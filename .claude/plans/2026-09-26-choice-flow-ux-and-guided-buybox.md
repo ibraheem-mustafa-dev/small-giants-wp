@@ -8,6 +8,43 @@ date: 2026-09-26
 
 # Choice flow: Continue model, visual summary, option images, guided buybox
 
+**Status (2026-09-26):** Waves 1, 1.5, 2, 2b and most of Wave 3 are DONE and live on sandybrown and eye-care-test.
+- **Commits:** 60bde4b0a (the wave), 1d5071b4c, 03e5c1a33, 74e6546a9 (showcase fixes against the draft),
+  5c17a44d0 (answer-row fix, guided unchosen start, flow opener label).
+- **Eye Care:** the lens configurator runs the showcase layout (post 463, `gen_lens_configurator.py`). Draft compared
+  at 1440, 768 and 375; six differences found and fixed in 74e6546a9. The £268 path, cart rows and Buy now to
+  checkout are proven. The draft is also hosted at mintcream-lyrebird-224487.hostingersite.com.
+- **Mama's (sandybrown):**
+  - A: showcase flow 4008 on page 4012
+  - B: product 3990 links flow 4010 (`_sgs_choice_flow`); per-product template 4014 deleted
+  - C: guided buybox page 4083
+  - prices 8, 20 and 40 at £9.50, £21.50 and £38.00; seven terms have swatch photos
+- **Found and fixed:**
+  - Answer rows were lost when a shopper re-tapped a pre-selected default. Proven by reproduction; fixed in
+    `flow-fields.js` and on Continue.
+  - Guided groups started "chosen" because option-picker selects its first option by default (`requireChoice`).
+  - A bare `layout` attribute collided with WordPress's layout support (now `flowLayout` / `buyboxLayout`).
+  - Two panel names collided in the shared component map (now `FlowLayoutPanel` / `FlowNavigationPanel`).
+
+**Remaining (next session, in order):**
+1. Confirm the 5c17a44d0 deploy landed on both sites (payload verify), or redeploy with
+   `build-deploy.py --target <site> --blocks-only`.
+2. Eye Care: set `summaryBaseLabel` "Frame" and `closeStyle` "text" in `gen_lens_configurator.py`, rebuild post
+   463, then re-run the draft comparison at 1440, 768 and 375. It passes when no structural difference remains.
+3. Mama's: set flow 4010's `openerLabel` "Choose your flavours".
+4. **One batched QA pass on both sites:**
+   - every journey, including B and C with the re-tap-default case, at 1440 and 375
+   - the Continue button muted then active, and its early-press hint
+   - Add to basket and Buy now
+   - the guided finish-choosing guard (C now starts with Flavour, Topping and Dietary unchosen)
+   - an editor round trip for every new setting (`flowLayout`, `closeStyle`, `summaryBaseLabel`, `openerLabel`,
+     `requireChoice`, `showTermDetails`, the guided peripherals)
+   - the Eye Care £268 regression
+5. **Close the plan:**
+   - Spec 43 §9 phasing status
+   - LEDGER row
+   - archive this plan; Phase 5 of the phase plan then starts in a fresh session
+
 **Why:** Bean's review of the live Mama's journeys (2026-09-26). The flow works but reads as a quiz, not a shop:
 - the final step shows one button where the options were
 - there's no picture of what's being built
