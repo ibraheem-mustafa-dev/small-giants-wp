@@ -50,6 +50,8 @@ sgs-theme/
 │   │   ├── dark-mode.js             # Dark mode toggle + system preference
 │   │   ├── nav-accessibility.js     # Keyboard nav + ARIA management for menus
 │   │   ├── sgs-shop-filters.js      # Accessible mobile filter drawer for shop archive (Spec 30)
+│   │   ├── sgs-shop-filters-extras.js # One-switch filter toggle + live result count (Spec 30)
+│   │   ├── sgs-shop-filters-groups.js # Filter group looks set by a heading class (Spec 30 FR-30-3)
 │   │   ├── smooth-scroll.js         # Smooth anchor scrolling
 │   │   └── viewport-width.js        # Viewport-width helper for responsive JS
 │   ├── fonts/                       # Self-hosted font files (WOFF2)

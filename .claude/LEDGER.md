@@ -17,10 +17,8 @@ equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3
 **Eye Care: now built by hand first (D1149, 2026-09-24).** Instead of finishing the pipeline before any client
 ships, the Eye Care site is built by hand to client-ready from Claude Design's gap map, full scope including the lens
 configurator and prescription upload. The finished site then becomes the pipeline's answer key. Plan:
-`plans/2026-09-24-eye-care-hand-build-design.md`. Waves A and B built: the seven Wave B pages are live on eye-care-test,
-the nine close-out items are done, and a final comparison left a short proven list (plan Status block, close-out part 2:
-eight framework settings and four content fixes, the mobile menu the largest). Then Wave C (shop, product page,
-checkout, lens configurator, prescription). The old clone on test page 11 and its
+`plans/2026-09-24-eye-care-hand-build-design.md`. Waves A-C are built; every page is being re-reviewed against the
+draft with the parity tool before Wave D (Front F). The old clone on test page 11 and its
 converter fixes (C1, C3, C4, C5) wait for Phase 7.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
@@ -51,20 +49,19 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-09-26, main aaf19d46f, all live on eye-care-test).** Wave C tasks 1-6 DONE and proven in a real browser:
-listing card, product page, shop; the lens configurator (a Choice Flow post, `lens-configurator` = post 463, opened
-full screen from "Add my prescription"; four questions incl. "Your prescription" per pair; one bag line at £268 for
-Distance/Thin/Polarised; tampered add-on or file requests refused); the size guide (`sgs_modal` 461); bag drawer
-detail rows; checkout placed an order end to end (store now GB-only with the draft's three delivery options, UK County
-hidden, free delivery pre-selected, staff download link for uploaded prescriptions). Spec 43 is v1.10.0; the lens configurator (post 463) runs the showcase layout and passes the parity tool (`scripts/parity/draft-live-walk.mjs`, config `sites/eye-care-ward-end/build/qa/parity/lens.mjs`) with 0 open differences at 1440, 768 and 375 (2026-09-26, live to a174a8f3d; the plan's "Lens-flow parity" bullet lists the accepted differences, four PROPOSED for Bean). The final design review ran; its owed items are in the plan's Status block. The lens flow is the only page verified to the draft-parity standard so far; the shop archive is in progress (`plans/2026-09-26-eye-care-shop-parity.md`) and the other pages follow before Wave D (the plan's Status block). No
-payment gateway is enabled on eye-care-test (a launch item for Bean). Header, footer, mobile menu and mega panels stay
-with the nav track. No blockers.
+**Now (2026-09-26, main 26287602b; eye-care-test runs the plugin at a174a8f3d and the theme at 84f04635e).** Waves
+A-C built (listing card, product page, shop, lens configurator post 463, size guide, bag, checkout). Parity
+re-review to the new standard: every page compared to the draft by `scripts/parity/draft-live-walk.mjs` (one config
+per page in `sites/eye-care-ward-end/build/qa/parity/`). Lens pop-up DONE (0 open differences at 1440/768/375, £268
+path intact; four differences PROPOSED for Bean in the plan's "Lens-flow parity" bullet). Shop archive IN PROGRESS:
+filters, toolbar, Featured order live; `plans/2026-09-26-eye-care-shop-parity.md` "Remaining" is next (first:
+replace the duplicate brand search with Spec 30's `sgs/filter-search`, then the library-wide hover upgrade Bean
+asked for). Product page, bag, checkout, confirmation, home, lenses, about, help, contact to follow before Wave D.
+Payments decided (Stripe with Klarna and wallets, plus PayPal Payments, test mode). No blockers.
 
-**Resume from:** the plan's Status block, "Wave C design review" (owed shop polish) and Phase 6
-(launch readiness); task 6 detail and parked items in `plans/2026-09-25-eye-care-bag-checkout-prescription.md`.
+**Resume from:** the shop plan's "Remaining" list, then the main plan's Status block ("Parity re-review owed").
 
-**Parked (detail in the plan's Status block and the task plans):** owed product-page and shop polish; theme default
-shop template hard-codes another client's filters; the theme's 1280px shop-columns container rule never applies;
+**Parked (detail in the plans):** theme default shop template hard-codes another client's filters (shop plan);
 `disabled` as a golden state (Bean, only if wanted); nav-drawer badge/disabled; the shared `IconPicker` `id` prop.
 
 ### Spec 36+37 merged track (after Front F)

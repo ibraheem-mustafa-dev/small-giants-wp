@@ -43,7 +43,9 @@ sgs-theme/
 │   │   ├── dark-mode.js             # Dark-mode toggle
 │   │   ├── smooth-scroll.js
 │   │   ├── viewport-width.js
-│   │   └── sgs-shop-filters.js      # Mobile filter drawer
+│   │   ├── sgs-shop-filters.js      # Mobile filter drawer; filter groups as <details> (open with sgs-filter-open)
+│   │   ├── sgs-shop-filters-extras.js # One-switch filter toggle, live result count on Apply
+│   │   └── sgs-shop-filters-groups.js # Group looks by heading class: sgs-filter-count, -segmented (swatches are CSS)
 │   └── fonts/                # Self-hosted WOFF2 files
 └── screenshot.png
 ```

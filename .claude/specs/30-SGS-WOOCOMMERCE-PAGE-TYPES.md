@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 30
-spec_version: "2.3"
+spec_version: "2.4"
 status: active
 title: "SGS WooCommerce Page Types — single-product / shop archive / cart / checkout"
 project: small-giants-wp
@@ -104,6 +104,7 @@ Product Collection + Product Filters composed into:
 (c) **filter parity** — a filter group for every attribute the product card displays at build time (post-launch attribute additions surface automatically via WC's attribute taxonomy — if any case requires code, FR-30-13's checklist says so explicitly);
 (d) **top SEO text** — a RichText block attribute (1–3 sentences) above the grid, fully operator-editable in the block editor;
 (e) **bottom SEO text** — RichText attribute below the grid with the read-more expand: full text server-rendered in the HTML; collapsed via a wrapper with `height:0; overflow:hidden; visibility:hidden` + `aria-hidden="true"` (NOT `display:none` on the text, NOT JS-injected content); the toggle is a `<button>` with `aria-expanded` + `aria-controls`, accessible name flips Read more/less, ≥44px; the collapsed line count N is an inspector integer control. Collapsed text remains ASA-subject — factual claims only.
+(f) **settings (v2.4, 2026-09-26, Eye Care shop parity)** — Customizer > Shop Filters also sets the result count's wording ("%d frames", with a singular form), the sort menu's options, order and labels ("option|Label" lines; `inc/shop-toolbar-settings.php`), product row gap, filter column width and the gap beside it, and where the one-switch filter toggle sits and whether it reads an attribute or a product tag (`?tags=`). A filter group's heading block takes classes that set its look: `sgs-filter-open` (starts expanded; with none marked the first group opens), `sgs-filter-count` (option count beside the heading), `sgs-filter-segmented` (one choice at a time, "All" first), `sgs-filter-swatches` (round swatches from each term's `_sgs_swatch_color`, via a generated stylesheet). `sgs-filter-search` (a search box over the list) duplicates FR-30-6's `sgs/filter-search` block and is being removed (`plans/2026-09-26-eye-care-shop-parity.md`, Remaining item 0). The "plain" panel style draws 52px heading rows ruled below.
 **Model:** sonnet build + opus design review. **Done when:** at 375px the archive paints with filters closed + a sticky Filter button opening a drawer; chips render/remove and persist across a paginate-away-and-back; `curl` of the archive HTML contains the FULL bottom text pre-expand; the toggle passes button/aria checks in axe + a manual keyboard run; top text, bottom text, and N are all editable in the block editor with zero code.
 
 ### FR-30-4 — Cart / checkout / Mini-Cart styling — **SHIPPED**

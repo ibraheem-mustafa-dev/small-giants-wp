@@ -16,7 +16,8 @@ key), with the owed Wave C polish alongside.
   hover end states compared by script at 1440, 768 and 375, screenshots looked at, and every difference either fixed
   or listed as accepted by Bean. Tool: `scripts/parity/draft-live-walk.mjs` with a config per page in
   `sites/eye-care-ward-end/build/qa/parity/`. Progress: lens pop-up DONE (below); shop archive IN PROGRESS
-  (`plans/2026-09-26-eye-care-shop-parity.md`); product page, bag drawer, checkout, order confirmation, home,
+  (`plans/2026-09-26-eye-care-shop-parity.md`: filters, toolbar and Featured order built and live; its "Remaining"
+  list is next); product page, bag drawer, checkout, order confirmation, home,
   lenses, about, help, contact to do.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
@@ -115,11 +116,9 @@ key), with the owed Wave C polish alongside.
   `build/archive-product.tree.json` (generator `build/gen_archive_product.py`), shop page titled Sunglasses (`/shop/`
   unchanged), theme Shop Filters settings (card minimum 250px, gap 18px, narrow grid, plain panel), phone drawer built
   by `sgs-shop-filters.js` (WordPress 7.1 saves editor-made Custom HTML empty). Brand filter PROVEN: WooCommerce 11's
-  parameter is `?brands=ray-ban` (not `filter_product_brand`), 3 Ray-Bans, survives reload. Verified at 1440/768/375.
-  Owed shop polish: one-row toolbar ("16 frames · Filter · Featured"), colour swatches in the Colour filter (WooCommerce
-  has no swatch display), a Gender filter (no gender data seeded), brand search box. Framework debt found: the theme's
-  default `archive-product.html` hard-codes another client's filters (Flavour/Size by attribute ID), and its
-  `@container sgs-shop-grid (min-width:1280px)` columns rule queries its own container so it has never applied.
+  parameter is `?brands=ray-ban` (not `filter_product_brand`), 3 Ray-Bans, survives reload. The shop's parity with
+  the draft (toolbar, swatches, Gender and Size, brand search, open groups, Featured order, and the theme debt) is
+  `plans/2026-09-26-eye-care-shop-parity.md`.
 - **Wave C task 4 (lens configurator) DONE and live (2026-09-25):** Spec 43 v1.5.0. The add-on price list
   (`includes/addon-price-list/`, WooCommerce > Add-on prices, seeded on eye-care-test with `wp sgs addon-prices
   seed`: lens-use, lens-thickness, lens-finish) is the only price authority. The flow is the Choice Flow
@@ -181,8 +180,7 @@ key), with the owed Wave C polish alongside.
   - Each finish card previews the frame's own photo under that finish's treatment, as the draft's do (e1403e873,
     centred and at the uncropped single-product size since aaf19d46f/3caa2ce16); a product with no photo shows the
     finish's own picture. At 768 "Light-reactive +£70.00" wraps where the draft's "+£70" does not (pennies).
-- Owed, shop polish (already listed above): colour swatches, filter panels open by
-  default, the results count and sort row. For Bean: the size buttons read the real lens width (55 / 58 / 62, from
+- For Bean: the size buttons read the real lens width (55 / 58 / 62, from
   the jpopticians sizes chosen 2026-09-25) where the draft says S / M / L. For the nav track: `floatingHideNearInline`
   (default `true`, f9af77509) steps the floating WhatsApp bubble aside while the product page's "Need advice?"
   card is on screen at 1440, and brings it back once scrolled past; live-verified on eye-care-test, including
@@ -324,7 +322,7 @@ colours and interactions, then look at the screenshots side by side. The check r
 | 3 | Framework features used across pages: open a modal from any link; an inner-block slot in `sgs/buybox`; a `card` variant on `sgs/whatsapp-cta`; a "current product has reviews" visibility condition; private file storage (section 6). | no |
 | 4 | Pages and templates: header, footer, mega panels, mobile menu; home; lenses, about, help (with FAQ), contact; shop archive; product page; bag drawer; checkout; order confirmation; size-guide modal. Detail per item is in the gap map rows for that area. | no |
 | 5 | Lens configurator and prescription upload (sections 5 and 6). | no |
-| 6 | Launch readiness: install and configure the payment plugins (a Stripe plugin with Klarna and wallets, plus PayPal Payments), an accessibility audit, a performance audit, the full-site 3-width check, then Bean's eye. | yes, for the final look |
+| 6 | Launch readiness: install and configure the payment plugins (a Stripe plugin with Klarna and wallets, plus PayPal Payments; Bean confirmed 2026-09-26, both in test mode until the shop owner's accounts exist), an accessibility audit, a performance audit, the full-site 3-width check, then Bean's eye. | yes, for the final look |
 | 7 | The pipeline answer key (section 7). | no |
 
 **Page order inside the product page:** build the zero-reviews state first. A new shop has no product
