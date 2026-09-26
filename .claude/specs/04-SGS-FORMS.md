@@ -229,10 +229,9 @@ When a form is submitted, the plugin fires a POST request to the configured N8N 
 ```json
 {
   "form_id": "indus-trade-application",
-  "form_name": "Trade Account Application",
-  "site_url": "https://indusfoods.co.uk",
   "submission_id": 42,
   "submitted_at": "2026-02-12T14:30:00Z",
+  "site_url": "https://indusfoods.co.uk",
   "fields": {
     "name": "Priya Sharma",
     "email": "priya@bombaykitchen.co.uk",
@@ -244,11 +243,7 @@ When a form is submitted, the plugin fires a POST request to the configured N8N 
   },
   "files": [
     { "name": "fhrs-certificate.pdf", "url": "https://..." }
-  ],
-  "payment": {
-    "status": "none",
-    "amount": 0
-  }
+  ]
 }
 ```
 
@@ -259,6 +254,8 @@ N8N then handles:
 - Any follow-up automation (e.g., reminder if not replied within 48h)
 
 This decouples notification logic from WordPress entirely — changes to email templates, recipients, or follow-up sequences happen in N8N without touching the plugin.
+
+**Current state:** none of the above is built on the N8N side. The one live workflow on `n8n.smallgiantsstudio.cloud`, "SGS site events" (`.claude/dev-setup.md` §N8N), emails only the Spec 30 shop alerts and acknowledges then drops form payloads (they carry no `event` key), so a submitted form emails nobody today. Building the form branch (owner notification, customer confirmation, recipients per site) is open work under this section.
 
 ---
 
