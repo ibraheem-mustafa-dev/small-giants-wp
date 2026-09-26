@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A form system built into the SGS Blocks plugin that replaces Fluent Forms Pro and SureForms for all Small Giants Studio client sites. Handles multi-step forms, conditional logic, file uploads, payment collection, and notifications — all rendering with the SGS design system and sending notifications via N8N.
+A form system built into the SGS Blocks plugin that replaces Fluent Forms Pro and SureForms for all Small Giants Studio client sites. Handles multi-step forms, conditional logic, file uploads, payment collection, and notifications — all rendering with the SGS design system and sending its emails through `wp_mail()` over the client's own SMTP mailbox.
 
 **Note:** This is not a standalone plugin — it lives within SGS Blocks as a set of form-related blocks and a shared form processing engine.
 
@@ -17,7 +17,7 @@ A form system built into the SGS Blocks plugin that replaces Fluent Forms Pro an
 | Conditional logic | Plugin-specific rules UI | Attributes on field blocks + `viewScriptModule` |
 | File uploads | Built-in with limits | `sgs/form-field-file` block + REST endpoint |
 | Payment integration | Plugin-specific Stripe addon | Shared Stripe handler (same as SGS Booking) |
-| Email notifications | Plugin-specific email builder | N8N webhooks (same architecture as SGS Booking) |
+| Email notifications | Plugin-specific email builder | `wp_mail()` over the site's SMTP (FluentSMTP), one shared SGS template; optional N8N event for automations |
 | Submissions storage | Plugin database tables | Custom table `{prefix}sgs_form_submissions` |
 | GDPR compliance | Plugin checkbox + privacy settings | `sgs/form-field-consent` block + data export/erasure hooks |
 | Styling | Plugin-specific CSS (often conflicts) | Design tokens from theme.json (always matches site) |
@@ -67,7 +67,10 @@ The wrapper block that handles the entire form lifecycle.
 | `submitPadding` / `submitMinHeight` | object (box) / number | Submit button padding and minimum height (px); unset keeps 0.75rem 2rem and 44px |
 | `successMessage` | string | Message shown after successful submission |
 | `successRedirect` | string | URL to redirect to after submission (optional, overrides message) |
-| `n8nWebhookUrl` | string | N8N webhook URL for notifications |
+| `notifyEmail` | string | Who receives each submission; blank uses the Site Info email, then `admin_email` |
+| `confirmationEmail` | boolean | Also email the submitter a confirmation (only when the form has a valid email field; default false) |
+| `confirmationSubject` | string | Confirmation subject; blank sends "Thanks for your submission" |
+| `confirmationMessage` | string | Confirmation body, plain text wrapped in paragraphs; blank sends a short thank-you |
 | `requireLogin` | boolean | Require WordPress login to submit |
 | `honeypot` | boolean | Enable honeypot spam field (default: true) |
 | `rateLimit` | integer | Max submissions per IP per hour (default: 5) |
@@ -164,7 +167,7 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 6. File upload processing (if any)
 7. Payment processing (if enabled) — Stripe Payment Intent
 8. Store submission in database
-9. Fire N8N webhook with full submission data
+9. Email the owner notification and, when switched on, the submitter's confirmation (`Form_Mailer`), then fire the optional N8N event
 10. Return success response (message or redirect URL)
 ```
 
@@ -222,9 +225,19 @@ Accessible at **SGS Forms > Submissions** in wp-admin.
 
 ---
 
-## Notification Architecture (N8N)
+## Notification Architecture
 
-When a form is submitted, the plugin fires a POST request to the configured N8N webhook URL with:
+Every email goes through `wp_mail()`, which FluentSMTP sends over the client's own mailbox (`.claude/dev-setup.md` §Site email). After a submission is stored, `plugins/sgs-blocks/includes/forms/class-form-mailer.php::send_notifications` sends through `plugins/sgs-blocks/includes/mail/class-sgs-mailer.php::send` (HTML in the shared template plus a plain-text part):
+
+- **Owner notification:** to the form's `notifyEmail`, else the Site Info email, else `admin_email` (`Sgs_Mailer::owner_recipient`). Subject "New form submission: <form name>", every submitted field in an escaped table, `Reply-To` the submitter's email field when it is valid.
+- **Confirmation:** only when `confirmationEmail` is on and the submission has a valid email field; `confirmationSubject` and `confirmationMessage`, or their defaults.
+- **Header injection:** `Form_Processor::sanitise_fields` blanks any email-named value holding a line break (core `sanitize_email()` would rebuild `a@b.com
+Bcc: x@y.com` as the valid-looking `a@b.comBccxy.com`), and `Sgs_Mailer` refuses CR/LF in a recipient or `Reply-To`.
+- **Template:** `Sgs_Mail_Template::wrap` uses WooCommerce's email header, footer and CSS inliner when WooCommerce is active, else `plugins/sgs-blocks/includes/mail/templates/email.php` (site name, logo, theme text/surface/primary colours).
+
+The choice-flow email terminal (Spec 43 FR-43-4) goes through the same path. PECR: confirmations and owner notifications are service messages while they carry no promotional copy.
+
+**Optional automation event.** When a site sets `sgs_n8n_webhook_url`, `Form_Processor::send_webhook` also POSTs the submission there for CRM rows, Slack or follow-ups. It is never the email path:
 
 ```json
 {
@@ -232,30 +245,12 @@ When a form is submitted, the plugin fires a POST request to the configured N8N 
   "submission_id": 42,
   "submitted_at": "2026-02-12T14:30:00Z",
   "site_url": "https://indusfoods.co.uk",
-  "fields": {
-    "name": "Priya Sharma",
-    "email": "priya@bombaykitchen.co.uk",
-    "phone": "07700 900123",
-    "business_name": "Bombay Kitchen",
-    "business_type": "Restaurant",
-    "product_interests": ["spices", "rice", "oils"],
-    ...
-  },
-  "files": [
-    { "name": "fhrs-certificate.pdf", "url": "https://..." }
-  ]
+  "fields": { "name": "Priya Sharma", "email": "priya@bombaykitchen.co.uk", "business_type": "Restaurant" },
+  "files": [ { "name": "fhrs-certificate.pdf" } ]
 }
 ```
 
-N8N then handles:
-- Sending confirmation email to customer
-- Sending notification email/Slack/SMS to site owner
-- Creating a record in CRM/Notion/Google Sheets (per-client workflow)
-- Any follow-up automation (e.g., reminder if not replied within 48h)
-
-This decouples notification logic from WordPress entirely — changes to email templates, recipients, or follow-up sequences happen in N8N without touching the plugin.
-
-**Current state:** none of the above is built on the N8N side. The one live workflow on `n8n.smallgiantsstudio.cloud`, "SGS site events" (`.claude/dev-setup.md` §N8N), emails only the Spec 30 shop alerts and acknowledges then drops form payloads (they carry no `event` key), so a submitted form emails nobody today. Building the form branch (owner notification, customer confirmation, recipients per site) is open work under this section.
+**Verified (2026-09-26):** `tests/php/run-form-mailer-standalone.php` (16, including a check that the real sanitiser blanks a line-break email and goes red without the guard); on sandybrown a visitor submission of the test page `/sgs-email-test-form/` (page 4473, tree `sites/mamas-munches/build/email-test-form.tree.json`) sent the owner notification and the confirmation, both logged `sent` in FluentSMTP.
 
 ---
 

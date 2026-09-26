@@ -5,7 +5,7 @@
 	"version": "0.2.0",
 	"title": "SGS Form",
 	"category": "sgs-forms",
-	"description": "Form wrapper with multi-step support, validation, and N8N webhook notifications.",
+	"description": "Form wrapper with multi-step support, validation, and email notifications to the site owner and the submitter.",
 	"keywords": [
 		"form",
 		"contact",

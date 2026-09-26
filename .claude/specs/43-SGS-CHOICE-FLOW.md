@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.10.0
+spec_version: 1.11.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -284,19 +284,20 @@ now-nonexistent "Spec 42 FR-42-8" boundary — FR-42-8 is Spec 42's cache/nonce 
 has nothing to do with pricing or scoring; there is no live Spec 42 FR to point at here).
 
 **FR-43-4 — Email-capture handoff.** Collect an email, send the result to it, optionally
-add to a mailing list (reuse whatever list/webhook mechanism `sgs/form` already has —
-this project's forms notify via N8N webhooks, never `wp_mail()`; do not add a second
-notification path). **Rate-limiting inherits
+add to a mailing list (reuse `sgs/form`'s mechanism: its emails go through `Form_Mailer`
+over `wp_mail()` and the site's SMTP, and its optional N8N event carries any list automation;
+do not add a second notification path). **Rate-limiting inherits
 from `sgs/form`'s existing `rateLimit` config, applied per-flow-instance** (Competitor +
 Cynic MISSING finding — a quiz-style lead-capture terminal with no spam defence is an open
-relay for lead-list poisoning and N8N webhook cost amplification); this is validated
+relay for lead-list poisoning and email or webhook cost amplification); this is validated
 against FR-42-8's now-cache-independent config lookup, not the vulnerable transient path.
 Built (v1.7.0) as the `email` action of `sgs/choice-flow-result` (email label, submit label, success message,
 `rateLimit` 1 to 50, default 5) and `POST /sgs/v1/choice-flow/submit`
 (`includes/forms/class-choice-flow-submit.php`): rest nonce, honeypot (a filled one gets a fake success and nothing
 is stored), `is_email`, answers on the path (at most 16; label 60, value 200) and tags (at most 20, `sanitize_key`),
-then `Form_REST_Submission::check_rate_limit()` and `Form_Processor::process()`, which stores the submission and
-fires the N8N webhook. The rate limit is read from the saved block, never the request: `flowRef` is the saved flow's
+then `Form_REST_Submission::check_rate_limit()` and `Form_Processor::process()`, which stores the submission,
+emails the shopper the `email`-action result block's heading (subject) and body, notifies the site owner (Site Info
+email, else `admin_email`) through `Form_Mailer`, and fires the optional N8N event. The rate limit is read from the saved block, never the request: `flowRef` is the saved flow's
 slug (the linking block stamps it onto the flow post's root as it renders it) or `page:<postId>:0` for a flow placed
 directly on a page. Proof: `tests/php/run-choice-flow-submit-standalone.php` (the 5th submission allowed, the 6th
 refused with 429).
@@ -601,7 +602,7 @@ CPT-creation gap) and FR-42-13 (analytics).
 | FR-43-2a | Editor-time validation: dangling target / cycle blocks publish — decided |
 | FR-43-2b | Skip-a-priced-step abuse path — resolved as a side effect of FR-43-10's correction, no new FR needed |
 | FR-43-3 | Terminal: recommendation result screen |
-| FR-43-4 | Terminal: email-capture lead-gen handoff (N8N webhook, not `wp_mail()`) + inherited rate-limit |
+| FR-43-4 | Terminal: email-capture lead-gen handoff (result emailed over `wp_mail()` via `Form_Mailer`) + inherited rate-limit |
 | FR-43-5 | Terminal: real purchase via Spec 27's `/sgs/v1/cart/add-item` proxy, unmodified — corrected citation, no bespoke security apparatus |
 | FR-43-6 | A saved `sgs_choice_flow` post shown by a linked `sgs/choice-flow` (`flowId` + `flowIsLinked`, same picker as Spec 42), inline or inside a full-screen `sgs/modal` |
 | FR-43-7 | Mama's Munches: one product, only the pack priced; full-customisation popup and pick-on-page-then-popup journeys |

@@ -714,11 +714,11 @@ It installs FluentSMTP, writes `FLUENTMAIL_SMTP_USERNAME` / `FLUENTMAIL_SMTP_PAS
 
 sandybrown: From `admin@smallgiantsstudio.co.uk` (alias), login `ibraheem@smallgiantsstudio.co.uk`, key `SMTP_PASS_SGS`, digest to Bean. Sent mail is listed in WP Admin > Settings > FluentSMTP > Email Logs (table `{prefix}fsmpt_email_logs`).
 
-### N8N: where site notifications go
+### N8N: optional automation events, never the email path
 
-Every SGS site's `sgs_n8n_webhook_url` option points at one workflow on `https://n8n.smallgiantsstudio.cloud`: "SGS site events" (id `AJzRBARFn8AqQlkg`). The URL's path is a secret; read it with `wp option get sgs_n8n_webhook_url` on sandybrown, never commit it. The workflow emails `sgs_wishlist_alert` (one email to the shopper) and `sgs_back_in_stock` (one email per subscriber) over the `Hostinger SMTP - admin@ibraheemmustafa.com` credential, and acknowledges then drops anything else, including form submissions (no form-email path exists yet).
+Emails go through `wp_mail()` and FluentSMTP (§Site email above). A site that sets `sgs_n8n_webhook_url` also POSTs events there for automations (CRM rows, Slack): form submissions (`Form_Processor::send_webhook`), `sgs_wishlist_alert` and `sgs_back_in_stock` (`Sgs_Webhook::send`). The URL's path is a secret; read it with `wp option get sgs_n8n_webhook_url`, never commit it.
 
-Its logic lives in the repo: `plugins/sgs-blocks/scripts/n8n/site-events-build-emails.js`. A site is emailed for only when its `site_url` is in that file's `SITES` map (shop name and sender), and every link in an email must point at that same site. To add a client shop, add its `SITES` line, then:
+The workflow "SGS site events" (id `AJzRBARFn8AqQlkg`, `https://n8n.smallgiantsstudio.cloud`) is an **inactive backup**, deactivated on 2026-09-26 when the shop alerts moved to WooCommerce emails so no alert goes out twice. It emails the two shop events over the `Hostinger SMTP - admin@ibraheemmustafa.com` credential for sites listed in `SITES` in `plugins/sgs-blocks/scripts/n8n/site-events-build-emails.js`. To use it again, activate it (`POST /api/v1/workflows/AJzRBARFn8AqQlkg/activate`) and switch the matching WooCommerce emails off so shoppers are not emailed twice. The repo code stays pushable:
 
 ```bash
 python plugins/sgs-blocks/scripts/n8n/push-site-events.py           # push the repo code to the live node

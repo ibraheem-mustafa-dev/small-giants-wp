@@ -685,7 +685,7 @@ These are vulnerabilities in the booking system that must be fixed before the WP
 
 The WP plugin does NOT interact with N8N directly. All notifications (email, SMS, WhatsApp) are triggered by the booking system when bookings are created, cancelled, or when reminders are due.
 
-However, N8N can optionally be used for WordPress-specific automations (contact form submissions, page notifications, etc.) — these are unrelated to the booking flow and configured separately in the SGS Framework's core settings.
+WordPress-side emails (contact forms, shop alerts, client notes) are separate from the booking flow: they go through `wp_mail()` over the site's SMTP (Spec 04 §Notification Architecture), and N8N is only an optional automation hook there (`sgs_n8n_webhook_url`).
 
 ---
 

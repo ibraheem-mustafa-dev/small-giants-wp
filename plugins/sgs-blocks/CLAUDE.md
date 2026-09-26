@@ -9,7 +9,7 @@ semantic markup that reads design tokens from the SGS Theme. Per-block status: q
 
 Full spec: `.claude/specs/02-SGS-BLOCKS.md` (blocks) + `.claude/specs/04-SGS-FORMS.md` (forms, incl.
 the form processing engine — DB table `{prefix}sgs_form_submissions`, REST namespace
-`sgs-forms/v1`, notifications via N8N webhooks not `wp_mail`).
+`sgs-forms/v1`, notification emails via `includes/mail/` `Sgs_Mailer` over `wp_mail()`; N8N is an optional automation hook).
 
 ## Plugin Structure
 

@@ -242,7 +242,7 @@ curated capability roster.
 | Blocks plugin → DB | Read-only queries against `sgs-framework.db` (§5's access pattern); `/sgs-update` writes it |
 | Cloning pipeline → WordPress REST | Deploy stage `PATCH /wp/v2/pages/{id}`; Playwright captures at 375/768/1440px against the live canary for verification |
 | Cloning pipeline → fidelity measurement | Stage 11.6 `computed-parity.js` (Spec 20), diagnostic only, never the gate |
-| Blocks plugin → notifications | Form/booking submissions route to an N8N webhook, never `wp_mail()` |
+| Blocks plugin → email | Every email goes through `wp_mail()` (SGS code via `Sgs_Mailer`, shop alerts as `WC_Email` subclasses) over the site's SMTP mailbox via FluentSMTP; N8N receives optional automation events only |
 | Blocks plugin → Customiser | Floating UI (Back to Top, Reading Progress) settings stored as `theme_mod`, output via `wp_footer` |
 | Per-client deployment | `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` → `wp_global_styles` (§7) |
 | Deploy | `plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — the ONE path; never hand-rolled tar/scp. `--target indus-test` and `--target eye-care-test` deploy to those test sites. It builds and deploys from an isolated `git worktree add HEAD` by default, so a concurrent session's build or uncommitted dirty files cannot collide with the deploy |
@@ -303,7 +303,8 @@ Real, current items only. `.claude/LEDGER.md` carries the live status of each.
 | Service | Purpose |
 |---|---|
 | Hostinger | Web hosting for the canary and the Indus test site (`ssh hd` alias) |
-| N8N | Form/booking notification webhook (used instead of `wp_mail()`) |
+| FluentSMTP | Per-site SMTP for `wp_mail()`, with email logs (`provision-site-mail.py`) |
+| N8N | Optional automation events (`sgs_n8n_webhook_url`); never the email path |
 | Playwright | Visual/live-DOM verification, MCP + CLI |
 | Lucide | ~1900 icons, pre-generated to `lucide-icons.php` |
 | Inter (variable), Montserrat, Source Sans 3 | Self-hosted WOFF2 fonts, no CDN |

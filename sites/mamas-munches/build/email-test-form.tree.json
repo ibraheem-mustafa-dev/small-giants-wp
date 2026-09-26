@@ -1,0 +1,39 @@
+[
+  {
+    "name": "sgs/form",
+    "attributes": {
+      "formId": "sgs-email-test",
+      "formName": "SGS email test form",
+      "notifyEmail": "ibraheemmustafa16@gmail.com",
+      "confirmationEmail": true,
+      "confirmationSubject": "We have your message",
+      "confirmationMessage": "Thanks for getting in touch.\n\nThis is the SGS email test form on the sandybrown test site; this confirmation proves the form's confirmation email works."
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/form-field-text",
+        "attributes": {
+          "fieldName": "your_name",
+          "label": "Your name",
+          "required": true
+        }
+      },
+      {
+        "name": "sgs/form-field-email",
+        "attributes": {
+          "fieldName": "email",
+          "label": "Email",
+          "required": true
+        }
+      },
+      {
+        "name": "sgs/form-field-textarea",
+        "attributes": {
+          "fieldName": "message",
+          "label": "Message",
+          "required": true
+        }
+      }
+    ]
+  }
+]

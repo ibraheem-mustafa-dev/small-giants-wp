@@ -38,7 +38,7 @@ Visitor → Widget (Interactivity API) → REST API → WordPress DB (conversati
 
 **AI mode:** Visitor → Widget → REST API → N8N webhook → LLM processes → N8N returns response → REST API → Widget
 
-**Hybrid mode:** AI handles initial messages. If confidence is low or visitor requests human, N8N escalation workflow notifies operator via N8N → email/Slack/WhatsApp.
+**Hybrid mode:** AI handles initial messages. If confidence is low or visitor requests human, the operator is emailed through `wp_mail()` (the site's SMTP, Spec 04 §Notification Architecture), and an N8N escalation workflow adds Slack or WhatsApp when one is configured.
 
 ---
 
