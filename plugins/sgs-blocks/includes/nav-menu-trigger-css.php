@@ -121,27 +121,53 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 				return in_array( $mode, array( 'text', 'icon-and-text' ), true );
 			};
 
-			$burger_desktop_text_bearing = $sgs_nm_text_bearing( $trigger_mode );
-			$css                        .= $burger_sel . '{'
-				. ( $burger_desktop_text_bearing ? 'width:auto;' : 'width:' . $burger_size . ';' )
-				. 'height:' . $burger_size . ';min-width:' . $burger_size . ';min-height:' . $burger_size . ';}';
+			/*
+			 * `burgerWidth` lets the button be non-square (e.g. 30px wide x
+			 * 36px tall, lamalama.com) — WIDTH only; `height`/`min-height`
+			 * stay tied to `burgerSize`. A tier's own (sanitised) value wins,
+			 * an unset tier climbs to the tier above (sgs_resolve_tier()), and
+			 * desktop falls back to `$burger_size`. `min-width` follows the
+			 * resolved width so a width under 44px takes effect; the 44px
+			 * touch target is the burger's `::after` in style.css.
+			 *
+			 * An empty `burgerWidth` (`{}`) resolves every tier to
+			 * `$burger_size`, so the burger stays square.
+			 */
+			$sgs_nm_bw_tiers = sgs_responsive_normalise_object( $attributes['burgerWidth'] ?? array(), false );
+			$sgs_nm_bw_clean = array();
+			foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_nm_bw_tier_key ) {
+				$sgs_nm_bw_raw                          = $sgs_nm_bw_tiers[ $sgs_nm_bw_tier_key ] ?? null;
+				$sgs_nm_bw_safe                         = ( null !== $sgs_nm_bw_raw && '' !== $sgs_nm_bw_raw ) ? sgs_css_length_value( (string) $sgs_nm_bw_raw ) : '';
+				$sgs_nm_bw_clean[ $sgs_nm_bw_tier_key ] = '' !== $sgs_nm_bw_safe ? $sgs_nm_bw_safe : null;
+			}
+			$sgs_nm_resolve_width = static function ( $tier ) use ( $sgs_nm_bw_clean, $burger_size ) {
+				return sgs_resolve_tier( $sgs_nm_bw_clean, $tier, $burger_size )['value'];
+			};
 
-			$sgs_nm_size_prev_bearing = $burger_desktop_text_bearing;
+			$sgs_nm_size_decl_for = static function ( $mode, $width ) use ( $sgs_nm_text_bearing, $burger_size ) {
+				return ( $sgs_nm_text_bearing( $mode ) ? 'width:auto;' : 'width:' . $width . ';' )
+					. 'height:' . $burger_size . ';min-width:' . $width . ';min-height:' . $burger_size . ';';
+			};
+
+			$burger_desktop_width = $sgs_nm_resolve_width( 'desktop' );
+			$burger_desktop_decl  = $sgs_nm_size_decl_for( $trigger_mode, $burger_desktop_width );
+			$css                 .= $burger_sel . '{' . $burger_desktop_decl . '}';
+
+			$sgs_nm_size_prev_decl = $burger_desktop_decl;
 			foreach ( array(
-				'tablet' => array( $trigger_mode_tablet, SGS_Breakpoints::TABLET_MAX ),
-				'mobile' => array( $trigger_mode_mobile, SGS_Breakpoints::MOBILE_MAX ),
+				'tablet' => array( $trigger_mode_tablet, SGS_Breakpoints::TABLET_MAX, 'tablet' ),
+				'mobile' => array( $trigger_mode_mobile, SGS_Breakpoints::MOBILE_MAX, 'mobile' ),
 			) as $sgs_nm_size_tier ) {
-				list( $sgs_nm_size_tier_mode, $sgs_nm_size_tier_bp ) = $sgs_nm_size_tier;
-				$sgs_nm_size_tier_text_bearing                       = $sgs_nm_text_bearing( $sgs_nm_size_tier_mode );
-				if ( $sgs_nm_size_tier_text_bearing === $sgs_nm_size_prev_bearing ) {
-					$sgs_nm_size_prev_bearing = $sgs_nm_size_tier_text_bearing;
+				list( $sgs_nm_size_tier_mode, $sgs_nm_size_tier_bp, $sgs_nm_size_tier_key ) = $sgs_nm_size_tier;
+				$sgs_nm_size_tier_width = $sgs_nm_resolve_width( $sgs_nm_size_tier_key );
+				$sgs_nm_size_tier_decl  = $sgs_nm_size_decl_for( $sgs_nm_size_tier_mode, $sgs_nm_size_tier_width );
+				if ( $sgs_nm_size_tier_decl === $sgs_nm_size_prev_decl ) {
+					$sgs_nm_size_prev_decl = $sgs_nm_size_tier_decl;
 					continue;
 				}
-				$css .= '@media (max-width:' . $sgs_nm_size_tier_bp . 'px){' . $burger_sel . '{'
-					. ( $sgs_nm_size_tier_text_bearing ? 'width:auto;' : 'width:' . $burger_size . ';' )
-					. 'height:' . $burger_size . ';min-width:' . $burger_size . ';min-height:' . $burger_size . ';}}';
+				$css .= '@media (max-width:' . $sgs_nm_size_tier_bp . 'px){' . $burger_sel . '{' . $sgs_nm_size_tier_decl . '}}';
 
-				$sgs_nm_size_prev_bearing = $sgs_nm_size_tier_text_bearing;
+				$sgs_nm_size_prev_decl = $sgs_nm_size_tier_decl;
 			}
 		}
 

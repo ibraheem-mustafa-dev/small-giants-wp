@@ -5,6 +5,8 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
+import { useBlockEditContext, store as blockEditorStore } from '@wordpress/block-editor';
+import { useSelect } from '@wordpress/data';
 import { SgsLengthControl, IconPicker, MotionEasingControl, ResponsiveOverride } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { resolveTier } from '../../utils';
@@ -42,8 +44,15 @@ const BURGER_MORPH_OPTIONS = [
  * Icon colour + button background (Normal + Hover, plus their hover-treatment
  * selectors) live in the top-level `SgsColourPanel` (§9.6), not here.
  *
+ * `burgerWidth` (FR-U18-G1, the button's WIDTH-only override) is read
+ * directly off the block's own attributes via `useBlockEditContext()` +
+ * `getBlockAttributes()`, NOT as a prop — this panel's caller (`edit.js`) is
+ * outside this task's edit scope and does not destructure/pass it, so a prop
+ * would always read `undefined` even once a value is stored.
+ *
  * @param {Object}   root0                       Props.
- * @param {string}   root0.burgerSize            `burgerSize`.
+ * @param {string}   root0.burgerSize            `burgerSize` — the button's HEIGHT (and, unless
+ *                                                `burgerWidth` overrides it, its width too).
  * @param {Object}   root0.triggerMode           `triggerMode` — tier object {desktop,tablet,mobile},
  *                                                each icon | text | icon-and-text.
  * @param {string}   root0.triggerLabel          `triggerLabel`.
@@ -80,6 +89,16 @@ export default function BurgerPanel( {
 	burgerMorphEasingCustom,
 	setAttributes,
 } ) {
+	// FR-U18-G1: this panel's `edit.js` caller does not pass `burgerWidth`
+	// (outside this task's edit scope) — read it straight off the block's
+	// own stored attributes instead, exactly as the value the last save
+	// actually holds (no prop-drilling round trip needed).
+	const { clientId } = useBlockEditContext();
+	const burgerWidth = useSelect(
+		( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.burgerWidth,
+		[ clientId ]
+	);
+
 	// `triggerMode` is a TIER OBJECT. The icon picker, the
 	// Label field and the morph controls apply to EVERY tier at once (one
 	// icon glyph, one label word, one morph pose, whichever tiers use them),
@@ -192,7 +211,7 @@ export default function BurgerPanel( {
 			) }
 
 			<SgsLengthControl
-				label={ __( 'Size', 'sgs-blocks' ) }
+				label={ __( 'Height', 'sgs-blocks' ) }
 				value={ burgerSize }
 				units={ [ { value: 'px', label: 'px', default: 44 } ] }
 				onChange={ ( val ) => setAttributes( { burgerSize: val || '44px' } ) }
@@ -202,6 +221,30 @@ export default function BurgerPanel( {
 				) }
 				presets={ false }
 			/>
+
+			{ /* FR-U18-G1: WIDTH only — burgerSize above stays the button's
+			   height (and its width too, unless overridden here), so the
+			   button can be a genuinely non-square touch target (e.g. 30px
+			   wide x 36px tall, lamalama.com). Per-device override via the
+			   GLOBAL device toggle (ResponsiveOverride), matching `triggerMode`
+			   above — never a per-control switcher. */ }
+			<ResponsiveOverride
+				label={ __( 'Width', 'sgs-blocks' ) }
+				value={ burgerWidth }
+				onChange={ ( obj ) => setAttributes( { burgerWidth: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SgsLengthControl
+						label={ __( 'Width', 'sgs-blocks' ) }
+						value={ ownValue || '' }
+						placeholder={ inherited ? effectiveValue || burgerSize : burgerSize }
+						units={ [ { value: 'px', label: 'px', default: 44 } ] }
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
+						help={ __( 'Leave empty to match the height.', 'sgs-blocks' ) }
+						presets={ false }
+					/>
+				) }
+			</ResponsiveOverride>
 
 			<ToggleControl
 				label={ __( 'Magnetic pull', 'sgs-blocks' ) }

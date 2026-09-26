@@ -186,8 +186,28 @@
 	min-height: 44px;
 	min-width: 44px;
 	padding: 0;
+	position: relative;
 	transition: background-color var(--wp--custom--transition--fast, 150ms ease);
 	width: 44px;
+}
+
+/*
+ * FR-U18-G1 touch-target floor. `burgerWidth` (render.php scoped) can now
+ * shrink the button's own box below 44px on one or both axes (e.g. 30px wide
+ * x 36px tall, lamalama.com) — WCAG 2.2's 44x44px target still has to be met,
+ * so an invisible hit-area sits on a `::after` pseudo-element that extends
+ * each side outward only as far as reaching 44px needs, per axis (0 when the
+ * box is already 44px or more), so it stays centred in either text
+ * direction. It paints
+ * nothing (no background, no border) and needs no `pointer-events`
+ * override: a pseudo-element of the button IS the button for hit-testing, so
+ * every tap on it activates the real `<button>` exactly as a tap on the
+ * visible box would.
+ */
+.sgs-nav-bar-menu__burger::after {
+	content: "";
+	inset: min(0px, calc((100% - 44px) / 2));
+	position: absolute;
 }
 
 /* Zero-specificity overridable default (G20c ungated-paint fix) — no

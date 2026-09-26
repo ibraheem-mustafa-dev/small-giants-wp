@@ -251,7 +251,7 @@
 					],
 					"prefix": "burger",
 					"attrMap": {
-						"css:width": "burgerSize",
+						"css:width": "burgerWidth",
 						"css:height": "burgerSize",
 						"css:color": "burgerColour",
 						"css:color-gradient": "burgerColourGradient",
@@ -670,6 +670,11 @@
 		"burgerSize": {
 			"type": "string",
 			"default": "44px"
+		},
+		"burgerWidth": {
+			"type": "object",
+			"default": {},
+			"description": "FR-U18-G1. Per-tier {desktop,tablet,mobile} CSS length overriding the burger button's WIDTH only (burgerSize keeps height/min-height), so the button can be a genuinely non-square touch target (e.g. 30px wide x 36px tall, lamalama.com). A tier left unset inherits the tier above (sgs_resolve_tier() cascade), and an empty object falls all the way back to burgerSize -- byte-identical to pre-G1 output."
 		},
 		"burgerFontSize": {
 			"type": "string",
