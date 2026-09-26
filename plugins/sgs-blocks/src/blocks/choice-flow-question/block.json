@@ -48,23 +48,7 @@
 						"layout"
 					],
 					"_note": "v1: no per-option colour/layout attrs yet — plain list, styled by the block's own stylesheet only."
-				},
-		"eyebrow": {
-			"type": "string",
-			"default": "",
-			"description": "FR-43-24: replaces the 'Question N of M' line above this question, e.g. 'Last bit, and it can wait'. A question with its own eyebrow is left out of the count."
-		},
-		"pricePrefix": {
-			"type": "string",
-			"enum": [ "plus", "from" ],
-			"default": "plus",
-			"description": "FR-43-17: how option prices read: 'plus' gives '+£30.00', 'from' gives 'from £59.00' (a starting price later choices add to)."
-		},
-		"summaryLabel": {
-			"type": "string",
-			"default": "",
-			"description": "FR-43-19: the stage line's label for this unpriced question's answer, e.g. 'Prescription'. Empty uses the step's label."
-		}
+				}
 			}
 		}
 	},
@@ -169,6 +153,22 @@
 					}
 				}
 			}
+		},
+		"eyebrow": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24: replaces the 'Question N of M' line above this question, e.g. 'Last bit, and it can wait'. A question with its own eyebrow is left out of the count."
+		},
+		"pricePrefix": {
+			"type": "string",
+			"enum": [ "plus", "from" ],
+			"default": "plus",
+			"description": "FR-43-17: how option prices read: 'plus' gives '+£30.00', 'from' gives 'from £59.00' (a starting price later choices add to)."
+		},
+		"summaryLabel": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-19: the stage line's label for this unpriced question's answer, e.g. 'Prescription'. Empty uses the step's label."
 		}
 	},
 	"render": "file:./render.php",
