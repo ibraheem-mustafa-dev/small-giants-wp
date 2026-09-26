@@ -12,9 +12,11 @@
  * Elements already in the viewport on load play at once (their own delay
  * plus a 100ms-per-index stagger). The rest are created — paused, which
  * already paints their start pose — once they come within 200px of the
- * viewport, then played when 15% of them is in view. Nothing is hidden by
- * CSS, so content with no JavaScript, or a script that throws, both show
- * unanimated rather than invisible.
+ * viewport, then played when 15% of them is in view. Until this script has
+ * put the start poses in place, a head flag (sgs-entrance-pending, printed by
+ * includes/animation-attributes.php) holds animated elements at opacity 0; it
+ * lifts itself after 3s, and without JavaScript it never exists, so content
+ * shows unanimated rather than invisible.
  *
  * Progressive enhancement: adds .sgs-js to <html> (also read by the
  * image-sequence and horizontal-panel blocks). Try/catch finishes every
@@ -31,7 +33,17 @@
 
 	var elements = document.querySelectorAll( '[data-sgs-animation]' );
 
+	/**
+	 * Lift the head flag (includes/animation-attributes.php::
+	 * print_entrance_pending_flag) that holds animated elements at opacity 0
+	 * until this script has put their start poses in place.
+	 */
+	function releasePending() {
+		document.documentElement.classList.remove( 'sgs-entrance-pending' );
+	}
+
 	if ( ! elements.length ) {
+		releasePending();
 		return;
 	}
 
@@ -66,6 +78,7 @@
 	var DURATION_FALLBACKS_MS = { instant: 60, fast: 150, medium: 300, slow: 500, 'extra-slow': 800 };
 	var EASING_TOKEN_KEYS     = [ 'default', 'ease-out', 'ease-in', 'spring', 'linear' ];
 	var FALLBACK_EASING       = 'cubic-bezier(0.4, 0, 0.2, 1)';
+	var NEAR_MARGIN_PX        = 200; // Paused start poses are created this far outside the viewport.
 
 	/**
 	 * Build the WAAPI keyframe list for one effect.
@@ -248,6 +261,7 @@
 		elements.forEach( function ( el ) {
 			el.classList.add( 'sgs-animated' );
 		} );
+		releasePending();
 		return;
 	}
 
@@ -255,6 +269,7 @@
 		elements.forEach( function ( el ) {
 			el.classList.add( 'sgs-animated' );
 		} );
+		releasePending();
 		return;
 	}
 
@@ -306,7 +321,7 @@
 					nearObserver.unobserve( el );
 				} );
 			},
-			{ threshold: 0, rootMargin: '200px 0px 200px 0px' }
+			{ threshold: 0, rootMargin: NEAR_MARGIN_PX + 'px 0px ' + NEAR_MARGIN_PX + 'px 0px' }
 		);
 
 		// "Play" observer — plays the animation once 15% of the element is
@@ -338,13 +353,26 @@
 		// Elements already in the viewport on page load play at once — both
 		// observers fire async and would otherwise miss them.
 		const inViewOnLoad = [];
+		const viewHeight = globalThis.innerHeight || document.documentElement.clientHeight;
 		elements.forEach( function ( el ) {
 			if ( isInViewport( el ) ) {
 				inViewOnLoad.push( el );
-			} else {
-				nearObserver.observe( el );
-				playObserver.observe( el );
+				return;
 			}
+			// Already within the near margin (e.g. peeking in at the fold below
+			// the 15% play threshold): hold its start pose now, before the
+			// pending flag lifts, rather than on the near observer's first
+			// asynchronous callback.
+			const rect = el.getBoundingClientRect();
+			if ( rect.top < viewHeight + NEAR_MARGIN_PX && rect.bottom > -NEAR_MARGIN_PX ) {
+				const animation = createAnimation( el, null );
+				if ( animation ) {
+					animation.pause();
+					animations.set( el, animation );
+				}
+			}
+			nearObserver.observe( el );
+			playObserver.observe( el );
 		} );
 
 		// Stagger already-visible elements by 100ms per index so they play
@@ -358,6 +386,9 @@
 			animation.play();
 			el.classList.add( 'sgs-animated' );
 		} );
+
+		// Every in-view entrance now holds its start pose itself.
+		releasePending();
 
 		// Header failsafe — a header entrance hides the header until it
 		// plays; if it is still paused (never came within 200px of view for
@@ -391,6 +422,7 @@
 		elements.forEach( function ( el ) {
 			el.classList.add( 'sgs-animated' );
 		} );
+		releasePending();
 
 		// Expose in dev environments without crashing production.
 		if ( globalThis.console ) {

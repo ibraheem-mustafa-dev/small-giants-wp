@@ -101,10 +101,13 @@ for ( const width of [ 375, 768, 1440 ] ) {
 	const between  = after.filter( ( [ , o ] ) => o > 0.02 && o < 0.98 );
 	const firstLow = after.findIndex( ( [ , o ] ) => o < 0.98 );
 	const flash    = firstLow > 0 && after.slice( 0, firstLow ).some( ( [ , o ] ) => o >= 0.98 );
-	const rise     = between.length ? between[ between.length - 1 ][ 0 ] - between[ 0 ][ 0 ] : 0;
-	r.header = { paint: u16.paint, samplesAfterPaint: after.length, between: between.length, riseMs: Math.round( rise ), flash };
-	check( between.length >= 3 && rise >= 500, `${ width } header entrance is a slow fade`, r.header );
-	check( ! flash, `${ width } header painted visible before its entrance`, r.header );
+	// The rise, bracketed: from the last sample still at 0 to the first sample at 1.
+	const lastZero = after.map( ( [ , o ] ) => o <= 0.02 ).lastIndexOf( true );
+	const firstOne = after.findIndex( ( [ , o ], i ) => i > lastZero && o >= 0.98 );
+	const rise     = lastZero >= 0 && firstOne > lastZero ? after[ firstOne ][ 0 ] - after[ lastZero ][ 0 ] : 0;
+	r.header = { paint: u16.paint, samplesAfterPaint: after.length, between: between.length, riseMs: Math.round( rise ), flash, trace: after.slice( 0, 30 ).map( ( [ t, o ] ) => [ Math.round( t ), Math.round( o * 100 ) / 100 ] ) };
+	check( between.length >= 3 && rise >= 650, `${ width } header entrance is a slow fade`, { ...r.header, trace: undefined } );
+	check( ! flash, `${ width } header painted visible before its entrance`, { ...r.header, trace: undefined } );
 	r.header.leftover = await page.evaluate( ( s ) => document.querySelector( s ).getAnimations().filter( ( a ) => ! ( a instanceof CSSAnimation ) && ! ( a instanceof CSSTransition ) ).length, HEADER );
 	check( 0 === r.header.leftover, `${ width } header entrance left an animation behind`, r.header.leftover );
 
@@ -176,9 +179,13 @@ for ( const width of [ 375, 768, 1440 ] ) {
 	check( 3 === rows.length, `${ width } footer rows found`, rows.length );
 	check( 'fade-up' === rows[ 0 ]?.entrance && '50' === rows[ 0 ]?.distance, `${ width } row one carries fade-up 50`, rows[ 0 ] );
 	check( null === rows[ 2 ]?.entrance && '50' === rows[ 2 ]?.childDistance, `${ width } staggered row gives way, its card keeps its entrance`, rows[ 2 ] );
-	await page.evaluate( ( s ) => document.querySelector( s ).scrollIntoView( { block: 'end' } ), ROWS );
+	// Step scroll (the page runs Lenis, which swallows scrollIntoView): first to 150px above the rows' near
+	// margin edge, where they already hold their paused start pose, then to the bottom.
+	await page.evaluate( ( s ) => window.scrollTo( 0, document.querySelector( s ).getBoundingClientRect().top + window.scrollY - window.innerHeight - 150 ), ROWS );
+	await page.waitForTimeout( 400 );
 	const travel = await page.evaluate( async ( s ) => {
 		const els = [ ...document.querySelectorAll( s ) ].slice( 0, 2 );
+		window.scrollTo( 0, document.documentElement.scrollHeight );
 		const out = els.map( () => ( { start: null, maxY: 0, finalY: null } ) );
 		const t0  = performance.now();
 		while ( performance.now() - t0 < 1400 ) {

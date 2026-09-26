@@ -6,17 +6,29 @@
  * `transition`, `animation` or `transform` with a block's own effects
  * (hover transitions, the header's shrink keyframes, hide-on-scroll).
  *
- * Nothing here hides an element: no start pose, no opacity:0, nothing
- * gated behind .sgs-js. Content shows immediately with no JavaScript, or if
- * the observer script fails — the observer itself is what hides an element
- * (via a paused, fill:'backwards' animation) once it confirms it can also
- * play it back in.
+ * Nothing here moves an element and nothing is gated behind .sgs-js. The
+ * one hiding rule is the pending flag below, which only exists while
+ * JavaScript runs and lifts itself after 3s. After that the observer hides
+ * an element only through its own paused, fill:'backwards' animation.
  *
  * The effect table (start pose per preset, matching what used to live here)
  * lives in animation-observer.js between the `sgs-entrance-effects:start`
  * and `sgs-entrance-effects:end` markers — read that file, not this one, for
  * what each preset does.
  */
+
+/*
+ * Until the observer runs, the head flag `sgs-entrance-pending` (printed by
+ * includes/animation-attributes.php::print_entrance_pending_flag) holds animated
+ * elements at opacity 0, so an element in view at load never paints visible
+ * before its entrance. The observer removes the flag once its animations hold
+ * their start poses; the flag removes itself after 3s regardless.
+ */
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-entrance-pending [data-sgs-animation] {
+		opacity: 0;
+	}
+}
 
 /* ===== SGS Device Visibility Extension ===== */
 

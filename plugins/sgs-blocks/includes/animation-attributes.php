@@ -261,3 +261,22 @@ function inject_animation_attributes( string $block_content, array $block ): str
 
 	return $block_content;
 }
+
+add_action( 'wp_head', __NAMESPACE__ . '\print_entrance_pending_flag', 1 );
+
+/**
+ * Mark entrances as pending before the first paint.
+ *
+ * animation-observer.js loads in the footer, so an element in view at load
+ * (the header) can paint visible before its entrance holds the start pose.
+ * This head script adds `sgs-entrance-pending` to <html>; extensions.css holds
+ * `[data-sgs-animation]` at opacity 0 while it is present (motion allowed
+ * only); the observer removes it once its animations hold their start poses.
+ * The script also removes it after 3s, so a failed or blocked observer never
+ * leaves content hidden. Without JavaScript the flag never exists.
+ */
+function print_entrance_pending_flag(): void {
+	wp_print_inline_script_tag(
+		'(function(d){d.classList.add("sgs-entrance-pending");setTimeout(function(){d.classList.remove("sgs-entrance-pending");},3000);})(document.documentElement);'
+	);
+}
