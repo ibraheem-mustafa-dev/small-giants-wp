@@ -75,7 +75,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 22,
+        "paintDeclarations": 23,
         "replacedCoreSupports": []
       }
     },
@@ -301,7 +301,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 27,
+        "paintDeclarations": 28,
         "replacedCoreSupports": []
       }
     },
