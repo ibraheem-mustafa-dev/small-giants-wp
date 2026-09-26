@@ -1,0 +1,109 @@
+[
+  {
+    "name": "sgs/mega-panel",
+    "attributes": {
+      "variant": "general",
+      "style": "columns",
+      "maxWidth": {
+        "desktop": "620px"
+      },
+      "colourScheme": "light"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/mega-group",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/icon-list",
+            "attributes": {
+              "items": [
+                {
+                  "text": "01  Our Story",
+                  "description": "Three decades of heritage",
+                  "iconSource": "lucide",
+                  "iconName": "circle",
+                  "url": "#"
+                },
+                {
+                  "text": "02  Certifications",
+                  "description": "Quality & safety standards",
+                  "iconSource": "lucide",
+                  "iconName": "square",
+                  "url": "#"
+                },
+                {
+                  "text": "03  Community & Charity",
+                  "description": "Giving back locally",
+                  "iconSource": "lucide",
+                  "iconName": "circle-dot",
+                  "url": "#"
+                },
+                {
+                  "text": "04  Sustainability",
+                  "description": "Responsible sourcing",
+                  "iconSource": "lucide",
+                  "iconName": "diamond",
+                  "url": "#"
+                },
+                {
+                  "text": "05  Careers",
+                  "description": "Join our growing team",
+                  "iconSource": "lucide",
+                  "iconName": "menu",
+                  "url": "#"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/mega-aside",
+        "attributes": {
+          "asideFormat": "feature",
+          "asideBg": "#075E80"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/media",
+            "attributes": {
+              "imageUrl": "",
+              "imageAlt": "heritage photo (placeholder \u2014 draft ships no real image, image-slot is empty)"
+            }
+          },
+          {
+            "name": "sgs/label",
+            "attributes": {
+              "text": "Since 1994",
+              "textColour": "#EAF4F7"
+            }
+          },
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "content": "Three decades of heritage",
+              "textColour": "#FFFFFF"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "From a single stall to the UK's trusted ethnic food wholesaler.",
+              "textColour": "#EAF4F7"
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "Read our story",
+              "url": "#",
+              "colourText": "#FFFFFF",
+              "colourBackground": "#0A7EA8"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

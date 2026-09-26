@@ -1,0 +1,93 @@
+[
+  {
+    "name": "sgs/mega-panel",
+    "attributes": {
+      "variant": "brands",
+      "style": "columns",
+      "maxWidth": {
+        "desktop": "1080px"
+      },
+      "colourScheme": "light",
+      "brandsEyebrow": "Our Brands"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/card-grid",
+        "attributes": {
+          "columns": {
+            "desktop": 4
+          },
+          "items": [
+            {
+              "title": "Sanam",
+              "link": "#"
+            },
+            {
+              "title": "The Lemon Tree",
+              "link": "#"
+            },
+            {
+              "title": "Green Leaf",
+              "link": "#"
+            },
+            {
+              "title": "Shan",
+              "link": "#"
+            },
+            {
+              "title": "Indus Foods",
+              "link": "#"
+            },
+            {
+              "title": "logo ipsum",
+              "link": "#"
+            },
+            {
+              "title": "logo ipsum",
+              "link": "#"
+            },
+            {
+              "title": "logo ipsum",
+              "link": "#"
+            },
+            {
+              "title": "logo ipsum",
+              "link": "#"
+            },
+            {
+              "title": "logo ipsum",
+              "link": "#"
+            }
+          ]
+        }
+      },
+      {
+        "name": "sgs/mega-aside",
+        "attributes": {
+          "asideFormat": "cta"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/label",
+            "attributes": {
+              "text": "Own Brands"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "We develop and market our own range of quality food products alongside our distribution brands."
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "View All Brands",
+              "url": "#"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

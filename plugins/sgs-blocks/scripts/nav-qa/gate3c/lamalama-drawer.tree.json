@@ -1,0 +1,86 @@
+[
+  {
+    "name": "sgs/nav-drawer",
+    "attributes": {
+      "anchor": { "desktop": "trigger", "tablet": "trigger", "mobile": "trigger" },
+      "panelSize": { "desktop": "min(100vw - 2rem, 27.375rem)" },
+      "modality": "non-modal",
+      "surfaceBlur": "4px",
+      "drawerBg": "text",
+      "surfaceOpacity": 0.6,
+      "anchorOffset": { "desktop": "-48px" },
+      "borderRadius": {
+        "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
+      },
+      "closeStyle": { "desktop": "trigger" },
+      "scrimColour": "#000000",
+      "scrimOpacity": { "desktop": 0.4 },
+      "scrimBlur": { "desktop": "16px" },
+      "drawerTextColour": "text-inverse",
+      "entryDuration": 450,
+      "exitDuration": 350,
+      "entryEasing": "ease-out-css",
+      "drawerPadding": {
+        "desktop": { "top": "16px", "right": "13px", "bottom": "16px", "left": "13px" }
+      },
+      "drawerGap": { "desktop": "0px" },
+      "accordionExclusive": true,
+      "ariaLabel": "Lama Lama menu"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/nav-drawer-menu",
+        "attributes": {
+          "ref": 131,
+          "navLabel": "Lama Lama drawer menu",
+          "gap": { "desktop": "0px" },
+          "itemBorderWidth": { "bottom": "1px" },
+          "itemBorderColour": "border-light",
+          "itemColour": "#ffffff",
+          "submenuColour": "#ffffff",
+          "submenuLinkBg": "transparent",
+          "submenuLinkBgHover": "transparent"
+        }
+      },
+      {
+        "name": "sgs/button",
+        "attributes": {
+          "label": "Our pitchdeck",
+          "url": "https://lamalama.com/pitchdeck/",
+          "inheritStyle": "outline",
+          "widthType": { "desktop": "full" },
+          "margin": { "desktop": { "top": "16px" } }
+        }
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "layout": "grid",
+          "columns": { "desktop": 2 },
+          "gap": { "desktop": "8px" },
+          "margin": { "desktop": { "top": "8px" } }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "Schedule a call",
+              "url": "https://lamalama.com/contact/",
+              "inheritStyle": "primary",
+              "widthType": { "desktop": "full" }
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "Start a project",
+              "url": "https://lamalama.com/contact/",
+              "inheritStyle": "secondary",
+              "widthType": { "desktop": "full" }
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

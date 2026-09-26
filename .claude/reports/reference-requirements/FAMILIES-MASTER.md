@@ -2,7 +2,7 @@
 
 **Inputs:** `families-A.json` (header shell, bar, footer — 25), `families-B.json` (dropdown, mega, trigger and close — 25), `families-C.json` (drawer — 24). **Revised against:** `FAMILIES-REVIEW.md` (23 findings, verdict *sign after fixes*) — every finding re-verified against the raw cell or the tree before anything changed (V-34 to V-47). **Feeds:** W3B-5 (owner signs off the family list and the order) and Wave 3C.
 
-**74 source families merged to 46 masters**, all 46 covered after Wave 3C (Gate 3C audit, 2026-09-26; the per-family notes below record each one's route and accepted divergences). Reference counts are out of the 13-reference roster: away, buck, butcherbox, dogstudio, fantasy, halcyon, indus-foods, lamalama, lusion, rabbit, resn, studionamma, wearecollins.
+**74 source families merged to 46 masters**, 42 covered and 4 partial (M-13, M-16, M-17, M-39: gaps G1 to G4 found composing Gate 3C item 4's copies, open as U-18 in the Wave 3C plan); the per-family notes below record each one's route and accepted divergences. Reference counts are out of the 13-reference roster: away, buck, butcherbox, dogstudio, fantasy, halcyon, indus-foods, lamalama, lusion, rabbit, resn, studionamma, wearecollins.
 
 **Two columns do different jobs.** *needed by* = references whose rows touch the family at all. *uncovered* = references with at least one value the framework cannot express today. Unit support is the union of **uncovered**, because a family that is covered for eleven references and short for two is two references of work, not eleven.
 
@@ -24,11 +24,11 @@
 | M-10 | Pointer-tracking label magnet on bar items | 2 | 0 | covered | measured | F-A-14 |
 | M-11 | Header and footer entrance animation | 6 | 0 | covered | measured | F-A-20 |
 | M-12 | Footer archetype | 11 | 0 | covered | mixed | F-A-22 |
-| M-13 | Surface ground: fill, opacity, blur, radius, border, shadow | 13 | 0 | covered | measured | F-A-03, F-A-04, F-B-05, F-C-04, F-C-05, F-A-23 |
+| M-13 | Surface ground: fill, opacity, blur, radius, border, shadow | 13 | 2 | partial | measured | F-A-03, F-A-04, F-B-05, F-C-04, F-C-05, F-A-23 |
 | M-14 | Surface scrim (viewport dimmer behind an open surface) | 6 | 0 | covered | measured | F-B-06, F-C-06 |
 | M-15 | Background media layer on a surface (image, video, per-link visual) | 7 | 0 | covered | measured | F-A-23, F-C-07 |
-| M-16 | Panel geometry: width, horizontal anchor, top offset | 6 | 0 | covered | mixed | F-B-02, F-B-03, F-B-04 |
-| M-17 | Drawer anchor archetype and width cap | 13 | 0 | covered | measured | F-C-02, F-C-03, F-C-20 |
+| M-16 | Panel geometry: width, horizontal anchor, top offset | 6 | 1 | partial | mixed | F-B-02, F-B-03, F-B-04 |
+| M-17 | Drawer anchor archetype and width cap | 13 | 1 | partial | measured | F-C-02, F-C-03, F-C-20 |
 | M-18 | Missing utility and furniture blocks (bar and footer roster gap) | 13 | 0 | covered | measured | F-A-10, F-A-24 |
 | M-19 | Per-tier role migration and secondary-block visibility | 10 | 0 | covered | mixed | F-C-23 |
 | M-20 | Panel side rail and callout tiles | 3 | 0 | covered | measured | F-B-08, F-B-09 |
@@ -47,7 +47,7 @@
 | M-34 | Dismissal routes (every way the menu can be shut) | 13 | 0 | covered | measured | F-B-16, F-B-25, F-C-18 |
 | M-35 | Modality: background scroll lock, focus trap, dialog semantics | 13 | 0 | covered | measured | F-B-25, F-C-19, F-B-16 |
 | M-36 | Trigger element semantics, accessible name and open state | 11 | 0 | covered | measured | F-B-22 |
-| M-39 | Menu trigger form and placement in the bar | 13 | 0 | covered | measured | F-A-18, F-B-18 |
+| M-39 | Menu trigger form and placement in the bar | 13 | 1 | partial | measured | F-A-18, F-B-18 |
 | M-40 | Collapse breakpoint: presence per tier, and what happens on a resize across it | 13 | 0 | covered | measured | F-A-11, F-B-17, F-C-01, F-C-24 |
 | M-41 | Panel ownership per bar item | 6 | 0 | covered | measured | F-B-01 |
 | M-42 | Panel content shape (columns / cards / minimal / logo grid) | 6 | 0 | covered | measured | F-B-07 |

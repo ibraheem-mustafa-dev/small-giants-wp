@@ -1,0 +1,42 @@
+[
+  {
+    "name": "sgs/mega-panel",
+    "attributes": {
+      "variant": "general",
+      "style": "columns",
+      "maxWidth": {
+        "desktop": "300px"
+      },
+      "colourScheme": "light"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/mega-group",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/icon-list",
+            "attributes": {
+              "items": [
+                {
+                  "text": "01  Contact Us",
+                  "description": "Get in touch with the team",
+                  "iconSource": "lucide",
+                  "iconName": "circle-dot",
+                  "url": "#"
+                },
+                {
+                  "text": "02  FAQs",
+                  "description": "Common questions answered",
+                  "iconSource": "lucide",
+                  "iconName": "circle",
+                  "url": "#"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

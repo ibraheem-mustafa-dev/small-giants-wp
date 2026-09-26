@@ -1,0 +1,110 @@
+[
+  {
+    "name": "sgs/nav-drawer",
+    "attributes": {
+      "drawerBg": "#0A7EA8"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/nav-drawer-menu",
+        "attributes": {
+          "ref": 132,
+          "navLabel": "QA copy Indus mobile",
+          "navColour": "#FFFFFF",
+          "itemColour": "#FFFFFF",
+          "itemBorderColour": "rgba(255,255,255,.18)",
+          "itemBorderWidth": {
+            "bottom": "1px"
+          }
+        }
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "transparent"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "Become A Trade Customer",
+              "url": "#",
+              "colourText": "#1E2A3C",
+              "colourBackground": "#D8CA50",
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "26px",
+                  "topRight": "26px",
+                  "bottomRight": "26px",
+                  "bottomLeft": "26px"
+                }
+              }
+            }
+          },
+          {
+            "name": "sgs/icon",
+            "attributes": {
+              "iconName": "mail",
+              "iconSize": 18,
+              "ariaLabel": "Email",
+              "linkUrl": "mailto:#"
+            }
+          },
+          {
+            "name": "sgs/icon",
+            "attributes": {
+              "iconName": "phone",
+              "iconSize": 18,
+              "ariaLabel": "Call",
+              "linkUrl": "tel:#"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "transparent"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/icon",
+            "attributes": {
+              "iconName": "facebook",
+              "iconSize": 20,
+              "ariaLabel": "Facebook",
+              "linkUrl": "#"
+            }
+          },
+          {
+            "name": "sgs/icon",
+            "attributes": {
+              "iconName": "instagram",
+              "iconSize": 20,
+              "ariaLabel": "Instagram",
+              "linkUrl": "#"
+            }
+          },
+          {
+            "name": "sgs/icon",
+            "attributes": {
+              "iconName": "linkedin",
+              "iconSize": 20,
+              "ariaLabel": "LinkedIn",
+              "linkUrl": "#"
+            }
+          },
+          {
+            "name": "sgs/icon",
+            "attributes": {
+              "iconName": "twitter",
+              "iconSize": 20,
+              "ariaLabel": "Twitter/X",
+              "linkUrl": "#"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

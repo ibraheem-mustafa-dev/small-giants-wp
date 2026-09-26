@@ -1,0 +1,93 @@
+[
+  {
+    "name": "sgs/site-header",
+    "attributes": {
+      "align": "full",
+      "backgroundColour": "#FFFFFF",
+      "borderWidth": {
+        "bottom": "3px"
+      },
+      "borderColour": "#D8CA50",
+      "borderStyle": "solid",
+      "maxWidth": {
+        "desktop": "1240px"
+      },
+      "minHeight": {
+        "desktop": "76px"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/site-header-row",
+        "attributes": {
+          "rowSlot": "middle",
+          "justifyContent": "space-between",
+          "alignItems": "center",
+          "padding": {
+            "desktop": {
+              "top": "0px",
+              "bottom": "0px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/responsive-logo",
+            "attributes": {
+              "width": 140,
+              "linkToHome": true
+            }
+          },
+          {
+            "name": "sgs/nav-bar-menu",
+            "attributes": {
+              "ref": 132,
+              "navLabel": "QA copy Indus",
+              "gap": {
+                "desktop": "4px"
+              },
+              "submenuAlign": "page-centred",
+              "megaAlign": {
+                "desktop": "page-centred"
+              },
+              "itemColour": "#1E2A3C",
+              "itemColourHover": "#0A7EA8",
+              "itemBgHover": "rgba(10,126,168,.12)",
+              "itemBgHoverTreatment": "swap",
+              "itemColourHoverTreatment": "swap",
+              "itemBorderRadius": {
+                "topLeft": "11px",
+                "topRight": "11px",
+                "bottomRight": "11px",
+                "bottomLeft": "11px"
+              },
+              "itemFontSize": {
+                "desktop": "15px"
+              },
+              "itemFontWeight": "600",
+              "itemFontFamily": "'Plus Jakarta Sans', sans-serif",
+              "itemPadding": {
+                "top": "13px",
+                "right": "16px",
+                "bottom": "13px",
+                "left": "16px"
+              },
+              "submenuCloseGrace": 170,
+              "submenuIntentDelay": 0,
+              "drawerRef": 4456
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "Request Catalogue",
+              "url": "#",
+              "colourText": "#FFFFFF",
+              "colourBackground": "#0A7EA8"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

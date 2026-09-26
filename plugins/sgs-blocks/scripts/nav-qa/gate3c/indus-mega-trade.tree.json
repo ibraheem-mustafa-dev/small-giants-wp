@@ -1,0 +1,102 @@
+[
+  {
+    "name": "sgs/mega-panel",
+    "attributes": {
+      "variant": "general",
+      "style": "columns",
+      "maxWidth": {
+        "desktop": "620px"
+      },
+      "colourScheme": "light"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/mega-group",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/icon-list",
+            "attributes": {
+              "items": [
+                {
+                  "text": "01  Apply for Trade Account",
+                  "description": "Get wholesale pricing",
+                  "iconSource": "lucide",
+                  "iconName": "square",
+                  "url": "#"
+                },
+                {
+                  "text": "02  Request Catalogue",
+                  "description": "Our full product range",
+                  "iconSource": "lucide",
+                  "iconName": "menu",
+                  "url": "#"
+                },
+                {
+                  "text": "03  Delivery & Logistics",
+                  "description": "UK-wide, next-day available",
+                  "iconSource": "lucide",
+                  "iconName": "diamond",
+                  "url": "#"
+                },
+                {
+                  "text": "04  Terms & Conditions",
+                  "description": "Trade account terms",
+                  "iconSource": "lucide",
+                  "iconName": "circle",
+                  "url": "#"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/mega-aside",
+        "attributes": {
+          "asideFormat": "feature",
+          "asideBg": "#0A7EA8"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/media",
+            "attributes": {
+              "imageUrl": "",
+              "imageAlt": "trade photo (placeholder \u2014 draft ships no real image, image-slot is empty)"
+            }
+          },
+          {
+            "name": "sgs/label",
+            "attributes": {
+              "text": "Trade partners",
+              "textColour": "#EAF4F7"
+            }
+          },
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "content": "Trade with Indus Foods",
+              "textColour": "#FFFFFF"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Reliable stock, fast delivery, dedicated account support.",
+              "textColour": "#EAF4F7"
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "Apply now",
+              "url": "#",
+              "colourText": "#0A7EA8",
+              "colourBackground": "#FFFFFF"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "name": "sgs/mega-panel",
+    "attributes": {
+      "variant": "media-cards",
+      "style": "cards",
+      "maxWidth": {
+        "desktop": "1080px"
+      },
+      "colourScheme": "light"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/card-grid",
+        "attributes": {
+          "columns": {
+            "desktop": 4
+          },
+          "cardRadius": "18px",
+          "cardBackground": "#0A7EA8",
+          "titleColour": "#FFFFFF",
+          "subtitleColour": "rgba(255,255,255,.82)",
+          "scaleHover": "1",
+          "cardShadowHover": "floating",
+          "items": [
+            {
+              "title": "Food Service",
+              "subtitle": "Quality ingredients for venues, caterers & events across the UK.",
+              "link": "#"
+            },
+            {
+              "title": "Manufacturing",
+              "subtitle": "High-quality, healthy & delicious food products at scale.",
+              "link": "#"
+            },
+            {
+              "title": "Retail",
+              "subtitle": "Retail-ready packaging for independent & national retailers.",
+              "link": "#"
+            },
+            {
+              "title": "Wholesale",
+              "subtitle": "Reliable stock levels & fast delivery across the whole of the UK.",
+              "link": "#"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]
