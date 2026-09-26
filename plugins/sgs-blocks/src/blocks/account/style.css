@@ -74,7 +74,7 @@
 .sgs-account nav.woocommerce-MyAccount-navigation a {
 	display: flex;
 	align-items: center;
-	gap: 0.625rem;
+	gap: var(--sgs-account-menu-icon-gap, 0.625rem);
 	min-height: 44px;
 	padding: 0.5rem 0.75rem;
 	border-radius: 6px;
