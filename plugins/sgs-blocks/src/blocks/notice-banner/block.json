@@ -231,6 +231,7 @@
 			"default": "inline",
 			"enum": [
 				"inline",
+				"bar",
 				"announcement"
 			]
 		},

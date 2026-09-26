@@ -2,6 +2,8 @@
   {
     "name": "sgs/notice-banner",
     "attributes": {
+      "displayMode": "bar",
+      "align": "full",
       "messageMode": "rotate",
       "showMessageArrows": true,
       "rotateInterval": 5
@@ -72,6 +74,8 @@
   {
     "name": "sgs/notice-banner",
     "attributes": {
+      "displayMode": "bar",
+      "align": "full",
       "messageMode": "random"
     },
     "innerBlocks": [
@@ -136,6 +140,8 @@
   {
     "name": "sgs/notice-banner",
     "attributes": {
+      "displayMode": "bar",
+      "align": "full",
       "messageMode": "rotate"
     },
     "innerBlocks": [

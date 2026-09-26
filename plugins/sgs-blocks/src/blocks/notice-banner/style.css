@@ -97,6 +97,18 @@
 	text-decoration: none;
 }
 
+/* ===== Full-width strip mode ===== */
+
+/* An in-flow bar (a header's top strip): square, no accent edge, content
+   centred. The operator's own radius/border (scoped on the block's uid,
+   specificity 0,2,0) still wins over these defaults. */
+.sgs-notice-banner--bar {
+	width: 100%;
+	border-radius: 0;
+	border-left: none;
+	justify-content: center;
+}
+
 /* ===== Announcement mode ===== */
 
 .sgs-notice-banner--announcement {

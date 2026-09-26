@@ -54,6 +54,7 @@ const TEXT_ALIGN_OPTIONS = [
 
 const DISPLAY_MODE_OPTIONS = [
 	{ label: __( 'Inline', 'sgs-blocks' ), value: 'inline' },
+	{ label: __( 'Full-width strip', 'sgs-blocks' ), value: 'bar' },
 	{ label: __( 'Announcement bar', 'sgs-blocks' ), value: 'announcement' },
 ];
 
@@ -199,6 +200,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const className = [
 		'sgs-notice-banner',
 		`sgs-notice-banner--${ variant }`,
+		'bar' === displayMode ? 'sgs-notice-banner--bar' : '',
 		isAnnouncement ? 'sgs-notice-banner--announcement' : '',
 		isAnnouncement ? `sgs-notice-banner--sticky-${ stickyPosition }` : '',
 		canvasTextAlign ? `has-text-align-${ canvasTextAlign }` : '',
@@ -338,12 +340,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<SelectControl
 								label={ __( 'Display mode', 'sgs-blocks' ) }
 								help={ __(
-									'Inline sits within the page flow. Announcement bar is fixed to the top or bottom of the viewport.',
+									'Inline is a rounded card within the page flow. Full-width strip runs edge to edge with square corners (a header top bar). Announcement bar is fixed to the top or bottom of the viewport.',
 									'sgs-blocks'
 								) }
 								value={ displayMode }
 								options={ DISPLAY_MODE_OPTIONS }
-								onChange={ ( val ) => setAttributes( { displayMode: val } ) }
+								onChange={ ( val ) =>
+									setAttributes(
+										'bar' === val && ! attributes.align
+											? { displayMode: val, align: 'full' }
+											: { displayMode: val }
+									)
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>

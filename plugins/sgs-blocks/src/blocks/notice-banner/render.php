@@ -84,6 +84,7 @@ $dismissible       = ! empty( $attributes['dismissible'] );
 $dismiss_behaviour = $attributes['dismissBehaviour'] ?? 'session';
 
 $is_announcement = ( 'announcement' === $display_mode );
+$is_bar          = ( 'bar' === $display_mode );
 
 // Show the icon? New posts use the explicit showIcon toggle. Backwards-compat:
 // older posts hid the icon with the legacy icon='none' value.
@@ -422,6 +423,10 @@ if ( '' !== $preset_text_slug ) {
 }
 if ( '' !== $text_align ) {
 	$sgs_wrapper_classes[] = 'has-text-align-' . $text_align;
+}
+
+if ( $is_bar ) {
+	$sgs_wrapper_classes[] = 'sgs-notice-banner--bar';
 }
 
 if ( $is_announcement ) {
