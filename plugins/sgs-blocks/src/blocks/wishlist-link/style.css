@@ -11,7 +11,7 @@
 }
 
 .sgs-wishlist-link:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent, #1e6091);
+	outline: 2px solid var(--wp--preset--color--text, currentColor);
 	outline-offset: 2px;
 }
 

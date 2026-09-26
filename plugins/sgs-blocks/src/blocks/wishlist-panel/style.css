@@ -119,7 +119,7 @@
 }
 
 .sgs-wishlist-panel__choose-options:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent, #1e6091);
+	outline: 2px solid var(--wp--preset--color--text, currentColor);
 	outline-offset: 2px;
 }
 
@@ -134,7 +134,7 @@
 .sgs-wishlist-panel__remove:focus-visible,
 .sgs-wishlist-panel__notify-toggle:focus-visible,
 .sgs-save-for-later:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent, #1e6091);
+	outline: 2px solid var(--wp--preset--color--text, currentColor);
 	outline-offset: 2px;
 }
 
@@ -347,7 +347,7 @@
 .sgs-wishlist-panel__view-all:focus-visible,
 .sgs-wishlist-panel__guest-prompt .wp-element-button:focus-visible,
 .sgs-wishlist-panel__add-to-mine:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent, #1e6091);
+	outline: 2px solid var(--wp--preset--color--text, currentColor);
 	outline-offset: 2px;
 }
 

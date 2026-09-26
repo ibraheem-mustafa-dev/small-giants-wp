@@ -70,7 +70,7 @@
 }
 
 .sgs-account nav.woocommerce-MyAccount-navigation a:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent, currentColor);
+	outline: 2px solid var(--wp--preset--color--text, currentColor);
 	outline-offset: 2px;
 }
 
@@ -120,8 +120,12 @@
 	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a,
 	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a {
 		font-weight: 700;
-		background: var(--wp--preset--color--accent);
-		color: var(--wp--preset--color--text-inverse, #fff);
+		/* Inverted palette ink: text on surface is the one pair every client
+		   palette guarantees for contrast (a brand accent fill with inverse
+		   text can fail, e.g. a yellow accent). The Active item colours
+		   override both. */
+		background: var(--wp--preset--color--text);
+		color: var(--wp--preset--color--surface, #fff);
 	}
 }
 
@@ -278,7 +282,7 @@ a.sgs-account__quick-card:focus-visible .sgs-account__card-title {
 .sgs-account form input.input-text:focus-visible,
 .sgs-account form select:focus-visible,
 .sgs-account form textarea:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent, currentColor);
+	outline: 2px solid var(--wp--preset--color--text, currentColor);
 	outline-offset: 1px;
 }
 
