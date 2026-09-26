@@ -151,7 +151,7 @@ export default function FormEmbedEdit( { attributes, setAttributes, clientId } )
 		<div { ...blockProps }>
 			{ inspector }
 			<Placeholder
-				icon={ formIcon }
+				icon={ formIcon.src }
 				label={ __( 'Form', 'sgs-blocks' ) }
 				instructions={
 					hasInlineFields
