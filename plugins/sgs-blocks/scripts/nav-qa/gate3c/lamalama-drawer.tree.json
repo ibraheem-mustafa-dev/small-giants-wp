@@ -2,13 +2,11 @@
   {
     "name": "sgs/nav-drawer",
     "attributes": {
-      "anchor": { "desktop": "trigger", "tablet": "trigger", "mobile": "trigger" },
-      "panelSize": { "desktop": "min(100vw - 2rem, 27.375rem)" },
+      "anchor": { "desktop": "header-box", "tablet": "header-box", "mobile": "header-box" },
       "modality": "non-modal",
       "surfaceBlur": "4px",
-      "drawerBg": "text",
+      "drawerBg": "#000000",
       "surfaceOpacity": 0.6,
-      "anchorOffset": { "desktop": "-48px" },
       "borderRadius": {
         "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
       },

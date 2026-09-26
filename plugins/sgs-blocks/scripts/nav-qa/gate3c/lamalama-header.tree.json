@@ -71,6 +71,7 @@
               "triggerSurface": { "desktop": "on", "tablet": "on", "mobile": "on" },
               "triggerMode": { "desktop": "icon" },
               "burgerSize": "36px",
+              "burgerWidth": { "desktop": "30px" },
               "burgerColour": "#ffffff",
               "showBurger": true
             }
