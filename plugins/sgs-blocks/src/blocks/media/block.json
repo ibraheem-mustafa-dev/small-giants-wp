@@ -137,7 +137,8 @@
 			"enum": [
 				"image",
 				"video",
-				"svg"
+				"svg",
+				"lottie"
 			]
 		},
 		"svgContent": {
