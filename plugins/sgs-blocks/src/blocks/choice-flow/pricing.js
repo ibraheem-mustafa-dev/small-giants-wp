@@ -261,7 +261,10 @@ export function getAddonSummary( flowRoot ) {
 
 	const addons = [];
 	const rows = [];
-	state.answers.forEach( ( answer, group ) => {
+	// Question order, as the stage lists them: a pre-selected default is
+	// recorded on load, before any click, so insertion order would put it first.
+	const ordered = [ ...state.answers ].sort( ( a, b ) => a[ 1 ].stepIndex - b[ 1 ].stepIndex );
+	ordered.forEach( ( [ group, answer ] ) => {
 		addons.push( { group, key: answer.key } );
 		const priceValue = parseFloat( answer.price );
 		rows.push( {
