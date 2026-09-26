@@ -203,8 +203,9 @@ class Rest_Notes extends \WP_REST_Controller {
 		$note_id = $wpdb->insert_id;
 		$note = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $note_id ), ARRAY_A );
 
-		// Send webhook notification.
+		// Send webhook notification (optional N8N automation) and the guaranteed email notification.
 		$this->send_webhook( 'created', $note );
+		( new Notes_Mailer() )->notify( 'created', $note );
 
 		return rest_ensure_response( $this->prepare_item_for_response( $note, $request ) );
 	}
@@ -255,9 +256,10 @@ class Rest_Notes extends \WP_REST_Controller {
 
 		$note = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $note_id ), ARRAY_A );
 
-		// Send webhook notification if resolved.
+		// Send webhook notification (optional N8N automation) and the guaranteed email notification if resolved.
 		if ( isset( $data['status'] ) && 'resolved' === $data['status'] ) {
 			$this->send_webhook( 'resolved', $note );
+			( new Notes_Mailer() )->notify( 'resolved', $note );
 		}
 
 		return rest_ensure_response( $this->prepare_item_for_response( $note, $request ) );

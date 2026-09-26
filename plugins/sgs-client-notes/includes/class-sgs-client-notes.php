@@ -118,6 +118,7 @@ class SGS_Client_Notes {
 	 * Register REST API routes.
 	 */
 	public function register_rest_routes() {
+		require_once SGS_CLIENT_NOTES_PATH . 'includes/api/class-notes-mailer.php';
 		require_once SGS_CLIENT_NOTES_PATH . 'includes/api/class-rest-notes.php';
 		require_once SGS_CLIENT_NOTES_PATH . 'includes/api/class-rest-replies.php';
 

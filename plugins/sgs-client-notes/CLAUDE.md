@@ -55,7 +55,7 @@ Positions stored as percentage offsets (not pixels). Viewport width recorded for
 - File uploads (screenshots) restricted to JPEG/PNG, max 5MB
 - Rate limiting: max 20 notes per hour per user
 - All input sanitised, all output escaped
-- Notifications via N8N webhooks (not wp_mail)
+- Notifications: `class-notes-mailer.php::Notes_Mailer::notify()` emails `sgs_client_notes_notification_email` on note created/resolved (via `Sgs_Mailer` when sgs-blocks is active, else plain `wp_mail()`); sends nothing when that option is empty or invalid. `class-rest-notes.php::send_webhook` stays as an optional N8N automation event alongside it (no workflow exists for it yet)
 
 ## Build & Deploy
 
