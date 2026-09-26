@@ -12,7 +12,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { PanelBody, ToggleControl, TextControl, Button } from '@wordpress/components';
+import { PanelBody, ToggleControl, TextControl, SelectControl, Button } from '@wordpress/components';
 import { SgsColourPanel } from '../../components';
 import fillRow from '../../components/colour-variants/fillRow';
 
@@ -23,7 +23,7 @@ import fillRow from '../../components/colour-variants/fillRow';
  * @return {JSX.Element} The panel, mounted inside its own InspectorControls.
  */
 export default function ChromePanel( { attributes, setAttributes } ) {
-	const { progressColour, showHeader, headerLogo, closeLabel, stickyFooter } = attributes;
+	const { progressColour, showHeader, headerLogo, closeLabel, closeStyle, stickyFooter } = attributes;
 
 	return (
 		<InspectorControls>
@@ -97,6 +97,21 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 							value={ closeLabel }
 							onChange={ ( val ) => setAttributes( { closeLabel: val } ) }
 							help={ __( 'Shown as visible text next to a decorative ×.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<SelectControl
+							label={ __( 'Close button', 'sgs-blocks' ) }
+							value={ closeStyle || 'icon' }
+							options={ [
+								{ label: __( 'Icon', 'sgs-blocks' ), value: 'icon' },
+								{ label: __( 'Text', 'sgs-blocks' ), value: 'text' },
+							] }
+							onChange={ ( val ) => setAttributes( { closeStyle: val } ) }
+							help={ __(
+								'Icon: a round 44px button. Text: a bordered rectangular button with the label then a decorative ×.',
+								'sgs-blocks'
+							) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>

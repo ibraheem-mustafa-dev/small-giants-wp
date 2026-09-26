@@ -13,6 +13,12 @@
  * of those is DISPLAY ONLY client-side; FR-43-18's price list stays the sole
  * price authority for what is actually charged.
  *
+ * FIXES item 4 (2026-09-26 Eye Care/showcase pass): the base row's label is
+ * an operator control (`summaryBaseLabel`, default "Base price") rather than
+ * a hardcoded string — Eye Care sets it to "Frame". Carried to `summary.js`
+ * via `data-base-label` on the `<aside>`, the same seed-attribute pattern
+ * `data-fallback-image`/`data-product-name` already use here.
+ *
  * Standalone (function_exists-guarded) rather than folded into
  * `choice-flow-variation-seed.php` — that file seeds combo pricing data for
  * `variation.js`'s resolution; this one only builds a markup shell for the
@@ -43,6 +49,8 @@ if ( ! function_exists( 'sgs_choice_flow_summary_panel_html' ) ) {
 		$stage_note_link = isset( $attributes['stageNoteLink'] ) && is_array( $attributes['stageNoteLink'] ) ? $attributes['stageNoteLink'] : array();
 		$note_link_url   = isset( $stage_note_link['url'] ) ? (string) $stage_note_link['url'] : '';
 		$note_link_text  = isset( $stage_note_link['text'] ) ? (string) $stage_note_link['text'] : '';
+		$base_label_raw  = isset( $attributes['summaryBaseLabel'] ) ? trim( (string) $attributes['summaryBaseLabel'] ) : '';
+		$base_label      = '' !== $base_label_raw ? sanitize_text_field( $base_label_raw ) : __( 'Base price', 'sgs-blocks' );
 
 		// The variation client-side (`summary.js`'s `data-flow-combos` lookup,
 		// `choice-flow-variation-seed.php`'s 'i' field) always wins once one
@@ -65,7 +73,7 @@ if ( ! function_exists( 'sgs_choice_flow_summary_panel_html' ) ) {
 		$img_hidden = '' === $fallback_image ? ' hidden' : '';
 		$image_tag  = '<img class="sgs-choice-flow__summary-image" src="' . esc_url( $fallback_image ) . '" alt="' . esc_attr( $product_name ) . '" loading="lazy"' . $img_hidden . ' />';
 
-		$out  = '<aside class="sgs-choice-flow__summary sgs-choice-flow__summary--position-' . esc_attr( $position ) . '" aria-live="polite" data-fallback-image="' . esc_attr( $fallback_image ) . '" data-product-name="' . esc_attr( $product_name ) . '">';
+		$out  = '<aside class="sgs-choice-flow__summary sgs-choice-flow__summary--position-' . esc_attr( $position ) . '" aria-live="polite" data-fallback-image="' . esc_attr( $fallback_image ) . '" data-product-name="' . esc_attr( $product_name ) . '" data-base-label="' . esc_attr( $base_label ) . '">';
 		$out .= '<details class="sgs-choice-flow__summary-toggle" open>';
 
 		// The collapsed mobile/compact row (D4): a 72px thumbnail, the
@@ -77,7 +85,13 @@ if ( ! function_exists( 'sgs_choice_flow_summary_panel_html' ) ) {
 			$out .= '<span class="sgs-choice-flow__summary-summary-media">' . $image_tag . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $image_tag is built from esc_url()/esc_attr() above.
 		}
 		$out .= '<span class="sgs-choice-flow__summary-summary-name">' . esc_html( $product_name ) . '</span>';
-		$out .= '<span class="sgs-choice-flow__summary-summary-total"></span>';
+		// FIXES item 6: the collapsed/narrow row's total gets its own "Total"
+		// label (stacked above, right-aligned, in `showcase` — style.css's own
+		// narrow-row rules); `summary.js` fills only the value span.
+		$out .= '<span class="sgs-choice-flow__summary-summary-total">';
+		$out .= '<span class="sgs-choice-flow__summary-summary-total-label">' . esc_html__( 'Total', 'sgs-blocks' ) . '</span>';
+		$out .= '<span class="sgs-choice-flow__summary-summary-total-value"></span>';
+		$out .= '</span>';
 		$out .= '</summary>';
 
 		// The full stage (FR-43-24): large square image, product name, the

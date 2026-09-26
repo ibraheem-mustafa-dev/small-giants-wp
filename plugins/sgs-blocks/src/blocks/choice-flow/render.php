@@ -138,6 +138,10 @@ $flow_price = $resolved_product_id > 0
 	? sgs_choice_flow_resolve_product_price_minor( $resolved_product_id )
 	: null;
 
+// FIXES item 2 — the showcase header eyebrow's product name (chrome.js
+// composes "<Product name> — <Step name>" from it).
+$resolved_product_name = sgs_choice_flow_resolve_product_name( $resolved_product_id );
+
 // -------------------------------------------------------------------------
 // Box-object interface contract — maxWidth (kept-scalar string) + padding
 // (tier-object, desktop/tablet/mobile) — mirrors sgs/notice-banner's/
@@ -228,7 +232,7 @@ echo '<div ' . $wrapper_attributes . sgs_choice_flow_variation_seed_attr( $inner
 
 // Questions only, as view.js counts them: a step holding a result is not numbered.
 $step_total = count( array_filter( $inner_parsed, static fn( $b ) => 'sgs/form-step' === ( $b['blockName'] ?? '' ) && false === strpos( (string) wp_json_encode( $b['innerBlocks'] ?? array() ), 'sgs\/choice-flow-result' ) ) );
-echo sgs_choice_flow_chrome_header_html( $chrome_attrs, $step_total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns pre-escaped markup.
+echo sgs_choice_flow_chrome_header_html( $chrome_attrs, $step_total, $resolved_product_name ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns pre-escaped markup.
 
 // FR-43-24: in 'showcase', this moves below into the step pane (the eyebrow
 // above each question) instead of sitting here above the progress line —

@@ -176,6 +176,11 @@
 			"default": "start",
 			"description": "D4 (v1.8.0): which side of the steps the summary panel sits on at desktop widths (1024px+) — 'start' (left, default) or 'end' (right). Below that width it's a collapsible 'Your box' row above the steps either way."
 		},
+		"summaryBaseLabel": {
+			"type": "string",
+			"default": "Base price",
+			"description": "FIXES item 4 (2026-09-26 Eye Care/showcase pass): the summary panel's running-lines base row label — default 'Base price'; Eye Care sets 'Frame'. showPricePanel still gates the whole panel."
+		},
 		"stageNote": {
 			"type": "string",
 			"default": "",
@@ -205,6 +210,12 @@
 			"type": "string",
 			"default": "Close",
 			"description": "Root polish: the header's Close button label, shown as visible text (with a decorative × alongside it, hidden from assistive tech)."
+		},
+		"closeStyle": {
+			"type": "string",
+			"enum": [ "icon", "text" ],
+			"default": "icon",
+			"description": "FIXES item 3 (2026-09-26 Eye Care/showcase pass): 'icon' (default, unchanged) is the round 44px Close button. 'text' is the draft's bordered rectangular button (label then a decorative ×, hover brightens the border)."
 		},
 		"stickyFooter": {
 			"type": "boolean",

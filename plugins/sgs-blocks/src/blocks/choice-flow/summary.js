@@ -25,7 +25,9 @@ const SUMMARY_NAME_SELECTOR = '.sgs-choice-flow__summary-summary-name';
 const META_SELECTOR = '.sgs-choice-flow__summary-meta';
 const LINES_SELECTOR = '.sgs-choice-flow__summary-lines';
 const TOTAL_VALUE_SELECTOR = '.sgs-choice-flow__summary-total-value';
-const TOGGLE_TOTAL_SELECTOR = '.sgs-choice-flow__summary-summary-total';
+// FIXES item 6: the collapsed row's total is now a "Total" label plus its
+// own value span (previously a bare text node) — only the value updates.
+const TOGGLE_TOTAL_VALUE_SELECTOR = '.sgs-choice-flow__summary-summary-total-value';
 
 /** `style.css`'s own two-column breakpoint for `.sgs-choice-flow__body--with-panel`. */
 const DESKTOP_QUERY = '(min-width: 1024px)';
@@ -143,6 +145,10 @@ export function renderSummaryPanel( flowRoot, pricing ) {
 
 	const { base, trimZeros, addonRows } = pricing;
 	const productName = panelEl.getAttribute( 'data-product-name' ) || '';
+	// FIXES item 4: the base row's label is an operator control
+	// (`summaryBaseLabel`, default "Base price" — Eye Care sets "Frame"),
+	// carried here via the panel's own `data-base-label`.
+	const baseLabel = panelEl.getAttribute( 'data-base-label' ) || 'Base price';
 
 	updateImage( panelEl, base.variationId );
 
@@ -171,15 +177,17 @@ export function renderSummaryPanel( flowRoot, pricing ) {
 	if ( linesEl ) {
 		linesEl.innerHTML = '';
 		linesEl.appendChild(
-			buildLine( 'Base price', base.priceMinor !== null ? formatMinor( base.priceMinor, base.decimals, trimZeros ) : '—' )
+			buildLine( baseLabel, base.priceMinor !== null ? formatMinor( base.priceMinor, base.decimals, trimZeros ) : '—' )
 		);
 		addonRows.forEach( ( answer ) => {
 			const priceValue = parseFloat( answer.price );
 			const priceMinor = Number.isFinite( priceValue ) ? Math.round( priceValue * 10 ** base.decimals ) : 0;
 			addonTotalMinor += priceMinor;
-			const label = answer.groupLabel ? `${ answer.groupLabel } — ${ answer.label }` : answer.label;
+			// FIXES item 4: the chosen OPTION's own label only (e.g. "Distance
+			// lenses", "Standard · 1.5") — never prefixed with its group's
+			// label, matching the draft's own running lines.
 			linesEl.appendChild(
-				buildLine( label, priceMinor > 0 ? formatMinor( priceMinor, base.decimals, trimZeros ) : 'Included' )
+				buildLine( answer.label, priceMinor > 0 ? formatMinor( priceMinor, base.decimals, trimZeros ) : 'Included' )
 			);
 		} );
 	}
@@ -197,9 +205,9 @@ export function renderSummaryPanel( flowRoot, pricing ) {
 		void totalValueEl.offsetWidth; // Force a reflow so the class removal takes effect before it's re-added.
 		totalValueEl.classList.add( 'is-updated' );
 	}
-	const toggleTotalEl = panelEl.querySelector( TOGGLE_TOTAL_SELECTOR );
-	if ( toggleTotalEl ) {
-		toggleTotalEl.textContent = total;
+	const toggleTotalValueEl = panelEl.querySelector( TOGGLE_TOTAL_VALUE_SELECTOR );
+	if ( toggleTotalValueEl ) {
+		toggleTotalValueEl.textContent = total;
 	}
 }
 

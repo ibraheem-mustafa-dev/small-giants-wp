@@ -346,11 +346,15 @@
 
 .sgs-choice-flow__chrome-eyebrow {
 	flex: 1 1 auto;
+	min-width: 0;
 	font-size: 13px;
 	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 	color: var(--wp--preset--color--primary-dark, #0F4C4C);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 /* D6 (2026-09-26 plan, Bean's review): redesigned from a text-plus-'×' pill
@@ -407,6 +411,38 @@
 .sgs-choice-flow__chrome-close:focus-visible {
 	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
 	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
+}
+
+/* `closeStyle:"text"` (FIXES item 3) — the draft's bordered rectangular
+   button (Eye Care Birmingham.dc.html:1317) instead of the round icon
+   button above. Overrides every icon-only sizing/shape declaration; hover
+   BRIGHTENS (never darkens, this codebase's own hover-direction rule) —
+   the draft's own hover darkens the border, which this deliberately does
+   not copy. */
+.sgs-choice-flow__chrome-close--text {
+	width: auto;
+	height: auto;
+	min-height: 44px;
+	padding: 0 16px;
+	gap: 10px;
+	border: 1px solid var(--wp--preset--color--border, #E6E1DA);
+	border-radius: 0;
+	background-color: transparent;
+	color: var(--wp--preset--color--text, #1A202C);
+	font-size: 12.5px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	transition: border-color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-choice-flow__chrome-close--text:hover {
+	background-color: transparent;
+	border-color: color-mix(in srgb, var(--wp--preset--color--border, #E6E1DA) 55%, white 45%);
+}
+
+.sgs-choice-flow__chrome-close--text .sgs-choice-flow__chrome-close-glyph {
+	font-size: 18px;
+	line-height: 1;
 }
 
 /* ===== Root chrome: sticky footer (Eye Care hand-build design gap) =====
@@ -706,6 +742,26 @@
 	font-weight: 400;
 }
 
+/* FIXES item 6: the collapsed row's total gets its own "Total" label
+   (previously just the bare value) — shared shape for compact's disclosure
+   row and showcase's narrow stage row; showcase stacks+right-aligns it
+   below (draft: lensTotalDir column / lensTotalAlign flex-end). */
+.sgs-choice-flow__summary-summary-total {
+	display: flex;
+	flex-shrink: 0;
+	align-items: baseline;
+	gap: 6px;
+	white-space: nowrap;
+}
+
+.sgs-choice-flow__summary-summary-total-label {
+	font-size: 11px;
+	font-weight: 400;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--text-muted, #6B655E);
+}
+
 .sgs-choice-flow__summary-body {
 	padding: 4px 0 20px;
 }
@@ -835,7 +891,7 @@
 	flex-shrink: 0;
 }
 
-@container sgs-choice-flow-showcase (min-width: 700px) {
+@container sgs-choice-flow-showcase (min-width: 600px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-header {
 		padding: 16px 28px;
 	}
@@ -885,15 +941,21 @@
 	gap: 0;
 }
 
-@container sgs-choice-flow-showcase (min-width: 700px) {
+@container sgs-choice-flow-showcase (min-width: 600px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
 		grid-template-columns: minmax(300px, .8fr) minmax(0, 1.55fr);
 	}
 }
 
-@container sgs-choice-flow-showcase (min-width: 700px) and (max-width: 1099px) {
+/* FIXES item 1: lowered from 700px — a ~640px+ container (e.g. this flow
+   inside an sgs/modal on a 768px viewport, whose container is ~672px) keeps
+   the full two-column stage instead of collapsing to the slim row; the
+   draft only stacks it at phone widths. Column minimums under 1100px match
+   the draft's own real lens-configurator source
+   (Eye Care Birmingham.dc.html:2187): minmax(250px,.7fr) minmax(0,1.6fr). */
+@container sgs-choice-flow-showcase (min-width: 600px) and (max-width: 1099px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
-		grid-template-columns: minmax(250px, .7fr) minmax(0, 1.55fr);
+		grid-template-columns: minmax(250px, .7fr) minmax(0, 1.6fr);
 	}
 }
 
@@ -935,7 +997,17 @@
 	display: none;
 }
 
-@container sgs-choice-flow-showcase (min-width: 700px) {
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-total {
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 2px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-total-label {
+	font-size: 10px;
+}
+
+@container sgs-choice-flow-showcase (min-width: 600px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle {
 		padding: 22px;
 		border-bottom: 0;
@@ -960,6 +1032,19 @@
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-product {
 	font-family: var(--wp--preset--font-family--heading, inherit);
 	font-size: 1.1rem;
+}
+
+/* FIXES item 5: a small uppercase letter-spaced muted label (draft:
+   Eye Care Birmingham.dc.html:1353, 11.5px/text-muted) beside a large total
+   in the heading font — `.sgs-choice-flow__summary-total`'s own base rule
+   already keeps both on one flex/baseline row. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-label {
+	font-size: 11.5px;
+	font-weight: 400;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--text-muted, #6B655E);
+	white-space: nowrap;
 }
 
 /* "a large total in the heading font" (FR-43-24). */
@@ -1014,7 +1099,7 @@
 	padding: 24px 20px 40px;
 }
 
-@container sgs-choice-flow-showcase (min-width: 700px) {
+@container sgs-choice-flow-showcase (min-width: 600px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__inner {
 		padding: 40px 44px 56px;
 	}

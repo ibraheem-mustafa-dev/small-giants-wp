@@ -420,11 +420,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		flowProductId,
 		flowId,
 		flowIsLinked,
+		closeStyle,
+		summaryBaseLabel,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
-		className: `sgs-choice-flow sgs-choice-flow--layout-${ attributes.flowLayout || 'compact' }`,
+		className: `sgs-choice-flow sgs-choice-flow--layout-${ attributes.flowLayout || 'compact' } sgs-choice-flow--close-${ closeStyle || 'icon' }`,
 		style: buildWrapperStyle( attributes ),
+		'data-summary-base-label': summaryBaseLabel || '',
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -638,6 +641,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					showPricePanel={ showPricePanel }
 					summaryShowImage={ attributes.summaryShowImage }
 					summaryPosition={ attributes.summaryPosition }
+					summaryBaseLabel={ summaryBaseLabel }
 					stageNote={ attributes.stageNote }
 					stageNoteLink={ attributes.stageNoteLink }
 					setAttributes={ setAttributes }

@@ -71,15 +71,31 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 	 * untouched — chrome.js's wireClose() still finds this same
 	 * `.sgs-choice-flow__chrome-close` selector.
 	 *
-	 * @param array $attributes Block attributes.
-	 * @param int   $step_count Total question-step count (excludes result
-	 *                          steps — the same count view.js's own
-	 *                          showStepByIndex() computes), for the eyebrow's
-	 *                          no-JS-yet initial text only; view.js's mirror
-	 *                          overwrites it on first paint once it has run.
+	 * FIXES item 3 (2026-09-26 Eye Care/showcase pass): `closeStyle` ("icon",
+	 * default, unchanged above) or "text" — the draft's bordered rectangular
+	 * button (Eye Care Birmingham.dc.html:1317), styled by style.css's
+	 * `.sgs-choice-flow__chrome-close--text`. Both variants keep an
+	 * accessible name: "icon" via the visually-hidden label span above,
+	 * "text" via its own visible label text (the decorative '×' glyph
+	 * carries `aria-hidden`).
+	 *
+	 * FIXES item 2: the eyebrow's initial no-JS-yet text stays "Step N of M"
+	 * here regardless of layout — chrome.js's mirrorStepEyebrow() recomposes
+	 * it to "<Product name> — <Step name>" once it runs, in `showcase` only
+	 * (the root's `data-product-name`, set here on the header, is where it
+	 * reads the product name from).
+	 *
+	 * @param array  $attributes   Block attributes.
+	 * @param int    $step_count   Total question-step count (excludes result
+	 *                             steps — the same count view.js's own
+	 *                             showStepByIndex() computes), for the eyebrow's
+	 *                             no-JS-yet initial text only; view.js's mirror
+	 *                             overwrites it on first paint once it has run.
+	 * @param string $product_name The flow's resolved product's name (render.php's
+	 *                             $resolved_product_id), '' when none resolves.
 	 * @return string Escaped HTML, or '' when the header is off.
 	 */
-	function sgs_choice_flow_chrome_header_html( array $attributes, int $step_count ): string {
+	function sgs_choice_flow_chrome_header_html( array $attributes, int $step_count, string $product_name = '' ): string {
 		if ( empty( $attributes['showHeader'] ) ) {
 			return '';
 		}
@@ -89,7 +105,8 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 		$logo_alt = isset( $logo['alt'] ) ? sanitize_text_field( (string) $logo['alt'] ) : '';
 
 		$close_label_raw = isset( $attributes['closeLabel'] ) ? trim( (string) $attributes['closeLabel'] ) : '';
-		$close_label      = '' !== $close_label_raw ? sanitize_text_field( $close_label_raw ) : __( 'Close', 'sgs-blocks' );
+		$close_label     = '' !== $close_label_raw ? sanitize_text_field( $close_label_raw ) : __( 'Close', 'sgs-blocks' );
+		$close_style     = isset( $attributes['closeStyle'] ) && 'text' === $attributes['closeStyle'] ? 'text' : 'icon';
 
 		$initial_eyebrow = $step_count > 0
 			? sprintf(
@@ -100,7 +117,7 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 			)
 			: '';
 
-		$html = '<div class="sgs-choice-flow__chrome-header">';
+		$html = '<div class="sgs-choice-flow__chrome-header" data-product-name="' . esc_attr( $product_name ) . '">';
 
 		if ( '' !== $logo_url ) {
 			$html .= '<img class="sgs-choice-flow__chrome-logo" src="' . esc_url( $logo_url ) . '" alt="' . esc_attr( $logo_alt ) . '" />';
@@ -108,14 +125,42 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 
 		$html .= '<span class="sgs-choice-flow__chrome-eyebrow" aria-live="polite">' . esc_html( $initial_eyebrow ) . '</span>';
 
-		$html .= '<button type="button" class="sgs-choice-flow__chrome-close">';
-		$html .= '<svg class="sgs-choice-flow__chrome-close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-		$html .= '<span class="sgs-choice-flow__chrome-close-label">' . esc_html( $close_label ) . '</span>';
+		$html .= '<button type="button" class="sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--' . esc_attr( $close_style ) . '">';
+		if ( 'text' === $close_style ) {
+			$html .= '<span class="sgs-choice-flow__chrome-close-text">' . esc_html( $close_label ) . '</span>';
+			$html .= '<span class="sgs-choice-flow__chrome-close-glyph" aria-hidden="true">&times;</span>';
+		} else {
+			$html .= '<svg class="sgs-choice-flow__chrome-close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+			$html .= '<span class="sgs-choice-flow__chrome-close-label">' . esc_html( $close_label ) . '</span>';
+		}
 		$html .= '</button>';
 
 		$html .= '</div>';
 
 		return $html;
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_resolve_product_name' ) ) {
+	/**
+	 * FIXES item 2: the showcase header eyebrow's product name — WooCommerce's
+	 * own product name first (matches `choice-flow-summary.php`'s own
+	 * resolution), falling back to the post title for a non-WC product ID.
+	 *
+	 * @param int $product_id render.php's resolved product ID (0 = none).
+	 * @return string The product's name, or '' when none resolves.
+	 */
+	function sgs_choice_flow_resolve_product_name( int $product_id ): string {
+		if ( $product_id <= 0 ) {
+			return '';
+		}
+		if ( function_exists( 'wc_get_product' ) ) {
+			$wc_product = wc_get_product( $product_id );
+			if ( $wc_product ) {
+				return $wc_product->get_name();
+			}
+		}
+		return get_the_title( $product_id );
 	}
 }
 

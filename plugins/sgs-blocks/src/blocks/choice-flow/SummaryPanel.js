@@ -23,6 +23,7 @@ import { PanelBody, ToggleControl, SelectControl, TextControl } from '@wordpress
  * @param {boolean}  props.showPricePanel   Current `showPricePanel` attribute (Pricing panel's own toggle).
  * @param {boolean}  props.summaryShowImage Current `summaryShowImage` attribute.
  * @param {string}   props.summaryPosition  Current `summaryPosition` attribute ('start'|'end').
+ * @param {string}   props.summaryBaseLabel Current `summaryBaseLabel` attribute (FIXES item 4).
  * @param {string}   props.stageNote        Current `stageNote` attribute.
  * @param {Object}   props.stageNoteLink    Current `stageNoteLink` attribute ({url,text}).
  * @param {Function} props.setAttributes    Block attribute setter.
@@ -31,6 +32,7 @@ export default function SummaryPanel( {
 	showPricePanel,
 	summaryShowImage,
 	summaryPosition,
+	summaryBaseLabel,
 	stageNote,
 	stageNoteLink,
 	setAttributes,
@@ -63,6 +65,17 @@ export default function SummaryPanel( {
 				onChange={ ( val ) => setAttributes( { summaryPosition: val } ) }
 				help={ __(
 					'Below 1024px the panel is a collapsible "Your box" row above the steps either way.',
+					'sgs-blocks'
+				) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			<TextControl
+				label={ __( 'Base price label', 'sgs-blocks' ) }
+				value={ summaryBaseLabel || '' }
+				onChange={ ( val ) => setAttributes( { summaryBaseLabel: val } ) }
+				help={ __(
+					'FIXES item 4: the running lines’ first row label — default "Base price"; e.g. "Frame" for an eyewear flow.',
 					'sgs-blocks'
 				) }
 				__nextHasNoMarginBottom

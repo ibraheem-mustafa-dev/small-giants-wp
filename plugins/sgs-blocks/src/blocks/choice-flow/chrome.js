@@ -18,15 +18,42 @@
  */
 
 const EYEBROW_SELECTOR         = '.sgs-choice-flow__chrome-eyebrow';
+const HEADER_SELECTOR          = '.sgs-choice-flow__chrome-header';
 const SOURCE_STEP_COUNT_SELECTOR = '.sgs-choice-flow__step-count';
+const SOURCE_STEP_LABEL_SELECTOR = '.sgs-choice-flow__step-label';
 const CLOSE_SELECTOR           = '.sgs-choice-flow__chrome-close';
 const MODAL_DIALOG_SELECTOR    = 'dialog.sgs-modal__dialog';
 const MODAL_CLOSE_SELECTOR     = '.sgs-modal__close';
+const SHOWCASE_CLASS           = 'sgs-choice-flow--layout-showcase';
 
 /**
- * Keep the header's eyebrow text in sync with view.js's own step-count
- * element. A no-op when either element is absent (showHeader:false renders
- * no eyebrow at all).
+ * FIXES item 2: `showcase`'s eyebrow reads "<Product name> — <Step name>"
+ * (the header's own `data-product-name` — render.php resolves it — plus
+ * `.sgs-choice-flow__step-label`, which `flow-steps.js`'s showStepByIndex()
+ * fills from the step's `data-step-label` or, failing that, the active
+ * question's own title) instead of mirroring "Step N of M".
+ *
+ * @param {HTMLElement} flowEl The flow's wrapper element.
+ * @return {string} The composed eyebrow text.
+ */
+function composeShowcaseEyebrow( flowEl ) {
+	const headerEl = flowEl.querySelector( HEADER_SELECTOR );
+	const productName = headerEl ? headerEl.getAttribute( 'data-product-name' ) || '' : '';
+	const stepLabelEl = flowEl.querySelector( SOURCE_STEP_LABEL_SELECTOR );
+	const stepLabel = stepLabelEl ? stepLabelEl.textContent.trim() : '';
+
+	if ( productName && stepLabel ) {
+		return `${ productName } — ${ stepLabel }`;
+	}
+	return productName || stepLabel;
+}
+
+/**
+ * Keep the header's eyebrow text in sync with the current step: "Step N of
+ * M" in `compact` (mirroring view.js's own step-count element, unchanged),
+ * or "<Product name> — <Step name>" in `showcase` (FIXES item 2). A no-op
+ * when either element is absent (showHeader:false renders no eyebrow at
+ * all).
  *
  * @param {HTMLElement} flowEl The flow's wrapper element (`.sgs-choice-flow`).
  */
@@ -37,8 +64,10 @@ function mirrorStepEyebrow( flowEl ) {
 		return;
 	}
 
+	const showcase = flowEl.classList.contains( SHOWCASE_CLASS );
+
 	const sync = () => {
-		eyebrowEl.textContent = sourceEl.textContent;
+		eyebrowEl.textContent = showcase ? composeShowcaseEyebrow( flowEl ) : sourceEl.textContent;
 	};
 
 	// Pick up whatever showStepByIndex() has already written by the time
@@ -48,6 +77,13 @@ function mirrorStepEyebrow( flowEl ) {
 
 	const observer = new MutationObserver( sync );
 	observer.observe( sourceEl, { childList: true, characterData: true, subtree: true } );
+
+	if ( showcase ) {
+		const stepLabelEl = flowEl.querySelector( SOURCE_STEP_LABEL_SELECTOR );
+		if ( stepLabelEl ) {
+			observer.observe( stepLabelEl, { childList: true, characterData: true, subtree: true } );
+		}
+	}
 }
 
 /**

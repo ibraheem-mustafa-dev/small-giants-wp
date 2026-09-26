@@ -210,7 +210,13 @@ export function showStepByIndex( flowRoot, targetIndex ) {
 
 		const stepLabelEl = flowRoot.querySelector( STEP_LABEL_SELECTOR );
 		if ( stepLabelEl && targetStepEl ) {
-			stepLabelEl.textContent = targetStepEl.getAttribute( 'data-step-label' ) || '';
+			// FIXES item 2: fall back to the active question's own title when
+			// the step declares no explicit `data-step-label` — chrome.js's
+			// showcase eyebrow reads this same element, so it always has
+			// something to compose "<Product name> — <Step name>" from.
+			const questionTitleEl = targetStepEl.querySelector( '.sgs-choice-flow-question__title' );
+			stepLabelEl.textContent =
+				targetStepEl.getAttribute( 'data-step-label' ) || ( questionTitleEl ? questionTitleEl.textContent : '' );
 		}
 
 		buildStepperMarkup( flowRoot, questionSteps.length ? questionSteps : steps );
