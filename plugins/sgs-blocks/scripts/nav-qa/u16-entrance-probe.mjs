@@ -11,12 +11,12 @@
  *   hide      from the top, scrolling down slides the header away through in-between positions; after 600px of
  *             scroll, scrolling back up slides it back and it pins at the top of the viewport;
  *   card      after its entrance, a real pointer hover moves the card to its own hover transform (the info-box
- *             hover scale) and reaches it within 450ms (its own 300ms transition, not the 800ms entrance, not never);
+ *             hover scale) and reaches it within 330ms (its own 300ms transition; the pre-U-16 build took about 400ms);
  *   footer    rows one and two travel 50px to 0 and start about 100ms apart; row three (footer stagger on) has no
  *             entrance of its own and the card inside it keeps one;
  *   dropdown  (1440) a dropdown opened mid-entrance sits where the same dropdown sits when opened afterwards (2px).
- * Then: reduced motion shows the header at once with no in-between values; JavaScript off and a blocked observer
- * both show the header, the card and the footer rows at opacity 1.
+ * Then: reduced motion shows the header at once with no in-between values; JavaScript off shows the header, the
+ * card and the footer rows at opacity 1; a blocked observer shows them once the head flag lifts itself (3s).
  * Exit code 1 on any failed assertion; JSON results in --out (default the OS temp directory).
  */
 import { chromium } from 'playwright';
@@ -102,8 +102,8 @@ for ( const width of [ 375, 768, 1440 ] ) {
 	const firstLow = after.findIndex( ( [ , o ] ) => o < 0.98 );
 	const flash    = firstLow > 0 && after.slice( 0, firstLow ).some( ( [ , o ] ) => o >= 0.98 );
 	// The rise, bracketed: from the last sample still at 0 to the first sample at 1.
-	const lastZero = after.map( ( [ , o ] ) => o <= 0.02 ).lastIndexOf( true );
-	const firstOne = after.findIndex( ( [ , o ], i ) => i > lastZero && o >= 0.98 );
+	const lastZero = after.map( ( [ , o ] ) => o <= 0.005 ).lastIndexOf( true );
+	const firstOne = after.findIndex( ( [ , o ], i ) => i > lastZero && o >= 0.995 );
 	const rise     = lastZero >= 0 && firstOne > lastZero ? after[ firstOne ][ 0 ] - after[ lastZero ][ 0 ] : 0;
 	r.header = { paint: u16.paint, samplesAfterPaint: after.length, between: between.length, riseMs: Math.round( rise ), flash, trace: after.slice( 0, 30 ).map( ( [ t, o ] ) => [ Math.round( t ), Math.round( o * 100 ) / 100 ] ) };
 	check( between.length >= 3 && rise >= 650, `${ width } header entrance is a slow fade`, { ...r.header, trace: undefined } );
@@ -147,7 +147,7 @@ for ( const width of [ 375, 768, 1440 ] ) {
 	const final   = hover[ hover.length - 1 ][ 1 ];
 	const reached = hover.find( ( [ , m ] ) => m === final );
 	r.card = { rest: hover[ 0 ][ 1 ], final, reachedMs: reached[ 0 ] };
-	check( 'none' !== final && reached[ 0 ] <= 450, `${ width } card hover runs at its own speed`, r.card );
+	check( 'none' !== final && reached[ 0 ] <= 330, `${ width } card hover runs at its own speed`, r.card );
 	await page.mouse.move( 5, 800 );
 
 	// From the top: the header shrinks and slides away scrolling down; after 600px it slides back and pins.
@@ -186,14 +186,18 @@ for ( const width of [ 375, 768, 1440 ] ) {
 	const travel = await page.evaluate( async ( s ) => {
 		const els = [ ...document.querySelectorAll( s ) ].slice( 0, 2 );
 		window.scrollTo( 0, document.documentElement.scrollHeight );
-		const out = els.map( () => ( { start: null, maxY: 0, finalY: null } ) );
+		const out = els.map( () => ( { start: null, hiddenAt: null, maxY: 0, finalY: null } ) );
 		const t0  = performance.now();
-		while ( performance.now() - t0 < 1400 ) {
+		while ( performance.now() - t0 < 2400 ) {
 			els.forEach( ( el, i ) => {
 				const cs = getComputedStyle( el );
 				const y  = cs.translate && 'none' !== cs.translate ? parseFloat( cs.translate.split( ' ' )[ 1 ] || 0 ) : 0;
 				out[ i ].maxY = Math.max( out[ i ].maxY, y );
-				if ( null === out[ i ].start && +cs.opacity > 0.05 ) {
+				if ( null === out[ i ].hiddenAt && +cs.opacity <= 0.01 ) {
+					out[ i ].hiddenAt = Math.round( performance.now() - t0 );
+				}
+				// The entrance starts at the first rise after the row was seen at its hidden start pose.
+				if ( null === out[ i ].start && null !== out[ i ].hiddenAt && +cs.opacity > 0.05 ) {
 					out[ i ].start = Math.round( performance.now() - t0 );
 				}
 				out[ i ].finalY = y;
@@ -216,7 +220,8 @@ const still = async ( label, options, route ) => {
 		await page.route( /animation-observer\.js/, ( rt ) => rt.abort() );
 	}
 	await page.goto( fresh(), { waitUntil: 'load' } );
-	await page.waitForTimeout( 1200 );
+	// A blocked observer leaves the head flag in place until it lifts itself at 3s.
+	await page.waitForTimeout( route ? 3500 : 1200 );
 	const state = await page.evaluate( ( [ h, c, rw ] ) => ( {
 		header: +getComputedStyle( document.querySelector( h ) ).opacity,
 		card: +getComputedStyle( document.querySelector( c ) ).opacity,

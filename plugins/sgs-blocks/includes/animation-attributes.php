@@ -269,13 +269,16 @@ add_action( 'wp_head', __NAMESPACE__ . '\print_entrance_pending_flag', 1 );
  *
  * animation-observer.js loads in the footer, so an element in view at load
  * (the header) can paint visible before its entrance holds the start pose.
- * This head script adds `sgs-entrance-pending` to <html>; extensions.css holds
- * `[data-sgs-animation]` at opacity 0 while it is present (motion allowed
- * only); the observer removes it once its animations hold their start poses.
- * The script also removes it after 3s, so a failed or blocked observer never
+ * This head script adds `sgs-entrance-pending` to <html>, and the head rule
+ * beside it holds `[data-sgs-animation]` at opacity 0 while it is present
+ * (motion allowed only). The rule is printed here, render-blocking, because
+ * extensions.css loads asynchronously and would arrive after the first paint.
+ * The observer removes the flag once its animations hold their start poses;
+ * the script also removes it after 3s, so a failed or blocked observer never
  * leaves content hidden. Without JavaScript the flag never exists.
  */
 function print_entrance_pending_flag(): void {
+	echo '<style id="sgs-entrance-pending-css">@media (prefers-reduced-motion:no-preference){.sgs-entrance-pending [data-sgs-animation]{opacity:0}}</style>' . "\n";
 	wp_print_inline_script_tag(
 		'(function(d){d.classList.add("sgs-entrance-pending");setTimeout(function(){d.classList.remove("sgs-entrance-pending");},3000);})(document.documentElement);'
 	);
