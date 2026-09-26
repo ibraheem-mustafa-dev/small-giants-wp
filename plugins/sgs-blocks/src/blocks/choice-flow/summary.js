@@ -83,6 +83,41 @@ function updateImage( panelEl, variationId ) {
 			imageEl.hidden = true;
 		}
 	} );
+	if ( flowRoot ) {
+		updateOptionPhotos( flowRoot, src );
+	}
+}
+
+/**
+ * An option with a photo treatment (`stageEffect`, e.g. a lens finish)
+ * previews it on its own card: the product's current photo, treated, laid
+ * over the option's picture (style.css in choice-flow-question). With no
+ * product photo the option's own picture shows alone.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @param {string}      src      The stage photo's URL, '' for none.
+ */
+function updateOptionPhotos( flowRoot, src ) {
+	flowRoot.querySelectorAll( '.sgs-choice-flow-question__option-button[data-stage-effect]' ).forEach( ( buttonEl ) => {
+		const mediaEl = buttonEl.querySelector( '.sgs-choice-flow-question__option-media' );
+		if ( ! mediaEl ) {
+			return;
+		}
+		let photoEl = mediaEl.querySelector( '.sgs-choice-flow-question__option-photo' );
+		if ( ! photoEl && src ) {
+			photoEl = document.createElement( 'img' );
+			photoEl.className = `sgs-choice-flow-question__option-photo is-effect-${ buttonEl.getAttribute( 'data-stage-effect' ) }`;
+			photoEl.alt = '';
+			photoEl.loading = 'lazy';
+			mediaEl.appendChild( photoEl );
+		}
+		if ( photoEl ) {
+			photoEl.hidden = ! src;
+			if ( src ) {
+				photoEl.src = src;
+			}
+		}
+	} );
 }
 
 /**
