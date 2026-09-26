@@ -12,7 +12,7 @@
 
 namespace SGS\Theme;
 
-defined( 'A\PATH' ) || exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Register the controls in the existing Shop Filters section.

@@ -1201,6 +1201,15 @@
     "order": 132
   },
   {
+    "id": "check-exit-guards",
+    "cmd": "python scripts/check-exit-guards.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 136
+  },
+  {
     "id": "check-nested-global-settings",
     "cmd": "python scripts/check-nested-global-settings.py --check",
     "tier": "fast",
