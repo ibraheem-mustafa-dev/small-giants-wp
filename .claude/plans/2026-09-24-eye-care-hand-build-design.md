@@ -136,8 +136,10 @@ key), with the owed Wave C polish alongside.
   768 and 375, with the draft's "Frame" first running line and its single bordered text Close (f26c23146; the
   popup's own round Close now steps aside for the flow's). One accepted difference: the draft advances on tap at
   step 1, while the flow shows Continue on every step (Spec 43 D1, the Continue model).
-- **Lens-flow parity: DONE 2026-09-26** (Spec 43 v1.9.0; commits 38206aa0f to 3f5eb16d9, live on eye-care-test).
-  The hosted draft (Gucci Oversized Cat-Eye) and eye-care-test product 128 match at 1440, 768 and 375 in screenshots
+- **Lens-flow parity: DONE 2026-09-26** (Spec 43 v1.9.0; commits 38206aa0f to e1403e873, live on eye-care-test).
+  The hosted draft and eye-care-test compared on the same product, the Gucci Oversized Cat-Eye (product 76, which
+  has the draft's photo; the draft photographs only it, Holbrook, Original Wayfarer and Round Metal, all four with
+  their photos on eye-care-test), matching at 1440, 768 and 375 in screenshots
   and computed motion, walked through all four questions by a repeatable script (session scratchpad
   `lens-steps.mjs`, `hovers.mjs`): the header text and mark at every step, the progress widths, "Question N of 3"
   and "Last bit — and it can wait", the stage (brand, name, options, running lines in question order, "Lenses · not
@@ -147,15 +149,16 @@ key), with the owed Wave C polish alongside.
   line at £268 with its rows, at 1440 and 375, with no console errors. Decided (Bean, 2026-09-26): a pre-selected
   default shows on the stage only once its question is reached.
   - Accepted differences: Continue on every step and the pre-selected default cards (Spec 43 D1), so the
-    prescription ending is one Continue away and the skip link goes to the "Frame only" confirmation; the test
-    product's missing photo (and the draft's own catalogue tint on its photo); pennies on every price (Bean,
+    prescription ending is one Continue away and the skip link goes to the "Frame only" confirmation; the draft's
+    per-colour tint on its one photo (it fakes colour variants; the site shows each variation's own image); the
+    size line reads "Frame size 55" where the draft says "Size M" (Bean, 2026-09-25); pennies on every price (Bean,
     2026-09-25); Close keeps the 44px touch target (the draft's is 42px, so the header is 2px taller); the product
     page button lifts 3px (Eye Care's button preset) where the draft's lifts 2px.
   - For Bean: the option pictures (media 447-458) draw the draft's shapes at a fixed share of the card (44%), where
     the draft draws them at a fixed 140px, so they read larger at 1440 and smaller at 768. Matching exactly needs the
     pictures redrawn as fixed-size marks on a plain band.
-  - Framework gap (FR-43-24, for products with photos): the draft's finish cards show the frame's own photo under
-    each finish's treatment; the flow shows the finish swatch pictures. Invisible on the test products (no photos).
+  - Each finish card previews the frame's own photo under that finish's treatment, as the draft's do (e1403e873);
+    a product with no photo shows the finish's own picture.
 - Owed, shop polish (already listed above): colour swatches, filter panels open by
   default, the results count and sort row. For Bean: the size buttons read the real lens width (55 / 58 / 62, from
   the jpopticians sizes chosen 2026-09-25) where the draft says S / M / L. For the nav track: `floatingHideNearInline`

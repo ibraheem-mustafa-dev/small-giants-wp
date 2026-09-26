@@ -385,7 +385,8 @@ to edge (the modal's own padding drops, and a full-screen modal fades in rather 
     photo that swaps with the resolved variation, the brand, name and chosen options (which take the slack, so the
     lines sit low), the running lines, a large total in the heading font, and the help note at the bottom edge.
   - An option can carry a photo treatment (`stageEffect`: dim, deepen, soften, brighten) that the stage photo shows
-    while it is chosen, named in a small tag on the photo (a lens finish).
+    while it is chosen, named in a small tag on the photo (a lens finish); the option's own card previews it too,
+    the product's photo treated the same way over the option's picture.
   - The help note is a bordered card; with a link the whole card is the link, with an optional round icon badge
     (`stageNoteIcon`: WhatsApp, phone, email, chat) and its own icon, border and hover colours.
 - **Step pane:** padded 40/44/56. It holds:
