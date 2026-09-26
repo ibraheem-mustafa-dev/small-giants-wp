@@ -428,6 +428,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		className: `sgs-choice-flow sgs-choice-flow--layout-${ attributes.flowLayout || 'compact' } sgs-choice-flow--close-${ closeStyle || 'icon' }`,
 		style: buildWrapperStyle( attributes ),
 		'data-summary-base-label': summaryBaseLabel || '',
+		'data-opener-label': attributes.openerLabel || '',
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(

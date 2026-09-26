@@ -33,7 +33,7 @@ export function recordPlainAnswer( flowRoot, stepIndex, stepEl, buttonEl ) {
 		return;
 	}
 	const list = plainAnswers.get( flowRoot ) || [];
-	plainAnswers.set( flowRoot, [ ...forgetFrom( list, stepIndex ), { stepIndex, label, value } ] );
+	plainAnswers.set( flowRoot, [ ...list.filter( ( answer ) => answer.stepIndex !== stepIndex ), { stepIndex, label, value } ] );
 }
 
 /**
@@ -60,18 +60,8 @@ export function getPlainAnswers( flowRoot ) {
 export function forgetAnswersFrom( flowRoot, stepIndex ) {
 	const list = plainAnswers.get( flowRoot );
 	if ( list ) {
-		plainAnswers.set( flowRoot, forgetFrom( list, stepIndex ) );
+		plainAnswers.set( flowRoot, list.filter( ( answer ) => answer.stepIndex < stepIndex ) );
 	}
-}
-
-/**
- * @param {Array<{stepIndex: number}>} list      Answers in the order given.
- * @param {number}                     stepIndex Step to forget from.
- * @return {Array} The answers given before that step was first answered.
- */
-function forgetFrom( list, stepIndex ) {
-	const at = list.findIndex( ( answer ) => answer.stepIndex === stepIndex );
-	return at === -1 ? list : list.slice( 0, at );
 }
 
 /**

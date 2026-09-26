@@ -206,6 +206,10 @@
 			"default": {},
 			"description": "Root polish: the optional header's logo image, {id,url,alt}. Empty object = no logo shown."
 		},
+		"openerLabel": {
+			"type": "string",
+			"default": ""
+		},
 		"closeLabel": {
 			"type": "string",
 			"default": "Close",

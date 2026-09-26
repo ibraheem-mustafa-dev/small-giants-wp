@@ -83,6 +83,7 @@ if ( ! function_exists( 'sgs_buybox_apply_linked_flow' ) ) {
 			'modal_id'    => $add_to_cart_modal_id,
 			'opens_modal' => $add_to_cart_opens_modal,
 			'flow'        => null,
+			'label'       => '',
 		);
 
 		if ( $is_guided || $add_to_cart_opens_modal ) {
@@ -101,6 +102,7 @@ if ( ! function_exists( 'sgs_buybox_apply_linked_flow' ) ) {
 		$result['modal_id']    = $modal_id;
 		$result['opens_modal'] = true;
 		$result['flow']        = $flow;
+		$result['label']       = sgs_buybox_linked_flow_label( $flow );
 
 		return $result;
 	}
@@ -179,8 +181,30 @@ if ( ! function_exists( 'sgs_buybox_simple_linked_flow_html' ) ) {
 		}
 		ob_start();
 		echo do_blocks( '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /-->' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
+		$flow_label = sgs_buybox_linked_flow_label( $flow );
+		if ( '' !== $flow_label ) {
+			$label = $flow_label;
+		}
 		echo sgs_buybox_modal_cta_html( '' !== $label ? $label : __( 'Add to Cart', 'sgs-blocks' ), 'wp-element-button buybox__add-to-cart', false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
 		sgs_buybox_render_linked_flow_modal( $flow );
 		return (string) ob_get_clean();
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_linked_flow_label' ) ) {
+	/**
+	 * The saved flow's own opener wording (its root block's `openerLabel`),
+	 * e.g. "Choose your flavours"; '' when the flow leaves it to the buybox.
+	 *
+	 * @param \WP_Post $flow The linked `sgs_choice_flow` post.
+	 * @return string
+	 */
+	function sgs_buybox_linked_flow_label( \WP_Post $flow ): string {
+		foreach ( parse_blocks( $flow->post_content ) as $block ) {
+			if ( 'sgs/choice-flow' === ( $block['blockName'] ?? '' ) ) {
+				return sanitize_text_field( (string) ( $block['attrs']['openerLabel'] ?? '' ) );
+			}
+		}
+		return '';
 	}
 }

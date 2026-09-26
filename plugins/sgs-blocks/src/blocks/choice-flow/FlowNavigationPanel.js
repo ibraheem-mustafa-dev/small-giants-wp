@@ -22,7 +22,7 @@ import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
  * @return {JSX.Element} The panel, mounted inside its own InspectorControls.
  */
 export default function FlowNavigationPanel( { attributes, setAttributes } ) {
-	const { advanceMode, continueLabel } = attributes;
+	const { advanceMode, continueLabel, openerLabel } = attributes;
 
 	return (
 		<InspectorControls>
@@ -51,6 +51,14 @@ export default function FlowNavigationPanel( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				) }
+				<TextControl
+					label={ __( 'Product page button label', 'sgs-blocks' ) }
+					value={ openerLabel }
+					onChange={ ( val ) => setAttributes( { openerLabel: val } ) }
+					help={ __( 'Shown on the product page button when a product links this flow, e.g. "Choose your flavours". Empty uses the buybox label.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
 			</PanelBody>
 		</InspectorControls>
 	);

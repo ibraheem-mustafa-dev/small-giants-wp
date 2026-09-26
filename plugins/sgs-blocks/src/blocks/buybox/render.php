@@ -458,6 +458,7 @@ $add_to_cart_action      = $buybox_linked_flow_wire['action'];
 $add_to_cart_modal_id    = $buybox_linked_flow_wire['modal_id'];
 $add_to_cart_opens_modal = $buybox_linked_flow_wire['opens_modal'];
 $buybox_linked_flow_post = $buybox_linked_flow_wire['flow'];
+$add_to_cart_label       = '' !== $buybox_linked_flow_wire['label'] ? $buybox_linked_flow_wire['label'] : $add_to_cart_label;
 
 // Eye Care Wave C: add-to-cart button style preset + optional price display.
 // sgs_buybox_add_to_cart_class() allowlists to '' (today's look) or

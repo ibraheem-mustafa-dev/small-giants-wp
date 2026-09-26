@@ -215,8 +215,10 @@ if ( $sanitised_default ) {
 	}
 }
 
-// Fall back to the first option if no valid default was found.
-if ( '' === $resolved_default ) {
+// Fall back to the first option if no valid default was found, unless the
+// picker must start with nothing selected (`requireChoice`: the guided buybox's
+// groups with no product default, so a choice is always the shopper's own).
+if ( '' === $resolved_default && empty( $attributes['requireChoice'] ) ) {
 	$resolved_default = $valid_items[0]['key'];
 }
 

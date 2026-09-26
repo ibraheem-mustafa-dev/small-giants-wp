@@ -92,7 +92,6 @@ if ( ! function_exists( 'sgs_buybox_guided_groups' ) ) {
 		return $groups;
 	}
 }
-
 if ( ! function_exists( 'sgs_buybox_guided_term_label' ) ) {
 	/**
 	 * A group's term label by slug (used for the meter's "done" caption).
@@ -146,6 +145,7 @@ if ( ! function_exists( 'sgs_buybox_guided_picker' ) ) {
 				$group['terms']
 			),
 			'defaultSelected'  => $group['default_slug'],
+			'requireChoice'    => '' === $group['default_slug'],
 			'typeKey'          => $group['taxonomy'],
 			'showSelectedTick' => $picker_forward['show_tick'],
 		);

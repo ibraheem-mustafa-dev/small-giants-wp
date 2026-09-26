@@ -175,6 +175,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourPreset,
 		showSelectedTick,
 		showTermDetails,
+		requireChoice,
 		pillBgColour,
 		pillBgColourGradient,
 		pillBgColourHover,
@@ -213,6 +214,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			colourPreset ? `sgs-option-picker--${ colourPreset }` : '',
 			showSelectedTick ? '' : 'sgs-option-picker--no-tick',
 			showTermDetails ? '' : 'sgs-option-picker--no-term-details',
+			requireChoice ? 'sgs-option-picker--require-choice' : '',
 		].filter( Boolean ).join( ' ' ),
 		style: buildRootPreviewStyle( attributes ),
 	} );
@@ -936,6 +938,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								help={ __( 'Shows each option’s badge and short description when its attribute term has them.', 'sgs-blocks' ) }
 								checked={ showTermDetails }
 								onChange={ ( val ) => setAttributes( { showTermDetails: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Start with nothing selected', 'sgs-blocks' ) }
+							hasValue={ () => requireChoice === true }
+							onDeselect={ () => setAttributes( { requireChoice: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Start with nothing selected', 'sgs-blocks' ) }
+								help={ __( 'Off selects the default (or the first option) on load. On leaves the choice to the shopper.', 'sgs-blocks' ) }
+								checked={ !! requireChoice }
+								onChange={ ( val ) => setAttributes( { requireChoice: val } ) }
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>

@@ -99,6 +99,9 @@ export function handleContinueClick( buttonEl ) {
 	}
 
 	hideContinueHint( flowRoot );
+	// Re-record the chosen answer: a default recorded on load may have been
+	// dropped by Back, and every answer type replaces its own step's value.
+	recordOptionAnswer( flowRoot, selectedButtonEl, currentIndex );
 	commitStepRouting( flowRoot, selectedButtonEl, currentIndex );
 }
 
