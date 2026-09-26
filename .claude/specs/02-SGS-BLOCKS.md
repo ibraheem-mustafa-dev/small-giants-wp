@@ -57,7 +57,7 @@ sgs-blocks/
 │   │   ├── tabs/                 # Tabbed content panels
 │   │   ├── tab/                  # One tab panel (parent: sgs/tabs)
 │   │   ├── brand-strip/          # Logo/brand carousel strip
-│   │   ├── notice-banner/        # Inline banner; `displayMode=announcement` gives the sticky announcement bar
+│   │   ├── notice-banner/        # Inline banner; `displayMode=bar` a full-width strip, `announcement` the fixed announcement bar
 │   │   ├── notice-message/       # One self-changing message with its own colour pair (parent: sgs/notice-banner)
 │   │   ├── local-time/           # Live clock for one IANA time zone (label, 12/24-hour, seconds)
 │   │   ├── language-switch/      # Hand-set language links: inline, single link or disclosure; PHP intl names and hreflang
@@ -606,14 +606,14 @@ The icon circle has an overridable default border; a title placeholder never lea
 
 ### 16. Notice Banner (`sgs/notice-banner`)
 
-**Purpose:** Inline informational banner for contextual messages like minimum order values, delivery terms, or promotional notices. **Also serves as the announcement bar via `displayMode=announcement`.**
+**Purpose:** Inline informational banner for contextual messages like minimum order values, delivery terms, or promotional notices. **Also serves as a header top strip via `displayMode=bar` (in-flow, edge to edge, square) and as the fixed announcement bar via `displayMode=announcement`.**
 
 **`displayMode` attribute:**
 - `inline` — (default) embedded within page content at the drop point
 - `announcement` — sticky top/bottom bar (full-width, `z-index: 1000`), dismissible via WP Interactivity API (`session`/`permanent` storage), pre-paint anti-flash script prevents FOUC
 
 **Attributes:**
-- `displayMode` — inline | announcement (default: inline)
+- `displayMode` — inline | bar | announcement (default: inline)
 - `icon` — string (emoji or SVG slug)
 - `iconColour` — token slug
 - `text` — RichText (supports inline bold, links)
