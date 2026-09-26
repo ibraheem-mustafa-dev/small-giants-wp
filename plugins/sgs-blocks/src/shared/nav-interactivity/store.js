@@ -144,6 +144,65 @@ function publishContainerInsets( drawer, trigger ) {
 	);
 }
 
+/**
+ * A drawer grown out of its header (nav-drawer anchor `header-box`): publish
+ * the opener header's border box on the dialog (`--sgs-drawer-hb-top/-left/
+ * -width/-row-h/-radius`, custom-property VALUES) and mark the header
+ * `data-sgs-drawer-grown`, which drops its own fill, blur and shadow
+ * (site-header style.css) so header and drawer read as one card. Whether the
+ * resolved anchor at this width is `header-box` is read from render.php's
+ * per-tier `--sgs-nd-grows`. Called on open and on every viewport change;
+ * everything is undone by `ungrowHeader()` on close.
+ *
+ * @param {HTMLElement}      drawer  The dialog.
+ * @param {HTMLElement|null} trigger The burger that opened it.
+ */
+function publishHeaderBox( drawer, trigger ) {
+	const grows =
+		'1' ===
+		window.getComputedStyle( drawer ).getPropertyValue( '--sgs-nd-grows' ).trim();
+	const header =
+		grows && trigger
+			? trigger.closest( 'header.sgs-site-header' ) ||
+			  trigger.closest( HEADER_REGION_SELECTOR )
+			: null;
+	const previous = grownHeaders.get( drawer );
+	if ( previous && previous !== header ) {
+		previous.removeAttribute( 'data-sgs-drawer-grown' );
+		grownHeaders.delete( drawer );
+	}
+	const rect = header ? header.getBoundingClientRect() : null;
+	if ( ! rect || rect.width <= 0 ) {
+		[ 'top', 'left', 'width', 'row-h', 'radius' ].forEach( ( key ) =>
+			drawer.style.removeProperty( `--sgs-drawer-hb-${ key }` )
+		);
+		return;
+	}
+	drawer.style.setProperty( '--sgs-drawer-hb-top', `${ Math.round( rect.top ) }px` );
+	drawer.style.setProperty( '--sgs-drawer-hb-left', `${ Math.round( rect.left ) }px` );
+	drawer.style.setProperty( '--sgs-drawer-hb-width', `${ Math.round( rect.width ) }px` );
+	drawer.style.setProperty( '--sgs-drawer-hb-row-h', `${ Math.round( rect.height ) }px` );
+	drawer.style.setProperty(
+		'--sgs-drawer-hb-radius',
+		window.getComputedStyle( header ).borderTopLeftRadius || '0px'
+	);
+	header.setAttribute( 'data-sgs-drawer-grown', '' );
+	grownHeaders.set( drawer, header );
+}
+
+/**
+ * Hand the header back its own fill once the grown drawer closes.
+ *
+ * @param {HTMLElement} drawer The dialog.
+ */
+function ungrowHeader( drawer ) {
+	const header = grownHeaders.get( drawer );
+	if ( header ) {
+		header.removeAttribute( 'data-sgs-drawer-grown' );
+		grownHeaders.delete( drawer );
+	}
+}
+
 const HEADER_REGION_SELECTOR =
 	'.wp-block-sgs-site-header, header.wp-block-template-part, body > header';
 
@@ -153,6 +212,9 @@ const drawerBookkeeping = new WeakMap();
 
 // Drawers already re-parented to <body> (idempotency for reparentToBody).
 const reparented = new WeakSet();
+
+// The header each open grown drawer marked (see publishHeaderBox).
+const grownHeaders = new WeakMap();
 
 /* ==========================================================================
  * DRAWER PLUMBING — hard-won fixes (do NOT re-derive).
@@ -740,6 +802,7 @@ function openDrawerFor( ctx, trigger ) {
 	 * render.php's `var(…, 0px)` fallback takes over.
 	 */
 	publishContainerInsets( drawer, trigger );
+	publishHeaderBox( drawer, trigger );
 
 	const openerRow = trigger
 		? trigger.closest( '.sgs-site-header-row' ) || trigger
@@ -968,6 +1031,7 @@ function openDrawerFor( ctx, trigger ) {
 			}
 			updateSameSlotVars();
 			publishContainerInsets( drawer, trigger );
+			publishHeaderBox( drawer, trigger );
 		} );
 	};
 	window.addEventListener( 'resize', onViewportChange );
@@ -1090,6 +1154,7 @@ function openDrawerFor( ctx, trigger ) {
 			unlockScroll();
 		}
 		unfreezeBackground( bookkeeping.frozen );
+		ungrowHeader( drawer );
 		bookkeeping.cleanup.forEach( ( fn ) => fn() );
 		drawerBookkeeping.delete( drawer );
 		ctx.isOpen = false;

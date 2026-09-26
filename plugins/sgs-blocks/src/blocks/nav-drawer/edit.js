@@ -675,6 +675,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										{ value: 'container', label: __( "Lined up with the header's content", 'sgs-blocks' ) },
 										{ value: 'trigger', label: __( 'Corner panel under the menu button', 'sgs-blocks' ) },
 										{ value: 'centred', label: __( 'Centred card', 'sgs-blocks' ) },
+										{ value: 'header-box', label: __( 'Grows out of the header', 'sgs-blocks' ) },
 									] }
 									onChange={ ( value ) => setOwnValue( value || undefined ) }
 									__nextHasNoMarginBottom
@@ -743,12 +744,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					>
 						<ToggleGroupControl
 							label={ __( 'Header stays live', 'sgs-blocks' ) }
-							help={ __(
-								'Modal (default) dims and disables the rest of the page while the drawer is open. Non-modal keeps the header row — including the burger button — visible and usable, matching the pattern most reference sites use.',
-								'sgs-blocks'
-							) }
-							value={ modality || 'modal' }
-							onChange={ ( value ) => setAttributes( { modality: value || 'modal' } ) }
+							help={
+								anchorUses( anchor, [ 'header-box' ] )
+									? __(
+										'A panel that grows out of the header is always non-modal, so the header and its menu button stay usable.',
+										'sgs-blocks'
+									)
+									: __(
+										'Modal (default) dims and disables the rest of the page while the drawer is open. Non-modal keeps the header row — including the burger button — visible and usable, matching the pattern most reference sites use.',
+										'sgs-blocks'
+									)
+							}
+							value={ anchorUses( anchor, [ 'header-box' ] ) ? 'non-modal' : modality || 'modal' }
+							onChange={ ( value ) => {
+								if ( ! anchorUses( anchor, [ 'header-box' ] ) ) {
+									setAttributes( { modality: value || 'modal' } );
+								}
+							} }
 							isBlock
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize

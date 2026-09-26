@@ -506,6 +506,13 @@ import {
 			rafScheduled = false;
 			const scrollY = window.scrollY;
 
+			// A drawer grown out of this header (nav-drawer anchor `header-box`)
+			// holds the header still until it closes, so the card never drifts.
+			if ( header.hasAttribute( 'data-sgs-drawer-grown' ) ) {
+				prevScrollY = scrollY;
+				return;
+			}
+
 			// Transparent → opaque transition, and Shrink (same threshold, own
 			// state class, independent CSS rule) — one decision drives both.
 			let scrolled;
@@ -732,6 +739,11 @@ import {
 		function onScrollTick() {
 			rafScheduled = false;
 			const scrollY = window.scrollY;
+			// Rows hold still while a drawer grown out of their header is open.
+			if ( document.querySelector( '[data-sgs-drawer-grown]' ) ) {
+				prevScrollY = scrollY;
+				return;
+			}
 			const tier = getCurrentDeviceTier();
 			const scrollingDown = scrollY > 100 && scrollY > prevScrollY;
 			const scrollingUp = scrollY <= prevScrollY;

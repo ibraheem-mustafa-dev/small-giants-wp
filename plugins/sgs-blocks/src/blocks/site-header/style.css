@@ -63,3 +63,19 @@
 :where(.sgs-site-header .sgs-header-icons) {
 	align-items: center;
 }
+
+/* A drawer grown out of this header (sgs/nav-drawer anchor `header-box`) paints
+   the one card while it is open: the header gives up its own fill, blur and
+   shadow so its row sits on the drawer's surface with no doubled strip.
+   store.js sets and removes the attribute. (0,3,1) beats the container
+   wrapper's scoped (0,2,0) paint by specificity, never by !important. */
+header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] {
+	background: none;
+	box-shadow: none;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+}
+
+header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] > .sgs-container__overlay {
+	opacity: 0;
+}

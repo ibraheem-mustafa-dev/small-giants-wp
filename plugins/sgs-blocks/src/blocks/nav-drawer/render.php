@@ -96,7 +96,7 @@ $close_sel = $root_sel . ' .sgs-nav-drawer__close';
 // 'full-screen'). `panelSize` is the matching per-device LENGTH object,
 // consulted by the side, trigger and centred anchors; `anchorOffset` is the
 // per-device gap below what a trigger or container panel hangs from.
-$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred' );
+$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred', 'header-box' );
 
 /**
  * Geometry declarations (position/inset/width/height/max-* ONLY — never
@@ -115,6 +115,16 @@ $sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'side-start', 'side-en
  * header's content box, which store.js measures from the burger's header row
  * at open (`--sgs-drawer-container-left/-right`, 16px without a row), and sits
  * `anchorOffset` below the header (modal) or the burger's row (non-modal).
+ * `header-box` lays the panel over the opener header's own border box (the
+ * floating pill growing into a card): same top, left and width, one z-index
+ * below the header so its row paints over the panel's top strip, and the
+ * panel's content starts below that row (`--sgs-nd-hb-row`, read by the body
+ * rule in style.css). store.js measures the box at open and on resize
+ * (`--sgs-drawer-hb-*`) and marks the header `data-sgs-drawer-grown`, which
+ * drops the header's own fill, blur and shadow so the two read as one card.
+ * Always non-modal (a modal dialog is top-layer and would cover the header);
+ * `$modality` is forced below. `--sgs-nd-grows` tells store.js, per tier,
+ * whether the resolved anchor is `header-box`.
  *
  * @param string $anchor_value   Resolved anchor keyword for this tier.
  * @param string $panel_size     Resolved, pre-sanitised panelSize length for this tier (may be '').
@@ -169,6 +179,8 @@ $sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size, $modality_v
 			$cap = '' !== $panel_size ? $panel_size : '360px';
 			$gap = '' !== $offset ? $offset : '8px';
 			return 'position:fixed;top:calc(var(--sgs-drawer-trigger-top, 8px) + ' . $gap . ');right:var(--sgs-drawer-trigger-right, 16px);bottom:auto;left:auto;margin:0;width:min(' . $cap . ', calc(100vw - 32px));height:auto;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);' . $sgs_nd_z_popover;
+		case 'header-box':
+			return 'position:fixed;top:var(--sgs-drawer-hb-top, 0px);right:auto;bottom:auto;left:var(--sgs-drawer-hb-left, 0px);margin:0;width:var(--sgs-drawer-hb-width, 100vw);height:auto;max-width:100vw;max-height:calc(100dvh - var(--sgs-drawer-hb-top, 0px) - 16px);--sgs-nd-hb-row:var(--sgs-drawer-hb-row-h, 0px);--sgs-nd-grows:1;' . $sgs_nd_z_under_header;
 		case 'centred':
 			$cap = '' !== $panel_size ? $panel_size : '480px';
 			return 'position:fixed;inset:0;margin:auto;width:min(' . $cap . ', calc(100vw - 32px));height:fit-content;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);' . $sgs_nd_z_popover;
@@ -276,6 +288,11 @@ $submenu_model = in_array( $attributes['submenuModel'] ?? 'accordion', array( 'a
 // the dialog.
 $modality_raw = (string) ( $attributes['modality'] ?? 'modal' );
 $modality     = in_array( $modality_raw, array( 'modal', 'non-modal' ), true ) ? $modality_raw : 'modal';
+// A `header-box` drawer on any tier is non-modal: a modal dialog sits in the
+// top layer, above the header, and would cover the burger it grows from.
+if ( is_array( $attributes['anchor'] ?? null ) && in_array( 'header-box', array_map( 'strval', array_values( $attributes['anchor'] ) ), true ) ) {
+	$modality = 'non-modal';
+}
 
 // ── closeOnScrollDistance (§4.6, DEC-02 carve-out) — a plain number, 0..200,
 // default 0 (off). Not a tier object (one reference, one value). Carried as a
@@ -509,6 +526,13 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set || $sgs_nd_offset_is_set || '
 	$sgs_nd_geom_desktop = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_desktop, $sgs_nd_panel_desktop, $modality, $sgs_nd_offset_desktop );
 	$sgs_nd_geom_tablet  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_tablet, $sgs_nd_panel_tablet, $modality, $sgs_nd_offset_tablet );
 	$sgs_nd_geom_mobile  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_mobile, $sgs_nd_panel_mobile, $modality, $sgs_nd_offset_mobile );
+	// When any tier grows from the header, the other tiers switch it back off.
+	if ( in_array( 'header-box', array( $sgs_nd_anchor_desktop, $sgs_nd_anchor_tablet, $sgs_nd_anchor_mobile ), true ) ) {
+		$sgs_nd_grown_off     = '--sgs-nd-grows:0;--sgs-nd-hb-row:0px;';
+		$sgs_nd_geom_desktop .= 'header-box' === $sgs_nd_anchor_desktop ? '' : $sgs_nd_grown_off;
+		$sgs_nd_geom_tablet  .= 'header-box' === $sgs_nd_anchor_tablet ? '' : $sgs_nd_grown_off;
+		$sgs_nd_geom_mobile  .= 'header-box' === $sgs_nd_anchor_mobile ? '' : $sgs_nd_grown_off;
+	}
 
 	if ( '' !== $sgs_nd_geom_desktop ) {
 		$css .= $root_sel . '{' . $sgs_nd_geom_desktop . '}';
@@ -602,9 +626,12 @@ $sgs_nd_edge_for = function ( $tier ) use ( $attributes, $sgs_nd_allowed_anchors
 	$anchor = in_array( $anchor, $sgs_nd_allowed_anchors, true ) ? $anchor : 'full-screen';
 	$card   = in_array( $anchor, array( 'container', 'trigger', 'centred' ), true );
 	$side   = in_array( $anchor, array( 'side-start', 'side-end' ), true );
+	$grown  = 'header-box' === $anchor;
 	return array(
-		'shadow' => $card || $side || ( 'full-screen' === $anchor && 'non-modal' === $modality ),
+		'shadow' => $card || $side || $grown || ( 'full-screen' === $anchor && 'non-modal' === $modality ),
 		'radius' => $card,
+		// A grown header takes the header's own measured radius and no line.
+		'grown'  => $grown,
 		// The open edge a side panel's line sits on (the edge facing the page).
 		'side'   => 'side-start' === $anchor ? 'inline-end' : ( 'side-end' === $anchor ? 'inline-start' : '' ),
 	);
@@ -615,7 +642,7 @@ $sgs_nd_edge_decls     = function ( $edge ) use ( $sgs_nd_default_shadow, $sgs_n
 	if ( '' === $sgs_nd_shadow_raw ) {
 		$decls = $edge['shadow'] && ! empty( $sgs_nd_default_shadow ) ? $sgs_nd_default_shadow : array( 'box-shadow:none' );
 	}
-	$decls[] = 'border-radius:' . ( $edge['radius'] ? '20px' : '0' );
+	$decls[] = 'border-radius:' . ( $edge['radius'] ? '20px' : ( $edge['grown'] ? 'var(--sgs-drawer-hb-radius, 0px)' : '0' ) );
 	// A 1px primary line where the drawer meets the header (Bean: the shadow
 	// alone left the top edge blending into a header of the same colour):
 	// all round a card, along the top only of a full-screen drawer. The
@@ -623,6 +650,8 @@ $sgs_nd_edge_decls     = function ( $edge ) use ( $sgs_nd_default_shadow, $sgs_n
 	$line = '1px solid var(--wp--preset--color--primary)';
 	if ( $edge['radius'] ) {
 		$decls[] = 'border:' . $line;
+	} elseif ( $edge['grown'] ) {
+		$decls[] = 'border:0';
 	} elseif ( '' !== $edge['side'] ) {
 		$decls[] = 'border:0';
 		$decls[] = 'border-' . $edge['side'] . ':' . $line;
@@ -644,7 +673,7 @@ foreach ( array(
 	$sgs_nd_edge = $sgs_nd_edge_for( $sgs_nd_edge_tier );
 	// Tier-diff: skip a tier identical to the one above; the desktop tier
 	// emits only when it has an edge (the base rule has none).
-	if ( $sgs_nd_edge === $sgs_nd_edge_prev || ( null === $sgs_nd_edge_prev && ! $sgs_nd_edge['shadow'] && ! $sgs_nd_edge['radius'] && '' === $sgs_nd_edge['side'] ) ) {
+	if ( $sgs_nd_edge === $sgs_nd_edge_prev || ( null === $sgs_nd_edge_prev && ! $sgs_nd_edge['shadow'] && ! $sgs_nd_edge['radius'] && ! $sgs_nd_edge['grown'] && '' === $sgs_nd_edge['side'] ) ) {
 		$sgs_nd_edge_prev = $sgs_nd_edge;
 		continue;
 	}
