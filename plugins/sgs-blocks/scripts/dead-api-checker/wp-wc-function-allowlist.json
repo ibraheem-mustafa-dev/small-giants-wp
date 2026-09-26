@@ -448,6 +448,11 @@
     "wp_upload_dir",
     "wp_validate_redirect",
     "wp_verify_nonce",
-    "wpautop"
+    "wpautop",
+    "wc_format_datetime",
+    "wc_get_account_endpoint_url",
+    "wc_get_account_menu_items",
+    "wc_get_order_status_name",
+    "get_privacy_policy_url"
   ]
 }
