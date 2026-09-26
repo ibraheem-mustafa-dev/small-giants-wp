@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8948,
+    "row_count": 8950,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -613,6 +613,8 @@
     "sgs/account::cardTitleTextWrap": "typography",
     "sgs/account::chipBackgroundColour": "color",
     "sgs/account::chipTextColour": "color",
+    "sgs/account::contentLinkColour": "color",
+    "sgs/account::contentLinkColourHover": "color",
     "sgs/account::contentMaxWidth": "layout",
     "sgs/account::fx": "behaviour",
     "sgs/account::fxDisableMobile": "behaviour",

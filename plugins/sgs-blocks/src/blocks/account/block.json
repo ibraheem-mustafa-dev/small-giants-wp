@@ -133,6 +133,23 @@
 					"attrMap": {
 						"css:border-color": "trackDoneColour"
 					}
+				},
+				"contentLink": {
+					"label": "Content links",
+					"order": 10,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "contentLinkColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "contentLinkColourHover"
+							}
+						}
+					}
 				}
 			}
 		}
@@ -254,6 +271,14 @@
 			"default": ""
 		},
 		"headingColour": {
+			"type": "string",
+			"default": ""
+		},
+		"contentLinkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"contentLinkColourHover": {
 			"type": "string",
 			"default": ""
 		},

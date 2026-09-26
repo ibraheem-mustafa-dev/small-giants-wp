@@ -90,7 +90,7 @@ export function alertsBarHtml( { features, alerts, share }, labels ) {
 				share?.enabled ? 'true' : 'false'
 		  }">${ escapeHtml( labels.shareLabel ) }</button>` +
 		  `<div class="sgs-wishlist-panel__share-controls" ${ share?.enabled ? '' : 'hidden' }>` +
-		  `<input type="text" class="sgs-wishlist-panel__share-field" readonly value="${ escapeHtml(
+		  `<input type="text" class="sgs-wishlist-panel__share-field" readonly aria-label="${ escapeHtml( labels.shareLabel ) }" value="${ escapeHtml(
 				share?.url || ''
 		  ) }" data-sgs-wishlist-share-field />` +
 		  `<button type="button" data-sgs-wishlist-share-copy>${ escapeHtml(

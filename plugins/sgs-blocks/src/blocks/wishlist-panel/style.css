@@ -1,6 +1,26 @@
 .sgs-wishlist-panel {
-	--sgs-wishlist-panel-columns: 3;
+	--sgs-wishlist-panel-columns: 4;
 	--sgs-wishlist-panel-gap: 1rem;
+}
+
+/* Default columns per tier (4 / 3 / 2); the block's columns control
+   overrides these through its own scoped rule. */
+@media (max-width: 1023px) {
+	.sgs-wishlist-panel {
+		--sgs-wishlist-panel-columns: 3;
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-wishlist-panel {
+		--sgs-wishlist-panel-columns: 2;
+	}
+}
+
+/* Anything the view module hides stays hidden, whatever display its own
+   rule sets. */
+.sgs-wishlist-panel [hidden] {
+	display: none;
 }
 
 .sgs-wishlist-panel__heading {
@@ -19,7 +39,7 @@
 
 .sgs-wishlist-panel__items {
 	display: grid;
-	grid-template-columns: repeat(var(--sgs-wishlist-panel-columns), 1fr);
+	grid-template-columns: repeat(var(--sgs-wishlist-panel-columns), minmax(0, 1fr));
 	gap: var(--sgs-wishlist-panel-gap);
 }
 
@@ -185,11 +205,6 @@
 	min-height: 44px;
 	display: inline-flex;
 	align-items: center;
-}
-
-.sgs-wishlist-panel__view-all[hidden],
-.sgs-wishlist-panel__heading[hidden] {
-	display: none;
 }
 
 /* ── List layout ── */

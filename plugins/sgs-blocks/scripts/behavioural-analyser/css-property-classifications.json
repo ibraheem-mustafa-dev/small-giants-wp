@@ -13660,6 +13660,25 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "contentLinkColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "contentLink"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "contentLinkColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "contentLink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "headingColour",
       "fields": {
         "css_property": "color",

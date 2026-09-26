@@ -66,6 +66,13 @@ export default function Edit( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 		textRow( {
+			key: 'contentLink',
+			label: __( 'Content links', 'sgs-blocks' ),
+			attrs: { base: 'contentLinkColour', hover: 'contentLinkColourHover' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
 			key: 'heading',
 			label: __( 'Headings', 'sgs-blocks' ),
 			attrs: { base: 'headingColour' },

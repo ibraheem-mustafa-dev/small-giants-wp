@@ -233,6 +233,16 @@ a.sgs-account__quick-card:focus-visible .sgs-account__card-title {
 	align-items: center;
 }
 
+/* -- Content links ---------------------------------------------------------
+   The palette's text colour, underlined, rather than the site's global link
+   colour (a brand accent can fail contrast on a light surface). The block's
+   Content links colour overrides it. */
+.sgs-account .sgs-account__wc a:where(:not(nav *, .button, .wp-element-button, .sgs-account__quick-card)) {
+	color: var(--wp--preset--color--text);
+	text-decoration: underline;
+	text-underline-offset: 0.15em;
+}
+
 /* -- WooCommerce forms ------------------------------------------------------ */
 /* "Remember me" and every other checkbox: a 24px box inside a 44px label row. */
 .sgs-account form .woocommerce-form__label-for-checkbox {

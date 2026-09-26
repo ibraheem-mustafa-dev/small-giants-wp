@@ -158,6 +158,17 @@ if ( ! function_exists( 'sgs_account_scoped_css' ) ) {
 		$css[] = sgs_border_states_css( $root_sel . ' .sgs-account__card', $attributes, array( 'base' => 'cardBorderColour' ) );
 		$css[] = sgs_account_card_border_shape_css( $attributes, $root_sel . ' .sgs-account__card' );
 
+		// Links in the account content and the log-in forms (not the menu,
+		// buttons or quick cards, which have their own controls).
+		$css[] = sgs_text_states_css(
+			$root_sel . ' .sgs-account__wc a:where(:not(nav *, .button, .wp-element-button, .sgs-account__quick-card))',
+			$attributes,
+			array(
+				'base'  => 'contentLinkColour',
+				'hover' => 'contentLinkColourHover',
+			)
+		);
+
 		// Headings (dashboard greeting/section titles) + card titles share one colour.
 		$css[] = sgs_text_states_css(
 			$root_sel . ' .sgs-account__heading, ' . $root_sel . ' .sgs-account__card-title',
