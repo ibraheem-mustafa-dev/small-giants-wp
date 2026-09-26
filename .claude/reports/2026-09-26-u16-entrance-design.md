@@ -53,22 +53,31 @@ longer steps: a header hidden for seconds with no preloader in front of it is a 
 studionamma start 7 to 9 seconds in because their own preloader or intro runs first; SGS has none. Recorded
 divergence: "preloader-gated start", both references.
 
-### 4.3 The header's entrance is a keyframe animation, not a transition
+### 4.3 The entrance is its own layer on every block
 
-The header root already has one `transition` writer (hide-on-scroll, shrink, the scrolled shadow, section ink) on
-`.uid.sgs-site-header`, the same specificity as the extension's `.sgs-js [data-sgs-animation]` and printed later, so
-its shorthand would reset the entrance to `transition-property: transform` at 200ms: a fade would snap (council,
-census finding 4). On `sgs/site-header` the entrance therefore runs as a CSS animation: `extensions.css` gains one
-keyframe per effect (from the effect's start pose to none) and
-`.sgs-js .sgs-site-header[data-sgs-animation].sgs-animated { animation: sgs-entrance-<effect> <duration> <easing>
-<delay> backwards; }`, with the header exempt from the transition-based start pose. `backwards` holds the start
-pose through the delay and releases every property when it ends, so hide-on-scroll's transform works afterwards
-and the header's transition list is never touched. Other blocks keep the transition mechanism unchanged.
-A failsafe for the header only: if the observer never marks it (a script error), a CSS animation with a 3s delay
-shows it anyway. Editor: an entrance set on the header shows a notice that it delays the header's first appearance.
+The extension runs the entrance as a `transition` on `opacity` and `transform`, the same two properties blocks use
+for their own effects: 50 block stylesheets write a `transition` shorthand and blocks write `transform` in about 300
+places (hover lifts, tilts, the header's hide-on-scroll). Whichever rule is printed later wins, so any block with an
+entrance and its own effect loses one or the other (council, census finding 4, found on the header; Bean: scroll
+effects and entrances are separate things, so fix the mechanism, not the header). The entrance becomes an
+independent layer for every block:
+1. A keyframe animation, not a transition: `extensions.css` gains one `@keyframes sgs-entrance-<effect>` per effect
+   and `.sgs-js [data-sgs-animation].sgs-animated { animation: sgs-entrance-<effect> <duration> <easing> <delay>
+   backwards; }`. `animation` and `transition` are separate properties, so neither can reset the other.
+2. The standalone `translate`, `scale`, `rotate` and `filter`-free properties, not `transform`: the browser composes
+   them with a block's own `transform`, so a hover lift or hide-on-scroll works during and after the entrance.
+   Effects that need `filter` (blur-in) or `clip-path` (reveal-up) animate those; no block writes them on its root
+   today, which the build confirms with a grep.
+3. Fill mode `backwards`: the start pose holds through the delay and every property is released when the entrance
+   ends. The pre-start hidden state stays gated on `.sgs-js`, so without JavaScript content shows.
+A failsafe on every animated block would spoil below-the-fold reveals, so it stays on `sgs/site-header` only: if the
+observer never marks it (a script error), a 3s-delayed animation shows it anyway. Editor: an entrance set on the
+header shows a notice that it delays the header's first appearance.
 
 ### 4.4 Proof for the rest
 
+- A block with its own hover lift (a card) and a `fade-up` entrance: the entrance plays at its chosen duration and
+  the hover lift still animates at its own speed afterwards (negative control: the pre-change build snaps one).
 - The header entrance on a sticky header with hide-on-scroll and shrink ON at the same tier: opacity sampled every
   50ms rises over the chosen duration (not a snap), the header pins during and after, hide-on-scroll still slides
   afterwards, and a dropdown opened mid-entrance and after it lands in place.
@@ -78,8 +87,8 @@ shows it anyway. Editor: an entrance set on the header shows a notice that it de
 
 ## 5. Council (2026-09-26)
 
-Code-path census (Sonnet) and adversarial reader (Haiku): both GO WITH FIXES. Applied: the header entrance as a
-keyframe animation (the transition-shorthand collision); distance as presets on a data attribute (no scoped-CSS
+Code-path census (Sonnet) and adversarial reader (Haiku): both GO WITH FIXES. Applied: the entrance as its own layer on
+every block (keyframes on the standalone translate/scale properties; Bean widened it from a header-only fix); distance as presets on a data attribute (no scoped-CSS
 path exists); delay steps capped at 800ms; a header-only failsafe; the first-appearance notice; the live check with
 hide-on-scroll and shrink on. Declined: effect-keyed distances (one effect per element). Per plan §5 step 2a this
 revision goes back past the same two reviewers before the build.

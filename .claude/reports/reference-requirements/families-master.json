@@ -300,7 +300,7 @@
    "covered_by": [
     "sgs/site-footer-row::fxFooterStagger"
    ],
-   "note": "Step 0d (2026-09-26, headed capture): header entrance only on lamalama (fade 800ms, after its preloader) and studionamma (slide 800ms); none on dogstudio, lusion and the two drafts. Footer reveal: dogstudio fade-up 50px, lamalama text fade, studionamma scale 0.9 to 1 with fade; lusion's footer is canvas; the drafts have no footer. No footer hover colour change anywhere. The universal animation extension (sgsAnimation) already reaches site-header, site-footer and both row blocks; U-16 adds a distance preset, 500/800ms delays and a keyframe entrance on site-header (design .claude/reports/2026-09-26-u16-entrance-design.md). Recorded divergence: the preloader-gated start (lamalama, studionamma).",
+   "note": "Step 0d (2026-09-26, headed capture): header entrance only on lamalama (fade 800ms, after its preloader) and studionamma (slide 800ms); none on dogstudio, lusion and the two drafts. Footer reveal: dogstudio fade-up 50px, lamalama text fade, studionamma scale 0.9 to 1 with fade; lusion's footer is canvas; the drafts have no footer. No footer hover colour change anywhere. The universal animation extension (sgsAnimation) already reaches site-header, site-footer and both row blocks; U-16 adds a distance preset, 500/800ms delays and makes the entrance a separate keyframe layer on every block (design .claude/reports/2026-09-26-u16-entrance-design.md). Recorded divergence: the preloader-gated start (lamalama, studionamma).",
    "uncovered_references": [
     "dogstudio",
     "halcyon",
