@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-require_once dirname( __DIR__ ) . '/account/helpers-account-defaults.php';
+require_once dirname( __DIR__ ) . '/helpers-account-defaults.php';
 
 $attrs = is_array( \SGS\Blocks\Account_Endpoints::$active ) ? \SGS\Blocks\Account_Endpoints::$active : array();
 

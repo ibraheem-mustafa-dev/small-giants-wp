@@ -137,18 +137,19 @@
 }
 
 .sgs-wishlist-panel__empty-message {
-	margin: 0 0 0.75rem 0;
+	grid-column: 1 / -1;
+	margin: 0;
 }
 
+/* The empty-state link carries wp-element-button, so it takes the client's
+   own button colours from theme.json. */
 .sgs-wishlist-panel__empty-cta {
-	display: inline-block;
+	grid-column: 1 / -1;
+	justify-self: start;
+	display: inline-flex;
+	align-items: center;
 	min-height: 44px;
-	line-height: 44px;
-	padding: 0 1rem;
-	background-color: var(--wp--preset--color--accent, #1e6091);
-	color: var(--wp--preset--color--text-inverse, #fff);
 	text-decoration: none;
-	border-radius: var(--wp--preset--spacing--10, 4px);
 }
 
 /* The Save-for-later button injected into WooCommerce's own cart rows
@@ -184,6 +185,11 @@
 	min-height: 44px;
 	display: inline-flex;
 	align-items: center;
+}
+
+.sgs-wishlist-panel__view-all[hidden],
+.sgs-wishlist-panel__heading[hidden] {
+	display: none;
 }
 
 /* ── List layout ── */

@@ -153,6 +153,12 @@ function wp_create_nonce( $action ) {
 function wp_add_inline_script( ...$args ) {
 	$GLOBALS['sgs_test_inline_scripts'][] = $args;
 }
+function wp_register_script( $handle, ...$args ) {
+	$GLOBALS['sgs_test_registered_scripts'][] = $handle;
+}
+function wp_enqueue_script( $handle ) {
+	$GLOBALS['sgs_test_enqueued_scripts'][] = $handle;
+}
 function add_action( $hook, $callback, $priority = 10 ): void {
 	$GLOBALS['sgs_test_actions'][] = array( $hook, $callback, $priority );
 }
@@ -509,7 +515,12 @@ ok( Wishlist_Store::MAX_ITEMS === count( $cap_merge->get_data()['items'] ), 'mer
 
 // ── Client config exposes features + savedItemsUrl ───────────────────────────
 Wishlist_Rest::enqueue_client_config();
-$last_inline_script = end( $GLOBALS['sgs_test_inline_scripts'] )[1];
+$last_inline_call   = end( $GLOBALS['sgs_test_inline_scripts'] );
+$last_inline_script = $last_inline_call[1];
+ok(
+	'sgs-wishlist-config' === $last_inline_call[0] && in_array( 'sgs-wishlist-config', $GLOBALS['sgs_test_enqueued_scripts'] ?? array(), true ),
+	'the client config prints on its own enqueued head handle, not on wp-api-request'
+);
 ok( false !== strpos( $last_inline_script, '"features"' ), 'the client config exposes "features"' );
 ok( false !== strpos( $last_inline_script, '"savedItemsUrl"' ), 'the client config exposes "savedItemsUrl"' );
 

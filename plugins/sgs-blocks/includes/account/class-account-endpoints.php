@@ -140,7 +140,10 @@ final class Account_Endpoints {
 	 *                      the framework's WordPress-hook-callback rule).
 	 */
 	public static function render_saved_items_endpoint( $value ) {
-		$attrs = self::resolve_wishlist_panel_attrs();
+		// The account page's own title already names the tab, so the panel
+		// drops its heading here.
+		$attrs            = self::resolve_wishlist_panel_attrs();
+		$attrs['heading'] = '';
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() output is already escaped by the block's own render.php.
 		echo \render_block(
 			array(

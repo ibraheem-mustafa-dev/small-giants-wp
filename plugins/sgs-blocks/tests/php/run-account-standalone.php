@@ -136,7 +136,11 @@ $create_pages_input = array(
 	'myaccount' => array( 'name' => 'my-account', 'title' => 'My account', 'content' => '<!-- wp:shortcode -->[woocommerce_my_account]<!-- /wp:shortcode -->' ),
 );
 $pages_out = Account_Pages::add_pages( $create_pages_input );
-ok( '<!-- wp:sgs/account /-->' === $pages_out['myaccount']['content'], 'the My Account page content becomes wp:sgs/account' );
+ok(
+	false !== strpos( $pages_out['myaccount']['content'], '<!-- wp:sgs/account /-->' )
+		&& 0 === strpos( $pages_out['myaccount']['content'], '<!-- wp:sgs/container' ),
+	'the My Account page content becomes wp:sgs/account inside an sgs/container'
+);
 ok( isset( $pages_out['saved_items'] ), 'a saved_items page entry is added' );
 ok(
 	false !== strpos( $pages_out['saved_items']['content'] ?? '', 'sgs/wishlist-panel' ),

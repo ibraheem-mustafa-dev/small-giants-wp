@@ -98,8 +98,8 @@
 		flex-direction: row;
 		overflow-x: auto;
 		scroll-snap-type: x proximity;
+		/* Room for the focus ring inside the scroller, which clips overflow. */
 		padding: 0.25rem;
-		margin-inline: -0.25rem;
 		scrollbar-width: none;
 	}
 	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation ul::-webkit-scrollbar,
@@ -234,6 +234,20 @@ a.sgs-account__quick-card:focus-visible .sgs-account__card-title {
 }
 
 /* -- WooCommerce forms ------------------------------------------------------ */
+/* "Remember me" and every other checkbox: a 24px box inside a 44px label row. */
+.sgs-account form .woocommerce-form__label-for-checkbox {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 44px;
+}
+
+.sgs-account form input[type="checkbox"] {
+	width: var(--sgs-account-checkbox-size, 1.5rem);
+	height: var(--sgs-account-checkbox-size, 1.5rem);
+	margin: 0;
+}
+
 .sgs-account form .form-row label,
 .sgs-account form label {
 	color: var(--wp--preset--color--text, currentColor);

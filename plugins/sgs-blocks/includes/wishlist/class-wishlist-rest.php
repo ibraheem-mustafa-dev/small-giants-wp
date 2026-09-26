@@ -43,10 +43,9 @@ final class Wishlist_Rest {
 	 * site-wide feature switches and the Saved items page URL to
 	 * `src/shared/wishlist-store/index.js`.
 	 *
-	 * Hooked on the SAME classic-script handle ('wp-api-request') that
-	 * `includes/wc-cart-fragments.php::sgs_cart_inline_config()` already
-	 * uses for `window.sgsCartData` — guaranteed present on WP 5.0+ and
-	 * guaranteed to run before any `viewScriptModule` executes.
+	 * Printed as an inline script on the source-less head handle
+	 * 'sgs-wishlist-config' on every front-end page, so it runs before any
+	 * `viewScriptModule` executes.
 	 *
 	 * A nonce is required even for the GET route here: WordPress's cookie
 	 * authenticator (`rest_cookie_check_errors`) verifies `X-WP-Nonce` on
@@ -64,10 +63,14 @@ final class Wishlist_Rest {
 			'savedItemsUrl' => Wishlist_Settings::saved_items_page_url(),
 		);
 
+		// Its own source-less handle, printed in the head on every front-end
+		// page: 'wp-api-request' prints only when something else enqueues it,
+		// which left logged-in shoppers treated as guests on pages without it.
+		\wp_register_script( 'sgs-wishlist-config', false, array(), null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- source-less handle, nothing to cache-bust.
+		\wp_enqueue_script( 'sgs-wishlist-config' );
 		\wp_add_inline_script(
-			'wp-api-request',
-			'window.sgsWishlistData = ' . \wp_json_encode( $config ) . ';',
-			'before'
+			'sgs-wishlist-config',
+			'window.sgsWishlistData = ' . \wp_json_encode( $config ) . ';'
 		);
 	}
 

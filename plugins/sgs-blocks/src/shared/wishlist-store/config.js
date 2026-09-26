@@ -3,13 +3,8 @@
  *
  * Login state + REST config come from `window.sgsWishlistData`
  * (`{ restUrl, nonce, isLoggedIn, features, savedItemsUrl }`), localised by
- * the wishlist REST class on `wp-api-request` — the same classic-script
- * handle `includes/wc-cart-fragments.php` already uses for
- * `window.sgsCartData`/`window.__sgsCartConfig`, so it is guaranteed to run
- * before this module's first paint.
- *
- * Split out of `index.js` (Wave 3C FR-30-14/15) so every wishlist-store file
- * stays under the project's 250-line JS ceiling.
+ * `includes/wishlist/class-wishlist-rest.php::Wishlist_Rest::enqueue_client_config()`
+ * on its own head script handle, so it runs before this module's first paint.
  *
  * @package
  */

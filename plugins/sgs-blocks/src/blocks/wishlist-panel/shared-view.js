@@ -75,6 +75,7 @@ export async function renderSharedView( elements, labels, token ) {
 	const { itemsEl, barsEl, headingEl, headingCountEl, viewAllEl } = elements;
 	if ( headingEl ) {
 		headingEl.textContent = labels.sharedHeading;
+		headingEl.hidden = false;
 	}
 	if ( headingCountEl ) {
 		headingCountEl.hidden = true;

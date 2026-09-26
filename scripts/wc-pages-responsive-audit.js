@@ -15,9 +15,10 @@
  * Usage:
  *   node scripts/wc-pages-responsive-audit.js [--base https://site] [--out dir] [--only key,key]
  *
- * Pages marked `auth` are audited logged in as the site's WP admin user from
- * `.claude/secrets/<site>.env` (`WP_USER_*` / `WP_PWD_*`, `--env sandybrown`
- * by default); the rest are audited as a guest.
+ * Pages marked `auth` are audited logged in from `.claude/secrets/<site>.env`
+ * (`--env sandybrown` by default): the shopper account
+ * `WP_CUSTOMER_USER_*` / `WP_CUSTOMER_PWD_*` when present, else the admin
+ * `WP_USER_*` / `WP_PWD_*`. The rest are audited as a guest.
  *
  * Defaults: base = the sandybrown canary; out = .claude/reports/spec30-p1.
  * Exit code 1 when any overflow or axe violation is found (budget overruns
@@ -77,8 +78,10 @@ async function loginState( browser ) {
 	const ctx = await browser.newContext();
 	const page = await ctx.newPage();
 	await page.goto( `${ BASE }/my-account/`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
-	await page.fill( '#username', env[ `WP_USER_${ suffix }` ] );
-	await page.fill( '#password', env[ `WP_PWD_${ suffix }` ] );
+	// A shopper account (role customer) when the secrets file has one, so the
+	// admin bar's scripts and links are not measured as the shopper's page.
+	await page.fill( '#username', env[ `WP_CUSTOMER_USER_${ suffix }` ] || env[ `WP_USER_${ suffix }` ] );
+	await page.fill( '#password', env[ `WP_CUSTOMER_PWD_${ suffix }` ] || env[ `WP_PWD_${ suffix }` ] );
 	await Promise.all( [ page.waitForLoadState( 'networkidle' ), page.click( 'button[name="login"]' ) ] );
 	const state = await ctx.storageState();
 	await ctx.close();

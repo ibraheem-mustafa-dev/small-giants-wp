@@ -171,8 +171,8 @@ foreach ( $data_attrs as $name => $value ) {
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-sanitised. ?><?php echo $attrs_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value above is esc_attr()'d in the loop. ?> hidden>
 	<div class="sgs-wishlist-panel__bar-top">
-		<h2 class="sgs-wishlist-panel__heading"><?php echo esc_html( $heading ); ?><span class="sgs-wishlist-panel__count" data-sgs-wishlist-count hidden></span></h2>
-		<a class="sgs-wishlist-panel__view-all" href="<?php echo esc_url( $view_all_url ); ?>" data-sgs-wishlist-view-all hidden></a>
+		<h2 class="sgs-wishlist-panel__heading"<?php echo '' === $heading ? ' hidden' : ''; ?>><?php echo esc_html( $heading ); ?><span class="sgs-wishlist-panel__count" data-sgs-wishlist-count hidden></span></h2>
+		<a class="sgs-wishlist-panel__view-all" href="<?php echo esc_url( $view_all_url ); ?>" data-sgs-wishlist-view-all hidden><?php echo esc_html( (string) ( $label_data['view-all-label'] ?? __( 'View all saved items', 'sgs-blocks' ) ) ); ?></a>
 	</div>
 	<p class="sgs-wishlist-panel__status" role="status" aria-live="polite" aria-atomic="true" data-sgs-wishlist-status></p>
 	<div class="sgs-wishlist-panel__bars" data-sgs-wishlist-bars></div>

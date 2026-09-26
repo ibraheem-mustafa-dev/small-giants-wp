@@ -47,13 +47,13 @@ final class Account_Pages {
 			return $pages;
 		}
 		if ( isset( $pages['myaccount'] ) ) {
-			$pages['myaccount']['content'] = '<!-- wp:sgs/account /-->';
+			$pages['myaccount']['content'] = '<!-- wp:sgs/container {"tagName":"div"} --><!-- wp:sgs/account /--><!-- /wp:sgs/container -->';
 		}
 		if ( ! isset( $pages['saved_items'] ) ) {
 			$pages['saved_items'] = array(
 				'name'    => _x( 'saved-items', 'Page slug', 'sgs-blocks' ),
 				'title'   => _x( 'Saved items', 'Page title', 'sgs-blocks' ),
-				'content' => '<!-- wp:sgs/wishlist-panel {"layout":"grid","showWhenEmpty":true} /-->',
+				'content' => '<!-- wp:sgs/container {"tagName":"div"} --><!-- wp:sgs/wishlist-panel {"layout":"grid","showWhenEmpty":true,"heading":""} /--><!-- /wp:sgs/container -->',
 			);
 		}
 		return $pages;

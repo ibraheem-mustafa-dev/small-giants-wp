@@ -1950,7 +1950,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 9,
+        "paintDeclarations": 7,
         "replacedCoreSupports": []
       }
     }

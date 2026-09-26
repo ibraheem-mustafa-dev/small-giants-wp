@@ -76,8 +76,8 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\sgs_maybe_dequeue_cart_frag
  * Inject the REST API root URL and WC status flag into the page for view.js.
  *
  * Outputs a small inline script so the view module can find the Store API
- * endpoint without hardcoding it. Using wp_add_inline_script on 'wp-api-request'
- * (always present on WP 5.0+) ensures it loads before the module.
+ * endpoint without hardcoding it. A source-less head handle prints on every
+ * front-end page, before any view module runs.
  *
  * Also exposes sgsCartData.wcActive so the editor edit.js can show/hide
  * the "WooCommerce not active" warning without a REST round-trip.
@@ -95,12 +95,15 @@ function sgs_cart_inline_config(): void {
 		)
 	);
 
+	// Its own source-less handle, printed in the head on every front-end page:
+	// 'wp-api-request' prints only when something else enqueues it.
+	wp_register_script( 'sgs-cart-config', false, array(), null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- source-less handle, nothing to cache-bust.
+	wp_enqueue_script( 'sgs-cart-config' );
 	wp_add_inline_script(
-		'wp-api-request',
+		'sgs-cart-config',
 		'window.__sgsCartConfig = ' . $config . ';' .
 		// Also expose on the legacy key used by edit.js window.sgsCartData.
-		'window.sgsCartData = window.sgsCartData || window.__sgsCartConfig;',
-		'before'
+		'window.sgsCartData = window.sgsCartData || window.__sgsCartConfig;'
 	);
 }
 

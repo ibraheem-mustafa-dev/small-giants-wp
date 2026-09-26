@@ -67,7 +67,7 @@ export function initPanel( panel ) {
 				barsEl.innerHTML = '';
 				itemsEl.innerHTML =
 					`<p class="sgs-wishlist-panel__empty-message">${ escapeHtml( labels.emptyText ) }</p>` +
-					`<a class="sgs-wishlist-panel__empty-cta" href="${ escapeHtml(
+					`<a class="sgs-wishlist-panel__empty-cta wp-element-button" href="${ escapeHtml(
 						labels.shopUrl
 					) }">${ escapeHtml( labels.emptyLinkLabel ) }</a>`;
 				return;
