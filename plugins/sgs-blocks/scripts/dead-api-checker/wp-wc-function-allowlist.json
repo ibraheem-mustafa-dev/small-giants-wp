@@ -372,6 +372,7 @@
     "wp_get_current_user",
     "wp_get_document_title",
     "wp_get_font_dir",
+    "wp_get_block_css_selector",
     "wp_get_global_settings",
     "wp_get_nav_menu_items",
     "wp_get_nav_menu_object",

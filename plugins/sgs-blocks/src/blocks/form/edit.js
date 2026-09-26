@@ -19,6 +19,8 @@ import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPa
 import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveTextColourPreviewStyle, backgroundPaintPreview } from '../../utils';
+import FormEmbedEdit from './FormEmbedEdit';
+import { FORM_CPT } from './SavedFormPicker';
 
 const SUBMIT_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -47,7 +49,26 @@ const SUBMIT_TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'Capitalize', 'sgs-blocks' ), value: 'capitalize' },
 ];
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+/**
+ * sgs/form's editor, chosen by where the block sits (Spec 42 §9): inside a
+ * saved form (`sgs_form`) it is the field builder below; everywhere else it
+ * embeds a saved form (FormEmbedEdit.js).
+ *
+ * @param {Object} props Block edit props.
+ * @return {JSX.Element} The editor for this context.
+ */
+export default function Edit( props ) {
+	const postType = useSelect( ( select ) => {
+		const editor = select( 'core/editor' );
+		return editor && typeof editor.getCurrentPostType === 'function'
+			? editor.getCurrentPostType()
+			: null;
+	}, [] );
+
+	return FORM_CPT === postType ? <FormDefinitionEdit { ...props } /> : <FormEmbedEdit { ...props } />;
+}
+
+function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const {
 		formId,
 		formName,
