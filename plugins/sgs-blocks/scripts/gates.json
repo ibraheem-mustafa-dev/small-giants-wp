@@ -1217,5 +1217,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 134
+  },
+  {
+    "id": "check-raw-box-control",
+    "cmd": "python scripts/check-raw-box-control.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 135
   }
 ]

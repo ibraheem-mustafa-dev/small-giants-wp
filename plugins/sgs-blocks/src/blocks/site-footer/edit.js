@@ -8,7 +8,7 @@ import {
 	useSettings,
 } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
-import { PanelBody, Notice, SelectControl, BoxControl } from '@wordpress/components';
+import { PanelBody, Notice, SelectControl } from '@wordpress/components';
 // sgs/site-footer does not use <ContainerWrapperControls>'s
 // ResponsiveSpacingPanel: padding and margin are box OBJECT attrs read by
 // class-sgs-container-wrapper.php, so this block's own "Padding & margin"
@@ -616,13 +616,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Band padding', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
-								splitOnAxis={ false }
+								presets
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

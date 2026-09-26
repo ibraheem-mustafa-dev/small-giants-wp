@@ -25,8 +25,7 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 	DesignTokenPicker,
-	GradientCapableColourControl,
-} from '../../components';
+	GradientCapableColourControl, SgsBoxControl } from '../../components';
 // Not re-exported from '../../components' (the shared index) — importing
 // directly avoids touching that shared file, which two sibling sessions are
 // wiring the same four components into for site-footer-row/mega-panel in
@@ -35,7 +34,7 @@ import { CursorFieldRowControls } from '../../components/CursorFieldRowControls'
 import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
-import { BoxControl, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview } from '../../utils';
 
 // TIER 2 (THE PLACEMENT RULE, Spec 35 Part O) — `row` is the block's
@@ -766,12 +765,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ LENGTH_UNITS }
+								presets
 								onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -781,12 +780,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ LENGTH_UNITS }
+								presets
 								onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

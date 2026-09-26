@@ -13,7 +13,6 @@ import {
 	SelectControl,
 	Notice,
 	Button,
-	BoxControl,
 } from '@wordpress/components';
 // sgs/site-header does not use <ContainerWrapperControls>'s
 // ResponsiveSpacingPanel: padding and margin are box OBJECT attrs read by
@@ -891,13 +890,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
 						>
 							{ ( { ownValue, setOwnValue } ) => (
-								<BoxControl
+								<SgsBoxControl
 									label={ __( 'Band padding', 'sgs-blocks' ) }
 									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 									units={ BOX_UNITS }
-									splitOnAxis={ false }
+									presets
 									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>

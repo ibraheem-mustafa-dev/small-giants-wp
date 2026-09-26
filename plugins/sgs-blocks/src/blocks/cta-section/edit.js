@@ -11,7 +11,6 @@ import {
 	TextControl,
 	Button,
 	RangeControl,
-	BoxControl,
 	ToggleControl,
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
@@ -659,13 +658,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Band padding', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
-								splitOnAxis={ false }
+								presets
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

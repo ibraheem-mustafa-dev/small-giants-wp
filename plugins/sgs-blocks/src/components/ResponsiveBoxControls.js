@@ -23,9 +23,9 @@
 import { __ } from '@wordpress/i18n';
 import {
 	PanelBody,
-	BoxControl,
 	SelectControl,
 } from '@wordpress/components';
+import SgsBoxControl from './SgsBoxControl';
 import ResponsiveOverride from './ResponsiveOverride';
 import { UnitControl } from './primitives';
 
@@ -78,7 +78,7 @@ export default function ResponsiveBoxControls( {
 
 	return (
 		<PanelBody
-			title={ __( 'Spacing & width (per device)', 'sgs-blocks' ) }
+			title={ __( 'Spacing & width', 'sgs-blocks' ) }
 			initialOpen={ initialOpen }
 		>
 			{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
@@ -94,12 +94,12 @@ export default function ResponsiveBoxControls( {
 				onChange={ ( obj ) => setAttributes( { padding: obj } ) }
 			>
 				{ ( { ownValue, setOwnValue } ) => (
-					<BoxControl
+					<SgsBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 						units={ LENGTH_UNITS }
+						presets
 						onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
-						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>
@@ -110,12 +110,12 @@ export default function ResponsiveBoxControls( {
 				onChange={ ( obj ) => setAttributes( { margin: obj } ) }
 			>
 				{ ( { ownValue, setOwnValue } ) => (
-					<BoxControl
+					<SgsBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 						units={ LENGTH_UNITS }
+						presets
 						onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
-						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>

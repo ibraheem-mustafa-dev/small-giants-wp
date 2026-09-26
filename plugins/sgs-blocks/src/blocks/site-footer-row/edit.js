@@ -15,7 +15,7 @@ import {
 	ToggleControl,
 	Notice,
 } from '@wordpress/components';
-import { BoxControl, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 import {
 	ResponsiveOverride,
 	SpacingControl,
@@ -27,8 +27,7 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 	DesignTokenPicker,
-	GradientCapableColourControl,
-} from '../../components';
+	GradientCapableColourControl, SgsBoxControl } from '../../components';
 import { CursorFieldRowControls } from '../../components/CursorFieldRowControls';
 import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
@@ -770,12 +769,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ LENGTH_UNITS }
+								presets
 								onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -785,12 +784,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ LENGTH_UNITS }
+								presets
 								onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

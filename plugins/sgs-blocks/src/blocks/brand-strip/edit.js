@@ -1041,7 +1041,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<BrandTextStylePanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				<PanelBody
-					title={ __( 'Strip spacing (responsive)', 'sgs-blocks' ) }
+					title={ __( 'Strip spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<ResponsiveOverride

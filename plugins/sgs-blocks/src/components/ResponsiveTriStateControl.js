@@ -12,18 +12,13 @@
  * concrete at the point of write too, so the stored attribute never needs that
  * coercion in practice.
  *
- * UX (§4.1):
- *  - The everyday surface is a SINGLE `ToggleControl` that reads/writes the
- *    DESKTOP tier only — flipping it never touches an existing tablet/phone
- *    override (the ambiguity the design gate calls out explicitly).
- *  - A "Customise per device →" link reveals the full tri-state device
- *    switcher (tablet/mobile add an `Inherit` option, default).
- *  - A persistent, non-colour "Customised for Tablet, Phone" trace line shows
- *    whenever any lower tier holds an explicit value, so an override is never
- *    invisible from the simple surface.
- *  - The `Inherit` option's label resolves inline — "Inherit (following All
- *    devices: On)" — via the shared `resolveTier()` resolver, never a
- *    second cascade implementation.
+ * UX: the device comes from the ONE global toggle docked at the bottom of the
+ * inspector, like every other responsive control. On Desktop the control is a
+ * single `ToggleControl`; on Tablet or Phone it is an Inherit / Off / On
+ * segment whose Inherit option names what it follows ("Inherit (following All
+ * devices: On)", resolved by the shared `resolveTier()`), with a reset back to
+ * Inherit. A text line names any tier that carries its own value, so an
+ * override is never invisible while editing another device.
  *
  * ⚑ CORRECTED 2026-08-10 (Spec 35 Phase 1.3). This used to read "Tier switching
  * reuses the shared `DeviceTabs` component (the same shell
@@ -47,7 +42,7 @@
  *       defaultValue="off"
  *   />
  */
-import { useState, useRef } from '@wordpress/element';
+import { useRef } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import {
 	ToggleControl,
@@ -58,11 +53,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { resolveTier } from '../utils/responsive';
 import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 
-// ⛔ Removed with the switcher (Phase 1.3): the `DeviceTabs` import and
-// `VisuallyHidden` — the latter only wrapped the tier announcement, which is now
-// the global toggle's job (keeping it would announce every tier change once PER
-// RENDERED INSTANCE of this control). TIER_META stays: TIER_LABEL_BY_KEY derives
-// from it and is still used six times.
+// TIER_META supplies the tier names shown in labels and hints.
 
 // WP's native device-type names → this component's tier keys.
 const DEVICE_TO_KEY = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
@@ -89,11 +80,7 @@ export default function ResponsiveTriStateControl( {
 	onChange,
 	defaultValue = 'off',
 } ) {
-	const [ expanded, setExpanded ] = useState( false );
-
-	// The tier comes from the ONE global toggle (Spec 35 Phase 1.3), not from
-	// private state. `expanded` STAYS local — it is a disclosure, not a tier, and
-	// whether this control's per-device panel is open is genuinely per-control.
+	// The tier comes from the ONE global toggle (Spec 35 Phase 1.3).
 	const activeTier = useSelect( ( select ) => {
 		const ed = select( 'core/editor' );
 		const device =
@@ -118,9 +105,9 @@ export default function ResponsiveTriStateControl( {
 		onChange( { ...obj, [ tierKey ]: tierValue } );
 	};
 
-	// The simple toggle drives DESKTOP only — it must never overwrite an
-	// existing tablet/phone override (§4.1: "explicit flip behaviour").
-	const handleSimpleToggle = ( checked ) => {
+	// The Desktop switch writes Desktop only; it never touches a tablet/phone
+	// override (§4.1: "explicit flip behaviour").
+	const handleDesktopToggle = ( checked ) => {
 		writeTier( 'desktop', checked ? 'on' : 'off' );
 	};
 
@@ -172,114 +159,89 @@ export default function ResponsiveTriStateControl( {
 		}
 	};
 
+	const customisedNote = hasCustomisation && (
+		<p className="sgs-tri-state-control__customised-note">
+			{ sprintf(
+				/* translators: %s: comma-separated list of device tiers with an explicit override. */
+				__( 'Customised for %s.', 'sgs-blocks' ),
+				customisedTiers
+					.map( ( t ) => TIER_LABEL_BY_KEY[ t ] )
+					.join( ', ' )
+			) }
+		</p>
+	);
+
+	if ( 'desktop' === activeTier ) {
+		return (
+			<div className="sgs-tri-state-control">
+				<ToggleControl
+					__nextHasNoMarginBottom
+					label={ label }
+					help={ help }
+					checked={ desktopExplicit === 'on' }
+					onChange={ handleDesktopToggle }
+				/>
+				{ customisedNote }
+			</div>
+		);
+	}
+
 	return (
 		<div className="sgs-tri-state-control">
-			<ToggleControl
+			<ToggleGroupControl
 				__nextHasNoMarginBottom
-				label={ label }
+				isBlock
+				label={ sprintf(
+					/* translators: 1: control label, 2: device tier name. */
+					__( '%1$s — %2$s', 'sgs-blocks' ),
+					safeLabel,
+					TIER_LABEL_BY_KEY[ activeTier ]
+				) }
 				help={ help }
-				checked={ desktopExplicit === 'on' }
-				onChange={ handleSimpleToggle }
-			/>
+				value={ activeOwn }
+				onChange={ onTierChange }
+				__next40pxDefaultSize
+			>
+				{ options.map( ( opt ) => (
+					<ToggleGroupControlOption
+						key={ opt.value }
+						value={ opt.value }
+						label={ opt.label }
+					/>
+				) ) }
+			</ToggleGroupControl>
 
-			{ hasCustomisation && (
-				<p className="sgs-tri-state-control__customised-note">
+			{ activeOwn === 'inherit' && (
+				<p
+					ref={ resolvedHintRef }
+					tabIndex={ -1 }
+					className="sgs-tri-state-control__resolved-hint"
+				>
 					{ sprintf(
-						/* translators: %s: comma-separated list of device tiers with an explicit override. */
-						__( 'Customised for %s.', 'sgs-blocks' ),
-						customisedTiers
-							.map( ( t ) => TIER_LABEL_BY_KEY[ t ] )
-							.join( ', ' )
+						/* translators: 1: parent tier name, 2: resolved On/Off state. */
+						__( 'Uses the %1$s setting: %2$s.', 'sgs-blocks' ),
+						TIER_LABEL_BY_KEY[ parentTier ],
+						onOffLabel( activeResolved.value )
 					) }
 				</p>
 			) }
 
-			<Button
-				variant="link"
-				onClick={ () => setExpanded( ( v ) => ! v ) }
-				aria-expanded={ expanded }
-				style={ { minHeight: '44px' } }
-			>
-				{ expanded
-					? __( 'Hide per-device settings', 'sgs-blocks' )
-					: __( 'Customise per device →', 'sgs-blocks' ) }
-			</Button>
-
-			{ expanded && (
-				<div className="sgs-tri-state-control__panel">
-					{ /* ⛔ Per-control <DeviceTabs> deleted (Spec 35 Phase 1.3) — the
-					     tier is chosen once, globally. As in ResponsiveOverride, the
-					     tabs' "(customised)" per-tier hint goes with them; the
-					     "Customise per device" summary below still names which tiers
-					     carry an override, so that information is not lost here.
-
-					     ⛔ The aria-live announcement is deleted too, DELIBERATELY:
-					     the global toggle already announces "Now editing the tablet
-					     view." on every change. Keeping this would announce the same
-					     event twice — and once per rendered instance of this control
-					     on the page, which is worse the more of them there are. */ }
-
-					<ToggleGroupControl
-						__nextHasNoMarginBottom
-						isBlock
-						label={ sprintf(
-							/* translators: 1: control label, 2: device tier name. */
-							__( '%1$s — %2$s', 'sgs-blocks' ),
-							safeLabel,
-							TIER_LABEL_BY_KEY[ activeTier ]
-						) }
-						hideLabelFromVision
-						value={ activeOwn }
-						onChange={ onTierChange }
-						__next40pxDefaultSize
-					>
-						{ options.map( ( opt ) => (
-							<ToggleGroupControlOption
-								key={ opt.value }
-								value={ opt.value }
-								label={ opt.label }
-							/>
-						) ) }
-					</ToggleGroupControl>
-
-					{ activeTier !== 'desktop' && activeOwn === 'inherit' && (
-						<p
-							ref={ resolvedHintRef }
-							tabIndex={ -1 }
-							className="sgs-tri-state-control__resolved-hint"
-						>
-							{ sprintf(
-								/* translators: 1: parent tier name, 2: resolved On/Off state. */
-								__(
-									'Uses the %1$s setting: %2$s.',
-									'sgs-blocks'
-								),
-								TIER_LABEL_BY_KEY[ parentTier ],
-								onOffLabel( activeResolved.value )
-							) }
-						</p>
+			{ activeOwn !== 'inherit' && (
+				<Button
+					variant="tertiary"
+					size="small"
+					onClick={ resetActiveTier }
+					aria-label={ sprintf(
+						/* translators: %s: device tier name. */
+						__( 'Reset %s to inherited value', 'sgs-blocks' ),
+						TIER_LABEL_BY_KEY[ activeTier ]
 					) }
-
-					{ activeTier !== 'desktop' && activeOwn !== 'inherit' && (
-						<Button
-							variant="tertiary"
-							size="small"
-							onClick={ resetActiveTier }
-							aria-label={ sprintf(
-								/* translators: %s: device tier name. */
-								__(
-									'Reset %s to inherited value',
-									'sgs-blocks'
-								),
-								TIER_LABEL_BY_KEY[ activeTier ]
-							) }
-							style={ { minHeight: '44px', marginTop: '4px' } }
-						>
-							{ __( 'Reset to inherited', 'sgs-blocks' ) }
-						</Button>
-					) }
-				</div>
+					style={ { minHeight: '44px', marginTop: '4px' } }
+				>
+					{ __( 'Reset to inherited', 'sgs-blocks' ) }
+				</Button>
 			) }
+			{ customisedNote }
 		</div>
 	);
 }

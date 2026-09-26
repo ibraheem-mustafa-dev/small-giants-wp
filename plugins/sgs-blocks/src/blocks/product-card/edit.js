@@ -17,8 +17,7 @@ import {
 	SgsLengthControl,
 	SgsBorderControl,
 	MediaElementPanel,
-	SsrPreviewGuard,
-} from '../../components';
+	SsrPreviewGuard, SgsBoxControl } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import { ListingContentPanel, ListingShapePanel } from './listing-panels';
 import {
@@ -36,7 +35,6 @@ import { useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
-	BoxControl,
 	NumberControl,
 	ToggleGroupControl,
 	ToggleGroupControlOption,
@@ -1887,13 +1885,13 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					title={ __( 'Card padding', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<BoxControl
+					<SgsBoxControl
 						label={ __( 'Card padding', 'sgs-blocks' ) }
 						values={ cardPadding ?? {} }
+						presets
 						onChange={ ( next ) =>
 							setAttributes( { cardPadding: next } )
 						}
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -2048,13 +2046,13 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									label={ __( 'Bottom right', 'sgs-blocks' ) }
 								/>
 							</ToggleGroupControl>
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Saving badge padding', 'sgs-blocks' ) }
 								values={ savingBadgePadding ?? {} }
+								presets
 								onChange={ ( next ) =>
 									setAttributes( { savingBadgePadding: next } )
 								}
-								__next40pxDefaultSize
 							/>
 							<SgsLengthControl
 								label={ __( 'Saving badge border radius', 'sgs-blocks' ) }
@@ -2161,13 +2159,13 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								__next40pxDefaultSize
 								__nextHasNoMarginBottom
 							/>
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Attribute tag padding', 'sgs-blocks' ) }
 								values={ attributeTagPadding ?? {} }
+								presets
 								onChange={ ( next ) =>
 									setAttributes( { attributeTagPadding: next } )
 								}
-								__next40pxDefaultSize
 							/>
 							{ /* Border width + colour as ONE composite row (Spec 35 C1 —
 							     border colour lives in SgsBorderControl, never a sibling
@@ -2426,13 +2424,13 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 										} )
 									}
 								/>
-								<BoxControl
+								<SgsBoxControl
 									label={ __( 'Tag padding', 'sgs-blocks' ) }
 									values={ attributes.tagPadding ?? {} }
+									presets
 									onChange={ ( next ) =>
 										setAttributes( { tagPadding: next } )
 									}
-									__next40pxDefaultSize
 								/>
 							</>
 						) }
@@ -2829,13 +2827,13 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								setAttributes( { ctaPadding: {} } )
 							}
 						>
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Button padding', 'sgs-blocks' ) }
 								values={ ctaPadding ?? {} }
+								presets
 								onChange={ ( next ) =>
 									setAttributes( { ctaPadding: next } )
 								}
-								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>

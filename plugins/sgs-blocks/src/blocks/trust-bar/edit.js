@@ -10,7 +10,6 @@ import {
 	Button,
 	RangeControl,
 	Notice,
-	BoxControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
@@ -1005,13 +1004,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Band padding', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
-								splitOnAxis={ false }
+								presets
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

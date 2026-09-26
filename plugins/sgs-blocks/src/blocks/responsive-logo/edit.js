@@ -661,11 +661,11 @@ export default function Edit( { attributes, setAttributes } ) {
 			<InspectorControls group="styles">
 				{ /* ── Panel 3b: Maximum size per device ── */ }
 				<PanelBody
-					title={ __( 'Maximum size (per device)', 'sgs-blocks' ) }
+					title={ __( 'Maximum size', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<p className="sgs-responsive-logo-editor__panel-hint">
-						{ __( 'Cap the logo box independently per breakpoint. Leave a tier blank for no maximum at that size.', 'sgs-blocks' ) }
+						{ __( 'Cap the logo box. Leave it blank for no maximum.', 'sgs-blocks' ) }
 					</p>
 					<ResponsiveOverride
 						label={ __( 'Max width', 'sgs-blocks' ) }
@@ -775,34 +775,30 @@ export default function Edit( { attributes, setAttributes } ) {
 										setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
 								},
 							],
+							// Colour treatment sits with the colour controls: it turns the logo
+							// IMAGE white (always, or only on a dark ground), where the row
+							// above paints the tile behind it.
+							after: (
+									<SelectControl
+										label={ __( 'Logo image colour', 'sgs-blocks' ) }
+										help={ __(
+											'Turn the logo image pure white, always or only where it sits on a dark background.',
+											'sgs-blocks'
+										) }
+										value={ attributes.colourTreatment || '' }
+										options={ [
+											{ value: '', label: __( 'As uploaded', 'sgs-blocks' ) },
+											{ value: 'white', label: __( 'Force white', 'sgs-blocks' ) },
+											{ value: 'auto', label: __( 'Automatic (white on dark backgrounds)', 'sgs-blocks' ) },
+										] }
+										onChange={ ( val ) => setAttributes( { colourTreatment: val || '' } ) }
+										__next40pxDefaultSize
+										__nextHasNoMarginBottom
+									/>
+							),
 						},
 					] }
 				/>
-
-				{ /* ── Colour treatment: forces the logo IMAGE white -- for a
-				   full-colour logo dropped onto a dark surface (e.g. inside
-				   sgs/site-footer). Distinct from the background-colour tile
-				   above, which paints the wrapper, not the image itself.
-				   'auto' (U-13 §4.5) whitens only on a dark ground -- same
-				   signals as the "Logo for dark backgrounds" panel above. ── */ }
-				<PanelBody title={ __( 'Colour treatment', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Logo image colour', 'sgs-blocks' ) }
-						help={ __(
-							'Turn the logo image pure white, always or only where it sits on a dark background.',
-							'sgs-blocks'
-						) }
-						value={ attributes.colourTreatment || '' }
-						options={ [
-							{ value: '', label: __( 'As uploaded', 'sgs-blocks' ) },
-							{ value: 'white', label: __( 'Force white', 'sgs-blocks' ) },
-							{ value: 'auto', label: __( 'Automatic (white on dark backgrounds)', 'sgs-blocks' ) },
-						] }
-						onChange={ ( val ) => setAttributes( { colourTreatment: val || '' } ) }
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
 
 				{ /* ── Panel 5: Border ── */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>

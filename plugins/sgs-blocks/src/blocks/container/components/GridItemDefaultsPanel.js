@@ -15,7 +15,6 @@ import {
 	PanelBody,
 	SelectControl,
 	TextControl,
-	BoxControl,
 } from '@wordpress/components';
 import {
 	ResponsiveOverride,
@@ -24,8 +23,7 @@ import {
 	ShadowControl,
 	shadowAttrKeys,
 	ResponsiveBorderRadiusControl,
-	normaliseResponsiveBox,
-} from '../../../components';
+	normaliseResponsiveBox, SgsBoxControl } from '../../../components';
 import { UnitControl } from '../../../components/primitives';
 
 const GRID_ITEM_BORDER_STYLES = [
@@ -140,13 +138,12 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 				onChange={ ( obj ) => setAttributes( { gridItemPadding: obj } ) }
 			>
 				{ ( { ownValue, setOwnValue } ) => (
-					<BoxControl
+					<SgsBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
-						splitOnAxis={ false }
 						units={ GRID_ITEM_BOX_UNITS }
+						presets
 						onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>

@@ -5,7 +5,7 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
-import { PanelBody, RangeControl, SelectControl, Notice, BoxControl } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl, Notice } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, fillRow, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import { backgroundPreview, spacingPreview, svgBackgroundPreview, flattenPresetSetting } from '../../utils';
@@ -400,13 +400,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Band padding', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
-								splitOnAxis={ false }
+								presets
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

@@ -11,7 +11,6 @@ import {
 	RangeControl,
 	Button,
 	TextControl,
-	BoxControl,
 	ToggleControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl } from '../../components';
@@ -1900,13 +1899,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<BoxControl
+							<SgsBoxControl
 								label={ __( 'Band padding', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
-								splitOnAxis={ false }
+								presets
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

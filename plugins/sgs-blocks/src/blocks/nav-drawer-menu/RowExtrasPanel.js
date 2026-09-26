@@ -112,7 +112,7 @@ export default function RowExtrasPanel( { attributes, setAttributes } ) {
 		<PanelBody title={ __( 'Row extras', 'sgs-blocks' ) } initialOpen={ false }>
 			<TierToggle
 				label={ __( 'Leading ornament', 'sgs-blocks' ) }
-				help={ __( 'A number (01, 02 …) or an icon before each top-level item, per device.', 'sgs-blocks' ) }
+				help={ __( 'A number (01, 02 …) or an icon before each top-level item.', 'sgs-blocks' ) }
 				value={ itemOrnament }
 				options={ ORNAMENT_OPTIONS }
 				onChange={ ( obj ) => setAttributes( { itemOrnament: obj } ) }
