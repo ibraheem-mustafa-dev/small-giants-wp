@@ -147,6 +147,18 @@ function main() {
 	const attrs = collectAttributes();
 	const php = renderPhp( attrs );
 
+	// The docblock must close exactly once: a `*/` inside its text (a glob such
+	// as `extensions/**/*.js`) ends the comment early and the file fatals every
+	// page. Checked here so neither a write nor --check can pass such output.
+	const commentCloses = php.split( '*/' ).length - 1;
+	if ( 1 !== commentCloses ) {
+		process.stderr.write(
+			`[generate-extension-attributes] REFUSED: the generated PHP closes a comment ${ commentCloses } times (must be 1); ` +
+				'remove the `*/` from the header text in renderPhp().\n'
+		);
+		process.exit( 1 );
+	}
+
 	if ( check ) {
 		const current = fs.existsSync( OUT_FILE )
 			? fs.readFileSync( OUT_FILE, 'utf8' )
