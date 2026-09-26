@@ -289,6 +289,26 @@
 			"default": "",
 			"description": "The help note's background on hover. Empty keeps the background unchanged."
 		},
+		"headerEyebrowColour": {
+			"type": "string",
+			"default": "",
+			"description": "The header's step name colour (showcase). Empty uses the muted text colour."
+		},
+		"infoToggleColour": {
+			"type": "string",
+			"default": "",
+			"description": "The option cards' '?' toggle glyph colour (showcase). Empty uses the text colour."
+		},
+		"infoToggleBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "The option cards' '?' toggle border colour (showcase). Empty mixes the border colour 94% with the text colour."
+		},
+		"optionMediaSize": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device size of each option's own picture as a percentage of its picture band's width ({desktop, tablet, mobile}; 100 = fills the band, the default). Centred on the band, which shows the stage colour around a smaller picture; a larger one is cropped by the band. A lens-finish card's frame photo is not scaled."
+		},
 		"skipPrompt": {
 			"type": "string",
 			"default": "",

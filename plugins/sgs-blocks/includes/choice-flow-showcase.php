@@ -102,10 +102,13 @@ if ( ! function_exists( 'sgs_choice_flow_showcase_css' ) ) {
 	function sgs_choice_flow_showcase_css( array $attributes, string $root_sel ): string {
 		$decls  = array();
 		$colour = array(
-			'stageColour'           => '--sgs-choice-flow-stage',
-			'stageNoteIconColour'   => '--sgs-choice-flow-note-icon',
-			'stageNoteBorderColour' => '--sgs-choice-flow-note-border',
-			'stageNoteHoverColour'  => '--sgs-choice-flow-note-hover',
+			'stageColour'            => '--sgs-choice-flow-stage',
+			'stageNoteIconColour'    => '--sgs-choice-flow-note-icon',
+			'stageNoteBorderColour'  => '--sgs-choice-flow-note-border',
+			'stageNoteHoverColour'   => '--sgs-choice-flow-note-hover',
+			'headerEyebrowColour'    => '--sgs-choice-flow-eyebrow',
+			'infoToggleColour'       => '--sgs-choice-flow-toggle',
+			'infoToggleBorderColour' => '--sgs-choice-flow-toggle-border',
 		);
 		foreach ( $colour as $key => $property ) {
 			$raw      = isset( $attributes[ $key ] ) ? (string) $attributes[ $key ] : '';
@@ -118,7 +121,41 @@ if ( ! function_exists( 'sgs_choice_flow_showcase_css' ) ) {
 		if ( 32 !== $logo_height && $logo_height >= 12 && $logo_height <= 80 ) {
 			$decls[] = "--sgs-choice-flow-logo-height:{$logo_height}px";
 		}
-		return $decls ? $root_sel . '{' . implode( ';', $decls ) . ';}' : '';
+		$css = $decls ? $root_sel . '{' . implode( ';', $decls ) . ';}' : '';
+		return $css . sgs_choice_flow_media_size_css( $attributes, $root_sel );
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_media_size_css' ) ) {
+	/**
+	 * `optionMediaSize` ({desktop, tablet, mobile}, % of the picture band's
+	 * width) as `--sgs-choice-flow-media-size` per tier, on the viewport tiers
+	 * the flow's padding uses, with `--sgs-choice-flow-media-height:auto` so
+	 * the picture keeps its own proportions. A tier left empty inherits the
+	 * wider one; nothing set keeps the picture filling and cropping to its
+	 * band (no rule emitted).
+	 *
+	 * @param array  $attributes Root block attributes.
+	 * @param string $root_sel   The instance's scoped root selector.
+	 * @return string Scoped rules, or ''.
+	 */
+	function sgs_choice_flow_media_size_css( array $attributes, string $root_sel ): string {
+		$sizes = isset( $attributes['optionMediaSize'] ) && is_array( $attributes['optionMediaSize'] ) ? $attributes['optionMediaSize'] : array();
+		$media = array(
+			'desktop' => '',
+			'tablet'  => '@media(max-width:1023px){',
+			'mobile'  => '@media(max-width:767px){',
+		);
+		$css = '';
+		foreach ( $media as $tier => $open ) {
+			$value = isset( $sizes[ $tier ] ) && is_numeric( $sizes[ $tier ] ) ? (float) $sizes[ $tier ] : 0.0;
+			if ( $value < 10 || $value > 300 ) {
+				continue;
+			}
+			$rule = "{$root_sel}{--sgs-choice-flow-media-size:" . round( $value, 2 ) . '%;--sgs-choice-flow-media-height:auto;}';
+			$css .= '' === $open ? $rule : $open . $rule . '}';
+		}
+		return $css;
 	}
 }
 

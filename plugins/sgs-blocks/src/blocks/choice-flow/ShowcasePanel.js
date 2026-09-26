@@ -2,7 +2,8 @@
  * sgs/choice-flow — the full-screen flow's finishing settings (Spec 43
  * FR-43-19, FR-43-24): how progress counts, the position line's wording,
  * the logo's height, the stage and help-note colours, the note's icon, the
- * stage's placeholder line and the footer's skip link.
+ * stage's placeholder line, the footer's skip link, the option cards'
+ * '?' toggle colours and picture size (OptionCardsPanel).
  *
  * Its own component: edit.js is over its size cap, so it mounts this with
  * one import and one render line (the ChromePanel/FlowLayoutPanel pattern).
@@ -15,6 +16,8 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RangeControl, SelectControl, TextControl } from '@wordpress/components';
 import { SgsColourPanel } from '../../components';
 import fillRow from '../../components/colour-variants/fillRow';
+import textRow from '../../components/colour-variants/textRow';
+import OptionCardsPanel from './OptionCardsPanel';
 
 /**
  * @param {Object}   o
@@ -127,9 +130,32 @@ export default function ShowcasePanel( { attributes, setAttributes } ) {
 							attributes,
 							setAttributes,
 						} ),
+						textRow( {
+							key: 'eyebrow',
+							label: __( 'Header step name', 'sgs-blocks' ),
+							attrs: { base: 'headerEyebrowColour' },
+							attributes,
+							setAttributes,
+						} ),
+						textRow( {
+							key: 'toggle',
+							label: __( 'Option ’?’ toggle', 'sgs-blocks' ),
+							attrs: { base: 'infoToggleColour' },
+							attributes,
+							setAttributes,
+						} ),
+						fillRow( {
+							key: 'toggle-border',
+							label: __( 'Option ’?’ toggle border', 'sgs-blocks' ),
+							attrs: { base: 'infoToggleBorderColour' },
+							attributes,
+							setAttributes,
+						} ),
 					] }
 				/>
 			</PanelBody>
+
+			<OptionCardsPanel attributes={ attributes } setAttributes={ setAttributes } />
 		</InspectorControls>
 	);
 }

@@ -22,6 +22,23 @@
 	--sgs-header-height: 80px;
 }
 
+/* ─── Controls and dialogs take the page's font and text colour ───
+ *
+ * Browsers give button, input, select and textarea their own system font
+ * (Arial on Windows), and a <dialog> color: CanvasText (black), instead of
+ * inheriting, so a control or dialog without its own rule ignored the
+ * client's font and text colour. :where() keeps both at zero specificity:
+ * a block's or preset's own value always wins, and any author rule still
+ * beats the browser default.
+ */
+:where(button, input, select, textarea) {
+	font-family: inherit;
+}
+
+:where(dialog) {
+	color: inherit;
+}
+
 html {
 	scroll-padding-top: var(--sgs-header-height);
 }

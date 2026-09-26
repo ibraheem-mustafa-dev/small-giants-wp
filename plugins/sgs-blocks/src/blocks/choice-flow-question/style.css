@@ -349,6 +349,23 @@
 	width: calc( 100% + 36px );
 	margin: -16px -18px 11px;
 	border-radius: 0;
+	background-color: var( --sgs-choice-flow-stage, var( --wp--preset--color--surface-alt, #F1F0EC ) );
+}
+
+/* "Option picture size" (optionMediaSize, per device): the option's own
+   picture drawn at a share of the band's width, centred; a smaller one
+   shows the band around it, a larger one is cropped by the band. The
+   finish cards' frame photo (__option-photo) keeps filling the band. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media:has( > img ) {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media > img:not( .sgs-choice-flow-question__option-photo ) {
+	flex: none;
+	width: var( --sgs-choice-flow-media-size, 100% );
+	height: var( --sgs-choice-flow-media-height, 100% );
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-label {
@@ -485,9 +502,9 @@
 	right: 12px;
 	width: 30px;
 	height: 30px;
-	border-color: color-mix( in srgb, var( --wp--preset--color--border, #d4dbe5 ) 94%, var( --wp--preset--color--text, #1a202c ) );
+	border-color: var( --sgs-choice-flow-toggle-border, color-mix( in srgb, var( --wp--preset--color--border, #d4dbe5 ) 94%, var( --wp--preset--color--text, #1a202c ) ) );
 	background-color: color-mix( in srgb, var( --wp--preset--color--surface-alt, #fff ) 94%, transparent );
-	color: var( --wp--preset--color--text, #1a202c );
+	color: var( --sgs-choice-flow-toggle, var( --wp--preset--color--text, #1a202c ) );
 	font-size: 14px;
 	font-weight: 400;
 	transition: background-color 0.2s ease, color 0.2s ease;

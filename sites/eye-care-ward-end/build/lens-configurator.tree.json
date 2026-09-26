@@ -19,8 +19,16 @@
       "progressColour": "accent",
       "progressCounts": "current",
       "stepCountLabel": "Question",
-      "stageColour": "#F3F0EB",
+      "stageColour": "surface-stage",
       "summaryBaseLabel": "Frame",
+      "headerEyebrowColour": "text-subtle",
+      "infoToggleColour": "text-soft",
+      "infoToggleBorderColour": "border-strong",
+      "optionMediaSize": {
+        "desktop": 76,
+        "tablet": 156,
+        "mobile": 96.7
+      },
       "summaryPendingLabel": "Lenses",
       "summaryPendingText": "not chosen yet",
       "stageNote": "Not sure which to pick?",

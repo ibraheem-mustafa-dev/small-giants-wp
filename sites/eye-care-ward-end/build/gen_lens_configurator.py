@@ -185,8 +185,8 @@ tree = [
     #   rendered from the hosted draft's inline SVG) at 16px high, closeStyle "text".
     # - progressCounts "current": question 1 of 4 fills a quarter, as the draft does.
     # - stepCountLabel "Question": "Question 1 of 3" (the prescription step has its own eyebrow).
-    # - progressColour "accent" (#9C8B78, the draft's var(--acc)); stageColour #F3F0EB (the draft's stage and
-    #   chosen-card fill, which the Eye Care palette has no token for).
+    # - progressColour "accent" (#9C8B78, the draft's var(--acc)); stageColour surface-stage #F3F0EB (the draft's stage and
+    #   chosen-card fill, added to the Eye Care palette 2026-09-26).
     # - summaryBaseLabel "Frame" and the "Lenses · not chosen yet" placeholder line; no panel title.
     # - The WhatsApp help card: note and link verbatim, the WhatsApp icon and the palette's WhatsApp colours.
     # - The footer's "Frame only? Skip the lenses" link (it takes the "No prescription" route) and its
@@ -196,7 +196,14 @@ tree = [
                               showHeader=True, closeStyle="text", headerLogoHeight=16,
                               headerLogo={"id": 486, "url": MEDIA + "flow-mark.png", "alt": ""},
                               progressColour="accent", progressCounts="current", stepCountLabel="Question",
-                              stageColour="#F3F0EB", summaryBaseLabel="Frame",
+                              stageColour="surface-stage", summaryBaseLabel="Frame",
+                              # The draft's quieter header step name, and its '?' toggle (#4A453E on #D8D2C8).
+                              headerEyebrowColour="text-subtle", infoToggleColour="text-soft",
+                              infoToggleBorderColour="border-strong",
+                              # The draft draws each option's picture on a fixed 140px plate; the PNGs carry
+                              # it at 43.75% of their width, so these put it at 140px on the 421 / 205 / 331px
+                              # picture bands at 1440 / 768 / 375 (Bean 2026-09-26: one proportion per device).
+                              optionMediaSize={"desktop": 76, "tablet": 156, "mobile": 96.7},
                               summaryPendingLabel="Lenses", summaryPendingText="not chosen yet",
                               stageNote="Not sure which to pick?",
                               stageNoteLink={

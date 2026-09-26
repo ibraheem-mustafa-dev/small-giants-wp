@@ -166,6 +166,30 @@
           "color": "#77716A",
           "name": "Text Label",
           "_source": "declared"
+        },
+        {
+          "slug": "text-subtle",
+          "color": "#6B655E",
+          "name": "Text Subtle",
+          "_source": "declared"
+        },
+        {
+          "slug": "text-soft",
+          "color": "#4A453E",
+          "name": "Text Soft",
+          "_source": "declared"
+        },
+        {
+          "slug": "border-strong",
+          "color": "#D8D2C8",
+          "name": "Border Strong",
+          "_source": "declared"
+        },
+        {
+          "slug": "surface-stage",
+          "color": "#F3F0EB",
+          "name": "Surface Stage",
+          "_source": "declared"
         }
       ],
       "gradients": [],
