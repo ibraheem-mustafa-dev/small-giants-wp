@@ -443,6 +443,51 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    # Wave 3C lane C (2026-09-26): the header and footer furniture blocks and the
+    # notice-banner's message child. None renders through the container wrapper;
+    # notice-message holds inner blocks but paints its own markup.
+    {
+        "block_slug": "sgs/local-time",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/language-switch",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/store-selector",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/theme-toggle",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/wishlist-link",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/wishlist-panel",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/notice-message",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 
