@@ -1,0 +1,96 @@
+/**
+ * Lottie media type (Spec 38 §1.2a Tier H, D1151) — shared layout for every
+ * surface that renders sgs_render_lottie(): the Media block, the hero split
+ * media, the logo and the wrapper background. Enqueued by the Motion Registry
+ * only on pages that carry data-sgs-fx="lottie" (EFFECT_STYLES).
+ *
+ * The server prints the poster inside .sgs-lottie; the player renders its SVG
+ * into the same box once its trigger fires. Until then (and always under
+ * reduced motion, without JS, or in print) the poster is what shows.
+ */
+
+.sgs-lottie {
+	position: relative;
+	display: block;
+	line-height: 0;
+}
+
+.sgs-lottie > svg {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+/* Once the animation has drawn, the poster steps back (it keeps its box). */
+.sgs-lottie:has(> svg) > :is(img, picture) {
+	visibility: hidden;
+}
+
+/* Wrapper background: the moving layer fills the section behind its content. */
+.sgs-container__lottie-bg {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+/* The pause control sits beside the animation (never inside a link). */
+:where(*):has(> .sgs-lottie + .sgs-lottie__pause) {
+	position: relative;
+}
+
+.sgs-lottie + .sgs-lottie__pause {
+	position: absolute;
+	inset-block-end: 0.5rem;
+	inset-inline-end: 0.5rem;
+	z-index: 2;
+}
+
+.sgs-lottie__pause {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	border: 0;
+	border-radius: 999px;
+	background: var(--wp--preset--color--text, #1a1a1a);
+	color: var(--wp--preset--color--surface, #ffffff);
+	cursor: pointer;
+}
+
+.sgs-lottie__pause:focus-visible {
+	outline: 2px solid var(--wp--preset--color--text, #1a1a1a);
+	outline-offset: 2px;
+}
+
+/* Pause bars; a play triangle while paused. */
+.sgs-lottie__pause::before {
+	content: "";
+	display: block;
+	width: 10px;
+	height: 12px;
+	border-inline: 3px solid currentColor;
+}
+
+.sgs-lottie__pause[aria-pressed="true"]::before {
+	width: 0;
+	height: 0;
+	border-inline: 0;
+	border-block: 7px solid transparent;
+	border-inline-start: 11px solid currentColor;
+}
+
+@media print {
+	.sgs-lottie > svg,
+	.sgs-lottie__pause {
+		display: none;
+	}
+
+	.sgs-lottie > :is(img, picture) {
+		visibility: visible;
+	}
+}

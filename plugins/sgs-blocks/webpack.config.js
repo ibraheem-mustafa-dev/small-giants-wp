@@ -135,6 +135,9 @@ if ( moduleConfig ) {
 					// Flip (FR-38-12, redirected 2026-08-20). Also shipped inside
 					// the installed gsap 3.15.0, free since the Webflow acquisition.
 					'gsap-flip',
+					// Tier H Lottie player (D1151): lottie-web's minified light build,
+					// loaded by @sgs/fx-lottie with a dynamic import after its trigger.
+					'lottie-light',
 				].map( ( name ) => [
 					`vendor-modules/${ name }`,
 					path.resolve(

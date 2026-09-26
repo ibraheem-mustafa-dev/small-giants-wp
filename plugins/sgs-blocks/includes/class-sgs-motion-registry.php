@@ -425,6 +425,12 @@ class SGS_Motion_Registry {
 		'morph'            => 'assets/css/fx-shape-routes.css',
 
 		/*
+		 * Lottie (Tier H, D1151): the poster/animation stack, the wrapper
+		 * background layer and the 44px pause control, on Lottie pages only.
+		 */
+		'lottie'           => 'assets/css/fx-lottie.css',
+
+		/*
 		 * The cursor field needs one for the strongest reason of the four: for
 		 * this effect the stylesheet IS the effect. Every field type paints in
 		 * CSS, and the JS does nothing but publish two custom-property values.
