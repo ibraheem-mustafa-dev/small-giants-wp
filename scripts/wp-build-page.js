@@ -42,6 +42,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { createRequire } = require( 'module' );
 const os = require( 'os' );
+const crypto = require( 'crypto' );
 const { execFileSync } = require( 'child_process' );
 
 const pluginRequire = createRequire( path.join( __dirname, '..', 'plugins', 'sgs-blocks', 'package.json' ) );
@@ -169,6 +170,39 @@ async function main() {
 		fail( 1, `cannot read tree: ${ e.message }` );
 	}
 	if ( ! Array.isArray( tree ) ) fail( 1, 'tree must be an array of blocks' );
+
+	// sgs/form's edit.js assigns a stable formId in a mount effect the first
+	// time it's opened in the editor (src/blocks/form/edit.js — the
+	// `useEffect` that sets `form-${clientId.substr(0,8)}`) — a tree built
+	// by this script never opens the editor, so an sgs/form block with no
+	// formId in its JSON reached the REST submission handler with formId=''
+	// and 503'd (form_config_unavailable — the config transient/CPT lookup
+	// has nothing to key on). Fill any missing/empty formId here,
+	// deterministically from the build target + the block's position in the
+	// tree, so the same tree run against the same target always gets the
+	// same id (submissions and rate-limiting key off it) — never a random
+	// id per run. Never touches a formId already present in the tree JSON.
+	const sgsFormTarget = args.slug || args.postId || args.templatePart || args.template || 'untitled';
+	let sgsFormIdsAssigned = 0;
+	( function fillFormIds( blocks, pathPrefix ) {
+		blocks.forEach( ( b, i ) => {
+			if ( ! b || typeof b !== 'object' ) return;
+			const here = `${ pathPrefix }.${ i }`;
+			if ( b.name === 'sgs/form' ) {
+				b.attributes = b.attributes || {};
+				if ( ! b.attributes.formId ) {
+					const hash = crypto.createHash( 'sha1' ).update( `${ sgsFormTarget }:${ here }` ).digest( 'hex' );
+					b.attributes.formId = `form-${ hash.slice( 0, 8 ) }`;
+					sgsFormIdsAssigned++;
+				}
+			}
+			fillFormIds( b.innerBlocks || [], here );
+		} );
+	} )( tree, '' );
+	if ( sgsFormIdsAssigned ) {
+		console.error( `[info] assigned formId to ${ sgsFormIdsAssigned } sgs/form block(s) missing one` );
+	}
+
 	const { url, user, pwd } = readEnv( path.resolve( args.envFile ), args.envKey );
 
 	// Core blocks that have an SGS replacement are banned on pages (block-replacements.json is the one list).

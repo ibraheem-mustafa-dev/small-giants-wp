@@ -2,7 +2,6 @@
   {
     "name": "sgs/form",
     "attributes": {
-      "formId": "sgs-email-test",
       "formName": "SGS email test form",
       "notifyEmail": "ibraheemmustafa16@gmail.com",
       "confirmationEmail": true,
