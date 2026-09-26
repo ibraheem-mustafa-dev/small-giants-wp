@@ -22,7 +22,7 @@ def B(name, attrs=None, inner=None):
 
 
 def group_heading(text, looks=""):
-    # looks: the theme's per-group classes (sgs-filter-open, sgs-filter-count, sgs-filter-search, sgs-filter-swatches, sgs-filter-segmented).
+    # looks: the theme's per-group classes (sgs-filter-open, sgs-filter-count, sgs-filter-swatches, sgs-filter-segmented).
     return B("sgs/heading", {"content": text, "level": "h3",
                              "className": ("sgs-shop-filters__group-heading " + looks).strip(),
                              "fontSize": {"desktop": 12}, "fontSizeUnit": "px", "fontWeight": "400",
@@ -38,11 +38,15 @@ def attribute_filter(label, slug, style, looks=""):
               [B(display)])]
 
 
-def taxonomy_filter(label, taxonomy, style, looks=""):
+def taxonomy_filter(label, taxonomy, style, looks="", search=""):
+    # search: a placeholder puts the sgs/filter-search box above the options (Spec 30 FR-30-6).
     display = "woocommerce/product-filter-chips" if style == "chips" else "woocommerce/product-filter-checkbox-list"
+    inner = [B(display)]
+    if search:
+        inner.insert(0, B("sgs/filter-search", {"taxonomy": taxonomy, "placeholder": search, "threshold": 2}))
     return [group_heading(label, looks),
             B("woocommerce/product-filter-taxonomy", {"taxonomy": taxonomy, "displayStyle": display, "showCounts": True},
-              [B(display)])]
+              inner)]
 
 
 CARD = dict(
@@ -73,7 +77,7 @@ filters = [
     group_heading("Price", "sgs-filter-open"),
     B("woocommerce/product-filter-price", {},
       [B("woocommerce/product-filter-price-slider")]),
-    *taxonomy_filter("Brand", "product_brand", "list", "sgs-filter-open sgs-filter-count sgs-filter-search"),
+    *taxonomy_filter("Brand", "product_brand", "list", "sgs-filter-open sgs-filter-count", "Search brands"),
     *attribute_filter("Style", "shape", "chips", "sgs-filter-open sgs-filter-count"),
     *attribute_filter("Material", "material", "list"),
     *attribute_filter("Frame type", "frame-type", "list"),

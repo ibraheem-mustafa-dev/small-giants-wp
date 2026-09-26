@@ -4,9 +4,10 @@
  *
  * Two modes (attributes.searchMode) — full rationale for each in the
  * relevant branch below and in resolve-taxonomy-terms.php's own docblock:
- * - 'attribute-chips' (legacy/default): a type-to-find input narrowing a
- *   sibling WC attribute filter's chip list. Auto-shown only once the
- *   attribute has ≥$threshold terms (default 16, the Baymard Institute
+ * - 'attribute-chips' (default): a type-to-find input narrowing the options
+ *   of the core filter block it sits in (an attribute filter by attributeId,
+ *   or a taxonomy filter such as brand by taxonomy). Auto-shown only once the
+ *   taxonomy has ≥$threshold terms (default 16, the Baymard Institute
  *   type-to-find threshold).
  * - 'taxonomy-terms': the block owns the whole list — a searchable, tickable
  *   list of a chosen taxonomy's terms, usable standalone in a filter panel.
@@ -34,6 +35,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once __DIR__ . '/resolve-taxonomy-terms.php';
+require_once __DIR__ . '/resolve-chip-taxonomy.php';
 
 // ---------------------------------------------------------------------------
 // Security sanitisers (contract §D) — a CSS-length sanitiser for box/side
@@ -77,47 +79,18 @@ if ( 'taxonomy-terms' === $search_mode ) {
 
 } else {
 
-	$attribute_id = absint( $attributes['attributeId'] ?? 0 );
+	// Attribute-chips mode: the options come from the core filter block this
+	// sits in — an attribute filter (attributeId) or a taxonomy filter such
+	// as brand (taxonomy). Resolution lives in resolve-chip-taxonomy.php.
+	$resolved = sgs_filter_search_resolve_chip_taxonomy( $attributes );
 
-	// Guard: no attribute selected yet — render nothing.
-	if ( 0 === $attribute_id ) {
+	// Nothing chosen yet, or below the threshold — render nothing.
+	if ( null === $resolved || $resolved['total'] < $threshold ) {
 		return;
 	}
 
-	// Resolve taxonomy slug from the WooCommerce attribute ID.
-	$attribute_taxonomy = function_exists( 'wc_attribute_taxonomy_name_by_id' )
-		? wc_attribute_taxonomy_name_by_id( $attribute_id )
-		: '';
-
-	if ( empty( $attribute_taxonomy ) || ! taxonomy_exists( $attribute_taxonomy ) ) {
-		return;
-	}
-
-	// Count terms that are attached to at least one published product.
-	// hide_empty=true relies on WP's term.count which is incremented/decremented
-	// only for published posts — draft-only terms have count=0 and are excluded.
-	$terms = get_terms(
-		array(
-			'taxonomy'   => $attribute_taxonomy,
-			'hide_empty' => true,
-		)
-	);
-
-	if ( is_wp_error( $terms ) || ! is_array( $terms ) ) {
-		return;
-	}
-
-	// Below threshold — render nothing (the boundary condition).
-	if ( count( $terms ) < $threshold ) {
-		return;
-	}
-
-	$total = count( $terms );
-
-	// Human-readable attribute label (e.g. "Flavour", "Size").
-	$attribute_label = function_exists( 'wc_attribute_label' )
-		? wc_attribute_label( $attribute_taxonomy )
-		: $attribute_taxonomy;
+	$total           = $resolved['total'];
+	$attribute_label = $resolved['attribute_label'];
 }
 
 // Unique ID for aria wiring — stable per request/instance.

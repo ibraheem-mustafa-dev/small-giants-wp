@@ -2,8 +2,6 @@
  * SGS Shop Filter Drawer — per-group looks, switched on by classes on a group's
  * heading block (its Additional CSS class):
  *   sgs-filter-count     the number of options beside the heading ("Brand 40")
- *   sgs-filter-search    a search box above the options that narrows the list as you type
- *                 (placeholder: Customizer > Shop Filters, `searchLabel`)
  *   sgs-filter-segmented  one choice at a time as a segmented row, "All" first
  *                 (an attribute group: it sets `filter_<attribute>` and reloads,
  *                 the same round trip WooCommerce's own filters take)
@@ -35,27 +33,6 @@
 		count.className = 'sgs-shop-filters__group-count';
 		count.textContent = String( group.querySelectorAll( ITEM ).length );
 		summary.appendChild( count );
-	}
-
-	function addSearch( heading ) {
-		const group = groupOf( heading );
-		const summary = group && group.querySelector( '.sgs-shop-filters__group-summary' );
-		if ( ! summary || group.querySelector( '.sgs-shop-filters__group-search' ) ) {
-			return;
-		}
-		const input = document.createElement( 'input' );
-		input.type = 'search';
-		input.className = 'sgs-shop-filters__group-search';
-		input.placeholder = SETTINGS.searchLabel || 'Search';
-		input.setAttribute( 'aria-label', SETTINGS.searchLabel || heading.textContent.trim() );
-		input.addEventListener( 'input', function () {
-			const q = input.value.trim().toLowerCase();
-			group.querySelectorAll( ITEM ).forEach( function ( item ) {
-				const text = ( item.textContent || item.getAttribute( 'aria-label' ) || '' ).toLowerCase();
-				item.classList.toggle( 'is-search-hidden', '' !== q && -1 === text.indexOf( q ) );
-			} );
-		} );
-		summary.insertAdjacentElement( 'afterend', input );
 	}
 
 	function makeSegmented( heading ) {
@@ -102,9 +79,6 @@
 		dialog.querySelectorAll( '.sgs-shop-filters__group-heading' ).forEach( function ( heading ) {
 			if ( heading.classList.contains( 'sgs-filter-count' ) ) {
 				addCount( heading );
-			}
-			if ( heading.classList.contains( 'sgs-filter-search' ) ) {
-				addSearch( heading );
 			}
 			if ( heading.classList.contains( 'sgs-filter-segmented' ) ) {
 				makeSegmented( heading );

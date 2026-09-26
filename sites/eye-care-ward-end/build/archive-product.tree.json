@@ -320,7 +320,7 @@
                         "attributes": {
                           "content": "Brand",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-count sgs-filter-search",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-count",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -341,6 +341,14 @@
                           "showCounts": true
                         },
                         "innerBlocks": [
+                          {
+                            "name": "sgs/filter-search",
+                            "attributes": {
+                              "taxonomy": "product_brand",
+                              "placeholder": "Search brands",
+                              "threshold": 2
+                            }
+                          },
                           {
                             "name": "woocommerce/product-filter-checkbox-list",
                             "attributes": {}

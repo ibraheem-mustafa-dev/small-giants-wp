@@ -5,19 +5,25 @@
  * options. Two DOM shapes, chosen by render.php's
  * `data-sgs-filter-search-mode` attribute:
  *
- *   'chips' (attribute-chips mode, legacy/default): narrows a SIBLING
- *   WooCommerce attribute filter's chip list —
- *     - Group:       .wp-block-woocommerce-product-filter-attribute (nearest ancestor)
- *     - Chip items:  .wc-block-product-filter-chips__item (inside the group)
- *     - Chip label:  .wc-block-product-filter-chips__text (inside each item)
+ *   'chips' (attribute-chips mode, default): narrows the options of the core
+ *   filter block this sits in, chips or checkbox list —
+ *     - Group:  .wp-block-woocommerce-product-filter-attribute or
+ *               .wp-block-woocommerce-product-filter-taxonomy (nearest ancestor)
+ *     - Items:  .wc-block-product-filter-chips__item or
+ *               .wc-block-product-filter-checkbox-list__item
+ *     - Label:  the item's __text element
+ *   A checkbox list renders only its first options until "Show N more" is
+ *   pressed; the first keystroke presses it (WooCommerce's own action), and
+ *   the items are re-read on every keystroke. An item is hidden with the
+ *   data-sgs-fs-hidden attribute (style.css), never `hidden`, which
+ *   WooCommerce's Interactivity binding owns.
  *
  *   'terms' (taxonomy-terms mode): narrows this block's OWN rendered term
  *   list — each term is a plain `<a>` link (built server-side, so applying a
  *   filter needs zero JS); this script only hides/shows rows by typed text.
  *     - Item:  .sgs-filter-search__term-item (data-term-label = lowercase name)
  *
- * Filtering is 100% client-side visibility toggling via the `hidden`
- * attribute — no network requests, no mutation of the underlying filter
+ * Filtering is 100% client-side visibility toggling — no network requests, no mutation of the underlying filter
  * mechanism (WC's Interactivity API store for chips; plain navigation for
  * term links).
  *
@@ -26,32 +32,49 @@
  * @package SGS\Blocks
  */
 
+const GROUP_SELECTOR = '.wp-block-woocommerce-product-filter-attribute, .wp-block-woocommerce-product-filter-taxonomy';
+const CHIP_ITEM_SELECTOR = '.wc-block-product-filter-chips__item, .wc-block-product-filter-checkbox-list__item';
+const HIDDEN_ATTR = 'data-sgs-fs-hidden';
+
 /**
- * Get the chip items to filter for 'chips' mode.
+ * Get the option items to filter for 'chips' mode.
  *
  * @param {HTMLElement} root The [data-sgs-filter-search] wrapper.
- * @return {HTMLElement[]} Chip item elements, or an empty array if the
+ * @return {HTMLElement[]} Option item elements, or an empty array if the
  *                         ancestor group isn't found.
  */
 function getChipItems( root ) {
-	const group = root.closest( '.wp-block-woocommerce-product-filter-attribute' );
+	const group = root.closest( GROUP_SELECTOR );
 	if ( ! group ) {
 		return [];
 	}
-	return Array.from( group.querySelectorAll( '.wc-block-product-filter-chips__item' ) );
+	return Array.from( group.querySelectorAll( CHIP_ITEM_SELECTOR ) );
 }
 
 /**
- * Get the matchable text for a chip element.
+ * Press the group's "Show N more" button so every option is in the DOM.
  *
- * Prefers the dedicated label element; falls back to the chip's own
+ * @param {HTMLElement} root The [data-sgs-filter-search] wrapper.
+ */
+function expandGroup( root ) {
+	const group = root.closest( GROUP_SELECTOR );
+	const more  = group && group.querySelector( '.wc-block-product-filter-checkbox-list__show-more-button' );
+	if ( more && ! more.hidden ) {
+		more.click();
+	}
+}
+
+/**
+ * Get the matchable text for an option element.
+ *
+ * Prefers the dedicated label element; falls back to the item's own
  * textContent (defensive — handles future WC markup changes).
  *
  * @param {HTMLElement} chip
  * @return {string} Lowercased, trimmed label text.
  */
 function chipLabel( chip ) {
-	const labelEl = chip.querySelector( '.wc-block-product-filter-chips__text' );
+	const labelEl = chip.querySelector( '.wc-block-product-filter-chips__text, .wc-block-product-filter-checkbox-list__text' );
 	return ( labelEl ? labelEl.textContent : chip.textContent ).trim().toLowerCase();
 }
 
@@ -89,10 +112,10 @@ function initInstance( root ) {
 	root.dataset.sgsFilterSearchReady = '1';
 
 	const isTermsMode = 'terms' === root.dataset.sgsFilterSearchMode;
-	const items       = isTermsMode ? getTermItems( root ) : getChipItems( root );
+	const getItems    = isTermsMode ? getTermItems : getChipItems;
 	const getLabel    = isTermsMode ? termLabel : chipLabel;
 
-	if ( 0 === items.length ) {
+	if ( 0 === getItems( root ).length ) {
 		return;
 	}
 
@@ -110,7 +133,8 @@ function initInstance( root ) {
 	// guard against any edge case where the markup is cached without data attrs.
 	const shownTemplate = status.dataset.shownTemplate || '%1$d of %2$d options shown';
 	const noneText      = status.dataset.noneText      || 'No matching options';
-	const total         = parseInt( status.dataset.total, 10 ) || items.length;
+	const total         = parseInt( status.dataset.total, 10 ) || getItems( root ).length;
+	let expanded        = isTermsMode;
 
 	/**
 	 * Filter items to those whose label includes the query string.
@@ -119,11 +143,16 @@ function initInstance( root ) {
 	function filterItems() {
 		const query = input.value.trim().toLowerCase();
 
+		if ( ! expanded && '' !== query ) {
+			expandGroup( root );
+			expanded = true;
+		}
+
 		let shown = 0;
 
-		items.forEach( ( item ) => {
+		getItems( root ).forEach( ( item ) => {
 			const matches = '' === query || getLabel( item ).includes( query );
-			item.hidden = ! matches;
+			item.toggleAttribute( HIDDEN_ATTR, ! matches );
 			if ( matches ) {
 				shown++;
 			}

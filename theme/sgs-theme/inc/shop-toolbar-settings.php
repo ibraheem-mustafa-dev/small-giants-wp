@@ -1,9 +1,9 @@
 <?php
 /**
  * Shop toolbar and filter-panel settings (Customizer > Shop Filters):
- * the result count's wording, the sort menu's options and labels, the
- * searchable filter lists' placeholder, where the one-switch filter sits and
- * what it reads, and the colour swatches' stylesheet.
+ * the result count's wording, the sort menu's options and labels, where the
+ * one-switch filter sits and what it reads, and the colour swatches'
+ * stylesheet.
  *
  * Kept apart from inc/shop-filters-settings.php, which is near its size cap.
  *
@@ -48,11 +48,6 @@ function register_shop_toolbar_customizer_settings( \WP_Customize_Manager $wp_cu
 			'type'     => 'number',
 			'label'    => __( 'Gap between the filter column and the products (px, blank for the theme spacing)', 'sgs-theme' ),
 			'sanitize' => __NAMESPACE__ . '\sanitize_shop_px',
-		),
-		'sgs_shop_filter_search_label'     => array(
-			'type'     => 'text',
-			'label'    => __( 'Placeholder of a searchable filter list (a group heading with the class sgs-filter-search), e.g. "Search brands"', 'sgs-theme' ),
-			'sanitize' => 'sanitize_text_field',
 		),
 		'sgs_shop_filter_boolean_source'   => array(
 			'type'     => 'select',
@@ -256,7 +251,6 @@ function enqueue_shop_filter_groups(): void {
 		true
 	);
 	$extra = array(
-		'searchLabel'       => (string) get_theme_mod( 'sgs_shop_filter_search_label', '' ),
 		'segmentedAllLabel' => __( 'All', 'sgs-theme' ),
 	);
 	wp_add_inline_script(

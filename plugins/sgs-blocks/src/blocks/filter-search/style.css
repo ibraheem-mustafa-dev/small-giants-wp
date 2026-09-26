@@ -117,3 +117,13 @@
 	opacity: 0.6;
 	cursor: not-allowed;
 }
+
+/* ─── Narrowed-out options ──────────────────────────────────────────────── */
+
+/* view.js marks an option that doesn't match the typed text. `!important`
+   because WooCommerce's own item rules set display on the same elements. */
+.wp-block-sgs-filter-search [data-sgs-fs-hidden],
+.wp-block-woocommerce-product-filter-attribute [data-sgs-fs-hidden],
+.wp-block-woocommerce-product-filter-taxonomy [data-sgs-fs-hidden] {
+	display: none !important;
+}

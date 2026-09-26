@@ -1,7 +1,7 @@
 """Applies Eye Care's shop settings (the theme's Customizer > Shop Filters theme mods) to a site over SSH.
 The reproducible record of those settings: re-run after a site rebuild. Values follow the draft's shop
 (Eye Care Birmingham.dc.html): 270px filter column 40px from a grid of 18px gaps, "16 frames", the draft's five
-sort options, "Search brands", and "Polarised only" (a product tag) at the bottom of the panel.
+sort options, and "Polarised only" (a product tag) at the bottom of the panel.
 
 Usage: python apply_shop_settings.py [--path domains/<site>/public_html]   (default: eye-care-test)"""
 import argparse
@@ -29,7 +29,6 @@ SETTINGS = {
         'sgs_biggest_saving|Biggest saving',
         'sgs_brand_az|Brand A–Z',
     ]),
-    'sgs_shop_filter_search_label': 'Search brands',
     'sgs_shop_filter_boolean_enabled': '1',
     'sgs_shop_filter_boolean_source': 'tag',
     'sgs_shop_filter_boolean_term': 'polarised',
