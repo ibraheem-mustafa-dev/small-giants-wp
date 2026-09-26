@@ -21,15 +21,25 @@
  * result's tags overlap most with the tags accumulated along the path taken
  * wins — decided entirely client-side by the IAPI store, not here.
  *
- * FR-43-20 (v1.4.0) `action: "add-to-bag"`: this terminal instead shows a
- * summary of the priced add-ons chosen along the path taken + an "Add to
- * bag" button. The summary text and the actual POST to
- * `/sgs/v1/cart/add-item` are built entirely client-side by
- * `sgs/choice-flow`'s own pricing module (it alone knows the path taken) —
- * this file only renders the button + empty summary/status containers, plus
- * the REST nonce + endpoint URL the button needs (same "embed server-known
- * values as data-*, never guess them in JS" pattern `sgs/product-card`'s own
- * render.php uses for `restNonce`).
+ * FR-43-20/D3 (v1.8.0) `action: "add-to-bag"`: this terminal no longer
+ * renders its own button — Bean's 2026-09-26 review (D3) moved "Add to
+ * basket"/"Buy now" into `sgs/choice-flow`'s own footer, since Back and the
+ * terminal action sit on the same row (Back left, actions right) and the
+ * footer is the ONE element outside every step's markup. This file's job is
+ * therefore only to publish, as data-* attributes on this instance's own
+ * wrapper, everything `choice-flow/navigation.js` needs to build those
+ * buttons when this step becomes current: which of the two are switched on
+ * (`showAddToBasket`/`showBuyNow`), their labels, and the REST nonce +
+ * `/cart/add-item` endpoint + `wc_get_checkout_url()` (same "embed
+ * server-known values as data-*, never guess them in JS" pattern
+ * `sgs/product-card`'s own render.php uses for `restNonce`). The wrapper
+ * also carries the legacy `sgs-choice-flow-result__add-to-bag` class
+ * alongside its own — `choice-flow/flow-fields.js`'s file-upload helper
+ * already reads its nonce/endpoint off the nearest element with that class;
+ * giving the WRAPPER that class (it is no longer a `<button>`) keeps that
+ * reader working unchanged. The client-side add/buy request itself is built
+ * by `sgs/choice-flow`'s own `add-to-bag.js`, which alone knows the path
+ * taken (add-ons, resolved variation).
  *
  * NO-INLINE (Spec 32): this block emits zero inline `style` property
  * declarations. No per-instance colour/typography attribute exists on this
@@ -63,13 +73,36 @@ $success_message = isset( $attributes['successMessage'] ) && '' !== trim( (strin
 	? (string) $attributes['successMessage']
 	: __( "Thanks — we'll be in touch shortly.", 'sgs-blocks' );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class'           => 'sgs-choice-flow-result',
-		'data-match-tags' => implode( ',', $match_tags ),
-		'data-action'     => $result_action,
-	)
+// D3 (v1.8.0): the flow's own footer builds "Add to basket"/"Buy now" from
+// these — see this file's own docblock for why the button moved out of here.
+$show_add_to_basket  = ! isset( $attributes['showAddToBasket'] ) || (bool) $attributes['showAddToBasket'];
+$add_to_basket_label = isset( $attributes['addToBasketLabel'] ) && '' !== trim( (string) $attributes['addToBasketLabel'] )
+	? (string) $attributes['addToBasketLabel']
+	: __( 'Add to basket', 'sgs-blocks' );
+$show_buy_now        = ! isset( $attributes['showBuyNow'] ) || (bool) $attributes['showBuyNow'];
+$buy_now_label       = isset( $attributes['buyNowLabel'] ) && '' !== trim( (string) $attributes['buyNowLabel'] )
+	? (string) $attributes['buyNowLabel']
+	: __( 'Buy now', 'sgs-blocks' );
+
+$wrapper_args = array(
+	// The second class is a back-compat marker for flow-fields.js's file-
+	// upload helper — see this file's own docblock.
+	'class'           => 'sgs-choice-flow-result' . ( 'add-to-bag' === $result_action ? ' sgs-choice-flow-result__add-to-bag' : '' ),
+	'data-match-tags' => implode( ',', $match_tags ),
+	'data-action'     => $result_action,
 );
+
+if ( 'add-to-bag' === $result_action ) {
+	$wrapper_args['data-show-add-to-basket']  = $show_add_to_basket ? '1' : '0';
+	$wrapper_args['data-add-to-basket-label'] = $add_to_basket_label;
+	$wrapper_args['data-show-buy-now']        = $show_buy_now ? '1' : '0';
+	$wrapper_args['data-buy-now-label']       = $buy_now_label;
+	$wrapper_args['data-nonce']               = wp_create_nonce( 'wp_rest' );
+	$wrapper_args['data-endpoint']            = rest_url( 'sgs/v1/cart/add-item' );
+	$wrapper_args['data-checkout-url']        = function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '';
+}
+
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
 echo '<div ' . $wrapper_attributes . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() pre-escapes.
 
@@ -82,11 +115,9 @@ if ( '' !== trim( wp_strip_all_tags( $body ) ) ) {
 }
 
 if ( 'add-to-bag' === $result_action ) {
-	echo '<div class="sgs-choice-flow-result__addon-summary"></div>';
-	echo '<button type="button" class="sgs-choice-flow-result__add-to-bag"';
-	echo ' data-nonce="' . esc_attr( wp_create_nonce( 'wp_rest' ) ) . '"';
-	echo ' data-endpoint="' . esc_url( rest_url( 'sgs/v1/cart/add-item' ) ) . '"';
-	echo '>' . esc_html__( 'Add to bag', 'sgs-blocks' ) . '</button>';
+	// The button itself lives in the flow's own footer now (D3) — this is
+	// only where an error ("please choose every option above…") or the
+	// success message shows, since it's contextually part of this step.
 	echo '<div class="sgs-choice-flow-result__cart-status" role="status" aria-live="polite"></div>';
 }
 

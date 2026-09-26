@@ -10,6 +10,7 @@ import { BuyboxExtraPanels, getBuyboxExtraColourRows } from './inspector-extra';
 import { BuyboxExtraSettingsPanels2 } from './inspector-extra-2';
 import { BuyboxExtraStylesPanels } from './inspector-extra-3';
 import ButtonActionPanel from './ButtonActionPanel';
+import GuidedPanel from './GuidedPanel';
 
 // A second CTA, a WhatsApp prompt, or an assurance list — the kinds of thing
 // worth dropping below the add-to-cart form. Not exhaustive (any block can be
@@ -98,6 +99,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<SgsColourPanel rows={ colourRows } />
 			<ButtonActionPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<GuidedPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 			<InspectorControls>
 				<PanelBody title={ __( 'Buybox labels', 'sgs-blocks' ) }>

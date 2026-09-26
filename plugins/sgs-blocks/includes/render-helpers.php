@@ -164,3 +164,7 @@ require_once __DIR__ . '/media/atoms/shadow.php';
 require_once __DIR__ . '/media/atoms/media-padding.php';
 require_once __DIR__ . '/media/atoms/caption.php';
 require_once __DIR__ . '/media/atoms/link.php';
+
+// Spec 43 FR-43-25 — a term's badge/description fallback for choice-flow
+// product-option steps that don't override them.
+require_once __DIR__ . '/choice-flow-term-details.php';

@@ -174,6 +174,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		tileGap,
 		colourPreset,
 		showSelectedTick,
+		showTermDetails,
 		pillBgColour,
 		pillBgColourGradient,
 		pillBgColourHover,
@@ -211,6 +212,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			`sgs-option-picker--${ pillSize }`,
 			colourPreset ? `sgs-option-picker--${ colourPreset }` : '',
 			showSelectedTick ? '' : 'sgs-option-picker--no-tick',
+			showTermDetails ? '' : 'sgs-option-picker--no-term-details',
 		].filter( Boolean ).join( ' ' ),
 		style: buildRootPreviewStyle( attributes ),
 	} );
@@ -920,6 +922,20 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange={ ( val ) =>
 									setAttributes( { showSelectedTick: val } )
 								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Show option badge and description', 'sgs-blocks' ) }
+							hasValue={ () => showTermDetails !== true }
+							onDeselect={ () => setAttributes( { showTermDetails: true } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show option badge and description', 'sgs-blocks' ) }
+								help={ __( 'Shows each option’s badge and short description when its attribute term has them.', 'sgs-blocks' ) }
+								checked={ showTermDetails }
+								onChange={ ( val ) => setAttributes( { showTermDetails: val } ) }
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>

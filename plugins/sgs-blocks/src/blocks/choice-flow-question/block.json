@@ -55,6 +55,11 @@
 			"default": "",
 			"role": "content"
 		},
+		"intro": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24 (v1.8.0): an optional short paragraph shown under the question title, in both layouts — capped to about 56 characters wide in the showcase layout (style.css's own max-width). Empty string = no intro paragraph."
+		},
 		"layout": {
 			"type": "string",
 			"enum": [ "grid", "list" ],
@@ -70,6 +75,12 @@
 			"type": "string",
 			"default": "",
 			"description": "Spec 43 Phase 3/4 (FR-43-10/10a): a `pa_*` taxonomy on the flow's own product. When set, this step is a product-option step — its options are generated from the product's attribute terms at render time (not typed), and it can't be combined with `priceGroup` (the editor clears `priceGroup` when this is chosen). Empty string = not a product-option step."
+		},
+		"questionFontWeight": {
+			"type": "string",
+			"enum": [ "400", "500", "600", "700", "800" ],
+			"default": "700",
+			"description": "D7 (2026-09-26 plan, Bean's review): the step heading's font-weight. Defaults to 700 (bold) — titles read too weak at the browser's UA default. Emitted as a class per weight (never inline style — Spec 32), see style.css's `__title--w{weight}` rules."
 		},
 		"options": {
 			"type": "array",

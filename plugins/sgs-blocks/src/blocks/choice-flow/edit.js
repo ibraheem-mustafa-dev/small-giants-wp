@@ -20,8 +20,11 @@ import fillRow from '../../components/colour-variants/fillRow';
 import textRow from '../../components/colour-variants/textRow';
 import { colourVar } from '../../utils';
 import PricingSettingsPanel from './PricingSettingsPanel';
+import SummaryPanel from './SummaryPanel';
+import FlowLayoutPanel from './FlowLayoutPanel';
 import LinkedFlowPanel from './LinkedFlowPanel';
 import ChromePanel from './ChromePanel';
+import FlowNavigationPanel from './FlowNavigationPanel';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only). Mirrors sgs/notice-banner/edit.js's LENGTH_UNITS exactly
@@ -420,7 +423,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const blockProps = useBlockProps( {
-		className: 'sgs-choice-flow',
+		className: `sgs-choice-flow sgs-choice-flow--layout-${ attributes.flowLayout || 'compact' }`,
 		style: buildWrapperStyle( attributes ),
 	} );
 
@@ -628,6 +631,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			</InspectorControls>
 			<ChromePanel attributes={ attributes } setAttributes={ setAttributes } />
+			<FlowLayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<FlowNavigationPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<InspectorControls>
+				<SummaryPanel
+					showPricePanel={ showPricePanel }
+					summaryShowImage={ attributes.summaryShowImage }
+					summaryPosition={ attributes.summaryPosition }
+					stageNote={ attributes.stageNote }
+					stageNoteLink={ attributes.stageNoteLink }
+					setAttributes={ setAttributes }
+				/>
+			</InspectorControls>
 
 			<div { ...blockProps }>
 				{ title && (

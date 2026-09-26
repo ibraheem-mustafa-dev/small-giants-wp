@@ -10,6 +10,11 @@
  *     button (only meaningful when the flow sits inside an sgs/modal)
  *   - a sticky Back / primary-action footer
  *
+ * D5/D7 (2026-09-26 plan) also live here — a product-option step's swatch-
+ * image fallback and the question heading's font-weight class — because
+ * `choice-flow-product-attribute-step.php` was already at this codebase's
+ * 300-line file cap; they have no other thematic tie to the root chrome.
+ *
  * `function_exists()` guards on every symbol — this file is `require_once`
  * from render.php, which itself can be included by more than one code path
  * per request (a linked flow rendering the referenced post's own blocks).
@@ -58,6 +63,14 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 	 * hides it client-side when no enclosing `dialog.sgs-modal__dialog` is
 	 * found, so a header used outside a modal never shows a dead button.
 	 *
+	 * D6 (2026-09-26 plan, Bean's review): redesigned from a text-plus-'×'
+	 * pill to a round 44x44 icon button — an inline SVG '×' (stroke
+	 * `currentColor`, `aria-hidden`) with `closeLabel` as VISUALLY HIDDEN
+	 * text (never a visible label), so its accessible name survives even
+	 * where `aria-label` support is patchy. The click mechanism itself is
+	 * untouched — chrome.js's wireClose() still finds this same
+	 * `.sgs-choice-flow__chrome-close` selector.
+	 *
 	 * @param array $attributes Block attributes.
 	 * @param int   $step_count Total question-step count (excludes result
 	 *                          steps — the same count view.js's own
@@ -96,7 +109,8 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 		$html .= '<span class="sgs-choice-flow__chrome-eyebrow" aria-live="polite">' . esc_html( $initial_eyebrow ) . '</span>';
 
 		$html .= '<button type="button" class="sgs-choice-flow__chrome-close">';
-		$html .= '<span aria-hidden="true">&times;</span> ' . esc_html( $close_label );
+		$html .= '<svg class="sgs-choice-flow__chrome-close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+		$html .= '<span class="sgs-choice-flow__chrome-close-label">' . esc_html( $close_label ) . '</span>';
 		$html .= '</button>';
 
 		$html .= '</div>';
@@ -133,5 +147,106 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_progress_colour_css' ) ) {
 		}
 
 		return "{$root_sel} .sgs-choice-flow__progress-fill{--sgs-choice-flow-progress-colour:{$resolved};}";
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_term_swatch_image' ) ) {
+	/**
+	 * D5: a product-option step's fallback option image — the term's OWN
+	 * swatch image, same term meta `sgs/option-picker`'s pills read
+	 * (`_sgs_swatch_image_id` — `option-picker/render.php`).
+	 *
+	 * @param string $taxonomy A `pa_*` attribute taxonomy name.
+	 * @param string $slug     The term's slug.
+	 * @return array{url:string,alt:string} Empty when nothing resolves.
+	 */
+	function sgs_choice_flow_term_swatch_image( string $taxonomy, string $slug ): array {
+		$empty = array(
+			'url' => '',
+			'alt' => '',
+		);
+		if ( '' === $taxonomy || '' === $slug || ! function_exists( 'get_term_by' ) ) {
+			return $empty;
+		}
+		$term = get_term_by( 'slug', $slug, $taxonomy );
+		if ( ! $term instanceof \WP_Term ) {
+			return $empty;
+		}
+		$image_id = absint( get_term_meta( $term->term_id, '_sgs_swatch_image_id', true ) );
+		$url      = $image_id > 0 ? wp_get_attachment_image_url( $image_id, 'medium' ) : false;
+		if ( ! $url ) {
+			return $empty;
+		}
+		$alt = trim( (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) );
+		return array(
+			'url' => (string) $url,
+			'alt' => '' !== $alt ? $alt : $term->name,
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_resolve_option_image' ) ) {
+	/**
+	 * D5: a product-option step option's image — its own merged `image`
+	 * (from `sgs_choice_flow_merge_option_extras()`) first, else the term's
+	 * swatch image. Optional either way — no image anywhere keeps this
+	 * option a plain text card.
+	 *
+	 * @param array  $merged_option A row from `sgs_choice_flow_merge_option_extras()`.
+	 * @param string $taxonomy      This step's `pa_*` attribute taxonomy.
+	 * @return array{url:string,alt:string}
+	 */
+	function sgs_choice_flow_resolve_option_image( array $merged_option, string $taxonomy ): array {
+		$image = isset( $merged_option['image'] ) && is_array( $merged_option['image'] ) ? $merged_option['image'] : array();
+		$url   = isset( $image['url'] ) ? (string) $image['url'] : '';
+		if ( '' !== $url ) {
+			return array(
+				'url' => $url,
+				'alt' => isset( $image['alt'] ) ? (string) $image['alt'] : '',
+			);
+		}
+		return sgs_choice_flow_term_swatch_image( $taxonomy, (string) ( $merged_option['value'] ?? '' ) );
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_question_title_weight_class' ) ) {
+	/**
+	 * D7: the step heading's font-weight, as a class suffix (never inline
+	 * style — Spec 32). Falls back to '700' (the new bold default) for an
+	 * unset or off-enum stored value.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string One of '400'/'500'/'600'/'700'/'800'.
+	 */
+	function sgs_choice_flow_question_title_weight_class( array $attributes ): string {
+		$weight = isset( $attributes['questionFontWeight'] ) ? (string) $attributes['questionFontWeight'] : '700';
+		return in_array( $weight, array( '400', '500', '600', '700', '800' ), true ) ? $weight : '700';
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_footer_html' ) ) {
+	/**
+	 * The flow's sticky footer: Back on the left; Continue, Add to basket and
+	 * Buy now on the right. navigation.js's updateFooterActions() decides which
+	 * right-hand buttons show for the current step (Spec 43 FR-43-1/FR-43-5).
+	 *
+	 * @param array $attributes Root block attributes.
+	 * @return string Escaped markup.
+	 */
+	function sgs_choice_flow_footer_html( array $attributes ): string {
+		$continue_label = isset( $attributes['continueLabel'] ) && '' !== trim( (string) $attributes['continueLabel'] )
+			? (string) $attributes['continueLabel']
+			: __( 'Continue', 'sgs-blocks' );
+
+		return '<div class="sgs-choice-flow__footer"><div class="sgs-choice-flow__footer-row">'
+			. '<button type="button" class="sgs-choice-flow__nav-back" hidden aria-label="' . esc_attr__( 'Back', 'sgs-blocks' ) . '">'
+			. '<span aria-hidden="true">&larr;</span> ' . esc_html__( 'Back', 'sgs-blocks' ) . '</button>'
+			. '<div class="sgs-choice-flow__footer-actions">'
+			. '<button type="button" class="sgs-choice-flow__continue is-muted" hidden aria-disabled="true">' . esc_html( $continue_label ) . '</button>'
+			. '<button type="button" class="sgs-choice-flow__add-to-basket" hidden></button>'
+			. '<button type="button" class="sgs-choice-flow__buy-now" hidden></button>'
+			. '</div></div>'
+			. '<p class="sgs-choice-flow__continue-hint" role="status" aria-live="polite" data-message="' . esc_attr__( 'Choose an option to continue', 'sgs-blocks' ) . '"></p>'
+			. '</div>';
 	}
 }

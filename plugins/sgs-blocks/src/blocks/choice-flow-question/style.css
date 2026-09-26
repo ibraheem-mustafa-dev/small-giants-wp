@@ -61,6 +61,45 @@
 	margin: 0 0 16px;
 }
 
+/* D7 (2026-09-26 plan, Bean's review — titles need more weight): the
+   heading's font-weight, emitted as a class (never inline style — Spec 32),
+   controlled by TitlePanel.js's questionFontWeight attribute. Defaults to
+   700 (bold) via block.json — a step with no stored value still gets one of
+   these classes from render.php's own fallback, never the browser's UA
+   regular weight. */
+.sgs-choice-flow-question__title--w400 {
+	font-weight: 400;
+}
+
+.sgs-choice-flow-question__title--w500 {
+	font-weight: 500;
+}
+
+.sgs-choice-flow-question__title--w600 {
+	font-weight: 600;
+}
+
+.sgs-choice-flow-question__title--w700 {
+	font-weight: 700;
+}
+
+.sgs-choice-flow-question__title--w800 {
+	font-weight: 800;
+}
+
+/* FR-43-24 — the optional intro paragraph under the title, both layouts;
+   the showcase layout caps its width (below). */
+.sgs-choice-flow-question__intro {
+	margin: 0 0 16px;
+	color: var( --wp--preset--color--text-muted, #6b7280 );
+	font-size: 0.95em;
+	line-height: 1.5;
+}
+
+.sgs-choice-flow-question__intro:empty {
+	display: none;
+}
+
 /* ---------------------------------------------------------------------- */
 /* Option grid (was a plain stacked <ul>)                                 */
 /* ---------------------------------------------------------------------- */
@@ -235,3 +274,107 @@
 /* FR-43-16's '?' help-toggle + panel now lives in the shared
    src/shared/info-toggle.css (imported at the top of this file) as
    .sgs-info-toggle / .sgs-info-toggle__panel — see that file. */
+
+/* =========================================================================
+ * Showcase layout (FR-43-24)
+ * =========================================================================
+ * The ancestor class lives on the root `sgs/choice-flow` wrapper
+ * (choice-flow/style.css) — every rule here reaches down into this block's
+ * own classes through it, so compact's rules above stay untouched.
+ */
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__intro {
+	max-width: 56ch;
+	margin-bottom: 26px;
+	font-size: 15.5px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__title {
+	font-family: var( --wp--preset--font-family--heading, inherit );
+	font-size: 28px;
+	line-height: 1.1;
+	margin-bottom: 8px;
+}
+
+@container sgs-choice-flow-showcase ( min-width: 700px ) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__title {
+		font-size: 38px;
+	}
+}
+
+/* Options grid — the step pane's OWN container (`sgs-choice-flow-pane`,
+   declared on choice-flow/style.css's `.sgs-choice-flow__inner`), not the
+   flow's overall width: "one column under a 620px container" (FR-43-24). */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options--grid {
+	grid-template-columns: minmax( 0, 1fr );
+	gap: 12px;
+}
+
+@container sgs-choice-flow-pane ( min-width: 620px ) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options--grid {
+		grid-template-columns: repeat( 2, minmax( 0, 1fr ) );
+	}
+}
+
+/* Option card: a 16:9 image band on top (row 1), then the title with its
+   price aligned right on the same line (row 2), then the description
+   (row 3) — explicit grid-row placement so the visual order doesn't depend
+   on render.php's own DOM order (badge stays absolutely positioned,
+   untouched). */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: baseline;
+	column-gap: 12px;
+	row-gap: 4px;
+	padding: 16px 18px 18px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media {
+	grid-column: 1 / -1;
+	grid-row: 1;
+	margin: -16px -18px 12px;
+	border-radius: 0;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-label {
+	grid-column: 1;
+	grid-row: 2;
+	font-size: 18px;
+	font-weight: 500;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-price {
+	grid-column: 2;
+	grid-row: 2;
+	margin-top: 0;
+	white-space: nowrap;
+	color: var( --wp--preset--color--accent, var( --wp--preset--color--primary-dark, #6F6152 ) );
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-description {
+	grid-column: 1 / -1;
+	grid-row: 3;
+	margin-top: 0;
+}
+
+/* A plain surface band when the option carries no image — render.php only
+   emits `.option-media` when an image URL exists, so this is a CSS-only
+   fallback (`:has()` is broadly supported; browsers without it simply show
+   no band, a decorative-only degrade). */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button:not( :has( .sgs-choice-flow-question__option-media ) )::before {
+	content: '';
+	display: block;
+	grid-column: 1 / -1;
+	grid-row: 1;
+	aspect-ratio: 16 / 9;
+	margin: -16px -18px 12px;
+	background-color: var( --wp--preset--color--surface-alt, #F3F0EC );
+}
+
+/* "the selected card gets a 2px border in the text colour" (FR-43-24) —
+   overrides the compact `--selected` rule's primary-token border above. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button--selected {
+	border-color: var( --wp--preset--color--text, #1a202c );
+	box-shadow: none;
+}

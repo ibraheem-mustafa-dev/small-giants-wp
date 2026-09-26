@@ -7,13 +7,16 @@
  * everything add-on/price-specific lives here. The 'add-to-bag' terminal's
  * own POST is a further split, `add-to-bag.js` (reads this module's
  * `getAddonSummary()`), to keep this file itself under the same guideline.
+ * The D4 summary panel's own PAINTING (image swap, rows, total) is a further
+ * split again, `summary.js` — this module owns only the pricing STATE and
+ * hands it a snapshot on every change; it holds no DOM query for the panel.
  *
  * Ownership split (FR-43-18 — the server-side price list is the ONLY price
  * authority):
  *   - This module never invents a price. Every price it shows or sends came
  *     from a `data-price` attribute `choice-flow-question/render.php` already
  *     read off the site-wide add-on price list at render time.
- *   - The FR-43-19 panel here is DISPLAY ONLY. The actual charge is resolved
+ *   - The summary panel is DISPLAY ONLY. The actual charge is resolved
  *     server-side, in `/sgs/v1/cart/add-item`'s `addons` handling (a parallel
  *     build — see `add-to-bag.js`), from `{group, key}` pairs alone; this
  *     module never sends a price or a total.
@@ -31,10 +34,7 @@
  * @package SGS\Blocks
  */
 
-const PRICE_PANEL_SELECTOR = '.sgs-choice-flow__price-panel';
-const PANEL_BASE_VALUE_SELECTOR = '.sgs-choice-flow__price-panel-base-value';
-const PANEL_ROWS_SELECTOR = '.sgs-choice-flow__price-panel-rows';
-const PANEL_TOTAL_VALUE_SELECTOR = '.sgs-choice-flow__price-panel-total-value';
+import { renderSummaryPanel, formatMinor, bindSummaryToggle } from './summary.js';
 
 /**
  * Per-flow-instance add-on state: which priced-question group each chosen
@@ -84,30 +84,6 @@ function currentBase( state ) {
 let variationListenerBound = false;
 
 /**
- * @param {number}      minor    Amount in minor currency units.
- * @param {number}      decimals  Currency decimal places.
- * @param {boolean}     trimZeros Drop the decimals on a whole amount (WooCommerce's
- *                                `woocommerce_price_trim_zeros`, seeded by render.php).
- * @return {string} A plain formatted amount, e.g. "£9.99". No currency
- *                   symbol is assumed beyond "£" (this codebase's default
- *                   client base) when no symbol is otherwise available —
- *                   acceptable for a DISPLAY-only panel; the cart/order
- *                   totals a shopper actually pays are always WooCommerce's
- *                   own, server-formatted output.
- */
-function formatMinor( minor, decimals, trimZeros = false ) {
-	const amount = minor / 10 ** decimals;
-	const places = trimZeros && minor % 10 ** decimals === 0 ? 0 : decimals;
-	return (
-		'£' +
-		amount.toLocaleString( undefined, {
-			minimumFractionDigits: places,
-			maximumFractionDigits: places,
-		} )
-	);
-}
-
-/**
  * Read a flow's render.php-seeded first-paint product/price.
  *
  * @param {HTMLElement} flowRoot Flow wrapper element.
@@ -145,57 +121,17 @@ function ensureState( flowRoot ) {
 }
 
 /**
- * Re-render the FR-43-19 price panel for one flow instance. A no-op when the
- * flow has no panel container (`showPricePanel:false` never emits one).
+ * Hand `summary.js` this flow instance's current pricing snapshot to paint.
  *
  * @param {HTMLElement} flowRoot Flow wrapper element.
  */
-function renderPricePanel( flowRoot ) {
-	const panelEl = flowRoot.querySelector( PRICE_PANEL_SELECTOR );
-	if ( ! panelEl ) {
-		return;
-	}
-
+function refreshSummary( flowRoot ) {
 	const state = ensureState( flowRoot );
-	const base = currentBase( state );
-
-	const baseValueEl = panelEl.querySelector( PANEL_BASE_VALUE_SELECTOR );
-	if ( baseValueEl ) {
-		baseValueEl.textContent =
-			base.priceMinor !== null ? formatMinor( base.priceMinor, base.decimals, state.trimZeros ) : '—';
-	}
-
-	const rowsEl = panelEl.querySelector( PANEL_ROWS_SELECTOR );
-	let addonTotalMinor = 0;
-	if ( rowsEl ) {
-		rowsEl.innerHTML = '';
-		state.answers.forEach( ( answer ) => {
-			const priceValue = parseFloat( answer.price );
-			const priceMinor = Number.isFinite( priceValue )
-				? Math.round( priceValue * 10 ** base.decimals )
-				: 0;
-			addonTotalMinor += priceMinor;
-
-			const rowEl = document.createElement( 'li' );
-			const labelEl = document.createElement( 'span' );
-			labelEl.textContent = answer.groupLabel
-				? `${ answer.groupLabel } — ${ answer.label }`
-				: answer.label;
-			const valueEl = document.createElement( 'span' );
-			valueEl.textContent = priceMinor > 0 ? formatMinor( priceMinor, base.decimals, state.trimZeros ) : 'Included';
-			rowEl.appendChild( labelEl );
-			rowEl.appendChild( valueEl );
-			rowsEl.appendChild( rowEl );
-		} );
-	}
-
-	const totalValueEl = panelEl.querySelector( PANEL_TOTAL_VALUE_SELECTOR );
-	if ( totalValueEl ) {
-		totalValueEl.textContent =
-			base.priceMinor !== null
-				? formatMinor( base.priceMinor + addonTotalMinor, base.decimals, state.trimZeros )
-				: '—';
-	}
+	renderSummaryPanel( flowRoot, {
+		base: currentBase( state ),
+		trimZeros: state.trimZeros,
+		addonRows: Array.from( state.answers.values() ),
+	} );
 }
 
 /**
@@ -231,7 +167,7 @@ function storeLiveBase( live ) {
 	}
 	liveBases.set( live.productId, live );
 	lastLiveBase = live;
-	document.querySelectorAll( '[data-wp-interactive="sgs/choice-flow"]' ).forEach( renderPricePanel );
+	document.querySelectorAll( '[data-wp-interactive="sgs/choice-flow"]' ).forEach( refreshSummary );
 }
 
 /**
@@ -253,21 +189,22 @@ export function setFlowVariationBase( flowRoot, overlay ) {
 }
 
 /**
- * Initialise this flow instance's pricing state + panel, and bind the
- * module-level variation-change listener once. Called from `view.js`'s
- * `initFlow()`.
+ * Initialise this flow instance's pricing state + summary panel, and bind
+ * the module-level variation-change listener + the panel's desktop toggle
+ * lock once. Called from `view.js`'s `initFlow()`.
  *
  * @param {HTMLElement} flowRoot Flow wrapper element.
  */
 export function initPricePanel( flowRoot ) {
 	ensureState( flowRoot );
+	bindSummaryToggle( flowRoot );
 
 	if ( ! variationListenerBound ) {
 		variationListenerBound = true;
 		window.addEventListener( 'sgs-variation-change', handleVariationChange );
 	}
 
-	renderPricePanel( flowRoot );
+	refreshSummary( flowRoot );
 }
 
 /**
@@ -290,7 +227,7 @@ export function recordAddonAnswer( flowRoot, group, groupLabel, key, label, pric
 	}
 	const state = ensureState( flowRoot );
 	state.answers.set( group, { key, label, groupLabel, price } );
-	renderPricePanel( flowRoot );
+	refreshSummary( flowRoot );
 }
 
 /**
@@ -303,7 +240,7 @@ export function recordAddonAnswer( flowRoot, group, groupLabel, key, label, pric
 export function resetAddonAnswers( flowRoot ) {
 	const state = ensureState( flowRoot );
 	state.answers.clear();
-	renderPricePanel( flowRoot );
+	refreshSummary( flowRoot );
 }
 
 /**

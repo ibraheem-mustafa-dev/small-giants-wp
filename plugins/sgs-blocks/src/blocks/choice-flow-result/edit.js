@@ -1,10 +1,23 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, RichText } from '@wordpress/block-editor';
-import { PanelBody, TextControl, SelectControl } from '@wordpress/components';
+import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
 import { NumberControl } from '../../components/primitives';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { heading, body, matchTags, action, rateLimit, emailLabel, submitLabel, successMessage } = attributes;
+	const {
+		heading,
+		body,
+		matchTags,
+		action,
+		rateLimit,
+		emailLabel,
+		submitLabel,
+		successMessage,
+		showAddToBasket,
+		addToBasketLabel,
+		showBuyNow,
+		buyNowLabel,
+	} = attributes;
 
 	const blockProps = useBlockProps( { className: 'sgs-choice-flow-result' } );
 
@@ -36,12 +49,47 @@ export default function Edit( { attributes, setAttributes } ) {
 						] }
 						onChange={ ( val ) => setAttributes( { action: val } ) }
 						help={ __(
-							'Add to bag shows a summary of the chosen add-ons and a real Add to bag button — the product/variation and every priced answer on the path taken. Email capture shows an email form that stores the path’s answers as a form submission.',
+							'Add to bag shows "Add to basket"/"Buy now" in the flow’s own footer (Back on the left, these on the right) — the product/variation and every priced answer on the path taken. Email capture shows an email form that stores the path’s answers as a form submission.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ 'add-to-bag' === action && (
+						<>
+							<ToggleControl
+								label={ __( 'Show “Add to basket”', 'sgs-blocks' ) }
+								checked={ showAddToBasket !== false }
+								onChange={ ( val ) => setAttributes( { showAddToBasket: val } ) }
+								__nextHasNoMarginBottom
+							/>
+							{ showAddToBasket !== false && (
+								<TextControl
+									label={ __( 'Add to basket label', 'sgs-blocks' ) }
+									value={ addToBasketLabel }
+									onChange={ ( val ) => setAttributes( { addToBasketLabel: val } ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+							<ToggleControl
+								label={ __( 'Show “Buy now”', 'sgs-blocks' ) }
+								checked={ showBuyNow !== false }
+								onChange={ ( val ) => setAttributes( { showBuyNow: val } ) }
+								help={ __( 'Buy now adds the item then goes straight to checkout.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+							/>
+							{ showBuyNow !== false && (
+								<TextControl
+									label={ __( 'Buy now label', 'sgs-blocks' ) }
+									value={ buyNowLabel }
+									onChange={ ( val ) => setAttributes( { buyNowLabel: val } ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</>
+					) }
 					{ 'email' === action && (
 						<>
 						<NumberControl
@@ -116,18 +164,23 @@ export default function Edit( { attributes, setAttributes } ) {
 					allowedFormats={ [ 'core/bold', 'core/italic', 'core/link' ] }
 					multiline="p"
 				/>
-				{ /* Canvas preview only — the real summary + Add to bag button are
-				   built client-side by sgs/choice-flow's own pricing module (it
-				   alone knows the path taken); this is a static stand-in so the
-				   `action` attribute reflects visibly in the editor canvas
+				{ /* Canvas preview only (D3) — the real "Add to basket"/"Buy now"
+				   buttons render in sgs/choice-flow's own footer, not here (Back
+				   left, these right), built by navigation.js from this block's
+				   data-* attributes once this step is current. This static line
+				   stands in so showAddToBasket/addToBasketLabel/showBuyNow/
+				   buyNowLabel reflect visibly in the editor canvas
 				   (check-editor-render-parity.js CHECK A). */ }
 				{ 'add-to-bag' === action && (
-					<div className="sgs-choice-flow-result__addon-summary-preview">
-						{ __( 'Chosen add-ons will summarise here.', 'sgs-blocks' ) }
-						<button type="button" disabled className="sgs-choice-flow-result__add-to-bag">
-							{ __( 'Add to bag', 'sgs-blocks' ) }
-						</button>
-					</div>
+					<p className="sgs-choice-flow-result__addon-summary-preview">
+						{ __( 'Shown in the flow’s footer:', 'sgs-blocks' ) }{ ' ' }
+						{ [
+							showAddToBasket !== false ? ( addToBasketLabel || __( 'Add to basket', 'sgs-blocks' ) ) : null,
+							showBuyNow !== false ? ( buyNowLabel || __( 'Buy now', 'sgs-blocks' ) ) : null,
+						]
+							.filter( Boolean )
+							.join( ' · ' ) || __( 'no button — both are switched off', 'sgs-blocks' ) }
+					</p>
 				) }
 				{ /* Canvas preview only — the real submit handler is built client-side
 				   by choice-flow/email.js; this is a static stand-in so the `action`

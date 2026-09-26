@@ -867,6 +867,27 @@ store( 'sgs/product-card', {
 					body.variation = variation;
 				}
 
+				// Spec 43 FR-43-23 — sgs/buybox's guided layout resolves answer
+				// groups (e.g. Topping, Dietary) that never enter variation
+				// resolution; guided.js keeps their chosen labels as JSON on the
+				// card root's data-extra-fields attribute (the smallest generic
+				// extension point this store needs — read fresh on every add, so
+				// a later re-answer is picked up with no extra wiring).
+				const cardRefForFields = cardRefByCtx.get( ctx );
+				const extraFieldsRaw = cardRefForFields
+					? cardRefForFields.dataset.extraFields
+					: '';
+				if ( extraFieldsRaw ) {
+					try {
+						const extraFields = JSON.parse( extraFieldsRaw );
+						if ( Array.isArray( extraFields ) && extraFields.length ) {
+							body.fields = extraFields;
+						}
+					} catch {
+						// Malformed JSON — proceed with no fields rather than failing the add.
+					}
+				}
+
 				const response = yield fetch(
 					getStoreApiBase() + '/sgs/v1/cart/add-item',
 					{

@@ -43,6 +43,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-configurator-pricing.php
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-rrp.php';
 require_once dirname( __DIR__, 3 ) . '/includes/buybox-modal-cta.php';
+require_once dirname( __DIR__, 3 ) . '/includes/buybox-guided.php';
+require_once dirname( __DIR__, 3 ) . '/includes/buybox-linked-flow.php';
 require_once __DIR__ . '/extras.php';
 
 // ---------------------------------------------------------------------------
@@ -89,8 +91,10 @@ if ( ! $product instanceof \WC_Product ) {
 /* ── 3. Simple product / non-variable: core fallback ────────────────────── */
 
 if ( ! $product->is_type( 'variable' ) ) {
+	// A linked customisation flow (FR-43-25) replaces core's Add to Cart.
+	$buybox_simple_flow = sgs_buybox_simple_linked_flow_html( $buybox_post_id, sanitize_text_field( (string) ( $attributes['addToCartLabel'] ?? '' ) ) );
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo do_blocks( $buybox_core_fallback );
+	echo '' !== $buybox_simple_flow ? $buybox_simple_flow : do_blocks( $buybox_core_fallback );
 	return;
 }
 
@@ -103,6 +107,13 @@ if ( null === $manifest ) {
 	echo do_blocks( $buybox_core_fallback );
 	return;
 }
+
+/* ── 4b. Guided layout (Spec 43 FR-43-23) — resolved early so both the wrapper class (below) and the 8b picker section can read it. ── */
+$buybox_layout = (string) ( $attributes['buyboxLayout'] ?? 'standard' );
+if ( ! in_array( $buybox_layout, array( 'standard', 'guided' ), true ) ) {
+	$buybox_layout = 'standard';
+}
+$buybox_is_guided = ( 'guided' === $buybox_layout );
 
 /* ── 5. Build seeded context (mirrors product-card L444-504 exactly) ─────── */
 
@@ -439,6 +450,15 @@ if ( ! in_array( $add_to_cart_action, array( 'cart', 'modal' ), true ) ) {
 $add_to_cart_modal_id    = sanitize_text_field( (string) ( $attributes['addToCartModalId'] ?? '' ) );
 $add_to_cart_opens_modal = ( 'modal' === $add_to_cart_action && '' !== $add_to_cart_modal_id );
 
+// Spec 43 FR-43-25 — a product-linked Choice Flow auto-wires this same modal
+// mode when no explicit addToCartAction:modal already wins (includes/buybox-
+// linked-flow.php owns the decision + the resolved flow post).
+$buybox_linked_flow_wire = sgs_buybox_apply_linked_flow( $buybox_post_id, $buybox_is_guided, $add_to_cart_action, $add_to_cart_modal_id, $add_to_cart_opens_modal );
+$add_to_cart_action      = $buybox_linked_flow_wire['action'];
+$add_to_cart_modal_id    = $buybox_linked_flow_wire['modal_id'];
+$add_to_cart_opens_modal = $buybox_linked_flow_wire['opens_modal'];
+$buybox_linked_flow_post = $buybox_linked_flow_wire['flow'];
+
 // Eye Care Wave C: add-to-cart button style preset + optional price display.
 // sgs_buybox_add_to_cart_class() allowlists to '' (today's look) or
 // primary|secondary|outline (extras.php) — style.css's
@@ -601,6 +621,9 @@ if ( $buybox_sticky['enabled'] ) {
 }
 if ( 'tablet' === ( $attributes['stackBelow'] ?? 'mobile' ) ) {
 	$buybox_wrapper_classes .= ' sgs-buybox--stack-tablet';
+}
+if ( $buybox_is_guided ) {
+	$buybox_wrapper_classes .= ' sgs-buybox--guided';
 }
 
 // Wrapper attributes — includes Interactivity API bindings. uid CLASS added
@@ -854,51 +877,79 @@ if ( '' !== $sgs_bb_price_typo_css ) {
 	$buybox_picker_sub_label_key  = sanitize_key( (string) ( $attributes['pickerSubLabelMetaKey'] ?? '' ) );
 	$buybox_picker_show_tick      = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
 
-	foreach ( $manifest['axes'] as $axis ) {
-		$terms = $axis['terms'] ?? array();
-
-		// Single-variant suppression (QA Gate B from design doc): skip axes where
-		// there is only one selectable term — no meaningful choice to present.
-		if ( count( $terms ) < 2 ) {
-			continue;
-		}
-
-		$buybox_axis_taxonomy = (string) ( $axis['taxonomy'] ?? '' );
-		$buybox_axis_style    = sgs_buybox_axis_has_swatch( $buybox_axis_taxonomy, $terms )
-			? $buybox_picker_swatch_style
-			: $buybox_picker_plain_style;
-
-		$buybox_picker_attrs = array(
-			'label'            => $axis['label'],
-			'showLabel'        => true,
-			'optionItems'      => array_map(
-				static function ( $t ) {
-					return array(
-						'key'   => $t['slug'],
-						'label' => $t['label'],
-					);
-				},
-				$terms
-			),
-			'defaultSelected'  => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
-			'typeKey'          => $axis['taxonomy'],
-			'showSelectedTick' => $buybox_picker_show_tick,
+	if ( $buybox_is_guided ) :
+		// Spec 43 FR-43-23 — one decision per screen behind a progress meter,
+		// instead of every axis picker at once. New file (includes/buybox-
+		// guided.php) so this render.php stays byte-identical in standard
+		// layout (the only path this file's size cap allows).
+		$buybox_guided_groups = sgs_buybox_guided_groups(
+			$product,
+			$manifest,
+			(bool) ( $attributes['guidedAnswerAttributes'] ?? true )
 		);
-		if ( '' !== $buybox_axis_style ) {
-			$buybox_picker_attrs['pillStyle'] = $buybox_axis_style;
-		}
-		if ( '' !== $buybox_picker_sub_label_key ) {
-			$buybox_picker_attrs['subLabelMetaKey'] = $buybox_picker_sub_label_key;
-		}
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
-		echo render_block(
+		echo sgs_buybox_guided_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_buybox_guided_render() escapes every value it interpolates.
+			$buybox_guided_groups,
 			array(
-				'blockName' => 'sgs/option-picker',
-				'attrs'     => $buybox_picker_attrs,
+				'swatch_style'  => $buybox_picker_swatch_style,
+				'plain_style'   => $buybox_picker_plain_style,
+				'sub_label_key' => $buybox_picker_sub_label_key,
+				'show_tick'     => $buybox_picker_show_tick,
+			),
+			(bool) ( $attributes['guidedAutoAdvance'] ?? true ),
+			array(
+				'next_label'   => (string) ( $attributes['guidedNextLabel'] ?? '' ),
+				'back_label'   => (string) ( $attributes['guidedBackLabel'] ?? '' ),
+				'meter_style'  => (string) ( $attributes['guidedMeterStyle'] ?? 'segments' ),
+				'meter_colour' => (string) ( $attributes['guidedMeterColour'] ?? '' ),
 			)
 		);
-	}
+	else :
+		foreach ( $manifest['axes'] as $axis ) {
+			$terms = $axis['terms'] ?? array();
+
+			// Single-variant suppression (QA Gate B from design doc): skip axes where
+			// there is only one selectable term — no meaningful choice to present.
+			if ( count( $terms ) < 2 ) {
+				continue;
+			}
+
+			$buybox_axis_taxonomy = (string) ( $axis['taxonomy'] ?? '' );
+			$buybox_axis_style    = sgs_buybox_axis_has_swatch( $buybox_axis_taxonomy, $terms )
+				? $buybox_picker_swatch_style
+				: $buybox_picker_plain_style;
+
+			$buybox_picker_attrs = array(
+				'label'            => $axis['label'],
+				'showLabel'        => true,
+				'optionItems'      => array_map(
+					static function ( $t ) {
+						return array(
+							'key'   => $t['slug'],
+							'label' => $t['label'],
+						);
+					},
+					$terms
+				),
+				'defaultSelected'  => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
+				'typeKey'          => $axis['taxonomy'],
+				'showSelectedTick' => $buybox_picker_show_tick,
+			);
+			if ( '' !== $buybox_axis_style ) {
+				$buybox_picker_attrs['pillStyle'] = $buybox_axis_style;
+			}
+			if ( '' !== $buybox_picker_sub_label_key ) {
+				$buybox_picker_attrs['subLabelMetaKey'] = $buybox_picker_sub_label_key;
+			}
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+			echo render_block(
+				array(
+					'blockName' => 'sgs/option-picker',
+					'attrs'     => $buybox_picker_attrs,
+				)
+			);
+		}
+	endif;
 	?>
 
 	<?php
@@ -1089,4 +1140,11 @@ if ( '' !== $sgs_bb_price_typo_css ) {
 </div>
 <?php
 echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ob_get_clean() returns the buffered HTML built above with esc_* on all dynamic values.
+
+// Spec 43 FR-43-25 — the product-linked flow's full-screen modal, rendered
+// after the buybox itself (once per page even with two buyboxes for the
+// same product/flow — see buybox-linked-flow.php's static guard).
+if ( $buybox_linked_flow_post instanceof \WP_Post ) {
+	sgs_buybox_render_linked_flow_modal( $buybox_linked_flow_post );
+}
 

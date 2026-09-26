@@ -2,73 +2,55 @@
 /**
  * Server-side render for sgs/choice-flow.
  *
- * Spec 43 Phase 2 (§9) — the branching-quiz wizard root. Renders its
- * InnerBlocks (sgs/form-step children) as-is via $content. Originally
- * declared no colour/typography/box attrs (block.json's old
- * supports.sgs.elements.wrapper._note) — the Visual-QA pass (2026-09-15,
- * design-reviewer gap #1) added a DELIBERATELY MINIMAL maxWidth + padding
- * shape only (content-block composition_role, not wrapper-shell-kind — see
- * the composition_role decision in scripts/seed-composition-roles.py). This
- * still does NOT call SGS_Container_Wrapper — that would be a real
- * architecture change needing its own design-gate (CLAUDE.md rule 7) — it
- * stays block-private, matching sgs/form-review's minimal shape.
+ * The branching-quiz wizard root. Renders its InnerBlocks (sgs/form-step
+ * children) as-is via $content. Carries a DELIBERATELY MINIMAL maxWidth +
+ * padding box shape only (content-block composition_role, not
+ * wrapper-shell-kind) — never calls SGS_Container_Wrapper, matching
+ * sgs/form-review's own minimal shape.
  *
  * `data-wp-interactive="sgs/choice-flow"` on the wrapper is the load-bearing
  * hook `view.js`'s FLOW_SELECTOR depends on
- * (`[data-wp-interactive="sgs/choice-flow"]`) — view.js was built and
- * verified against this exact contract before this file existed; do not
- * rename or remove it without updating view.js in the same commit.
+ * (`[data-wp-interactive="sgs/choice-flow"]`) — do not rename or remove it
+ * without updating view.js in the same commit.
  *
- * `title` (FR-43-9 build note) is shown to the editor operator as a canvas
- * preview only (edit.js) and here as an accessible landmark label — real
- * content for assistive tech, never a general-purpose visible heading (the
- * attribute's own help text: "not necessarily displayed to visitors").
+ * `title` is shown to the editor operator as a canvas preview only
+ * (edit.js) and here as an accessible landmark label — real content for
+ * assistive tech, never a general-purpose visible heading.
  *
- * Progress bar (Visual-QA gap #2): a track + fill pair, scoped inside this
- * same wrapper. The fill's WIDTH is driven entirely client-side by
- * `view.js`'s `showStepByIndex()`, which sets a `--sgs-choice-flow-progress`
- * custom property (0–1) on the flow root — this file only emits the
- * static markup + the CSS that consumes that property
- * (`width:calc(var(--sgs-choice-flow-progress,0) * 100%)`); it does not
- * compute an initial value (view.js's `initFlow()` sets it on load, same as
- * it does on every step change, so there is no flash-of-0%-then-jump beyond
- * ordinary paint timing).
+ * Progress bar: a track + fill pair, scoped inside this same wrapper. The
+ * fill's WIDTH is driven entirely client-side by `view.js`'s
+ * `showStepByIndex()`, which sets a `--sgs-choice-flow-progress` custom
+ * property (0–1) on the flow root — this file only emits the static markup
+ * + the CSS that consumes that property.
  *
- * Step transition (Visual-QA gap #3): CSS-only opacity+translate transition
- * on `.sgs-form-step`, gated by `prefers-reduced-motion`. `view.js` toggles
- * an `.is-entering` class alongside its existing `hidden` show/hide — the
- * `hidden` attribute remains the real accessibility/layout mechanism
- * (untouched); `.is-entering` is a pure visual enhancement layered on top.
+ * Step transition: CSS-only opacity+translate transition on
+ * `.sgs-form-step`, gated by `prefers-reduced-motion`. `view.js` toggles an
+ * `.is-entering` class alongside its existing `hidden` show/hide — `hidden`
+ * remains the real accessibility/layout mechanism; `.is-entering` is a pure
+ * visual enhancement layered on top.
  *
- * Step indicator + Back button (user-reported gap, 2026-09-15 — all three
- * reference quizzes have numbered/named stages AND a Back control; the
- * first Visual-QA pass shipped neither).
- *   - `.sgs-choice-flow__step-count` / `__step-label` start empty and are
- *     filled by `showStepByIndex()` on every step change — "Step {n} of
- *     {total}" plus the current step's own `data-step-label` (an attribute
- *     `sgs/form-step` ALREADY emits for `sgs/form`'s own progress bar; reused
- *     here rather than adding a second per-step label attribute).
- *   - `.sgs-choice-flow__nav-back` starts `hidden` (there is nowhere to go
- *     back to on step 1) and `view.js` toggles it via the `history` stack
- *     `handleOptionClick()` was already building but nothing previously
- *     consumed. LIVE evidence read from the client's own real lens-
- *     configurator source (2026-09-15 —
- *     sites/eye-care-ward-end/design_handoff_ward_end_eye_care/
- *     Eye Care Birmingham.dc.html:1529-1532) put this in a BOTTOM sticky
- *     footer strip (border-top divider, left-aligned), not inline with the
- *     progress bar — AthleanX matches the same bottom-footer placement;
- *     Invisalign's top-of-page text-link placement was explicitly rejected
- *     (Bean, "the invisalign one is definitely the outlier"). Styled via the
- *     shared `sgs_button_element_style_css()` helper — see the block.json
- *     `back` element's own `_note` for the full colour-token evidence.
+ * Step indicator + Back button: `.sgs-choice-flow__step-count`/`__step-label`
+ * start empty and are filled by `navigation.js`'s `showStepByIndex()` on
+ * every step change. `.sgs-choice-flow__nav-back` starts `hidden` and
+ * `navigation.js` toggles it via its `history` stack; both live in a bottom
+ * sticky footer strip (border-top divider, left-aligned). Styled via the
+ * shared `sgs_button_element_style_css()` helper.
  *
- * Progress style variants (`progressStyle` attr, user-directed 2026-09-15):
- * 'bar' (default) is this file's own plain fill bar, unchanged. 'circles'
- * and 'badge' both need an EMPTY container here that `view.js` populates —
- * only `view.js` reliably knows the flow's total step count + per-step
- * labels (via `getSteps()`/`data-step-label`), so building N circles or a
- * positioned badge server-side would mean re-deriving that count from the
- * parsed InnerBlocks tree, duplicating logic `view.js` already owns.
+ * Footer: Back left; Continue (muted with aria-disabled until the step has a
+ * choice), or a result step's own Add to basket / Buy now, on the right —
+ * `includes/choice-flow-chrome.php::sgs_choice_flow_footer_html`, driven by
+ * `navigation.js::updateFooterActions`. A recommendation or email-capture
+ * terminal shows neither.
+ *
+ * Progress style variants (`progressStyle` attr): 'bar' (default) is this
+ * file's own plain fill bar. 'circles'/'badge' need an EMPTY container here
+ * that `view.js` populates — it alone knows the flow's total step count and
+ * per-step labels.
+ *
+ * Layout (`layout` attr, FR-43-24): 'compact' (default, unchanged output) or
+ * 'showcase' — a full-height frame with a sticky stage beside the steps; see
+ * this file's own `$is_showcase` branches below and
+ * choice-flow-chrome.php's header helper.
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32.
@@ -86,6 +68,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__ ) . '/choice-flow-question/helpers-addon-pricing.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-chrome.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-variation-seed.php';
+require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-summary.php';
 
 // FR-43-6 — a linked flow renders the referenced sgs_choice_flow post's own
 // sgs/choice-flow (its steps, pricing and styling) in place of this block,
@@ -125,6 +108,15 @@ if ( $flow_is_linked ) {
 
 $flow_title = isset( $attributes['title'] ) ? (string) $attributes['title'] : '';
 
+// FR-43-24 — layout: 'compact' (unchanged single column) or 'showcase' (a
+// full-height frame with a sticky stage beside the steps). Showcase always
+// shows the chrome header (logo/eyebrow/Close), regardless of showHeader —
+// a full-screen flow needs it either way; a local attributes copy keeps
+// choice-flow-chrome.php's own helpers untouched.
+$layout       = isset( $attributes['flowLayout'] ) && 'showcase' === $attributes['flowLayout'] ? 'showcase' : 'compact';
+$is_showcase  = 'showcase' === $layout;
+$chrome_attrs = $is_showcase ? array_merge( $attributes, array( 'showHeader' => true ) ) : $attributes;
+
 // -------------------------------------------------------------------------
 // FR-43-19/FR-43-20 (v1.4.0) — price panel + "what is being bought".
 // Resolution order: the page's own product (a single product template) wins
@@ -155,6 +147,9 @@ $flow_price = $resolved_product_id > 0
 $progress_style  = isset( $attributes['progressStyle'] ) && in_array( $attributes['progressStyle'], array( 'circles', 'badge' ), true )
 	? $attributes['progressStyle']
 	: 'bar';
+// D1 (v1.8.0) — the footer's Continue button; navigation.js reads this off
+// the wrapper to decide whether a question step shows Continue at all.
+$advance_mode    = isset( $attributes['advanceMode'] ) && 'tap' === $attributes['advanceMode'] ? 'tap' : 'continue';
 $max_width       = isset( $attributes['maxWidth'] ) ? (string) $attributes['maxWidth'] : '';
 $padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
 $padding_desktop = is_array( $padding_tiers['desktop'] ?? null ) ? $padding_tiers['desktop'] : array();
@@ -201,7 +196,7 @@ $scoped_css[] = sgs_choice_flow_chrome_progress_colour_css( $attributes, $root_s
 $inner_parsed = isset( $block->parsed_block['innerBlocks'] ) && is_array( $block->parsed_block['innerBlocks'] ) ? $block->parsed_block['innerBlocks'] : array();
 
 $wrapper_args = array(
-	'class'                 => trim( 'sgs-choice-flow ' . $uid . ' ' . sgs_choice_flow_chrome_classes( $attributes ) ),
+	'class'                 => trim( 'sgs-choice-flow sgs-choice-flow--layout-' . $layout . ' ' . $uid . ' ' . sgs_choice_flow_chrome_classes( $chrome_attrs ) ),
 	'data-wp-interactive'   => 'sgs/choice-flow',
 	'data-flow-id'          => get_the_ID() . '-' . $uid, // Session-state key: unique per page and flow.
 	// FR-43-19/20: the flow's first-paint product/price, read by view.js's
@@ -214,6 +209,8 @@ $wrapper_args = array(
 	// WooCommerce's own "drop .00 on whole amounts" switch, so the panel's
 	// JS-formatted prices match wc_price() everywhere else on the site.
 	'data-flow-trim-zeros'  => apply_filters( 'woocommerce_price_trim_zeros', false ) ? '1' : '0',
+	// D1: read by navigation.js's advanceModeOf().
+	'data-advance-mode'     => $advance_mode,
 );
 
 if ( '' !== $flow_title ) {
@@ -231,14 +228,17 @@ echo '<div ' . $wrapper_attributes . sgs_choice_flow_variation_seed_attr( $inner
 
 // Questions only, as view.js counts them: a step holding a result is not numbered.
 $step_total = count( array_filter( $inner_parsed, static fn( $b ) => 'sgs/form-step' === ( $b['blockName'] ?? '' ) && false === strpos( (string) wp_json_encode( $b['innerBlocks'] ?? array() ), 'sgs\/choice-flow-result' ) ) );
-echo sgs_choice_flow_chrome_header_html( $attributes, $step_total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns pre-escaped markup.
+echo sgs_choice_flow_chrome_header_html( $chrome_attrs, $step_total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns pre-escaped markup.
 
-echo '<div class="sgs-choice-flow__header">';
-echo '<div class="sgs-choice-flow__step-indicator">';
-echo '<span class="sgs-choice-flow__step-count"></span>';
-echo '<span class="sgs-choice-flow__step-label"></span>';
-echo '</div>';
-echo '</div>';
+// FR-43-24: in 'showcase', this moves below into the step pane (the eyebrow
+// above each question) instead of sitting here above the progress line —
+// same markup either way, view.js fills it the same way regardless.
+$step_indicator_html = '<div class="sgs-choice-flow__header"><div class="sgs-choice-flow__step-indicator">'
+	. '<span class="sgs-choice-flow__step-count"></span><span class="sgs-choice-flow__step-label"></span>'
+	. '</div></div>';
+if ( ! $is_showcase ) {
+	echo $step_indicator_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed string, no dynamic content.
+}
 
 // 'circles' gets an empty stepper container ABOVE the plain bar (mirrors
 // AthleanX: numbered circles + connecting lines above a separate fill bar)
@@ -249,8 +249,16 @@ if ( 'circles' === $progress_style ) {
 
 echo '<div class="sgs-choice-flow__progress" aria-hidden="true"><div class="sgs-choice-flow__progress-fill"></div></div>';
 
-echo '<div class="sgs-choice-flow__body' . ( $show_price_panel ? ' sgs-choice-flow__body--with-panel' : '' ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed string, no dynamic content.
+// FR-43-24: showcase always renders the stage (the summary panel doubles as
+// it — see choice-flow-summary.php's own docblock), not only when
+// showPricePanel is on.
+$render_stage = $show_price_panel || $is_showcase;
+
+echo '<div class="sgs-choice-flow__body' . ( $render_stage ? ' sgs-choice-flow__body--with-panel' : '' ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed string, no dynamic content.
 echo '<div class="sgs-choice-flow__inner">';
+if ( $is_showcase ) {
+	echo $step_indicator_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed string, no dynamic content.
+}
 // FR-43-21: form fields in a purchase step are styled by sgs/form's own
 // stylesheet (the field blocks carry none), which a page with no sgs/form
 // would never load.
@@ -260,37 +268,18 @@ if ( false !== strpos( $content, 'sgs-form-field' ) ) {
 echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InnerBlocks content is pre-rendered/sanitised by the block editor's own save pipeline.
 echo '</div>';
 
-// FR-43-19: the live price panel is DISPLAY ONLY — every row + the total is
-// built/updated entirely by view.js's pricing module (it alone knows which
-// priced-add-on options have been chosen along the path taken). This shell
-// only reserves the markup + heading; an empty rows list renders nothing
-// extra (no flash of a stray total before the first paint pass runs).
-if ( $show_price_panel ) {
-	echo '<aside class="sgs-choice-flow__price-panel" aria-live="polite">';
-	if ( '' !== $price_panel_title ) {
-		echo '<h4 class="sgs-choice-flow__price-panel-title">' . esc_html( $price_panel_title ) . '</h4>';
-	}
-	echo '<div class="sgs-choice-flow__price-panel-base-row">';
-	echo '<span class="sgs-choice-flow__price-panel-base-label">' . esc_html__( 'Base price', 'sgs-blocks' ) . '</span>';
-	echo '<span class="sgs-choice-flow__price-panel-base-value"></span>';
-	echo '</div>';
-	echo '<ul class="sgs-choice-flow__price-panel-rows"></ul>';
-	echo '<div class="sgs-choice-flow__price-panel-total-row">';
-	echo '<span class="sgs-choice-flow__price-panel-total-label">' . esc_html__( 'Total', 'sgs-blocks' ) . '</span>';
-	echo '<span class="sgs-choice-flow__price-panel-total-value"></span>';
-	echo '</div>';
-	echo '</aside>';
+// FR-43-19/D4/FR-43-24: the live summary/stage panel is DISPLAY ONLY — the
+// image, every row and the total are built/updated entirely by view.js's
+// pricing + summary modules (they alone know which options have been chosen
+// along the path taken, and which variation/image has resolved). This call
+// only reserves the markup + heading; empty rows render nothing extra (no
+// flash of a stray total before the first paint pass runs).
+if ( $render_stage ) {
+	echo sgs_choice_flow_summary_panel_html( $attributes, $resolved_product_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns pre-escaped markup.
 }
 
 echo '</div>'; // .sgs-choice-flow__body
 
-// Bottom sticky footer — Back button only (this flow's option-click-to-
-// advance model needs no separate forward button; see render.php's own
-// docblock for the real-evidence reasoning).
-echo '<div class="sgs-choice-flow__footer">';
-echo '<button type="button" class="sgs-choice-flow__nav-back" hidden aria-label="' . esc_attr__( 'Back', 'sgs-blocks' ) . '">';
-echo '<span aria-hidden="true">&larr;</span> ' . esc_html__( 'Back', 'sgs-blocks' );
-echo '</button>';
-echo '</div>';
+echo sgs_choice_flow_footer_html( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns pre-escaped markup.
 
 echo '</div>';

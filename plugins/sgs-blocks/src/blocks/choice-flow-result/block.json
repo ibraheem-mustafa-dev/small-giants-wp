@@ -85,6 +85,24 @@
         "successMessage": {
             "type": "string",
             "default": "Thanks — we'll be in touch shortly."
+        },
+        "showAddToBasket": {
+            "type": "boolean",
+            "default": true,
+            "description": "D3 (Bean's 2026-09-26 review): shows an 'Add to basket' button in the flow's footer while this add-to-bag terminal is the current step. Switching both this and showBuyNow off leaves the footer with no primary action on this step."
+        },
+        "addToBasketLabel": {
+            "type": "string",
+            "default": "Add to basket"
+        },
+        "showBuyNow": {
+            "type": "boolean",
+            "default": true,
+            "description": "D3: shows a 'Buy now' button in the flow's footer — the same add-to-cart request as Add to basket, then straight to checkout."
+        },
+        "buyNowLabel": {
+            "type": "string",
+            "default": "Buy now"
         }
     },
     "render": "file:./render.php",

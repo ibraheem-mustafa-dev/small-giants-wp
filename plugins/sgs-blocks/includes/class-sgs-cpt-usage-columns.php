@@ -161,13 +161,21 @@ final class Sgs_Cpt_Usage_Columns {
 				);
 
 			case Sgs_Block_CPTs::CHOICE_FLOW_CPT:
-				$count = self::content_reference_count( 'flowId', $post->post_name );
-				return self::count_label(
-					$count,
+				$page_count    = self::content_reference_count( 'flowId', $post->post_name );
+				$product_count = sgs_product_choice_flow_count( $post->post_name );
+				$page_label    = self::count_label(
+					$page_count,
 					\__( 'Not currently embedded on any page', 'sgs-blocks' ),
 					/* translators: %d: number of pages. */
-					\_n( 'Embedded on %d page', 'Embedded on %d pages', $count, 'sgs-blocks' )
+					\_n( 'Embedded on %d page', 'Embedded on %d pages', $page_count, 'sgs-blocks' )
 				);
+				$product_label = self::count_label(
+					$product_count,
+					\__( 'Not linked from any product', 'sgs-blocks' ),
+					/* translators: %d: number of products. */
+					\_n( 'Used by %d product', 'Used by %d products', $product_count, 'sgs-blocks' )
+				);
+				return $page_label . '<br />' . $product_label;
 		}
 
 		return '';
@@ -195,11 +203,11 @@ final class Sgs_Cpt_Usage_Columns {
 	 * @return int
 	 */
 	private static function header_footer_rule_count( \WP_Post $post ): int {
-		$is_header    = ( Sgs_Block_CPTs::HEADER_CPT === $post->post_type );
-		$target_slug  = ( $is_header ? 'sgs/header-' : 'sgs/footer-' ) . $post->post_name;
-		$rules_class  = $is_header ? Sgs_Header_Rules::class : Sgs_Footer_Rules::class;
-		$rules        = $rules_class::list_rules();
-		$matched      = 0;
+		$is_header   = ( Sgs_Block_CPTs::HEADER_CPT === $post->post_type );
+		$target_slug = ( $is_header ? 'sgs/header-' : 'sgs/footer-' ) . $post->post_name;
+		$rules_class = $is_header ? Sgs_Header_Rules::class : Sgs_Footer_Rules::class;
+		$rules       = $rules_class::list_rules();
+		$matched     = 0;
 		foreach ( $rules as $rule ) {
 			if ( ( $rule['pattern_slug'] ?? '' ) === $target_slug ) {
 				++$matched;
@@ -233,7 +241,7 @@ final class Sgs_Cpt_Usage_Columns {
 	private static function modal_reference_count( \WP_Post $post ): int {
 		global $wpdb;
 
-		$needle = '"modalRef":' . (int) $post->ID;
+		$needle     = '"modalRef":' . (int) $post->ID;
 		$like_comma = '%' . $wpdb->esc_like( $needle . ',' ) . '%';
 		$like_brace = '%' . $wpdb->esc_like( $needle . '}' ) . '%';
 

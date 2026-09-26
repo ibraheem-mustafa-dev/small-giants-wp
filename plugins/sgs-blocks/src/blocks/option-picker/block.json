@@ -239,6 +239,11 @@
 			"default": "",
 			"description": "Optional term-meta key (on the picker's resolved WooCommerce attribute taxonomy term) shown as a second caption line under each option's label, e.g. a frame size's eye/bridge/temple measurement. '' (default) = off, no second line, byte-identical to the current markup."
 		},
+		"showTermDetails": {
+			"type": "boolean",
+			"default": true,
+			"description": "WC-bound pickers only (typeKey resolves to a pa_* taxonomy): show each term's badge (a small pill, `_sgs_term_badge`) and short description (a line under the label, `_sgs_term_description`) when the term has them set (Spec 43 FR-43-25). Off = neither renders, byte-identical to the current markup."
+		},
 		"contentImpact": {
 			"type": "array",
 			"default": [],

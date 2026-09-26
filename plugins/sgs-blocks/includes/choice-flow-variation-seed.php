@@ -115,6 +115,11 @@ if ( ! function_exists( 'sgs_choice_flow_variation_seed_attr' ) ) {
 				'v' => isset( $combo['variationId'] ) ? (int) $combo['variationId'] : 0,
 				'p' => isset( $combo['priceMinor'] ) ? (int) $combo['priceMinor'] : 0,
 				's' => ! empty( $combo['inStock'] ) ? 1 : 0,
+				// D4 (Spec 43 v1.8.0) — the summary panel's own image, read
+				// by `choice-flow/summary.js` once this combo's variation
+				// resolves. Already resolved by Product_Manifest::build()
+				// (variation image, falling back to the parent product's).
+				'i' => isset( $combo['imageUrl'] ) ? (string) $combo['imageUrl'] : '',
 			);
 		}
 

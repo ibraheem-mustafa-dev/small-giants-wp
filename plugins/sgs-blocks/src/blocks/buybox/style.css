@@ -832,3 +832,265 @@
 	flex-direction: column;
 	gap: var(--sgs-buybox-gap, 12px);
 }
+
+/* ── Guided layout (Spec 43 FR-43-23) ─────────────────────────────────────
+   "The meter is the receipt": one segment per group, the chosen value as
+   its label, jumping back to that group when pressed. container-type lets
+   the narrow fallback (dots + "2 of 4 · Topping") follow the buybox's OWN
+   width rather than the viewport — the buybox can sit in a narrow sidebar
+   at any breakpoint. */
+.sgs-buybox-guided {
+	container-type: inline-size;
+	container-name: sgs-buybox-guided;
+	display: flex;
+	flex-direction: column;
+	gap: var(--sgs-buybox-gap, 12px);
+}
+
+.sgs-buybox-guided__meter {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	gap: 6px;
+	overflow-x: auto;
+}
+
+.sgs-buybox-guided__meter-item {
+	flex: 1 1 0;
+	min-width: 0;
+}
+
+.sgs-buybox-guided__meter-btn {
+	width: 100%;
+	min-height: 44px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 8px 10px;
+	border: 1px solid var(--wp--preset--color--border, #d8d3ca);
+	border-radius: var(--wp--preset--spacing--10, 6px);
+	background: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-muted, #6b6459);
+	font-size: 0.8125rem;
+	line-height: 1.2;
+	cursor: pointer;
+}
+
+.sgs-buybox-guided__meter-btn[aria-disabled='true'] {
+	cursor: default;
+	opacity: 0.55;
+}
+
+.sgs-buybox-guided__meter-btn--done {
+	color: var(--wp--preset--color--text, #1e1e1e);
+	background: var(--wp--preset--color--surface-alt, #efeae2);
+}
+
+.sgs-buybox-guided__meter-btn--current {
+	border-color: var(--sgs-buybox-guided-meter-colour, var(--wp--preset--color--primary, #1e1e1e));
+	color: var(--sgs-buybox-guided-meter-colour, var(--wp--preset--color--primary, #1e1e1e));
+}
+
+.sgs-buybox-guided__meter-btn:not([aria-disabled='true']):hover {
+	border-color: var(--sgs-buybox-guided-meter-colour, var(--wp--preset--color--primary, #1e1e1e));
+}
+
+.sgs-buybox-guided__meter-btn:focus-visible {
+	outline: 2px solid var(--sgs-buybox-guided-meter-colour, var(--wp--preset--color--primary, currentColor));
+	outline-offset: 2px;
+}
+
+/* Meter style — 'bar': a single filled progress track. Index and value text
+   hide (the track fill is the whole signal); done segments fill solid,
+   the current segment gets a lighter tint so its position still reads. */
+.sgs-buybox-guided__meter--bar {
+	gap: 3px;
+}
+
+.sgs-buybox-guided__meter--bar .sgs-buybox-guided__meter-btn {
+	min-height: 6px;
+	height: 6px;
+	padding: 0;
+	border: none;
+	border-radius: var(--wp--preset--spacing--10, 6px);
+	background: var(--wp--preset--color--border, #d8d3ca);
+}
+
+.sgs-buybox-guided__meter--bar .sgs-buybox-guided__meter-index,
+.sgs-buybox-guided__meter--bar .sgs-buybox-guided__meter-value {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+}
+
+.sgs-buybox-guided__meter--bar .sgs-buybox-guided__meter-btn--done {
+	background: var(--sgs-buybox-guided-meter-colour, var(--wp--preset--color--primary, #1e1e1e));
+}
+
+.sgs-buybox-guided__meter--bar .sgs-buybox-guided__meter-btn--current {
+	background: color-mix(in srgb, var(--sgs-buybox-guided-meter-colour, var(--wp--preset--color--primary, #1e1e1e)) 45%, transparent);
+	border-color: transparent;
+}
+
+/* Meter style — 'dots': always the compact narrow-container look, at every
+   container width, not only under 420px. */
+.sgs-buybox-guided__meter--dots .sgs-buybox-guided__meter-btn {
+	min-height: 12px;
+	width: 12px;
+	height: 12px;
+	min-width: 12px;
+	padding: 0;
+	border-radius: 50%;
+}
+
+.sgs-buybox-guided__meter--dots .sgs-buybox-guided__meter-index,
+.sgs-buybox-guided__meter--dots .sgs-buybox-guided__meter-value {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+}
+
+.sgs-buybox-guided__meter--dots .sgs-buybox-guided__meter-item {
+	flex: 0 0 auto;
+}
+
+.sgs-buybox-guided__meter--dots {
+	justify-content: center;
+}
+
+.sgs-buybox-guided__meter--dots ~ .sgs-buybox-guided__meter-compact {
+	display: block;
+	text-align: center;
+}
+
+.sgs-buybox-guided__meter-index {
+	font-weight: 600;
+}
+
+.sgs-buybox-guided__meter-value {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.sgs-buybox-guided__meter-compact {
+	display: none;
+	margin: 0;
+	font-size: 0.8125rem;
+	color: var(--wp--preset--color--text-muted, #6b6459);
+}
+
+/* Narrow container: dots (the meter buttons, shrunk and text-hidden) plus
+   the "2 of 4 · Topping" compact line — matches FR-43-23's fallback wording. */
+@container sgs-buybox-guided (max-width: 420px) {
+	.sgs-buybox-guided__meter-btn {
+		min-height: 12px;
+		width: 12px;
+		height: 12px;
+		min-width: 12px;
+		padding: 0;
+		border-radius: 50%;
+	}
+
+	.sgs-buybox-guided__meter-index,
+	.sgs-buybox-guided__meter-value {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+	}
+
+	.sgs-buybox-guided__meter-item {
+		flex: 0 0 auto;
+	}
+
+	.sgs-buybox-guided__meter {
+		justify-content: center;
+	}
+
+	.sgs-buybox-guided__meter-compact {
+		display: block;
+		text-align: center;
+	}
+}
+
+.sgs-buybox-guided__group {
+	min-height: var(--sgs-buybox-guided-group-min-height, 5.5rem);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-buybox-guided__group {
+		animation: sgs-buybox-guided-fade-in 0.2s ease-out;
+	}
+}
+
+@keyframes sgs-buybox-guided-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.sgs-buybox-guided__group-title {
+	margin: 0 0 8px;
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+.sgs-buybox-guided__nav {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.sgs-buybox-guided__nav-btn {
+	min-height: 44px;
+	min-width: 44px;
+	padding: 10px 20px;
+	border-radius: var(--wp--preset--spacing--10, 6px);
+	cursor: pointer;
+}
+
+.sgs-buybox-guided__nav-btn--back {
+	border: 1px solid var(--wp--preset--color--border, #d8d3ca);
+	background: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+.sgs-buybox-guided__nav-btn--back:hover {
+	border-color: var(--wp--preset--color--primary, #1e1e1e);
+}
+
+.sgs-buybox-guided__nav-btn--next {
+	margin-left: auto;
+	border: none;
+	background: var(--wp--preset--color--primary, #1e1e1e);
+	color: var(--wp--preset--color--text-inverse, #fff);
+}
+
+.sgs-buybox-guided__nav-btn--next[aria-disabled='true'] {
+	opacity: 0.55;
+	cursor: default;
+}
+
+.sgs-buybox-guided__nav-btn--next:not([aria-disabled='true']):hover {
+	background: color-mix(in srgb, var(--wp--preset--color--primary, #1e1e1e) 85%, #fff 15%);
+}
+
+.sgs-buybox-guided__nav-btn:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+}

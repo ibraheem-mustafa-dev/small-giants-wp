@@ -50,7 +50,7 @@ if ( ! function_exists( 'sgs_choice_flow_addon_group_options' ) ) {
 if ( ! function_exists( 'sgs_choice_flow_addon_group_label' ) ) {
 	/**
 	 * Resolve one add-on group's own label (for "group label → option label"
-	 * price-panel rows — FR-43-19).
+	 * summary-panel rows — FR-43-19).
 	 *
 	 * @param string $group_key Group key.
 	 * @return string Group label, or '' when unresolvable.

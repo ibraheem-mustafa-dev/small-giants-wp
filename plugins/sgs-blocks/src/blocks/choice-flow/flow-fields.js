@@ -37,6 +37,20 @@ export function recordPlainAnswer( flowRoot, stepIndex, stepEl, buttonEl ) {
 }
 
 /**
+ * The unpriced answers recorded so far, in path order — a snapshot copy, so
+ * mutating the result never affects flow state. Read by `summary.js` to
+ * build the D4 summary panel's plain-answer and product-option-answer rows
+ * (a product-option step's unpriced choice is recorded the same way as a
+ * plain question's, via `recordPlainAnswer()` above — see `variation.js`).
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @return {Array<{stepIndex: number, label: string, value: string}>} Answers given so far.
+ */
+export function getPlainAnswers( flowRoot ) {
+	return ( plainAnswers.get( flowRoot ) || [] ).slice();
+}
+
+/**
  * The shopper went Back to `stepIndex`: that answer and every later one no
  * longer describe the path.
  *

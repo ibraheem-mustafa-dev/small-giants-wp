@@ -59,24 +59,42 @@
 	display: none;
 }
 
-/* ===== Footer: Back button (user-reported gap, 2026-09-15) =====
- * Real evidence (Eye Care Birmingham.dc.html:1529-1532) puts the Back
- * button in a bottom sticky footer strip with a border-top divider,
- * left-aligned — the same placement AthleanX uses; Invisalign's top-of-page
- * text-link placement was explicitly ruled out (Bean, "the invisalign one
- * is definitely the outlier"). Colour/border are emitted by render.php's
- * scoped `<style>` via the shared sgs_button_element_style_css() helper —
- * this rule only carries layout + the fixed small-caps text treatment the
- * same source uses on every one of its nav buttons (Back/Close/Continue),
- * not an operator control (matches sgs/label's fixed-eyebrow-size
- * precedent — a deliberate constant, not a missing control).
+/* ===== Footer: Back button + right-hand actions (D1/D2/D3, Bean's
+ * 2026-09-26 review; user-reported gap, 2026-09-15) =====
+ * Real evidence (Eye Care Birmingham.dc.html:1529-1532) puts Back in a
+ * bottom sticky footer strip with a border-top divider — the same placement
+ * AthleanX uses; Invisalign's top-of-page text-link placement was explicitly
+ * ruled out (Bean, "the invisalign one is definitely the outlier"). Bean's
+ * 2026-09-26 review added the right-hand row: Continue on a question step
+ * (D1), or Add to basket/Buy now on an add-to-bag result step (D3) — never
+ * both kinds at once (`navigation.js`'s `updateFooterActions()` decides).
+ * Back's own colour/border are emitted by render.php's scoped `<style>` via
+ * the shared sgs_button_element_style_css() helper; this file carries only
+ * layout + the fixed small-caps text treatment every nav button in the same
+ * real source uses (Back/Close/Continue) — not an operator control (matches
+ * sgs/label's fixed-eyebrow-size precedent).
  */
 .sgs-choice-flow__footer {
-	display: flex;
-	justify-content: flex-start;
 	margin-top: 16px;
 	padding-top: 16px;
 	border-top: 1px solid var(--wp--preset--color--border-light, #E5E7EB);
+}
+
+.sgs-choice-flow__footer-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.sgs-choice-flow__footer-actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 12px;
+	flex-wrap: wrap;
+	margin-left: auto;
 }
 
 .sgs-choice-flow__nav-back {
@@ -111,13 +129,151 @@
 	display: none;
 }
 
+/* D1/D2 — Continue. Filled with the theme's own 'primary' button preset
+   (--wp--custom--button-presets--primary--*, the same tokens sgs/button's
+   primary variant reads — see button/style.css) so it matches whatever
+   button styling a client's theme-snapshot sets, with this codebase's own
+   defaults as the fallback. */
+.sgs-choice-flow__continue {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: var(--wp--custom--button-presets--primary--padding, 12px 24px);
+	border: var(--wp--custom--button-presets--primary--border-width, 2px) solid
+		var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary, #1F7A7A));
+	border-radius: var(--wp--custom--button-presets--primary--border-radius, 8px);
+	background-color: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary, #1F7A7A));
+	color: var(--wp--custom--button-presets--primary--text, #fff);
+	font-family: inherit;
+	font-size: var(--wp--custom--button-presets--primary--font-size, 15px);
+	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	cursor: pointer;
+	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
+		border-color var(--wp--custom--transition--fast, 0.15s ease), opacity var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+/* Hover BRIGHTENS (never darkens) — the theme's own primary hover token
+   swaps to a darker ink for every OTHER primary button in this framework;
+   this one control deliberately keeps the fill and lifts opacity instead,
+   per this task's own design-taste rule, while active (not muted). */
+.sgs-choice-flow__continue:not(.is-muted):hover {
+	opacity: 0.85;
+}
+
+.sgs-choice-flow__continue:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #1F7A7A);
+	outline-offset: 2px;
+}
+
+/* D2 — muted (not disabled: aria-disabled only, still focusable/clickable so
+   the D2 hint can show). Reduced opacity + not-allowed cursor; full colour
+   the moment a selection exists. */
+.sgs-choice-flow__continue.is-muted {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.sgs-choice-flow__continue[hidden] {
+	display: none;
+}
+
+/* D3 — Add to basket (secondary/outline) + Buy now (primary/filled), same
+   token family as Continue above. */
+.sgs-choice-flow__add-to-basket,
+.sgs-choice-flow__buy-now {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: var(--wp--custom--button-presets--primary--padding, 12px 24px);
+	border-radius: var(--wp--custom--button-presets--primary--border-radius, 8px);
+	font-family: inherit;
+	font-size: var(--wp--custom--button-presets--primary--font-size, 15px);
+	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	cursor: pointer;
+	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
+		border-color var(--wp--custom--transition--fast, 0.15s ease), opacity var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-choice-flow__add-to-basket {
+	border: var(--wp--custom--button-presets--secondary--border-width, 2px) solid
+		var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary, #1F7A7A));
+	background-color: var(--wp--custom--button-presets--secondary--background, transparent);
+	color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--primary, #1F7A7A));
+}
+
+.sgs-choice-flow__buy-now {
+	border: var(--wp--custom--button-presets--primary--border-width, 2px) solid
+		var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary, #1F7A7A));
+	background-color: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary, #1F7A7A));
+	color: var(--wp--custom--button-presets--primary--text, #fff);
+}
+
+/* Hover brightens both, never darkens. */
+.sgs-choice-flow__add-to-basket:hover,
+.sgs-choice-flow__buy-now:hover {
+	opacity: 0.85;
+}
+
+.sgs-choice-flow__add-to-basket:focus-visible,
+.sgs-choice-flow__buy-now:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #1F7A7A);
+	outline-offset: 2px;
+}
+
+.sgs-choice-flow__add-to-basket:disabled,
+.sgs-choice-flow__buy-now:disabled {
+	opacity: 0.6;
+	cursor: default;
+}
+
+.sgs-choice-flow__add-to-basket[hidden],
+.sgs-choice-flow__buy-now[hidden] {
+	display: none;
+}
+
+/* D2 — the "choose an option to continue" inline hint. Empty and collapsed
+   until navigation.js's showContinueHint() fills it. */
+.sgs-choice-flow__continue-hint {
+	margin: 8px 0 0;
+	font-size: 13px;
+	color: var(--wp--preset--color--error, #b3261e);
+}
+
+.sgs-choice-flow__continue-hint:empty {
+	display: none;
+}
+
+/* Narrow widths: actions can stack full-width below Back rather than
+   shrinking under 44px tall — both stay comfortably tappable. */
+@media (max-width: 480px) {
+	.sgs-choice-flow__footer-row {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.sgs-choice-flow__footer-actions {
+		width: 100%;
+		margin-left: 0;
+	}
+
+	.sgs-choice-flow__continue,
+	.sgs-choice-flow__add-to-basket,
+	.sgs-choice-flow__buy-now {
+		flex: 1 1 auto;
+	}
+}
+
 /* Editor-canvas-only Back-button colour/border PREVIEW (edit.js's
    buildBackButtonPreviewStyle()) — a static, non-interactive stand-in for
-   the real runtime button (view.js shows/hides the real one). Border
+   the real runtime button (navigation.js shows/hides the real one). Border
    colour/width/radius/background/text come from inline style per-instance
    (Spec 32 exemption: editor-canvas-only, matches this file's own
    buildWrapperStyle() convention); only the shared layout/text-treatment
-   properties live here. */
+   properties live here. The Continue/Add to basket/Buy now buttons have no
+   canvas preview (NavigationPanel.js is inspector-controls-only, matching
+   the ChromePanel precedent) — they only ever exist at runtime. */
 .sgs-choice-flow__footer-preview {
 	display: flex;
 	justify-content: flex-start;
@@ -197,21 +353,51 @@
 	color: var(--wp--preset--color--primary-dark, #0F4C4C);
 }
 
+/* D6 (2026-09-26 plan, Bean's review): redesigned from a text-plus-'×' pill
+   to a round 44x44 icon button (choice-flow-chrome.php's own docblock has
+   the full rationale). Its accessible name is the visually hidden
+   `.sgs-choice-flow__chrome-close-label` span, never a visible caption —
+   the same reason `sgs-choice-flow__chrome-close-icon` carries
+   `aria-hidden` in the markup. Hover BRIGHTENS (mixes toward white), never
+   darkens, matching this codebase's hover-direction rule. */
 .sgs-choice-flow__chrome-close {
 	display: inline-flex;
 	align-items: center;
-	gap: 4px;
-	min-height: 44px;
-	min-width: 44px;
-	padding: 8px 16px;
-	background-color: transparent;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
 	border: none;
-	font-family: inherit;
-	font-size: 13px;
-	font-weight: 600;
+	border-radius: 50%;
+	background-color: var(--wp--preset--color--surface-alt, #F1F0EC);
 	color: var(--wp--preset--color--text, #1A202C);
 	cursor: pointer;
 	flex-shrink: 0;
+	transition: background-color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-choice-flow__chrome-close:hover {
+	background-color: color-mix(in srgb, var(--wp--preset--color--surface-alt, #F1F0EC) 80%, white 20%);
+}
+
+.sgs-choice-flow__chrome-close-icon {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+}
+
+.sgs-choice-flow__chrome-close-label {
+	/* Visually hidden — the button's ONLY accessible name (Spec/WCAG 4.1.2),
+	   same clip-based technique sgs/option-picker's own `.sgs-sr-only` uses. */
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 
 .sgs-choice-flow__chrome-close[hidden] {
@@ -219,15 +405,15 @@
 }
 
 .sgs-choice-flow__chrome-close:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #1F7A7A);
-	outline-offset: 2px;
+	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
 }
 
 /* ===== Root chrome: sticky footer (Eye Care hand-build design gap) =====
- * `stickyFooter:true` pins this file's EXISTING footer (the Back button —
- * see the plain `.sgs-choice-flow__footer` rule above; a result step's own
- * primary action renders inside `.sgs-choice-flow__inner` and is unaffected)
- * to the bottom of the viewport, with safe-area padding for notched devices.
+ * `stickyFooter:true` pins this file's EXISTING footer (Back plus, since
+ * D1/D2/D3, whichever right-hand action is showing — see the
+ * `.sgs-choice-flow__footer` rule above) to the bottom of the viewport, with
+ * safe-area padding for notched devices.
  */
 .sgs-choice-flow--sticky-footer .sgs-choice-flow__footer {
 	position: sticky;
@@ -367,12 +553,10 @@
 	}
 }
 
-/* ===== Price panel (FR-43-19, v1.4.0) =====
- * `.sgs-choice-flow__body` wraps the steps + the optional price panel so the
- * two can sit side by side. Two columns from 1024px up (steps first, panel
- * beside); below that the panel simply falls to a second row in DOM order —
- * no reordering needed, `showPricePanel:false` renders no
- * `.sgs-choice-flow__price-panel` element at all (no empty gap).
+/* ===== Steps and summary columns =====
+ * `.sgs-choice-flow__body` wraps the steps and the optional summary panel;
+ * from 1024px `--with-panel` sets them side by side (the summary rules below
+ * choose the panel's side).
  */
 .sgs-choice-flow__body {
 	display: block;
@@ -385,54 +569,6 @@
 		gap: 32px;
 		align-items: start;
 	}
-}
-
-.sgs-choice-flow__price-panel {
-	margin-top: 24px;
-	padding: 20px;
-	border: 1px solid var(--wp--preset--color--border, #d4dbe5);
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	background-color: var(--wp--preset--color--surface-alt, #f8f7f4);
-}
-
-@media (min-width: 1024px) {
-	.sgs-choice-flow__price-panel {
-		margin-top: 0;
-		position: sticky;
-		top: 24px;
-	}
-}
-
-.sgs-choice-flow__price-panel-title {
-	margin: 0 0 12px;
-	font-size: 1rem;
-}
-
-.sgs-choice-flow__price-panel-base-row,
-.sgs-choice-flow__price-panel-total-row,
-.sgs-choice-flow__price-panel-rows li {
-	display: flex;
-	align-items: baseline;
-	justify-content: space-between;
-	gap: 12px;
-	padding: 6px 0;
-}
-
-.sgs-choice-flow__price-panel-rows {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	border-top: 1px solid var(--wp--preset--color--border, #d4dbe5);
-	border-bottom: 1px solid var(--wp--preset--color--border, #d4dbe5);
-}
-
-.sgs-choice-flow__price-panel-rows:empty {
-	border: none;
-}
-
-.sgs-choice-flow__price-panel-total-row {
-	padding-top: 10px;
-	font-weight: 600;
 }
 
 /* ===== Form fields in a purchase step (FR-43-21) =====
@@ -460,4 +596,443 @@
 /* With the header on, its eyebrow carries "Step N of M"; the indicator row keeps only the step label. */
 .sgs-choice-flow--has-header .sgs-choice-flow__step-count {
 	display: none;
+}
+
+/* ===== Summary panel (Spec 43 D4, v1.8.0) =====
+ * A flex column keeps the summary FIRST in paint order below 1024px
+ * (`order:-1`, mobile-first default — D4's "collapsible section above the
+ * steps") without moving it in the DOM; `.sgs-choice-flow__body--with-panel`
+ * (unchanged trigger, `render.php`'s `$show_price_panel`) switches to the
+ * existing two-column grid at 1024px, where `order` also governs a grid's
+ * auto-placement sequence, so the same property picks left ('start',
+ * default) or right ('end', `summaryPosition`) for `--position-end`.
+ */
+.sgs-choice-flow__body {
+	display: flex;
+	flex-direction: column;
+}
+
+.sgs-choice-flow__summary {
+	order: -1;
+	margin-bottom: 24px;
+}
+
+.sgs-choice-flow__inner {
+	order: 0;
+}
+
+@media (min-width: 1024px) {
+	.sgs-choice-flow__body--with-panel .sgs-choice-flow__summary {
+		order: -1;
+		margin-bottom: 0;
+		position: sticky;
+		top: 24px;
+	}
+
+	.sgs-choice-flow__body--with-panel .sgs-choice-flow__summary--position-end {
+		order: 1;
+	}
+}
+
+.sgs-choice-flow__summary-toggle {
+	padding: 0 20px;
+	border: 1px solid var(--wp--preset--color--border, #d4dbe5);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background-color: var(--wp--preset--color--surface-alt, #f8f7f4);
+}
+
+/* The collapsed mobile row: "Your box" + running total, a 44px touch target. */
+.sgs-choice-flow__summary-toggle > summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-height: 44px;
+	padding: 10px 0;
+	list-style: none;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.sgs-choice-flow__summary-toggle > summary::-webkit-details-marker {
+	display: none;
+}
+
+.sgs-choice-flow__summary-toggle > summary::after {
+	content: '▾';
+	transition: transform 200ms ease;
+}
+
+.sgs-choice-flow__summary-toggle[open] > summary::after {
+	transform: rotate(180deg);
+}
+
+.sgs-choice-flow__summary-toggle > summary:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #1e293b);
+	outline-offset: 2px;
+}
+
+/* 1024px+: a static column, never a real disclosure — `summary.js`'s
+ * `bindSummaryToggle()` re-opens it if a keyboard toggle still fires. */
+@media (min-width: 1024px) {
+	.sgs-choice-flow__summary-toggle > summary {
+		pointer-events: none;
+		cursor: default;
+	}
+
+	.sgs-choice-flow__summary-toggle > summary::after {
+		display: none;
+	}
+}
+
+/* The collapsed row's own 72px thumbnail + name (D4's "72px thumbnail, the
+ * name and the total" — FR-43-24 §4's narrow-container spec, reused here
+ * for the collapsed compact row too, same shape). */
+.sgs-choice-flow__summary-summary-media {
+	flex: 0 0 auto;
+	width: 72px;
+	height: 72px;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	overflow: hidden;
+	background-color: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-choice-flow__summary-summary-media .sgs-choice-flow__summary-image {
+	aspect-ratio: 1 / 1;
+}
+
+.sgs-choice-flow__summary-summary-name {
+	flex: 1 1 auto;
+	font-weight: 400;
+}
+
+.sgs-choice-flow__summary-body {
+	padding: 4px 0 20px;
+}
+
+/* FR-43-24's stage image — a square photo that swaps with the resolved
+ * variation. Sized modestly here (this task's `compact` styling only); a
+ * later pass grows it for the full-screen `showcase` layout against these
+ * same classes. */
+.sgs-choice-flow__summary-media {
+	margin-bottom: 16px;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	overflow: hidden;
+	background-color: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-choice-flow__summary-image {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+}
+
+.sgs-choice-flow__summary-image[hidden] {
+	display: none;
+}
+
+.sgs-choice-flow__summary-title {
+	margin: 0 0 4px;
+	font-size: 1rem;
+}
+
+.sgs-choice-flow__summary-product {
+	margin: 0 0 4px;
+	font-weight: 600;
+}
+
+.sgs-choice-flow__summary-meta {
+	margin: 0 0 12px;
+	color: var(--wp--preset--color--text-muted, #6b7280);
+	font-size: 0.875rem;
+}
+
+.sgs-choice-flow__summary-meta:empty {
+	display: none;
+}
+
+.sgs-choice-flow__summary-lines li,
+.sgs-choice-flow__summary-total {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 6px 0;
+}
+
+.sgs-choice-flow__summary-lines {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border-top: 1px solid var(--wp--preset--color--border, #d4dbe5);
+	border-bottom: 1px solid var(--wp--preset--color--border, #d4dbe5);
+}
+
+.sgs-choice-flow__summary-total {
+	padding-top: 10px;
+	font-weight: 600;
+}
+
+/* The value's own span, so a later pass can size it up independently for
+ * FR-43-24's "large total in the heading font" without touching the label. */
+.sgs-choice-flow__summary-total-value {
+	font-size: 1.125rem;
+}
+
+.sgs-choice-flow__summary-note {
+	margin: 16px 0 0;
+	font-size: 0.875rem;
+	color: var(--wp--preset--color--text-muted, #6b7280);
+}
+
+.sgs-choice-flow__summary-note-link {
+	font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-choice-flow__summary-toggle > summary::after {
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* =========================================================================
+ * Showcase layout (FR-43-24)
+ * =========================================================================
+ * A full-height frame for a flow shown full screen (typically inside an
+ * sgs/modal): a header bar (the chrome header, forced on by render.php),
+ * a full-width progress line, a scrolling body grid — a sticky "stage"
+ * aside (the summary panel above, reused as-is: same __summary-media/
+ * -product/-meta/-lines/-total/-note elements) beside the step pane (the
+ * existing __inner) — and the existing sticky-capable footer. Container
+ * queries (not viewport media queries) drive every tier here, named on this
+ * wrapper (`sgs-choice-flow-showcase`) and, for the options grid, on the
+ * step pane itself (`sgs-choice-flow-pane`, declared in
+ * choice-flow-question/style.css) — this project's convention is that a
+ * component's responsive tier follows its own container's width, not the
+ * viewport's.
+ *
+ * Compact's own rules above are untouched — every rule below is scoped
+ * under `.sgs-choice-flow--layout-showcase` and never edits a bare
+ * `.sgs-choice-flow__*` selector.
+ */
+
+.sgs-choice-flow--layout-showcase {
+	container: sgs-choice-flow-showcase / inline-size;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+	max-width: none;
+	padding: 0;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-header {
+	margin-bottom: 0;
+	padding: 14px 18px;
+	border-bottom: 1px solid var(--wp--preset--color--border, #D4DBE5);
+	background-color: var(--wp--preset--color--surface, #fff);
+	flex-shrink: 0;
+}
+
+@container sgs-choice-flow-showcase (min-width: 700px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-header {
+		padding: 16px 28px;
+	}
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__progress {
+	margin-bottom: 0;
+	flex-shrink: 0;
+}
+
+/* The flow-level step-indicator moves INTO the step pane (render.php echoes
+   the same markup there instead) — left-aligned there, an "accent ink"
+   eyebrow above the question title, not the compact right-aligned header
+   row. The step-label duplicates the H3 question text directly below it in
+   this layout, so only the count shows. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__header {
+	justify-content: flex-start;
+	margin: 0 0 8px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__step-indicator {
+	align-items: flex-start;
+	text-align: left;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__step-count {
+	color: var(--wp--preset--color--accent, var(--wp--preset--color--primary-dark, #6F6152));
+	font-size: 12px;
+	letter-spacing: 0.2em;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__step-label {
+	display: none;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__body {
+	display: block;
+	flex: 1 1 auto;
+	overflow-y: auto;
+	min-height: 0;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	align-items: stretch;
+	gap: 0;
+}
+
+@container sgs-choice-flow-showcase (min-width: 700px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
+		grid-template-columns: minmax(300px, .8fr) minmax(0, 1.55fr);
+	}
+}
+
+@container sgs-choice-flow-showcase (min-width: 700px) and (max-width: 1099px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
+		grid-template-columns: minmax(250px, .7fr) minmax(0, 1.55fr);
+	}
+}
+
+/* ----- Stage (the summary panel doubles as it — FR-43-24) ----- */
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary {
+	order: -1;
+	margin: 0;
+	position: sticky;
+	top: 0;
+	align-self: stretch;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle {
+	height: 100%;
+	padding: 12px 16px;
+	border: none;
+	border-bottom: 1px solid var(--wp--preset--color--border, #D4DBE5);
+	border-radius: 0;
+	background-color: var(--wp--preset--color--surface-alt, #F3F0EC);
+}
+
+/* Narrow (below the container query, no match): a slim row only — 72px
+   thumbnail, name, total, above the steps. The full stage (image, lines,
+   note) stays hidden; FR-43-24's running lines move to the final step's
+   own summary instead. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-body {
+	display: none;
+	flex-direction: column;
+	height: 100%;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle > summary {
+	pointer-events: none;
+	cursor: default;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle > summary::after {
+	display: none;
+}
+
+@container sgs-choice-flow-showcase (min-width: 700px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle {
+		padding: 22px;
+		border-bottom: 0;
+		border-right: 1px solid var(--wp--preset--color--border, #D4DBE5);
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle > summary {
+		display: none;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-body {
+		display: flex;
+	}
+}
+
+@container sgs-choice-flow-showcase (min-width: 1100px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle {
+		padding: 32px;
+	}
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-product {
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-size: 1.1rem;
+}
+
+/* "a large total in the heading font" (FR-43-24). */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-value {
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-size: 24px;
+	font-weight: 500;
+}
+
+@container sgs-choice-flow-showcase (min-width: 1100px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-value {
+		font-size: 34px;
+	}
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note {
+	margin-top: auto;
+	padding: 14px 16px;
+	border: 1px solid var(--wp--preset--color--border, #D4DBE5);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background-color: var(--wp--preset--color--surface, #fff);
+}
+
+/* Total pop on change (FR-43-24) — summary.js toggles `.is-updated` on the
+   stage's own total value every time pricing.js re-renders it. */
+@keyframes sgs-choice-flow-total-pop {
+	0% {
+		transform: scale(0.94);
+		opacity: 0.6;
+	}
+
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-value.is-updated {
+	animation: sgs-choice-flow-total-pop 0.35s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-value.is-updated {
+		animation: none;
+	}
+}
+
+/* ----- Step pane (the existing __inner) ----- */
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__inner {
+	container: sgs-choice-flow-pane / inline-size;
+	padding: 24px 20px 40px;
+}
+
+@container sgs-choice-flow-showcase (min-width: 700px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__inner {
+		padding: 40px 44px 56px;
+	}
+}
+
+/* Steps rise in over 0.4s in showcase (compact keeps its own 220ms —
+   reduced motion is already handled globally above for `.sgs-form-step`). */
+.sgs-choice-flow--layout-showcase .sgs-form-step {
+	transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-form-step.is-entering {
+	transform: translateY(12px);
+}
+
+/* ----- Footer bar (top border, per FR-43-24's frame) ----- */
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__footer {
+	margin-top: 0;
+	flex-shrink: 0;
 }

@@ -133,6 +133,11 @@ Configurator_Meta::register();
 // (delegates to Configurator_Meta::save_product_fields). No-op without WooCommerce.
 require_once SGS_BLOCKS_PATH . 'includes/configurator-product-fields.php';
 
+// Choice Flow — "Customisation flow" product link (Spec 43 FR-43-25).
+// Self-hooks woocommerce_product_options_general_product_data + its own save
+// handler + register_post_meta(). No-op without WooCommerce.
+require_once SGS_BLOCKS_PATH . 'includes/product-choice-flow-link.php';
+
 // Demand Analytics — privacy-safe aggregate counter for unbuyable combos
 // (Spec 27). REST endpoint POST /sgs/v1/demand/attempt +
 // admin meta-box on product edit screen. ZERO PII stored.
@@ -158,6 +163,11 @@ require_once SGS_BLOCKS_PATH . 'includes/lottie-render.php';
 
 // Configurator — swatch fields on WooCommerce attribute term screens (FR-27-B2 authoring UI).
 require_once SGS_BLOCKS_PATH . 'includes/configurator-term-fields.php';
+
+// Configurator — badge + short-description term fields, beside the swatch fields above
+// (Spec 43 FR-43-25 guided-buybox peripherals; configurator-term-fields.php is already
+// over the 300-line cap, so this is a new file, same registration pattern).
+require_once SGS_BLOCKS_PATH . 'includes/configurator-term-badge-fields.php';
 
 // Configurator — per-unit / unit-label / discount-label fields on the WooCommerce
 // variation editor panel (FR-27-B3 authoring UI).

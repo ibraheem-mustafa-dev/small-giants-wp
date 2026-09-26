@@ -108,6 +108,7 @@ $default_selected     = $attributes['defaultSelected'] ?? '';
 $content_impact       = $attributes['contentImpact'] ?? array();
 $type_key             = $attributes['typeKey'] ?? '';
 $sub_label_meta_key   = isset( $attributes['subLabelMetaKey'] ) ? sanitize_key( (string) $attributes['subLabelMetaKey'] ) : '';
+$show_term_details    = array_key_exists( 'showTermDetails', $attributes ) ? (bool) $attributes['showTermDetails'] : true;
 $pill_style           = $attributes['pillStyle'] ?? 'outlined';
 // Validated once, up front, so the 'tile' image-size lookup (§8) and the
 // root-class build (§10) share one allow-listed value -- no duplicate list.
@@ -644,8 +645,9 @@ if ( '' !== $type_key && function_exists( 'wc_get_attribute_taxonomy_names' ) ) 
 
 /* ── Build a map: option_slug => array( 'color' => string|'', 'image_id' => int ) ── */
 
-$swatch_map    = array();
-$sub_label_map = array();
+$swatch_map       = array();
+$sub_label_map    = array();
+$term_details_map = array();
 
 if ( '' !== $swatch_taxonomy ) {
 	foreach ( $valid_items as $item ) {
@@ -661,6 +663,23 @@ if ( '' !== $swatch_taxonomy ) {
 			$sub_label_text = sgs_option_picker_resolve_sub_label( $attr_term, $sub_label_meta_key );
 			if ( '' !== $sub_label_text ) {
 				$sub_label_map[ $item['key'] ] = $sub_label_text;
+			}
+		}
+
+		// Guided-buybox peripherals (Spec 43 FR-43-25) -- the term's own badge
+		// pill + one-line description, off the SAME already-fetched term.
+		// Shown wherever this WC-bound picker renders: the standard buybox,
+		// the guided buybox, and flow product-option steps that don't
+		// override them. showTermDetails:false or a term with neither field
+		// set = byte-identical to the current markup.
+		if ( $show_term_details ) {
+			$term_badge_raw       = (string) get_term_meta( $attr_term->term_id, '_sgs_term_badge', true );
+			$term_description_raw = (string) get_term_meta( $attr_term->term_id, '_sgs_term_description', true );
+			if ( '' !== $term_badge_raw || '' !== $term_description_raw ) {
+				$term_details_map[ $item['key'] ] = array(
+					'badge'       => $term_badge_raw,
+					'description' => $term_description_raw,
+				);
 			}
 		}
 
@@ -770,10 +789,18 @@ foreach ( $valid_items as $item ) {
 	// unaffected. Same accessible name either way: both spans stay inside the
 	// <label>, so a sub-label is simply extra text an AT reads as part of the
 	// existing option label -- no separate aria-* wiring needed.
-	$item_sub_label = isset( $sub_label_map[ $item['key'] ] ) ? $sub_label_map[ $item['key'] ] : '';
-	$pill_text_html = '<span class="sgs-option-picker__pill-text"><span class="sgs-option-picker__pill-label">' . esc_html( $item['label'] ) . '</span>';
+	$item_sub_label   = isset( $sub_label_map[ $item['key'] ] ) ? $sub_label_map[ $item['key'] ] : '';
+	$item_term_badge  = isset( $term_details_map[ $item['key'] ]['badge'] ) ? $term_details_map[ $item['key'] ]['badge'] : '';
+	$item_term_desc   = isset( $term_details_map[ $item['key'] ]['description'] ) ? $term_details_map[ $item['key'] ]['description'] : '';
+	$pill_text_html   = '<span class="sgs-option-picker__pill-text"><span class="sgs-option-picker__pill-label">' . esc_html( $item['label'] ) . '</span>';
+	if ( '' !== $item_term_badge ) {
+		$pill_text_html .= '<span class="sgs-option-picker__term-badge">' . esc_html( $item_term_badge ) . '</span>';
+	}
 	if ( '' !== $item_sub_label ) {
 		$pill_text_html .= '<span class="sgs-option-picker__sub-label">' . esc_html( $item_sub_label ) . '</span>';
+	}
+	if ( '' !== $item_term_desc ) {
+		$pill_text_html .= '<span class="sgs-option-picker__term-description">' . esc_html( $item_term_desc ) . '</span>';
 	}
 	$pill_text_html .= '</span>';
 

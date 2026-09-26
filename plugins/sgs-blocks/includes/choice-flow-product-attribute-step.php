@@ -240,9 +240,10 @@ if ( ! function_exists( 'sgs_choice_flow_merge_option_extras' ) ) {
 	 *
 	 * @param array $generated_option One row from the variation/answer builders.
 	 * @param array $stored_options   The block's own `options[]` attribute.
+	 * @param string $taxonomy         The step's attribute taxonomy, for the term badge/description fallback.
 	 * @return array Merged row, ready for render.php to read.
 	 */
-	function sgs_choice_flow_merge_option_extras( array $generated_option, array $stored_options ): array {
+	function sgs_choice_flow_merge_option_extras( array $generated_option, array $stored_options, string $taxonomy = '' ): array {
 		$match = array();
 		foreach ( $stored_options as $stored ) {
 			if ( isset( $stored['value'] ) && (string) $stored['value'] === $generated_option['value'] ) {
@@ -250,6 +251,10 @@ if ( ! function_exists( 'sgs_choice_flow_merge_option_extras' ) ) {
 				break;
 			}
 		}
+
+		// A term's own badge and description (attribute term screen) fill in
+		// wherever the flow's option leaves them empty.
+		$term = '' !== $taxonomy && function_exists( 'sgs_choice_flow_term_details' ) ? sgs_choice_flow_term_details( $taxonomy, (string) $generated_option['value'] ) : array( 'badge' => '', 'description' => '' );
 
 		return array_merge(
 			$generated_option,
@@ -259,8 +264,8 @@ if ( ! function_exists( 'sgs_choice_flow_merge_option_extras' ) ) {
 				'image'       => isset( $match['image'] ) && is_array( $match['image'] ) ? $match['image'] : array(),
 				'helpText'    => isset( $match['helpText'] ) ? (string) $match['helpText'] : '',
 				'isDefault'   => ! empty( $match['isDefault'] ),
-				'badge'       => isset( $match['badge'] ) ? (string) $match['badge'] : '',
-				'description' => isset( $match['description'] ) ? (string) $match['description'] : '',
+				'badge'       => isset( $match['badge'] ) && '' !== $match['badge'] ? (string) $match['badge'] : (string) $term['badge'],
+				'description' => isset( $match['description'] ) && '' !== $match['description'] ? (string) $match['description'] : (string) $term['description'],
 			)
 		);
 	}

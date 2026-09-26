@@ -2,42 +2,29 @@
 /**
  * Server-side render for sgs/choice-flow-question.
  *
- * Spec 43 (§2, FR-43-1 plain-question step type + FR-43-2 per-option
- * routing). This block is a CONTENT-kind leaf — question text + an options
- * list, no grid/section machinery — so per D294 it renders fully
- * block-private (get_block_wrapper_attributes() directly, no
- * SGS_Container_Wrapper call), the same pattern as sgs/notice-banner.
+ * A CONTENT-kind leaf — question text + an options list, no grid/section
+ * machinery — so it renders fully block-private (`get_block_wrapper_attributes()`
+ * directly, no `SGS_Container_Wrapper` call), the same pattern as
+ * `sgs/notice-banner`.
  *
- * v1 (Spec 43 Phase 2) carries no colour/typography attrs of its own, so
- * there is no scoped <style> to emit here yet — a later pass adding a
- * SgsColourPanel would follow the same uid-scoped <style> pattern already
- * used by sibling form-field-* blocks (see form-field-tiles/render.php).
- *
- * Phase 2b (2026-09-15) adds FR-43-15 (per-option image) and FR-43-16
- * (per-option help-text toggle) — both purely additive per-option markup,
- * styled entirely by this block's new static style.css (no scoped <style>
- * needed here either, since neither capability carries a colour/typography
- * attribute of its own).
+ * Carries no colour/typography attrs beyond `questionFontWeight` (a class,
+ * never inline style) and `intro` (a plain paragraph under the title, both
+ * layouts — built by `includes/choice-flow-showcase.php`'s helper, this file
+ * being at this codebase's 300-line cap) — no scoped `<style>` tag needed.
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32.
  *
- * Client-side navigation (FR-43-2's nextStepMap resolution + FR-43-9's own
- * Interactivity API store) is NOT built here — this block only emits the
- * data an as-yet-unbuilt view.js/store will read. Each option carries plain
- * data-* attributes (data-value / data-next-step-id) rather than
- * data-wp-on--click, because no sgs/choice-flow Interactivity store exists
- * yet to bind an action to — inventing a data-wp-interactive contract ahead
- * of that store would be a guess, not a reuse of an existing convention.
+ * Client-side navigation is NOT built here — each option carries plain
+ * `data-value`/`data-next-step-id` attributes, not `data-wp-on--click`, for
+ * `sgs/choice-flow`'s own view.js/store to read.
  *
- * Priced add-on step (FR-43-17, v1.4.0): when `priceGroup` names a group in
- * the site-wide add-on price list, each option's price (read from the list,
- * never typed into the block — FR-43-18) renders next to its label, and the
- * button carries `data-price-group` / `data-price` / `data-price-label` so
- * `sgs/choice-flow`'s own view.js can build the FR-43-19 live price panel
- * and FR-43-20's add-to-bag payload without a second server round-trip. An
- * option whose `value` isn't in the group renders with no price (flagged in
- * the editor only — see edit.js).
+ * Priced add-on step: when `priceGroup` names a group in the site-wide
+ * add-on price list, each option's price (read from the list, never typed
+ * in) renders next to its label, and the button carries
+ * `data-price-group`/`data-price`/`data-price-label` for view.js's price
+ * panel and add-to-bag payload. An option whose `value` isn't in the group
+ * renders with no price (editor-flagged only).
  *
  * @var array     $attributes Block attributes (sanitised by block.json defaults).
  * @var string    $content    Inner block content (unused — this block has no InnerBlocks).
@@ -48,15 +35,17 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// This block previously called no shared helper of its own, so it never
-// needed render-helpers.php — added when the help-toggle markup moved to
-// the shared sgs_render_info_toggle() (includes/helpers-info-toggle.php).
-// Without this require, that call is an undefined-function FATAL the
-// moment any option carries help text (caught live, 2026-09-15).
+// render-helpers.php: needed for the shared sgs_render_info_toggle() call
+// (includes/helpers-info-toggle.php) the help-text toggle markup uses below.
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
 require_once __DIR__ . '/helpers-addon-pricing.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-product-attribute-step.php';
+// D5/D7: option-image + title-weight helpers below live in the chrome file
+// (this file was already at the 300-line cap) — required explicitly.
+require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-chrome.php';
+// FR-43-24: the intro-paragraph helper (this file is at the 300-line cap).
+require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-showcase.php';
 
 $question       = isset( $attributes['question'] ) ? (string) $attributes['question'] : '';
 $options        = isset( $attributes['options'] ) && is_array( $attributes['options'] ) ? $attributes['options'] : array();
@@ -106,8 +95,12 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 echo '<div ' . $wrapper_attributes . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped markup.
 
 if ( '' !== $question ) {
-	echo '<h3 class="sgs-choice-flow-question__title">' . esc_html( $question ) . '</h3>';
+	// D7: heading font-weight, emitted as a class (TitlePanel.js's control).
+	$question_weight_class = sgs_choice_flow_question_title_weight_class( $attributes );
+	echo '<h3 class="sgs-choice-flow-question__title sgs-choice-flow-question__title--w' . esc_attr( $question_weight_class ) . '">' . esc_html( $question ) . '</h3>';
 }
+
+echo sgs_choice_flow_question_intro_html( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes internally.
 
 // Option polish (Spec 43 §5): `isDefault` pre-selects one option per step
 // (client-side, view.js reads data-default — choice-flow/defaults.js)
@@ -118,7 +111,7 @@ $default_rendered = false;
 if ( $is_product_attribute_step ) {
 	echo '<ul class="sgs-choice-flow-question__options sgs-choice-flow-question__options--' . esc_attr( $options_layout ) . '">';
 	foreach ( $generated_options as $generated_option ) {
-		$merged       = sgs_choice_flow_merge_option_extras( $generated_option, $options );
+		$merged       = sgs_choice_flow_merge_option_extras( $generated_option, $options, $product_attribute );
 		$label        = (string) $merged['label'];
 		$value        = (string) $merged['value'];
 		$next_step_id = (string) $merged['nextStepId'];
@@ -128,6 +121,9 @@ if ( $is_product_attribute_step ) {
 		$badge        = (string) $merged['badge'];
 		$description  = (string) $merged['description'];
 		$is_default   = ! empty( $merged['isDefault'] ) && ! $default_rendered;
+
+		// D5: own image first, else the term's swatch image (option-picker's).
+		$option_image = sgs_choice_flow_resolve_option_image( $merged, $product_attribute );
 
 		if ( '' === $label ) {
 			continue;
@@ -157,6 +153,11 @@ if ( $is_product_attribute_step ) {
 		echo '>';
 		if ( '' !== $badge ) {
 			echo '<span class="sgs-choice-flow-question__option-badge">' . esc_html( $badge ) . '</span>';
+		}
+		if ( '' !== $option_image['url'] ) {
+			echo '<span class="sgs-choice-flow-question__option-media">';
+			echo '<img src="' . esc_url( $option_image['url'] ) . '" alt="' . esc_attr( $option_image['alt'] ) . '" loading="lazy" />';
+			echo '</span>';
 		}
 		echo '<span class="sgs-choice-flow-question__option-label">' . esc_html( $label ) . '</span>';
 		if ( '' !== $description ) {

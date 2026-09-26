@@ -90,6 +90,12 @@
 			"default": false,
 			"description": "True only when flowId was set by the Linked flow picker: the discriminator between 'not linked' (renders its own steps) and 'linked, but the flow post is gone' (renders the fallback). The flow post's own sgs/choice-flow never carries it, which is what stops a linked flow rendering itself."
 		},
+		"flowLayout": {
+			"type": "string",
+			"enum": [ "compact", "showcase" ],
+			"default": "compact",
+			"description": "FR-43-24 (v1.8.0): 'compact' (default) is the single column for a flow inline on a page. 'showcase' spends a full screen the way the Eye Care draft's lens flow does — a header bar, a full-width progress line, a sticky stage (the finished product, running lines, a big total) beside large image-led option cards. Set on the saved flow, never per placement (FR-43-25)."
+		},
 		"maxWidth": {
 			"type": "string",
 			"default": "800px"
@@ -159,6 +165,27 @@
 			"default": 0,
 			"description": "FR-43-20 (v1.4.0): the product this flow adds to the bag when it is NOT embedded on that product's own page (where the page's own product/variation is used instead — see render.php). 0 = none set; a flow with priced add-on steps and no product set here, opened off a product page, cannot resolve a base price."
 		},
+		"summaryShowImage": {
+			"type": "boolean",
+			"default": true,
+			"description": "D4 (v1.8.0): shows the summary panel's product photo — the resolved variation's image once one resolves, else the product's own featured image. showPricePanel still gates the whole panel."
+		},
+		"summaryPosition": {
+			"type": "string",
+			"enum": [ "start", "end" ],
+			"default": "start",
+			"description": "D4 (v1.8.0): which side of the steps the summary panel sits on at desktop widths (1024px+) — 'start' (left, default) or 'end' (right). Below that width it's a collapsible 'Your box' row above the steps either way."
+		},
+		"stageNote": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24 (v1.8.0): an optional help note shown in the summary panel/showcase stage, e.g. 'Not sure which to pick? Message me'. Empty = no note shown."
+		},
+		"stageNoteLink": {
+			"type": "object",
+			"default": {},
+			"description": "FR-43-24 (v1.8.0): the note's optional link, {url,text}. Shown only when stageNote is also set and both url and text are non-empty."
+		},
 		"progressColour": {
 			"type": "string",
 			"default": "",
@@ -183,6 +210,17 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Root polish: pins the existing footer (Back button plus the terminal's primary action) to the bottom of the viewport while a step is in view."
+		},
+		"advanceMode": {
+			"type": "string",
+			"enum": [ "continue", "tap" ],
+			"default": "continue",
+			"description": "D1 (Bean's 2026-09-26 review): 'continue' (default) — picking an option selects it and records the answer but does not advance; the footer's Continue button moves on. 'tap' keeps the original advance-on-click behaviour, for quick quizzes."
+		},
+		"continueLabel": {
+			"type": "string",
+			"default": "Continue",
+			"description": "D1/D2: the footer's primary button label on a question step, in 'continue' advanceMode. Muted (aria-disabled) until the current step has a selection."
 		}
 	},
 	"providesContext": {

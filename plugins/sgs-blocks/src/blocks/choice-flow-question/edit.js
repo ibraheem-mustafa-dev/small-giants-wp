@@ -13,6 +13,8 @@ import { VStack } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import AddonPricingPanel from './AddonPricingPanel';
 import ProductAttributePanel from './ProductAttributePanel';
+import TitlePanel from './TitlePanel';
+import VariationCoverageNotice from './VariationCoverageNotice';
 import OptionPolishFields from './OptionPolishFields';
 
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
@@ -186,6 +188,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					/>
 				</PanelBody>
 				<ProductAttributePanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } context={ context } />
+				<TitlePanel attributes={ attributes } setAttributes={ setAttributes } />
 				<AddonPricingPanel
 					priceGroup={ priceGroup }
 					options={ options }
@@ -343,6 +346,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				<VariationCoverageNotice attributes={ attributes } clientId={ clientId } context={ context } />
 				<TextControl
 					label={ __( 'Question', 'sgs-blocks' ) }
 					value={ question }

@@ -188,6 +188,50 @@
 			"default": "",
 			"description": "The HTML anchor set on the sgs/modal block this button opens, when addToCartAction is 'modal'. Empty falls back to cart mode even when 'modal' is selected."
 		},
+		"buyboxLayout": {
+			"type": "string",
+			"default": "standard",
+			"enum": [
+				"standard",
+				"guided"
+			],
+			"description": "'standard' (default) shows every axis picker at once. 'guided' turns the buy box into a one-decision-per-screen flow behind a segmented progress meter (Spec 43 FR-43-23)."
+		},
+		"guidedAutoAdvance": {
+			"type": "boolean",
+			"default": true,
+			"description": "Guided layout only: move to the next group automatically a short beat after a choice is made (instant under prefers-reduced-motion). Off = the shopper always presses Next."
+		},
+		"guidedAnswerAttributes": {
+			"type": "boolean",
+			"default": true,
+			"description": "Guided layout only: also walk the product's other visible, non-variation attributes (e.g. Topping, Dietary) as answer groups, in the product's own attribute order. Off = only the variation-forming axes appear."
+		},
+		"guidedNextLabel": {
+			"type": "string",
+			"default": "Next",
+			"description": "Guided layout only: the Next button's wording."
+		},
+		"guidedBackLabel": {
+			"type": "string",
+			"default": "Back",
+			"description": "Guided layout only: the Back button's wording."
+		},
+		"guidedMeterStyle": {
+			"type": "string",
+			"default": "segments",
+			"enum": [
+				"segments",
+				"bar",
+				"dots"
+			],
+			"description": "Guided layout only: the progress meter's shape. 'segments' (default) shows an index and the chosen value per group. 'bar' shows a single filled progress track. 'dots' always shows the compact narrow-container dots, regardless of container width."
+		},
+		"guidedMeterColour": {
+			"type": "string",
+			"default": "",
+			"description": "Guided layout only: the meter's done/current colour. Empty = the theme's primary preset colour."
+		},
 		"perUnitDenomination": {
 			"type": "string",
 			"default": "",
@@ -448,5 +492,8 @@
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",
 	"render": "file:./render.php",
-	"viewScriptModule": "file:./notify-view.js"
+	"viewScriptModule": [
+		"file:./notify-view.js",
+		"file:./guided.js"
+	]
 }
