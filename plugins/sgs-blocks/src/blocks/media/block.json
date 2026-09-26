@@ -192,6 +192,20 @@
 		"lottieId": {
 			"type": "integer"
 		},
+		"lottieTrigger": {
+			"type": "string",
+			"enum": [
+				"load",
+				"visible",
+				"hover",
+				"scroll"
+			],
+			"default": "visible"
+		},
+		"lottieSpeed": {
+			"type": "number",
+			"default": 1
+		},
 		"videoMimeType": {
 			"type": "string",
 			"default": ""
