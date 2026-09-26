@@ -77,6 +77,115 @@ class Notes_Mailer {
 	}
 
 	/**
+	 * Email the note's author when someone else replies to their note (Spec
+	 * 05 item 5, unified-email plan row 5b).
+	 *
+	 * Sends nothing (and returns false) when the note has no author, the
+	 * author's email doesn't sanitise to a valid address, or the replier IS
+	 * the note's author (no self-notification).
+	 *
+	 * @param array $note  Note row (associative array, as returned by $wpdb->get_row( ..., ARRAY_A )).
+	 * @param array $reply Reply row (associative array, as returned by $wpdb->get_row( ..., ARRAY_A )).
+	 * @return bool True when the email was sent, false otherwise.
+	 */
+	public function notify_reply( $note, $reply ) {
+		$note_author_id = ! empty( $note['user_id'] ) ? (int) $note['user_id'] : 0;
+		$replier_id     = ! empty( $reply['user_id'] ) ? (int) $reply['user_id'] : 0;
+
+		if ( ! $note_author_id || $note_author_id === $replier_id ) {
+			return false;
+		}
+
+		$note_author = get_userdata( $note_author_id );
+		if ( ! $note_author ) {
+			return false;
+		}
+
+		$recipient = sanitize_email( $note_author->user_email );
+		if ( '' === $recipient || ! is_email( $recipient ) ) {
+			return false;
+		}
+
+		$post       = get_post( $note['post_id'] );
+		$page_title = $post ? $post->post_title : __( '(unknown page)', 'sgs-client-notes' );
+		$page_url   = ! empty( $note['page_url'] ) ? $note['page_url'] : ( $post ? get_permalink( $post ) : '' );
+
+		$replier      = $replier_id ? get_userdata( $replier_id ) : false;
+		$replier_name = $replier ? $replier->display_name : __( 'Unknown', 'sgs-client-notes' );
+
+		$site_name  = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
+		$event_name = __( 'New reply on your note', 'sgs-client-notes' );
+		$subject    = $this->strip_crlf( sprintf( '[%s] %s on %s', $site_name, $event_name, wp_specialchars_decode( $page_title, ENT_QUOTES ) ) );
+
+		$note_comment = ! empty( $note['comment'] ) ? $note['comment'] : '';
+		$text_body    = $this->build_reply_text_body( $reply['comment'], $replier_name, $note_comment, $page_title, $page_url );
+
+		if ( class_exists( '\SGS\Blocks\Mail\Sgs_Mailer' ) ) {
+			$html_body = $this->build_reply_html_body( $reply['comment'], $replier_name, $note_comment, $page_title, $page_url );
+
+			return \SGS\Blocks\Mail\Sgs_Mailer::send( $recipient, $subject, $event_name, $html_body, $text_body );
+		}
+
+		return (bool) wp_mail( $recipient, $subject, $text_body );
+	}
+
+	/**
+	 * Build the reply-notification HTML body (trusted by Sgs_Mailer — every value here is escaped).
+	 *
+	 * @param string $reply_comment Raw reply text (unescaped).
+	 * @param string $replier_name  Display name of who replied.
+	 * @param string $note_comment  Raw original note text (unescaped).
+	 * @param string $page_title    Page title.
+	 * @param string $page_url      Page URL.
+	 * @return string
+	 */
+	private function build_reply_html_body( $reply_comment, $replier_name, $note_comment, $page_title, $page_url ) {
+		$html  = '<p>' . esc_html__( 'You have a new reply on your note:', 'sgs-client-notes' ) . '</p>';
+		$html .= wpautop( esc_html( (string) $reply_comment ) );
+		$html .= '<p>' . esc_html__( 'By:', 'sgs-client-notes' ) . ' ' . esc_html( $replier_name ) . '</p>';
+		$html .= '<p>' . esc_html__( 'Your note:', 'sgs-client-notes' ) . ' ' . esc_html( wp_strip_all_tags( (string) $note_comment ) ) . '</p>';
+		$html .= '<p>' . esc_html__( 'Page:', 'sgs-client-notes' ) . ' ' . esc_html( $page_title );
+
+		if ( ! empty( $page_url ) ) {
+			$html .= ' &mdash; <a href="' . esc_url( $page_url ) . '">' . esc_html( $page_url ) . '</a>';
+		}
+
+		$html .= '</p>';
+
+		return $html;
+	}
+
+	/**
+	 * Build the reply-notification plain-text body.
+	 *
+	 * @param string $reply_comment Raw reply text (unescaped).
+	 * @param string $replier_name  Display name of who replied.
+	 * @param string $note_comment  Raw original note text (unescaped).
+	 * @param string $page_title    Page title.
+	 * @param string $page_url      Page URL.
+	 * @return string
+	 */
+	private function build_reply_text_body( $reply_comment, $replier_name, $note_comment, $page_title, $page_url ) {
+		$lines   = array();
+		$lines[] = __( 'You have a new reply on your note:', 'sgs-client-notes' );
+		$lines[] = '';
+		$lines[] = wp_strip_all_tags( (string) $reply_comment );
+		$lines[] = '';
+		/* translators: %s: display name of who replied. */
+		$lines[] = sprintf( __( 'By: %s', 'sgs-client-notes' ), $replier_name );
+		/* translators: %s: the original note text. */
+		$lines[] = sprintf( __( 'Your note: %s', 'sgs-client-notes' ), wp_strip_all_tags( (string) $note_comment ) );
+		/* translators: %s: page title. */
+		$lines[] = sprintf( __( 'Page: %s', 'sgs-client-notes' ), $page_title );
+
+		if ( ! empty( $page_url ) ) {
+			$lines[] = $page_url;
+		}
+
+		return implode( "\n", $lines );
+	}
+
+	/**
 	 * Build the HTML body (trusted by Sgs_Mailer — every value here is escaped).
 	 *
 	 * @param string $event_name Human-readable event name.

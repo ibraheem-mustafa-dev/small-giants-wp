@@ -140,9 +140,13 @@ class Rest_Replies extends \WP_REST_Controller {
 
 		$reply_id = $wpdb->insert_id;
 		$reply = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $reply_id ), ARRAY_A );
+		$note = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$notes_table} WHERE id = %d", $note_id ), ARRAY_A );
 
-		// Send webhook notification.
+		// Send webhook notification (optional N8N automation) and the guaranteed email to the note's author.
 		$this->send_webhook( $note_id, $reply );
+		if ( $note ) {
+			( new Notes_Mailer() )->notify_reply( $note, $reply );
+		}
 
 		return rest_ensure_response( $this->prepare_item_for_response( $reply, $request ) );
 	}

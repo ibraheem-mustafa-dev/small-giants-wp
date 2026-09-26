@@ -71,6 +71,7 @@ function get_permalink( $post ) {
 
 class Sgs_Test_User {
 	public $display_name = '';
+	public $user_email   = '';
 }
 
 function get_userdata( $user_id ) {
@@ -210,16 +211,41 @@ function make_note( array $overrides = array() ): array {
 	);
 }
 
+function make_reply( array $overrides = array() ): array {
+	return array_merge(
+		array(
+			'id'         => 1,
+			'note_id'    => 1,
+			'user_id'    => 7,
+			'comment'    => 'Looks great, thanks!',
+			'created_at' => '2026-09-27 00:00:00',
+		),
+		$overrides
+	);
+}
+
 $GLOBALS['sgs_test_posts'][42] = new Sgs_Test_Post();
 $GLOBALS['sgs_test_posts'][42]->post_title = 'Homepage';
 
 $author = new Sgs_Test_User();
 $author->display_name = 'Ada Author';
+$author->user_email = 'ada@example.com';
 $GLOBALS['sgs_test_users'][5] = $author;
 
 $resolver = new Sgs_Test_User();
 $resolver->display_name = 'Rita Resolver';
+$resolver->user_email = 'rita@example.com';
 $GLOBALS['sgs_test_users'][9] = $resolver;
+
+$replier = new Sgs_Test_User();
+$replier->display_name = 'Rex Replier';
+$replier->user_email = 'rex@example.com';
+$GLOBALS['sgs_test_users'][7] = $replier;
+
+$author_bad_email = new Sgs_Test_User();
+$author_bad_email->display_name = 'Bea Bad-Email';
+$author_bad_email->user_email = 'not-an-email';
+$GLOBALS['sgs_test_users'][6] = $author_bad_email;
 
 // -- (a) wp_mail() fallback path: no Sgs_Mailer class defined yet -----------
 // (must run BEFORE the class stub below — PHP classes cannot be undeclared).
@@ -246,6 +272,33 @@ $call_resolved = last_wp_mail_call();
 ok( true === $sent_resolved, 'notify( resolved ) reports success via the wp_mail() fallback' );
 ok( null !== $call_resolved && false !== strpos( $call_resolved['subject'], 'Note resolved' ), 'the resolved-event subject names the event' );
 ok( null !== $call_resolved && false !== strpos( $call_resolved['message'], 'Rita Resolver' ), 'the text body names who resolved the note (not who wrote it)' );
+
+// -- (a2) notify_reply() fallback path: emails the note's author -----------
+
+reset_wp_mail_log();
+$sent_reply = $mailer->notify_reply( make_note(), make_reply() );
+$call_reply = last_wp_mail_call();
+
+ok( true === $sent_reply, 'notify_reply() reports success via the wp_mail() fallback' );
+ok( null !== $call_reply && 'ada@example.com' === $call_reply['to'], 'notify_reply() mails the note author, not the notification-address option' );
+ok( null !== $call_reply && false !== strpos( $call_reply['subject'], 'reply' ), 'the reply subject names the event' );
+ok( null !== $call_reply && false !== strpos( $call_reply['message'], 'Rex Replier' ), 'the text body names who replied' );
+ok( null !== $call_reply && false !== strpos( $call_reply['message'], 'A perfectly normal note' ), 'the text body quotes the original note' );
+
+reset_wp_mail_log();
+$sent_self_reply = $mailer->notify_reply( make_note(), make_reply( array( 'user_id' => 5 ) ) );
+ok( false === $sent_self_reply, 'the note author replying to their own note sends nothing (no self-notification)' );
+ok( null === last_wp_mail_call(), 'a self-reply never reaches wp_mail()' );
+
+reset_wp_mail_log();
+$sent_no_author = $mailer->notify_reply( make_note( array( 'user_id' => 0 ) ), make_reply() );
+ok( false === $sent_no_author, 'a note with no author sends nothing' );
+ok( null === last_wp_mail_call(), 'a note with no author never reaches wp_mail()' );
+
+reset_wp_mail_log();
+$sent_bad_author_email = $mailer->notify_reply( make_note( array( 'user_id' => 6 ) ), make_reply() );
+ok( false === $sent_bad_author_email, "a note author with an invalid email sends nothing" );
+ok( null === last_wp_mail_call(), 'an invalid author email never reaches wp_mail()' );
 
 // -- (b) empty notification-address option sends nothing --------------------
 
@@ -349,6 +402,21 @@ ok(
 ok(
 	false !== $mailer_call && false === strpos( $mailer_call['text_body'], '<script>' ) && false !== strpos( $mailer_call['text_body'], 'alert(1)' ),
 	'note text with <script> is escaped in the text body passed to Sgs_Mailer'
+);
+
+// -- (g) notify_reply() via the Sgs_Mailer path -------------------------------
+
+$GLOBALS['sgs_test_sgs_mailer_calls'] = array();
+reset_wp_mail_log();
+$sent_reply_via_mailer = $mailer->notify_reply( make_note(), make_reply( array( 'comment' => '<script>alert(2)</script> nice work' ) ) );
+$reply_mailer_call     = end( $GLOBALS['sgs_test_sgs_mailer_calls'] );
+
+ok( true === $sent_reply_via_mailer, 'notify_reply() reports success via the Sgs_Mailer path' );
+ok( null === last_wp_mail_call(), 'the Sgs_Mailer path never calls wp_mail() directly for a reply' );
+ok( false !== $reply_mailer_call && 'ada@example.com' === $reply_mailer_call['to'], 'the Sgs_Mailer path for a reply is called with the note author\'s email' );
+ok(
+	false !== $reply_mailer_call && false === strpos( $reply_mailer_call['html_body'], '<script>' ) && false !== strpos( $reply_mailer_call['html_body'], 'alert(2)' ),
+	'reply text with <script> is escaped in the HTML body passed to Sgs_Mailer'
 );
 
 echo "\n==== {$passes} passed, {$failures} failed ====\n";
