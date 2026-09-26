@@ -132,8 +132,8 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
 
 ## Wave 3C — Header and nav architecture harmonised
 - STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5,
-  U-3+U-8, U-6+U-7, U-4, U-10+U-14, with its batched QA pass) and all of lane C (U-12, U-15, U-17) are closed.
-  Open: lane B (U-13, then U-16, which waits on step 0d) and Gate 3C below.
+  U-3+U-8, U-6+U-7, U-4, U-10+U-14, with its batched QA pass), all of lane C (U-12, U-15, U-17) and U-13 are closed.
+  Open: U-16 (step 0d measured 2026-09-26; design gate next) and Gate 3C below.
 - Lane C evidence (live on sandybrown 2026-09-26, headed Chrome; fixture pages 4070 `/qa-furniture/`, 4072 `/qa-notice/`,
   4074 `/qa-wishlist/`, 4087 `/qa-lottie/`): six clocks in their zones with correct offsets and no `aria-live`; language links
   with `lang`/`hreflang`; the store disclosure closes on Escape and returns focus; the up button 54x54 at 1440 and 45x45 at
@@ -147,6 +147,22 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
 - D (0f8b97287): a Transparent tier falling back to a narrower non-Transparent tier keeps the header's own resting
   fill via `sgs_merge_tri_state_declarations()`'s per-behaviour `fallback` map. Live on a navy header: transparent
   at 1440, `rgb(26,26,46)` at 375.
+
+**U-13 exit criteria (closed):**
+- M-04 covered (Spec 37 FR-37-50): the header's ink, optional fill, menu links and logo follow the section behind it,
+  only where the header is see-through. Live on sandybrown `/qa-section-ink/` (fixture `section-ink`, probe
+  `scripts/nav-qa/u13-ink-probe.mjs`): `#140700` over light and `#f8f8f7` over dark at 18.64:1 over light, dark, photo
+  (toned by `_sgs_top_tone`) and plain-group (browser fallback) sections at 375, 768 and 1440, menu links equal to the
+  ink; negative control `section-ink-off`: no tone class, no change.
+- M-03 covered (FR-37-51): `scrolledTrigger` direction and `scrolledOffset`. Live (fixture `direction-fade`, probe
+  `scripts/nav-qa/m03-direction-probe.mjs`): fantasy's black 0.5 fill paints at rest (header top edge darker, pixel sum
+  361 against 765), is gone past 100px going down, holds through a 5px upward nudge and returns on 15px up at y=465
+  over about 300ms, at all three widths.
+- axe scoped to the header over the dark and light sections: 0 at 1440; at 375 one finding present with the feature
+  on and off alike (the test header's top-row phone button, `#fffaf5` on `#e68a95`, 2.4:1), not U-13's.
+- Editor: every new control set through the real inspector (sidebar tabs, colour popover, number fields) and unchanged
+  after save and reload; no invalid blocks; no "Error loading block" (fixed on the way: the header and drawer starter
+  templates seeded a flat menu `gap`, 31c2ed4c5).
 
 **U-1 exit criteria (closed):**
 - Mega close-grace reads `submenuCloseGrace` (the bug where the mega context passed a literal 170

@@ -74,20 +74,20 @@
     "wearecollins"
    ],
    "needed_by_count": 4,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/site-header::headerTransparent",
     "::headerTransparentDirection",
     "::backgroundColourScrolled",
     "::textColourScrolled",
-    "::shadowScrolled"
+    "::shadowScrolled",
+    "sgs/site-header::scrolledTrigger",
+    "::scrolledOffset"
    ],
-   "note": "Transparent-at-rest / solid-once-scrolled is fully covered per tier and per row. Gap: headerTransparentDirection keys on scroll POSITION; fantasy keys on scroll DIRECTION (fades going down, returns going up, at any offset). OVERSTATEMENT CORRECTED on review: headerTransparent IS a tier object, but backgroundColourScrolled and textColourScrolled are plain STRINGS, so a different scrolled colour per tier is unreachable. dogstudio's 375-only solid #0d0e12 clones only because its other tiers stay transparent.",
-   "uncovered_references": [
-    "fantasy"
-   ],
-   "uncovered_count": 1
+   "note": "U-13 (2026-09-26, Spec 37 FR-37-51): scrolledTrigger direction plus scrolledOffset; with solid-first the resting fill fades by opacity on ::after. Live: fantasy's black 0.5 fill gone past 100px going down, back on a 15px upward scroll mid-page, 5px deadzone held (m03-direction-probe.mjs). backgroundColourScrolled and textColourScrolled stay plain strings (a per-tier scrolled colour remains unreachable; no reference needs it).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-04",
@@ -103,18 +103,24 @@
     "wearecollins"
    ],
    "needed_by_count": 5,
-   "coverage_status": "gap",
+   "coverage_status": "covered",
    "evidence": "mixed",
-   "covered_by": [],
-   "note": "contrastSafe is an advisory scrim behind the header's OWN text and never reads the section behind it. Nothing in the tree observes what passes under the header, and mix-blend-mode exists only as backgroundOverlayBlendMode on the shared overlay panel (8 blocks), never on a header element. fantasy's light-ground half is source-only (never observed at any sampled offset).",
-   "uncovered_references": [
-    "dogstudio",
-    "fantasy",
-    "lusion",
-    "studionamma",
-    "wearecollins"
+   "covered_by": [
+    "sgs/site-header::sectionInk",
+    "::inkOnLight",
+    "::inkOnDark",
+    "::fillOnLight",
+    "::fillOnDark",
+    "::inkDuration",
+    "::inkEasing",
+    "sgs/responsive-logo::darkLogoId",
+    "::colourTreatment",
+    "wrapper blocks::surfaceTone",
+    "_sgs_top_tone attachment meta"
    ],
-   "uncovered_count": 5
+   "note": "U-13 (2026-09-26, Spec 37 FR-37-50): the header reads the section under its midpoint (tone class, picture = unknown, else the opaque computed background) and adapts ink and optional fill where it is see-through; menu links and the logo follow. Live: wearecollins' #140700/#f8f8f7 pair at 18.64:1 over light, dark, photo and plain sections at 375/768/1440 (u13-ink-probe.mjs). studionamma is sectionInk blend; dogstudio's 375-only fill was already reachable (headerTransparent mobile + backgroundColourScrolled). Residue: fantasy's light half is source-only (never observed live); lusion's black and blue states are WebGL-painted, JSON only; the ink colours carry no css_state, so the cloning converter cannot route a draft's CSS to them.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-05",
