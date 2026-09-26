@@ -41,7 +41,10 @@ const SGS_LOTTIE_MAX_BYTES = 524288;
  * @param array $mimes Existing allow-listed mime map.
  * @return array Filtered mime map.
  */
-function sgs_lottie_allow_json_mime( array $mimes ): array {
+function sgs_lottie_allow_json_mime( $mimes ) {
+	if ( ! is_array( $mimes ) ) {
+		return $mimes;
+	}
 	if ( ! current_user_can( 'upload_files' ) ) {
 		return $mimes;
 	}
@@ -57,15 +60,19 @@ add_filter( 'upload_mimes', 'sgs_lottie_allow_json_mime' );
  * `application/json` finfo variants for a `.json`-named file specifically —
  * this does not loosen the check for any other extension.
  *
- * @param array        $checked   {ext, type, proper_filename}.
- * @param string       $file      Full path to the file.
- * @param string       $filename  The name of the file.
- * @param array        $mimes     Key => mime type array.
- * @param string|false $real_mime Real mime type, or false if unknown.
- * @return array Filtered filetype check.
+ * Runs on EVERY upload, so its parameters are untyped: WordPress passes null
+ * for $mimes when the caller gave no mime list (wp_check_filetype_and_ext()'s
+ * default), and a typed signature would fatal every media upload on the site.
+ *
+ * @param array|mixed       $checked   {ext, type, proper_filename}.
+ * @param string|mixed      $file      Full path to the file.
+ * @param string|mixed      $filename  The name of the file.
+ * @param array|null|mixed  $mimes     Key => mime type array, or null.
+ * @param string|false      $real_mime Real mime type, or false if unknown.
+ * @return array|mixed Filtered filetype check.
  */
-function sgs_lottie_filetype_and_ext( array $checked, string $file, string $filename, array $mimes, $real_mime = false ): array {
-	if ( ! preg_match( '/\.json$/i', $filename ) ) {
+function sgs_lottie_filetype_and_ext( $checked, $file, $filename, $mimes = null, $real_mime = false ) {
+	if ( ! is_array( $checked ) || ! is_string( $filename ) || ! preg_match( '/\.json$/i', $filename ) ) {
 		return $checked;
 	}
 	if ( ! current_user_can( 'upload_files' ) ) {

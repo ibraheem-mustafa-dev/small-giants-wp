@@ -521,5 +521,28 @@ ok(
 	'negative control: the REAL validator disagrees with the AM-style guard on [] (real guard wins)'
 );
 
+// wp_check_filetype_and_ext runs on EVERY upload, and WordPress passes null for
+// $mimes when the caller gave no mime list. A typed `array $mimes` signature
+// fatalled every media upload on the canary (2026-09-26); the callback is untyped.
+$sgs_ft_checked = array( 'ext' => 'jpg', 'type' => 'image/jpeg', 'proper_filename' => false );
+try {
+	$sgs_ft_out = sgs_lottie_filetype_and_ext( $sgs_ft_checked, '/tmp/x.jpg', 'photo.jpg', null, 'image/jpeg' );
+	ok( $sgs_ft_out === $sgs_ft_checked, 'filetype filter: a non-JSON upload with null $mimes passes through unchanged (no fatal)' );
+} catch ( \TypeError $e ) {
+	ok( false, 'filetype filter: a non-JSON upload with null $mimes passes through unchanged (no fatal), threw ' . $e->getMessage() );
+}
+// Negative control: the old typed signature, called the same way, throws.
+$sgs_ft_typed = function ( array $checked, string $file, string $filename, array $mimes, $real_mime = false ): array {
+	return $checked;
+};
+$sgs_ft_threw = false;
+try {
+	$sgs_ft_typed( $sgs_ft_checked, '/tmp/x.jpg', 'photo.jpg', null, 'image/jpeg' );
+} catch ( \TypeError $e ) {
+	$sgs_ft_threw = true;
+}
+ok( $sgs_ft_threw, 'NEGATIVE CONTROL: the old typed signature throws a TypeError on null $mimes' );
+ok( null === sgs_lottie_allow_json_mime( null ), 'upload_mimes filter: a non-array value passes through untouched' );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );
