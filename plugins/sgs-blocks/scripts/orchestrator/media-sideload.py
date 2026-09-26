@@ -54,6 +54,9 @@ import urllib.request
 from pathlib import Path
 from typing import Any, Callable
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
+
 sys.stdout.reconfigure(encoding="utf-8")
 
 DEFAULT_WP_SITE = os.environ.get("SGS_WP_SITE", "https://palestine-lives.org")
@@ -232,7 +235,7 @@ def _check_existing_attachment(
         headers={"Authorization": auth_header},
     )
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
+        with urlopen_tls(req, "media-sideload", timeout=timeout) as resp:
             items: list[dict] = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         if e.code in (401, 403):
@@ -287,7 +290,7 @@ def _upload_one(
         },
     )
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
+        with urlopen_tls(req, "media-sideload", timeout=timeout) as resp:
             return json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         if e.code in (401, 403):

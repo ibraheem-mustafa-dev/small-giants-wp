@@ -3,7 +3,12 @@ from __future__ import annotations
 
 import base64
 import json
+import sys
 import urllib.request
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
 
 
 def push(target_domain: str, fields: dict[str, str], overwrite: bool,
@@ -20,5 +25,5 @@ def push(target_domain: str, fields: dict[str, str], overwrite: bool,
             "Authorization": f"Basic {token}",
         },
     )
-    with urllib.request.urlopen(req, timeout=20) as resp:
+    with urlopen_tls(req, "business_info.push", timeout=20) as resp:
         return json.loads(resp.read().decode("utf-8"))

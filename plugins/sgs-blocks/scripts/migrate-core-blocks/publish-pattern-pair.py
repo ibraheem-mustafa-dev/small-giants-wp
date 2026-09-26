@@ -24,6 +24,9 @@ import urllib.request
 REPO = pathlib.Path(__file__).resolve().parents[4]
 SECRETS = REPO / '.claude' / 'secrets' / 'sandybrown.env'
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
+
 
 def load_env():
     env = {}
@@ -57,7 +60,7 @@ def publish(env, slug, title, content):
     req = urllib.request.Request(
         f"{env['WP_URL_SANDYBROWN']}/wp-json/wp/v2/pages", data=data, method='POST',
         headers={'Content-Type': 'application/json', 'Authorization': 'Basic ' + auth})
-    with urllib.request.urlopen(req) as r:
+    with urlopen_tls(req, "publish-pattern-pair") as r:
         out = json.load(r)
     return out['id'], out['link']
 

@@ -36,6 +36,9 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
+
 for _stream in (sys.stdout, sys.stderr):
     try:
         _stream.reconfigure(encoding='utf-8')
@@ -80,7 +83,7 @@ def rest(env: dict, path: str, data: dict | None = None, method: str = 'GET'):
         data=body, method=method,
         headers={'Content-Type': 'application/json', 'Authorization': 'Basic ' + auth})
     try:
-        with urllib.request.urlopen(req, timeout=60) as r:
+        with urlopen_tls(req, 'extend-page-3145-video-svg', timeout=60) as r:
             return json.load(r)
     except urllib.error.HTTPError as exc:
         sys.exit(f'FAIL: REST {method} {path} -> HTTP {exc.code}: {exc.read()[:400]!r}')

@@ -32,6 +32,9 @@ import urllib.request
 from pathlib import Path
 from urllib.parse import urlparse
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
+
 sys.stdout.reconfigure(encoding="utf-8")
 
 # Moved 2026-05-19 from reports/brand-walkdown-2026-05-19/ to canonical
@@ -107,7 +110,7 @@ def upload_one(file_path: Path) -> dict:
             "Content-Disposition": f'attachment; filename="{file_path.name}"',
         },
     )
-    with urllib.request.urlopen(req, timeout=120) as resp:
+    with urlopen_tls(req, "upload_and_patch", timeout=120) as resp:
         raw = resp.read().decode("utf-8", errors="ignore")
         idx = raw.find("{")
         return json.loads(raw[idx:]) if idx >= 0 else {}
@@ -320,7 +323,8 @@ def main():
         headers={"Authorization": AUTH, "Content-Type": "application/json"},
     )
     try:
-        resp = urllib.request.urlopen(req, timeout=120).read().decode("utf-8", errors="ignore")
+        with urlopen_tls(req, "upload_and_patch", timeout=120) as patch_resp:
+            resp = patch_resp.read().decode("utf-8", errors="ignore")
         idx = resp.find('{"id"')
         if idx >= 0:
             r = json.loads(resp[idx:])

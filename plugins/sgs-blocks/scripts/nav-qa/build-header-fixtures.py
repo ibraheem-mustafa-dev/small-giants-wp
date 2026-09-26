@@ -60,12 +60,14 @@ from __future__ import annotations
 import argparse
 import base64
 import json
-import ssl
 import sys
 import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
 
 # .../plugins/sgs-blocks/scripts/nav-qa/this-file -> up 4 to the repo root.
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -114,17 +116,6 @@ def load_env(path: Path) -> dict:
     return env
 
 
-def ssl_context() -> ssl.SSLContext:
-    """certifi's bundle when present. The Windows store can hold a stale root and reject a
-    valid Hostinger chain ("certificate has expired") while curl and browsers accept it."""
-    try:
-        import certifi  # type: ignore
-
-        return ssl.create_default_context(cafile=certifi.where())
-    except ImportError:
-        return ssl.create_default_context()
-
-
 class WP:
     """Minimal authenticated WordPress REST client."""
 
@@ -137,7 +128,6 @@ class WP:
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
-        self.ctx = ssl_context()
 
     def _request(self, method: str, path: str, payload=None, params=None):
         url = self.base + path
@@ -146,7 +136,7 @@ class WP:
         data = json.dumps(payload).encode("utf-8") if payload is not None else None
         req = urllib.request.Request(url, data=data, headers=self.headers, method=method)
         try:
-            with urllib.request.urlopen(req, timeout=60, context=self.ctx) as response:
+            with urlopen_tls(req, "build-header-fixtures", timeout=60) as response:
                 body = response.read().decode("utf-8")
                 return json.loads(body) if body else None
         except urllib.error.HTTPError as err:

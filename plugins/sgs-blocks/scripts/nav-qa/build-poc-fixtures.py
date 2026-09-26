@@ -64,6 +64,9 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
+
 # .../plugins/sgs-blocks/scripts/nav-qa/this-file → up 4 to the repo root.
 REPO_ROOT = Path(__file__).resolve().parents[4]
 ENV_PATH = REPO_ROOT / ".claude" / "secrets" / "sandybrown.env"
@@ -126,7 +129,7 @@ class WP:
         data = json.dumps(payload).encode("utf-8") if payload is not None else None
         req = urllib.request.Request(url, data=data, headers=self.headers, method=method)
         try:
-            with urllib.request.urlopen(req, timeout=60) as response:
+            with urlopen_tls(req, "build-poc-fixtures", timeout=60) as response:
                 body = response.read().decode("utf-8")
                 return json.loads(body) if body else None
         except urllib.error.HTTPError as err:

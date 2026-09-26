@@ -40,6 +40,9 @@ import sys
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
+
 # --- Paths ------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
 BLOCKS_DIR = SCRIPT_DIR.parent.parent / "src" / "blocks"
@@ -169,33 +172,10 @@ def analyse_style_css(css_path: Path) -> dict:
 
 # --- Live analysis ----------------------------------------------------------
 def fetch(url: str, timeout: int = 25) -> str:
-    """Fetch `url`, trusting the certifi bundle first and the platform store second.
-
-    The two stores can disagree about the same certificate (the Windows store has
-    rejected the healthy canary as "expired"), so a verification failure under one
-    is retried once under the other — the same order as build-deploy.py::urlopen_tls.
-    """
-    import ssl
-    import urllib.error
-
-    stores = []
-    try:
-        import certifi
-        stores.append(ssl.create_default_context(cafile=certifi.where()))
-    except ImportError:
-        pass
-    stores.append(None)  # platform store
-
+    """Fetch `url` through the shared trust-store fallback (scripts/tls_urlopen.py)."""
     req = urllib.request.Request(url, headers={"User-Agent": "sgs-no-inline-detector"})
-    for position, context in enumerate(stores):
-        try:
-            with urllib.request.urlopen(req, timeout=timeout, context=context) as resp:
-                return resp.read().decode("utf-8", errors="replace")
-        except urllib.error.URLError as exc:
-            if isinstance(exc.reason, ssl.SSLCertVerificationError) and position + 1 < len(stores):
-                continue
-            raise
-    raise RuntimeError("no TLS store available")
+    with urlopen_tls(req, "no-inline-detect", timeout=timeout) as resp:
+        return resp.read().decode("utf-8", errors="replace")
 
 
 TAG_RE = re.compile(r"<[a-zA-Z][^>]*>")

@@ -58,6 +58,9 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
+
 # Windows consoles default to cp1252, which raises UnicodeEncodeError on the
 # em-dashes and arrows in this script's output. Force UTF-8 so a cosmetic
 # encoding fault can never masquerade as a failed measurement run.
@@ -1153,7 +1156,7 @@ def rest(env: dict, path: str, data: dict | None = None, method: str = 'GET'):
         data=body, method=method,
         headers={'Content-Type': 'application/json', 'Authorization': 'Basic ' + auth})
     try:
-        with urllib.request.urlopen(req, timeout=60) as r:
+        with urlopen_tls(req, "build-tier-fixture-page", timeout=60) as r:
             return json.load(r)
     except urllib.error.HTTPError as exc:
         sys.exit(f'FAIL: REST {method} {path} → HTTP {exc.code}: {exc.read()[:400]!r}')
