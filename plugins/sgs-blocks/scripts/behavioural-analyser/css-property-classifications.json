@@ -19978,6 +19978,108 @@
     },
     {
       "slug": "sgs/notice-banner",
+      "attr": "iconCircleBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "icon",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleBackgroundHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "icon",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "icon",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconCircleSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
       "attr": "iconColourGradient",
       "fields": {
         "css_property": "stroke",
@@ -19993,6 +20095,14 @@
         "role": "color",
         "css_element": "icon",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "icon-glyph"
       }
     },
     {
