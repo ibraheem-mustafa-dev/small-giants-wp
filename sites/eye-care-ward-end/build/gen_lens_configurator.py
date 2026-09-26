@@ -38,22 +38,21 @@ def opt(value, label, media_id, file, help_text, description="", **extra):
 # Step order (0-based, the flow's own DOM order): questions 0-3, then one result per path.
 STEP_LATER, STEP_UPLOAD, STEP_TYPE, STEP_FRAME_ONLY = 4, 5, 6, 7
 
-H2 = dict(level="h2", fontFamily="heading", fontWeight="500", fontSize={"desktop": 40, "mobile": 30},
-          fontSizeUnit="px", lineHeight={"desktop": 1.05}, lineHeightUnit="unitless",
-          margin={"desktop": {"bottom": "8px"}})
-INTRO = dict(fontSize={"desktop": 15.5}, fontSizeUnit="px", textColour="text-muted",
-             margin={"desktop": {"bottom": "26px"}})
+# FR-43-24 (v1.8.0): the question's title and intro paragraph are now first-class
+# attributes on sgs/choice-flow-question itself (render.php emits the h3/p there,
+# styled at 38px/28px in the showcase layout) — no separate sgs/heading/sgs/text
+# blocks. Using those would either leave the title/intro blank (unset attribute)
+# or double them up (block's own h3/p alongside the manual ones).
+def step(label, question):
+    return B("sgs/form-step", {"label": label}, [question])
 
 
-def step(label, heading, intro, question):
-    return B("sgs/form-step", {"label": label}, [
-        B("sgs/heading", dict(H2, content=heading)),
-        B("sgs/text", dict(INTRO, text=intro)),
-        question,
-    ])
-
-
-use = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-use", options=[
+use = B("sgs/choice-flow-question", dict(
+    layout="grid", priceGroup="lens-use",
+    question="What will you use them for?",
+    intro="Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what "
+          "you're after.",
+    options=[
     opt("distance", "Distance", 455, "use-distance.png",
         "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision "
         "looking ahead and into the distance.", description="Driving, walking about, everyday wear."),
@@ -73,7 +72,13 @@ use = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-use", o
 # Badge/default text is verbatim from the draft: thickness's "std" carries "Most people pick this"
 # (Eye Care Birmingham.dc.html:1429, the `rec` flag on thickOptions:1998); the prescription step's
 # "later" carries "Easiest" (dc.html:1483, the `pref` flag on rxModes:2018).
-thickness = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-thickness", options=[
+thickness = B("sgs/choice-flow-question", dict(
+    layout="grid", priceGroup="lens-thickness",
+    question="How thin would you like them?",
+    intro="Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is "
+          "a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth "
+          "it.",
+    options=[
     opt("std", "Standard · 1.5", 451, "thickness-std.png",
         "The standard lens material. Perfectly good for a mild prescription — going thinner would make no visible "
         "difference and cost you money for nothing.",
@@ -92,7 +97,15 @@ thickness = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-t
         description="The thinnest made. For ±6.00 and above."),
 ]))
 
-finish = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-finish", options=[
+# Draft's finish-step intro (dc.html:1461) also tells the shopper to watch the stage image change as they
+# pick — a showcase-specific line (the compact layout has no persistent product image to watch), kept
+# verbatim because the showcase stage does exactly that (FR-43-24's swap-on-selection).
+finish = B("sgs/choice-flow-question", dict(
+    layout="grid", priceGroup="lens-finish",
+    question="What finish?",
+    intro="All of them block 100% of UV and come scratch-resistant. Watch the frame on the left change as you "
+          "pick.",
+    options=[
     opt("tint", "Tinted to match", 450, "finish-tint.png",
         "I match the tint to the lenses the brand fitted, so the frame looks exactly as designed. Nobody will know "
         "they're prescription.", description="Same colour and depth as the original lenses."),
@@ -111,7 +124,12 @@ finish = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-fini
 # The draft's prescription step (dc.html:1481-1486) shows its `desc` directly under the title with no
 # "?" toggle at all (unlike the three steps above) — so that copy maps to `description` here, not
 # `helpText`; a `helpText` value would wrongly add a toggle button the draft never has on this step.
-rx = B("sgs/choice-flow-question", dict(layout="grid", options=[
+rx = B("sgs/choice-flow-question", dict(
+    layout="grid",
+    question="Your prescription",
+    intro="It needs to be under two years old and from a UK optician — whoever tested your eyes has to give "
+          "you a copy if you ask. You don't need it to hand right now.",
+    options=[
     {"label": "Send it later", "value": "later", "nextStepId": str(STEP_LATER),
      "description": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives.",
      "isDefault": True, "badge": "Easiest"},
@@ -160,21 +178,23 @@ tree = [
     # - closeLabel left at the block default "Close", which already matches dc.html:1317's visible text.
     # - stickyFooter on: dc.html's footer row (:1537) stays pinned at the bottom of the flex column while
     #   the body scrolls (:1322's flex:1;overflow:auto) — the same visual effect stickyFooter produces.
+    # - flowLayout "showcase" (FR-43-24, this session): the full-screen stage-beside-step-pane layout, the
+    #   framework's reference build for it — matches the draft's `lensOpen` dialog structure exactly.
+    # - stageNote/stageNoteLink: the draft's WhatsApp help card in the stage aside (dc.html:1345-1350),
+    #   verbatim text and number.
     B("sgs/choice-flow", dict(title="Add prescription lenses", maxWidth="1200px", progressStyle="bar",
                               showPricePanel=True, pricePanelTitle="Your order",
-                              progressColour="accent", showHeader=True, stickyFooter=True), [
-        step("What they're for", "What will you use them for?",
-             "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what "
-             "you're after.", use),
-        step("How thin", "How thin would you like them?",
-             "Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is a "
-             "safe pick — I'll check when your prescription arrives and tell you if something thinner is worth it.",
-             thickness),
-        step("Finish", "What finish?",
-             "All of them block 100% of UV and come scratch-resistant.", finish),
-        step("Your prescription", "Your prescription",
-             "It needs to be under two years old and from a UK optician — whoever tested your eyes has to give you "
-             "a copy if you ask. You don't need it to hand right now.", rx),
+                              progressColour="accent", showHeader=True, stickyFooter=True,
+                              flowLayout="showcase",
+                              stageNote="Not sure which to pick?",
+                              stageNoteLink={
+                                  "url": "https://wa.me/4479605978",
+                                  "text": "Happy to talk it through — message me and we'll choose together.",
+                              }), [
+        step("What they're for", use),
+        step("How thin", thickness),
+        step("Finish", finish),
+        step("Your prescription", rx),
         result("Send it later", "Perfect — order now and I'll WhatsApp you a link for it.",
                "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut "
                "them I refund the lenses in full."),

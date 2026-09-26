@@ -9,7 +9,13 @@
       "pricePanelTitle": "Your order",
       "progressColour": "accent",
       "showHeader": true,
-      "stickyFooter": true
+      "stickyFooter": true,
+      "flowLayout": "showcase",
+      "stageNote": "Not sure which to pick?",
+      "stageNoteLink": {
+        "url": "https://wa.me/4479605978",
+        "text": "Happy to talk it through — message me and we'll choose together."
+      }
     },
     "innerBlocks": [
       {
@@ -19,49 +25,12 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/heading",
-            "attributes": {
-              "level": "h2",
-              "fontFamily": "heading",
-              "fontWeight": "500",
-              "fontSize": {
-                "desktop": 40,
-                "mobile": 30
-              },
-              "fontSizeUnit": "px",
-              "lineHeight": {
-                "desktop": 1.05
-              },
-              "lineHeightUnit": "unitless",
-              "margin": {
-                "desktop": {
-                  "bottom": "8px"
-                }
-              },
-              "content": "What will you use them for?"
-            }
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "fontSize": {
-                "desktop": 15.5
-              },
-              "fontSizeUnit": "px",
-              "textColour": "text-muted",
-              "margin": {
-                "desktop": {
-                  "bottom": "26px"
-                }
-              },
-              "text": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after."
-            }
-          },
-          {
             "name": "sgs/choice-flow-question",
             "attributes": {
               "layout": "grid",
               "priceGroup": "lens-use",
+              "question": "What will you use them for?",
+              "intro": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after.",
               "options": [
                 {
                   "label": "Distance",
@@ -124,49 +93,12 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/heading",
-            "attributes": {
-              "level": "h2",
-              "fontFamily": "heading",
-              "fontWeight": "500",
-              "fontSize": {
-                "desktop": 40,
-                "mobile": 30
-              },
-              "fontSizeUnit": "px",
-              "lineHeight": {
-                "desktop": 1.05
-              },
-              "lineHeightUnit": "unitless",
-              "margin": {
-                "desktop": {
-                  "bottom": "8px"
-                }
-              },
-              "content": "How thin would you like them?"
-            }
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "fontSize": {
-                "desktop": 15.5
-              },
-              "fontSizeUnit": "px",
-              "textColour": "text-muted",
-              "margin": {
-                "desktop": {
-                  "bottom": "26px"
-                }
-              },
-              "text": "Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth it."
-            }
-          },
-          {
             "name": "sgs/choice-flow-question",
             "attributes": {
               "layout": "grid",
               "priceGroup": "lens-thickness",
+              "question": "How thin would you like them?",
+              "intro": "Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth it.",
               "options": [
                 {
                   "label": "Standard · 1.5",
@@ -230,49 +162,12 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/heading",
-            "attributes": {
-              "level": "h2",
-              "fontFamily": "heading",
-              "fontWeight": "500",
-              "fontSize": {
-                "desktop": 40,
-                "mobile": 30
-              },
-              "fontSizeUnit": "px",
-              "lineHeight": {
-                "desktop": 1.05
-              },
-              "lineHeightUnit": "unitless",
-              "margin": {
-                "desktop": {
-                  "bottom": "8px"
-                }
-              },
-              "content": "What finish?"
-            }
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "fontSize": {
-                "desktop": 15.5
-              },
-              "fontSizeUnit": "px",
-              "textColour": "text-muted",
-              "margin": {
-                "desktop": {
-                  "bottom": "26px"
-                }
-              },
-              "text": "All of them block 100% of UV and come scratch-resistant."
-            }
-          },
-          {
             "name": "sgs/choice-flow-question",
             "attributes": {
               "layout": "grid",
               "priceGroup": "lens-finish",
+              "question": "What finish?",
+              "intro": "All of them block 100% of UV and come scratch-resistant. Watch the frame on the left change as you pick.",
               "options": [
                 {
                   "label": "Tinted to match",
@@ -334,48 +229,11 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/heading",
-            "attributes": {
-              "level": "h2",
-              "fontFamily": "heading",
-              "fontWeight": "500",
-              "fontSize": {
-                "desktop": 40,
-                "mobile": 30
-              },
-              "fontSizeUnit": "px",
-              "lineHeight": {
-                "desktop": 1.05
-              },
-              "lineHeightUnit": "unitless",
-              "margin": {
-                "desktop": {
-                  "bottom": "8px"
-                }
-              },
-              "content": "Your prescription"
-            }
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "fontSize": {
-                "desktop": 15.5
-              },
-              "fontSizeUnit": "px",
-              "textColour": "text-muted",
-              "margin": {
-                "desktop": {
-                  "bottom": "26px"
-                }
-              },
-              "text": "It needs to be under two years old and from a UK optician — whoever tested your eyes has to give you a copy if you ask. You don't need it to hand right now."
-            }
-          },
-          {
             "name": "sgs/choice-flow-question",
             "attributes": {
               "layout": "grid",
+              "question": "Your prescription",
+              "intro": "It needs to be under two years old and from a UK optician — whoever tested your eyes has to give you a copy if you ask. You don't need it to hand right now.",
               "options": [
                 {
                   "label": "Send it later",
