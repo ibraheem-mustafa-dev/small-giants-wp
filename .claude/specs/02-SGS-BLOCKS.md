@@ -614,6 +614,7 @@ The icon circle has an overridable default border; a title placeholder never lea
 
 **Attributes:**
 - `displayMode` — inline | bar | announcement (default: inline)
+- `iconSize` (8-96px, default 20) and `iconStyle` bare | circle; circle adds the trust-bar-style badge (`iconCircleSize`, `iconCircleBackground` (+gradient, hover), `iconCircleBorderRadius`, `iconCircleShadow`, `iconCircleBorderWidth/Style/Colour`)
 - `icon` — string (emoji or SVG slug)
 - `iconColour` — token slug
 - `text` — RichText (supports inline bold, links)
