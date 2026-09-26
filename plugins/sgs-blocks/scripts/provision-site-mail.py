@@ -29,6 +29,12 @@ Usage:
   python plugins/sgs-blocks/scripts/provision-site-mail.py --target sandybrown --check
 
 --check exits 1 when the site has no working FluentSMTP SMTP connection.
+
+A test site that holds a real client's details (sandybrown's Site Info email is the
+client's) must never email them: `--redirect-all-to <address>` writes the mu-plugin
+wp-content/mu-plugins/sgs-test-mail-redirect.php, which sends every email to that
+address with the real recipients in the subject and drops Cc/Bcc; `--redirect-all-to
+off` removes it. Capture-only QA proofs lift it with remove_filter().
 Secrets file: `--secret-file` (default .claude/secrets/ai-agent-credentials-and-info/
 email.env); when a key is defined twice the last definition wins, as in dotenv.
 """
@@ -146,6 +152,7 @@ echo wp_json_encode( array(
 	'sender'              => ( $c['sender_name'] ?? '' ) . ' <' . ( $c['sender_email'] ?? '' ) . '>',
 	'log_emails'          => $s['misc']['log_emails'] ?? '',
 	'digest'              => ( $n['enabled'] ?? 'no' ) . ' -> ' . ( $n['notify_email'] ?? '' ),
+	'test_redirect'       => has_filter( 'wp_mail', 'sgs_test_mail_redirect' ) ? 'ON (every email goes to one address)' : 'off',
 ) );
 """
 
@@ -158,6 +165,43 @@ $table = $wpdb->prefix . FLUENT_MAIL_DB_PREFIX . 'email_logs';
 $row   = $wpdb->get_row( $wpdb->prepare( "SELECT id, status, `from`, subject FROM {$table} WHERE subject = %s ORDER BY id DESC LIMIT 1", $subject ), ARRAY_A );
 echo wp_json_encode( array( 'wp_mail' => $sent, 'subject' => $subject, 'log' => $row ) );
 """
+
+
+REDIRECT_MU_PLUGIN = "wp-content/mu-plugins/sgs-test-mail-redirect.php"
+REDIRECT_PHP = r"""<?php
+/**
+ * Plugin Name: SGS test-site mail redirect
+ * Description: Sends every email this TEST site produces to one address, naming the real recipients in the subject. Written by provision-site-mail.py --redirect-all-to; never install on a live client site.
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+function sgs_test_mail_redirect( $atts ) {
+	$original = is_array( $atts['to'] ) ? implode( ', ', $atts['to'] ) : (string) $atts['to'];
+	$headers  = is_array( $atts['headers'] ) ? $atts['headers'] : explode( "\n", str_replace( "\r\n", "\n", (string) $atts['headers'] ) );
+	$atts['headers'] = array_values( array_filter( $headers, static function ( $line ) {
+		return ! preg_match( '/^\s*b?cc\s*:/i', (string) $line );
+	} ) );
+	$atts['subject'] = '[test site, to: ' . $original . '] ' . $atts['subject'];
+	$atts['to']      = __REDIRECT_TO__;
+	return $atts;
+}
+add_filter( 'wp_mail', 'sgs_test_mail_redirect', PHP_INT_MAX );
+"""
+
+
+def set_redirect(site: Site, address: str) -> None:
+    """Install (an address) or remove ('off') the test-site mail redirect mu-plugin."""
+    if address == "off":
+        result = site.run(f"rm -f {REDIRECT_MU_PLUGIN}")
+    else:
+        if "@" not in address or any(c in address for c in "'\\\r\n"):
+            sys.exit(f"ERROR: --redirect-all-to needs a plain email address, got {address!r}")
+        php = REDIRECT_PHP.replace("__REDIRECT_TO__", "'" + address + "'")
+        result = site.run(f"mkdir -p wp-content/mu-plugins && cat > {REDIRECT_MU_PLUGIN} && php -l {REDIRECT_MU_PLUGIN}", stdin=php)
+    if result.returncode:
+        sys.exit(f"ERROR: redirect change failed\n{result.stdout}\n{result.stderr}")
+    print(f"redirect: {'removed' if address == 'off' else 'every email now goes to ' + address}")
 
 
 def check(site: Site) -> int:
@@ -210,8 +254,14 @@ def main() -> int:
     parser.add_argument("--from-name", default="", help="default: the site title")
     parser.add_argument("--alert-email", default="", help="daily digest recipient; default: the Site Info email")
     parser.add_argument("--test-to", default="", help="send a test email to this address after setup")
+    parser.add_argument("--redirect-all-to", default="", metavar="ADDRESS|off",
+                        help="TEST SITES ONLY: send every email to ADDRESS (real recipients shown in the subject); 'off' removes it")
     args = parser.parse_args()
 
+    if args.redirect_all_to and not args.smtp_user:
+        site = Site(args.target)
+        set_redirect(site, args.redirect_all_to)
+        return check(site)
     if args.check:
         return check(Site(args.target))
     if not (args.smtp_user and args.secret_key):
@@ -220,6 +270,8 @@ def main() -> int:
     password = read_secret(args.secret_file, args.secret_key)
     site = Site(args.target, secret=password)
     provision(site, args, password)
+    if args.redirect_all_to:
+        set_redirect(site, args.redirect_all_to)
     status = check(site)
     if status == 0 and args.test_to:
         sent = site.php(TEST_PHP, args.test_to)

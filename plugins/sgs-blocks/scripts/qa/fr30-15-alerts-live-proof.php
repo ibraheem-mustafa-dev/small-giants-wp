@@ -46,6 +46,9 @@ $capture_cb = static function ( $pre, $atts ) use ( &$captured, &$mail_ok ) {
 	return $mail_ok;
 };
 add_filter( 'pre_wp_mail', $capture_cb, 10, 2 );
+// A test site's mail redirect (provision-site-mail.py --redirect-all-to) would
+// rewrite the recipients this proof asserts; nothing is sent here, so lift it.
+remove_filter( 'wp_mail', 'sgs_test_mail_redirect', PHP_INT_MAX );
 
 $snapshot = array(
 	'webhook'  => get_option( 'sgs_n8n_webhook_url', '' ),
