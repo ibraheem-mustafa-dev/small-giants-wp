@@ -5,6 +5,16 @@
 2026-09-25). **Wave C DONE 2026-09-25** (tasks 1-6 live on eye-care-test and proven; the design review's owed items
 are in "Wave C design review" below). **Next: Wave D** (section 8: Phase 6 launch readiness, then the Phase 7 answer
 key), with the owed Wave C polish alongside.
+- **Parity re-review owed before Wave D (Bean, 2026-09-26).** Only the lens configurator is verified to the standard
+  below; every other page's "verified at 1440/768/375" in this plan came from lighter checks (the opening state,
+  different content on each side, no motion or hover end states), the same kind that wrongly passed the lens flow.
+  Re-review every page except the header and footer (and the nav track's mobile menu, mega panels and floating
+  WhatsApp bubble): home, lenses, about, help (FAQ), contact, shop archive (filters applied and open), product page
+  (every tab, gallery, size guide modal), bag drawer, checkout, order confirmation. Standard: the same content item
+  on both sides (a photographed product where the draft has a photo: Gucci 76, Holbrook 81, Wayfarer 90, Round Metal
+  98), every state walked (tabs, steps, open panels, filters), text and positions and computed styles and motion and
+  hover end states compared by script at 1440, 768 and 375, screenshots looked at, and every difference either fixed
+  or listed as accepted by Bean.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,
