@@ -5,9 +5,11 @@
       "flowId": "mamas-build-your-box",
       "title": "Build your box",
       "flowProductId": 3990,
+      "flowLayout": "showcase",
       "showHeader": true,
       "stickyFooter": true,
       "showPricePanel": true,
+      "advanceMode": "continue",
       "closeLabel": "Close"
     },
     "innerBlocks": [
@@ -19,6 +21,7 @@
             "name": "sgs/choice-flow-question",
             "attributes": {
               "question": "Choose your flavour",
+              "intro": "Both are baked fresh to order.",
               "productAttribute": "pa_flavour",
               "options": [
                 { "label": "chocolate", "value": "chocolate" },
@@ -36,6 +39,7 @@
             "name": "sgs/choice-flow-question",
             "attributes": {
               "question": "Choose a topping",
+              "intro": "A little extra chocolate, or keep it plain.",
               "productAttribute": "pa_topping",
               "options": [
                 { "label": "Chocolate Chip", "value": "chocolate-chip" },
@@ -54,9 +58,10 @@
             "name": "sgs/choice-flow-question",
             "attributes": {
               "question": "Any dietary needs?",
+              "intro": "Same great taste, made vegan if you need it.",
               "productAttribute": "pa_dietary",
               "options": [
-                { "label": "Regular", "value": "regular" },
+                { "label": "Regular", "value": "regular", "isDefault": true },
                 { "label": "Vegan", "value": "vegan" }
               ]
             }
@@ -71,11 +76,11 @@
             "name": "sgs/choice-flow-question",
             "attributes": {
               "question": "How many cookies?",
+              "intro": "Bigger packs work out cheaper per cookie.",
               "productAttribute": "pa_number-in-pack",
               "options": [
                 { "label": "8", "value": "8" },
-                { "label": "12", "value": "12" },
-                { "label": "20", "value": "20" },
+                { "label": "20", "value": "20", "badge": "Best value" },
                 { "label": "40", "value": "40" }
               ]
             }
@@ -90,7 +95,11 @@
             "name": "sgs/choice-flow-result",
             "attributes": {
               "heading": "Your box is ready",
-              "action": "add-to-bag"
+              "action": "add-to-bag",
+              "showAddToBasket": true,
+              "addToBasketLabel": "Add to basket",
+              "showBuyNow": true,
+              "buyNowLabel": "Buy now"
             }
           }
         ]

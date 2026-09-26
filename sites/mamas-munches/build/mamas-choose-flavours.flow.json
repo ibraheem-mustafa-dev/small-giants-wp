@@ -4,8 +4,12 @@
     "attributes": {
       "flowId": "mamas-choose-flavours",
       "title": "Choose your flavours",
+      "flowLayout": "showcase",
       "showHeader": true,
       "stickyFooter": true,
+      "showPricePanel": true,
+      "advanceMode": "continue",
+      "openerLabel": "Choose your flavours",
       "closeLabel": "Close"
     },
     "innerBlocks": [
@@ -17,6 +21,7 @@
             "name": "sgs/choice-flow-question",
             "attributes": {
               "question": "Choose your flavour",
+              "intro": "Both are baked fresh to order.",
               "productAttribute": "pa_flavour",
               "options": [
                 { "label": "chocolate", "value": "chocolate" },
@@ -34,6 +39,7 @@
             "name": "sgs/choice-flow-question",
             "attributes": {
               "question": "Choose a topping",
+              "intro": "A little extra chocolate, or keep it plain.",
               "productAttribute": "pa_topping",
               "options": [
                 { "label": "Chocolate Chip", "value": "chocolate-chip" },
@@ -52,9 +58,10 @@
             "name": "sgs/choice-flow-question",
             "attributes": {
               "question": "Any dietary needs?",
+              "intro": "Same great taste, made vegan if you need it.",
               "productAttribute": "pa_dietary",
               "options": [
-                { "label": "Regular", "value": "regular" },
+                { "label": "Regular", "value": "regular", "isDefault": true },
                 { "label": "Vegan", "value": "vegan" }
               ]
             }
@@ -69,7 +76,11 @@
             "name": "sgs/choice-flow-result",
             "attributes": {
               "heading": "Add to bag",
-              "action": "add-to-bag"
+              "action": "add-to-bag",
+              "showAddToBasket": true,
+              "addToBasketLabel": "Add to basket",
+              "showBuyNow": true,
+              "buyNowLabel": "Buy now"
             }
           }
         ]
