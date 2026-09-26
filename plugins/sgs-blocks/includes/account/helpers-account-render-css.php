@@ -143,10 +143,11 @@ if ( ! function_exists( 'sgs_account_scoped_css' ) ) {
 
 		// Active item — a bar (sidebar) or a filled pill (tabs), never colour
 		// alone (WCAG): both also carry bold text. The bar is the link's
-		// ::before; the background paints the active link in either layout.
+		// ::after (::before is the icon); the background paints the active link
+		// in either layout.
 		$active_link  = $root_sel . ' nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a';
 		$css[]        = sgs_text_states_css( $active_link, $attributes, array( 'base' => 'menuActiveTextColour' ) );
-		$css[]        = sgs_fill_states_css( $active_link . '::before', $attributes, array( 'base' => 'menuActiveIndicatorColour' ) );
+		$css[]        = sgs_fill_states_css( $active_link . '::after', $attributes, array( 'base' => 'menuActiveIndicatorColour' ) );
 		$css[]        = sgs_fill_states_css( $active_link, $attributes, array( 'base' => 'menuActiveBackgroundColour' ) );
 
 		// Cards (dashboard quick-cards, latest-order card, auth cards, tracking card).

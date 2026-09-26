@@ -58,9 +58,23 @@
 	gap: var(--sgs-account-menu-item-gap, 0.25rem);
 }
 
+/* WooCommerce's own layout sheet floats these at 30% / 68% widths; the
+   block's grid and tab row own the layout instead. */
+.sgs-account .woocommerce-MyAccount-navigation,
+.sgs-account .woocommerce-MyAccount-content {
+	float: none;
+	width: auto;
+}
+
+.sgs-account nav.woocommerce-MyAccount-navigation li {
+	margin: 0;
+	padding: 0;
+}
+
 .sgs-account nav.woocommerce-MyAccount-navigation a {
 	display: flex;
 	align-items: center;
+	gap: 0.625rem;
 	min-height: 44px;
 	padding: 0.5rem 0.75rem;
 	border-radius: 6px;
@@ -74,21 +88,24 @@
 	outline-offset: 2px;
 }
 
-/* Active item — sidebar: an accent BAR (a ground, never a bare dot) plus
-   bold text, never colour alone. */
-.sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a {
-	font-weight: 700;
-	color: var(--wp--preset--color--text);
-}
+/* Active item — sidebar (desktop tier only): a surface-alt ground, an accent
+   BAR (a ground, never a bare dot) and bold text, never colour alone. */
+@container sgs-account (min-width: 1024px) {
+	.sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a {
+		font-weight: 700;
+		color: var(--wp--preset--color--text);
+		background: var(--wp--preset--color--surface-alt, transparent);
+	}
 
-.sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a::after {
-	content: "";
-	position: absolute;
-	inset-inline-start: 0;
-	inset-block: 0.25rem;
-	width: 3px;
-	border-radius: 2px;
-	background: var(--wp--preset--color--accent);
+	.sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a::after {
+		content: "";
+		position: absolute;
+		inset-inline-start: 0;
+		inset-block: 0.25rem;
+		width: 3px;
+		border-radius: 2px;
+		background: var(--wp--preset--color--accent);
+	}
 }
 
 /* -- Menu (tabs layout, tablet + mobile) ---------------------------------- */
