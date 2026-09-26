@@ -66,7 +66,9 @@ if ( ! function_exists( 'sgs_choice_flow_summary_panel_html' ) ) {
 				$product_name = $product->get_name();
 				$image_id     = $product->get_image_id();
 				if ( $image_id ) {
-					$fallback_image = (string) wp_get_attachment_image_url( $image_id, 'woocommerce_thumbnail' );
+					// The single-product size: uncropped (a square thumbnail crops a
+					// landscape photo off-centre) and large enough for the stage.
+					$fallback_image = (string) wp_get_attachment_image_url( $image_id, 'woocommerce_single' );
 				}
 			}
 		}
