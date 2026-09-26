@@ -95,6 +95,11 @@
             "type": "string",
             "default": "Add to basket"
         },
+        "buttonShowsTotal": {
+            "type": "boolean",
+            "default": false,
+            "description": "FR-43-24: the flow's running total follows the purchase button's label, e.g. 'Add to bag  £418.00'."
+        },
         "showBuyNow": {
             "type": "boolean",
             "default": true,

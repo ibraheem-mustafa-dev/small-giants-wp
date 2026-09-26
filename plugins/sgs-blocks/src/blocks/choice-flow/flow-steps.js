@@ -109,6 +109,7 @@ export function updateFooterActions( flowRoot, targetStepEl ) {
 		addToBasketBtn.hidden = ! show;
 		if ( show ) {
 			addToBasketBtn.textContent = resultEl.getAttribute( 'data-add-to-basket-label' ) || addToBasketBtn.textContent;
+			appendButtonTotal( flowRoot, addToBasketBtn, resultEl );
 		}
 	}
 	if ( buyNowBtn ) {
@@ -116,8 +117,28 @@ export function updateFooterActions( flowRoot, targetStepEl ) {
 		buyNowBtn.hidden = ! show;
 		if ( show ) {
 			buyNowBtn.textContent = resultEl.getAttribute( 'data-buy-now-label' ) || buyNowBtn.textContent;
+			appendButtonTotal( flowRoot, buyNowBtn, resultEl );
 		}
 	}
+}
+
+/**
+ * FR-43-24 — the running total after a purchase button's label, when the
+ * result asks for it (`buttonShowsTotal`); `summary.js` keeps it current.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @param {HTMLElement} buttonEl The footer button just labelled.
+ * @param {HTMLElement} resultEl The result step's result block.
+ */
+function appendButtonTotal( flowRoot, buttonEl, resultEl ) {
+	if ( '1' !== resultEl.getAttribute( 'data-button-total' ) ) {
+		return;
+	}
+	const totalEl = document.createElement( 'span' );
+	totalEl.className = 'sgs-choice-flow__action-total';
+	const stageTotal = flowRoot.querySelector( '.sgs-choice-flow__summary-total-value' );
+	totalEl.textContent = stageTotal ? stageTotal.textContent : '';
+	buttonEl.appendChild( totalEl );
 }
 
 /**

@@ -310,7 +310,7 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "Send it later"
+          "label": "Your prescription"
         },
         "innerBlocks": [
           {
@@ -318,7 +318,10 @@
             "attributes": {
               "action": "add-to-bag",
               "heading": "Perfect — order now and I'll WhatsApp you a link for it.",
-              "body": "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut them I refund the lenses in full."
+              "body": "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut them I refund the lenses in full.",
+              "showBuyNow": false,
+              "addToBasketLabel": "Add to bag",
+              "buttonShowsTotal": true
             }
           }
         ]
@@ -326,7 +329,7 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "Upload a photo"
+          "label": "Your prescription"
         },
         "innerBlocks": [
           {
@@ -350,7 +353,10 @@
             "attributes": {
               "action": "add-to-bag",
               "heading": "Add your photo",
-              "body": "Your frame and lenses go in together."
+              "body": "Your frame and lenses go in together.",
+              "showBuyNow": false,
+              "addToBasketLabel": "Add to bag",
+              "buttonShowsTotal": true
             }
           }
         ]
@@ -358,7 +364,7 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "Type it in"
+          "label": "Your prescription"
         },
         "innerBlocks": [
           {
@@ -444,7 +450,10 @@
             "attributes": {
               "action": "add-to-bag",
               "heading": "Type in your prescription",
-              "body": "Copy the numbers exactly, including the + or −. If a box is empty or says “DS”, leave it blank. I read every prescription myself before anything is cut."
+              "body": "Copy the numbers exactly, including the + or −. If a box is empty or says “DS”, leave it blank. I read every prescription myself before anything is cut.",
+              "showBuyNow": false,
+              "addToBasketLabel": "Add to bag",
+              "buttonShowsTotal": true
             }
           }
         ]
@@ -460,7 +469,10 @@
             "attributes": {
               "action": "add-to-bag",
               "heading": "Your frame, as the brand made it",
-              "body": "It goes in your bag with its original tinted lenses. You can add prescription lenses later."
+              "body": "It goes in your bag with its original tinted lenses. You can add prescription lenses later.",
+              "showBuyNow": false,
+              "addToBasketLabel": "Add to bag",
+              "buttonShowsTotal": true
             }
           }
         ]

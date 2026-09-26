@@ -167,6 +167,9 @@ export function renderSummaryPanel( flowRoot, pricing ) {
 	}
 
 	const total = summary.totalMinor !== null ? formatTotal( summary.totalMinor, base.decimals, trimZeros ) : '—';
+	flowRoot.querySelectorAll( '.sgs-choice-flow__action-total' ).forEach( ( actionTotalEl ) => {
+		actionTotalEl.textContent = total;
+	} );
 	panelEl.querySelectorAll( TOTAL_VALUE_SELECTOR ).forEach( ( totalValueEl ) => {
 		// FR-43-24: the total pops when it changes (style.css's `.is-updated`
 		// keyframes, off under reduced motion); an unchanged repaint stays still.

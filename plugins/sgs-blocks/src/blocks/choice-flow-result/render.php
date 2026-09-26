@@ -97,6 +97,7 @@ if ( 'add-to-bag' === $result_action ) {
 	$wrapper_args['data-add-to-basket-label'] = $add_to_basket_label;
 	$wrapper_args['data-show-buy-now']        = $show_buy_now ? '1' : '0';
 	$wrapper_args['data-buy-now-label']       = $buy_now_label;
+	$wrapper_args['data-button-total']        = ! empty( $attributes['buttonShowsTotal'] ) ? '1' : '0';
 	$wrapper_args['data-nonce']               = wp_create_nonce( 'wp_rest' );
 	$wrapper_args['data-endpoint']            = rest_url( 'sgs/v1/cart/add-item' );
 	$wrapper_args['data-checkout-url']        = function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '';

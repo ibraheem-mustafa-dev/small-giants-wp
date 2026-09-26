@@ -203,6 +203,19 @@
 	color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--primary, #1F7A7A));
 }
 
+/* A lone purchase button (Buy now switched off) is the step's primary
+   action, so it takes the primary preset, not the secondary one. */
+.sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden]) .sgs-choice-flow__add-to-basket {
+	border-color: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary, #1F7A7A));
+	background-color: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary, #1F7A7A));
+	color: var(--wp--custom--button-presets--primary--text, #fff);
+}
+
+/* The running total after a purchase label (`buttonShowsTotal`). */
+.sgs-choice-flow__action-total {
+	margin-left: 14px;
+}
+
 .sgs-choice-flow__buy-now {
 	border: var(--wp--custom--button-presets--primary--border-width, 2px) solid
 		var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary, #1F7A7A));
@@ -990,7 +1003,8 @@
 	text-transform: uppercase;
 }
 
-.sgs-choice-flow--layout-showcase .sgs-choice-flow__step-label {
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__step-label,
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__header:has(.sgs-choice-flow__step-count:empty) {
 	display: none;
 }
 

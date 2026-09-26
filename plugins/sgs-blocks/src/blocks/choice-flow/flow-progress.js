@@ -152,7 +152,8 @@ export function updateStepPosition( flowRoot, steps, targetIndex ) {
 	const stepCountEl = flowRoot.querySelector( STEP_COUNT_SELECTOR );
 	if ( stepCountEl ) {
 		const label = flowRoot.dataset.stepCountLabel || 'Step';
-		stepCountEl.textContent = stepEyebrow( targetStepEl ) || `${ label } ${ position } of ${ numbered.length || total }`;
+		// A result step is not a question: no position line.
+		stepCountEl.textContent = isResultStep ? '' : stepEyebrow( targetStepEl ) || `${ label } ${ position } of ${ numbered.length || total }`;
 	}
 
 	const stepLabelEl = flowRoot.querySelector( STEP_LABEL_SELECTOR );

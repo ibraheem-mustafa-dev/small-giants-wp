@@ -149,9 +149,11 @@ READY = "Your frame and lenses go in together."
 
 
 def result(label, heading, body, fields=None):
-    """A purchase step: optional fields, then the add-to-bag result (Spec 43 FR-43-21)."""
+    """A purchase step: optional fields, then the add-to-bag result (Spec 43 FR-43-21). As in the draft, one
+    "Add to bag" button carrying the running total (no Buy now)."""
     return B("sgs/form-step", {"label": label}, (fields or []) + [
-        B("sgs/choice-flow-result", dict(action="add-to-bag", heading=heading, body=body))])
+        B("sgs/choice-flow-result", dict(action="add-to-bag", heading=heading, body=body, showBuyNow=False,
+                                         addToBasketLabel="Add to bag", buttonShowsTotal=True))])
 
 
 def rx_box(name, label, step, lo, hi, placeholder, required=False):
@@ -212,11 +214,12 @@ tree = [
         step("How thin", thickness),
         step("Finish", finish),
         step("Your prescription", rx),
-        result("Send it later", "Perfect — order now and I'll WhatsApp you a link for it.",
+        # The three prescription endings keep the header's "Your prescription", as the draft's one screen does.
+        result("Your prescription", "Perfect — order now and I'll WhatsApp you a link for it.",
                "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut "
                "them I refund the lenses in full."),
-        result("Upload a photo", "Add your photo", READY, PHOTO),
-        result("Type it in", "Type in your prescription", TYPED_HELP, TYPED),
+        result("Your prescription", "Add your photo", READY, PHOTO),
+        result("Your prescription", "Type in your prescription", TYPED_HELP, TYPED),
         result("Frame only", "Your frame, as the brand made it",
                "It goes in your bag with its original tinted lenses. You can add prescription lenses later."),
     ]),

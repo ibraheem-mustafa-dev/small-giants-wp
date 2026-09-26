@@ -15,6 +15,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		successMessage,
 		showAddToBasket,
 		addToBasketLabel,
+		buttonShowsTotal,
 		showBuyNow,
 		buyNowLabel,
 	} = attributes;
@@ -72,6 +73,13 @@ export default function Edit( { attributes, setAttributes } ) {
 									__next40pxDefaultSize
 								/>
 							) }
+							<ToggleControl
+								label={ __( 'Show the total on the button', 'sgs-blocks' ) }
+								checked={ !! buttonShowsTotal }
+								onChange={ ( val ) => setAttributes( { buttonShowsTotal: val } ) }
+								help={ __( 'The running total follows the button’s label, e.g. “Add to bag £418.00”.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+							/>
 							<ToggleControl
 								label={ __( 'Show “Buy now”', 'sgs-blocks' ) }
 								checked={ showBuyNow !== false }
