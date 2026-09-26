@@ -89,21 +89,23 @@ Enums are mirrored in a PHP allow-list in the same commit. All render through a 
   (`.uid.is-header-on-dark.is-header-scrolled`), beating the two-class `!important` scrolled background.
 - The `transition` is appended to the shared shorthand list on the header root, the same way
   `shadowScrolled`'s `$sh_shadow_tx_append` does, so Shrink and Hide-on-scroll do not overwrite it.
-- Logo: on dark, `.sgs-responsive-logo__dark` shows and the light image and Lottie hide; on light, the reverse,
-  even in site dark mode (the section, not the theme, decides the logo's ground while ink is adapting). The
-  header's selectors carry five classes, out-specifying the theme rule
-  `:root[data-theme='dark'] .sgs-responsive-logo …`. With no `darkLogoId` nothing changes. Inline SVG logos
-  follow the ink.
+- Logo: the header only publishes its state (`is-header-on-dark` / `is-header-on-light`); it never styles the
+  logo. The logo owns its response (§4.5).
 - Named exception: the menu item badge (`.sgs-nav-bar-menu__badge`, "NEW"/"SOON") keeps its own accent chip
   colours; it is a filled chip, legible on any ground.
 
-### 4.3 Image sections (the one real gap)
+### 4.3 Image sections (Bean, 2026-09-26: auto-measure plus override)
 
-A photo hero has no tone class. Recommended: a section-level override on the shared wrapper, **"Surface tone:
-Automatic / Light / Dark"** (`surfaceTone`, default `auto`), which writes the same `sgs-on-*` class. It fixes the
-header ink AND the existing shadow-tone logic for image sections, so it is universal, not a header carve-out.
-(Alternative, not recommended now: measure each image's brightness at upload and store it as attachment meta.
-Fully automatic, but a new upload hook plus a backfill for existing media; worth doing later.)
+A photo hero has no tone class today, because `sgs_surface_tone()` never samples an image.
+- **Measured at upload.** A `wp_generate_attachment_metadata` filter measures the mean relative luminance of
+  the image's top 20% (where a header sits) on a small downscaled copy (GD or Imagick, whichever the editor
+  class provides) and stores `_sgs_top_tone` (`dark` / `light`) as attachment meta; `wp sgs media measure-tone`
+  backfills existing images. `sgs_surface_tone()`'s image layer reads that meta instead of returning `''`, so
+  the section gets `sgs-on-*` automatically, and the shadow-tone logic benefits too. An image with no meta
+  (a failed read, an external URL) stays unknown, as today.
+- **Override.** A section-level **"Surface tone: Automatic / Light / Dark"** (`surfaceTone`, default `auto`) on
+  the shared wrapper writes the class directly, for a picture whose top strip misleads (a light sky over a
+  dark subject).
 
 The JS fallback in §4.2 step 3 already handles every plain-coloured area, so the gap is only pictures.
 
@@ -121,7 +123,19 @@ Two separate panels in the header inspector (they are independent features):
 - The transition midpoint is not a contrast state (WCAG judges the settled colour; reduced motion makes it
   instant), so no gate is added for it (council finding 2, declined).
 
-### 4.5 M-03 (built last)
+### 4.5 The logo responds to its ground (`sgs/responsive-logo`, Bean 2026-09-26)
+
+The logo block owns this, for every placement, not only the header:
+- `darkLogoId` keeps its name (no rename blast radius); its panel becomes **"Logo for dark backgrounds"**: shown
+  in site dark mode AND wherever the logo sits on a dark ground (inside `.sgs-on-dark`, or a header carrying
+  `is-header-on-dark`); inside `.sgs-on-light` or `is-header-on-light` the normal logo shows, even in dark mode.
+  The live header state outranks a static section class; a nearer light ground inside a dark one outranks it.
+- `colourTreatment` gains `auto`: white only on a dark ground (same signals), as uploaded on light. A client
+  with one full-colour logo needs no second file.
+- All rules live in `responsive-logo/style.scss`; `render.php` and the enum's PHP allow-list change only for
+  `auto`. Inline SVG logos already follow `currentColor`.
+
+### 4.6 M-03 (built last)
 
 - `scrolledTrigger`: `position` (today) \| `direction`. With `direction`, view.js adds `is-header-scrolled` only
   while past the offset AND the last movement was down, and removes it on an upward movement of 8px or
