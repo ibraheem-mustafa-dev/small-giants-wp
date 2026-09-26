@@ -243,11 +243,12 @@ final class Wishlist_Alerts_Scan {
 	}
 
 	/**
-	 * Format `$items`' minor-unit prices and send one `sgs_wishlist_alert` event.
+	 * Format `$items`' minor-unit prices and send the saved-items alert email
+	 * (plus the optional automation event) via {@see Wishlist_Alert_Mailer}.
 	 *
 	 * @param int   $user_id Shopper's user id.
 	 * @param array $items   Alert items from `evaluate()`.
-	 * @return bool Whether the event was sent.
+	 * @return bool Whether the caller should move the per-item baselines.
 	 */
 	private static function dispatch_alert( int $user_id, array $items ): bool {
 		$user = \get_userdata( $user_id );
@@ -266,16 +267,7 @@ final class Wishlist_Alerts_Scan {
 		}
 		unset( $item );
 
-		$payload = array(
-			'customer'   => array(
-				'email'      => $user->user_email,
-				'first_name' => $user->first_name,
-			),
-			'items'      => $items,
-			'manage_url' => Wishlist_Settings::saved_items_page_url(),
-		);
-
-		return Sgs_Webhook::send( 'sgs_wishlist_alert', $payload );
+		return Wishlist_Alert_Mailer::send( $user, $items );
 	}
 
 	/**

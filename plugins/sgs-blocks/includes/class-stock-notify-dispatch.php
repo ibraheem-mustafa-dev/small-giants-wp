@@ -146,9 +146,12 @@ final class Stock_Notify_Dispatch {
 
 	/**
 	 * Action Scheduler (or direct-fallback) handler: read the subscriber
-	 * list, send one webhook event, and clear the list only when the send
-	 * succeeded — so a failed send leaves the list intact for the next
-	 * stock-status change to retry.
+	 * list, send one `sgs_back_in_stock` email per subscriber via
+	 * {@see Stock_Notify_Mailer}, and keep only the subscribers whose send
+	 * failed — so the next stock-status change retries only the failures.
+	 * The N8N automation event still fires once for the whole batch,
+	 * regardless of the WooCommerce email's on/off state or individual send
+	 * outcomes; it is an optional side-channel, never the delivery mechanism.
 	 *
 	 * @param mixed $product_id Post ID holding the subscriber list.
 	 */
@@ -174,21 +177,24 @@ final class Stock_Notify_Dispatch {
 			}
 		}
 
-		if ( empty( $emails ) ) {
-			return;
+		if ( ! empty( $emails ) ) {
+			Sgs_Webhook::send(
+				'sgs_back_in_stock',
+				array(
+					'product_id'  => $product_id,
+					'name'        => \get_the_title( $product_id ),
+					'url'         => \get_permalink( $product_id ),
+					'subscribers' => $emails,
+				)
+			);
 		}
 
-		$payload = array(
-			'product_id'  => $product_id,
-			'name'        => \get_the_title( $product_id ),
-			'url'         => \get_permalink( $product_id ),
-			'subscribers' => $emails,
-		);
+		$remaining = Stock_Notify_Mailer::send( $product_id, $subscribers );
 
-		$sent = Sgs_Webhook::send( 'sgs_back_in_stock', $payload );
-
-		if ( $sent ) {
+		if ( empty( $remaining ) ) {
 			\delete_post_meta( $product_id, Stock_Notify::META_KEY );
+		} else {
+			\update_post_meta( $product_id, Stock_Notify::META_KEY, \wp_json_encode( $remaining ) );
 		}
 	}
 }

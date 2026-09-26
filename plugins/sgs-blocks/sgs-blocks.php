@@ -168,12 +168,20 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-webhook.php';
 // guards) plus the shared WooCommerce/native email template (Spec 04, FR-30-15).
 require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-mailer.php';
 require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-mail-template.php';
+// Shop-alert WooCommerce emails (saved-items alert, back in stock): the
+// subclass files require WC_Email, so they load inside this registrar's
+// woocommerce_email_classes callback, never here at plugin load (Spec 30
+// FR-30-15, unified-email plan phase 3).
+require_once SGS_BLOCKS_PATH . 'includes/wishlist/emails/class-sgs-shop-emails.php';
+Sgs_Shop_Emails::register();
+require_once SGS_BLOCKS_PATH . 'includes/class-stock-notify-mailer.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-stock-notify-dispatch.php';
 Stock_Notify_Dispatch::register();
 // Two-tier wishlist (guest browser list + account user meta): REST, site
 // switches, alerts opt-in, share links, privacy tools and the alerts scan.
 require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-store.php';
 require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-settings.php';
+require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-alert-mailer.php';
 require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-rest.php';
 require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-account-rest.php';
 require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-shared-rest.php';
