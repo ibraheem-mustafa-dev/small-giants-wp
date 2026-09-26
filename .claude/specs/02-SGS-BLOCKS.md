@@ -58,6 +58,13 @@ sgs-blocks/
 │   │   ├── tab/                  # One tab panel (parent: sgs/tabs)
 │   │   ├── brand-strip/          # Logo/brand carousel strip
 │   │   ├── notice-banner/        # Inline banner; `displayMode=announcement` gives the sticky announcement bar
+│   │   ├── notice-message/       # One self-changing message with its own colour pair (parent: sgs/notice-banner)
+│   │   ├── local-time/           # Live clock for one IANA time zone (label, 12/24-hour, seconds)
+│   │   ├── language-switch/      # Hand-set language links: inline, single link or disclosure; PHP intl names and hreflang
+│   │   ├── store-selector/       # Disclosure of store/country links with optional flags; current store by URL
+│   │   ├── theme-toggle/         # Dark-mode switch or light/dark/system radio group; renders only when the site has a dark palette
+│   │   ├── wishlist-link/        # Heart link with the live saved-items count
+│   │   ├── wishlist-panel/       # Saved items with live price and stock; Move to basket, Notify me, Save for later on the basket
 │   │   ├── whatsapp-cta/         # WhatsApp floating button + contextual CTA
 │   │   ├── pricing-table/        # Service/pricing comparison table
 │   │   ├── modal/                # Lightbox/modal overlay
@@ -621,6 +628,8 @@ The icon circle has an overridable default border; a title placeholder never lea
 - `position` — top | bottom (announcement mode only, default: top)
 
 **Render:** Dynamic `render.php` echoes `$content` (the `sgs/text` InnerBlocks child carrying the notice message). `save.js` returns `<InnerBlocks.Content />` — WordPress serialises the child block into `post_content`; render.php drives all frontend output.
+
+**Self-changing messages (Wave 3C U-15):** with two or more `sgs/notice-message` children, `messageMode` `rotate` advances every `rotateInterval` seconds (default 5) with a `messageTransition` (`none`, `fade`, `slide-up`, `slide-left`; instant under reduced motion), an always-visible 44px pause button (WCAG 2.2.2), optional previous/next arrows (`showMessageArrows`) and pause on hover and focus (`pauseOnHover`); the messages region is `aria-live="off"` while playing and `polite` while paused. `random` shows one message per page load, chosen in the browser so the page cache cannot freeze it. Each message's colour pair repaints the whole bar through one `:has()` rule. Without JavaScript every message shows, stacked. `static`, or fewer than two messages, renders exactly as before. A live clock is an `sgs/local-time` inside a message.
 
 **Indus Foods usage:** The MOV banner ("Minimum order just £75 — lower than most wholesalers...") uses `success` variant with truck icon and centred text.
 

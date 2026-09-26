@@ -131,9 +131,19 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
 - W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2 and all of lane A (U-9+U-11, U-5,
-  U-3+U-8, U-6+U-7, U-4, U-10+U-14) are closed, including lane A's batched QA pass. Open: lane B (U-13, then U-16,
-  which waits on step 0d), lane C (U-12, U-15, U-17), and Gate 3C below.
+- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5,
+  U-3+U-8, U-6+U-7, U-4, U-10+U-14, with its batched QA pass) and all of lane C (U-12, U-15, U-17) are closed.
+  Open: lane B (U-13, then U-16, which waits on step 0d) and Gate 3C below.
+- Lane C evidence (live on sandybrown 2026-09-26, headed Chrome; fixture pages 4070 `/qa-furniture/`, 4072 `/qa-notice/`,
+  4074 `/qa-wishlist/`, 4087 `/qa-lottie/`): six clocks in their zones with correct offsets and no `aria-live`; language links
+  with `lang`/`hreflang`; the store disclosure closes on Escape and returns focus; the up button 54x54 at 1440 and 45x45 at
+  375 and back-to-top lands focus on `main`; the theme toggle flips the palette and syncs both styles; hearts update the
+  header count across bundles and merge nothing twice; Save for later moves a WooCommerce basket row into the wishlist;
+  the rotating banner changes bar colour per message, pauses (holds for 6 s, `aria-live` polite) and steps by arrow; the
+  sound toggle plays, pauses and mutes other media; both Lottie surfaces animate, the player (46,496 bytes gzip) loads only
+  after its trigger and never under reduced motion; hostile Lottie uploads are refused. axe: 0 on `/qa-notice/`; the
+  colour-contrast and link-name findings on the other two were fixed in f39e66310. Existing backgrounds byte-identical
+  before and after the wrapper change (23 of 23 elements).
 - D (0f8b97287): a Transparent tier falling back to a narrower non-Transparent tier keeps the header's own resting
   fill via `sgs_merge_tri_state_declarations()`'s per-behaviour `fallback` map. Live on a navy header: transparent
   at 1440, `rgb(26,26,46)` at 375.

@@ -1,0 +1,219 @@
+[
+  {
+    "name": "sgs/notice-banner",
+    "attributes": {
+      "messageMode": "rotate",
+      "showMessageArrows": true,
+      "rotateInterval": 5
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/notice-message",
+        "attributes": {
+          "label": "Slide 1 – sale",
+          "backgroundColour": "#111111",
+          "textColour": "#ffffff"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": { "text": "20% off everything this weekend only." },
+            "innerBlocks": []
+          }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": {
+          "label": "Slide 2 – shipping",
+          "backgroundColour": "#d85358",
+          "textColour": "#ffffff"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": { "text": "Free UK delivery on orders over £50." },
+            "innerBlocks": []
+          }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": {
+          "label": "Slide 3 – returns",
+          "backgroundColour": "#39614c",
+          "textColour": "#ffffff"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": { "text": "Free returns within 30 days, no questions asked." },
+            "innerBlocks": []
+          }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": {
+          "label": "Slide 4 – new stock",
+          "backgroundColour": "#111111",
+          "textColour": "#ffffff"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": { "text": "New arrivals just landed – shop the latest drop." },
+            "innerBlocks": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/notice-banner",
+    "attributes": {
+      "messageMode": "random"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "Random 1" },
+        "innerBlocks": [
+          { "name": "sgs/text", "attributes": { "text": "MADE TO LAST" }, "innerBlocks": [] }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "Random 2" },
+        "innerBlocks": [
+          { "name": "sgs/text", "attributes": { "text": "SHIPPING WORLDWIDE" }, "innerBlocks": [] }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "Random 3" },
+        "innerBlocks": [
+          { "name": "sgs/text", "attributes": { "text": "SMALL BATCH, EVERY TIME" }, "innerBlocks": [] }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "Random 4" },
+        "innerBlocks": [
+          { "name": "sgs/text", "attributes": { "text": "NO PLASTIC PACKAGING" }, "innerBlocks": [] }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "Random 5" },
+        "innerBlocks": [
+          { "name": "sgs/text", "attributes": { "text": "DESIGNED IN LONDON" }, "innerBlocks": [] }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "Random 6" },
+        "innerBlocks": [
+          { "name": "sgs/text", "attributes": { "text": "CARBON NEUTRAL DELIVERY" }, "innerBlocks": [] }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "Random 7" },
+        "innerBlocks": [
+          { "name": "sgs/text", "attributes": { "text": "REPAIRS FOR LIFE" }, "innerBlocks": [] }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "Random 8" },
+        "innerBlocks": [
+          { "name": "sgs/text", "attributes": { "text": "JOIN THE WAITLIST" }, "innerBlocks": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/notice-banner",
+    "attributes": {
+      "messageMode": "rotate"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "City 1 – Paris" },
+        "innerBlocks": [
+          {
+            "name": "sgs/local-time",
+            "attributes": {
+              "timeZone": "Europe/Paris",
+              "label": "PARIS, FRANCE",
+              "hourCycle": "h23",
+              "showSeconds": true
+            },
+            "innerBlocks": []
+          }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "City 2 – Los Angeles" },
+        "innerBlocks": [
+          {
+            "name": "sgs/local-time",
+            "attributes": {
+              "timeZone": "America/Los_Angeles",
+              "label": "LOS ANGELES, CA",
+              "hourCycle": "h23",
+              "showSeconds": true
+            },
+            "innerBlocks": []
+          }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "City 3 – Barcelona" },
+        "innerBlocks": [
+          {
+            "name": "sgs/local-time",
+            "attributes": {
+              "timeZone": "Europe/Madrid",
+              "label": "BARCELONA, SPAIN",
+              "hourCycle": "h23",
+              "showSeconds": true
+            },
+            "innerBlocks": []
+          }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": { "label": "City 4 – Hong Kong" },
+        "innerBlocks": [
+          {
+            "name": "sgs/local-time",
+            "attributes": {
+              "timeZone": "Asia/Hong_Kong",
+              "label": "HONG KONG, CHINA",
+              "hourCycle": "h23",
+              "showSeconds": true
+            },
+            "innerBlocks": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/notice-banner",
+    "attributes": {},
+    "innerBlocks": [
+      {
+        "name": "sgs/text",
+        "attributes": { "text": "Static regression control – this banner never rotates or randomises." },
+        "innerBlocks": []
+      }
+    ]
+  }
+]

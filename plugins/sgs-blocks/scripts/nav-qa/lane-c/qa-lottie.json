@@ -1,0 +1,34 @@
+[
+	{
+		"name": "sgs/heading",
+		"attributes": { "content": "Lottie as a media type", "level": "h2" }
+	},
+	{
+		"name": "sgs/media",
+		"attributes": {
+			"mediaType": "lottie",
+			"lottieId": 4079,
+			"thumbnailId": 3459,
+			"lottieTrigger": "visible",
+			"videoLoop": true,
+			"lottieSpeed": 1,
+			"imageAlt": "A pink square turning"
+		}
+	},
+	{
+		"name": "sgs/heading",
+		"attributes": { "content": "Lottie as a section background", "level": "h2" }
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "section",
+			"bgLottie": 4079,
+			"bgLottieLoop": true,
+			"minHeight": { "desktop": "320px" }
+		},
+		"innerBlocks": [
+			{ "name": "sgs/text", "attributes": { "text": "Content sits above the moving background." } }
+		]
+	}
+]

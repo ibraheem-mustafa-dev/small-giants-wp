@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: "1.7"
+spec_version: "1.8"
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
@@ -415,6 +415,14 @@ Each entry carries `slug`, `name`, `fontFamily` (the stack the draft writes, mos
 The rendered value wins over the declared `.container` width (FR-33-4) and the README width (FR-33-16), per FR-33-1; the trace row records the values it superseded, the tally, and per band the cap element, its max-width, box-sizing, padding and the content box at both viewports. Facts from an older `measure.js` carry no census: a gap row is logged and nothing changes, so the Mama's and Indus goldens are unchanged. `python used_layout.py --facts <facts.json> --snapshot <snapshot> --write` updates only `settings.layout` of an existing snapshot.
 
 **Done when (met 2026-09-23).** Eye Care's home screen: four bands (hero, best sellers, "not sure what suits you", about strip) have a 1336px content box at x=52 (1440) and x=292 (1920); three (why buy, Google reviews, optician) have 1440px at x=240 (1920) and 1336px at x=52 (1440); the trust ticker has 1392px once. Result: `contentSize 1336px`, `wideSize 1440px`, replacing `1440px`/`1440px`. Tests (`tests/test_used_layout.py`, 16) include a real-browser run on three fixture drafts: two widths, no max-width at all (nothing written) and a draft whose only max-width is on a card (nothing written). A mutation run confirmed each rule (floor, text-element skip, binding, chrome, uncapped row, two-band wide minimum, most-common) is caught by a failing test.
+
+### FR-33-20 — Automatic dark palette from the client's own colours — BUILT
+
+**Behaviour.** A client opts in with a top-level `_sgsDark` key in its `theme-snapshot.json`: `{ "enabled": true, "palette": { "<slug>": "#hex" }, "roles": { "<slug>": "surface|text|border|brand|locked" } }`. It is internal (stripped before deploy, like `_sgsExtractor`). `plugins/sgs-blocks/scripts/derive-dark-palette.py::derive` runs inside `push-theme-snapshot.py::prepare_deploy_snapshot`, the one function both the snapshot push and `build-deploy.py` use, and writes `settings.custom.dark.<slug>` for every palette slug (WordPress prints `--wp--custom--dark--<slug>`). The theme maps each `--wp--preset--color--<slug>` to it while dark mode is on and loads dark mode only when the client has a dark palette.
+
+**Rules.** Each slug's role comes from its name unless `roles` sets it. Light surfaces move onto a dark band (hue kept); surfaces already dark in light mode keep their value. Every other colour follows the minimum-change rule: it is kept byte-identical if it already reaches its target against every ground it is used on (4.5:1 text, 3:1 borders and brand), otherwise its OKLCH lightness moves the shortest distance that passes them all. Grounds are every surface plus the text/background pairs the snapshot declares (`styles.color`, `styles.elements` with states, `styles.blocks`, preset references in template parts). Locked colours (WhatsApp green) are checked, never changed; hand-set `palette` values win and are checked the same way. When no lightness satisfies every ground, the push stops and names each pair and ratio (`DarkPaletteContrastError`), so a client never ships an unreadable dark page; a hand-set `palette` or `roles` entry settles the conflict.
+
+**Status.** Mama's Munches reports four such conflicts (text, text-inverse, primary-text, accent-text), so its committed snapshot does not enable dark mode until Bean chooses the overrides. Tests: `plugins/sgs-blocks/scripts/tests/test_derive_dark_palette.py`.
 
 ## Known limits
 

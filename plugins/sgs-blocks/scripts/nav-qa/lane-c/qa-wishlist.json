@@ -1,0 +1,70 @@
+[
+	{
+		"name": "sgs/heading",
+		"attributes": {
+			"content": "Wishlist QA",
+			"level": "h1"
+		},
+		"innerBlocks": []
+	},
+	{
+		"name": "sgs/wishlist-link",
+		"attributes": {
+			"showCount": true,
+			"label": "Wishlist"
+		},
+		"innerBlocks": []
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "section",
+			"layout": "grid",
+			"columns": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/product-card",
+				"attributes": {
+					"sourceMode": "wc-product",
+					"productId": 3990,
+					"showWishlist": true,
+					"showCta": true
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/product-card",
+				"attributes": {
+					"sourceMode": "wc-product",
+					"productId": 1125,
+					"showWishlist": true,
+					"showCta": true
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/product-card",
+				"attributes": {
+					"sourceMode": "wc-product",
+					"productId": 950,
+					"showWishlist": true,
+					"showCta": true
+				},
+				"innerBlocks": []
+			}
+		]
+	},
+	{
+		"name": "sgs/wishlist-panel",
+		"attributes": {
+			"heading": "Saved for later",
+			"showWhenEmpty": true
+		},
+		"innerBlocks": []
+	}
+]

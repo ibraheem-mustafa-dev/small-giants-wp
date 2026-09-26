@@ -185,18 +185,17 @@
     "studionamma"
    ],
    "needed_by_count": 3,
-   "coverage_status": "gap",
+   "coverage_status": "covered",
    "evidence": "thin",
    "covered_by": [
-    "sgs/notice-banner::text (one static string only)"
+    "sgs/notice-banner::text (one static string only)",
+    "sgs/notice-message (per-message fill/text pair) + sgs/notice-banner::messageMode rotate|random, rotateInterval, messageTransition, showMessageArrows, pauseOnHover (U-15)",
+    "sgs/local-time inside a message (the live clock)"
    ],
    "note": "notice-banner holds ONE string with one colour set. No slide collection, no per-slide colour pair, no prev/next control, no timer, no random source, and nothing in the 209-block roster ticks a clock. Evidence thin: away's announcement transition timing was never measured.",
-   "uncovered_references": [
-    "away",
-    "lamalama",
-    "studionamma"
-   ],
-   "uncovered_count": 3
+   "uncovered_references": [],
+   "uncovered_count": 0,
+   "u15_residue": "Measured live on sandybrown 2026-09-26 (page 4072 /qa-notice/): away 4 slides with #111111 then #d85358 bar fills, 36x36 arrows in 44px targets, pause holds rotation and sets aria-live polite; lamalama random line; studionamma rotating city clocks. Away interval and transition were never measured (5 s fade is a free choice); lamalama's mono text reveal approximated by slide-up (recorded divergence); lamalama's bar that appears only after the first scroll at 375 is header-behaviour territory (lane B)."
   },
   {
    "id": "M-08",
@@ -547,7 +546,7 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/cart",
@@ -556,20 +555,20 @@
     "sgs/form",
     "sgs/social-icons",
     "sgs/business-info::displayType",
-    "sgs/nav-drawer (InnerBlocks body)"
+    "sgs/nav-drawer (InnerBlocks body)",
+    "sgs/local-time (timeZone, label, labelPosition, separator, hourCycle, showSeconds, showPeriod; U-12)",
+    "sgs/language-switch (display inline/single-link/disclosure, labelStyle autonym/code/custom, languages; PHP intl for autonyms and BCP-47 lang/hreflang; U-12)",
+    "sgs/store-selector (triggerPrefix, stores with flags, current store by host and longest path prefix; U-12)",
+    "sgs/wishlist-link + sgs/wishlist-panel + includes/class-sgs-wishlist-rest.php (two-tier wishlist, Save for later; U-12)",
+    "sgs/theme-toggle + scripts/derive-dark-palette.py (automatic per-client dark palette; U-12)",
+    "sgs/button::linkSource top|account (back-to-top, account/log-in; U-12)",
+    "sgs/audio::playerStyle toggle (site-wide sound on/off; U-12)",
+    "sgs/product-search supports.sgs.headerEssential (U-12)"
    ],
    "note": "RE-SCOPED to the roster GAP only. The first pass folded F-C-15 (status COVERED: the drawer body is open InnerBlocks, so any secondary block is placeable) into a partial family, which made a covered fact read as part of an eight-block build. F-C-15 is now M-51. What remains here is the gap itself, VERIFIED as 0 matching slugs in a 209-block roster: a live local-time clock (buck, studionamma), a language switch (dogstudio, studionamma, lamalama), a country or store selector (away), a back-to-top button (lusion), a wishlist (away), an account/log-in link (away, butcherbox), a theme toggle (studionamma) and a site-wide sound mute (lusion, resn). Separately, sgs/product-search and sgs/filter-search exist but declare no headerEssential, so neither is offered as a header control (VERIFIED: true on sgs/cart and sgs/responsive-logo only). Covered and NOT part of the gap: cart with a count badge, CTA buttons, the newsletter form, every social row, and every legal/address/contact line via business-info::displayType (9 enum values).",
-   "uncovered_references": [
-    "away",
-    "buck",
-    "butcherbox",
-    "dogstudio",
-    "lamalama",
-    "lusion",
-    "resn",
-    "studionamma"
-   ],
-   "uncovered_count": 8
+   "uncovered_references": [],
+   "uncovered_count": 0,
+   "u12_residue": "Measured live on sandybrown 2026-09-26 (fixture pages 4070 /qa-furniture/, 4074 /qa-wishlist/): buck and studionamma clocks, lamalama/dogstudio/studionamma language shapes, away store selector, lusion up button 54x54 at 1440 and 45x45 at 375, away wishlist heart with live count, butcherbox Sign in, studionamma DARK MODE switch (icon-only at 375), lusion/resn sound toggle. Named follow-ups: Polylang/WPML as a language-list source; wishlist share-by-link and price-drop alerts; dynamic menu items; product-search across pages and posts. Dark mode for Mama's Munches waits on Bean: the derivation reports four real conflicts (text, text-inverse, primary-text, accent-text are each used on a light fill and on dark surfaces) for a hand-set _sgsDark.palette."
   },
   {
    "id": "M-19",
@@ -972,7 +971,7 @@
     "wearecollins"
    ],
    "needed_by_count": 8,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "thin",
    "covered_by": [
     "sgs/responsive-logo::logoId/-Tablet/-Mobile",
@@ -981,14 +980,16 @@
     "::maxWidth",
     "::maxHeight",
     "::animationStyle",
-    "::svgAnimationSource"
+    "::svgAnimationSource",
+    "Lottie as the fourth media type (Spec 38 Tier H, D1151): sgs/responsive-logo::animationSubstrate lottie + lottieId/Trigger/Loop/Speed, sgs/media and sgs/hero split media via the media-type atom, the shared wrapper background bgLottie/bgLottieLoop (U-17)",
+    "sgs/responsive-logo::darkLogoId (a dark-mode logo)"
    ],
    "note": "A different mark per tier with its own switch point, per-tier max sizes, a home link and a stroke-draw animation (FR-38-15, owned by the block) all land. Gap: the SUBSTRATE — a Lottie JSON (buck) and a live 2D canvas mark (lamalama) are not images, and svgAnimationSource accepts a media-library .svg only (inline SVG paste is banned as an XSS risk). Evidence thin: buck's Lottie was never sampled over time. See DEC-13.",
    "uncovered_references": [
-    "buck",
     "lamalama"
    ],
-   "uncovered_count": 2
+   "uncovered_count": 1,
+   "u17_residue": "Measured live on sandybrown 2026-09-26 (page 4087 /qa-lottie/): the player loads after its trigger (46,496 bytes gzip plus a 2,595-byte runtime, inside the 60 KB allowance), both animations advance, the poster shows under reduced motion with no player request, uploads are validated fail-closed. lamalama's live canvas mark stays a still (accepted divergence, plan section 1h). buck's own Lottie file is used only at its Wave 4 clone."
   },
   {
    "id": "M-34",

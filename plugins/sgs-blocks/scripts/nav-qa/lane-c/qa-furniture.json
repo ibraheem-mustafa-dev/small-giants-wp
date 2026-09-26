@@ -1,0 +1,337 @@
+[
+	{
+		"name": "sgs/site-header",
+		"attributes": {},
+		"innerBlocks": [
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"rowSlot": "bar",
+					"justifyContent": "space-between",
+					"alignItems": "center"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/responsive-logo",
+						"attributes": {
+							"width": 160,
+							"linkToHome": true
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/language-switch",
+						"attributes": {
+							"display": "inline",
+							"labelStyle": "code",
+							"languages": [
+								{
+									"code": "en",
+									"url": "/",
+									"customLabel": ""
+								},
+								{
+									"code": "nl",
+									"url": "/nl/",
+									"customLabel": ""
+								}
+							]
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/store-selector",
+						"attributes": {
+							"triggerPrefix": "Select store",
+							"stores": [
+								{
+									"label": "United Kingdom",
+									"url": "/",
+									"flagId": 0,
+									"flagUrl": ""
+								},
+								{
+									"label": "United States",
+									"url": "/us/",
+									"flagId": 0,
+									"flagUrl": ""
+								}
+							]
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/wishlist-link",
+						"attributes": {},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"linkSource": "account",
+							"label": "Sign in"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/theme-toggle",
+						"attributes": {
+							"toggleStyle": "switch",
+							"label": "Dark mode",
+							"iconOnlyMobile": true
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/audio",
+						"attributes": {
+							"playerStyle": "toggle",
+							"toggleLabel": "Sound",
+							"audioSource": "internal",
+							"audioId": 4089,
+							"audioUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-tone.wav",
+							"audioMimeType": "audio/wav",
+							"audioLoop": true
+						},
+						"innerBlocks": []
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Local times",
+					"level": "h2"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/local-time",
+				"attributes": {
+					"timeZone": "America/Los_Angeles",
+					"label": "LA",
+					"hourCycle": "h12",
+					"showSeconds": false,
+					"separator": "→"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/local-time",
+				"attributes": {
+					"timeZone": "America/New_York",
+					"label": "NY",
+					"hourCycle": "h12",
+					"showSeconds": false,
+					"separator": "→"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/local-time",
+				"attributes": {
+					"timeZone": "Australia/Sydney",
+					"label": "SYD",
+					"hourCycle": "h12",
+					"showSeconds": false,
+					"separator": "→"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/local-time",
+				"attributes": {
+					"timeZone": "Europe/Amsterdam",
+					"label": "AMS",
+					"hourCycle": "h12",
+					"showSeconds": false,
+					"separator": "→"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/local-time",
+				"attributes": {
+					"timeZone": "Europe/London",
+					"label": "LDN",
+					"hourCycle": "h12",
+					"showSeconds": false,
+					"separator": "→"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/local-time",
+				"attributes": {
+					"timeZone": "Europe/Paris",
+					"label": "PARIS, FRANCE",
+					"hourCycle": "h23",
+					"showSeconds": true
+				},
+				"innerBlocks": []
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Scroll filler",
+					"level": "h2"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "This section exists only to make the page tall enough to scroll, so the header's shrink, sticky, transparent and hide-on-scroll behaviours can be checked against the furniture blocks above. Scroll down to reach the footer-style controls below."
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Paragraph two of the scroll filler. Nothing here is measured; it only needs to push the footer test block off the first viewport at 375, 768 and 1440px."
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Paragraph three of the scroll filler, for the same reason as the two above it."
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Paragraph four of the scroll filler, for the same reason as the three above it."
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Paragraph five of the scroll filler, for the same reason as the four above it."
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Paragraph six of the scroll filler, for the same reason as the five above it."
+				},
+				"innerBlocks": []
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "footer",
+			"justifyContent": "space-between",
+			"alignItems": "center"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"linkSource": "top",
+					"label": "Back to top",
+					"icon": "arrow-up",
+					"labelCollapse": "all",
+					"borderRadius": {
+						"desktop": "50%",
+						"tablet": "50%",
+						"mobile": "50%"
+					},
+					"customWidth": {
+						"desktop": 54,
+						"tablet": 50,
+						"mobile": 45
+					},
+					"minHeight": {
+						"desktop": "54px",
+						"tablet": "50px",
+						"mobile": "45px"
+					},
+					"widthType": {
+						"desktop": "custom",
+						"tablet": "custom",
+						"mobile": "custom"
+					},
+					"customWidthUnit": {
+						"desktop": "px",
+						"tablet": "px",
+						"mobile": "px"
+					},
+					"padding": {
+						"desktop": {
+							"top": "0",
+							"right": "0",
+							"bottom": "0",
+							"left": "0"
+						}
+					}
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/theme-toggle",
+				"attributes": {
+					"toggleStyle": "segmented",
+					"label": "Dark mode"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/language-switch",
+				"attributes": {
+					"display": "disclosure",
+					"labelStyle": "autonym",
+					"languages": [
+						{
+							"code": "en",
+							"url": "/",
+							"customLabel": ""
+						},
+						{
+							"code": "nl",
+							"url": "/nl/",
+							"customLabel": ""
+						}
+					]
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/language-switch",
+				"attributes": {
+					"display": "single-link",
+					"labelStyle": "custom",
+					"languages": [
+						{
+							"code": "fr",
+							"url": "/fr/",
+							"customLabel": "Site en Français"
+						}
+					]
+				},
+				"innerBlocks": []
+			}
+		]
+	}
+]
