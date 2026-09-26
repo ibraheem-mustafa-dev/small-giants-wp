@@ -377,7 +377,7 @@ at 1440 with the `exit-cells` geometry fixture: 0 violations.
 **U-13 — done** (design `.claude/reports/2026-09-26-u13-header-ink-design.md`, two-model council GO WITH FIXES,
 Bean sign-off; commits 0844bb1cf, 97b7df3a1, 93196a939, 31c2ed4c5, 51d80ff73; Spec 37 FR-37-50 and FR-37-51). The
 header's colour follows the section behind it (`sectionInk` adapt or blend, ink and optional fill per tone), only where
-the header is see-through; menu links follow it over their own colour while live (Bean); photo sections are toned by a
+the header is see-through; menu links and header icons follow it over their own colour while live (Bean); photo sections are toned by a
 brightness measure taken at upload (`_sgs_top_tone`, `wp sgs media measure-tone`) with a `surfaceTone` override on
 every wrapper block; the logo answers its own ground ("Logo for dark backgrounds", colour treatment Automatic), so the
 header never styles it (Bean re-scoped this into the logo block). M-03: `scrolledTrigger` direction plus
@@ -386,7 +386,11 @@ header never styles it (Bean re-scoped this into the logo block). M-03: `scrolle
 `m03-direction-probe.mjs`): wearecollins' pair at 18.64:1 over light, dark, photo and plain sections at 375/768/1440
 with the negative control flat; fantasy's fade gone going down past 100px, back on a 15px upward scroll, a 5px nudge
 held. axe on the header over dark and light sections: 0 at 1440; at 375 one pre-existing finding with the feature on or
-off (the top row's phone button, cream on Mama's pink, 2.4:1). Every new control set through the real inspector and
+off (the top row's phone button, cream on Mama's pink, 2.4:1). Its framework half is fixed (ba4340c39, 167d3835f):
+every block putting `text-inverse` text on a `primary` ground now uses the palette's `primary-text` (26 rules in 13
+blocks, kept out by the fast gate `scripts/check-text-on-primary.py`), and the business-info Button hover brightens.
+Mama's own `primary-text` is still cream, so its pink buttons stay 2.4:1 until its palette changes (Bean: framework fix
+only; a change of that colour in `sites/mamas-munches/theme-snapshot.json` is the client's call). Every new control set through the real inspector and
 unchanged after reload. Found and fixed on the way: a freshly inserted header's menu (and the drawer's menu) seeded a
 flat `gap`, so the editor preview failed with "Error loading block" (31c2ed4c5); the ink colours had opened a second
 "Colour" panel. M-04 and M-03 move to `covered`. Residue, named: fantasy's light half and lusion's black and blue

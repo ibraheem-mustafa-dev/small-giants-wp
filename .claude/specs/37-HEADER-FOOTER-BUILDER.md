@@ -1468,8 +1468,10 @@ against whatever is behind (`mix-blend-mode: difference`, ink white), with no sc
   with a tone fill, `rest` or `scrolled` for Transparent's see-through state); outside it view.js sets no
   class, so an opaque header reads its own fill. With Transparent on, a tone fill paints only in the solid
   state. Each tier's CSS sits in its own exact-range media query, so no tier cancels another.
-- **Menu links follow.** While live, the bar's top-level links and burger take the ink even when the menu
-  sets `itemColour` (Bean, 2026-09-26); hover, focus and dropdown panels keep theirs.
+- **Menu links and icons follow.** While live, the bar's top-level links and burger, and the header's icons
+  (business info, cart, plain and outlined social icons) take the ink even when they set their own colour (Bean,
+  2026-09-26); hover, focus, dropdown panels and filled chips (business info's Button style, filled and pill social
+  icons, the menu badge) keep theirs.
 - **Photo sections.** New image uploads store `_sgs_top_tone` (mean luminance of the top 20%,
   `plugins/sgs-blocks/includes/media-top-tone.php`); `wp sgs media measure-tone [--force]` backfills.
   `plugins/sgs-blocks/includes/helpers-surface-tone.php::sgs_surface_tone` reads it for an image layer. Every wrapper block with a
@@ -1482,7 +1484,7 @@ against whatever is behind (`mix-blend-mode: difference`, ink white), with no sc
 **Status:** `BUILT + LIVE-VERIFIED` (sandybrown, `/qa-section-ink/`, fixtures `section-ink` and
 `section-ink-off` in `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php`, probe `plugins/sgs-blocks/scripts/nav-qa/u13-ink-probe.mjs`:
 wearecollins' pair `#140700`/`#f8f8f7` at 18.64:1 over light, dark, photo and plain-group sections at 375,
-768 and 1440, menu links following; with the feature off, no tone and no change).
+768 and 1440, menu links and header icons following; with the feature off, no tone and no change).
 **Done when:** the header, its menu links and its logo stay at 4.5:1 or better over light, dark and photo
 sections at every tier where the header is see-through, and nothing changes where it is opaque. ✅ met.
 
