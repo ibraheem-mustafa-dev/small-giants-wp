@@ -84,3 +84,19 @@ python scripts/lint-patterns-for-personal-data.py || exit 1
 ```
 
 This prevents merging pattern files with hardcoded personal data to production branches.
+
+## parity/draft-live-walk.mjs
+
+Draft-versus-live parity walker. A per-page config (an `.mjs` module; Eye Care's live in
+`sites/eye-care-ward-end/build/qa/parity/`) says how to open the page on the draft and on
+live, which states to walk (tabs, steps, panels, filters, modals) and which element pairs
+to compare. For every state at 1440, 768 and 375 it compares rendered text, box size,
+computed styles (text properties read from the element that paints the text), motion
+(keyframes by content, animation and transition timing, what runs right after each action)
+and hover end states, writes `report.json`, `report.md` and draft|live side-by-side
+screenshots, and exits 1 on any difference the config does not accept.
+
+    NODE_EXTRA_CA_CERTS=<certifi cacert.pem> node scripts/parity/draft-live-walk.mjs <config.mjs> [--widths 1440] [--states a,b] [--out dir]
+
+Negative control: `--inject-live-css "<css>"` plants a known difference on the live side;
+the report must turn red on it. `--no-accept` shows the accepted differences as open.
