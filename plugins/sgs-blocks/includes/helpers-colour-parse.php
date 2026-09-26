@@ -109,6 +109,31 @@ function sgs_colour_resolve_hex_alpha( string $value ): array {
 }
 
 /**
+ * Resolve a colour attribute as the editor stores it — a palette slug OR any CSS
+ * colour the client picked — to a 6-digit hex for contrast maths
+ * (sgs_wcag_text_colour_for_bg() and friends). Never use the result as the paint
+ * value: paint with sgs_colour_value(), which keeps a slug as a live palette var.
+ *
+ * Covers everything sgs_colour_resolve_hex_alpha() does plus hsl()/hwb()/oklch()/
+ * oklab() via sgs_functional_colour_to_hex(). Returns '' when no single hex exists
+ * (a gradient, `transparent`, `currentColor`, an unknown slug).
+ * Gate: scripts/check-custom-colour-survives.py.
+ *
+ * @param string $value Colour attribute value.
+ * @return string Hex colour, or ''.
+ */
+function sgs_colour_hex_for_contrast( string $value ): string {
+	$value = trim( $value );
+	if ( '' === $value ) {
+		return '';
+	}
+	if ( function_exists( 'sgs_functional_colour_to_hex' ) ) {
+		$value = sgs_functional_colour_to_hex( $value );
+	}
+	return sgs_colour_resolve_hex_alpha( $value )['hex'];
+}
+
+/**
  * Split a comma-separated CSS argument list on TOP-LEVEL commas only —
  * i.e. commas that are not nested inside a function call's parentheses.
  * A gradient's colour stops are comma-separated, but a stop's own colour

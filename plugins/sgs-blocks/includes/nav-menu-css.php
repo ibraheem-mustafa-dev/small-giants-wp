@@ -212,20 +212,9 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	// Resolves EITHER a palette slug OR a raw CSS colour (hex/rgb/hsl/…) to an
 	// actual computable hex. Used ONLY for WCAG smart-contrast maths below —
 	// never for the paint declaration itself (see $item_bg_hex vs $item_bg_raw
-	// split further down): `sgs_resolve_palette_hex()` alone silently returns
-	// '' for a raw hex (it is a slug-only lookup), so a client-chosen
-	// custom colour (not a theme swatch) would leave
-	// $bg_hex/$preferred_hex empty and `$smart_fg()` would return the
-	// input unchanged.
+	// split further down).
 	$sgs_nm_hex = static function ( $raw ): string {
-		$raw = (string) $raw;
-		if ( '' === $raw ) {
-			return '';
-		}
-		if ( sgs_is_css_colour( $raw ) ) {
-			return sgs_functional_colour_to_hex( $raw );
-		}
-		return (string) sgs_resolve_palette_hex( sanitize_html_class( $raw ), '' );
+		return sgs_colour_hex_for_contrast( (string) $raw );
 	};
 	$item_colour = isset( $attributes['itemColour'] ) ? (string) $attributes['itemColour'] : '';
 	// The sibling gradient wins when set+valid. Safe unconditionally: itemBg

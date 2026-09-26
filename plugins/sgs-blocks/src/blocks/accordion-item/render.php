@@ -28,14 +28,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
-// CSS-slug sanitiser — design-token colour slugs travelling from parent block
-// context into a `var(--wp--preset--color--{slug})` reference inside the scoped
-// <style> tag. Strips everything except letters, digits, hyphen, underscore so a
-// malicious slug can never break out of the declaration (contract §D).
-$sgs_css_slug = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — border-style free text.
 // CSS-length sanitiser — border-width / radius string values.
 $sgs_title                = $attributes['title'] ?? '';
@@ -98,9 +90,9 @@ if ( '' !== $header_col_effective ) {
 // icon hover below already uses.
 $header_hover_decls = array();
 if ( '' !== $header_bg_hover ) {
-	$header_hover_slug = $sgs_css_slug( $header_bg_hover );
-	if ( '' !== $header_hover_slug ) {
-		$header_hover_decls[] = 'background-color:var(--wp--preset--color--' . $header_hover_slug . ')';
+	$header_hover_paint = sgs_colour_value( $header_bg_hover );
+	if ( '' !== $header_hover_paint ) {
+		$header_hover_decls[] = 'background-color:' . $header_hover_paint;
 	}
 }
 $header_bg_hover_gradient_value = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( $header_bg_hover_gradient ) : '';
@@ -146,15 +138,16 @@ if ( preg_match( '/^[1-9]00$/', (string) $header_font_weight_open ) ) {
 // background whenever one is set (sgs_block_background_layer_css()).
 $header_open_sel   = $root_sel . '[open] > .sgs-accordion-item__header,' . $root_sel . '[open] > summary > .sgs-accordion-item__header';
 $header_open_decls = array();
-$header_col_open_slug = '' !== $header_col_open ? $sgs_css_slug( $header_col_open ) : '';
-if ( '' !== $header_col_open_slug ) {
-	$header_open_decls[] = 'color:var(--wp--preset--color--' . $header_col_open_slug . ')';
+// Each colour is a palette slug or any CSS colour, painted through sgs_colour_value().
+$header_col_open_paint = sgs_colour_value( (string) $header_col_open );
+if ( '' !== $header_col_open_paint ) {
+	$header_open_decls[] = 'color:' . $header_col_open_paint;
 }
-$header_bg_open_slug = '' !== $header_bg_open ? $sgs_css_slug( $header_bg_open ) : '';
-if ( '' !== $header_bg_open_slug ) {
-	$header_open_decls[] = 'background-color:var(--wp--preset--color--' . $header_bg_open_slug . ')';
+$header_bg_open_paint = sgs_colour_value( (string) $header_bg_open );
+if ( '' !== $header_bg_open_paint ) {
+	$header_open_decls[] = 'background-color:' . $header_bg_open_paint;
 	$responsive_css     .= $root_sel . '[open] > .sgs-accordion-item__header::after,' . $root_sel . '[open] > summary > .sgs-accordion-item__header::after'
-		. '{background:var(--wp--preset--color--' . $header_bg_open_slug . ')}';
+		. '{background:' . $header_bg_open_paint . '}';
 }
 if ( $header_open_decls ) {
 	$responsive_css .= $header_open_sel . '{' . implode( ';', $header_open_decls ) . '}';
@@ -162,9 +155,9 @@ if ( $header_open_decls ) {
 
 // Icon colour — was inline `style="…"` on both icon spans, now a scoped rule.
 if ( $icon_col ) {
-	$icon_slug = $sgs_css_slug( $icon_col );
-	if ( '' !== $icon_slug ) {
-		$responsive_css .= $root_sel . ' .sgs-accordion-item__icon-open,' . $root_sel . ' .sgs-accordion-item__icon-close{color:var(--wp--preset--color--' . $icon_slug . ')}';
+	$icon_paint = sgs_colour_value( (string) $icon_col );
+	if ( '' !== $icon_paint ) {
+		$responsive_css .= $root_sel . ' .sgs-accordion-item__icon-open,' . $root_sel . ' .sgs-accordion-item__icon-close{color:' . $icon_paint . '}';
 	}
 }
 
@@ -185,9 +178,9 @@ if ( '' !== $sgs_ai_icon_hover_grad['css'] ) {
 	$responsive_css .= sgs_hover_state_rules( $sgs_ai_header_sel, $sgs_ai_icon_hover_grad['css'], ':focus-visible', ' .sgs-accordion-item__icon-open svg' );
 	$responsive_css .= sgs_hover_state_rules( $sgs_ai_header_sel, $sgs_ai_icon_hover_grad['css'], ':focus-visible', ' .sgs-accordion-item__icon-close svg' );
 } elseif ( '' !== $icon_col_hover ) {
-	$icon_hover_slug = $sgs_css_slug( $icon_col_hover );
-	if ( '' !== $icon_hover_slug ) {
-		$icon_hover_decl = 'color:var(--wp--preset--color--' . $icon_hover_slug . ')';
+	$icon_hover_paint = sgs_colour_value( (string) $icon_col_hover );
+	if ( '' !== $icon_hover_paint ) {
+		$icon_hover_decl = 'color:' . $icon_hover_paint;
 		$responsive_css .= sgs_hover_state_rules( $sgs_ai_header_sel, $icon_hover_decl, ':focus-visible', ' .sgs-accordion-item__icon-open' );
 		$responsive_css .= sgs_hover_state_rules( $sgs_ai_header_sel, $icon_hover_decl, ':focus-visible', ' .sgs-accordion-item__icon-close' );
 	}

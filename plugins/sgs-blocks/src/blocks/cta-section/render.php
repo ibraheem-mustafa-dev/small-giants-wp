@@ -415,9 +415,17 @@ $responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them
 // manually (mirrors sgs/hero / sgs/quote) so preset palette colours still
-// resolve visually.
-$cta_preset_text_slug = isset( $attributes['textColour'] ) ? sanitize_html_class( $attributes['textColour'] ) : '';
-$cta_preset_bg_slug   = isset( $attributes['backgroundColour'] ) ? sanitize_html_class( $attributes['backgroundColour'] ) : '';
+// resolve visually. Each attribute is a palette slug OR any CSS colour: a slug
+// takes the preset class, a custom colour paints through the scoped root rule.
+$cta_text_raw = isset( $attributes['textColour'] ) ? trim( (string) $attributes['textColour'] ) : '';
+$cta_bg_raw   = isset( $attributes['backgroundColour'] ) ? trim( (string) $attributes['backgroundColour'] ) : '';
+$cta_is_slug  = static function ( string $value ): bool {
+	return 1 === preg_match( '/^[a-z0-9-]+$/', $value ) && ! sgs_is_css_colour( $value );
+};
+$cta_preset_text_slug = $cta_is_slug( $cta_text_raw ) ? $cta_text_raw : '';
+$cta_preset_bg_slug   = $cta_is_slug( $cta_bg_raw ) ? $cta_bg_raw : '';
+$cta_custom_text      = '' === $cta_preset_text_slug ? sgs_colour_value( $cta_text_raw ) : '';
+$cta_custom_bg        = '' === $cta_preset_bg_slug ? sgs_colour_value( $cta_bg_raw ) : '';
 // backgroundColourGradient (Bean-requested colour+gradient upgrade) — a
 // non-empty, valid gradient WINS over the slug-resolved background entirely:
 // it bypasses the has-{slug}-background-color preset-class mechanism below
@@ -428,12 +436,18 @@ $cta_background_gradient = sgs_css_gradient_value( $attributes['backgroundColour
 if ( '' !== $cta_preset_text_slug ) {
 	$classes[] = 'has-text-color';
 	$classes[] = 'has-' . $cta_preset_text_slug . '-color';
+} elseif ( '' !== $cta_custom_text ) {
+	$classes[]       = 'has-text-color';
+	$responsive_css .= $root_sel . '{color:' . $cta_custom_text . ';}';
 }
 if ( '' !== $cta_background_gradient ) {
 	$responsive_css .= $root_sel . '{background-image:' . $cta_background_gradient . ';}';
 } elseif ( '' !== $cta_preset_bg_slug ) {
 	$classes[] = 'has-background';
 	$classes[] = 'has-' . $cta_preset_bg_slug . '-background-color';
+} elseif ( '' !== $cta_custom_bg ) {
+	$classes[]       = 'has-background';
+	$responsive_css .= $root_sel . '{background-color:' . $cta_custom_bg . ';}';
 }
 
 // WS-4: the OUTER wrapper is now the shared sgs/container element (rendered by

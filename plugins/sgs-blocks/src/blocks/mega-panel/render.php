@@ -84,13 +84,12 @@ $headings_on = ! isset( $attributes['headings'] ) || (bool) $attributes['heading
 // groupBorderColour / groupBorderColourGradient are the RESTING-state
 // group-tile border pair (default empty string — no colour override at rest
 // until an operator sets one); see block.json's `group` element note.
-$accent_bg_slug     = isset( $attributes['iconBackground'] ) ? sanitize_html_class( (string) $attributes['iconBackground'] ) : 'accent';
-$accent_border_slug = isset( $attributes['groupBorderColourHover'] ) ? sanitize_html_class( (string) $attributes['groupBorderColourHover'] ) : 'accent';
+// Each is a palette slug or any CSS colour, painted through sgs_colour_value().
+$accent_bg_slug     = isset( $attributes['iconBackground'] ) ? trim( (string) $attributes['iconBackground'] ) : 'accent';
+$accent_border_slug = isset( $attributes['groupBorderColourHover'] ) ? trim( (string) $attributes['groupBorderColourHover'] ) : 'accent';
 $accent_border_gradient = sgs_css_gradient_value( $attributes['groupBorderColourGradientHover'] ?? '' );
-// iconColour (flat/gradient sibling pattern): NOT run through sanitize_html_class() like the other
-// slug-only accent attrs above — it is a free-text colour value (raw hex/var()
-// or a full CSS gradient function string when iconColourGradient is set), and
-// sanitize_html_class() would mangle a gradient string's parentheses/commas.
+// iconColour (flat/gradient sibling pattern): a colour value (slug, raw hex/var()
+// or a full CSS gradient function string when iconColourGradient is set).
 // $icon_colour_effective/$icon_colour_decl are resolved once here and consumed
 // at all 3 layout-mode icon selectors below.
 $icon_colour_raw          = isset( $attributes['iconColour'] ) ? (string) $attributes['iconColour'] : 'accent';
@@ -106,7 +105,7 @@ $icon_colour_decl         = sgs_text_colour_decl( $icon_colour_effective );
 $group_border_resting_raw      = isset( $attributes['groupBorderColour'] ) ? (string) $attributes['groupBorderColour'] : '';
 $group_border_resting_value    = '' !== $group_border_resting_raw ? sgs_colour_value( $group_border_resting_raw ) : '';
 $group_border_resting_gradient = sgs_css_gradient_value( $attributes['groupBorderColourGradient'] ?? '' );
-$accent_image_slug  = isset( $attributes['accentBackgroundImage'] ) ? sanitize_html_class( (string) $attributes['accentBackgroundImage'] ) : 'accent';
+$accent_image_slug  = isset( $attributes['accentBackgroundImage'] ) ? trim( (string) $attributes['accentBackgroundImage'] ) : 'accent';
 // accentBackgroundImageGradient:
 // a gradient sibling for accentBackgroundImage. accentBackgroundImage feeds
 // ONLY a colour STOP inside the aside spotlight glow's radial-gradient (via
@@ -390,10 +389,7 @@ $soft_image_value = 'color-mix(in srgb, ' . $accent_image_value . ' 10%, transpa
 // semi-transparent colour-mix() value.
 $text_value = 'var(--wp--preset--color--text, #1A202C)';
 if ( '' !== $panel_bg_raw ) {
-	$panel_bg_slug_for_hex = preg_replace( '/[^a-z0-9-]/', '', strtolower( $panel_bg_raw ) );
-	$panel_bg_hex          = str_starts_with( trim( $panel_bg_raw ), '#' )
-		? trim( $panel_bg_raw )
-		: sgs_resolve_palette_hex( $panel_bg_slug_for_hex, '' );
+	$panel_bg_hex = sgs_colour_hex_for_contrast( $panel_bg_raw );
 	if ( '' !== $panel_bg_hex && function_exists( 'sgs_wcag_preferred_text_colour_for_bg' ) ) {
 		$preferred_hex = sgs_resolve_palette_hex( 'text', '#1A202C' );
 		$text_value    = sgs_wcag_preferred_text_colour_for_bg( $panel_bg_hex, $preferred_hex );

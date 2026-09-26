@@ -1235,5 +1235,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 135
+  },
+  {
+    "id": "check-custom-colour-survives",
+    "cmd": "python scripts/check-custom-colour-survives.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 137
   }
 ]

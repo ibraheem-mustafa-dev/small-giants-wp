@@ -196,7 +196,9 @@ class SGS_QA_Stub_Block {
 }
 
 $block   = new SGS_QA_Stub_Block( $attributes );
-$content = '';
+// --content stands in for rendered InnerBlocks (a composite block with no inner
+// content renders nothing, so its colours are never emitted).
+$content = isset( $args['content'] ) ? (string) $args['content'] : '';
 
 $html   = '';
 $error  = null;

@@ -218,13 +218,14 @@ $text_align_map = array(
 	'right'  => 'end',
 );
 
-// ── Background (drawerBg, slug, default 'surface') + WCAG-computed foreground:
-// the background stays a theme-linked var() so a palette change recolours
-// it; the foreground is computed from the LIVE resolved hex each render so the
-// pairing is always ≥ 4.5:1 with zero config.
-$drawer_bg_slug = isset( $attributes['drawerBg'] ) ? sanitize_html_class( $attributes['drawerBg'] ) : 'surface';
-$drawer_bg_hex  = '' !== $drawer_bg_slug ? sgs_resolve_palette_hex( $drawer_bg_slug, '' ) : '';
-$drawer_fg_hex  = ( '' !== $drawer_bg_hex ) ? sgs_wcag_text_colour_for_bg( $drawer_bg_hex ) : '';
+// ── Background (drawerBg: a palette slug or any CSS colour, default 'surface') +
+// WCAG-computed foreground. A slug paints as a theme-linked var() so a palette
+// change recolours it; the foreground is computed from the LIVE resolved hex each
+// render so the pairing is always ≥ 4.5:1 with zero config.
+$drawer_bg_raw   = isset( $attributes['drawerBg'] ) ? trim( (string) $attributes['drawerBg'] ) : 'surface';
+$drawer_bg_paint = sgs_colour_value( $drawer_bg_raw );
+$drawer_bg_hex   = sgs_colour_hex_for_contrast( $drawer_bg_raw );
+$drawer_fg_hex   = ( '' !== $drawer_bg_hex ) ? sgs_wcag_text_colour_for_bg( $drawer_bg_hex ) : '';
 
 // ── Drawer TEXT colour — the OPERATOR'S choice, which wins outright.
 // $drawer_fg_hex above is a FALLBACK, not a control: the WCAG pairing applies
@@ -238,13 +239,13 @@ $drawer_text_effective = sgs_resolve_text_colour_or_gradient(
 	$attributes['drawerTextColourGradient'] ?? ''
 );
 
-// ── Close-icon colour (toggleCloseColour, slug). Empty = inherit the drawer's
+// ── Close-icon colour (toggleCloseColour, a slug or any CSS colour). Empty = inherit the drawer's
 // computed foreground (style.css sets the × to color:inherit).
 // toggleCloseColourGradient is the gradient sibling; gradient wins when
 // set+valid, mirrors drawerTextColourGradient above.
-$close_colour_slug       = isset( $attributes['toggleCloseColour'] ) ? sanitize_html_class( $attributes['toggleCloseColour'] ) : '';
+$close_colour_slug       = isset( $attributes['toggleCloseColour'] ) ? trim( (string) $attributes['toggleCloseColour'] ) : '';
 $close_colour_gradient   = $attributes['toggleCloseColourGradient'] ?? '';
-$close_colour_hover_slug = isset( $attributes['toggleCloseColourHover'] ) ? sanitize_html_class( $attributes['toggleCloseColourHover'] ) : '';
+$close_colour_hover_slug = isset( $attributes['toggleCloseColourHover'] ) ? trim( (string) $attributes['toggleCloseColourHover'] ) : '';
 // toggleCloseColourHoverGradient -- Normal resolves gradient-or-solid via
 // $close_colour_gradient above; Hover does the same through this attribute
 // (no smart-contrast swap applies here, unlike the bar's itemColourHover).
@@ -330,8 +331,8 @@ $custom_css = isset( $attributes['sgsCustomCss'] ) ? (string) $attributes['sgsCu
 $css = '';
 
 // Background + WCAG foreground on the dialog root.
-if ( '' !== $drawer_bg_slug ) {
-	$decls = 'background-color:var(--wp--preset--color--' . $drawer_bg_slug . ');';
+if ( '' !== $drawer_bg_paint ) {
+	$decls = 'background-color:' . $drawer_bg_paint . ';';
 	// A background GRADIENT layers OVER the flat colour rather than replacing it.
 	// The canonical helper is gradient-wins (sgs_background_paint_value), but a drawer
 	// is an OVERLAY panel: if the gradient carries alpha, dropping the solid base makes
@@ -561,7 +562,7 @@ $css              .= sgs_scrim_render(
 // helpers (includes/helpers-surface-ground.php): color-mix() keeps the resolved token as
 // the SOURCE colour (a palette change still recolours the translucent panel), an unset
 // value emits nothing, and 0 is a legal opacity or saturate value.
-$sgs_nd_fill_css   = '' !== $drawer_bg_slug ? 'var(--wp--preset--color--' . $drawer_bg_slug . ')' : '';
+$sgs_nd_fill_css   = $drawer_bg_paint;
 $sgs_nd_fill_alpha = sgs_surface_fill_alpha( $sgs_nd_fill_css, $attributes['surfaceOpacity'] ?? null );
 if ( '' !== $sgs_nd_fill_alpha ) {
 	$css .= $root_sel . '{background-color:' . $sgs_nd_fill_alpha . ';}';

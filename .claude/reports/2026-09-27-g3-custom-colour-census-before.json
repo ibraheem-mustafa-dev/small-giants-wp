@@ -1,0 +1,5191 @@
+{
+  "static": [
+    {
+      "file": "includes/nav-menu-css.php",
+      "line": 228,
+      "rule": "slug-only-lookup",
+      "detail": "sgs_resolve_palette_hex( sanitize_html_class( $raw ) returns '' for a custom colour; use sgs_colour_hex_for_contrast()"
+    },
+    {
+      "file": "includes/nav-menu-item-border-featured-css.php",
+      "line": 349,
+      "rule": "sanitize_html_class",
+      "detail": "colour attribute 'featuredBg' read through sanitize_html_class (strips the #)"
+    },
+    {
+      "file": "includes/nav-menu-item-border-featured-css.php",
+      "line": 440,
+      "rule": "sanitize_html_class",
+      "detail": "colour attribute 'featuredBgHover' read through sanitize_html_class (strips the #)"
+    },
+    {
+      "file": "includes/nav-menu-item-border-featured-css.php",
+      "line": 350,
+      "rule": "slug-only-lookup",
+      "detail": "sgs_resolve_palette_hex( $featured_bg_slug ) returns '' for a custom colour; use sgs_colour_hex_for_contrast()"
+    },
+    {
+      "file": "includes/nav-menu-item-border-featured-css.php",
+      "line": 381,
+      "rule": "slug-only-lookup",
+      "detail": "sgs_resolve_palette_hex( $featured_colour ) returns '' for a custom colour; use sgs_colour_hex_for_contrast()"
+    },
+    {
+      "file": "includes/nav-menu-item-border-featured-css.php",
+      "line": 441,
+      "rule": "slug-only-lookup",
+      "detail": "sgs_resolve_palette_hex( $featured_bg_hover ) returns '' for a custom colour; use sgs_colour_hex_for_contrast()"
+    },
+    {
+      "file": "includes/nav-menu-item-border-featured-css.php",
+      "line": 458,
+      "rule": "slug-only-lookup",
+      "detail": "sgs_resolve_palette_hex( $featured_fg_hover ) returns '' for a custom colour; use sgs_colour_hex_for_contrast()"
+    },
+    {
+      "file": "src/blocks/cta-section/render.php",
+      "line": 419,
+      "rule": "sanitize_html_class",
+      "detail": "colour attribute 'textColour' read through sanitize_html_class (strips the #)"
+    },
+    {
+      "file": "src/blocks/cta-section/render.php",
+      "line": 420,
+      "rule": "sanitize_html_class",
+      "detail": "colour attribute 'backgroundColour' read through sanitize_html_class (strips the #)"
+    },
+    {
+      "file": "src/blocks/mega-panel/render.php",
+      "line": 87,
+      "rule": "sanitize_html_class",
+      "detail": "colour attribute 'iconBackground' read through sanitize_html_class (strips the #)"
+    },
+    {
+      "file": "src/blocks/mega-panel/render.php",
+      "line": 88,
+      "rule": "sanitize_html_class",
+      "detail": "colour attribute 'groupBorderColourHover' read through sanitize_html_class (strips the #)"
+    },
+    {
+      "file": "src/blocks/mega-panel/render.php",
+      "line": 109,
+      "rule": "sanitize_html_class",
+      "detail": "colour attribute 'accentBackgroundImage' read through sanitize_html_class (strips the #)"
+    },
+    {
+      "file": "src/blocks/mega-panel/render.php",
+      "line": 396,
+      "rule": "slug-only-lookup",
+      "detail": "sgs_resolve_palette_hex( $panel_bg_slug_for_hex ) returns '' for a custom colour; use sgs_colour_hex_for_contrast()"
+    },
+    {
+      "file": "src/blocks/nav-drawer/render.php",
+      "line": 225,
+      "rule": "sanitize_html_class",
+      "detail": "colour attribute 'drawerBg' read through sanitize_html_class (strips the #)"
+    },
+    {
+      "file": "src/blocks/nav-drawer/render.php",
+      "line": 245,
+      "rule": "sanitize_html_class",
+      "detail": "colour attribute 'toggleCloseColour' read through sanitize_html_class (strips the #)"
+    },
+    {
+      "file": "src/blocks/nav-drawer/render.php",
+      "line": 247,
+      "rule": "sanitize_html_class",
+      "detail": "colour attribute 'toggleCloseColourHover' read through sanitize_html_class (strips the #)"
+    },
+    {
+      "file": "src/blocks/nav-drawer/render.php",
+      "line": 226,
+      "rule": "slug-only-lookup",
+      "detail": "sgs_resolve_palette_hex( $drawer_bg_slug ) returns '' for a custom colour; use sgs_colour_hex_for_contrast()"
+    }
+  ],
+  "render": [
+    {
+      "block": "sgs/accordion",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion",
+      "attr": "headerBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion",
+      "attr": "headerBackgroundHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion",
+      "attr": "headerBackgroundOpen",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion",
+      "attr": "headerColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion",
+      "attr": "headerColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion",
+      "attr": "headerColourOpen",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion",
+      "attr": "iconColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion",
+      "attr": "iconColourGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/accordion",
+      "attr": "iconColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion",
+      "attr": "iconColourHoverGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/accordion-item",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion-item",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/accordion-item",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion-item",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/accordion-item",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "cardBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "cardBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "chipBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "chipTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "contentLinkColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "contentLinkColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "headingColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "menuActiveBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "menuActiveIndicatorColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "menuActiveTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "menuTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "menuTextColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "trackColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/account",
+      "attr": "trackDoneColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/audio",
+      "attr": "accentColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/audio",
+      "attr": "accentColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/audio",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/audio",
+      "attr": "borderColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/audio",
+      "attr": "spectrumColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "boxShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "boxShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "dividerColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "dividerColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "handleColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "handleColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "handleIconColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "handleIconColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "labelBackgroundColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "labelColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/before-after",
+      "attr": "labelColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "brandTextColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "brandTextColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "itemBackgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "itemBorderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "nameColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "nameColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "tileBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "tileBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "tileShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "attr": "tileShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/breadcrumbs",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/breadcrumbs",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/breadcrumbs",
+      "attr": "currentColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/breadcrumbs",
+      "attr": "currentColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/breadcrumbs",
+      "attr": "linkColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/breadcrumbs",
+      "attr": "linkColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/breadcrumbs",
+      "attr": "separatorColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/breadcrumbs",
+      "attr": "separatorColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "attributionHoverColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "attributionHoverColourFallback",
+      "verdict": "PASS",
+      "source": "db"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "iconColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "iconColourGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "iconColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "iconColourHoverGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "labelColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "labelColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/business-info",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "boxShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "boxShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "colourBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "colourBackgroundHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "colourText",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "colourTextHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "iconColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "iconColourGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "iconColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/button",
+      "attr": "iconColourHoverGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "backgroundColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "backgroundColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "guidedMeterColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "rrpPillBackgroundColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "rrpPillTextColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "stockInStockColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "stockLowStockColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "stockOutOfStockColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "textColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/buybox",
+      "attr": "textColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "backgroundColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "borderColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "cardBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "cardBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "cardShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "cardShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "glyphColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "imageFallbackColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "overlayColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "subtitleColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "subtitleColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "textColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "titleColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/card-grid",
+      "attr": "titleColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "badgeColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "badgeTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "badgeTextColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "freeDeliveryFillColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "freeDeliveryTrackColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "iconColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "iconColourGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "iconColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "iconColourHoverGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "panelBg",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "panelTextColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "panelTextColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "pillBgColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "pillBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "pillTextColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cart",
+      "attr": "scrimColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "backColourBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "backColourBackgroundHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "backColourBorder",
+      "verdict": "PASS",
+      "source": "db"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "backColourBorderHover",
+      "verdict": "PASS",
+      "source": "db"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "backColourText",
+      "verdict": "PASS",
+      "source": "db"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "backColourTextHover",
+      "verdict": "PASS",
+      "source": "db"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "headerEyebrowColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "infoToggleBorderColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "infoToggleColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "progressColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "stageColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "stageNoteBorderColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "stageNoteHoverColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/choice-flow",
+      "attr": "stageNoteIconColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/collapsible-text",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/collapsible-text",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/collapsible-text",
+      "attr": "linkColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/collapsible-text",
+      "attr": "linkColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/collapsible-text",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/collapsible-text",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "backgroundOverlayColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "backgroundOverlayColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "borderColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "gridItemBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "gridItemBackgroundHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "gridItemBorder",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "gridItemShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "gridItemTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "gridItemTextColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "shadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "shadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "shapeDividerBottomColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "shapeDividerTopColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/container",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/countdown-timer",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/countdown-timer",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/countdown-timer",
+      "attr": "labelColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/countdown-timer",
+      "attr": "numberColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/countdown-timer",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/countdown-timer",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/counter",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/counter",
+      "attr": "labelColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/counter",
+      "attr": "labelColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/counter",
+      "attr": "numberColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/counter",
+      "attr": "numberColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "backgroundColour",
+      "verdict": "DROPPED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "backgroundOverlayColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "backgroundOverlayColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "shadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "shadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "shapeDividerBottomColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "shapeDividerTopColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "textColour",
+      "verdict": "DROPPED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/cta-section",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/feature-grid",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/feature-grid",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/feature-grid",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/feature-grid",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/feature-grid",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/filter-search",
+      "attr": "focusRingColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/filter-search",
+      "attr": "inputBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/filter-search",
+      "attr": "inputBorderColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/filter-search",
+      "attr": "textColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/filter-search",
+      "attr": "textColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "fileLabelBackgroundColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "fileLabelBackgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "fileLabelBorderColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "fileLabelBorderColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "formFocusRingColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "prevColourBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "prevColourBackgroundHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "progressBarColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "progressBarColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "submitBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "submitBackgroundHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "submitColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "submitColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "tileBorderColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/form",
+      "attr": "tileBorderColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/form-field-tiles",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form-field-tiles",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/form-field-tiles",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form-field-tiles",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form-field-tiles",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form-step",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form-step",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/form-step",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form-step",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/form-step",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/gallery",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/gallery",
+      "attr": "captionBgColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/gallery",
+      "attr": "captionColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/gallery",
+      "attr": "captionColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/gallery",
+      "attr": "overlayColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/gallery",
+      "attr": "scrimColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "arrowColourBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "arrowColourBackgroundHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "arrowColourBorder",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "arrowColourBorderHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "arrowColourText",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "arrowColourTextHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "authorColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "avatarTextColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "backgroundColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "cardBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "cardBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "countColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "dateColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "dotColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "dotColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "footnoteColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "headerDividerColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "metaColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "reviewLinkColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "scoreColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "scrollbarColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "seeAllColourBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "seeAllColourBackgroundHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "seeAllColourBorder",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "seeAllColourBorderHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "seeAllColourText",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "seeAllColourTextHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "sourceLabelColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "starColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "starColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "starEmptyColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "textColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "writeReviewColourBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "writeReviewColourBackgroundHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "writeReviewColourBorder",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "writeReviewColourBorderHover",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "writeReviewColourText",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/google-reviews",
+      "attr": "writeReviewColourTextHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/heading",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/heading",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/heading",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/heading",
+      "attr": "boxShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/heading",
+      "attr": "boxShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/heading",
+      "attr": "linkColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/heading",
+      "attr": "linkColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/heading",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/heading",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "backgroundOverlayColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "backgroundOverlayColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "contentBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "mediaBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "shadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "shadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "shapeDividerBottomColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "shapeDividerTopColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "splitMediaBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "splitMediaBorderColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "splitMediaOverlayColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/hero",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon",
+      "attr": "backgroundColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon",
+      "attr": "iconColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon",
+      "attr": "iconColourGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/icon",
+      "attr": "iconColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon",
+      "attr": "iconColourHoverGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/icon",
+      "attr": "shapeColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "descriptionColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "dividerColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "iconBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "iconColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "iconColourGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "iconColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "iconColourHoverGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "numberColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "siblingDimColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/icon-list",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/info-box",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/info-box",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/info-box",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/info-box",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/info-box",
+      "attr": "linkColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/info-box",
+      "attr": "linkColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/info-box",
+      "attr": "shadowHoverColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/info-box",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/info-box",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/label",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/label",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/label",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/language-switch",
+      "attr": "currentColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/language-switch",
+      "attr": "linkColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/language-switch",
+      "attr": "linkColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/language-switch",
+      "attr": "panelBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/language-switch",
+      "attr": "separatorColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/local-time",
+      "attr": "labelColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/local-time",
+      "attr": "labelColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/local-time",
+      "attr": "timeColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/local-time",
+      "attr": "timeColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/media",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/media",
+      "attr": "borderColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/media",
+      "attr": "boxShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/media",
+      "attr": "boxShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/media",
+      "attr": "captionColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/media",
+      "attr": "captionColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/media",
+      "attr": "overlayColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/media",
+      "attr": "overlayColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/mega-aside",
+      "attr": "asideBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-aside",
+      "attr": "asideBgHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-aside",
+      "attr": "asideBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-aside",
+      "attr": "asideBorderColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "accentBackgroundImage",
+      "verdict": "DROPPED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "fxFieldColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "fxGridDotColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "fxGridDotHoverColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "fxParticleColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "groupBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "groupBorderColourHover",
+      "verdict": "DROPPED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "iconBackground",
+      "verdict": "DROPPED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "iconBackgroundHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "iconColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "iconColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "panelBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/mega-panel",
+      "attr": "shadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/modal",
+      "attr": "closeColourBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/modal",
+      "attr": "closeColourBackgroundHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/modal",
+      "attr": "closeColourText",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/modal",
+      "attr": "closeColourTextHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/modal",
+      "attr": "modalBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/modal",
+      "attr": "scrimColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/modal",
+      "attr": "triggerBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/modal",
+      "attr": "triggerBackgroundHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/modal",
+      "attr": "triggerColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/modal",
+      "attr": "triggerColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "backgroundOverlayColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "backgroundOverlayColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "childBtnBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "childBtnBackgroundHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "childBtnBorderColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "childBtnTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/multi-button",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "burgerBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "burgerColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "burgerColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "burgerHoverColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "featuredBg",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "featuredBgHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "featuredColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "featuredColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemBadgeColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemBadgeTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemBgCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemBgHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemBorderColourCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemBorderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemColourCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemDisabledColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemSeparatorColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemSeparatorColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "navBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "navBgHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "navColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "navColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "scrimColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuColourCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBgCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBgHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBorderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "triggerDetachBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-bar-menu",
+      "attr": "triggerDetachBackgroundHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "attr": "curtainColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "attr": "drawerBg",
+      "verdict": "DROPPED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "attr": "drawerTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "attr": "drawerTextColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "attr": "scrimColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "attr": "shadowColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "attr": "toggleCloseColour",
+      "verdict": "DROPPED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "attr": "toggleCloseColourHover",
+      "verdict": "DROPPED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "featuredBg",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "featuredBgHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "featuredColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "featuredColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemBgCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemBgHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemBorderColourCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemBorderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemColourCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemOrnamentColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemOrnamentColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "navBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "navBgHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "navColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "navColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "siblingDimColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "sublinkMarkerColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "sublinkMarkerColourCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "sublinkMarkerColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuColourCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuLinkBg",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuLinkBgCurrent",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuLinkBgHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuLinkBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuLinkBorderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "arrowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "arrowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "iconCircleBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "iconCircleBackgroundHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "iconCircleBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "iconCircleShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "iconCircleShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "iconColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "iconColourGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "iconColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "iconColourHoverGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-banner",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-message",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/notice-message",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "labelColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "labelColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "pillBgColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "pillBgColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "pillBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "pillSelectedBgColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "pillSelectedBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "pillSelectedTextColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "pillTextColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/option-picker",
+      "attr": "pillTextColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/physics-canvas",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/physics-canvas",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/physics-canvas",
+      "attr": "backgroundOverlayColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/physics-canvas",
+      "attr": "backgroundOverlayColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/physics-canvas",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/physics-canvas",
+      "attr": "shadowColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/physics-canvas",
+      "attr": "shadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "cardBgColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "categoryBadgeBgColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "categoryBadgeBgColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "categoryBadgeColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "categoryBadgeColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "excerptColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "metaColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "readMoreColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "shadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "shadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/post-grid",
+      "attr": "titleColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "ctaBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "ctaBackgroundHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "ctaColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "ctaColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "featureColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "featureColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "popularBadgeBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "popularBadgeBackgroundHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "popularBadgeColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "popularBadgeColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "priceColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "priceColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "titleColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "titleColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "attr": "toggleLabelHoverColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "descriptionColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "descriptionColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "numberBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "numberBackgroundHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "numberColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "numberColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "titleColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/process-steps",
+      "attr": "titleColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "attributeTagBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "attributeTagBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "attributeTagTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "brandColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "ctaColourBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "ctaColourBackgroundHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "ctaColourBorder",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "ctaColourBorderHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "ctaColourText",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "ctaColourTextHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "descColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "descLinkColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "descLinkColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "pickerLabelColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "pickerPillBgColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "pickerPillBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "pickerPillSelectedBgColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "pickerPillSelectedBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "pickerPillSelectedTextColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "pickerPillTextColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "priceColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "priceNoteColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "ratingColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "rrpColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "savingBadgeBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "savingBadgeTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "tagBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "tagBackgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "tagTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-card",
+      "attr": "titleColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-faq",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-faq",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-faq",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-faq",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-faq",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-faq-item",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-faq-item",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/product-faq-item",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-faq-item",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-faq-item",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "focusRingColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "inputBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "inputBorderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "listboxBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "listboxBackgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "matchHighlightColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "matchHighlightColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "resultHoverBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "resultHoverBackgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/product-search",
+      "attr": "scrimColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "attributionColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "attributionColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "attributionLinkColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "attributionLinkColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "boxShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "boxShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/quote",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/responsive-logo",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/responsive-logo",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/responsive-logo",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/responsive-logo",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/separator",
+      "attr": "colour",
+      "verdict": "PASS",
+      "source": "db"
+    },
+    {
+      "block": "sgs/separator",
+      "attr": "contentColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/separator",
+      "attr": "contentColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer",
+      "attr": "backgroundOverlayColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer",
+      "attr": "backgroundOverlayColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer",
+      "attr": "shapeDividerBottomColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-footer",
+      "attr": "shapeDividerTopColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-footer",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer-row",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer-row",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer-row",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer-row",
+      "attr": "fxFieldColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-footer-row",
+      "attr": "fxGridDotColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-footer-row",
+      "attr": "fxGridDotHoverColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-footer-row",
+      "attr": "fxParticleColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-footer-row",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-footer-row",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "backgroundColourScrolled",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "backgroundOverlayColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "backgroundOverlayColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "fillOnDark",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "fillOnLight",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "shadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "shadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "shadowScrolledColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header",
+      "attr": "textColourScrolled",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/site-header-row",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header-row",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header-row",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header-row",
+      "attr": "fxFieldColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-header-row",
+      "attr": "fxGridDotColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-header-row",
+      "attr": "fxGridDotHoverColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-header-row",
+      "attr": "fxParticleColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/site-header-row",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/site-header-row",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/social-icons",
+      "attr": "iconBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/social-icons",
+      "attr": "iconBackgroundHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/social-icons",
+      "attr": "iconBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/social-icons",
+      "attr": "iconBorderColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/social-icons",
+      "attr": "iconGlyphColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/social-icons",
+      "attr": "iconGlyphColourGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/social-icons",
+      "attr": "iconGlyphColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/social-icons",
+      "attr": "iconGlyphColourHoverGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/social-icons",
+      "attr": "wrapperBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/social-icons",
+      "attr": "wrapperBorderColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/star-rating",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/star-rating",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/star-rating",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/star-rating",
+      "attr": "emptyColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/star-rating",
+      "attr": "starColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/star-rating",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/star-rating",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/store-selector",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/store-selector",
+      "attr": "borderColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/store-selector",
+      "attr": "itemColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/store-selector",
+      "attr": "itemColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/store-selector",
+      "attr": "panelBackground",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/store-selector",
+      "attr": "triggerColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/store-selector",
+      "attr": "triggerColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tab",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tab",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/tab",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tab",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tab",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/table-of-contents",
+      "attr": "activeLinkColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/table-of-contents",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/table-of-contents",
+      "attr": "linkColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/table-of-contents",
+      "attr": "titleColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/table-of-contents",
+      "attr": "titleColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "panelBgColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "panelBgColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "panelBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "tabActiveBgColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "tabActiveIndicatorColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "tabActiveTextColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "tabBgColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "tabHoverBgColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "tabIndicatorColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/tabs",
+      "attr": "tabTextColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "cardShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "cardShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "nameColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "nameColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "roleColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "roleColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/team-member",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "linkColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "linkColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "nameColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "nameColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "orgColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "orgColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "quoteColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "quoteColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "quoteLinkColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "quoteLinkColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "ratingColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "ratingColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "roleColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "roleColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "shadowHoverColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "summaryColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "summaryColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial-slider",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial-slider",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial-slider",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial-slider",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial-slider",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/testimonial-slider",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "borderColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "boxShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "boxShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "firstLetterColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "firstLetterColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "linkColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "linkColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/text",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/theme-toggle",
+      "attr": "backgroundColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/theme-toggle",
+      "attr": "backgroundColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/theme-toggle",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/theme-toggle",
+      "attr": "iconColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/theme-toggle",
+      "attr": "iconColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/theme-toggle",
+      "attr": "textColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/theme-toggle",
+      "attr": "textColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/theme-toggle",
+      "attr": "textColourPressed",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "borderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "connectorColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "connectorColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "connectorFillColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "connectorFillColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "dateColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "dateColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "descriptionLinkColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "descriptionLinkColourHover",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "rowStripeColourA",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "rowStripeColourAHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "rowStripeColourB",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "rowStripeColourBHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/timeline",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "backgroundOverlayColour",
+      "verdict": "PASS",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "backgroundOverlayColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "badgeImageShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "badgeImageShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "iconCircleBackground",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "iconCircleBackgroundHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "iconCircleBorderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "iconCircleShadowColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "iconCircleShadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "iconColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "iconColourGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "iconColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "iconColourHoverGradient",
+      "verdict": "NOT REACHED",
+      "source": "db"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "labelColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "labelColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "shadowColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "shadowColourHover",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "shapeDividerBottomColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "shapeDividerTopColour",
+      "verdict": "NOT REACHED",
+      "source": "disk"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "titleColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trust-bar",
+      "attr": "titleColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trustpilot-reviews",
+      "attr": "backgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trustpilot-reviews",
+      "attr": "backgroundColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trustpilot-reviews",
+      "attr": "borderColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trustpilot-reviews",
+      "attr": "textColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/trustpilot-reviews",
+      "attr": "textColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/whatsapp-cta",
+      "attr": "backgroundColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/whatsapp-cta",
+      "attr": "backgroundColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/whatsapp-cta",
+      "attr": "cardBorderColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/whatsapp-cta",
+      "attr": "cardSublineColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/whatsapp-cta",
+      "attr": "cardTitleColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/whatsapp-cta",
+      "attr": "labelColour",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/whatsapp-cta",
+      "attr": "labelColourHover",
+      "verdict": "NOT REACHED",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-link",
+      "attr": "badgeBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-link",
+      "attr": "badgeTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-link",
+      "attr": "iconColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-link",
+      "attr": "iconColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "barBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "buttonBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "buttonTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "headingColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "itemNameColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "linkColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "linkColourHover",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "priceColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "priceDropColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "shareFieldBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "shareFieldTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "stockChipBackgroundColour",
+      "verdict": "PASS",
+      "source": "both"
+    },
+    {
+      "block": "sgs/wishlist-panel",
+      "attr": "stockChipTextColour",
+      "verdict": "PASS",
+      "source": "both"
+    }
+  ],
+  "tally": {
+    "PASS": 528,
+    "DROPPED": 8,
+    "NOT REACHED": 310,
+    "NOT RUN": 0
+  },
+  "static_blocks": []
+}

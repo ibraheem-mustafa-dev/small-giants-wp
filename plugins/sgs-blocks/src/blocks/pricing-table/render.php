@@ -24,15 +24,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
-// CSS-keyword/slug sanitiser — for free-text attrs (border-style, colour
-// slugs) concatenated into raw CSS declarations inside this block's scoped
-// <style> tag. Letters, digits, hyphen only (preset colour slugs can contain
-// digits, e.g. "neutral-200"). Mirrors sgs/hero's sgs_css_keyword_sanitise(), widened
-// for slug use per contract §D.
-$sgs_pt_css_slug = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9-]/', '', (string) $value );
-};
-
 // CSS-length sanitiser — letters, digits, dot, percent only.
 // ── Attributes ──────────────────────────────────────────────────────────────
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11), though this block
@@ -99,14 +90,6 @@ $toggle_yearly_lbl  = sanitize_text_field( $attributes['billingToggleYearlyLabel
 // ── Unique block ID for billing toggle radio inputs ──────────────────────────
 $block_id = wp_unique_id( 'sgs-pricing-' );
 
-// ── Helper: colour CSS value (slug sanitised for safe <style>-tag concatenation) ──
-$colour_val = static function ( $slug ) use ( $sgs_pt_css_slug ) {
-	if ( ! $slug ) {
-		return '';
-	}
-	return 'var(--wp--preset--color--' . $sgs_pt_css_slug( $slug ) . ')';
-};
-
 // ── Scoping hook — no-inline contract (§A). A CLASS (contract §B3-style
 // scoping — matches container/hero/quote convention): the root element also
 // carries the WP `anchor` id, so the scoped hook must never collide with it.
@@ -168,7 +151,7 @@ foreach ( $plans as $plan_index => $plan ) {
 	$plan_highlighted    = (bool) ( $plan['highlighted'] ?? false );
 	$plan_icon           = sanitize_key( $plan['iconName'] ?? '' );
 	$plan_ribbon_text    = sanitize_text_field( $plan['ribbonText'] ?? '' );
-	$plan_ribbon_colour  = sanitize_key( $plan['ribbonColour'] ?? 'accent' );
+	$plan_ribbon_colour  = trim( (string) ( $plan['ribbonColour'] ?? 'accent' ) );
 	$plan_savings_badge  = sanitize_text_field( $plan['savingsBadgeText'] ?? '' );
 
 	// ── Normalise features: legacy string → {text, included:true} ───────────
@@ -245,7 +228,7 @@ foreach ( $plans as $plan_index => $plan ) {
 	$ribbon_html = '';
 	if ( $plan_ribbon_text && ! $plan_highlighted ) {
 		if ( $plan_ribbon_colour ) {
-			$responsive_css .= $root_sel . ' .sgs-pricing-table__grid .sgs-pricing-table__plan:nth-child(' . ( (int) $plan_index + 1 ) . ') .sgs-pricing-table__ribbon{--sgs-pt-ribbon-bg:' . $colour_val( $plan_ribbon_colour ) . ';}';
+			$responsive_css .= $root_sel . ' .sgs-pricing-table__grid .sgs-pricing-table__plan:nth-child(' . ( (int) $plan_index + 1 ) . ') .sgs-pricing-table__ribbon{--sgs-pt-ribbon-bg:' . sgs_colour_value( $plan_ribbon_colour ) . ';}';
 		}
 		$ribbon_html = sprintf(
 			'<div class="sgs-pricing-table__ribbon">%s</div>',
@@ -535,10 +518,8 @@ if ( $badge_bg || $badge_bg_gradient || ( '' !== ( $attributes['popularBadgeBack
 		$responsive_css .= sgs_hover_state_rules( $pt_badge_sel, $badge_bg_hover_decl . ';', ':focus-within', '::after' );
 	}
 }
-// D636 Task 1b — sibling gradient attribute wins when set+valid. The
-// block-local $colour_val() closure only ever emits a preset-slug var(), so
-// this routes through sgs_text_colour_decl() instead (it also resolves a
-// plain slug the same way $colour_val() does).
+// D636 Task 1b — sibling gradient attribute wins when set+valid, routed
+// through sgs_text_colour_decl() (it also resolves a plain slug).
 $price_colour_effective = sgs_resolve_text_colour_or_gradient( $price_colour, $price_colour_gradient );
 if ( '' !== $price_colour_effective ) {
 	$price_sel         = $root_sel . ' .sgs-pricing-table__price';
@@ -773,7 +754,7 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 	}
 }
 
-// value reaching $responsive_css is pre-sanitised ($sgs_pt_css_slug /
+// value reaching $responsive_css is pre-sanitised (sgs_colour_value /
 // $sgs_pt_css_length / wp_style_engine_get_styles), so no un-sanitised value
 // survives to here.
 if ( $responsive_css ) {

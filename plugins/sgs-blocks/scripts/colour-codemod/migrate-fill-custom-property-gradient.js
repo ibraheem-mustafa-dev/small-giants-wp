@@ -19,9 +19,9 @@
  * REFUSES (never guesses) three known-different shapes found while scoping
  * this script tonight — each is a real 4th/5th shape, not a variant of this
  * one, and needs its own codemod or hand fix:
- *   - a `sanitize_html_class()`/`sgs_resolve_palette_hex()` detour between the
- *     attribute read and the colour resolution (mega-panel.accentBackground
- *     Image, nav-menu.featuredBg) — a slug-derivation shape, not this one.
+ *   - a colour resolved outside one `--sgs-x:` emission line (mega-panel.
+ *     accentBackgroundImage feeds a derived color-mix(); nav-menu.featuredBg
+ *     paints a pill rule with a contrast-computed foreground) — not this shape.
  *   - a `foreach ( $map as $prop => $val )` loop building several custom
  *     properties from one associative array (product-search's 5 rows) — a
  *     real 4th shape, needs its own migrate-*-loop-map.js pass.
@@ -46,8 +46,8 @@ const TARGET_ROWS = [
 // nobody re-investigates them believing this script should have covered
 // them. See the module docblock for why each is excluded.
 const KNOWN_DIFFERENT_SHAPE = {
-	'mega-panel.accentBackgroundImage': 'slug-derivation via sanitize_html_class() before sgs_colour_value() — not this shape',
-	'nav-menu.featuredBg': 'resolves via sgs_resolve_palette_hex(), never reaches sgs_colour_value() — not this shape',
+	'mega-panel.accentBackgroundImage': 'feeds a derived color-mix() (--sgs-mm-soft-image), not a single --sgs-x: emission line — not this shape',
+	'nav-menu.featuredBg': 'paints the featured pill rule with a contrast-computed foreground (sgs_colour_hex_for_contrast()) — not this shape',
 	'product-search.inputBorderColour': 'foreach-over-map emission (5 rows share one array) — a distinct 4th shape, needs its own script',
 	'product-search.focusRingColour': 'foreach-over-map emission — see inputBorderColour',
 	'product-search.listboxBackgroundColour': 'foreach-over-map emission — see inputBorderColour',
@@ -66,7 +66,7 @@ const KNOWN_DIFFERENT_SHAPE = {
 	'team-member.cardShadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour',
 	'trust-bar.iconCircleShadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour',
 	'trust-bar.badgeImageShadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour',
-	'cta-section.backgroundColour': 'slug-derivation via sanitize_html_class() before any colour resolution (render.php:409, $cta_preset_bg_slug) — same shape as mega-panel.accentBackgroundImage/nav-menu.featuredBg above, not this script\'s shape',
+	'cta-section.backgroundColour': 'a slug takes the has-{slug}-background-color preset class and a custom colour a scoped root rule ($cta_preset_bg_slug / $cta_custom_bg in render.php), not a --sgs-x: emission line — not this script\'s shape',
 	'product-card.pickerPillBgColour': 'FORWARD-ATTRIBUTE shape, not this script\'s — product-card never paints this itself, it forwards into a nested render_block(\'sgs/option-picker\') attrs array. sgs/option-picker already has the full pillBgColourGradient mechanism (2026-09-05); the missing piece was product-card declaring + forwarding the sibling attr, hand-fixed directly 2026-09-06 (block.json + render.php $picker_style_attrs + edit.js), not via this codemod.',
 	'product-card.ctaColourBackground': 'Case E (FILL plan, 2026-09-06) — already painted by sgs_button_element_style_css(), which was silently missing the ctaColourBackgroundGradient/ctaColourBackgroundHoverGradient attribute DECLARATIONS (the helper already reads them). Hand-fixed directly, not this codemod\'s shape (no custom-property indirection involved at all).',
 
@@ -75,8 +75,8 @@ const KNOWN_DIFFERENT_SHAPE = {
 
 	// --- 2026-09-06 full-audit findings (every remaining FILL row read by hand) ---
 
-	'accordion.headerBackground': 'slug-derivation, same family as cta-section.backgroundColour above — consumed by sgs/accordion-item (block-context relay, $header_bg_slug = $sgs_css_slug($header_bg)) into var(--wp--preset--color--{slug}), never sgs_colour_value(). A preset-slug selector cannot hold a gradient.',
-	'nav-drawer.drawerBg': 'slug-derivation via sanitize_html_class() + sgs_resolve_palette_hex() (WCAG-computed foreground pairing depends on resolving a real hex from the slug) — same family as nav-menu.featuredBg.',
+	'accordion.headerBackground': 'consumed by sgs/accordion-item through block context and painted on a ::after background layer (sgs_block_background_layer_css()), not a --sgs-x: emission line.',
+	'nav-drawer.drawerBg': 'paints the dialog root with a contrast-computed foreground (sgs_colour_hex_for_contrast()) — same family as nav-menu.featuredBg.',
 	'info-box.shadowHoverColour': 'this attr IS a shadow HOVER value itself (sgs_shadow_value_composed($hover_shadow, $sgs_hover_shadow_colour)) — box-shadow family (cannot hold a gradient) AND already the hover-state colour, so it does not additionally need "a hover of its own hover". Same shape as testimonial.shadowHoverColour.',
 	'testimonial.shadowHoverColour': 'same box-shadow-hover-is-already-the-hover-value reason as info-box.shadowHoverColour.',
 	'gallery.overlayColourHover': 'CLASSIFIER FALSE POSITIVE — this is a genuine hover-ONLY attribute by design (block.json\'s own noBaseByDesign marker on the img-wrap element\'s states.hover entry, added 2026-08-15/2026-09-05): the overlay only exists on hover, so there is no resting counterpart to pair it with and none should exist. survey.js\'s needsHover check (statesCount<2) does not know about noBaseByDesign and flags a "gap" that is actually a finished, deliberate design.',
