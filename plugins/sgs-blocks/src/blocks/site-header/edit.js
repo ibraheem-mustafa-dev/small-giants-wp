@@ -256,7 +256,7 @@ const TEMPLATE = [
 				'sgs/nav-bar-menu',
 				{
 					itemColour: 'text',
-					gap: '28px',
+					gap: { desktop: '28px' },
 				},
 			],
 			// Icons cluster (right): cart. Grouped so the row has exactly 3 flex

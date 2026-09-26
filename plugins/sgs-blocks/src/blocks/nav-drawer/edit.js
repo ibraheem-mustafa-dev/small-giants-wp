@@ -93,7 +93,7 @@ import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPre
  * one.
  */
 const TEMPLATE = [
-	[ 'sgs/nav-drawer-menu', { gap: '4px' } ],
+	[ 'sgs/nav-drawer-menu', { gap: { desktop: '4px' } } ],
 	[ 'sgs/responsive-logo' ],
 	[ 'sgs/button' ],
 ];
