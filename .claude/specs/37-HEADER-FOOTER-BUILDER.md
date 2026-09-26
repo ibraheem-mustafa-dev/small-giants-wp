@@ -812,8 +812,8 @@ and `contrastSafe` (FR-37-44).
 **No migration, no fallback.** The framework is pre-production, so no deprecations and no
 read-time legacy fallback are carried (which would violate R-31-14 anyway).
 **Status:** `BUILT + LIVE-VERIFIED`. The behaviour attributes are `{desktop,tablet,mobile}` objects
-whose default `{}` resolves to off. `ResponsiveTriStateControl` in `site-header/edit.js` gives a
-simple toggle plus a "Customise per device" reveal. Server-side, per-tier resolution is emitted as
+whose default `{}` resolves to off. `ResponsiveTriStateControl` in `site-header/edit.js` follows the global
+device toggle: a switch on Desktop, Inherit / Off / On on Tablet and Phone (Spec 35 §12). Server-side, per-tier resolution is emitted as
 `#uid`-scoped `@media` rules via `sgs_emit_tier_rules()`, through a single-writer merge pass
 (`sgs_merge_tri_state_declarations()`) so a behaviour that is off at every tier emits nothing and a
 narrow tier can genuinely cancel a wide one (independent emitters relying on `!important` and

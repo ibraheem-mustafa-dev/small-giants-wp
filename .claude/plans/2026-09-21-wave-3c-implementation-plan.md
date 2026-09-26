@@ -390,7 +390,12 @@ off (the top row's phone button, cream on Mama's pink, 2.4:1). Its framework hal
 every block putting `text-inverse` text on a `primary` ground now uses the palette's `primary-text` (26 rules in 13
 blocks, kept out by the fast gate `scripts/check-text-on-primary.py`), and the business-info Button hover brightens.
 Mama's own `primary-text` is still cream, so its pink buttons stay 2.4:1 until its palette changes (Bean: framework fix
-only; a change of that colour in `sites/mamas-munches/theme-snapshot.json` is the client's call). Every new control set through the real inspector and
+only; a change of that colour in `sites/mamas-munches/theme-snapshot.json` is the client's call). Bean's review of the editor
+(sheets in `.claude/reports/2026-09-26-u13-review/`, 5248c847d, e50e587f5): every on/off tier switch follows the one
+global device toggle (the "Customise per device" reveal is gone); all 18 raw core `BoxControl` mounts, the header's
+Band padding among them, are `SgsBoxControl` with presets (gate `scripts/check-raw-box-control.py`); no panel title
+says "(per device)"; the logo's colour treatment sits in its Colour panel. Proved in the real editor at Desktop and
+Tablet, each check failing first against the previous build (Spec 35 §5 and §12). Every new control set through the real inspector and
 unchanged after reload. Found and fixed on the way: a freshly inserted header's menu (and the drawer's menu) seeded a
 flat `gap`, so the editor preview failed with "Error loading block" (31c2ed4c5); the ink colours had opened a second
 "Colour" panel. M-04 and M-03 move to `covered`. Residue, named: fantasy's light half and lusion's black and blue

@@ -758,7 +758,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 21 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 917 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 927 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -887,12 +887,15 @@ Each entry's purpose is quoted from the script's own header.
 | 112 | `fanout-shadow-lift-attr.py` | adds the `shadowLiftOnHover` block-level switch (boolean, |
 | 113 | `check-scrim.py` | the viewport-scrim detector (Wave 3C U-2, family M-14). |
 | 114 | `check-no-src-requires.py` | Fail when plugin-level PHP loads a file from src/. |
-| 115 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 116 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 117 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 118 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 115 | `check-nested-global-settings.py` | reject nested-path wp_get_global_settings() reads. |
+| 116 | `check-text-on-primary.py` | text on a primary-coloured ground must use the palette's |
+| 117 | `check-raw-box-control.py` | every 4-side box editor in the inspector is SgsBoxControl. |
+| 118 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 119 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 120 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 121 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
 
-**118 gating scripts.** Regenerate this whole section with:
+**121 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -900,7 +903,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (118 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 119 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (121 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 122 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -1099,6 +1102,12 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: exit(1)
 
+**`plugins/sgs-blocks/scripts/check-nested-global-settings.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]; `REPO` = PLUGIN.parents[1]; `ROOTS` = [PLUGIN / "includes", PLUGIN / "src", REPO / "theme" / "sgs-theme"]
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/check-no-core-blocks.py`** (build)
 - Path constants: `REPO` = pathlib.Path(__file__).resolve().parents[3]; `MIG` = REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'migrate-core-blocks'; `THEME` = REPO / 'theme' / 'sgs-theme'
 - Reads: UNVERIFIED (no recognised read call site found)
@@ -1126,6 +1135,12 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: `TARGET`
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: exit(0), exit(1)
+
+**`plugins/sgs-blocks/scripts/check-raw-box-control.py`** (build)
+- Path constants: `ROOT` = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-render-tier-object-spacing.py`** (build)
 - Path constants: `SCRIPT_DIR` = Path(__file__).resolve().parent; `PLUGIN_DIR` = SCRIPT_DIR.parent
@@ -1186,6 +1201,12 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: exit(0)
+
+**`plugins/sgs-blocks/scripts/check-text-on-primary.py`** (build)
+- Path constants: `ROOT` = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-tier-object-cast.py`** (build)
 - Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
@@ -1615,7 +1636,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 777 scripts
+#### `plugins/sgs-blocks/scripts/` — 783 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1700,11 +1721,13 @@ for the verb you happen to have in mind.
 | `check-media-breakpoints.js` | manifest+npm | Gate: the media-element stylesheet's breakpoints must match the ONE source. |
 | `check-media-disclosure-coverage.js` | manifest | Gate: every media atom's `disclosure()` is exercised against REAL fixtures derived from its own `requires` map in registry.js — not a static scan. |
 | `check-motion-bundle-budget.py` | manifest+npm+script-call | Spec 38 (Motion System) Tier G bundle-size budget gate. |
+| `check-nested-global-settings.py` | manifest | reject nested-path wp_get_global_settings() reads. |
 | `check-no-core-blocks.py` | manifest+script-call | Prebuild gate: NO banned core blocks in theme pattern/part/template FILES. |
 | `check-no-src-requires.py` | manifest | Fail when plugin-level PHP loads a file from src/. |
 | `check-palette-slug-refs.py` | manifest+npm | every referenced colour slug must actually exist. |
 | `check-preset-token-naming.py` | manifest+npm | STRUCTURAL GATE — Spec 32 FR-32-9 (Naming Convention) self-verifier. |
 | `check-product-search-guards.js` | manifest+npm+script-call | STATIC PRE-FLIGHT GUARD for the product-search REST endpoint. |
+| `check-raw-box-control.py` | manifest+script-call | every 4-side box editor in the inspector is SgsBoxControl. |
 | `check-render-tier-object-spacing.py` | manifest+npm+script-call | GUARD gate (Step 8 shape 2 — 'compares a derived copy to its source; 0 |
 | `check-render-undefined-vars.py` | manifest+npm+script-call | Undefined-variable gate for block render templates (PHPStan level 1). |
 | `check-rest-route-require.py` | npm | STRUCTURAL GUARD — catches a REST route registered against a callback class |
@@ -1717,6 +1740,7 @@ for the verb you happen to have in mind.
 | `check-single-instance-invariants.py` | manifest+npm | Single-instance invariant register — four named prohibitions, one shared mechanism. |
 | `check-style-blob-sanitisation.py` | manifest+npm | Gate: every render.php `<style>` blob echo must pass through wp_strip_all_tags(). |
 | `check-text-gradient-companion.js` | manifest+npm | THE TRAP THIS GATE CATCHES. `sgs_text_decls()` (`includes/helpers-colour- variants.php`) returns `color:` DECLARATIONS ONLY. When a text GRADIENT is… |
+| `check-text-on-primary.py` | manifest | text on a primary-coloured ground must use the palette's |
 | `check-tier-object-cast.py` | manifest+npm+script-call | Tier-object-cast gate — never coerce a whole object-typed attribute to a string. |
 | `check-tier-storage-shape.py` | manifest+script-call | Find per-device attribute families that are HALF-MIGRATED between storage shapes. |
 | `check-token-rename-neutral.py` | manifest | Is a block's staged change ONLY a preset-token RENAME whose resolved value is unchanged? |
@@ -2116,6 +2140,7 @@ for the verb you happen to have in mind.
 | `nav-qa/lib/shoot-drawer-pairs-selftest.mjs` | script-call | WHY |
 | `nav-qa/lib/sweep-drawer-variants-selftest.mjs` | script-call | A sweep whose assertions cannot fail reads green forever. Every control here runs one of the sweep's REAL decision functions (handed in as `targets`… |
 | `nav-qa/logical-props-lint.py` | manifest | RTL-readiness lint for the SGS nav blocks |
+| `nav-qa/m03-direction-probe.mjs` | — | U-13 M-03 live probe: direction-keyed restyle (fixture `direction-fade`, fantasy's cell). |
 | `nav-qa/palette-contrast-sweep.mjs` | manifest+script-call | drafts (mega-menu panels and any other self-contained SGS-BEM draft). |
 | `nav-qa/qa-close-fixture.php` | — | U-9+U-11 live-check fixture on sandybrown (wp eval-file qa-close-fixture.php <case>). Idempotent. |
 | `nav-qa/qa-geometry-fixture.php` | script-call | U-3 + U-8 live-check fixture on sandybrown (wp eval-file qa-geometry-fixture.php <case>). Idempotent. |
@@ -2126,6 +2151,7 @@ for the verb you happen to have in mind.
 | `nav-qa/submenu-harness.php` | — | Stubbed harness for SGS_Nav_Menu_Bar_Renderer — walker AND render_items. |
 | `nav-qa/sweep-drawer-variants.mjs` | manifest+script-call | WHY THIS SHAPE |
 | `nav-qa/u1-owed-probe.mjs` | — | U-1 + U-2 owed live checks (Wave 3C), run against `qa-u1-owed-fixture.php`. |
+| `nav-qa/u13-ink-probe.mjs` | — | U-13 live probe: section-adaptive header ink on /qa-section-ink/. |
 | `nav-qa/w2u-probe.mjs` | — | W2-u — mega-menu + drawer SAME-PAGE integration probe. |
 | `no-inline/check-no-inline.py` | manifest+npm+script-call | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
 | `no-inline/check-stranded-guards.py` | manifest+npm | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |
@@ -2382,6 +2408,7 @@ for the verb you happen to have in mind.
 | `theme-extractor/used_fonts.py` | script-call | FR-33-18: every font family a draft LOADS and actually RENDERS becomes a |
 | `theme-extractor/used_layout.py` | script-call | FR-33-19: the site's content width and wide width, read from the draft's RENDERED layout. |
 | `theme-extractor/variant_sets.py` | script-call | Spec 33 script variant sets: switchable brand colour sets a draft holds in its own script. |
+| `tls_urlopen.py` | script-call | open an HTTPS request against a live SGS site with a trust-store fallback. |
 | `toolindex/build_index.py` | script-call | extracts a searchable purpose index from every script in |
 | `toolindex/query.py` | manifest+script-call+skill | free-text search over the tool index built by build_index.py. |
 | `uimax-tools/enrich-db.py` | manifest+script-call | SGS Framework DB Enrichment — 10 targets in one idempotent pass. |

@@ -6,9 +6,9 @@
 ```
 doc_type: spec
 spec_id: 35
-spec_version: 3.0
+spec_version: 3.1
 status: ACTIVE
-last_verified: 2026-09-19
+last_verified: 2026-09-26
 owner: framework
 sub_specs: 35A (.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md)
 companions: Spec 32 (component styling/token contract — governs RENDERED output),
@@ -142,7 +142,7 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
 |---|---|---|
 | `RangeControl` | `min`/`max`/`step` real; `withInputField`; `allowReset`+`resetFallbackValue`; unit shown | slider only, no input/reset, arbitrary 0–100 |
 | `UnitControl` | `units` covering every meaningful unit; `isResetValueOnUnitChange` | px-only |
-| `BoxControl` | 4 sides + link/unlink; `units`; `allowReset`; `splitOnAxis` | one linked number |
+| `SgsBoxControl` (never core `BoxControl`, §5) | 4 sides + link/unlink; `units`; spacing `presets` | one linked number; core `BoxControl`'s misaligned slider and unlink icon |
 | Colour | **`enableAlpha`** (≈always) + `clearable` (alpha-0 ≠ unset); `disableCustomColors` false | no alpha (can't pick transparent — reported bug) |
 | `GradientPicker` | custom builder + alpha stops + `clearable` | preset-only |
 | Border (composed builder, contract §14.1) | width `UnitControl` (real `units`) + style `SelectControl` + token-aware colour picker with alpha; radius as a **separate** 4-corner `ResponsiveBorderRadiusControl` | one colour+width, no style; radius folded into the width control; a raw CSS-shorthand `TextControl` |
@@ -987,10 +987,13 @@ its element's panel (TIER 1) regardless of this field.)*
 
 ### 5. 4-VALUE BOX
 
-1. **Canonical** — `ResponsiveBoxControl` (4 sides) / `ResponsiveBorderRadiusControl` (4 corners);
-   `ResponsiveBoxControls` (plural) for object-cascade rows.
+1. **Canonical** — `SgsBoxControl` is the one 4-side editor: mounted through `ResponsiveBoxControl` for the
+   flat-sibling convention, or directly inside `ResponsiveOverride` for a tier object (as
+   `ResponsiveBoxControls` and every header, footer, container and card band do);
+   `ResponsiveBorderRadiusControl` for 4 corners.
 2. **Required props** — `values` per tier, `onChange(tier, next)`, real `units`.
-3. **Banned lookalikes** — per-side scalars (none remain); regex side-token
+3. **Banned lookalikes** — core `BoxControl` in any form (gate `scripts/check-raw-box-control.py`); per-side
+   scalars (none remain); regex side-token
    grouping in the converter (already gated, converter-side only — nothing guards editor code).
 4. **Tab** — `dimensions` (padding/margin) / `border` (width, radius). Styles.
  *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
@@ -1169,6 +1172,12 @@ its element's panel (TIER 1) regardless of this field.)*
    Mechanism: `.claude/rules/colour-emission.md` "Shadows — automatic, do not hand-roll".
 
 ### 12. THE RESPONSIVE WRAPPER FAMILY
+
+**One device switch, everywhere.** Every responsive control reads the tier from the global toggle docked at the
+bottom of the inspector and shows that tier's value: an on/off setting is a switch on Desktop and an
+Inherit / Off / On segment on Tablet and Phone (`ResponsiveTriStateControl`, `BooleanResponsiveControl`). No
+control carries its own per-device reveal, link or tabs. Because every control is per device, no panel title or
+label says "(per device)" or "(responsive)"; that wording would mark the rule as an exception.
 
 > ### ⭐ The wrapper is responsive GENERICALLY — read before acting on this section
 >
