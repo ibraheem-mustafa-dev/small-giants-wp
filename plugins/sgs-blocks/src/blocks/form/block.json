@@ -392,6 +392,26 @@
 			"type": "integer",
 			"default": 5
 		},
+		"notifyEmail": {
+			"type": "string",
+			"default": "",
+			"description": "Owner notification recipient. Blank falls back to the Site Info email, then admin_email (Sgs_Mailer::owner_recipient())."
+		},
+		"confirmationEmail": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, the submitter also receives a confirmation email at their submitted email field (only when one is present and valid)."
+		},
+		"confirmationSubject": {
+			"type": "string",
+			"default": "",
+			"description": "Confirmation email subject. Blank uses a sensible default."
+		},
+		"confirmationMessage": {
+			"type": "string",
+			"default": "",
+			"description": "Confirmation email body (plain text, wrapped in paragraphs). Blank uses a sensible default."
+		},
 		"formFocusRingColour": {
 			"type": "string",
 			"default": "accent"

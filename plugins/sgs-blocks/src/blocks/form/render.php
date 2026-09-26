@@ -152,14 +152,20 @@ $focus_ring_opacity = absint( $attributes['formFocusRingOpacity'] ?? 40 );
 $focus_ring_offset  = absint( $attributes['formFocusRingOffset'] ?? 2 );
 
 // Cache form configuration server-side so the submit handler can enforce
-// requireLogin and per-form rateLimit without trusting client data.
-// Transient lasts 24 hours; re-cached on every page render.
+// requireLogin and per-form rateLimit, and Form_Mailer can read the email
+// settings, without trusting client data. Transient lasts 24 hours;
+// re-cached on every page render.
 if ( ! empty( $form_id ) ) {
 	set_transient(
 		'sgs_form_config_' . sanitize_key( $form_id ),
 		array(
-			'requireLogin' => $require_login,
-			'rateLimit'    => $rate_limit,
+			'requireLogin'         => $require_login,
+			'rateLimit'            => $rate_limit,
+			'formName'             => $form_name,
+			'notifyEmail'          => (string) ( $attributes['notifyEmail'] ?? '' ),
+			'confirmationEmail'    => (bool) ( $attributes['confirmationEmail'] ?? false ),
+			'confirmationSubject'  => (string) ( $attributes['confirmationSubject'] ?? '' ),
+			'confirmationMessage'  => (string) ( $attributes['confirmationMessage'] ?? '' ),
 		),
 		DAY_IN_SECONDS
 	);

@@ -2,8 +2,9 @@
 /**
  * Process form submissions and store in database.
  *
- * Handles sanitisation, database storage, and N8N webhook notifications
- * for all SGS form submissions.
+ * Handles sanitisation, database storage, the owner/confirmation emails (via
+ * {@see Form_Mailer}) and the optional N8N automation webhook, for all SGS
+ * form submissions.
  *
  * @package SGS\Blocks\Forms
  */
@@ -17,13 +18,22 @@ class Form_Processor {
 	/**
 	 * Process a form submission.
 	 *
-	 * @param string $form_id   Unique form identifier.
-	 * @param array  $fields    Form field data (unsanitised).
-	 * @param array  $file_ids  Attachment IDs from uploads (default empty).
-	 * @param bool   $store     Whether to store in the database (default true).
+	 * @param string $form_id        Unique form identifier.
+	 * @param array  $fields         Form field data (unsanitised).
+	 * @param array  $file_ids       Attachment IDs from uploads (default empty).
+	 * @param bool   $store          Whether to store in the database (default true).
+	 * @param array  $email_settings Optional. 'notifyEmail', 'confirmationEmail',
+	 *                               'confirmationSubject', 'confirmationMessage' —
+	 *                               read from the submitting form's own block attrs
+	 *                               (Spec 04, unified-email plan phase 4). Empty
+	 *                               array sends the owner notification with every
+	 *                               default and no confirmation.
+	 * @param string $form_name      Optional. Human-readable form name for the
+	 *                               owner notification subject; falls back to
+	 *                               $form_id when blank.
 	 * @return array|WP_Error   Success array with submission_id, or WP_Error on failure.
 	 */
-	public static function process( string $form_id, array $fields, array $file_ids = [], bool $store = true ) {
+	public static function process( string $form_id, array $fields, array $file_ids = [], bool $store = true, array $email_settings = [], string $form_name = '' ) {
 		global $wpdb;
 
 		// Sanitise all field data.
@@ -76,8 +86,16 @@ class Form_Processor {
 			$submission_id = $wpdb->insert_id;
 		}
 
-		// Fire N8N webhook (non-blocking) — always, regardless of storage setting.
+		// Fire N8N webhook (optional automation event — never the notification
+		// path; see send_webhook()'s own docblock) — always, regardless of
+		// storage setting.
 		self::send_webhook( $form_id, $submission_id, $sanitised_fields, $files_data );
+
+		// The owner notification (and, when enabled, the submitter's
+		// confirmation) — the one wp_mail() notification path (Spec 04,
+		// unified-email plan phase 4).
+		require_once __DIR__ . '/class-form-mailer.php';
+		Form_Mailer::send_notifications( $form_id, $form_name, $sanitised_fields, $email_settings );
 
 		return [
 			'success'       => true,
@@ -100,7 +118,10 @@ class Form_Processor {
 			if ( is_array( $value ) ) {
 				$sanitised[ $sanitised_key ] = array_map( 'sanitize_text_field', $value );
 			} elseif ( false !== strpos( $key, 'email' ) ) {
-				$sanitised[ $sanitised_key ] = sanitize_email( $value );
+				// A line break means a tampered address: sanitize_email() would delete the
+				// break and rebuild a different valid-looking address (a@b.comBccxy.com),
+				// which the confirmation email would then be sent to.
+				$sanitised[ $sanitised_key ] = 1 === preg_match( '/[\r\n]/', (string) $value ) ? '' : sanitize_email( $value );
 			} elseif ( false !== strpos( $key, 'url' ) || false !== strpos( $key, 'website' ) ) {
 				$sanitised[ $sanitised_key ] = esc_url_raw( $value );
 			} else {
@@ -191,6 +212,13 @@ class Form_Processor {
 
 	/**
 	 * Send submission data to N8N webhook.
+	 *
+	 * This is now an OPTIONAL automation event only (CRM rows, Slack, custom
+	 * follow-ups) — never the notification path. The owner notification and
+	 * the submitter's confirmation email go through {@see Form_Mailer::send_notifications()}
+	 * (Spec 04, unified-email plan phase 4), which every SGS email now uses.
+	 * A site with no `sgs_n8n_webhook_url` set simply never fires this method's
+	 * request; the mail path above always runs regardless.
 	 *
 	 * Reads the webhook URL from the `sgs_n8n_webhook_url` option (server-side
 	 * only — never exposed in block attributes or the REST API).

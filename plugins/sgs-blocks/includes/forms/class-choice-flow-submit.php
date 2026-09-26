@@ -5,8 +5,11 @@
  *
  * Mirrors the shape of `Flow_Fields_Upload` (same nonce permission callback,
  * same self-contained route-class pattern) but dispatches through the forms
- * engine (`Form_Processor::process()`) rather than the cart, since an email
- * result stores a submission and fires the N8N webhook — never `wp_mail()`.
+ * engine (`Form_Processor::process()`) rather than the cart. The result
+ * block's own `heading`/`body` become the shopper's confirmation email (their
+ * result); the owner gets a plain notification — both sent through
+ * `Form_Mailer` (Spec 04, unified-email plan phase 4), the one `wp_mail()`
+ * path every SGS email now uses. N8N stays an optional automation event only.
  *
  * The rate limit is never taken from the request: it is read server-side
  * from the published flow's own `sgs/choice-flow-result` block attrs, so a
@@ -26,16 +29,12 @@ final class Choice_Flow_Submit {
 
 	/** Default rate limit when no email-result block attrs can be read. */
 	private const DEFAULT_RATE_LIMIT = 5;
-
 	/** Most answers accepted; extras are truncated, not rejected. */
 	private const ANSWERS_MAX = 16;
-
 	/** Longest answer label kept, in characters. */
 	private const LABEL_MAX = 60;
-
 	/** Longest answer value kept, in characters. */
 	private const VALUE_MAX = 200;
-
 	/** Most tags accepted. */
 	private const TAGS_MAX = 20;
 
@@ -121,7 +120,7 @@ final class Choice_Flow_Submit {
 			);
 		}
 
-		list( $flow_key, $rate_limit_max ) = $resolved;
+		list( $flow_key, $rate_limit_max, $email_settings ) = $resolved;
 
 		// 4. Rate limit, read from the block, never the request.
 		$limited = Form_REST_Submission::check_rate_limit( 'choice-flow-' . $flow_key, $rate_limit_max );
@@ -137,7 +136,10 @@ final class Choice_Flow_Submit {
 			'flowref' => \sanitize_text_field( $flow_ref ),
 		);
 
-		$result = Form_Processor::process( 'choice-flow-' . $flow_key, $fields, array(), true );
+		// The owner notification + the shopper's confirmation of their result
+		// (Form_Mailer, Spec 04 unified-email plan phase 4) — the same
+		// wp_mail() path every SGS form uses; the N8N webhook stays optional.
+		$result = Form_Processor::process( 'choice-flow-' . $flow_key, $fields, array(), true, $email_settings, __( 'Choice flow result', 'sgs-blocks' ) );
 		if ( \is_wp_error( $result ) ) {
 			return $result;
 		}
@@ -147,14 +149,13 @@ final class Choice_Flow_Submit {
 
 	/**
 	 * Resolve `flowRef` to a rate-limit key + the email-result block's own
-	 * `rateLimit` attribute (defaulting when no email-result block is found).
-	 *
-	 * `flowRef` is either a linked flow's `sgs_choice_flow` post slug, or
-	 * `page:<postId>:<blockIndex>` for an inline flow — the Nth `sgs/choice-flow`
-	 * block (document order, any depth) found in that published post's content.
+	 * `rateLimit` + email settings. `flowRef` is either a linked flow's
+	 * `sgs_choice_flow` post slug, or `page:<postId>:<blockIndex>` for an
+	 * inline flow — the Nth `sgs/choice-flow` block (document order, any
+	 * depth) found in that published post's content.
 	 *
 	 * @param string $flow_ref The `flowRef` parameter.
-	 * @return array{0:string,1:int}|null [flow_key, rateLimit], or null when unresolved.
+	 * @return array{0:string,1:int,2:array}|null [flow_key, rateLimit, emailSettings], or null when unresolved.
 	 */
 	private static function resolve_flow( string $flow_ref ): ?array {
 		if ( '' === $flow_ref ) {
@@ -176,7 +177,8 @@ final class Choice_Flow_Submit {
 				return null;
 			}
 			$flow_key = 'page-' . $post_id . '-' . $block_index;
-			return array( $flow_key, self::rate_limit_from( $flow_blocks[ $block_index ] ) );
+			list( $rate_limit, $email_settings ) = self::email_result_config_from( $flow_blocks[ $block_index ] );
+			return array( $flow_key, $rate_limit, $email_settings );
 		}
 
 		if ( ! class_exists( '\SGS\Blocks\Sgs_Block_CPTs' ) ) {
@@ -195,25 +197,40 @@ final class Choice_Flow_Submit {
 		}
 
 		$flow_key = 'flow-' . substr( md5( $flow_ref ), 0, 16 );
-		return array( $flow_key, self::rate_limit_from( $flow_block ) );
+		list( $rate_limit, $email_settings ) = self::email_result_config_from( $flow_block );
+		return array( $flow_key, $rate_limit, $email_settings );
 	}
 
 	/**
-	 * The first `sgs/choice-flow-result` block's `rateLimit` attr inside a
-	 * `sgs/choice-flow` block, or the default when none is found.
+	 * The first `email`-action `sgs/choice-flow-result` inside a
+	 * `sgs/choice-flow`: its `rateLimit` + email settings built from its own
+	 * `heading`/`body` (the result becomes the confirmation — FR-43-4).
+	 * Defaults when no such block is found.
 	 *
 	 * @param array $flow_block A parsed `sgs/choice-flow` block.
-	 * @return int
+	 * @return array{0:int,1:array} [rateLimit, emailSettings].
 	 */
-	private static function rate_limit_from( array $flow_block ): int {
+	private static function email_result_config_from( array $flow_block ): array {
 		$results = self::find_blocks( $flow_block['innerBlocks'] ?? array(), 'sgs/choice-flow-result' );
 		foreach ( $results as $result_block ) {
-			if ( 'email' === ( $result_block['attrs']['action'] ?? '' ) ) {
-				$configured = \absint( $result_block['attrs']['rateLimit'] ?? self::DEFAULT_RATE_LIMIT );
-				return $configured > 0 ? $configured : self::DEFAULT_RATE_LIMIT;
+			if ( 'email' !== ( $result_block['attrs']['action'] ?? '' ) ) {
+				continue;
 			}
+			$configured = \absint( $result_block['attrs']['rateLimit'] ?? self::DEFAULT_RATE_LIMIT );
+			$rate_limit = $configured > 0 ? $configured : self::DEFAULT_RATE_LIMIT;
+			$heading    = isset( $result_block['attrs']['heading'] ) ? \wp_strip_all_tags( (string) $result_block['attrs']['heading'] ) : '';
+			$body       = isset( $result_block['attrs']['body'] ) ? \wp_strip_all_tags( (string) $result_block['attrs']['body'] ) : '';
+			return array(
+				$rate_limit,
+				array(
+					'notifyEmail'         => '',
+					'confirmationEmail'   => true,
+					'confirmationSubject' => '' !== $heading ? $heading : __( 'Your result', 'sgs-blocks' ),
+					'confirmationMessage' => '' !== $body ? $body : __( "Thanks — here's your result.", 'sgs-blocks' ),
+				),
+			);
 		}
-		return self::DEFAULT_RATE_LIMIT;
+		return array( self::DEFAULT_RATE_LIMIT, array() );
 	}
 
 	/**

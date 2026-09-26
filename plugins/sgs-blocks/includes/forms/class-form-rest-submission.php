@@ -98,6 +98,13 @@ class Form_REST_Submission {
 
 			$require_login  = (bool) ( $form_config['requireLogin'] ?? false );
 			$rate_limit_max = absint( $form_config['rateLimit'] ?? 5 );
+			$resolved_name  = (string) ( $form_config['formName'] ?? '' );
+			$email_settings = array(
+				'notifyEmail'         => (string) ( $form_config['notifyEmail'] ?? '' ),
+				'confirmationEmail'   => (bool) ( $form_config['confirmationEmail'] ?? false ),
+				'confirmationSubject' => (string) ( $form_config['confirmationSubject'] ?? '' ),
+				'confirmationMessage' => (string) ( $form_config['confirmationMessage'] ?? '' ),
+			);
 		} else {
 			$form_block = null;
 
@@ -118,6 +125,13 @@ class Form_REST_Submission {
 
 			$require_login  = (bool) ( $form_block['attrs']['requireLogin'] ?? false );
 			$rate_limit_max = absint( $form_block['attrs']['rateLimit'] ?? 5 );
+			$resolved_name  = (string) ( $form_block['attrs']['formName'] ?? '' );
+			$email_settings = array(
+				'notifyEmail'         => (string) ( $form_block['attrs']['notifyEmail'] ?? '' ),
+				'confirmationEmail'   => (bool) ( $form_block['attrs']['confirmationEmail'] ?? false ),
+				'confirmationSubject' => (string) ( $form_block['attrs']['confirmationSubject'] ?? '' ),
+				'confirmationMessage' => (string) ( $form_block['attrs']['confirmationMessage'] ?? '' ),
+			);
 		}
 
 		// 3. Schema-level payload validation runs BEFORE the login check so a
@@ -146,7 +160,7 @@ class Form_REST_Submission {
 		}
 
 		// 6. Process the submission.
-		$result = Form_Processor::process( $form_id, $fields, $file_ids, $store_submissions );
+		$result = Form_Processor::process( $form_id, $fields, $file_ids, $store_submissions, $email_settings, $resolved_name );
 
 		if ( is_wp_error( $result ) ) {
 			return $result;

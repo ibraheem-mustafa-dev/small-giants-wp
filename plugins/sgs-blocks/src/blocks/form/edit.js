@@ -21,6 +21,7 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
 import { resolveTextColourPreviewStyle, backgroundPaintPreview } from '../../utils';
 import FormEmbedEdit from './FormEmbedEdit';
 import { FORM_CPT } from './SavedFormPicker';
+import EmailSettingsPanel from './EmailSettingsPanel';
 
 const SUBMIT_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -80,6 +81,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		storeSubmissions,
 		requireLogin,
 		rateLimit,
+		notifyEmail,
+		confirmationEmail,
+		confirmationSubject,
+		confirmationMessage,
 		submitColour,
 		submitBackground,
 		submitBackgroundHover,
@@ -617,6 +622,14 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+
+				<EmailSettingsPanel
+					notifyEmail={ notifyEmail }
+					confirmationEmail={ confirmationEmail }
+					confirmationSubject={ confirmationSubject }
+					confirmationMessage={ confirmationMessage }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Submit Button', 'sgs-blocks' ) }
