@@ -49,9 +49,20 @@ function initPanel( panel ) {
 
 	/**
 	 * Render the current wishlist (empty state, or the fetched rows).
+	 *
+	 * `ensureWishlistReady()` caches its FIRST resolution — a later call
+	 * returns that same stale id list even after the shared store's `ids`
+	 * have since changed (hearting a product elsewhere, or Remove in this
+	 * panel), which is why the panel used to need a reload to catch up.
+	 * `onWishlistChange` already hands this function the fresh id array on
+	 * every change (same-tab CustomEvent, or a re-resolved cross-tab fetch);
+	 * accept it here and only fall back to `ensureWishlistReady()` for the
+	 * very first, un-subscribed call.
+	 *
+	 * @param {number[]} [freshIds] The current id list, when already known.
 	 */
-	async function render() {
-		const ids = await ensureWishlistReady();
+	async function render( freshIds ) {
+		const ids = Array.isArray( freshIds ) ? freshIds : await ensureWishlistReady();
 
 		if ( 0 === ids.length ) {
 			panel.hidden = ! showWhenEmpty;

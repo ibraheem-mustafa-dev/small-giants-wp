@@ -88,6 +88,17 @@ $link_colour_decl       = sgs_text_colour_decl( $link_colour_effective );
 if ( '' !== $link_colour_decl ) {
 	$scoped_css[] = "{$link_sel}{{$link_colour_decl};}";
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $link_sel, $link_colour_effective );
+} else {
+	// No client colour/gradient set — default the language link to the
+	// palette's text token, not the site's global link colour (Bean's
+	// ruling, lane A commit 6962dd0e6): the brand accent stays available
+	// through the block's own linkColour control, but is never the
+	// unreviewed default. Plain scoped selector (matches every other rule
+	// in this array) — a `:where()` wrap would drop to zero specificity and
+	// lose to WordPress's own global link rule
+	// (`a:where(:not(.wp-element-button))`, which still carries the bare
+	// `a` element's specificity).
+	$scoped_css[] = "{$link_sel}{color:var(--wp--preset--color--text);}";
 }
 
 $link_hover           = isset( $attributes['linkColourHover'] ) ? (string) $attributes['linkColourHover'] : '';

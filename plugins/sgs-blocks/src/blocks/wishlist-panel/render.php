@@ -47,7 +47,23 @@ $root_sel = '.' . $uid . '.wp-block-sgs-wishlist-panel';
 $scoped_css = array();
 
 $scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__heading', $attributes, array( 'base' => 'headingColour' ) );
-$scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__row-name', $attributes, array( 'base' => 'itemNameColour' ) );
+
+$item_name_colour = (string) ( $attributes['itemNameColour'] ?? '' );
+if ( '' !== $item_name_colour ) {
+	$scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__row-name', $attributes, array( 'base' => 'itemNameColour' ) );
+} else {
+	// No client colour set — default the product-name LINK to the palette's
+	// text token, not the site's global link colour (Bean's ruling, lane A
+	// commit 6962dd0e6): the brand accent stays available through the
+	// block's own itemNameColour control, but is never the unreviewed
+	// default (the site's anchor colour can be a low-contrast brand accent
+	// on a light surface). Plain scoped selector, same specificity shape as
+	// every other rule in this array — a `:where()` wrap here would drop to
+	// zero specificity and lose to WordPress's own global link rule
+	// (`a:where(:not(.wp-element-button))`, which still carries the bare
+	// `a` element's specificity).
+	$scoped_css[] = $root_sel . ' .sgs-wishlist-panel__row-name{color:var(--wp--preset--color--text);}';
+}
 $scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__row-price', $attributes, array( 'base' => 'priceColour' ) );
 $scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__row-stock', $attributes, array( 'base' => 'stockColour' ) );
 $scoped_css[] = sgs_fill_states_css( $root_sel . ' .sgs-wishlist-panel__move-to-basket', $attributes, array( 'base' => 'buttonBackgroundColour' ) );

@@ -31,7 +31,10 @@ function formatLocalTime( zone, cycle, showSeconds, showPeriod ) {
 	const options = {
 		timeZone: zone || undefined,
 		hourCycle: cycle,
-		hour: 'numeric',
+		// h23 shows zero-padded two-digit hours ("19:48"), matching the
+		// server's own H:i format (local-time-helpers.php::sgs_local_time_format_string).
+		// h12 keeps numeric hours ("7:48") — no leading zero on a 12-hour clock.
+		hour: 'h23' === cycle ? '2-digit' : 'numeric',
 		minute: '2-digit',
 	};
 	if ( showSeconds ) {

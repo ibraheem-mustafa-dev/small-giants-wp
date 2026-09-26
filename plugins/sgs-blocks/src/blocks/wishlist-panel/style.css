@@ -87,6 +87,27 @@
 	border-radius: var(--wp--preset--spacing--10, 4px);
 }
 
+/* Variable products route to their product page to choose options (a Store
+   API add-to-cart call on a variable product is rejected) — same size/shape
+   as Move to basket so the row's action slot never visibly jumps depending
+   on product type. */
+.sgs-wishlist-panel__choose-options {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0 1rem;
+	background-color: var(--wp--preset--color--accent, #1e6091);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	border-radius: var(--wp--preset--spacing--10, 4px);
+	text-decoration: none;
+}
+
+.sgs-wishlist-panel__choose-options:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent, #1e6091);
+	outline-offset: 2px;
+}
+
 .sgs-wishlist-panel__remove,
 .sgs-wishlist-panel__notify-toggle {
 	background: transparent;
