@@ -142,7 +142,8 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
   reduced motion, JavaScript off and a blocked observer show everything. Commands:
   `node plugins/sgs-blocks/scripts/nav-qa/u16-entrance-probe.mjs <url>/qa-entrance/` (PASS twice; 15 failures on the
   pre-U-16 build) and `node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs` (18 PASS at Desktop and Tablet;
-  7 failures on the pre-U-16 build). Divergence: the preloader-gated start (lamalama, studionamma).
+  7 failures on the pre-U-16 build). Divergence: the preloader-gated start (lamalama, studionamma). Bean waived the
+  eye check (2026-09-26): the goal is a visual copy of the references, not the motion's feel.
 - Lane C evidence (live on sandybrown 2026-09-26, headed Chrome; fixture pages 4070 `/qa-furniture/`, 4072 `/qa-notice/`,
   4074 `/qa-wishlist/`, 4087 `/qa-lottie/`): six clocks in their zones with correct offsets and no `aria-live`; language links
   with `lang`/`hreflang`; the store disclosure closes on Escape and returns focus; the up button 54x54 at 1440 and 45x45 at
