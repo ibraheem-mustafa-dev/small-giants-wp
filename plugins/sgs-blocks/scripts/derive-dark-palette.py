@@ -62,6 +62,7 @@ relative luminance / contrast-ratio formulas match that file's maths exactly.
 from __future__ import annotations
 
 import math
+import re
 import sys
 from pathlib import Path
 from typing import Optional
@@ -82,6 +83,15 @@ BASE_SURFACE_L = 0.18
 OTHER_SURFACE_L_MIN = 0.21
 OTHER_SURFACE_L_MAX = 0.27
 MAX_SURFACE_CHROMA = 0.03
+
+# A surface already this dark or darker in the LIGHT theme (e.g. a footer band
+# deliberately authored dark, like Mama's Munches' `footer-bg` #3A2E26, OKLCh
+# L=0.312) is left byte-identical rather than pushed further into the dark band —
+# measured fact, not the design note's original 0.27 guess: the real gap between
+# such surfaces and the next-lightest "normal" surface in the wild is enormous
+# (Mama's Munches: 0.312 vs 0.808), so 0.4 gives headroom on both sides without
+# ever mistaking a genuinely light surface for an already-dark one.
+ALREADY_DARK_SURFACE_L_MAX = 0.4
 
 LOCKED_NAMES = frozenset({"whatsapp"})
 
@@ -284,44 +294,68 @@ def _linspace(start: float, stop: float, n: int) -> list[float]:
     return [start + step * i for i in range(n)]
 
 
+def _surface_is_already_dark(hexc: str) -> bool:
+    L, _, _ = hex_to_oklch(hexc)
+    return L <= ALREADY_DARK_SURFACE_L_MAX
+
+
 def derive_surfaces(palette: dict, roles_override: dict) -> dict:
+    """Map every LIGHT surface onto the dark band (D.2). A surface that is
+    ALREADY dark in the light theme (`_surface_is_already_dark`) is kept
+    byte-identical instead — it is not something dark mode needs to invent, it is
+    already a deliberately dark section (a footer band, say), and pushing it even
+    darker only breaks whatever the client already paired against it."""
     surface_slugs = [s for s in palette if classify_role(s, roles_override) == "surface"]
     base_slug = "surface" if "surface" in surface_slugs else None
+
     others = [s for s in surface_slugs if s != base_slug]
-    others_sorted = sorted(others, key=lambda s: hex_to_oklch(palette[s])[0])
-    levels = _linspace(OTHER_SURFACE_L_MIN, OTHER_SURFACE_L_MAX, len(others_sorted))
+    already_dark = [s for s in others if _surface_is_already_dark(palette[s])]
+    to_band = [s for s in others if s not in already_dark]
+    to_band_sorted = sorted(to_band, key=lambda s: hex_to_oklch(palette[s])[0])
+    levels = _linspace(OTHER_SURFACE_L_MIN, OTHER_SURFACE_L_MAX, len(to_band_sorted))
 
     out: dict[str, str] = {}
-    if base_slug:
-        _, C0, H0 = hex_to_oklch(palette[base_slug])
-        out[base_slug] = oklch_to_hex((BASE_SURFACE_L, min(C0, MAX_SURFACE_CHROMA), H0))
-    for slug, L in zip(others_sorted, levels):
+    for slug in already_dark:
+        out[slug] = palette[slug]
+    for slug, L in zip(to_band_sorted, levels):
         _, C, H = hex_to_oklch(palette[slug])
         out[slug] = oklch_to_hex((L, min(C, MAX_SURFACE_CHROMA), H))
+    if base_slug:
+        if _surface_is_already_dark(palette[base_slug]):
+            out[base_slug] = palette[base_slug]
+        else:
+            _, C0, H0 = hex_to_oklch(palette[base_slug])
+            out[base_slug] = oklch_to_hex((BASE_SURFACE_L, min(C0, MAX_SURFACE_CHROMA), H0))
     return out
 
 
 # ---------------------------------------------------------------------------
-# Minimum-change search for non-surface colours (D.3).
+# Minimum-change search for non-surface colours (D.3). A colour is now checked
+# against every GROUND it is actually paired with (role defaults plus real usage
+# pairs, §1 of the fix) — `pairs` is a list of (background-hex, target) tuples,
+# each of which may carry its OWN target (4.5:1 for a text usage, 3:1 for a
+# border/brand one), not one shared target for one shared background list.
 # ---------------------------------------------------------------------------
 
-def _worst_contrast(hex_colour: str, backgrounds: list[str]) -> float:
-    return min(contrast_ratio(hex_colour, bg) for bg in backgrounds)
-
-
-def _passes(hex_colour: str, backgrounds: list[str], target: float) -> bool:
-    return _worst_contrast(hex_colour, backgrounds) >= target
+def _passes_all(hex_colour: str, pairs: list[tuple[str, float]]) -> bool:
+    return all(contrast_ratio(hex_colour, bg) >= target - 1e-9 for bg, target in pairs)
 
 
 def solve_lightness(
-    original_hex: str, backgrounds: list[str], target: float, max_steps: int = 100
+    original_hex: str, pairs: list[tuple[str, float]], max_steps: int = 100
 ) -> str:
     """Shortest OKLCh-lightness move (either direction, in 0.01 steps) that
-    reaches `target` against every background, keeping hue/chroma from the
-    original. Returns the original hex unchanged when it already passes."""
-    if not backgrounds:
+    reaches EVERY paired target simultaneously, keeping hue/chroma from the
+    original. Returns the original hex unchanged when it already passes all of
+    them, and unchanged again when NO lightness move passes all of them at once —
+    a colour used as text on both a light fill and a dark surface can genuinely
+    have no single lightness that satisfies both. That is an irresolvable
+    conflict (D.3): fail closed by leaving the colour as-is rather than guessing
+    a least-bad value, so the verification pass below reports every pair it still
+    fails and the deploy stops instead of shipping an unreadable page."""
+    if not pairs:
         return original_hex
-    if _passes(original_hex, backgrounds, target):
+    if _passes_all(original_hex, pairs):
         return original_hex
 
     L0, C0, H0 = hex_to_oklch(original_hex)
@@ -333,7 +367,7 @@ def solve_lightness(
         for _ in range(max_steps):
             L = min(1.0, max(0.0, L + direction * step))
             hexc = oklch_to_hex((L, C0, H0))
-            if _passes(hexc, backgrounds, target):
+            if _passes_all(hexc, pairs):
                 candidates.append((abs(L - L0), hexc))
                 break
             if L in (0.0, 1.0):
@@ -343,13 +377,7 @@ def solve_lightness(
         candidates.sort(key=lambda c: c[0])
         return candidates[0][1]
 
-    # Lightness alone cannot reach the target (an extreme chroma/hue combination) —
-    # fall back to whichever pole (white/black) contrasts better. The caller's
-    # verification pass still checks the result and reports it if it still fails,
-    # rather than silently pretending the search succeeded.
-    white = oklch_to_hex((1.0, 0.0, H0))
-    black = oklch_to_hex((0.0, 0.0, H0))
-    return white if _worst_contrast(white, backgrounds) >= _worst_contrast(black, backgrounds) else black
+    return original_hex
 
 
 # ---------------------------------------------------------------------------
@@ -365,17 +393,175 @@ def _palette_dict(snapshot: dict) -> dict:
     }
 
 
-def _backgrounds_for(slug: str, role: str, palette: dict, dark: dict, surface_bg: str, surface_alt_bg: Optional[str]) -> tuple[list[str], float]:
+def _surface_bg_slugs(palette: dict, roles_override: dict) -> list[str]:
+    """Every slug currently classified `surface` — the full set of grounds a
+    text/border/brand colour is checked against by default (§1: checking only
+    the base `surface` + `surface-alt` missed real surfaces like `footer-bg`,
+    which is exactly the live defect). Falls back to the untouched palette
+    `surface` entry when a `roles` override leaves no surface at all — the same
+    "there must be something to check against" guarantee the original
+    surface_bg/surface_alt_bg fallback gave (this is what the negative-control
+    test exercises)."""
+    slugs = [s for s in palette if classify_role(s, roles_override) == "surface"]
+    if not slugs and "surface" in palette:
+        slugs = ["surface"]
+    return slugs
+
+
+def _default_pairs_for_slug(
+    slug: str, role: str, palette: dict, surface_slugs: list[str]
+) -> list[tuple[str, float]]:
+    """The role-based default grounds (D.2/D.3) a colour is checked against,
+    as (background-SLUG, target) pairs — every surface, plus (for a text-on-fill
+    slug like `text-inverse`) the specific fill it is guessed to sit on. This is
+    additive with real usage pairs (`collect_usage_pairs`), never exclusive: the
+    live defect was exactly `text-inverse` being checked ONLY against its guessed
+    fill and never against the surfaces it is also used on."""
     if role == "text":
+        pairs = [(s, TEXT_TARGET) for s in surface_slugs]
         pair_with = _text_pairs_with_fill(slug, palette)
-        if pair_with:
-            fill_dark = dark.get(pair_with) or palette.get(pair_with)
-            return ([fill_dark] if fill_dark else [surface_bg]), TEXT_TARGET
-        bgs = [surface_bg] + ([surface_alt_bg] if surface_alt_bg else [])
-        return bgs, TEXT_TARGET
+        if pair_with and pair_with in palette:
+            pairs.append((pair_with, TEXT_TARGET))
+        return pairs
     # border / brand / locked (locked is checked with the same background rule
     # its name-inferred role would have used, even though its VALUE is never moved).
-    return [surface_bg], UI_TARGET
+    return [(s, UI_TARGET) for s in surface_slugs]
+
+
+# ---------------------------------------------------------------------------
+# Real usage pairs (§1 of the fix) — every (text-slug, background-slug) and
+# (border-slug, background-slug) the client's OWN snapshot actually declares,
+# read from the documented theme.json shapes: `styles.color`, `styles.elements.*`
+# (including `:hover`/`:focus`), `styles.blocks.*` and their own `elements`, plus
+# any raw block markup a `templateParts`/`customTemplates` entry happens to carry.
+# ---------------------------------------------------------------------------
+
+_PRESET_VAR_RE = re.compile(r"^var\(--wp--preset--color--([a-zA-Z0-9_-]+)\)$")
+_CONTENT_TEXT_COLOR_RE = re.compile(r'"textColor":"([a-zA-Z0-9_-]+)"')
+_CONTENT_BG_COLOR_RE = re.compile(r'"backgroundColor":"([a-zA-Z0-9_-]+)"')
+_CONTENT_COMMENT_RE = re.compile(r"<!--\s*wp:[a-zA-Z0-9/_-]+\s*(\{.*?\})?\s*/?-->", re.S)
+_CONTENT_CLASS_RE = re.compile(r'class="([^"]*)"')
+_CONTENT_HAS_TEXT_RE = re.compile(r"has-([a-zA-Z0-9_-]+)-color\b(?!-background)")
+_CONTENT_HAS_BG_RE = re.compile(r"has-([a-zA-Z0-9_-]+)-background-color\b")
+
+
+def _preset_slug(value: object) -> Optional[str]:
+    """Resolve a theme.json colour value (`var:preset|color|<slug>` or
+    `var(--wp--preset--color--<slug>)`) to its palette slug, else None — a
+    literal hex/rgb value carries no slug and is not part of the checked usage
+    graph (nothing to look up in `settings.custom.dark`)."""
+    if not isinstance(value, str):
+        return None
+    v = value.strip()
+    if v.startswith("var:preset|color|"):
+        tail = v.split("|")[-1]
+        return tail or None
+    m = _PRESET_VAR_RE.match(v)
+    return m.group(1) if m else None
+
+
+def _pairs_from_markup(html: str, palette: dict) -> list[tuple[str, str, str]]:
+    """Real usage pairs found in raw block markup, when a `templateParts` /
+    `customTemplates` entry happens to carry one (a `content` string): block
+    comment `textColor`/`backgroundColor` JSON attributes, and `has-<slug>-color`
+    / `has-<slug>-background-color` class pairs on the same element."""
+    pairs: list[tuple[str, str, str]] = []
+    for m in _CONTENT_COMMENT_RE.finditer(html):
+        attrs = m.group(1) or ""
+        t = _CONTENT_TEXT_COLOR_RE.search(attrs)
+        b = _CONTENT_BG_COLOR_RE.search(attrs)
+        if t and b and t.group(1) != b.group(1) and t.group(1) in palette and b.group(1) in palette:
+            pairs.append((t.group(1), b.group(1), "text"))
+    for m in _CONTENT_CLASS_RE.finditer(html):
+        cls = m.group(1)
+        t = _CONTENT_HAS_TEXT_RE.search(cls)
+        b = _CONTENT_HAS_BG_RE.search(cls)
+        if t and b and t.group(1) != b.group(1) and t.group(1) in palette and b.group(1) in palette:
+            pairs.append((t.group(1), b.group(1), "text"))
+    return pairs
+
+
+def _walk_style_scope(
+    obj: object, ancestor_bg: Optional[str], palette: dict, out: list
+) -> None:
+    """Recurse into one theme.json style scope (an element, a block, a block's
+    own element, or a pseudo-state of any of those), collecting every declared
+    (text-slug, background-slug, "text") and (border-slug, background-slug,
+    "border") pair. A scope with no `color.background` of its own inherits the
+    nearest ancestor's — the same cascade WordPress itself applies. A border is
+    checked against the surrounding (ancestor) background, never a background
+    this SAME scope just set for itself — that would pair a fill against itself
+    and always "fail" at 1:1, which is not a real usage. A fg/bg pair identical
+    to itself (a text colour resolved to the same slug as its own background,
+    which only happens when the real background lives outside what this snapshot
+    captures — e.g. a header/footer's own colour, not global styles) is skipped
+    for the same reason."""
+    if not isinstance(obj, dict):
+        return
+    color = obj.get("color")
+    own_bg = ancestor_bg
+    text_slug = None
+    if isinstance(color, dict):
+        own_bg = _preset_slug(color.get("background")) or ancestor_bg
+        text_slug = _preset_slug(color.get("text"))
+    if text_slug and own_bg and text_slug != own_bg and text_slug in palette and own_bg in palette:
+        out.append((text_slug, own_bg, "text"))
+    border = obj.get("border")
+    if isinstance(border, dict):
+        border_slug = _preset_slug(border.get("color"))
+        if (
+            border_slug
+            and ancestor_bg
+            and border_slug != ancestor_bg
+            and border_slug in palette
+            and ancestor_bg in palette
+        ):
+            out.append((border_slug, ancestor_bg, "border"))
+    for key, sub in obj.items():
+        if key.startswith(":") and isinstance(sub, dict):
+            _walk_style_scope(sub, own_bg, palette, out)
+    elements = obj.get("elements")
+    if isinstance(elements, dict):
+        for el_obj in elements.values():
+            _walk_style_scope(el_obj, own_bg, palette, out)
+
+
+def collect_usage_pairs(snapshot: dict, palette: dict) -> list[tuple[str, str, str]]:
+    """Every real (foreground-slug, background-slug, kind) pair the client's own
+    snapshot actually declares. This is what catches a slug used in more than the
+    one role-guessed context its name suggests — D.2's `text-inverse` rule was
+    only ever a guess at ONE such context (text on the brand fill); Mama's
+    Munches also uses it as footer text, which this collects as a real pair
+    wherever the snapshot's own declared styles show it."""
+    styles = snapshot.get("styles") or {}
+    root_color = styles.get("color") or {}
+    root_bg = _preset_slug(root_color.get("background"))
+    root_text = _preset_slug(root_color.get("text"))
+
+    pairs: list[tuple[str, str, str]] = []
+    if root_text and root_bg and root_text != root_bg and root_text in palette and root_bg in palette:
+        pairs.append((root_text, root_bg, "text"))
+
+    elements = styles.get("elements")
+    if isinstance(elements, dict):
+        for el_obj in elements.values():
+            _walk_style_scope(el_obj, root_bg, palette, pairs)
+
+    blocks = styles.get("blocks")
+    if isinstance(blocks, dict):
+        for block_style in blocks.values():
+            _walk_style_scope(block_style, root_bg, palette, pairs)
+
+    for coll_key in ("templateParts", "customTemplates"):
+        entries = snapshot.get(coll_key)
+        if isinstance(entries, list):
+            for entry in entries:
+                if isinstance(entry, dict):
+                    content = entry.get("content")
+                    if isinstance(content, str) and content:
+                        pairs.extend(_pairs_from_markup(content, palette))
+
+    return pairs
 
 
 def derive(snapshot: dict) -> dict:
@@ -400,14 +586,25 @@ def derive(snapshot: dict) -> dict:
     dark: dict[str, str] = {}
     dark.update(derive_surfaces(palette, roles_override))
 
-    # Fallback background for checks when 'surface' itself is missing, or was
-    # reclassified away from the surface role by an override — this is also
-    # exactly the shape the negative-control test exercises (D.3's "a roles
-    # override that makes a light slug a surface" — here, the inverse: an
-    # override that takes the base surface OUT of the surface role leaves the
-    # checks running against its un-darkened light value, which fails loudly).
-    surface_bg = dark.get("surface") or palette.get("surface") or next(iter(dark.values()), "#000000")
-    surface_alt_bg = dark.get("surface-alt")
+    surface_slugs = _surface_bg_slugs(palette, roles_override)
+
+    # Real usage pairs (§1): a colour used as TEXT or a BORDER anywhere in the
+    # client's own declared styles, split into slugs this module can still move
+    # (fed into the minimum-change search alongside the role defaults) and slugs
+    # that are themselves a SURFACE (their value is fixed by `derive_surfaces`'s
+    # band placement, never by this search — they are only ever verified).
+    usage_pairs = collect_usage_pairs(snapshot, palette)
+    usage_solvable: dict[str, list[tuple[str, float]]] = {}
+    usage_surface_fg: list[tuple[str, str, float]] = []
+    for fg, bg, kind in usage_pairs:
+        target = TEXT_TARGET if kind == "text" else UI_TARGET
+        if classify_role(fg, roles_override) == "surface":
+            usage_surface_fg.append((fg, bg, target))
+        else:
+            usage_solvable.setdefault(fg, []).append((bg, target))
+
+    def bg_hex(slug: str) -> str:
+        return dark.get(slug) or palette.get(slug) or "#000000"
 
     # Non-surface colours, brand/border/locked FIRST (so a text-on-fill pairing
     # like text-inverse/primary-text/accent-text has its fill's DARK value ready
@@ -417,6 +614,20 @@ def derive(snapshot: dict) -> dict:
         (s for s in palette if classify_role(s, roles_override) != "surface"),
         key=lambda s: order.get(classify_role(s, roles_override), 0),
     )
+
+    def pairs_for(slug: str, role: str) -> list[tuple[str, float]]:
+        """Every (background-slug, target) this slug is checked against: the
+        role defaults PLUS any real usage pairs found for it, de-duplicated."""
+        combined = _default_pairs_for_slug(slug, role, palette, surface_slugs) + usage_solvable.get(slug, [])
+        seen: set[tuple[str, float]] = set()
+        deduped: list[tuple[str, float]] = []
+        for bg, target in combined:
+            key = (bg, target)
+            if key in seen:
+                continue
+            seen.add(key)
+            deduped.append((bg, target))
+        return deduped
 
     for slug in ordered_slugs:
         role = classify_role(slug, roles_override)
@@ -429,27 +640,33 @@ def derive(snapshot: dict) -> dict:
             dark[slug] = original
             continue
 
-        backgrounds, target = _backgrounds_for(slug, role, palette, dark, surface_bg, surface_alt_bg)
-        dark[slug] = solve_lightness(original, backgrounds, target)
+        resolved = [(bg_hex(bg), target) for bg, target in pairs_for(slug, role)]
+        dark[slug] = solve_lightness(original, resolved)
 
     # Verification — every non-surface slug, including locked/hand-set, must meet
-    # its target against its FINAL background(s).
+    # EVERY target it is paired with (role default or real usage) against its
+    # FINAL background. A surface used as a foreground elsewhere (e.g. `surface`
+    # as a button's hover text) is verified the same way, but was never eligible
+    # for the search above — its value comes from `derive_surfaces`'s band
+    # placement, not this module's minimum-change search.
     failures: list[dict] = []
     for slug in ordered_slugs:
         role = classify_role(slug, roles_override)
-        backgrounds, target = _backgrounds_for(slug, role, palette, dark, surface_bg, surface_alt_bg)
         final = dark[slug]
-        for bg in backgrounds:
-            ratio = contrast_ratio(final, bg)
+        for bg, target in pairs_for(slug, role):
+            ratio = contrast_ratio(final, bg_hex(bg))
             if ratio < target - 1e-9:
                 failures.append(
-                    {
-                        "slug": slug,
-                        "against": bg,
-                        "ratio": round(ratio, 2),
-                        "target": target,
-                    }
+                    {"slug": slug, "against": bg, "ratio": round(ratio, 2), "target": target}
                 )
+
+    for fg, bg, target in usage_surface_fg:
+        final_fg = dark.get(fg) or palette.get(fg)
+        if not final_fg:
+            continue
+        ratio = contrast_ratio(final_fg, bg_hex(bg))
+        if ratio < target - 1e-9:
+            failures.append({"slug": fg, "against": bg, "ratio": round(ratio, 2), "target": target})
 
     return {"enabled": True, "dark": dark, "failures": failures}
 
