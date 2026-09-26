@@ -1210,8 +1210,9 @@ byte-identical in size, because padding sits OUTSIDE children and they carry the
 A row may nominate ONE child to hide while it is shrunk, referenced by the child's own `anchor`
 attribute (`rowShrinkHideTarget`) — a **stable id that survives copy/paste**, never the editor's
 `clientId`.
-**The guardrail is declarative, not a hardcoded list (R-31-1).** `supports.sgs.headerEssential: true`
-is declared on `sgs/responsive-logo`, `sgs/nav-bar-menu` and `sgs/cart`. The editor picker reads it
+**The guardrail is declarative, not a hardcoded list (R-31-1).** Each critical block declares
+`supports.sgs.headerEssential: true` in its own block.json (for example `sgs/responsive-logo`, `sgs/cart`,
+`sgs/product-search`). The editor picker reads it
 via `wp.blocks.getBlockType()`; `sgs_resolve_row_shrink_hide_target()`
 (`includes/helpers-row-behaviour.php`) re-checks it server-side against `WP_Block_Type_Registry`.
 Protecting a new critical block later is one block.json flag.

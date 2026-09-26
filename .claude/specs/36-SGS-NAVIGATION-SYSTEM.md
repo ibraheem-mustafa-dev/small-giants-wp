@@ -1022,7 +1022,9 @@ lockup / favicon / variant half needs a frozen attribute table first (§4 index)
   sticky-header compact-mark swap. **BUILT:** `colourTreatment` (`''` | `white`) forces the logo IMAGE to
   pure white via a CSS filter, for a full-colour logo on a dark surface such as `sgs/site-footer`.
 - **SHOULD (Phase 3):** transparent-header light/dark variant; shrink-on-scroll (row+logo dimension animate);
-  dark-mode variant; logo+site-title lockup toggle; **sync-as-favicon** (WP core `shouldSyncIcon`).
+  logo+site-title lockup toggle; **sync-as-favicon** (WP core `shouldSyncIcon`). **BUILT (Wave 3C U-17):** the
+  dark-mode variant (`darkLogoId`, shown under the site's dark theme) and a Lottie substrate (`animationSubstrate`
+  `svg-draw` | `lottie`, with `lottieId`, `lottieTrigger`, `lottieLoop`, `lottieSpeed`; the logo picture is the poster).
 - **NICE:** reduced-motion SVG entrance/hover; auto-2x raster.
 - **Differentiator:** ONE logo *object* attribute (desktop/mobile/sticky/transparent/dark with a fallback
   chain) in one inspector panel with live preview — beats the competitors' split-across-panels UX. A11y/SEO:

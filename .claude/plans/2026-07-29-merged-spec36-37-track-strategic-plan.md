@@ -279,8 +279,8 @@ drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
 | W3C-1 | The nav chain, one unit at a time: U-1, U-9, U-11, U-5, U-2, U-3, U-6, U-7, U-10, U-4, U-8, U-14, U-13, U-16 | every signed family built, nothing parked; the drawer's own × optional (DEC-15); the pill panel width rule kept; force-solid and the drawer clamp are open questions for Bean and land in U-1 and U-3 only on his answer | about 4 sessions | YES |
-| W3C-2 | Furniture blocks (U-12), in parallel: local-time clock, language switch, back-to-top, account/log-in link, store selector, wishlist, theme toggle, sound mute | eight new blocks in that priority order, one agent per block in its own directory | about 1 session | no |
-| W3C-3 | Self-changing header message (U-15), in parallel | `notice-banner` rotate, random and live-clock modes | about 1h | no |
+| W3C-2 | Furniture blocks (U-12), in parallel — DONE | local-time, language-switch, store-selector, wishlist (link, panel, Save for later), theme-toggle with an automatic dark palette; back-to-top and account as `sgs/button` link sources, sound as an `sgs/audio` style (Wave 3C plan, lane C paragraph) | 1 session | no |
+| W3C-3 | Self-changing header message (U-15), in parallel — DONE | `notice-banner` rotate, random and live-clock modes via `sgs/notice-message` | 1h | no |
 | W3C-4 | Gate 3C composed-header check | one composed real header matches its requirements-table row, with Bean's eye (R-31-13) | ½ session | YES |
 
 **TEST (critical path):** Happy = every reference's row is expressible with block attributes and one
