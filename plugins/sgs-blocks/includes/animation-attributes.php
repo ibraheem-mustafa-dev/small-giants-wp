@@ -267,7 +267,7 @@ add_action( 'wp_head', __NAMESPACE__ . '\print_entrance_pending_flag', 1 );
 /**
  * Mark entrances as pending before the first paint.
  *
- * animation-observer.js loads in the footer, so an element in view at load
+ * The observer (animation-observer.js) loads in the footer, so an element in view at load
  * (the header) can paint visible before its entrance holds the start pose.
  * This head script adds `sgs-entrance-pending` to <html>, and the head rule
  * beside it holds `[data-sgs-animation]` at opacity 0 while it is present
