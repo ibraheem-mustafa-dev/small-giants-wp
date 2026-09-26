@@ -116,7 +116,7 @@ require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
 require_once SGS_BLOCKS_PATH . 'includes/helpers-scoped-instance-vars.php';
 
 // Universal hover effects — server-side CSS variable injection.
-require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
+require_once SGS_BLOCKS_PATH . 'includes/hover-effects/hover-effects.php';
 
 // Dark-background shadow presets: the stylesheet a dark container's children use.
 require_once SGS_BLOCKS_PATH . 'includes/shadow-dark-assets.php';
@@ -168,6 +168,10 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-webhook.php';
 // guards) plus the shared WooCommerce/native email template (Spec 04, FR-30-15).
 require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-mailer.php';
 require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-mail-template.php';
+// Keeps WooCommerce transactional email links/headings on the text colour,
+// never the brand accent (unified-email plan row 7, Spec 04).
+require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-woocommerce-email-contrast.php';
+Sgs_Woocommerce_Email_Contrast::register();
 // Shop-alert WooCommerce emails (saved-items alert, back in stock): the
 // subclass files require WC_Email, so they load inside this registrar's
 // woocommerce_email_classes callback, never here at plugin load (Spec 30
