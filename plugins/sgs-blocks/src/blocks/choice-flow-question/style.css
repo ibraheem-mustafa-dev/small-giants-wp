@@ -365,6 +365,7 @@
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media > img:not( .sgs-choice-flow-question__option-photo ) {
 	flex: none;
 	width: var( --sgs-choice-flow-media-size, 100% );
+	max-width: none;
 	height: var( --sgs-choice-flow-media-height, 100% );
 }
 
@@ -477,9 +478,19 @@
 	font-size: 17px;
 }
 
+/* With no picture band there is no row 1: the title line moves up to it and
+   the description to row 2, so an empty first row adds no row gap. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) :is( .sgs-choice-flow-question__option-label, .sgs-choice-flow-question__option-price ) {
+	grid-row: 1;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-description {
+	grid-row: 2;
+}
+
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-badge {
 	grid-column: 2;
-	grid-row: 2;
+	grid-row: 1;
 	justify-self: end;
 	margin-top: 0;
 	padding: 4px 8px;

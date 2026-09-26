@@ -1523,7 +1523,11 @@ body.woocommerce-cart .with-empty-cart-icon,
  * There is no dead band. The 24px gap only applies above a 767px viewport,
  * where the row is already >= 705px and this query cannot match anyway — so
  * the 16px regime is the only one in which the threshold is ever consulted. */
-.sgs-shop-layout .wc-block-product-template {
+/* The container is the collection wrapper around the grid, not the grid
+ * itself: a container query cannot style its own container, so with the
+ * name on the grid the 1280px column rule (10e) never applied. The wrapper
+ * is as wide as the grid (the toolbar and pagination sit inside it). */
+.sgs-shop-layout .wp-block-woocommerce-product-collection {
 	container: sgs-shop-grid / inline-size;
 }
 
@@ -1735,10 +1739,9 @@ body.woocommerce-cart .with-empty-cart-icon,
 	}
 }
 
-/* "Grid" setting (sgs_shop_narrow_layout): upright cards, two a row on a narrow grid. A container
-   query cannot style its own container, and the template IS the sgs-shop-grid container, so this
-   sits outside it: each column's minimum is the smaller of the card minimum and half the row, which
-   is two columns once the row is narrower than two card minimums and unchanged on wider rows. */
+/* "Grid" setting (sgs_shop_narrow_layout): upright cards, two a row on a narrow grid, at every
+   width: each column's minimum is the smaller of the card minimum and half the row, which is two
+   columns once the row is narrower than two card minimums and unchanged on wider rows. */
 .sgs-shop-narrow-grid .sgs-shop-layout .wc-block-product-template {
 	grid-template-columns: repeat(auto-fill, minmax(min(var(--sgs-shop-card-min), calc(50% - var(--sgs-shop-col-gap) / 2)), 1fr));
 }
