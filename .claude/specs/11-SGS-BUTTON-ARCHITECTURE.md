@@ -2,7 +2,9 @@
 
 > **Styling model: read [Spec 32](32-COMPONENT-STYLING-TOKEN-CONTRACT.md), not this spec.** D283's inline-`style=` preset model (2026-07-06) is retired — it broke `:hover` (inline beats `:hover`) and made the block un-reskinnable; Spec 32's semantic-BEM-class + custom-property model is current. Spec 11 (this doc) stays the attribute-surface/feature reference only.
 
-**Status:** ✅ SHIPPED 2026-05-04 to sandybrown. Spec'd 2026-05-03. All sections implemented end-to-end. Built blocks: `sgs/button` (87 attrs) + `sgs/multi-button` (container). Built admin: Settings → SGS Button Presets. theme.json mirror landed. Composite block refactors (sgs/hero, sgs/cta-section, sgs/product-card) replaced hand-coded CTAs with InnerBlocks composition. **Critical correctness fix discovered during deployment:** dynamic blocks with InnerBlocks slots MUST `save: () => <InnerBlocks.Content />` — see B4 in `common-wp-styling-errors.md`. Original spec retained below for reference. Live URL: https://sandybrown-nightingale-600381.hostingersite.com/
+**Status:** ✅ SHIPPED 2026-05-04 to sandybrown. Spec'd 2026-05-03. All sections implemented end-to-end. Built blocks: `sgs/button` + `sgs/multi-button` (container). Built admin: Settings → SGS Button Presets. theme.json mirror landed. Composite block refactors (sgs/hero, sgs/cta-section, sgs/product-card) replaced hand-coded CTAs with InnerBlocks composition. **Critical correctness fix discovered during deployment:** dynamic blocks with InnerBlocks slots MUST `save: () => <InnerBlocks.Content />` — see B4 in `common-wp-styling-errors.md`. Original spec retained below for reference. Live URL: https://sandybrown-nightingale-600381.hostingersite.com/
+
+> **2026-09-26 update — `note`.** `sgs/button` `note` (string, default empty): a short muted line at the button's far end, e.g. a price hint "from +£59.00"; plain text, never uppercased, coloured as 70% of the button's text colour, and the label and note spread to the two ends. Rendered by `includes/helpers-button-note.php::sgs_button_note_html`, set in the Settings panel beside Aria label.
 
 > **2026-05-30 update — XS-9.2 rich-text label hardening (commit `40a6f8ab`).** `sgs/button` `label` attribute now renders via `wp_kses($label, [...])` instead of `esc_html($label)`. Allowlist: `<br>`, `<strong>`, `<b>`, `<em>`, `<i>`, `<span class="...">`, `<code>` — **deliberately EXCLUDES `<a>`** because nested anchors are invalid HTML and a phishing vector. `block.json` version bumped 1.0.0 → 1.1.0. Converter side: `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` `_atomic_attrs_for()` sgs/button branch swapped `node.get_text(strip=True)` for `_rich_text_content(node)` so the harvest path preserves inline markup. Additional hardening: `_safe_href()` applied at the converter to block `javascript:`, `data:`, and `vbscript:` URL schemes BEFORE `render.php` runs — defence-in-depth alongside `render.php`'s `esc_url()`. 11 adversarial smoke tests (script injection, nested anchor, scheme abuse) all PASS.
 
@@ -25,7 +27,7 @@
 
 Provide a single canonical button block (`sgs/button`) and a flexible container (`sgs/multi-button`) that together replace every CTA implementation in the SGS framework. The pair gives:
 
-- **Full attribute surface** matching or exceeding Spectra/Kadence (87 attributes — see Section 8).
+- **Full attribute surface** matching or exceeding Spectra/Kadence (see Section 8; the live count is `sgs-db.py block sgs/button`).
 - **Preset binding** so the site owner sets primary/secondary button styling once and every button across the site syncs (filled coral pink + outlined coral on Mama's; client-specific values per style variation).
 - **WordPress-native composition** — composite blocks accept buttons via InnerBlocks rather than rendering CTAs internally. One source of truth for button rendering everywhere.
 
@@ -557,7 +559,7 @@ Attributes we're planning that no competitor has (or that are unique to our spec
 }
 ```
 
-**Attribute count: 87 attributes** (excluding the 3 commented-out P2 items).
+The live attribute list and count come from the framework DB (`sgs-db.py block sgs/button`), not this 2026-05 surface.
 
 ---
 

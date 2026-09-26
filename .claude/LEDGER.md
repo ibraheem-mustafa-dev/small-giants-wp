@@ -51,14 +51,14 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-09-25, main 705fd11bd, all live on eye-care-test).** Wave C tasks 1-6 DONE and proven in a real browser:
+**Now (2026-09-26, main aaf19d46f, all live on eye-care-test).** Wave C tasks 1-6 DONE and proven in a real browser:
 listing card, product page, shop; the lens configurator (a Choice Flow post, `lens-configurator` = post 463, opened
 full screen from "Add my prescription"; four questions incl. "Your prescription" per pair; one bag line at £268 for
 Distance/Thin/Polarised; tampered add-on or file requests refused); the size guide (`sgs_modal` 461); bag drawer
 detail rows; checkout placed an order end to end (store now GB-only with the draft's three delivery options, UK County
 hidden, free delivery pre-selected, staff download link for uploaded prescriptions). Spec 43 is v1.9.0; the lens configurator (post 463) runs the showcase layout and matches the draft at 1440, 768
-and 375 in look and motion (2026-09-26, live to 3f5eb16d9; the plan's "Lens-flow parity" bullet lists the accepted
-differences and one open choice for Bean, the option pictures' scale). The final design review ran; its owed items are in the plan's Status block. No
+and 375 in look and motion (2026-09-26, live to aaf19d46f, compared on the photographed Gucci product 76; the plan's "Lens-flow parity"
+bullet lists the accepted differences and one open choice for Bean, the option pictures' scale). The final design review ran; its owed items are in the plan's Status block. No
 payment gateway is enabled on eye-care-test (a launch item for Bean). Header, footer, mobile menu and mega panels stay
 with the nav track. No blockers.
 

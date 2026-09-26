@@ -120,7 +120,7 @@ key), with the owed Wave C polish alongside.
   stacked on every cart recalculation (257/316/375 for one line, 0a2f465cf, test
   `tests/php/run-addon-price-list-cart-standalone.php`), a `src/` require that 500'd the site (293692aea, new
   gate `check-no-src-requires.py`), nameless modal dialogs (36d0ff818). Lens option pictures: media 447-458.
-  Gap: the draft's left aside (frame photo + running lines) is the price panel on the right. The 4th question ("Your prescription")
+  The 4th question ("Your prescription")
   was added in task 6 (Spec 43 FR-43-21).
 - **Wave C task 5 (size guide) DONE (2026-09-25):** `sgs_modal` 461 (`build/gen_size_guide.py`), a triggerless
   `sgs/modal` (anchor `size-guide`, large) on the product template, opened by "Which size am I?" in the Sizing tab.
@@ -132,11 +132,10 @@ key), with the owed Wave C polish alongside.
   description and default. Applied to the lens configurator (post 463, `build/gen_lens_configurator.py`, 2026-09-26):
   accent progress fill, header with step eyebrow and Close, sticky footer, the draft's option descriptions, "Standard
   · 1.5" and "Send it later" pre-selected with their badges; the £268 path proven at 1440 and 375. Since 2026-09-26 it
-  runs the showcase layout (Spec 43 FR-43-24; the draft's left aside is the stage), compared with the draft at 1440,
-  768 and 375, with the draft's "Frame" first running line and its single bordered text Close (f26c23146; the
-  popup's own round Close now steps aside for the flow's). One accepted difference: the draft advances on tap at
-  step 1, while the flow shows Continue on every step (Spec 43 D1, the Continue model).
-- **Lens-flow parity: DONE 2026-09-26** (Spec 43 v1.9.0; commits 38206aa0f to e1403e873, live on eye-care-test).
+  runs the showcase layout (Spec 43 FR-43-24; the draft's left aside is the stage), with the draft's single bordered text
+  Close (f26c23146; the popup's own round Close now steps aside for the flow's); its match with the draft is the
+  "Lens-flow parity" bullet below.
+- **Lens-flow parity: DONE 2026-09-26** (Spec 43 v1.9.0; commits 38206aa0f to aaf19d46f, live on eye-care-test).
   The hosted draft and eye-care-test compared on the same product, the Gucci Oversized Cat-Eye (product 76, which
   has the draft's photo; the draft photographs only it, Holbrook, Original Wayfarer and Round Metal, all four with
   their photos on eye-care-test), matching at 1440, 768 and 375 in screenshots
@@ -157,8 +156,9 @@ key), with the owed Wave C polish alongside.
   - For Bean: the option pictures (media 447-458) draw the draft's shapes at a fixed share of the card (44%), where
     the draft draws them at a fixed 140px, so they read larger at 1440 and smaller at 768. Matching exactly needs the
     pictures redrawn as fixed-size marks on a plain band.
-  - Each finish card previews the frame's own photo under that finish's treatment, as the draft's do (e1403e873);
-    a product with no photo shows the finish's own picture.
+  - Each finish card previews the frame's own photo under that finish's treatment, as the draft's do (e1403e873,
+    centred and at the uncropped single-product size since aaf19d46f/3caa2ce16); a product with no photo shows the
+    finish's own picture. At 768 "Light-reactive +£70.00" wraps where the draft's "+£70" does not (pennies).
 - Owed, shop polish (already listed above): colour swatches, filter panels open by
   default, the results count and sort row. For Bean: the size buttons read the real lens width (55 / 58 / 62, from
   the jpopticians sizes chosen 2026-09-25) where the draft says S / M / L. For the nav track: `floatingHideNearInline`
