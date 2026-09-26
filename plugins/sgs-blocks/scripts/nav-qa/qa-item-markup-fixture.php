@@ -288,16 +288,12 @@ if ( 'entrance' === $case ) {
 	$entrance_page = get_page_by_path( 'qa-entrance' );
 	{
 		$card = static function ( string $heading, array $extra ): string {
-			$attrs = array_merge(
-				array(
-					'heading'     => $heading,
-					'description' => 'Entrance and hover lift on one card.',
-					'effectHover' => 'lift',
-					'scaleHover'  => '',
-				),
-				$extra
-			);
-			return '<!-- wp:sgs/info-box ' . serialize_block_attributes( $attrs ) . ' /-->';
+			// The info-box's own default template children (edit.js::INFO_BOX_TEMPLATE): a heading and a text.
+			$attrs = array_merge( array( 'effectHover' => 'lift' ), $extra );
+			return '<!-- wp:sgs/info-box ' . serialize_block_attributes( $attrs ) . ' -->'
+				. '<!-- wp:sgs/heading ' . serialize_block_attributes( array( 'level' => 'h3', 'headingRole' => 'heading', 'content' => $heading ) ) . ' /-->'
+				. '<!-- wp:sgs/text ' . serialize_block_attributes( array( 'text' => 'Entrance and hover on one card.' ) ) . ' /-->'
+				. '<!-- /wp:sgs/info-box -->';
 		};
 		$row = static function ( array $attrs, string $inner ): string {
 			return '<!-- wp:sgs/site-footer-row ' . serialize_block_attributes( $attrs ) . ' -->' . $inner . '<!-- /wp:sgs/site-footer-row -->';
