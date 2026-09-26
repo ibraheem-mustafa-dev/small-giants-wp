@@ -94,8 +94,8 @@ ok(
 
 // Site-level gate: nothing rendered on the frontend without a derived dark palette.
 ok(
-	false !== strpos( $render_source, "wp_get_global_settings( array( 'custom', 'dark' ) )" ),
-	'render.php: reads settings.custom.dark via wp_get_global_settings()'
+	false !== strpos( $render_source, "sgs_global_custom_setting( 'dark' )" ),
+	'render.php: reads settings.custom.dark via sgs_global_custom_setting() (a nested-path read returns the whole settings array when the key is missing)'
 );
 ok(
 	false !== strpos( $render_source, '$sgs_tt_has_dark' ) && false !== strpos( $render_source, 'return;' ),

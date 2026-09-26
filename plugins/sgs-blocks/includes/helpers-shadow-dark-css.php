@@ -10,6 +10,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-shadow-dark.php';
+require_once __DIR__ . '/helpers-global-settings.php';
 
 /**
  * The theme's shadow presets as one flat list, one entry per slug.
@@ -118,7 +119,7 @@ function sgs_shadow_dark_declarations( bool $refresh = false ): array {
  * @return string A CSS colour value that is safe to print inside a declaration.
  */
 function sgs_shadow_dark_site_colour(): string {
-	$value = function_exists( 'wp_get_global_settings' ) ? wp_get_global_settings( array( 'custom', 'shadowColour' ) ) : null;
+	$value = sgs_global_custom_setting( 'shadowColour' );
 	if ( is_string( $value ) && preg_match( '/^(?:var\(--wp--preset--color--[a-z0-9-]+\)|#[0-9a-fA-F]{3,8})$/D', $value ) ) {
 		return $value;
 	}

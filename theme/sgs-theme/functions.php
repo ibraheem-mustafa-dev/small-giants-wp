@@ -192,6 +192,24 @@ function dark_mode_mapping_css( array $dark_colours ): string {
 }
 
 /**
+ * The value at theme.json `settings.custom.<key>`, or null when it is not set.
+ *
+ * Core returns the WHOLE settings array for a missing path, so a nested-path
+ * read of an absent key comes back large, truthy and wrong; read the tree once
+ * and index it (plugins/sgs-blocks/scripts/check-nested-global-settings.py).
+ *
+ * @param string $key Key under settings.custom.
+ * @return mixed|null
+ */
+function global_custom_setting( string $key ) {
+	$settings = wp_get_global_settings();
+	if ( ! is_array( $settings ) || ! isset( $settings['custom'] ) || ! is_array( $settings['custom'] ) ) {
+		return null;
+	}
+	return array_key_exists( $key, $settings['custom'] ) ? $settings['custom'][ $key ] : null;
+}
+
+/**
  * Fill-scoped dark ink (settings.custom.darkInk, written by
  * scripts/derive-dark-palette.py): a text colour declared on a fill that stays
  * light in dark mode keeps a readable value inside that scope only, so page text
@@ -428,7 +446,7 @@ function enqueue_styles(): void {
 	// Dark mode — only load when THIS client's theme.json carries derived dark colours
 	// (settings.custom.dark, written by scripts/derive-dark-palette.py via
 	// push-theme-snapshot.py::prepare_deploy_snapshot).
-	$sgs_dark_custom = wp_get_global_settings( array( 'custom', 'dark' ) );
+	$sgs_dark_custom = global_custom_setting( 'dark' );
 	if ( is_array( $sgs_dark_custom ) && ! empty( $sgs_dark_custom ) ) {
 		wp_enqueue_style(
 			'sgs-dark-mode',
@@ -452,7 +470,7 @@ function enqueue_styles(): void {
 		wp_add_inline_style( 'sgs-dark-mode', dark_mode_mapping_css( $sgs_dark_custom ) );
 
 		// Fill-scoped ink: printed after the mapping so a scope's own value wins there.
-		$sgs_dark_ink = wp_get_global_settings( array( 'custom', 'darkInk' ) );
+		$sgs_dark_ink = global_custom_setting( 'darkInk' );
 		if ( is_array( $sgs_dark_ink ) && ! empty( $sgs_dark_ink ) ) {
 			wp_add_inline_style( 'sgs-dark-mode', dark_mode_ink_css( $sgs_dark_ink ) );
 		}

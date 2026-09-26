@@ -60,6 +60,7 @@
 namespace SGS\Blocks\Customiser;
 
 defined( 'ABSPATH' ) || exit;
+require_once __DIR__ . '/helpers-global-settings.php';
 
 /**
  * The three presets, in the order a client thinks about them.
@@ -245,7 +246,7 @@ function palette(): array {
  * @return string Current value, or '' when unset.
  */
 function effective_value( string $preset, string $role ): string {
-	$presets = \wp_get_global_settings( array( 'custom', 'buttonPresets' ) );
+	$presets = \sgs_global_custom_setting( 'buttonPresets' );
 
 	if ( is_array( $presets ) && isset( $presets[ $preset ][ $role ] ) && is_string( $presets[ $preset ][ $role ] ) ) {
 		return $presets[ $preset ][ $role ];

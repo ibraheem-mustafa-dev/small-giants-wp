@@ -18,6 +18,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-shadow-layers.php';
+require_once __DIR__ . '/helpers-global-settings.php';
 
 const SGS_SHADOW_HOVER_LIFT_FACTOR = 1.25;
 
@@ -49,7 +50,7 @@ function sgs_shadow_hover_raw_map(): array {
 	if ( ! function_exists( 'wp_get_global_settings' ) ) {
 		return array();
 	}
-	$raw = wp_get_global_settings( array( 'custom', 'shadowHover' ) );
+	$raw = sgs_global_custom_setting( 'shadowHover' );
 	if ( ! is_array( $raw ) ) {
 		return array();
 	}

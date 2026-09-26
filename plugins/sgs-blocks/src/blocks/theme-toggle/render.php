@@ -38,7 +38,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 // 0. Site-level gate — a site with no derived dark palette has nothing to toggle.
 // -----------------------------------------------------------------------------
 
-$sgs_tt_dark_custom = wp_get_global_settings( array( 'custom', 'dark' ) );
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-global-settings.php';
+$sgs_tt_dark_custom = sgs_global_custom_setting( 'dark' );
 $sgs_tt_has_dark    = is_array( $sgs_tt_dark_custom ) && ! empty( $sgs_tt_dark_custom );
 
 if ( ! $sgs_tt_has_dark ) {

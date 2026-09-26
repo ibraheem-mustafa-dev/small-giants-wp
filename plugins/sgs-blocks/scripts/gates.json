@@ -1199,5 +1199,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 132
+  },
+  {
+    "id": "check-nested-global-settings",
+    "cmd": "python scripts/check-nested-global-settings.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 400,
+    "order": 133
   }
 ]
