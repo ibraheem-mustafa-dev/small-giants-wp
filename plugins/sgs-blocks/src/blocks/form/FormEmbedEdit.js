@@ -108,7 +108,7 @@ export default function FormEmbedEdit( { attributes, setAttributes, clientId } )
 	};
 
 	const picker = (
-		<SavedFormPicker formId={ formId } formIsLinked={ formIsLinked } onLink={ link } onUnlink={ () => setAttributes( { formIsLinked: false } ) } />
+		<SavedFormPicker formId={ formId } formIsLinked={ formIsLinked } onLink={ link } onUnlink={ () => setAttributes( { formId: '', formIsLinked: false } ) } />
 	);
 
 	const inspector = (
