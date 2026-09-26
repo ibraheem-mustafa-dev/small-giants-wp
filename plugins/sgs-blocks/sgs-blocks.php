@@ -420,9 +420,13 @@ Sgs_Starter_Library_Migration::register();
 // time (not registration time), so load order here only needs the class
 // definitions to exist, which require_once already guarantees.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-default-meta.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-references.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-usage-columns.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-delete-guard.php';
 Sgs_Cpt_Default_Meta::register();
 Sgs_Cpt_Usage_Columns::register();
+// Refuse trashing/deleting a form or flow that is still embedded or product-linked (Spec 42 FR-42-7b).
+Sgs_Cpt_Delete_Guard::register();
 
 // "Framework look" post-state + "Framework looks (N)" view on the list table of
 // every CPT that has a seeded starter library (FR-37-48). Needs the CPT + Active-layout

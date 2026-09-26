@@ -1,6 +1,6 @@
 import { registerBlockType } from '@wordpress/blocks';
 import metadata from './block.json';
-import Edit from './edit';
+import Edit from './edit-router';
 import Save from './save';
 import './style.css';
 import './editor.css';

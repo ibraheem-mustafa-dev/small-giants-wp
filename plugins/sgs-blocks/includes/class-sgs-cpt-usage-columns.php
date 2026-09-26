@@ -22,13 +22,11 @@
  *   - sgs_modal — a `post_content LIKE` scan across published posts/pages for
  *     a `sgs/modal` block instance whose `modalRef` attribute equals this
  *     post's ID (the attribute {@see Sgs_Block_CPTs::resolve_modal()} reads).
- *   - sgs_form — the same LIKE-scan shape, matching `sgs/form`'s `formId`
- *     attribute (a SLUG, not an id) against this post's `post_name` — the
- *     attribute {@see Sgs_Block_CPTs::resolve_form()} reads.
- *   - sgs_choice_flow — the same LIKE-scan shape against a `flowId` slug
- *     attribute, mirroring `resolve_form()`'s shape exactly (Spec 43 FR-43-8).
- *     No `sgs/choice-flow*` block currently declares `flowId`, so every choice
- *     flow reads "Not currently used" until an embedding block does.
+ *   - sgs_form / sgs_choice_flow — published posts embedding the form or
+ *     flow by slug (`formId` / `flowId`), from
+ *     {@see Sgs_Cpt_References::embedding_posts()}, the same finder the delete
+ *     guard reads, so the definition post itself is never counted. A flow
+ *     also reports the products linking it through `_sgs_choice_flow`.
  *
  * All list-table queries are bounded to a `COUNT(*)`/small `get_posts()` over
  * PUBLISHED content only — these CPTs and their embedding targets are all
@@ -152,7 +150,7 @@ final class Sgs_Cpt_Usage_Columns {
 				);
 
 			case Sgs_Block_CPTs::FORM_CPT:
-				$count = self::content_reference_count( 'formId', $post->post_name );
+				$count = count( Sgs_Cpt_References::embedding_posts( $post, array( 'publish' ) ) );
 				return self::count_label(
 					$count,
 					\__( 'Not currently embedded on any page', 'sgs-blocks' ),
@@ -161,7 +159,7 @@ final class Sgs_Cpt_Usage_Columns {
 				);
 
 			case Sgs_Block_CPTs::CHOICE_FLOW_CPT:
-				$page_count    = self::content_reference_count( 'flowId', $post->post_name );
+				$page_count    = count( Sgs_Cpt_References::embedding_posts( $post, array( 'publish' ) ) );
 				$product_count = sgs_product_choice_flow_count( $post->post_name );
 				$page_label    = self::count_label(
 					$page_count,
@@ -251,36 +249,6 @@ final class Sgs_Cpt_Usage_Columns {
 				"SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_status = 'publish' AND ( post_content LIKE %s OR post_content LIKE %s )",
 				$like_comma,
 				$like_brace
-			)
-		);
-	}
-
-	/**
-	 * Count published posts/pages whose content embeds a block attribute
-	 * `"{$attr}":"{$slug}"` — the shape both `sgs/form`'s `formId` and a
-	 * `sgs/choice-flow` embedding block's `flowId` use to
-	 * reference a CPT post by slug (mirrors `Sgs_Block_CPTs::resolve_form()` /
-	 * `resolve_choice_flow()`'s own by-slug lookup).
-	 *
-	 * @param string $attr Attribute name (`formId` or `flowId`).
-	 * @param string $slug Target post's slug.
-	 * @return int
-	 */
-	private static function content_reference_count( string $attr, string $slug ): int {
-		if ( '' === $slug ) {
-			return 0;
-		}
-
-		global $wpdb;
-
-		$needle = '"' . $attr . '":"' . $slug . '"';
-		$like   = '%' . $wpdb->esc_like( $needle ) . '%';
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- bounded COUNT(*), no list-table pagination equivalent exists for a content scan.
-		return (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_status = 'publish' AND post_content LIKE %s",
-				$like
 			)
 		);
 	}

@@ -75,7 +75,7 @@ add_action( 'init', __NAMESPACE__ . '\\sgs_choice_flow_link_register', 20 );
  * Render the "Customisation flow" <select> inside the General product-data
  * panel: "None" plus every published `sgs_choice_flow` post (title shown,
  * slug stored) — same options source
- * {@see Sgs_Cpt_Usage_Columns::content_reference_count()} counts against.
+ * {@see Sgs_Cpt_References::embedding_posts()} looks up.
  *
  * @return void
  */

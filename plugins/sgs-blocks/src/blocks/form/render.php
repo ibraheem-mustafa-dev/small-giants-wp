@@ -91,7 +91,19 @@ if ( $form_is_linked && null === $referenced_form ) {
 }
 
 if ( null !== $referenced_form ) {
-	echo (string) do_blocks( $referenced_form->post_content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output is core-trusted block HTML, same provenance as modalRef's identical pattern (modal/render.php).
+	// The saved form's slug IS its identity (Spec 42 §2): the definition's
+	// root sgs/form block renders with formId set to the post's slug, whatever
+	// its stored Form ID says, so submissions, rate limits and the submit
+	// handler's resolve_form() lookup always key on the slug.
+	$form_markup = '';
+	foreach ( parse_blocks( $referenced_form->post_content ) as $definition_block ) {
+		if ( 'sgs/form' === $definition_block['blockName'] ) {
+			$definition_block['attrs']['formId']       = $referenced_form->post_name;
+			$definition_block['attrs']['formIsLinked'] = false;
+		}
+		$form_markup .= render_block( $definition_block );
+	}
+	echo $form_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() output is core-trusted block HTML, same provenance as modalRef's do_blocks() pattern (modal/render.php).
 	return;
 }
 

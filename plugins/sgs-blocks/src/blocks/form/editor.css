@@ -3,3 +3,22 @@
 	padding: 1rem;
 	border-radius: 4px;
 }
+
+/* Embed view (FormEmbedEdit.js): a saved form placed on a page. */
+.sgs-form-embed__bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem 1rem;
+	margin-bottom: 0.75rem;
+}
+
+.sgs-form-embed__actions,
+.sgs-form-embed__create {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.75rem;
+	width: 100%;
+}
