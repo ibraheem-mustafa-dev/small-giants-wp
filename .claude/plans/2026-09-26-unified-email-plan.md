@@ -2,7 +2,7 @@
 doc_type: plan
 spec_id: 04
 covers: [Spec 04 Notification Architecture, FR-30-15, FR-43-4, sgs-client-notes notifications]
-status: awaiting Bean's decisions (D1 to D3)
+status: ready to build
 created: 2026-09-26
 ---
 
@@ -29,11 +29,11 @@ Every client needs working SMTP for WooCommerce anyway, so every SGS email rides
 - **Other emails:** WordPress core has no HTML email template. When WooCommerce is active, reuse its email header, footer and `style_inline()` so every email looks alike; otherwise one inline-CSS SGS template. PECR: confirmations and owner notifications are service messages while they carry no promotional copy.
 - **Deliverability:** SPF, DKIM and DMARC (`p=none` to start) on every client domain at onboarding; Hostinger adds SPF and DKIM on its own nameservers, DMARC is one manual TXT record, and a domain may hold only one SPF record.
 
-## Decisions for Bean
+## Decisions (Bean, 2026-09-26)
 
-- **D1 SMTP tool:** FluentSMTP on every client site (recommended), set up by script.
-- **D2 today's N8N email workflow:** once the shop alerts send through WordPress, the N8N workflow's email step would send duplicates. Recommended: delete the workflow and `plugins/sgs-blocks/scripts/n8n/`, unset sandybrown's `sgs_n8n_webhook_url`, and keep `Sgs_Webhook::send` as the optional automation hook.
-- **D3 sandybrown sender:** a mailbox whose SMTP password we hold. `.claude/secrets/` has no Hostinger mailbox password; Bean creates or resets one (for example `shop@smallgiantsstudio.co.uk`) and it goes in `.claude/secrets/sandybrown.env` as `SMTP_USER_SANDYBROWN` and `SMTP_PWD_SANDYBROWN`.
+- **D1 SMTP tool:** FluentSMTP on every client site, set up by script.
+- **D2 N8N email workflow ("SGS site events", `AJzRBARFn8AqQlkg`):** kept as a switched-off backup. When phase 3 sends the shop alerts through WordPress, deactivate the workflow (`POST /api/v1/workflows/AJzRBARFn8AqQlkg/deactivate`) so no email goes out twice; keep `plugins/sgs-blocks/scripts/n8n/` and describe the workflow in `.claude/dev-setup.md` §N8N as an inactive backup. `Sgs_Webhook::send` still fires events to any URL a site sets, for automations.
+- **D3 sandybrown sender:** From `admin@smallgiantsstudio.co.uk`, which is an alias of the `ibraheem@smallgiantsstudio.co.uk` mailbox (Hostinger `mail_listAliasesV1`). Aliases cannot sign in: the SMTP login is `ibraheem@smallgiantsstudio.co.uk` with `SMTP_PASS_SGS` from `.claude/secrets/ai-agent-credentials-and-info/email.env` (proven by an SMTP login on 2026-09-26; the same file's `SMTP_USER_SGS=admin@…` is refused with 535). Hostinger lets a mailbox send as its own aliases; phase 1 proves that with a real send. This puts Bean's main mailbox password in the canary's wp-config; a client site uses its own mailbox.
 
 ## Contract
 
