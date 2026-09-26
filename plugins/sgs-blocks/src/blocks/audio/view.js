@@ -260,6 +260,13 @@ function enhance( root ) {
 		return;
 	}
 	root.classList.add( 'is-enhanced' );
+	// The server marks the empty viz slot aria-hidden (it holds nothing until
+	// this module fills it). Every style fills it with real controls (play,
+	// seek, the sound toggle), so the slot must not hide them from assistive
+	// technology; the purely decorative pieces carry their own aria-hidden.
+	if ( viz ) {
+		viz.removeAttribute( 'aria-hidden' );
+	}
 	const label = audio.getAttribute( 'aria-label' ) || 'audio';
 	// Concrete rgb for the canvas fills (var() references won't paint on canvas).
 	const accent = resolveColour( root, '--sgs-audio-accent', '#c9821f' );
@@ -380,6 +387,7 @@ function enhance( root ) {
 
 	if ( style === 'waveform' ) {
 		const cv = document.createElement( 'canvas' );
+		cv.setAttribute( 'aria-hidden', 'true' );
 		cv.className = 'sgs-audio__wave-canvas';
 		viz.append( play, cv, time );
 		const peaks = Array.from( { length: 72 }, ( _, i ) => 0.22 + 0.78 * Math.abs( Math.sin( i * 0.5 ) * Math.cos( i * 0.17 ) + 0.3 * Math.sin( i * 1.3 ) ) );
@@ -478,6 +486,7 @@ function enhance( root ) {
 	}
 
 	const cv = document.createElement( 'canvas' );
+	cv.setAttribute( 'aria-hidden', 'true' );
 	cv.className = style === 'spectrum' ? 'sgs-audio__spectrum-canvas' : 'sgs-audio__scope-canvas';
 	viz.append( transport, cv );
 
