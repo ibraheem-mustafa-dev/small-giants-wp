@@ -60,7 +60,12 @@ CARD = dict(
     titleFontFamily="body", titleFontSize={"desktop": 16}, titleFontSizeUnit="px", titleFontWeight="400",
     titleLineHeight=1.25, priceFontFamily="body", priceFontSize={"desktop": 18}, priceFontSizeUnit="px",
     priceFontWeight="500", showAttributeTag=True, attributeTagSource="tag", attributeTagTerm="polarised",
-    attributeTagText="Polarised")
+    attributeTagText="Polarised",
+    # The draft's card hover: 4px lift over 0.4s, a soft 18/44 shadow, the photo to 106% over 0.9s, border #CFC7BB.
+    sgsHoverLift=4, sgsHoverDurationMs=400, sgsHoverShadow="diffuse", sgsHoverImageZoom=True, sgsHoverZoom=106,
+    sgsHoverZoomDuration=900, borderColourHover="border-hover",
+    # Card text parts: price 18/27, RRP in text-label, 17px colour dots growing to 125% when pointed at.
+    priceLineHeight=27, priceLineHeightUnit="px", rrpColour="text-label", swatchSize=17, swatchHoverGrow=125)
 
 # The Filter button and the panel header are built by the theme's sgs-shop-filters.js (WordPress 7.1 saves an
 # editor-made Custom HTML block empty, so the template carries no raw HTML).

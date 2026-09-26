@@ -6,6 +6,7 @@
 import { __ } from '@wordpress/i18n';
 import {
 	PanelBody,
+	RangeControl,
 	SelectControl,
 	TextControl,
 	ToggleControl,
@@ -145,11 +146,55 @@ export function ListingShapePanel( { attributes, setAttributes } ) {
 			<ToggleControl
 				label={ __( 'Resting shadow', 'sgs-blocks' ) }
 				help={ __(
-					'Off = border only. The hover lift keeps its shadow.',
+					'Off = border only at rest. The hover shadow is set in Hover Effects.',
 					'sgs-blocks'
 				) }
 				checked={ showShadow !== false }
 				onChange={ ( v ) => setAttributes( { showShadow: v } ) }
+				__nextHasNoMarginBottom
+			/>
+		</PanelBody>
+	);
+}
+
+/**
+ * Colour dots panel: the size of a card's colour dots and how far one grows
+ * when pointed at (includes/product-card-card-parts.php).
+ *
+ * @param {Object}   props               Component props.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Attribute setter.
+ * @return {Element} The panel.
+ */
+export function ListingDotsPanel( { attributes, setAttributes } ) {
+	const { swatchSize, swatchHoverGrow } = attributes;
+
+	return (
+		<PanelBody title={ __( 'Colour dots', 'sgs-blocks' ) } initialOpen={ false }>
+			<RangeControl
+				label={ __( 'Dot size (px)', 'sgs-blocks' ) }
+				help={ __( '0 = the card style’s default.', 'sgs-blocks' ) }
+				value={ swatchSize ?? 0 }
+				onChange={ ( v ) => setAttributes( { swatchSize: v ?? 0 } ) }
+				min={ 0 }
+				max={ 40 }
+				step={ 1 }
+				allowReset
+				resetFallbackValue={ 0 }
+				__next40pxDefaultSize
+				__nextHasNoMarginBottom
+			/>
+			<RangeControl
+				label={ __( 'Grow on hover (%)', 'sgs-blocks' ) }
+				help={ __( '125 = a quarter larger when pointed at. 0 = no growth.', 'sgs-blocks' ) }
+				value={ swatchHoverGrow ?? 0 }
+				onChange={ ( v ) => setAttributes( { swatchHoverGrow: v ?? 0 } ) }
+				min={ 0 }
+				max={ 200 }
+				step={ 1 }
+				allowReset
+				resetFallbackValue={ 0 }
+				__next40pxDefaultSize
 				__nextHasNoMarginBottom
 			/>
 		</PanelBody>

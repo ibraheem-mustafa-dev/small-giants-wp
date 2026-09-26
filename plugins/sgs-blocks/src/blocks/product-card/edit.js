@@ -19,7 +19,8 @@ import {
 	MediaElementPanel,
 	SsrPreviewGuard, SgsBoxControl } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
-import { ListingContentPanel, ListingShapePanel } from './listing-panels';
+import { ListingContentPanel, ListingShapePanel, ListingDotsPanel } from './listing-panels';
+import { cardPartColourRows } from './card-part-rows';
 import {
 	PanelBody,
 	SelectControl,
@@ -1549,7 +1550,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 
 	return (
 		<>
-			<SgsColourPanel rows={ colourRows } />
+			<SgsColourPanel rows={ [ ...colourRows, ...cardPartColourRows( attributes, setAttributes ) ] } />
 			<InspectorControls>
 				<ProductSourcePanel
 					attributes={ attributes }
@@ -1878,6 +1879,10 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					showContentBand={ false }
 				/>
 				<ListingShapePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<ListingDotsPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
@@ -2298,7 +2303,10 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				     + heading level + tag text live in the Settings tab's
 				     "Card" panel; price content lives in the Settings tab's
 				     "Price" panel (bound mode) — this panel is appearance only. ── */ }
-				{ isBuiltIn && (
+				{ /* Both modes: render.php emits every target's rule before the
+				     typed/bound split. Bound mode leaves out 'brand', which has
+				     its own "Brand overlay typography" panel there. */ }
+				{ (
 					<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 						<TypographyControls
 							attributes={ attributes }
@@ -2361,7 +2369,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									prefix: 'price',
 									showFontFamily: true,
 									showStyle: false,
-									showLineHeight: false,
+									showLineHeight: true,
 								},
 								{
 									key: 'priceNote',
@@ -2391,7 +2399,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showStyle: false,
 									showLineHeight: false,
 								},
-							] }
+							].filter( ( target ) => isBuiltIn || 'brand' !== target.key ) }
 						/>
 						{ isTrial && (
 							<>

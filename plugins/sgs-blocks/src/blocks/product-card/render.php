@@ -59,6 +59,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-builtin-render.php';
 require_once __DIR__ . '/attribute-tag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-live-fill.php';
+require_once dirname( __DIR__, 3 ) . '/includes/product-card-card-parts.php';
 
 // The CTA below always carries .sgs-button/.sgs-button--primary classes, but it
 // is raw HTML, not a real `sgs/button` InnerBlocks instance — so WordPress's
@@ -527,8 +528,8 @@ $sgs_card_typo_css .= sgs_block_background_layer_css(
 	$sgs_pc_bg_decls['hover'][0] ?? ''
 );
 
-// --- Border (colour + gradient, no hover — block.json declares no
-// borderColourHover on this block). Real border-width/style are separate
+// --- Border (colour + gradient; the hover colour, borderColourHover, is
+// emitted by sgs_product_card_parts_css() below). Real border-width/style are separate
 // BOX-MODEL declarations (not paint) — emitted first so the masked
 // `::before` ring (when a colour/gradient is set) visually wins by source
 // order, matching sgs/quote + sgs/heading. ---
@@ -594,6 +595,9 @@ if ( 'none' !== $sgs_pc_border_style ) {
 	// default definitional border untouched — this branch does not fire for them.
 	$sgs_card_typo_css .= $sgs_pc_root_sel . '{border-style:none;border-width:0;}';
 }
+
+// Hover border colour, RRP colour, colour-dot size and hover growth.
+$sgs_card_typo_css .= sgs_product_card_parts_css( $sgs_pc_root_sel, $attributes );
 
 // --- Native border-radius (unchanged mechanism) — still resolved from the
 // skip-serialised style.border.radius object and emitted scoped via the

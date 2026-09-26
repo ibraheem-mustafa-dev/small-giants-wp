@@ -249,11 +249,11 @@
 	}
 
 	.sgs-team-member.sgs-has-img-zoom .sgs-team-member__photo img {
-		transition: transform 0.5s ease;
+		transition: transform var(--sgs-hover-zoom-duration, 0.5s) ease;
 	}
 
 	.sgs-team-member.sgs-has-img-zoom:hover .sgs-team-member__photo img {
-		transform: scale(1.1);
+		transform: scale(var(--sgs-hover-zoom, 1.1));
 	}
 
 	/* Grayscale to colour (#130) */

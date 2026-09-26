@@ -17,7 +17,7 @@
 	--sgs-product-card-max-width: 380px;
 	--sgs-product-card-image-height: 220px;
 	--sgs-product-card-bg: #ffffff;
-	--sgs-product-card-shadow: 0 2px 12px rgba(58, 46, 38, 0.10);
+	--sgs-product-card-shadow: 0 2px 12px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent);
 	/*
 	 * WCAG A11Y: primary button hover defaults use primary-dark bg + white text.
 	 * Framework palette: primary-dark = #0F4C4C → white text = 9.73:1 ✓ PASS.
@@ -54,7 +54,7 @@
 	 * backgrounds without depending on the low-contrast border (WCAG §1.4.11).
 	 * Border is kept for definition; shadow adds perceivable depth.
 	 */
-	box-shadow: var(--sgs-product-card-shadow, 0 2px 12px rgba(58, 46, 38, 0.10));
+	box-shadow: var(--sgs-product-card-shadow, 0 2px 12px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent));
 }
 
 /* Trial variant — re-declare the inherited custom property as transparent
@@ -632,16 +632,24 @@
  */
 
 /*
- * Card hover affordance (was missing). Subtle lift + deeper shadow on hover —
- * GPU-composited transform only. Disabled under reduced motion below.
+ * Card hover (lift, shadow, photo zoom and their timing) comes from the
+ * shared Hover Effects panel (supports.sgs.enabledExtensions "hover",
+ * extensions.css). The photo zoom grows the image inside its own box.
  */
-.product-card--live {
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
+@media (prefers-reduced-motion: no-preference) {
+	.product-card.sgs-has-img-zoom .product-card__media .sgs-media-el,
+	.product-card.sgs-has-img-zoom .sgs-product-card__media-wrap .sgs-media-el {
+		transition: transform var(--sgs-hover-zoom-duration, 0.5s) var(--sgs-hover-easing, ease);
+	}
+
+	.product-card.sgs-has-img-zoom:hover .product-card__media .sgs-media-el,
+	.product-card.sgs-has-img-zoom:hover .sgs-product-card__media-wrap .sgs-media-el {
+		transform: scale(var(--sgs-hover-zoom, 1.1));
+	}
 }
 
-.product-card--live:hover {
-	transform: translateY( -4px );
-	box-shadow: 0 8px 24px rgba( 58, 46, 38, 0.16 );
+.product-card.sgs-has-img-zoom .sgs-product-card__media-wrap {
+	overflow: hidden;
 }
 
 /*
@@ -702,13 +710,11 @@
 @media (prefers-reduced-motion: reduce) {
 	.product-card .sgs-button,
 	.product-card .product-card__cart-icon,
-	.product-card--live,
 	.product-card:not( .product-card--live ) {
 		transition: none;
 	}
 
-	.product-card .product-card__add-to-cart:hover .product-card__cart-icon,
-	.product-card--live:hover {
+	.product-card .product-card__add-to-cart:hover .product-card__cart-icon {
 		transform: none;
 	}
 }
@@ -1486,15 +1492,27 @@
 
 .sgs-product-card__swatch {
 	display: inline-block;
-	width: 16px;
-	height: 16px;
+	/* swatchSize → --sgs-pc-swatch-size (includes/product-card-card-parts.php). */
+	width: var( --sgs-pc-swatch-size, 16px );
+	height: var( --sgs-pc-swatch-size, 16px );
 	border-radius: 50%;
 	background: var( --sgs-pc-swatch-bg, #d8d2c8 );
 	border: 1px solid rgba( 0, 0, 0, 0.15 );
 }
 
+/* Colour-dot hover growth (swatchHoverGrow → --sgs-pc-swatch-hover-scale). */
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-product-card__swatch {
+		transition: transform 0.2s ease;
+	}
+
+	.sgs-product-card__swatch:hover {
+		transform: scale(var(--sgs-pc-swatch-hover-scale, 1));
+	}
+}
+
 .sgs-product-card__swatch-more {
-	font-size: 11px;
+	font-size: var( --sgs-pc-swatch-more-font-size, 11px );
 	color: var( --wp--preset--color--text-muted, #5e584f );
 	border: 1px solid rgba( 0, 0, 0, 0.15 );
 	border-radius: 999px;
@@ -1530,16 +1548,17 @@
 
 .wp-block-sgs-product-card.is-style-frame-card .sgs-product-card__swatch {
 	border-radius: 50%;
-	width: 17px;
-	height: 17px;
+	width: var( --sgs-pc-swatch-size, 17px );
+	height: var( --sgs-pc-swatch-size, 17px );
 }
 
 /*
  * ── Listing-card settings (live-data mode) ───────────────────────────────────
- * showShadow off: border only at rest; the hover lift keeps its shadow.
+ * showShadow off: border only at rest. It clears the resting shadow variable,
+ * not box-shadow, so the Hover Effects shadow still paints on hover.
  */
 .product-card.product-card--flat {
-	box-shadow: none;
+	--sgs-product-card-shadow: none;
 }
 
 /*

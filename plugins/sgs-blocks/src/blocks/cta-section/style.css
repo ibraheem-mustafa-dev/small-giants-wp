@@ -381,13 +381,13 @@
 		background-size: cover;
 		background-position: inherit;
 		pointer-events: none;
-		transition: transform 0.5s ease,
+		transition: transform var(--sgs-hover-zoom-duration, 0.5s) ease,
 			filter var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
 	}
 
 	/* Hover Image Zoom */
 	.sgs-cta-section.sgs-has-img-zoom.sgs-cta-section--has-bg-image:hover::before {
-		transform: scale(1.1);
+		transform: scale(var(--sgs-hover-zoom, 1.1));
 	}
 
 	/* Grayscale to colour */

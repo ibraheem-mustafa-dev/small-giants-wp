@@ -1,7 +1,8 @@
 <?php
 /**
- * Child-process probe for ReviewsEmptyRenderTest: runs the REAL includes/hover-effects.php
- * `inject_hover_effects()` render_block filter on a given block content and prints
+ * Child-process probe for ReviewsEmptyRenderTest: runs the REAL
+ * includes/hover-effects/hover-effects.php `inject_hover_effects()`
+ * render_block filter on a given block content and prints
  * {"out": "<filtered content>"}.
  *
  * Usage: php hover-effects-probe.php <content-file>
@@ -66,7 +67,7 @@ if ( ! class_exists( 'WP_Block_Type_Registry' ) ) {
 	}
 }
 
-require_once $sgs_blocks_dir . '/includes/hover-effects.php';
+require_once $sgs_blocks_dir . '/includes/hover-effects/hover-effects.php';
 
 $content = (string) file_get_contents( $argv[1] );
 $out     = \SGS\Blocks\inject_hover_effects( $content, array( 'blockName' => 'sgs/google-reviews', 'attrs' => array() ) );

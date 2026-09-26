@@ -398,12 +398,12 @@
 
 	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__image,
 	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__image-wrap .sgs-media-el {
-		transition: transform 0.5s ease;
+		transition: transform var(--sgs-hover-zoom-duration, 0.5s) ease;
 	}
 
 	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item:hover .sgs-card-grid__image,
 	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item:hover .sgs-card-grid__image-wrap .sgs-media-el {
-		transform: scale(1.1);
+		transform: scale(var(--sgs-hover-zoom, 1.1));
 	}
 
 	/* Grayscale to colour (#130) */

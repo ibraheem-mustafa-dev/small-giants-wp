@@ -203,7 +203,7 @@ function extractRegisteredHoverAttrsFromSrc( rawSrc ) {
 function readRegisteredUniversalHoverAttrs() {
 	return extractRegisteredHoverAttrsFromSrc(
 		readIfExists(
-			path.join( ROOT, 'src', 'blocks', 'extensions', 'hover-effects.js' )
+			path.join( ROOT, 'src', 'blocks', 'extensions', 'hover-effects', 'attributes.js' )
 		)
 	);
 }
@@ -841,6 +841,19 @@ function loadBlockOwnSrc( blockDir ) {
 				src += '\n' + readIfExists( p );
 				readPaths.add( path.resolve( p ) );
 			}
+		}
+	}
+	// The block's own sibling modules that edit.js imports by relative path
+	// (`from './listing-panels'`): controls split out of an oversized edit.js
+	// live there, and a tag-name lookup never reaches a plain function import.
+	const LOCAL_IMPORT_RE = /from\s+['"]\.\/([\w-]+)(?:\.js)?['"]/g;
+	let localMatch;
+	const editSrcForImports = src;
+	while ( ( localMatch = LOCAL_IMPORT_RE.exec( editSrcForImports ) ) !== null ) {
+		const p = path.join( blockDir, localMatch[ 1 ] + '.js' );
+		if ( fs.existsSync( p ) && ! readPaths.has( path.resolve( p ) ) ) {
+			src += '\n' + readIfExists( p );
+			readPaths.add( path.resolve( p ) );
 		}
 	}
 	// R3-a: the loop above only covers the block's OWN components/ dir. A
@@ -1777,7 +1790,7 @@ function main() {
 			'[check-duplicate-controls] FAIL - could not read any universal hover attribute\n'
 		);
 		process.stderr.write(
-			'  from src/blocks/extensions/hover-effects.js, so UNIVERSAL_HOVER_BY_CATEGORY\n'
+			'  from src/blocks/extensions/hover-effects/attributes.js, so UNIVERSAL_HOVER_BY_CATEGORY\n'
 		);
 		process.stderr.write( '  CANNOT be validated and this gate is blind.\n' );
 		process.stderr.write(

@@ -45,6 +45,7 @@ PRESETS = [
     ("Glow", "glow", [[0, 0, 16, 0, BRAND, 55], [0, 0, 40, 0, BRAND, 28]]),
     ("Pressed", "pressed", [[0, 2, 4, 0, SITE, 14, 1], [0, 0, 0, 1, SITE, 6, 1]]),
     ("Hard", "hard", [[4, 4, 0, 0, SITE, 100]]),
+    ("Diffuse", "diffuse", [[0, 18, 44, 0, SITE, 9]]),
 ]
 OLD = "|".join(RENAME)
 VAR_REF = re.compile(r"(--wp--preset--shadow--)(%s)\b" % OLD)

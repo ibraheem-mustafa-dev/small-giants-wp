@@ -605,7 +605,19 @@
                           "showAttributeTag": true,
                           "attributeTagSource": "tag",
                           "attributeTagTerm": "polarised",
-                          "attributeTagText": "Polarised"
+                          "attributeTagText": "Polarised",
+                          "sgsHoverLift": 4,
+                          "sgsHoverDurationMs": 400,
+                          "sgsHoverShadow": "diffuse",
+                          "sgsHoverImageZoom": true,
+                          "sgsHoverZoom": 106,
+                          "sgsHoverZoomDuration": 900,
+                          "borderColourHover": "border-hover",
+                          "priceLineHeight": 27,
+                          "priceLineHeightUnit": "px",
+                          "rrpColour": "text-label",
+                          "swatchSize": 17,
+                          "swatchHoverGrow": 125
                         }
                       }
                     ]

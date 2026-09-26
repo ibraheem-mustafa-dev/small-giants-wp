@@ -44,11 +44,11 @@
 /* --- Universal Hover Effects --- */
 
 .sgs-has-hover {
-	transition: background-color var(--sgs-hover-duration, 250ms) ease,
-	            color var(--sgs-hover-duration, 250ms) ease,
-	            border-color var(--sgs-hover-duration, 250ms) ease,
-	            transform var(--sgs-hover-duration, 250ms) ease,
-	            box-shadow var(--sgs-hover-duration, 250ms) ease;
+	transition: background-color var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
+	            color var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
+	            border-color var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
+	            transform var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
+	            box-shadow var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease);
 }
 
 /*
@@ -88,13 +88,20 @@
 	box-shadow: var(--sgs-hover-shadow, none);
 }
 
-.sgs-has-hover-scale:hover {
-	transform: scale(var(--sgs-hover-scale, 1));
+/* Lift and scale in one transform, so a block can use either or both. */
+.sgs-has-hover-scale:hover,
+.sgs-has-hover-lift:hover {
+	transform: translateY(calc(-1 * var(--sgs-hover-lift, 0px))) scale(var(--sgs-hover-scale, 1));
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.sgs-has-hover {
 		transition: none;
+	}
+
+	.sgs-has-hover-scale:hover,
+	.sgs-has-hover-lift:hover {
+		transform: none;
 	}
 }
 

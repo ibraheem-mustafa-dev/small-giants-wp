@@ -71,8 +71,11 @@ const ATTR_RE = /\b((?:sgs|fx)[A-Za-z0-9]*)\s*:\s*\{([^}]*)\}/g;
 const TYPE_RE = /\btype\s*:\s*["'](string|number|boolean|array|object)["']/;
 
 function collectAttributes() {
+	// Recursive: an extension split into a folder (extensions/hover-effects/)
+	// declares its attributes in a file below the top level.
 	const files = fs
-		.readdirSync( EXT_DIR )
+		.readdirSync( EXT_DIR, { recursive: true } )
+		.map( ( f ) => String( f ) )
 		.filter( ( f ) => f.endsWith( '.js' ) )
 		.sort();
 
@@ -124,7 +127,7 @@ function renderPhp( attrs ) {
 		' * Regenerate with `npm run build` (or `node scripts/generate-extension-attributes.js`).'
 	);
 	lines.push(
-		' * Single source of truth = the `sgs*` attribute definitions in src/blocks/extensions/*.js.'
+		' * Single source of truth = the `sgs*` attribute definitions in src/blocks/extensions/**/*.js.'
 	);
 	lines.push( ' *' );
 	lines.push( ' * @package SGS\\Blocks' );

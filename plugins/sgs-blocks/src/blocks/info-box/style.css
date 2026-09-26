@@ -323,3 +323,19 @@
 		transition: none;
 	}
 }
+
+/* Hover photo zoom (hover extension, `sgs-has-img-zoom`): the image of an
+   sgs/media child grows inside its own box. */
+.sgs-info-box.sgs-has-img-zoom .wp-block-sgs-media {
+	overflow: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-info-box.sgs-has-img-zoom .wp-block-sgs-media .sgs-media-el {
+		transition: transform var(--sgs-hover-zoom-duration, 0.5s) ease;
+	}
+
+	.sgs-info-box.sgs-has-img-zoom:hover .wp-block-sgs-media .sgs-media-el {
+		transform: scale(var(--sgs-hover-zoom, 1.1));
+	}
+}
