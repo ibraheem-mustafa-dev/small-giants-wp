@@ -34,6 +34,9 @@ import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from
 // file; this module only mounts them. See FloatControls.js.
 import FloatControls from './components/FloatControls';
 import { floatPreview, floatResetAttributes } from './float-preview';
+// Section-adaptive ink (Wave 3C U-13) — its own panel, independent of the
+// "Header behaviour" ToolsPanel below (sectionInk is its own feature).
+import SectionInkPanel from './section-ink-panel';
 
 /**
  * Does a tri-state {desktop,tablet,mobile} behaviour object resolve 'on' at
@@ -1278,6 +1281,17 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						</ToolsPanelItem>
 					) }
 				</ToolsPanel>
+			</InspectorControls>
+
+			{ /* "Colour over sections" (Wave 3C U-13, §4.4) — independent
+			     feature from the behaviour ToolsPanel above, so it gets its
+			     own panel rather than another ToolsPanelItem there. */ }
+			<InspectorControls group="settings">
+				<SectionInkPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					colourPalette={ colourPalette }
+				/>
 			</InspectorControls>
 
 			{ /* Styles tab — FR-37-28 layout preset. Simple (default-visible)

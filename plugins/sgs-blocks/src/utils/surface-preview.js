@@ -43,7 +43,16 @@ export function wrapperToneClass( attributes, palette, gradients = [] ) {
 		backgroundImage,
 		backgroundColourGradient,
 		backgroundColour,
+		surfaceTone,
 	} = attributes || {};
+	// "Surface tone" set to Light or Dark overrides the judgement, exactly as
+	// SGS_Container_Wrapper does on the frontend.
+	if ( 'dark' === surfaceTone ) {
+		return 'sgs-on-dark';
+	}
+	if ( 'light' === surfaceTone ) {
+		return 'sgs-on-light';
+	}
 	const opacityDesktop =
 		backgroundOverlayOpacity && 'object' === typeof backgroundOverlayOpacity
 			? backgroundOverlayOpacity.desktop

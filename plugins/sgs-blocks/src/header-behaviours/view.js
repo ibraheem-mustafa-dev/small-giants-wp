@@ -66,8 +66,170 @@
 
 /* global ResizeObserver */
 
+import { decideSectionTone } from './header-ink-tone.js';
+
 ( function () {
 	'use strict';
+
+	/**
+	 * Section-adaptive header ink (Wave 3C U-13, §4.2) — exclusion selectors.
+	 * Never look inside another header, a `<dialog>` (the drawer), the mega
+	 * panel (a plain `div`, not a popover — cannot be excluded via `:popover-open`)
+	 * or the detached burger chip (`.sgs-nav-bar-menu__detach`, printed at
+	 * wp_footer by includes/nav-detach-chip.php).
+	 */
+	const SGS_INK_EXCLUDED_SELECTOR =
+		'header.sgs-site-header, dialog, .wp-block-sgs-mega-panel, .sgs-nav-bar-menu__detach';
+
+	/**
+	 * Build a plain tone-decision descriptor from a real DOM element — the
+	 * only place `getComputedStyle()`/`classList` are read for this feature,
+	 * so `decideSectionTone()` itself stays pure and unit-testable.
+	 *
+	 * @param {Element} el
+	 * @return {Object} See header-ink-tone.js::classifyStackElement().
+	 */
+	function sgsInkDescribeElement( el ) {
+		const cs = window.getComputedStyle( el );
+		return {
+			tagName: el.tagName,
+			hasToneClassDark: el.classList.contains( 'sgs-on-dark' ),
+			hasToneClassLight: el.classList.contains( 'sgs-on-light' ),
+			hasBackgroundImage: 'none' !== cs.backgroundImage,
+			backgroundColor: cs.backgroundColor,
+		};
+	}
+
+	/**
+	 * Read the section behind ONE point and decide its tone, per §4.2.
+	 *
+	 * @param {number} x Viewport x.
+	 * @param {number} y Viewport y.
+	 * @return {'dark'|'light'|'unknown'|null}
+	 */
+	function sgsResolveSectionToneAt( x, y ) {
+		if ( 'function' !== typeof document.elementsFromPoint ) {
+			return null;
+		}
+		const stack = document
+			.elementsFromPoint( x, y )
+			.filter( function ( el ) {
+				return ! el.closest || ! el.closest( SGS_INK_EXCLUDED_SELECTOR );
+			} )
+			.map( sgsInkDescribeElement );
+		return decideSectionTone( stack );
+	}
+
+	/**
+	 * Wire up section-adaptive ink for ONE header (Wave 3C U-13, §4.2).
+	 *
+	 * Its OWN listener start — deliberately NOT gated by
+	 * `data-sgs-header-scroll-behaviours` (that attr is emitted only for
+	 * Transparent/Shrink/Hide-on-scroll), so a header using section ink alone
+	 * still gets its tone read. Skipped entirely when the header carries no
+	 * `data-sgs-header-ink` (emitted server-side only when some tier resolves
+	 * `adapt` — `blend` needs no JS at all).
+	 *
+	 * rAF-coalesced scroll/resize/load, and skips a tick when `scrollY` has
+	 * moved under 4px since the last measurement (the section under a fixed
+	 * point rarely changes on a sub-pixel scroll, and this keeps the
+	 * `elementsFromPoint()` cost off every single scroll frame).
+	 *
+	 * @param {HTMLElement} header
+	 */
+	function initSectionInk( header ) {
+		const liveAttr = header.dataset.sgsHeaderInk;
+		if ( ! liveAttr ) {
+			return;
+		}
+
+		// `<tier>:<always|rest|scrolled>` pairs (render.php, from
+		// sgs_header_ink_live_state()): where and in which scroll state the
+		// tone classes may be set. Outside that window both classes are
+		// removed, so the ink, the tone fill and the logo's ground response
+		// all stand down together.
+		const liveByTier = {};
+		liveAttr.split( /\s+/ ).forEach( function ( pair ) {
+			const parts = pair.split( ':' );
+			if ( 2 === parts.length ) {
+				liveByTier[ parts[ 0 ] ] = parts[ 1 ];
+			}
+		} );
+
+		function isLive() {
+			const state = liveByTier[ getCurrentDeviceTier() ];
+			if ( 'always' === state ) {
+				return true;
+			}
+			const scrolled = header.classList.contains( 'is-header-scrolled' );
+			return ( 'rest' === state && ! scrolled ) || ( 'scrolled' === state && scrolled );
+		}
+
+		let rafScheduled = false;
+		let lastMeasuredScrollY = null;
+
+		function apply() {
+			let tone = '';
+			if ( isLive() ) {
+				const rect = header.getBoundingClientRect();
+				// The switch point is the header's OWN vertical midpoint (§4.2),
+				// where its ink sits.
+				tone = sgsResolveSectionToneAt(
+					rect.left + rect.width / 2,
+					rect.top + rect.height / 2
+				);
+			}
+			header.classList.toggle( 'is-header-on-dark', 'dark' === tone );
+			header.classList.toggle( 'is-header-on-light', 'light' === tone );
+		}
+
+		function tick() {
+			rafScheduled = false;
+			const scrollY = window.scrollY;
+			if (
+				null !== lastMeasuredScrollY &&
+				Math.abs( scrollY - lastMeasuredScrollY ) < 4
+			) {
+				return;
+			}
+			lastMeasuredScrollY = scrollY;
+			apply();
+		}
+
+		function schedule() {
+			if ( ! rafScheduled ) {
+				rafScheduled = true;
+				window.requestAnimationFrame( tick );
+			}
+		}
+
+		function forceSchedule() {
+			// A resize or a scroll-state flip changes the answer without the
+			// page moving, so it bypasses the 4px skip.
+			lastMeasuredScrollY = null;
+			schedule();
+		}
+
+		window.addEventListener( 'scroll', schedule, { passive: true } );
+		window.addEventListener( 'resize', forceSchedule, { passive: true } );
+		window.addEventListener( 'load', apply );
+
+		// `is-header-scrolled` is toggled by initScrollBehaviours() in its own
+		// frame; a 'rest' or 'scrolled' window must re-check when it flips.
+		let wasScrolled = header.classList.contains( 'is-header-scrolled' );
+		new window.MutationObserver( function () {
+			const scrolled = header.classList.contains( 'is-header-scrolled' );
+			if ( scrolled !== wasScrolled ) {
+				wasScrolled = scrolled;
+				forceSchedule();
+			}
+		} ).observe( header, { attributes: true, attributeFilter: [ 'class' ] } );
+
+		// Run once immediately — a page loaded mid-scroll (browser
+		// back-navigation) or a resize-only layout shift must not wait for a
+		// scroll event that may never come.
+		apply();
+	}
 
 	/**
 	 * Locate EVERY header element on the page, in document order.
@@ -668,6 +830,10 @@
 			// exists. Per instance: each header reads its own data-attr and
 			// keeps its own scroll bookkeeping inside the call.
 			initScrollBehaviours( header );
+
+			// Section-adaptive ink (Wave 3C U-13) — its own independent listener
+			// start; only active when the header carries `data-sgs-header-ink`.
+			initSectionInk( header );
 
 			// FR-37-40 silent-failure guard — advisory console warning only,
 			// never a gate, and silent unless sticky was actually requested.

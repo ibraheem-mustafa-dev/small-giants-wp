@@ -264,6 +264,11 @@
 		"backgroundImageMobile": {
 			"type": "object"
 		},
+		"surfaceTone": {
+			"type": "string",
+			"enum": [ "auto", "light", "dark" ],
+			"default": "auto"
+		},
 		"backgroundSize": {
 			"type": "string",
 			"default": "cover",

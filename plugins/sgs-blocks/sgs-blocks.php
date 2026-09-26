@@ -99,6 +99,14 @@ require_once SGS_BLOCKS_PATH . 'includes/heading-anchors.php';
 // Device visibility — server-side class injection for show/hide per device.
 require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
 
+// Media top tone (U-13 §4.3) — measures a new image upload's top-20% tone at
+// `wp_generate_attachment_metadata` time and stores `_sgs_top_tone` meta, so
+// helpers-surface-tone.php's image layer (loaded per-render via
+// render-helpers.php) can read a real answer instead of always returning ''.
+// Loaded here (plugin-wide, every request) rather than only from the WP-CLI
+// block above — the upload filter must run on ordinary admin/REST uploads too.
+require_once SGS_BLOCKS_PATH . 'includes/media-top-tone.php';
+
 // Conditional visibility — server-side block suppression by rules (login, date, etc).
 require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
 
@@ -596,6 +604,13 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	// fallback in helpers-tokens.php).
 	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-colour-audit-cli-commands.php';
 	\WP_CLI::add_command( 'sgs audit-colour-tokens', Sgs_Colour_Audit_Cli_Commands::class );
+
+	// Media top-tone backfill (U-13 §4.3) — measures existing image attachments'
+	// `_sgs_top_tone` meta; new uploads are measured automatically by the
+	// `wp_generate_attachment_metadata` filter in media-top-tone.php (loaded
+	// unconditionally below, not just here).
+	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-media-cli-commands.php';
+	\WP_CLI::add_command( 'sgs media', Sgs_Media_Cli_Commands::class );
 }
 
 SGS_Blocks::instance();

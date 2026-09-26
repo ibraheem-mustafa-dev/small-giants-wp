@@ -529,6 +529,12 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'rowShrinkHideTarget',
 	'headerTransparentDirection',
 	'ariaLabel',
+	// NOT invisible: the canvas shows it as the wrapper's `sgs-on-dark`/`-light`
+	// class, but it is read inside `src/utils/surface-preview.js::wrapperToneClass()`,
+	// which receives the whole attributes object. That util is a function, not a
+	// JSX-mounted component, so this edit.js-plus-components corpus cannot see
+	// the read.
+	'surfaceTone',
 	// Client-set hover VALUES (2026-08-30) — see the mechanism note above.
 	'backgroundColourHover',
 	'backgroundColourHoverGradient',

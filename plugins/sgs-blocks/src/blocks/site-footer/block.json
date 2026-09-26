@@ -220,6 +220,11 @@
 		"backgroundImageTablet": {
 			"type": "object"
 		},
+		"surfaceTone": {
+			"type": "string",
+			"enum": [ "auto", "light", "dark" ],
+			"default": "auto"
+		},
 		"backgroundOverlayColour": {
 			"type": "string"
 		},

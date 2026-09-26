@@ -550,14 +550,14 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{ /* ── Panel: Dark-mode logo (U-17, design §3.1) — independent of
+				{ /* ── Panel: Logo for dark backgrounds (U-13 §4.5) — independent of
 				     animationSubstrate. ── */ }
 				<PanelBody
-					title={ __( 'Dark-mode logo', 'sgs-blocks' ) }
+					title={ __( 'Logo for dark backgrounds', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<p className="sgs-responsive-logo-editor__panel-hint">
-						{ __( 'Shown in place of the logo above when the site is in dark mode. Leave empty to use the same logo in both modes.', 'sgs-blocks' ) }
+						{ __( 'Shown in dark mode and wherever the logo sits on a dark background: a dark section or footer, or a header passing over a dark section. Leave empty to use the same logo everywhere.', 'sgs-blocks' ) }
 					</p>
 					<MediaUploadCheck>
 						<div className="sgs-responsive-logo-editor__slot">
@@ -573,7 +573,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										isDestructive
 										size="small"
 									>
-										{ __( 'Remove dark-mode logo', 'sgs-blocks' ) }
+										{ __( 'Remove logo for dark backgrounds', 'sgs-blocks' ) }
 									</Button>
 								</>
 							) : (
@@ -583,7 +583,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									value={ darkLogoId }
 									render={ ( { open } ) => (
 										<Button variant="secondary" onClick={ open }>
-											{ __( 'Select dark-mode logo', 'sgs-blocks' ) }
+											{ __( 'Select logo for dark backgrounds', 'sgs-blocks' ) }
 										</Button>
 									) }
 								/>
@@ -782,23 +782,26 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* ── Colour treatment: forces the logo IMAGE white -- for a
 				   full-colour logo dropped onto a dark surface (e.g. inside
 				   sgs/site-footer). Distinct from the background-colour tile
-				   above, which paints the wrapper, not the image itself. ── */ }
+				   above, which paints the wrapper, not the image itself.
+				   'auto' (U-13 §4.5) whitens only on a dark ground -- same
+				   signals as the "Logo for dark backgrounds" panel above. ── */ }
 				<PanelBody title={ __( 'Colour treatment', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToggleGroupControl
+					<SelectControl
 						label={ __( 'Logo image colour', 'sgs-blocks' ) }
 						help={ __(
-							'Force the logo image to pure white -- useful when the logo sits on a dark background.',
+							'Turn the logo image pure white, always or only where it sits on a dark background.',
 							'sgs-blocks'
 						) }
 						value={ attributes.colourTreatment || '' }
+						options={ [
+							{ value: '', label: __( 'As uploaded', 'sgs-blocks' ) },
+							{ value: 'white', label: __( 'Force white', 'sgs-blocks' ) },
+							{ value: 'auto', label: __( 'Automatic (white on dark backgrounds)', 'sgs-blocks' ) },
+						] }
 						onChange={ ( val ) => setAttributes( { colourTreatment: val || '' } ) }
-						isBlock
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
-					>
-						<ToggleGroupControlOption value="" label={ __( 'As uploaded', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="white" label={ __( 'Force white', 'sgs-blocks' ) } />
-					</ToggleGroupControl>
+					/>
 				</PanelBody>
 
 				{ /* ── Panel 5: Border ── */ }

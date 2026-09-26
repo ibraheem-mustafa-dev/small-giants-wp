@@ -246,6 +246,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"surfaceTone": {
+			"type": "string",
+			"enum": [ "auto", "light", "dark" ],
+			"default": "auto"
+		},
 		"backgroundColourGradient": {
 			"type": "string",
 			"default": ""
@@ -273,6 +278,70 @@
 				"transparent-first",
 				"solid-first"
 			]
+		},
+		"sectionInk": {
+			"type": "object",
+			"default": {},
+			"description": "Wave 3C U-13 — per-tier: off (default) | adapt | blend. adapt: the header's ink (and, where a tone fill is set, its fill) follows the section behind it, read live by header-behaviours/view.js and toggled as is-header-on-dark/is-header-on-light. blend: mix-blend-mode:difference on the header's rows, no JS. Emitted by includes/sgs-header-ink-css.php, gated to where the header is see-through or a tone fill is set — an opaque header with no tone fill keeps reading against its own fill."
+		},
+		"inkOnLight": {
+			"type": "string",
+			"default": "",
+			"description": "Ink colour when the section behind the header is light. Empty resolves to var(--wp--preset--color--text)."
+		},
+		"inkOnDark": {
+			"type": "string",
+			"default": "",
+			"description": "Ink colour when the section behind the header is dark. Empty resolves to var(--wp--preset--color--text-inverse)."
+		},
+		"fillOnLight": {
+			"type": "string",
+			"default": "",
+			"description": "Header fill over a light section. Empty means the fill is unchanged (ink-only adaptation)."
+		},
+		"fillOnDark": {
+			"type": "string",
+			"default": "",
+			"description": "Header fill over a dark section. Empty means the fill is unchanged (ink-only adaptation)."
+		},
+		"fillOnLightGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient sibling of fillOnLight; non-empty wins over the flat colour."
+		},
+		"fillOnDarkGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient sibling of fillOnDark; non-empty wins over the flat colour."
+		},
+		"inkDuration": {
+			"type": "number",
+			"default": 400,
+			"description": "Ink/fill transition duration in ms. 0 = instant. Reduced motion always forces instant."
+		},
+		"inkEasing": {
+			"type": "string",
+			"default": "ease",
+			"enum": [
+				"ease",
+				"ease-out-css",
+				"ease-in-out",
+				"default",
+				"ease-out",
+				"quart-out",
+				"standard",
+				"drafts",
+				"ease-in",
+				"spring",
+				"linear",
+				"custom"
+			],
+			"description": "Speed curve for the ink/fill transition, from the shared motion easing list (includes/helpers-motion-easing.php::sgs_motion_easing_values(), same vocabulary as U-5)."
+		},
+		"inkEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A cubic-bezier() curve, read only when inkEasing is custom. Validated; an invalid curve falls back to ease."
 		},
 		"backgroundAttachment": {
 			"type": "string",

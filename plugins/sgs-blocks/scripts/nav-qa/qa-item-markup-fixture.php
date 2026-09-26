@@ -22,6 +22,12 @@
  *               desktop with the burger magnet on (M-39).
  *   detach-chip exit-cells plus buck's detaching chip at desktop (M-08): the header does not stick, the chip
  *               waits for 330px of scroll, 68.6px, 48px from the side and 32px from the top.
+ *   section-ink U-13 (design .claude/reports/2026-09-26-u13-header-ink-design.md): exit-cells plus a sticky,
+ *               see-through header with section ink on at every tier on wearecollins' pair (#140700 on
+ *               light, #f8f8f7 on dark, 400ms), over page /qa-section-ink/ (created once, kept): a light
+ *               section, a dark section, a photo section with no overlay (attachment 3459, toned by
+ *               `wp sgs media measure-tone`) and a plain core/group with a dark fill (the browser-side
+ *               fallback). section-ink-off is the same with section ink off (the negative control).
  *   restore     put the pre-fixture bodies back.
  */
 
@@ -62,7 +68,7 @@ if ( 'restore' === $case ) {
 	return;
 }
 
-if ( ! in_array( $case, array( 'exit-cells', 'two-bar', 'header-row', 'detach-chip' ), true ) ) {
+if ( ! in_array( $case, array( 'exit-cells', 'two-bar', 'header-row', 'detach-chip', 'section-ink', 'section-ink-off' ), true ) ) {
 	echo "unknown case {$case}\n";
 	return;
 }
@@ -187,6 +193,59 @@ if ( 'detach-chip' === $case ) {
 		'triggerDetachOffset' => array( 'desktop' => array( 'x' => 48, 'y' => 32 ) ),
 	);
 	$header_set  = array( 'headerSticky' => array( 'desktop' => 'off' ) );
+}
+
+if ( 'section-ink' === $case || 'section-ink-off' === $case ) {
+	$all_tiers  = static function ( $value ) {
+		return array( 'desktop' => $value, 'tablet' => $value, 'mobile' => $value );
+	};
+	$header_set = array(
+		'headerSticky'      => $all_tiers( 'on' ),
+		'headerTransparent' => $all_tiers( 'on' ),
+		'sectionInk'        => $all_tiers( 'section-ink' === $case ? 'adapt' : 'off' ),
+		'inkOnLight'        => '#140700',
+		'inkOnDark'         => '#f8f8f7',
+		'inkDuration'       => 400,
+	);
+
+	$ink_page = get_page_by_path( 'qa-section-ink' );
+	if ( ! $ink_page ) {
+		$photo   = (int) $media_thumb;
+		$section = static function ( array $attrs, string $label ): string {
+			$attrs['minHeight'] = array( 'desktop' => '900px' );
+			return '<!-- wp:sgs/container ' . serialize_block_attributes( $attrs ) . ' -->'
+				. '<!-- wp:paragraph --><p>' . esc_html( $label ) . '</p><!-- /wp:paragraph -->'
+				. '<!-- /wp:sgs/container -->';
+		};
+		$content  = $section( array( 'backgroundColour' => '#ffffff' ), 'Light section' );
+		$content .= $section( array( 'backgroundColour' => '#140700' ), 'Dark section' );
+		$content .= $section(
+			array(
+				'backgroundImage'          => array(
+					'id'  => $photo,
+					'url' => (string) wp_get_attachment_url( $photo ),
+					'alt' => '',
+				),
+				'backgroundOverlayOpacity' => array( 'desktop' => 0 ),
+			),
+			'Photo section'
+		);
+		$content .= '<!-- wp:group {"style":{"color":{"background":"#1a1a2e"},"dimensions":{"minHeight":"900px"}}} -->'
+			. '<div class="wp-block-group has-background" style="background-color:#1a1a2e;min-height:900px">'
+			. '<!-- wp:paragraph --><p>Plain group, dark fill</p><!-- /wp:paragraph --></div><!-- /wp:group -->';
+		$content .= $section( array( 'backgroundColour' => '#ffffff' ), 'Light again' );
+		wp_insert_post(
+			wp_slash(
+				array(
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_title'   => 'QA section ink',
+					'post_name'    => 'qa-section-ink',
+					'post_content' => $content,
+				)
+			)
+		);
+	}
 }
 
 $d = $merge( get_post_field( 'post_content', $drawer_id ), 'sgs/nav-drawer-menu', $menu_set );

@@ -19,7 +19,7 @@ require_once __DIR__ . '/helpers-gradient-tone.php';
  * Each entry of $layers is one of:
  *   - array('colour' => string, 'opacity' => float 0..1)
  *   - array('gradient' => string, 'opacity' => float 0..1)
- *   - array('image' => true)
+ *   - array('image' => true, 'attachment_id' => int (optional))
  *
  * Walks top-down, accumulating opacity. The first layer that brings the
  * accumulated opacity to >= 0.5 decides the result:
@@ -31,9 +31,14 @@ require_once __DIR__ . '/helpers-gradient-tone.php';
  *     returns ''.
  *   - gradient: sgs_gradient_tone() of the (validated) gradient string. An
  *     unresolvable stop: ''.
- *   - image: an image is never sampled. Reaching an image layer without a
- *     decisive overlay above it: ''. Nothing below an image is examined —
- *     the image is assumed opaque.
+ *   - image: never sampled directly at render time, BUT when the layer
+ *     carries an `attachment_id` whose top-20% tone was already measured at
+ *     upload (`_sgs_top_tone` meta — media-top-tone.php::sgs_media_top_tone(),
+ *     U-13 §4.3), that measured tone decides immediately. Without a
+ *     resolvable attachment_id, or with no measured tone (a failed read, an
+ *     external URL, or an image uploaded before this shipped): reaching an
+ *     image layer without a decisive overlay above it gives ''. Nothing
+ *     below an image is examined either way — the image is assumed opaque.
  *   - Nothing ever reaches 0.5 accumulated opacity: ''.
  *
  * @param array<int, array<string, mixed>> $layers Top-down painted layers.
@@ -89,8 +94,19 @@ function sgs_surface_tone( array $layers ): string {
 		}
 
 		if ( ! empty( $layer['image'] ) ) {
+			// U-13 §4.3: a measured top tone (from upload-time analysis) decides
+			// immediately, treating the image as opaque — same as an unanalysed
+			// image, just with a real answer instead of ''.
+			if ( ! empty( $layer['attachment_id'] ) && function_exists( 'sgs_media_top_tone' ) ) {
+				$measured_tone = sgs_media_top_tone( (int) $layer['attachment_id'] );
+				if ( '' !== $measured_tone ) {
+					return $measured_tone;
+				}
+			}
+
 			// No overlay above this point reached 0.5 (we would already have
-			// returned): the image is unanalysed and blocks everything below it.
+			// returned) and no measured tone: the image is unanalysed and
+			// blocks everything below it.
 			return '';
 		}
 

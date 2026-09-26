@@ -214,7 +214,7 @@
 		"darkLogoId": {
 			"type": "number",
 			"default": 0,
-			"_comment": "U-17 (design §3.1). Media library attachment ID for a dark-mode logo variant, shown in place of the light logo under :root[data-theme=\"dark\"] and :root[data-theme=\"auto\"][data-prefers-dark=\"true\"]. Independent of animationSubstrate/colourTreatment."
+			"_comment": "U-13 §4.5 (was U-17 design §3.1). Media library attachment ID for a dark-mode logo variant. Shown wherever the logo sits on a dark ground: site dark mode (:root[data-theme=\"dark\"] / :root[data-theme=\"auto\"][data-prefers-dark=\"true\"]), a nearer static section tone (ancestor .sgs-on-dark, stamped by helpers-surface-tone.php), or a header's live scroll state (ancestor .sgs-site-header.is-header-on-dark). A nearer .sgs-on-light ancestor, or the header's own .is-header-on-light state, shows the normal logo even under site dark mode -- live header state outranks a static section class. Independent of animationSubstrate. Interacts with colourTreatment: when this dark variant is showing, colourTreatment 'auto' never applies its white filter to it (the dedicated dark logo always wins over the filter)."
 		},
 		"width": {
 			"type": "number",
@@ -293,9 +293,9 @@
 		},
 		"colourTreatment": {
 			"type": "string",
-			"enum": [ "", "white" ],
+			"enum": [ "", "white", "auto" ],
 			"default": "",
-			"description": "Forces the logo IMAGE (not its background tile) to pure white via a CSS filter -- for a full-colour logo dropped onto a dark surface (e.g. sgs/site-footer). '' = no override, the image renders as uploaded."
+			"description": "Forces the logo IMAGE (not its background tile) to pure white via a CSS filter. '' = no override, the image renders as uploaded. 'white' = always white, regardless of ground. 'auto' (U-13 §4.5) = white only wherever the logo sits on a dark ground (same signals as darkLogoId: site dark mode, nearest static section tone, live header scroll state) -- never on a light ground, and never on a dedicated dark-logo image that is currently showing (darkLogoId wins over the filter)."
 		},
 		"borderStyle": {
 			"type": "string",

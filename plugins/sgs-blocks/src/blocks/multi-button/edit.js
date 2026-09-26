@@ -75,7 +75,7 @@ const ALIGN_ITEMS_OPTIONS_WITH_INHERIT = [
 	...ALIGN_ITEMS_OPTIONS,
 ];
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const {
 		// `flexDirection`/`flexWrap`/`justifyContent`/`alignItems` are now TIER
 		// OBJECTS (Spec 35 pass, {desktop,tablet,mobile}) — the legacy
@@ -514,7 +514,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				    gradient/hover/hoverGradient) lives in the SgsColourPanel mount
 				    above (mandatory shared colour control, self-routing) — this
 				    panel is the fill cluster's remaining, non-colour half. */ }
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
 				{ /* ── Layout (TIER 2 property-family panel for `group`'s layout
 				    cluster) — merges the former separate "Padding & margin" /

@@ -1796,7 +1796,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			if ( $has_bg_image ) {
-				$tone_layers[] = array( 'image' => true );
+				// U-13 §4.3: pass the attachment id through so sgs_surface_tone()
+				// can read its measured `_sgs_top_tone` meta instead of always
+				// returning '' for a photo background.
+				$tone_layers[] = array(
+					'image'         => true,
+					'attachment_id' => ! empty( $bg_image['id'] ) ? absint( $bg_image['id'] ) : 0,
+				);
 			}
 
 			$tone_bg_gradient = $attributes['backgroundColourGradient'] ?? '';
@@ -1815,7 +1821,29 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				);
 			}
 
-			$tone_class = function_exists( 'sgs_surface_tone_class' ) ? sgs_surface_tone_class( $tone_layers ) : '';
+			// Surface tone override ('auto' | 'light' | 'dark', U-13 §4.3/§4.4):
+			// lets an operator override the automatic judgement above for a
+			// section whose picture misleads (a light sky over a dark subject).
+			// 'light'/'dark' stamp the class directly and skip
+			// sgs_surface_tone_class() (and its layer walk) entirely; 'auto'
+			// (default, and any invalid stored value) keeps today's judged
+			// behaviour unchanged.
+			$surface_tone_override = $attributes['surfaceTone'] ?? 'auto';
+			if ( ! in_array( $surface_tone_override, array( 'auto', 'light', 'dark' ), true ) ) {
+				$surface_tone_override = 'auto';
+			}
+
+			if ( 'dark' === $surface_tone_override ) {
+				if ( function_exists( 'sgs_shadow_dark_enqueue' ) ) {
+					sgs_shadow_dark_enqueue();
+				}
+				$tone_class = 'sgs-on-dark';
+			} elseif ( 'light' === $surface_tone_override ) {
+				$tone_class = 'sgs-on-light';
+			} else {
+				$tone_class = function_exists( 'sgs_surface_tone_class' ) ? sgs_surface_tone_class( $tone_layers ) : '';
+			}
+
 			if ( '' !== $tone_class ) {
 				$classes[] = $tone_class;
 			}

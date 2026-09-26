@@ -358,11 +358,25 @@ if ( '' !== $bg_hover_decl ) {
 // --- Colour treatment — forces the IMAGE (not the wrapper background above)
 // to pure white, for a full-colour logo dropped onto a dark surface (e.g.
 // inside sgs/site-footer). Targets every <img> the block can render (desktop/
-// tablet/mobile picture sources all share this class name). ---
-$colour_treatment = isset( $attributes['colourTreatment'] ) && 'white' === $attributes['colourTreatment'] ? 'white' : '';
+// tablet/mobile picture sources all share this class name). 'white' is an
+// unconditional operator choice, emitted here as instance CSS. 'auto' instead
+// applies only where the logo actually sits on a dark ground — that check
+// depends on ANCESTOR classes (static section tone, live header scroll state)
+// this render pass cannot see, so it is a class flag only; style.scss carries
+// the ground-conditional rules (§4.5 "The logo responds to its ground"). ---
+$colour_treatment = isset( $attributes['colourTreatment'] ) ? (string) $attributes['colourTreatment'] : '';
+if ( ! in_array( $colour_treatment, array( '', 'white', 'auto' ), true ) ) {
+	$colour_treatment = '';
+}
 if ( 'white' === $colour_treatment ) {
 	$scoped_css[] = "{$sel} img{filter:brightness(0) invert(1);}";
 }
+$colour_auto_modifier = 'auto' === $colour_treatment ? ' sgs-responsive-logo--colour-auto' : '';
+
+// --- Ground-response modifier classes (U-13 §4.5) — style.scss reads these
+// alongside the ancestor tone/header-state classes it already targets for the
+// dark-mode logo variant; see the "Ground response" section there. ---
+$has_dark_logo_modifier = '' !== $dark_logo_url ? ' sgs-responsive-logo--has-dark-logo' : '';
 
 $border_radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_base       = $border_radius_tiers['base'];
@@ -531,7 +545,7 @@ if ( $mobile_decls ) {
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
-		'class'          => 'sgs-responsive-logo' . $animation_modifier . ' ' . $uid,
+		'class'          => 'sgs-responsive-logo' . $animation_modifier . $has_dark_logo_modifier . $colour_auto_modifier . ' ' . $uid,
 		'data-animation' => 'none' !== $animation_style ? esc_attr( $animation_style ) : false,
 	)
 );

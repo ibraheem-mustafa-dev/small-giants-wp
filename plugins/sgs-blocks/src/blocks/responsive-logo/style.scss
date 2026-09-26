@@ -70,8 +70,12 @@
 	// ── Dark-mode logo variant (U-17, design §3.1) ──────────────────────────────
 	// Shares the light logo's box (absolutely positioned on top of it) so it
 	// inherits that box's size rather than imposing its own intrinsic one.
-	// Hidden by default; shown — with the light logo hidden — under an
-	// explicit dark theme or an auto theme currently resolving dark.
+	// Hidden by default; shown — with the light logo hidden — per the ground
+	// rules below. Every breakpoint's <img> shares this ONE class (render.php:
+	// desktop/tablet/mobile are all `<picture><source media="…">…<img
+	// class="sgs-responsive-logo__image--desktop">`, the browser swaps the
+	// SOURCE the <img> resolves, never the class) — so hiding/showing this
+	// single class already covers every tier, no per-breakpoint class needed.
 	&__dark {
 		display: none;
 		position: absolute;
@@ -81,15 +85,172 @@
 		object-fit: contain;
 	}
 
-	:root[data-theme='dark'] &,
-	:root[data-theme='auto'][data-prefers-dark='true'] & {
-		.sgs-responsive-logo__image--desktop,
-		.sgs-responsive-logo__lottie {
-			display: none;
+	// ── Ground response (U-13 §4.5, "the logo responds to its ground") ─────────
+	// The logo reads its OWN ground wherever it sits (header, footer, drawer,
+	// section) and swaps to the dark-background logo (darkLogoId). Signals,
+	// precedence highest to lowest:
+	//   1. a live header scroll state — `is-header-on-dark`/`is-header-on-light`
+	//      toggled on the ancestor `.sgs-site-header` as the page scrolls;
+	//   2. the nearest static section tone — `sgs-on-dark`/`sgs-on-light`,
+	//      stamped server-side by helpers-surface-tone.php on every
+	//      section-kind ancestor;
+	//   3. the site's own dark mode — `:root[data-theme]`.
+	// This whole block only exists while a dark variant is actually set
+	// (darkLogoId empty = "use the same logo everywhere": no swap, nothing
+	// below applies, matching the editor's own help text).
+	//
+	// Precedence is built from selector SPECIFICITY, not just source order, so
+	// it holds regardless of where these rules land in the compiled sheet:
+	// `:where()` strips the site-dark-mode selector's own specificity so it
+	// contributes nothing beyond `&` — any static ground selector (one real
+	// class) then always outranks it. A static ground and a live header state
+	// tie at equal specificity when both match; the header rules are declared
+	// LAST so the cascade's own tie-break (later wins) gives the live state
+	// the final word, matching "live header state outranks a static section
+	// class". One level of `sgs-on-dark`/`sgs-on-light` nesting is handled
+	// explicitly, both directions (a nearer light ground inside a dark one,
+	// and the reverse) — a deeper nest repeats the same nearest-ancestor
+	// pairing, which the browser resolves the same way.
+	&.sgs-responsive-logo--has-dark-logo {
+
+		// Tier 3 (lowest precedence) — site dark mode.
+		:where( :root[ data-theme='dark' ] ) &,
+		:where( :root[ data-theme='auto' ][ data-prefers-dark='true' ] ) & {
+			.sgs-responsive-logo__image--desktop,
+			.sgs-responsive-logo__lottie {
+				display: none;
+			}
+
+			.sgs-responsive-logo__dark {
+				display: block;
+			}
 		}
 
-		.sgs-responsive-logo__dark {
-			display: block;
+		// Tier 2 — nearest static section ground.
+		.sgs-on-dark & {
+			.sgs-responsive-logo__image--desktop,
+			.sgs-responsive-logo__lottie {
+				display: none;
+			}
+
+			.sgs-responsive-logo__dark {
+				display: block;
+			}
+		}
+
+		.sgs-on-light & {
+			.sgs-responsive-logo__image--desktop,
+			.sgs-responsive-logo__lottie {
+				display: block;
+			}
+
+			.sgs-responsive-logo__dark {
+				display: none;
+			}
+		}
+
+		// One level of nesting, explicit both directions.
+		.sgs-on-dark .sgs-on-light & {
+			.sgs-responsive-logo__image--desktop,
+			.sgs-responsive-logo__lottie {
+				display: block;
+			}
+
+			.sgs-responsive-logo__dark {
+				display: none;
+			}
+		}
+
+		.sgs-on-light .sgs-on-dark & {
+			.sgs-responsive-logo__image--desktop,
+			.sgs-responsive-logo__lottie {
+				display: none;
+			}
+
+			.sgs-responsive-logo__dark {
+				display: block;
+			}
+		}
+
+		// Tier 1 (highest precedence) — live header scroll state, declared
+		// last so an equal-specificity tie against the nesting tier above
+		// resolves in its favour.
+		.sgs-site-header.is-header-on-dark & {
+			.sgs-responsive-logo__image--desktop,
+			.sgs-responsive-logo__lottie {
+				display: none;
+			}
+
+			.sgs-responsive-logo__dark {
+				display: block;
+			}
+		}
+
+		.sgs-site-header.is-header-on-light & {
+			.sgs-responsive-logo__image--desktop,
+			.sgs-responsive-logo__lottie {
+				display: block;
+			}
+
+			.sgs-responsive-logo__dark {
+				display: none;
+			}
+		}
+	}
+
+	// ── Automatic colour treatment (U-13 §4.5) ──────────────────────────────────
+	// `colourTreatment: 'auto'` — same ground signals and precedence as above,
+	// but applies the plain white filter ('white' value's own CSS) instead of
+	// swapping images. Targets every <img> EXCEPT the dedicated dark-logo
+	// variant: when a dark logo is set and showing, it already IS the
+	// dark-background asset — it must never also be run through the filter.
+	&.sgs-responsive-logo--colour-auto {
+
+		// Tier 3 (lowest precedence) — site dark mode.
+		:where( :root[ data-theme='dark' ] ) &,
+		:where( :root[ data-theme='auto' ][ data-prefers-dark='true' ] ) & {
+			img:not( .sgs-responsive-logo__dark ) {
+				filter: brightness( 0 ) invert( 1 );
+			}
+		}
+
+		// Tier 2 — nearest static section ground.
+		.sgs-on-dark & {
+			img:not( .sgs-responsive-logo__dark ) {
+				filter: brightness( 0 ) invert( 1 );
+			}
+		}
+
+		.sgs-on-light & {
+			img:not( .sgs-responsive-logo__dark ) {
+				filter: none;
+			}
+		}
+
+		// One level of nesting, explicit both directions.
+		.sgs-on-dark .sgs-on-light & {
+			img:not( .sgs-responsive-logo__dark ) {
+				filter: none;
+			}
+		}
+
+		.sgs-on-light .sgs-on-dark & {
+			img:not( .sgs-responsive-logo__dark ) {
+				filter: brightness( 0 ) invert( 1 );
+			}
+		}
+
+		// Tier 1 (highest precedence) — live header scroll state, declared last.
+		.sgs-site-header.is-header-on-dark & {
+			img:not( .sgs-responsive-logo__dark ) {
+				filter: brightness( 0 ) invert( 1 );
+			}
+		}
+
+		.sgs-site-header.is-header-on-light & {
+			img:not( .sgs-responsive-logo__dark ) {
+				filter: none;
+			}
 		}
 	}
 

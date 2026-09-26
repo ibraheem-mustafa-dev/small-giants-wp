@@ -23,7 +23,7 @@ import {
 	TabPanel,
 	Notice,
 } from '@wordpress/components';
-import { ToolsPanel } from '../../../components/primitives';
+import { ToolsPanel, ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
 import {
 	ResponsiveControl,
 	DesignTokenPicker,
@@ -130,12 +130,22 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 		bgSvgAnimationSpeed = 'medium',
 		backgroundOverlayOpacity = 30,
 		backgroundOverlayBlendMode = 'normal',
+		backgroundOverlayColour = '',
+		overlayGradient = '',
+		surfaceTone = 'auto',
 		bgSvgOpacity = 100,
 		bgSvgTextShadow = false,
 		bgSvgMinHeight = '',
 	} = attributes;
 
 	const hasBgImage = !! backgroundImage?.url;
+	// U-13 §4.4 (design .claude/reports/2026-09-26-u13-header-ink-design.md):
+	// the advisory below fires only when a background image has NO decisive
+	// overlay above it — the exact gap sgs_surface_tone()'s image layer can't
+	// close on its own even with a measured `_sgs_top_tone` override present,
+	// because Automatic still means "trust the measurement", and the whole
+	// point of the notice is to flag when that trust might be misplaced.
+	const hasOverlayPaint = !! backgroundOverlayColour || !! overlayGradient;
 
 	return (
 		<PanelBody title={ __( 'Background', 'sgs-blocks' ) } initialOpen={ false }>
@@ -255,6 +265,47 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			{ /* Surface tone (U-13 §4.3/§4.4) — the "Surface tone: Automatic /
+			   Light / Dark" override on class-sgs-container-wrapper.php's
+			   automatic sgs-on-dark/sgs-on-light judgement. Gated on the block
+			   type actually declaring `surfaceTone` (read from the registered
+			   block type, same pattern the Surface ToolsPanel below uses for
+			   `surfaceBlur`) — `sgs/site-header` mounts this SAME shared panel
+			   but does not declare the attribute (owned by a concurrent U-13
+			   session), so this section correctly does not render there. */ }
+			{ getBlockType( name )?.attributes?.surfaceTone && (
+				<>
+					<hr style={ { margin: '16px 0' } } />
+					<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px' } }>
+						{ __( 'Surface tone', 'sgs-blocks' ) }
+					</p>
+					<ToggleGroupControl
+						label={ __( 'Surface tone', 'sgs-blocks' ) }
+						hideLabelFromVision
+						help={ __(
+							"Tells a see-through header and shadows whether this section reads as light or dark.",
+							'sgs-blocks'
+						) }
+						value={ surfaceTone }
+						onChange={ ( val ) => setAttributes( { surfaceTone: val || 'auto' } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="auto" label={ __( 'Automatic', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="light" label={ __( 'Light', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="dark" label={ __( 'Dark', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
+					{ hasBgImage && ! hasOverlayPaint && 'auto' === surfaceTone && (
+						<Notice isDismissible={ false } status="warning">
+							{ __(
+								"A header over this picture cannot tell whether it is light or dark.",
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
+				</>
+			) }
 			{ /* Surface ground (backdrop blur, saturate, and fill opacity where the block passes its own fill to sgs_surface_fill_alpha): shown only when the block type declares surfaceBlur, read from the registered block type. */ }
 			{ getBlockType( name )?.attributes?.surfaceBlur && (
 				<ToolsPanel

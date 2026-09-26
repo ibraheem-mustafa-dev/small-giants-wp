@@ -42,6 +42,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-force-solid.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-surface-ground.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-z-index.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-pass-through.php';
+require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-ink-css.php';
 
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation (class-sgs-container-wrapper.php)
@@ -400,22 +401,41 @@ $sh_shadow_scrolled_colour = isset( $attributes['shadowScrolledColour'] ) && is_
 $sh_shadow_scrolled_value  = sgs_shadow_value_composed( $sh_shadow_scrolled_shape, $sh_shadow_scrolled_colour );
 $sh_shadow_scrolled_on     = '' !== $sh_shadow_scrolled_value;
 
+// SECTION-ADAPTIVE INK (Wave 3C U-13, §4.1/§4.2) — resolved here, before the
+// shared `transition` list below, so its transition value can join the same
+// append/off pair Shrink's fallback and Hide-on-scroll already read. Reuses
+// $sh_transparent_effective/$sh_solid_first (the single resolver of which
+// state is see-through) and the resting fill already resolved above — never
+// a second resolution of either.
+$sh_ink = sgs_header_ink_css( $root_sel, $uid, $attributes, $sh_transparent_effective, $sh_solid_first, $sh_resting_bg_color, $sh_resting_bg_image );
+$css   .= $sh_ink['css'];
+
 // `transition` is a SHORTHAND that Shrink's fallback and Hide-on-scroll below
 // already write on this same selector, and a later shorthand replaces an earlier
-// one wholesale. So the shadow's easing is not a fourth writer: it is appended to
-// each of their lists (and stands in for their `transition:none` off-value), and
-// emitted on its own only as the base they override. Empty strings when no
-// scrolled shadow is set, which is what keeps their output unchanged.
-$sh_shadow_tx_append = $sh_shadow_scrolled_on ? ',box-shadow 200ms ease' : '';
-$sh_shadow_tx_off    = $sh_shadow_scrolled_on ? 'transition:box-shadow 200ms ease;' : 'transition:none;';
-
+// one wholesale. So the shadow's (and now the ink's) easing is not a fourth/fifth
+// writer: each is appended to every other's list (and stands in for the
+// `transition:none` off-value), and emitted on its own only as the base they
+// override. Empty strings when neither a scrolled shadow nor a painting ink
+// mode is set, which is what keeps their output unchanged.
+$sh_base_tx_parts = array();
 if ( $sh_shadow_scrolled_on ) {
+	$sh_base_tx_parts[] = 'box-shadow 200ms ease';
+}
+if ( '' !== $sh_ink['transition'] ) {
+	$sh_base_tx_parts[] = $sh_ink['transition'];
+}
+$sh_shadow_tx_append = $sh_base_tx_parts ? ',' . implode( ',', $sh_base_tx_parts ) : '';
+$sh_shadow_tx_off    = $sh_base_tx_parts ? 'transition:' . implode( ',', $sh_base_tx_parts ) . ';' : 'transition:none;';
+
+if ( $sh_shadow_scrolled_on || '' !== $sh_ink['transition'] ) {
 	// Eases in AND out: the resting rule carries the transition, so the return to
-	// the resting shadow (scrolling back to the top) animates as well. The
+	// the resting shadow/ink (scrolling back to the top) animates as well. The
 	// prefers-reduced-motion reset near the end of this file (`transition:none
 	// !important` on this selector) removes it for visitors who ask for no motion;
-	// the end-state shadow still applies.
-	$css .= $root_sel . '{transition:box-shadow 200ms ease;}';
+	// the end-state shadow/ink still applies.
+	$css .= $root_sel . '{transition:' . implode( ',', $sh_base_tx_parts ) . ';}';
+}
+if ( $sh_shadow_scrolled_on ) {
 	// The scrolled state is its own edge, so it carries its own forced-colours fallback.
 	$css .= $root_sel . '.is-header-scrolled{' . implode( ';', sgs_shadow_box_decls( $sh_shadow_scrolled_shape, $sh_shadow_scrolled_colour ) ) . ';}';
 }
@@ -608,9 +628,21 @@ $sh_scroll_behaviour_on = ! empty( sgs_resolve_on_tiers( $sh_transparent, 'on', 
 	// A scrolled shadow needs view.js to toggle `.is-header-scrolled`, even on a
 	// header that is neither transparent, shrinking nor hiding (a plain or merely
 	// sticky one). Without this the class is never added and the shadow never shows.
-	|| $sh_shadow_scrolled_on;
+	|| $sh_shadow_scrolled_on
+	// A tone fill (sectionInk's `tone-fill` mode) reads `.is-header-scrolled` too
+	// (sgs-header-ink-css.php's dark_scrolled/light_scrolled selectors), so a
+	// header using section ink alone still needs the class toggled.
+	|| $sh_ink['any_adapt'];
 if ( $sh_sticky_any_tier ) {
 	$sh_extra_attrs['data-sgs-header-sticky'] = '1';
+}
+// Section-adaptive ink (Wave 3C U-13): view.js's OWN listener start (§4.2 —
+// NOT gated by data-sgs-header-scroll-behaviours, so a header using section
+// ink alone still gets its tone read). The value lists where the tone classes
+// may be set, `<tier>:<always|rest|scrolled>` space-separated
+// (sgs_header_ink_live_state()); 'blend' needs no JS at all.
+if ( '' !== $sh_ink['live'] ) {
+	$sh_extra_attrs['data-sgs-header-ink'] = $sh_ink['live'];
 }
 if ( $sh_scroll_behaviour_on ) {
 	$sh_extra_attrs['data-sgs-header-scroll-behaviours'] = '1';
