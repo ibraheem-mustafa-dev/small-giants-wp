@@ -64,7 +64,8 @@ sgs-blocks/
 │   │   ├── store-selector/       # Disclosure of store/country links with optional flags; current store by URL
 │   │   ├── theme-toggle/         # Dark-mode switch or light/dark/system radio group; renders only when the site has a dark palette
 │   │   ├── wishlist-link/        # Heart link with the live saved-items count
-│   │   ├── wishlist-panel/       # Saved items with live price and stock; Move to basket, Notify me, Save for later on the basket
+│   │   ├── wishlist-panel/       # Saved items (grid, list or basket strip): price drop, stock, sort, alert opt-ins, share link; Save for later on the basket
+│   │   ├── account/              # WooCommerce My Account in an SGS wrapper: side menu or tabs, order-first dashboard, log-in / register layout
 │   │   ├── whatsapp-cta/         # WhatsApp floating button + contextual CTA
 │   │   ├── pricing-table/        # Service/pricing comparison table
 │   │   ├── modal/                # Lightbox/modal overlay
@@ -1621,7 +1622,7 @@ WooCommerce single-product buybox: wires `sgs/option-picker` pill axes to the sh
 **Attributes:**
 - `soldOutLabel` — string (aria-label suffix for sold-out pills; screen-reader only)
 - `unavailableLabel` — string (aria-label suffix for unavailable combinations)
-- `notifyMeLabel` — string (stored; notify-me capture is NOT BUILT)
+- `notifyMeLabel` — string (the Notify me label on sold-out combinations; the capture posts to `/sgs/v1/notify/subscribe` and the list is sent once on restock by `includes/class-stock-notify-dispatch.php`)
 - `addToCartLabel` — string (override Add to Cart label; empty = translated default)
 - `perUnitDenomination` — string template using `%s` as unit placeholder
 - `showLadder` — boolean (default: `true`; set `false` in narrow sidebar contexts)
