@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 36
-spec_version: 2.8
+spec_version: 2.9
 title: SGS Navigation System
 project: small-giants-wp
 status: active
@@ -111,6 +111,7 @@ column here would drift against the code.
 | FR-36-17 | 11 | Crawlable, schema-friendly, fast |
 | FR-36-25 | 11 | Structured-data-once |
 | FR-36-28 | 6 | Nav colour-state + control system → **Spec 41** (satisfies FR-36-4's hover/focus half + FR-36-11's colour floor; the ARIA active-trail is NOT satisfied — Spec 41 FR-41-20) |
+| FR-36-29 | 3 | Drawer row ornament, per-item media, sibling dim and label roll (`sgs/nav-drawer-menu`) |
 
 ## 2. Architecture
 
@@ -211,7 +212,14 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   length, applied to both the top-level item link and the submenu link, each adding to its own resting padding
   (the top-level link's is `itemPadding`'s left side where set, else 12px; the submenu link's is 16px).
   `itemPadding` (`sgs/nav-bar-menu` only) is the top-level link's padding, a per-device box of top, right, bottom
-  and left ("Link padding" in the List layout panel); unset sides keep the default 8px 12px. All four are touch-guarded via `sgs_hover_state_rules()`. On `sgs/mega-panel`: `panelCardLift`
+  and left ("Link padding" in the List layout panel); unset sides keep the default 8px 12px. All four are touch-guarded via `sgs_hover_state_rules()`.
+- **Item type scale (U-4).** A menu item's font size (`itemFontSize`/`itemFontSizeUnit`, `submenuFontSize`/
+  `submenuFontSizeUnit` on both menu blocks) and `sgs/business-info`'s own text sizes take `vw`/`vh` alongside
+  `px`/`em`/`rem`, through the shared unit list (`plugins/sgs-blocks/src/components/TypographyControls.js::FONT_SIZE_UNIT_SLUGS`),
+  so a menu label or a footer contact line can scale with the viewport instead of stepping at a breakpoint.
+  Per-tier menu line height was not built (no reference needs it); formula-based scaling was cut in favour of
+  `vw`/`vh` (Bean).
+  On `sgs/mega-panel`: `panelCardLift`
   (default `3px`) sets the `cards` style's group-tile hover/focus-within lift distance
   (`translateY(calc(-1 * <value>))`; empty or `0` means no lift); the same block's `itemPaddingShiftHover` grows a group item's own
   inline-start padding on hover, independently of the bar/drawer attribute of the same name. `sliding pill`
@@ -423,6 +431,10 @@ through the same shared chain as the bar); the inspector shows *which menu is bo
   row itself, minus the element's inline padding, published as `--sgs-drawer-container-left/-right`. Outside a
   header row the fallbacks are 16px each side.
 - `trigger`: the panel hangs below the burger by `anchorOffset` (per tier, default 8px); `container` defaults to 0.
+- **Item pitch.** The menu item `gap` (`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` `block.json::gap`) is a
+  per-device tier object on both menu blocks, so a reference's tight pitch (a 0 gap on 44px rows) is reachable
+  without changing padding. Stored flat values were folded into the tier shape by
+  `plugins/sgs-blocks/scripts/migrate-nav-gap-tier.php`, which every site runs before it takes the deploy.
 - Every value is consulted by the U-5 motion `auto` map (`side-*` slide from their own edge, `container` expands
   down) and by the default edge (side panels take a shadow and a 1px primary line on their open edge; `container`,
   `trigger` and `centred` are cards).
@@ -699,6 +711,38 @@ content; an editor preview is not a property of the page.** `editor.css` compile
 (`editorStyle`) and never reaches the frontend, and no `display` is added to the dialog's base rule, so
 STOP-DIALOG-DISPLAY-GATE stays intact. This is an editor-UX rule inside FR-36-6's scope, not a separate
 capability.
+
+### FR-36-29 — Drawer row ornament, per-item media, sibling dim and label roll (`sgs/nav-drawer-menu`)
+Wave 3C U-6 + U-7 added four item-level mechanisms to the drawer's own accordion list, each a genuinely
+different element from the bar's own item paint (FR-36-4):
+- **Row ornament (M-22).** `itemOrnament` (a per-tier `{desktop,tablet,mobile}` object: `none` | `index` | `icon`)
+  leads each primary row with either a decorative two-digit counter (`01`, `02`, …) or a glyph
+  (`itemOrnamentIcon`, an icon-picker object, with an optional `itemOrnamentIconHover` crossfade).
+  `itemOrnamentColour`/`itemOrnamentColourHover` and `itemOrnamentSize`/`itemOrnamentGap` style it
+  (`block.json::attributes.itemOrnament`).
+- **Accordion expander.** `itemExpanderIcon` (icon-picker, default `chevron-down`) is the `<summary>` glyph;
+  `itemExpanderRotate` (degrees, default 180, range -360 to 360) is the turn it takes while its accordion is
+  open — 45 degrees turns a plus into a cross (`block.json::attributes.itemExpanderRotate`).
+- **Per-item media (M-15).** `itemMedia` (`''` | `featured-image`) shows the linked page's own featured image
+  beside its label; a GIF or WebP is served full size so it keeps animating. `itemMediaReveal` (per tier:
+  `none` | `always` | `hover`, growing from zero width on hover or keyboard focus), `itemMediaWidth` (unset
+  160px) and `itemMediaHeight` (unset 112px), both per tier, and `itemMediaRadius` size and shape it. It is a
+  decorative slot, not an operator-placed image, so `supports.sgs.imageControls` is `false`
+  (`block.json::attributes.itemMedia`).
+- **Sibling dim (M-24).** `siblingDimColour` (+ `siblingDimColourGradient`) and `siblingDimOpacity` recolour
+  every OTHER item in the list while one is hovered or keyboard-focused (a list-scoped `:has()` rule,
+  `includes/helpers-item-effects.php::sgs_sibling_dim_css`); `''`/unset is off. Drawer and icon-list only — not
+  built on the bar (Bean).
+- **Label roll (M-25).** `labelRoll` (`''` | `up` | `up-scale`) rolls an item's label up to a second copy of
+  itself on hover or keyboard focus, honouring reduced motion; `itemMotionDuration`/`itemMotionEasing` is the
+  one shared item-motion timing pair for sibling dim, label roll and the ornament crossfade
+  (`block.json::attributes.labelRoll`). Distinct from `triggerHoverLabel`/`triggerOpenLabel` (FR-36-27), which
+  roll the BURGER TRIGGER's own word, not a list item's.
+- **Row separators** needed no new setting: the existing `itemBorderWidth`/`itemBorderColour*` family already
+  paints the bottom edge of a vertical row as a separator (on the horizontal bar the same attribute paints the
+  item underline instead — `block.json::attributes.itemBorderWidth`).
+- **Numbered link lists.** `sgs/icon-list`'s `markerType: 'numbered'` plus its per-item `description` (FR-36-26)
+  serves the numbered starter pattern (`sgs/mega-compact-links-numbered`) that pairs with this unit.
 
 ### FR-36-27 — Burger trigger presentation — PARTIAL
 The references make the trigger a designed element (one renders the word "MENU", one a symbol, one a morphing

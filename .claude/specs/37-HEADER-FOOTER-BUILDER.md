@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 37
-spec_version: 1.6.0
+spec_version: 1.7.0
 title: SGS Header/Footer Builder — CPT editing home, container blocks, behaviours, binding
 project: small-giants-wp
 status: active
@@ -907,6 +907,67 @@ divergence: SGS has no preloader, so the entrance starts at load.
 **Status:** `BUILT + LIVE-VERIFIED` (U-16, 2026-09-26): `node plugins/sgs-blocks/scripts/nav-qa/u16-entrance-probe.mjs`
 on `/qa-entrance/` (fixture `qa-item-markup-fixture.php entrance`) and
 `node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs`.
+
+#### FR-37-53 — Header and footer furniture blocks
+Wave 3C U-12 shipped six new header/footer furniture blocks plus link-source and style additions on two
+existing blocks, so a client's header or footer top row can carry the small utility elements top-tier
+reference sites use, promoted by the row inserter (FR-37-34) alongside logo/nav/search/cart:
+- **`sgs/local-time`** — a live clock for one time zone: `timeZone`, a `label` + `labelPosition`
+  (`before`/`after`/`above`), `separator`, `hourCycle` (`h12`/`h23`), `showSeconds`, `showPeriod`. Server-rendered
+  so a no-JS or cached page still shows a correct time (`local-time/block.json`).
+- **`sgs/language-switch`** — a hand-set list of language links: `display` (`inline`/`single-link`/`disclosure`),
+  `labelStyle` (`autonym`/`code`/`custom`), `languages` (array), `separator`, `prefixLabel`. Shows the current
+  language via `aria-current`; reads language names/tags through PHP's `intl` extension when available
+  (`language-switch/block.json`). Polylang/WPML as a language-list source is residue, not built.
+- **`sgs/store-selector`** — a trigger button plus a disclosure list of country/store links: `stores` (array),
+  `triggerPrefix`, `panelAlign` (`start`/`end`), `flagSize`. The current store is detected from the visitor's
+  host and path (`store-selector/block.json`).
+- **`sgs/theme-toggle`** — a dark-mode switch or light/dark/auto segmented control, wired to the site's
+  automatic dark palette (`theme.json::settings.custom.dark`): `toggleStyle` (`switch`/`segmented`), `label`,
+  `labelRoll` (`''`/`up`/`up-scale`), the per-tier `iconOnly` tri-state, `lightIcon`/`darkIcon`
+  (`theme-toggle/block.json`). The automatic dark palette itself (derived at snapshot push time, a
+  minimum-change rule, every colour checked against every ground it is used on, failing closed) is Spec 33
+  FR-33-20.
+- **`sgs/wishlist-link`** (header/footer icon-link with a live saved-item count badge) and **`sgs/wishlist-panel`**
+  (the saved-items panel: `heading`, `emptyText`/`emptyLinkLabel`/`showWhenEmpty`, `showPrice`/`showStock`,
+  `layout` (`grid`/`list`/`strip`), `columns`, `maxItems`) implement the two-tier wishlist (a browser-stored list
+  merged into the account on log-in), with Move to basket and Notify me actions
+  (`wishlist-link/block.json`, `wishlist-panel/block.json`, `includes/wishlist/`). The customer account area and
+  saved-item alerts (price drops, share by link) are Spec 30 FR-30-14/FR-30-15, not this spec.
+- **`sgs/button`** gained `linkSource: 'top'` (scroll to the top of the page) and `linkSource: 'account'` (the
+  WooCommerce My Account page, or the login screen when WooCommerce is inactive) alongside the existing
+  `url`/`phone`/`email`/`whatsapp` sources, for a header/footer "back to top" or "account" link
+  (`button/block.json::attributes.linkSource`).
+- **`sgs/audio`** gained `playerStyle: 'toggle'` — a compact sound on/off button that mutes every other player on
+  the page — alongside its eight other visual styles, for a header/footer sound-mute control
+  (`audio/block.json::attributes.playerStyle`).
+- **`headerEssential`** (`supports.sgs.headerEssential`) is declared on `sgs/product-search` only among these,
+  so it is the one furniture block the header-row essentials contract (FR-37-39) protects from a shrink-hide
+  target by default.
+**Status:** `BUILT + LIVE-VERIFIED` (design `.claude/reports/2026-09-26-u12-furniture-design.md`, two-model
+council GO WITH FIXES, Bean sign-off; live `reports/visual-diff/furniture-2026-09-26.md`, `verdict: PASS`, on
+sandybrown fixture page 4070 `/qa-furniture/` and 4074 `/qa-wishlist/`).
+**Done when:** each block renders and round-trips its settings in the real editor, and sits in a header or
+footer row through the promoted inserter. ✅ met.
+
+#### FR-37-54 — Self-changing header message
+Wave 3C U-15 gave `sgs/notice-banner` a `messageMode` (`static` default | `rotate` | `random`), consumed by one
+or more `sgs/notice-message` children: `static` shows every child stacked (or the single child); `rotate`/
+`random` need at least two children to take effect, else the banner renders exactly as `static`
+(`notice-banner/block.json::attributes.messageMode`). `rotateInterval` (seconds, 2 to 30, default 5),
+`messageTransition` (`none`/`fade`/`slide-up`/`slide-left`), `showMessageArrows` (rotate mode only, also pauses
+auto-rotation) and `pauseOnHover` (rotate mode only) control the change. Each `sgs/notice-message` is a
+freeform InnerBlocks slot (no `allowedBlocks` restriction), so the rotating content is not limited to plain
+text. The banner also gained a full-width strip `displayMode` and an `iconStyle: 'circle'` badge
+(`iconCircleSize`/`iconCircleBackground`/`iconCircleBorderRadius`/`iconCircleShadow`), reusing `sgs/trust-bar`'s
+own icon-badge element shape. Not limited to the header (it is a general banner block), but this is the
+mechanism that fulfils the self-changing header message.
+**Status:** `BUILT + LIVE-VERIFIED` (design `.claude/reports/2026-09-26-u15-notice-message-design.md`, two-model
+council GO WITH FIXES, Bean sign-off; live `reports/visual-diff/notice-banner-2026-09-26.md`, `verdict: PASS`, on
+sandybrown fixture page 4072 `/qa-notice/`; Bean's eye check 2026-09-26: good, its rounded corners were the
+inline card style, now the full-width strip mode).
+**Done when:** a banner with two or more `sgs/notice-message` children rotates or randomises on the frontend,
+each transition and the arrow/pause controls round-trip in the editor. ✅ met.
 
 ### Data model and controls
 
