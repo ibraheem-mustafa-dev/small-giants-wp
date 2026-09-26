@@ -74,7 +74,44 @@ A failsafe on every animated block would spoil below-the-fold reveals, so it sta
 observer never marks it (a script error), a 3s-delayed animation shows it anyway. Editor: an entrance set on the
 header shows a notice that it delays the header's first appearance.
 
-### 4.4 Proof for the rest
+### 4.4 The mechanism, as built (council revision 2, 2026-09-26)
+
+1. **Paused until marked, then running.** `.sgs-js [data-sgs-animation]` (inside `prefers-reduced-motion:
+   no-preference`) sets `animation-duration` (from `data-sgs-animation-duration`, the same tokens), the easing
+   variable, `animation-delay: var(--sgs-anim-delay, 0ms)`, `animation-fill-mode: backwards` and
+   `animation-play-state: paused`; each `[data-sgs-animation="<effect>"]` rule sets only `animation-name:
+   sgs-entrance-<effect>`. A paused animation at time 0 already paints its `from` keyframe, so the hidden pose needs no
+   static `opacity`, `translate` or `transform` write; `.sgs-animated` sets `animation-play-state: running` and
+   nothing else. The old `.sgs-animated { transform: none; … }` end state is deleted: it was the collision itself.
+2. **Each keyframe lists only the properties its effect moves.** fade and slide effects: `translate` (slide keeps
+   opacity 1); scale-in, scale-out, bounce-in: `scale` (bounce-in keeps its own overshoot curve as its
+   `animation-timing-function`); rotate-in: `rotate`; blur-in: `filter` with an explicit `to { filter: blur(0) }`;
+   reveal-up: `clip-path` with an explicit `to { clip-path: inset(0 0 0 0) }` (inset to `none` does not interpolate).
+   flip-in keeps `transform: perspective(600px) rotateX(30deg)` in its keyframe, because `perspective()` has no
+   standalone property: it is the one effect that still owns the block's `transform`, during its entrance only.
+3. **Distance.** Directional keyframes read `var(--sgs-entrance-distance, <effect default>)` (30px fade, 100px
+   slide, sign per direction); `[data-sgs-animation-distance="50"]` sets `--sgs-entrance-distance: 50px`, one rule
+   per preset. The data attribute is written only when set, so existing static blocks' saved markup stays valid.
+4. **Delay and stagger as animation delay.** The observer marks every element when it enters view and writes
+   `--sgs-anim-delay` (its own delay plus the existing 100ms-per-index stagger for elements in view at load), instead
+   of deferring the class with `setTimeout`.
+5. **Plays once.** Animations replay when a hidden ancestor (drawer, tab, accordion, dialog) shows again; transitions
+   did not. On `animationend` or `animationcancel` of an `sgs-entrance-*` animation the observer adds
+   `sgs-entrance-done`, which sets `animation: none`, so the entrance never replays and every property is released.
+6. **Reduced motion.** The reduce block adds `animation: none !important` and `translate`/`scale`/`rotate: none
+   !important` to its existing resets; the observer still marks everything at once.
+7. **Header failsafe.** `sgs/site-header` with an entrance carries a second animation in the list,
+   `sgs-entrance-failsafe` (opacity 1, translate none, 1ms, delay 3s, fill `forwards`, always running); the done
+   class removes it long before it fires, so it only ever acts when the script died.
+8. **One entrance per element.** `sgs/counter`'s root runs its own scroll-timeline reveal (`sgs-counter-reveal`);
+   an entrance chosen in the panel replaces it (higher specificity on the same `animation` list). That is intended:
+   the author's choice wins; with no entrance set, the built-in reveal is unchanged.
+9. **The framework DB seeder** (`scripts/dbschema/seed-motion-shape-signatures.py::_extract_entrance_rows`) reads the
+   per-effect shape from the `@keyframes sgs-entrance-<effect>` `from` blocks (translate, scale, rotate, filter,
+   clip-path, transform) instead of the old start-pose rules. Proof: the 16 entrance rows are identical before and
+   after the reseed (same property, direction and magnitude band).
+
+### 4.5 Proof for the rest
 
 - A block with its own hover lift (a card) and a `fade-up` entrance: the entrance plays at its chosen duration and
   the hover lift still animates at its own speed afterwards (negative control: the pre-change build snaps one).
@@ -91,7 +128,17 @@ Code-path census (Sonnet) and adversarial reader (Haiku): both GO WITH FIXES. Ap
 every block (keyframes on the standalone translate/scale properties; Bean widened it from a header-only fix); distance as presets on a data attribute (no scoped-CSS
 path exists); delay steps capped at 800ms; a header-only failsafe; the first-appearance notice; the live check with
 hide-on-scroll and shrink on. Declined: effect-keyed distances (one effect per element). Per plan §5 step 2a this
-revision goes back past the same two reviewers before the build.
+revision went back past the same two reviewers.
+
+Revision 2 (same reviewers, 2026-09-26): both GO WITH FIXES, applied as §4.4. Census: flip-in's `perspective()` has
+no standalone property (kept on `transform`, entrance only); `sgs/counter` runs its own root animation (the chosen
+entrance wins); the reduced-motion reset lacked the new properties; the DB seeder's regex would silently read zero
+entrance rows; delay was a `setTimeout`, not an animation delay. Adversarial: keyframes replay when a hidden
+container shows again (the done class); `animation` must sit inside the no-preference query. Declined: writing
+`translate: none` etc. on `.sgs-animated` (a static end-state write is the collision being removed; the paused
+`from` pose replaces it). Recorded, not changed: the observer loads in the footer, so `.sgs-js` arrives after the
+header may have painted; the live probe's first samples decide it (§7), and if the header paints visible first the
+fix is a head script that adds `.sgs-js`, covered by the header failsafe.
 
 ## 6. Risks
 
@@ -107,4 +154,5 @@ revision goes back past the same two reviewers before the build.
 Fixture on sandybrown (new cases in `qa-item-markup-fixture.php`): header `fade-in` extra-slow; a footer row
 `fade-up` at 50px with stagger. Probe: sample the header's opacity every 50ms from navigation (starts at 0, reaches 1
 by about 800ms, ends at `transform: none`, still pinned after scrolling 600px); footer rows' translateY 50 to 0 as
-they enter; reduced motion flat; JavaScript off shows the header. 375, 768 and 1440.
+they enter; reduced motion flat; JavaScript off shows the header. 375, 768 and 1440. The first samples after
+navigation must never show the header at opacity 1 before the entrance starts (the footer-loaded gate, §5).
