@@ -69,15 +69,19 @@ function initGuidedBuybox( root ) {
 	active = active < 0 ? 0 : active;
 
 	function goTo( idx, focusTitle ) {
-		if ( idx < 0 || idx >= total || idx === active ) {
+		if ( idx < 0 || idx >= total ) {
 			return;
 		}
-		groups[ active ].setAttribute( 'hidden', '' );
-		active = idx;
-		groups[ active ].removeAttribute( 'hidden' );
-		meterBtns.forEach( ( btn, i ) => btn.setAttribute( 'aria-current', i === active ? 'true' : 'false' ) );
-		updateCompact();
-		updateNav();
+		// Already showing that group (e.g. the guard's first unfinished group
+		// is the visible one): no switch, but still move focus to its title.
+		if ( idx !== active ) {
+			groups[ active ].setAttribute( 'hidden', '' );
+			active = idx;
+			groups[ active ].removeAttribute( 'hidden' );
+			meterBtns.forEach( ( btn, i ) => btn.setAttribute( 'aria-current', i === active ? 'true' : 'false' ) );
+			updateCompact();
+			updateNav();
+		}
 		const title = focusTitle && groups[ active ].querySelector( '.sgs-buybox-guided__group-title' );
 		if ( title ) {
 			title.focus();
