@@ -354,8 +354,12 @@ function propertyAtomBackedRegex( prop ) {
 // keyword gate suppressed it as a false negative, because the matching
 // `background-image` is set inline by render.php and never appears in the
 // stylesheet for `backgroundImageIsRealAsset()` to find.
+// 'lottie' added 2026-09-26 (U-17, design §3.1): the 4th media type's own
+// keyword, same rationale as every other member — a hand-rolled
+// `.sgs-lottie`/`data-sgs-fx="lottie"` style rule is media-element handling
+// this gate must still catch.
 const MEDIA_CONTEXT_KEYWORDS = new RegExp(
-	'(?<![a-z])(?:media|image|img|photo|avatar|logo|thumb|video|svg|banner|poster|ken-burns|parallax)(?![a-z])',
+	'(?<![a-z])(?:media|image|img|photo|avatar|logo|thumb|video|svg|banner|poster|ken-burns|parallax|lottie)(?![a-z])',
 	'i'
 );
 

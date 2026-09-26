@@ -81,6 +81,11 @@ export const MEDIA_BASES = {
 		'SvgContent',
 		'Thumbnail',
 		'ThumbnailId',
+		// Added 2026-09-26 (U-17, design §3.1) — the Lottie media type's own
+		// slot. Integer attachment ID ONLY, no `LottieUrl` sibling: the URL is
+		// resolved at render from the ID (`wp_get_attachment_url()`), same
+		// pattern `VideoId` uses when `VideoSource` is 'internal'.
+		'LottieId',
 	],
 	// Which of the three types is showing.
 	type: [ 'MediaType', 'VideoSource', 'VideoMimeType' ],
@@ -101,6 +106,11 @@ export const MEDIA_BASES = {
 		'VideoCaptionsUrl',
 		'VideoCaptionsLabel',
 		'VideoCaptionsSrcLang',
+		// Added 2026-09-26 (U-17, design §3.1) — shown ONLY for the 'lottie'
+		// media type (video-behaviour.control.js's per-type branch).
+		// `VideoLoop` above is REUSED for Lottie's own loop toggle.
+		'LottieTrigger',
+		'LottieSpeed',
 	],
 	// SVG presentation.
 	svg: [
@@ -225,7 +235,7 @@ export const MEDIA_BASES = {
  */
 export const MEDIA_TIERED_BASES = [
 	...[ 'ImageId', 'ImageUrl', 'VideoId', 'VideoUrl',
-		'SvgContent', 'Thumbnail', 'ThumbnailId' ],
+		'SvgContent', 'Thumbnail', 'ThumbnailId', 'LottieId' ],
 	...[ 'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
 		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
 		'VideoCaptionsLabel', 'VideoCaptionsSrcLang' ],
@@ -269,6 +279,10 @@ export const MEDIA_ATTR_TYPES = {
 	VideoId: 'integer',
 	ThumbnailId: 'integer',
 	VideoCaptionsId: 'integer',
+	// Added 2026-09-26 (U-17, design §3.1).
+	LottieId: 'integer',
+	LottieTrigger: 'string',
+	LottieSpeed: 'number',
 	// Strings.
 	ImageUrl: 'string',
 	VideoUrl: 'string',

@@ -209,6 +209,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		logoSwitchCustomPx,
 		svgAnimationSource,
 		animationStyle,
+		animationSubstrate = 'svg-draw',
+		lottieId,
+		lottieTrigger = 'load',
+		lottieLoop = false,
+		lottieSpeed = 1,
+		darkLogoId,
 		width,
 		shrinkWidth,
 		shrinkWidthUnit,
@@ -289,6 +295,25 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 	const onRemoveSvg = () => {
 		setAttributes( { svgAnimationSource: undefined } );
+	};
+
+	// Lottie substrate (U-17, design §3.1).
+	const onSelectLottie = ( media ) => {
+		if ( ! media || 'application/json' !== ( media.mime || '' ) ) {
+			return;
+		}
+		setAttributes( { lottieId: media.id } );
+	};
+	const onRemoveLottie = () => {
+		setAttributes( { lottieId: 0 } );
+	};
+
+	// Dark-mode logo variant (U-17, design §3.1) — independent of substrate.
+	const onSelectDarkLogo = ( media ) => {
+		setAttributes( { darkLogoId: media.id } );
+	};
+	const onRemoveDarkLogo = () => {
+		setAttributes( { darkLogoId: 0 } );
 	};
 
 	// Preview URLs come from the DECLARED, PERSISTED attrs.
@@ -381,59 +406,190 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* ── Panel 2: SVG animation ── */ }
 				<PanelBody
-					title={ __( 'SVG animation', 'sgs-blocks' ) }
+					title={ __( 'Animation', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<Notice isDismissible={ false } status="info">
-						{ __( 'Upload a .svg file via the media library — never paste SVG code directly. This prevents XSS vulnerabilities.', 'sgs-blocks' ) }
-					</Notice>
-
-					<SelectControl
-						label={ __( 'Animation style', 'sgs-blocks' ) }
-						value={ animationStyle }
-						options={ ANIMATION_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { animationStyle: val } ) }
+					{ /* U-17 (design §3.1) — a Lottie/Bodymovin JSON can draw fills,
+					     masks, mattes and morphs the stroke-draw SVG mechanism below
+					     never could; the two are mutually exclusive substrates for
+					     ONE animated logo. */ }
+					<ToggleGroupControl
+						label={ __( 'Animation type', 'sgs-blocks' ) }
+						value={ animationSubstrate }
+						onChange={ ( val ) => setAttributes( { animationSubstrate: val } ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						<ToggleGroupControlOption value="svg-draw" label={ __( 'SVG draw', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="lottie" label={ __( 'Lottie', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 
-					{ hasAnimation && (
-						<MediaUploadCheck>
-							<div className="sgs-responsive-logo-editor__slot">
-								<p>{ __( 'SVG animation file', 'sgs-blocks' ) }</p>
-								{ svgAnimationSource ? (
-									<>
-										<p className="sgs-responsive-logo-editor__svg-id">
-											{ /* translators: %d is the attachment ID */ }
-											{ sprintf( __( 'Attachment ID: %d', 'sgs-blocks' ), svgAnimationSource ) }
-										</p>
-										<Button
-											variant="secondary"
-											onClick={ onRemoveSvg }
-											isDestructive
-											size="small"
-										>
-											{ __( 'Remove SVG', 'sgs-blocks' ) }
-										</Button>
-									</>
-								) : (
-									<MediaUpload
-										onSelect={ onSelectSvg }
-										allowedTypes={ [ 'image/svg+xml' ] }
-										value={ svgAnimationSource }
-										render={ ( { open } ) => (
+					{ 'lottie' === animationSubstrate ? (
+						<>
+							<Notice isDismissible={ false } status="info">
+								{ __( 'Upload a Lottie JSON file via the media library — the desktop logo above is shown as the poster until the animation mounts, and to visitors who prefer reduced motion.', 'sgs-blocks' ) }
+							</Notice>
+							<MediaUploadCheck>
+								<div className="sgs-responsive-logo-editor__slot">
+									<p>{ __( 'Lottie file', 'sgs-blocks' ) }</p>
+									{ lottieId ? (
+										<>
+											<p className="sgs-responsive-logo-editor__svg-id">
+												{ __( 'Lottie animation selected', 'sgs-blocks' ) }
+											</p>
 											<Button
 												variant="secondary"
-												onClick={ open }
+												onClick={ onRemoveLottie }
+												isDestructive
+												size="small"
 											>
-												{ __( 'Upload SVG file', 'sgs-blocks' ) }
+												{ __( 'Remove Lottie file', 'sgs-blocks' ) }
 											</Button>
+										</>
+									) : (
+										<MediaUpload
+											onSelect={ onSelectLottie }
+											allowedTypes={ [ 'application/json' ] }
+											value={ lottieId }
+											render={ ( { open } ) => (
+												<Button variant="secondary" onClick={ open }>
+													{ __( 'Select Lottie JSON', 'sgs-blocks' ) }
+												</Button>
+											) }
+										/>
+									) }
+								</div>
+							</MediaUploadCheck>
+
+							<ToggleGroupControl
+								label={ __( 'Play trigger', 'sgs-blocks' ) }
+								value={ lottieTrigger }
+								onChange={ ( val ) => setAttributes( { lottieTrigger: val } ) }
+								isBlock
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							>
+								<ToggleGroupControlOption value="load" label={ __( 'On load', 'sgs-blocks' ) } />
+								<ToggleGroupControlOption value="visible" label={ __( 'When visible', 'sgs-blocks' ) } />
+								<ToggleGroupControlOption value="hover" label={ __( 'On hover', 'sgs-blocks' ) } />
+								<ToggleGroupControlOption value="scroll" label={ __( 'On scroll', 'sgs-blocks' ) } />
+							</ToggleGroupControl>
+
+							<ToggleControl
+								label={ __( 'Loop', 'sgs-blocks' ) }
+								checked={ !! lottieLoop }
+								onChange={ ( val ) => setAttributes( { lottieLoop: val } ) }
+								__nextHasNoMarginBottom
+							/>
+
+							<RangeControl
+								label={ __( 'Playback speed', 'sgs-blocks' ) }
+								value={ Number.isFinite( lottieSpeed ) ? lottieSpeed : 1 }
+								min={ 0.25 }
+								max={ 3 }
+								step={ 0.25 }
+								onChange={ ( val ) => setAttributes( { lottieSpeed: val ?? 1 } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</>
+					) : (
+						<>
+							<Notice isDismissible={ false } status="info">
+								{ __( 'Upload a .svg file via the media library — never paste SVG code directly. This prevents XSS vulnerabilities.', 'sgs-blocks' ) }
+							</Notice>
+
+							<SelectControl
+								label={ __( 'Animation style', 'sgs-blocks' ) }
+								value={ animationStyle }
+								options={ ANIMATION_STYLE_OPTIONS }
+								onChange={ ( val ) => setAttributes( { animationStyle: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+
+							{ hasAnimation && (
+								<MediaUploadCheck>
+									<div className="sgs-responsive-logo-editor__slot">
+										<p>{ __( 'SVG animation file', 'sgs-blocks' ) }</p>
+										{ svgAnimationSource ? (
+											<>
+												<p className="sgs-responsive-logo-editor__svg-id">
+													{ /* translators: %d is the attachment ID */ }
+													{ sprintf( __( 'Attachment ID: %d', 'sgs-blocks' ), svgAnimationSource ) }
+												</p>
+												<Button
+													variant="secondary"
+													onClick={ onRemoveSvg }
+													isDestructive
+													size="small"
+												>
+													{ __( 'Remove SVG', 'sgs-blocks' ) }
+												</Button>
+											</>
+										) : (
+											<MediaUpload
+												onSelect={ onSelectSvg }
+												allowedTypes={ [ 'image/svg+xml' ] }
+												value={ svgAnimationSource }
+												render={ ( { open } ) => (
+													<Button
+														variant="secondary"
+														onClick={ open }
+													>
+														{ __( 'Upload SVG file', 'sgs-blocks' ) }
+													</Button>
+												) }
+											/>
 										) }
-									/>
-								) }
-							</div>
-						</MediaUploadCheck>
+									</div>
+								</MediaUploadCheck>
+							) }
+						</>
 					) }
+				</PanelBody>
+
+				{ /* ── Panel: Dark-mode logo (U-17, design §3.1) — independent of
+				     animationSubstrate. ── */ }
+				<PanelBody
+					title={ __( 'Dark-mode logo', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p className="sgs-responsive-logo-editor__panel-hint">
+						{ __( 'Shown in place of the logo above when the site is in dark mode. Leave empty to use the same logo in both modes.', 'sgs-blocks' ) }
+					</p>
+					<MediaUploadCheck>
+						<div className="sgs-responsive-logo-editor__slot">
+							{ darkLogoId ? (
+								<>
+									<p className="sgs-responsive-logo-editor__svg-id">
+										{ /* translators: %d is the attachment ID */ }
+										{ sprintf( __( 'Attachment ID: %d', 'sgs-blocks' ), darkLogoId ) }
+									</p>
+									<Button
+										variant="secondary"
+										onClick={ onRemoveDarkLogo }
+										isDestructive
+										size="small"
+									>
+										{ __( 'Remove dark-mode logo', 'sgs-blocks' ) }
+									</Button>
+								</>
+							) : (
+								<MediaUpload
+									onSelect={ onSelectDarkLogo }
+									allowedTypes={ [ 'image' ] }
+									value={ darkLogoId }
+									render={ ( { open } ) => (
+										<Button variant="secondary" onClick={ open }>
+											{ __( 'Select dark-mode logo', 'sgs-blocks' ) }
+										</Button>
+									) }
+								/>
+							) }
+						</div>
+					</MediaUploadCheck>
 				</PanelBody>
 
 				{ /* ── Panel 3: Sizing + behaviour ── */ }

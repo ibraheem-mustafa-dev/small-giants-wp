@@ -31,8 +31,13 @@
  * @package SGS\Blocks
  */
 
-/** The canonical 3-member enum (registry `types` field, verbatim). */
-export const CANONICAL_ENUM = [ 'image', 'video', 'svg' ];
+/**
+ * The canonical enum (registry `types` field, verbatim). `lottie` (U-17,
+ * `.claude/reports/2026-09-26-u17-lottie-design.md` §3.1) is the 4th member,
+ * added 2026-09-26 — a Lottie/Bodymovin JSON animation, played by
+ * `@sgs/fx-lottie` via `sgs_render_lottie()`, never a plain SVG.
+ */
+export const CANONICAL_ENUM = [ 'image', 'video', 'svg', 'lottie' ];
 
 /** The tiered enum: the canonical 3 plus the inherit sentinel. */
 export const TIER_ENUM = [ '', ...CANONICAL_ENUM ];

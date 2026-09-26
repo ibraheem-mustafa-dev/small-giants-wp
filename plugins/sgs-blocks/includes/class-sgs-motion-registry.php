@@ -183,6 +183,25 @@ class SGS_Motion_Registry {
 		 * `fx-draw.js:214` registers it. See the fx-scramble note below for why
 		 * an omission would be silent rather than fatal.
 		 */
+		/*
+		 * Tier H Lottie player (Spec 38 §1.2a, D1151). The player is a DYNAMIC
+		 * dependency: it enters the import map but is fetched only when
+		 * fx-lottie.js imports it after the trigger fires, and never under
+		 * reduced motion.
+		 */
+		'@sgs/lottie-web'          => array(
+			'path' => 'build/vendor-modules/lottie-light.js',
+			'deps' => array(),
+		),
+		'@sgs/fx-lottie'           => array(
+			'path' => 'build/shared/lottie/fx-lottie.js',
+			'deps' => array(
+				array(
+					'id'     => '@sgs/lottie-web',
+					'import' => 'dynamic',
+				),
+			),
+		),
 		'@sgs/fx-draw'             => array(
 			'path' => 'build/shared/effects/gsap/fx-draw.js',
 			'deps' => array(

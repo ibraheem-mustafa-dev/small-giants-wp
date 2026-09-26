@@ -91,6 +91,10 @@ if ( moduleConfig ) {
 		// private copy of that state and reduced-motion teardown would only
 		// ever revert one effect's tweens.
 		'@sgs/motion-provider': '@sgs/motion-provider',
+		// Tier H Lottie player (D1151). The vendor shim bundles lottie-web's
+		// light build; fx-lottie.js imports it by this id so no other module
+		// carries a second copy.
+		'@sgs/lottie-web': '@sgs/lottie-web',
 	};
 
 	const VENDOR_DIR = 'src/vendor-modules';
@@ -149,6 +153,18 @@ if ( moduleConfig ) {
 			 * "exactly core + ScrollTrigger" guarantee in FR-38-3 would be
 			 * unmeetable. One module per effect keeps loading honest.
 			 */
+			/*
+			 * Tier H Lottie runtime (Spec 38 §1.2a, D1151). Loads the player
+			 * (`@sgs/lottie-web`) with a dynamic import after its trigger fires,
+			 * never under reduced motion.
+			 */
+			'shared/lottie/fx-lottie': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'lottie',
+				'fx-lottie.js'
+			),
 			'shared/effects/gsap/provider': path.resolve(
 				process.cwd(),
 				'src',

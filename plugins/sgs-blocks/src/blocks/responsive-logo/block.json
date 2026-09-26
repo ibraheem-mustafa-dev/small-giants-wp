@@ -179,6 +179,43 @@
 				"scroll-trigger"
 			]
 		},
+		"animationSubstrate": {
+			"type": "string",
+			"default": "svg-draw",
+			"enum": [
+				"svg-draw",
+				"lottie"
+			],
+			"_comment": "U-17 (design §3.1). 'svg-draw' is the pre-existing svgAnimationSource/animationStyle mechanism (stroke-draw of an uploaded .svg). 'lottie' plays a Bodymovin/Lottie JSON via sgs_render_lottie() instead — animationStyle/svgAnimationSource are ignored when this is 'lottie'."
+		},
+		"lottieId": {
+			"type": "number",
+			"default": 0,
+			"_comment": "U-17 (design §3.1). Lottie JSON attachment ID, used only when animationSubstrate is 'lottie'."
+		},
+		"lottieTrigger": {
+			"type": "string",
+			"default": "load",
+			"enum": [
+				"load",
+				"visible",
+				"hover",
+				"scroll"
+			]
+		},
+		"lottieLoop": {
+			"type": "boolean",
+			"default": false
+		},
+		"lottieSpeed": {
+			"type": "number",
+			"default": 1
+		},
+		"darkLogoId": {
+			"type": "number",
+			"default": 0,
+			"_comment": "U-17 (design §3.1). Media library attachment ID for a dark-mode logo variant, shown in place of the light logo under :root[data-theme=\"dark\"] and :root[data-theme=\"auto\"][data-prefers-dark=\"true\"]. Independent of animationSubstrate/colourTreatment."
+		},
 		"width": {
 			"type": "number",
 			"description": "Desktop logo width in px. No `default`: WP only injects a DECLARED default, so an untouched instance has no `width` key, which render.php reads as 'fill 100% of the containing column/element' (style.scss's `var(--logo-width, 100%)` fallback) instead of a hardcoded pixel value. An operator who moves the Sizing panel's RangeControl gets an explicit px width."

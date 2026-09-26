@@ -73,7 +73,10 @@ export const MEDIA_ATOMS = {
 	source: {
 		id: 'source',
 		bases: MEDIA_BASES.source,
-		types: [ 'image', 'video', 'svg' ],
+		// 'lottie' added 2026-09-26 (U-17, design §3.1): a 4th picker slot,
+		// `LottieId` (MEDIA_BASES.source), restricted to `application/json`
+		// in the media library — see source.control.js's lottie branch.
+		types: [ 'image', 'video', 'svg', 'lottie' ],
 		scope: 'both',
 		attachesTo: 'box',
 		requires: {},
@@ -110,7 +113,8 @@ export const MEDIA_ATOMS = {
 	'media-type': {
 		id: 'media-type',
 		bases: MEDIA_BASES.type,
-		types: [ 'image', 'video', 'svg' ],
+		// 'lottie' added 2026-09-26 (U-17, design §3.1) — the 4th media type.
+		types: [ 'image', 'video', 'svg', 'lottie' ],
 		scope: 'both',
 		attachesTo: 'element',
 		requires: {},
@@ -133,7 +137,12 @@ export const MEDIA_ATOMS = {
 	'video-behaviour': {
 		id: 'video-behaviour',
 		bases: MEDIA_BASES.behaviour,
-		types: [ 'video' ],
+		// 'lottie' added 2026-09-26 (U-17, design §3.1): this atom already owns
+		// type-conditional playback controls, so `VideoLoop` is reused for a
+		// Lottie instance's loop toggle, and the two new bases `LottieTrigger`/
+		// `LottieSpeed` are shown ONLY for 'lottie' — see video-behaviour.js's
+		// disclosure() and video-behaviour.control.js's per-type branch.
+		types: [ 'video', 'lottie' ],
 		scope: 'element',
 		attachesTo: 'element',
 		// ⛔ Enforced on BOTH sides, not just the client. A browser refuses to
@@ -157,7 +166,7 @@ export const MEDIA_ATOMS = {
 	meaning: {
 		id: 'meaning',
 		bases: MEDIA_BASES.meaning,
-		types: [ 'image', 'video', 'svg' ],
+		types: [ 'image', 'video', 'svg', 'lottie' ],
 		scope: 'both',
 		attachesTo: 'element',
 		// Alt text is meaningless once the client marks the media decorative,

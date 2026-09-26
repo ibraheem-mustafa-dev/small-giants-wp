@@ -8,7 +8,8 @@
   "unit": "gzip-bytes",
   "page_budgets": {
     "tier_w": 122880,
-    "default": 51200
+    "default": 51200,
+    "tier_h_lottie": 61440
   },
   "modules": {
     "shared/effects/fx-carousel-loop.js": 1012,

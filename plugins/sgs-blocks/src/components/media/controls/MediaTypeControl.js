@@ -30,11 +30,14 @@ import { createElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../primitives';
 
-/** The three real media types. Canonical order matches the registry. */
+/** The four real media types. Canonical order matches the registry. */
 export const MEDIA_TYPE_OPTIONS = [
 	{ label: __( 'Image', 'sgs-blocks' ), value: 'image' },
 	{ label: __( 'Video', 'sgs-blocks' ), value: 'video' },
 	{ label: __( 'SVG / animation', 'sgs-blocks' ), value: 'svg' },
+	// Added 2026-09-26 (U-17, design §3.1) — a Lottie/Bodymovin JSON
+	// animation, played by `@sgs/fx-lottie`.
+	{ label: __( 'Lottie animation', 'sgs-blocks' ), value: 'lottie' },
 ];
 
 const INHERIT_OPTION = {

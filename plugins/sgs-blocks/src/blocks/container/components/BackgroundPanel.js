@@ -21,6 +21,7 @@ import {
 	ToggleControl,
 	TextareaControl,
 	TabPanel,
+	Notice,
 } from '@wordpress/components';
 import { ToolsPanel } from '../../../components/primitives';
 import {
@@ -114,6 +115,12 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 		bgVideo,
 		bgVideoTablet,
 		bgVideoMobile,
+		// U-17 (design §3.1/§6) — the Lottie background layer. Plain attachment
+		// id (not the {id,url} object bgVideo uses), matching LottieId
+		// everywhere else. Untiered — no per-device art direction for the
+		// shared background's moving layers.
+		bgLottie = 0,
+		bgLottieLoop = true,
 		bgParallax = false,
 		bgKenBurns = false,
 		bgAnimationDuration = 20,
@@ -271,6 +278,7 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 				tabs={ [
 					{ name: 'image', title: __( 'Image', 'sgs-blocks' ) },
 					{ name: 'video', title: __( 'Video', 'sgs-blocks' ) },
+					{ name: 'lottie', title: __( 'Lottie', 'sgs-blocks' ) },
 					{ name: 'svg', title: __( 'SVG', 'sgs-blocks' ) },
 				] }
 			>
@@ -647,6 +655,63 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 										/>
 									</>
 								) }
+							</>
+						);
+					}
+
+					// ---- Lottie tab (U-17, design §3.1/§6) ----
+					if ( tab.name === 'lottie' ) {
+						return (
+							<>
+								<Notice isDismissible={ false } status="info">
+									{ __(
+										'A Lottie/Bodymovin JSON as the moving background layer. It replaces the background image and video above — the image becomes its poster, shown until the animation mounts and to visitors who prefer reduced motion.',
+										'sgs-blocks'
+									) }
+								</Notice>
+								<MediaUploadCheck>
+									<MediaUpload
+										onSelect={ ( media ) => {
+											if ( ! media || 'application/json' !== ( media.mime || '' ) ) {
+												return;
+											}
+											setAttributes( { bgLottie: media.id || 0 } );
+										} }
+										allowedTypes={ [ 'application/json' ] }
+										value={ bgLottie }
+										render={ ( { open } ) => (
+											<div style={ { marginBottom: '8px' } }>
+												{ bgLottie ? (
+													<>
+														<p style={ { fontSize: '12px', marginBottom: '4px' } }>
+															{ __( 'Lottie animation selected', 'sgs-blocks' ) }
+														</p>
+														<Button variant="secondary" onClick={ open }>
+															{ __( 'Replace Lottie file', 'sgs-blocks' ) }
+														</Button>
+														<Button
+															variant="link"
+															isDestructive
+															onClick={ () => setAttributes( { bgLottie: 0 } ) }
+														>
+															{ __( 'Remove Lottie file', 'sgs-blocks' ) }
+														</Button>
+													</>
+												) : (
+													<Button variant="secondary" onClick={ open }>
+														{ __( 'Select Lottie JSON', 'sgs-blocks' ) }
+													</Button>
+												) }
+											</div>
+										) }
+									/>
+								</MediaUploadCheck>
+								<ToggleControl
+									label={ __( 'Loop', 'sgs-blocks' ) }
+									checked={ !! bgLottieLoop }
+									onChange={ ( val ) => setAttributes( { bgLottieLoop: val } ) }
+									__nextHasNoMarginBottom
+								/>
 							</>
 						);
 					}

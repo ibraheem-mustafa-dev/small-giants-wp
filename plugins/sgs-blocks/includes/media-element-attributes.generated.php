@@ -50,6 +50,9 @@ return array(
 		"LinkOpensNewTab"          => "boolean",
 		"LinkRel"                  => "string",
 		"LinkUrl"                  => "string",
+		"LottieId"                 => "integer",
+		"LottieSpeed"              => "number",
+		"LottieTrigger"            => "string",
 		"MaxHeight"                => "object",
 		"MaxHeightUnit"            => "string",
 		"MaxWidth"                 => "object",
@@ -111,6 +114,8 @@ return array(
 			"VideoCaptionsUrl",
 			"VideoCaptionsLabel",
 			"VideoCaptionsSrcLang",
+			"LottieTrigger",
+			"LottieSpeed",
 		),
 		"caption"      => array(
 			"Caption",
@@ -191,6 +196,7 @@ return array(
 			"SvgContent",
 			"Thumbnail",
 			"ThumbnailId",
+			"LottieId",
 		),
 		"svg"          => array(
 			"SvgAnimation",
@@ -211,6 +217,7 @@ return array(
 		"Height",
 		"ImageId",
 		"ImageUrl",
+		"LottieId",
 		"MinHeight",
 		"ObjectFit",
 		"ObjectPosition",
@@ -318,6 +325,7 @@ return array(
 			"SvgContent",
 			"Thumbnail",
 			"ThumbnailId",
+			"LottieId",
 		),
 		"svg-presentation"   => array(
 			"SvgAnimation",
@@ -338,6 +346,8 @@ return array(
 			"VideoCaptionsUrl",
 			"VideoCaptionsLabel",
 			"VideoCaptionsSrcLang",
+			"LottieTrigger",
+			"LottieSpeed",
 		),
 	),
 );

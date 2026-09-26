@@ -34,6 +34,9 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+// U-17 (design §3.1) — not yet wired into render-helpers.php's autoload
+// chain, so required directly here (idempotent — require_once).
+require_once dirname( __DIR__, 3 ) . '/includes/lottie-render.php';
 
 // ---------------------------------------------------------------------------
 // 1. Extract shared styling attributes with safe defaults.
@@ -88,15 +91,19 @@ $link_rel           = isset( $attributes['linkRel'] ) ? (string) $attributes['li
 $media_type_raw = $attributes['mediaType'] ?? '';
 if ( '' === $media_type_raw ) {
 	// Backwards-compat: if a videoUrl is set and no imageUrl, treat as video.
-	$has_video_url = ! empty( $attributes['videoUrl'] ) || ! empty( $attributes['videoId'] );
-	$has_image_url = ! empty( $attributes['imageUrl'] ) || ! empty( $attributes['imageId'] );
-	if ( $has_video_url && ! $has_image_url ) {
+	$has_video_url  = ! empty( $attributes['videoUrl'] ) || ! empty( $attributes['videoId'] );
+	$has_image_url  = ! empty( $attributes['imageUrl'] ) || ! empty( $attributes['imageId'] );
+	$has_lottie_url = ! empty( $attributes['lottieId'] );
+	if ( $has_lottie_url && ! $has_image_url && ! $has_video_url ) {
+		$media_type_raw = 'lottie';
+	} elseif ( $has_video_url && ! $has_image_url ) {
 		$media_type_raw = 'video';
 	} else {
 		$media_type_raw = 'image';
 	}
 }
-$media_type = in_array( $media_type_raw, array( 'image', 'video', 'svg' ), true ) ? $media_type_raw : 'image';
+// 'lottie' added 2026-09-26 (U-17, design §3.1).
+$media_type = in_array( $media_type_raw, array( 'image', 'video', 'svg', 'lottie' ), true ) ? $media_type_raw : 'image';
 
 // ---------------------------------------------------------------------------
 // 3. Helper: validate allowed CSS dimension units.
@@ -1150,6 +1157,63 @@ if ( 'svg' === $media_type ) {
 }
 
 // ---------------------------------------------------------------------------
+// 12c. LOTTIE RENDER PATH (U-17, design §3.1/§3.2).
+// ---------------------------------------------------------------------------
+$lottie_html       = '';
+$lottie_pause_html = '';
+if ( 'lottie' === $media_type ) {
+	$lottie_id = isset( $attributes['lottieId'] ) ? absint( $attributes['lottieId'] ) : 0;
+
+	$lottie_thumbnail    = isset( $attributes['thumbnail'] ) ? (string) $attributes['thumbnail'] : '';
+	$lottie_thumbnail_id = isset( $attributes['thumbnailId'] ) ? absint( $attributes['thumbnailId'] ) : 0;
+	$lottie_poster_url   = '';
+	if ( $lottie_thumbnail_id ) {
+		$lottie_poster_src = wp_get_attachment_image_url( $lottie_thumbnail_id, 'full' );
+		if ( $lottie_poster_src ) {
+			$lottie_poster_url = $lottie_poster_src;
+		}
+	}
+	if ( '' === $lottie_poster_url && '' !== $lottie_thumbnail ) {
+		$lottie_poster_url = $lottie_thumbnail;
+	}
+	$lottie_poster_html = '';
+	if ( '' !== $lottie_poster_url ) {
+		$lottie_poster_html = sprintf(
+			'<img src="%s" alt="" aria-hidden="true" class="sgs-media__img sgs-media-el" loading="lazy" decoding="async" />',
+			esc_url( $lottie_poster_url )
+		);
+	}
+
+	// The `meaning` atom (alt text) does not cover 'lottie' — registry.js
+	// `meaning.types` is image/video/svg only, and this block has no dedicated
+	// Lottie alt field. `imageAlt` is reused as the closest existing text
+	// field; empty means decorative (aria-hidden), matching every other media
+	// type's own default.
+	$lottie_alt = isset( $attributes['imageAlt'] ) ? (string) $attributes['imageAlt'] : '';
+
+	$lottie_behaviour = sgs_media_atom_video_behaviour_resolve_lottie( $attributes, '', 'sgs/media' );
+
+	$lottie_result     = sgs_render_lottie(
+		$lottie_id,
+		array(
+			'poster_html' => $lottie_poster_html,
+			'alt'         => $lottie_alt,
+			'trigger'     => $lottie_behaviour['trigger'],
+			'loop'        => $lottie_behaviour['loop'],
+			'speed'       => $lottie_behaviour['speed'],
+			'extra_class' => 'sgs-media__lottie sgs-media-el',
+		)
+	);
+	$lottie_html       = $lottie_result['wrapper'];
+	$lottie_pause_html = $lottie_result['pause'];
+
+	$lottie_aspect_decls = sgs_lottie_aspect_ratio_css( $lottie_id );
+	if ( $lottie_aspect_decls ) {
+		$responsive_css .= $id_wrap . '{' . implode( ';', $lottie_aspect_decls ) . '}';
+	}
+}
+
+// ---------------------------------------------------------------------------
 // 13. Assemble wrapper attributes via get_block_wrapper_attributes().
 // No 'id' is passed — WP core applies it automatically from the anchor
 // support when the operator sets one. No 'style' is passed — nothing is
@@ -1315,6 +1379,17 @@ if ( 'image' === $media_type ) {
 		$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally.
 		$svg_html,           // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG content processed through wp_kses() with explicit allowlist; wrapper attrs from esc_attr().
 		$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
+	);
+} elseif ( 'lottie' === $media_type ) {
+	// Lottie — the pause control prints as a SIBLING after the closing
+	// </figure>, never nested inside it (council fix 4, design §3.2): this
+	// block emits no link wrapper for a Lottie instance, but keeping the
+	// control outside the figure matches every other Lottie surface.
+	printf(
+		'<figure %s>%s</figure>%s',
+		$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally.
+		$lottie_html,        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
+		$lottie_pause_html   // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
 	);
 } else {
 	// Video always emits a <figure> wrapper (needed for caption + accessible labelling).

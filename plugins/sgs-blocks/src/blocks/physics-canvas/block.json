@@ -275,6 +275,14 @@
 		"bgVideoMobile": {
 			"type": "object"
 		},
+		"bgLottie": {
+			"type": "integer",
+			"default": 0
+		},
+		"bgLottieLoop": {
+			"type": "boolean",
+			"default": true
+		},
 		"overlayGradient": {
 			"type": "string",
 			"default": ""

@@ -49,6 +49,9 @@ require_once __DIR__ . '/shape-dividers.php';
 require_once __DIR__ . '/helpers-surface-ground.php';
 // sgs_css_length_or_sizing_keyword() — the `$sgs_css_length` closure's sanitiser.
 require_once __DIR__ . '/helpers-css-sizing-keyword.php';
+// U-17 (design §3.1) — not yet wired into render-helpers.php's autoload
+// chain, so required directly here (idempotent — require_once).
+require_once __DIR__ . '/lottie-render.php';
 
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
@@ -486,6 +489,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$bg_video                = $attributes['bgVideo'] ?? null;
 			$bg_video_tablet         = $attributes['bgVideoTablet'] ?? null;
 			$bg_video_mobile         = $attributes['bgVideoMobile'] ?? null;
+			// U-17 (design §3.1/§6) — a Lottie/Bodymovin JSON as the moving
+			// background layer. Integer attachment id (not the {id,url} object
+			// shape bgVideo uses) — matches LottieId everywhere else. Untiered:
+			// the shared wrapper background offers no per-tier art direction for
+			// ANY of its moving layers (bgVideo itself has no such tiering
+			// control in the editor either, despite the attribute existing).
+			$bg_lottie_id            = isset( $attributes['bgLottie'] ) ? absint( $attributes['bgLottie'] ) : 0;
+			// `array_key_exists` (not `??`), so an UNDECLARED bgLottieLoop attr
+			// (a block that has not adopted it) and a DECLARED-but-false one are
+			// distinguishable — both resolve to the same true default here, but
+			// this is the same guard every other nullable-tri-state read in this
+			// file uses (e.g. $overlay_opacity_tablet above).
+			$bg_lottie_loop          = array_key_exists( 'bgLottieLoop', $attributes ) ? (bool) $attributes['bgLottieLoop'] : true;
+			$has_bg_lottie           = $bg_lottie_id > 0;
 			$bg_parallax             = ! empty( $attributes['bgParallax'] );
 			$bg_ken_burns            = ! empty( $attributes['bgKenBurns'] );
 			$bg_animation_duration   = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
@@ -1892,7 +1909,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// D6: universal, was section-only (the `if ( true )` wrapper this was
 			// left inside of has been removed as dead-conditional cleanup).
-			if ( $has_bg_image && ! $has_bg_video ) {
+			//
+			// U-17 (design §3.1/§6) — bgLottie IS the moving layer and takes
+			// precedence over both bgImage (which becomes its poster) and
+			// bgVideo (suppressed the same way): neither of their own classes
+			// apply once bgLottie is set. With no bgLottie this condition is
+			// unchanged from before — the byte-identical guarantee §6 requires.
+			if ( $has_bg_image && ! $has_bg_video && ! $has_bg_lottie ) {
 				$classes[] = 'sgs-container--has-bg-image';
 				if ( $bg_parallax ) {
 					$classes[] = 'sgs-container--parallax';
@@ -1901,8 +1924,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$classes[] = 'sgs-container--ken-burns';
 				}
 			}
-			if ( $has_bg_video ) {
+			if ( $has_bg_video && ! $has_bg_lottie ) {
 				$classes[] = 'sgs-container--has-bg-video';
+			}
+			if ( $has_bg_lottie ) {
+				$classes[] = 'sgs-container--has-bg-lottie';
 			}
 			if ( $has_bg_svg ) {
 				$classes[] = 'sgs-container--has-bg-svg';
@@ -2015,6 +2041,41 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$desktop_src
 					);
 				}
+			}
+
+			// ----------------------------------------------------------------
+			// Lottie HTML — U-17 (design §3.1/§6). Precedence: when bgLottie is
+			// set it IS the moving layer — the background image, if any, becomes
+			// its poster (shown until the player mounts, and always shown under
+			// reduced motion) rather than a separately painted background, and
+			// any bgVideo is suppressed the same way (§6: "a Lottie background
+			// without an image shows nothing under reduced motion: allowed,
+			// decorative"). With NO bgLottie this whole block is a no-op and
+			// $bg_img_html/$video_html reach final assembly completely
+			// untouched — the byte-identical guarantee §6 requires.
+			// ----------------------------------------------------------------
+			$lottie_html       = '';
+			$lottie_pause_html = '';
+			if ( $has_bg_lottie ) {
+				$lottie_result = sgs_render_lottie(
+					$bg_lottie_id,
+					array(
+						'poster_html' => $bg_img_html,
+						'decorative'  => true,
+						'trigger'     => 'visible',
+						'loop'        => $bg_lottie_loop,
+						'speed'       => 1.0,
+						'extra_class' => 'sgs-container__lottie-bg',
+					)
+				);
+				$lottie_html       = $lottie_result['wrapper'];
+				$lottie_pause_html = $lottie_result['pause'];
+
+				// The poster is now INSIDE the lottie wrapper — suppress the
+				// separate background-image/video layers so the poster does not
+				// also paint underneath it.
+				$bg_img_html = '';
+				$video_html  = '';
 			}
 
 			// ----------------------------------------------------------------
@@ -2351,6 +2412,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| '' !== $overlay_decls
 				|| ( $bg_parallax || $bg_ken_burns ) // D6: universal.
 				|| ( $has_bg_video && ( ! empty( $bg_video_tablet['url'] ) || ! empty( $bg_video_mobile['url'] ) ) ) // D6: universal.
+				// U-17 — the pause control's scoped positioning rule and the
+				// Lottie layer's own aspect-ratio custom property both need a
+				// uid to scope to.
+				|| $has_bg_lottie
 				// An SVG background emits `--sgs-svg-opacity` as a scoped rule on the
 				// `.sgs-container__svg-bg` layer (FR-32-4 / D345 — it used to ride inline
 				// on that div). Without a uid there is nowhere to scope it, so the SVG
@@ -2650,6 +2715,18 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// stays as the CSS fallback default for the (rare) no-uid case).
 			if ( $sgs_bg_video_style_decls && $uid ) {
 				$responsive_css .= '.' . $uid . ' > .sgs-container__video-bg{' . implode( ';', $sgs_bg_video_style_decls ) . '}';
+			}
+
+			// Lottie background layer + its WCAG 2.2.2 pause control (U-17,
+			// design §3.1/§6, no-inline contract). The block needs `position:
+			// relative` to host the pause button's `position: absolute` corner
+			// placement — every existing use of `.{uid}` already establishes a
+			// real element to attach to, and this rule is additive (only fires
+			// when $has_bg_lottie), so a block with no Lottie background is
+			// completely unaffected.
+			if ( $has_bg_lottie && $uid ) {
+				$responsive_css .= '.' . $uid . '{position:relative;}';
+				$responsive_css .= '.' . $uid . ' > .sgs-lottie__pause{position:absolute;inset-block-end:1rem;inset-inline-end:1rem;z-index:5;}';
 			}
 
 			// Overlay paint scoped rule (Spec 32 no-inline contract) — the bg overlay
@@ -4003,7 +4080,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// ----------------------------------------------------------------
 			// Final assembly — order:
-			// shape_top / bg_img / video / overlay / svg_bg / [__inner] content [/__inner] / svg_fg / shape_bottom
+			// shape_top / bg_img / video / lottie / overlay / svg_bg / [__inner] content [/__inner] / svg_fg / shape_bottom / lottie_pause
 			//
 			// $bg_img_html sits IMMEDIATELY BEFORE $video_html (Phase 2 LCP fast
 			// path, above) so today's z-order is preserved: a background video was
@@ -4012,21 +4089,31 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ($has_bg_image && ! $has_bg_video gates the <img> path), so placing
 			// the image ahead of the video slot keeps that ordering intact for the
 			// (currently impossible) case either changes.
+			//
+			// U-17 (design §3.1/§6): $lottie_html/$lottie_pause_html are both ''
+			// unless $has_bg_lottie, and $bg_img_html/$video_html are ALREADY
+			// suppressed above when it is set — so this sprintf is
+			// byte-identical to before this feature for every block with no
+			// bgLottie. $lottie_pause_html prints LAST, after $shape_bottom_html
+			// (a real, positioned element inside the wrapper — WCAG 2.2.2 —
+			// never nested inside $inner_html/the content it must sit above).
 			// ----------------------------------------------------------------
-			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr(), $bg_img_html built via sgs_responsive_image()/wp_get_attachment_image() (core-escaped).
+			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr(), $bg_img_html built via sgs_responsive_image()/wp_get_attachment_image() (core-escaped), $lottie_html/$lottie_pause_html built exclusively by sgs_render_lottie(), which escapes every value itself.
 			$open_attrs = '' !== $opt_extra_attr_html ? $wrapper_attributes . ' ' . $opt_extra_attr_html : $wrapper_attributes;
 			$element    = sprintf(
-				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s%10$s</%1$s>',
+				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s%10$s%11$s%12$s</%1$s>',
 				$html_tag,
 				$open_attrs,
 				$shape_top_html,
 				$bg_img_html,
 				$video_html,
+				$lottie_html,
 				$overlay_html,
 				$svg_bg_html,
 				$inner_open . $inner_html . $inner_close,
 				$svg_fg_html,
-				$shape_bottom_html
+				$shape_bottom_html,
+				$lottie_pause_html
 			);
 			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 

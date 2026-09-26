@@ -50,6 +50,9 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 // render-helpers.php, which is the documented single entry point for every shared
 // helper (see its own docblock).
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+// U-17 (design §3.1) — not yet wired into render-helpers.php's autoload
+// chain, so required directly here (idempotent — require_once).
+require_once dirname( __DIR__, 3 ) . '/includes/lottie-render.php';
 
 // ---------------------------------------------------------------------------
 // Security sanitisers (no-inline contract) — mirrors sgs/label/render.php.
@@ -102,6 +105,31 @@ $allowed_animation_styles = array( 'none', 'draw-on-load', 'hover-redraw', 'scro
 if ( ! in_array( $animation_style, $allowed_animation_styles, true ) ) {
 	$animation_style = 'none';
 }
+
+// ── Lottie substrate (U-17, design §3.1) ─────────────────────────────────────
+// `animationSubstrate` selects between the pre-existing SVG-draw mechanism
+// (svgAnimationSource/animationStyle) and a Lottie/Bodymovin JSON, played by
+// `sgs_render_lottie()`. `animationStyle`/`svgAnimationSource` are ignored
+// entirely when the substrate is 'lottie'.
+$animation_substrate = isset( $attributes['animationSubstrate'] ) ? sanitize_key( $attributes['animationSubstrate'] ) : 'svg-draw';
+if ( ! in_array( $animation_substrate, array( 'svg-draw', 'lottie' ), true ) ) {
+	$animation_substrate = 'svg-draw';
+}
+$lottie_id      = isset( $attributes['lottieId'] ) ? absint( $attributes['lottieId'] ) : 0;
+$lottie_trigger = isset( $attributes['lottieTrigger'] ) ? sanitize_key( $attributes['lottieTrigger'] ) : 'load';
+if ( ! in_array( $lottie_trigger, array( 'load', 'visible', 'hover', 'scroll' ), true ) ) {
+	$lottie_trigger = 'load';
+}
+$lottie_loop  = ! empty( $attributes['lottieLoop'] );
+$lottie_speed = isset( $attributes['lottieSpeed'] ) ? (float) $attributes['lottieSpeed'] : 1.0;
+if ( $lottie_speed < 0.25 || $lottie_speed > 3 ) {
+	$lottie_speed = 1.0;
+}
+$has_lottie_animation = 'lottie' === $animation_substrate && $lottie_id > 0;
+
+// ── Dark-mode logo variant (U-17, design §3.1) — independent of substrate. ──
+$dark_logo_id  = isset( $attributes['darkLogoId'] ) ? absint( $attributes['darkLogoId'] ) : 0;
+$dark_logo_url = $dark_logo_id > 0 ? (string) wp_get_attachment_url( $dark_logo_id ) : '';
 
 // ── Early exit: nothing to render ────────────────────────────────────────────
 
@@ -516,7 +544,8 @@ if ( 'none' === $animation_style ) {
 // ── SVG inline render (animation mode) ───────────────────────────────────────
 
 $svg_html          = '';
-$has_svg_animation = 'none' !== $animation_style && $svg_animation_id > 0;
+// 'lottie' ignores animationStyle/svgAnimationSource entirely (design §3.1).
+$has_svg_animation = 'svg-draw' === $animation_substrate && 'none' !== $animation_style && $svg_animation_id > 0;
 
 if ( $has_svg_animation ) {
 	$svg_path = get_attached_file( $svg_animation_id );
@@ -534,6 +563,12 @@ if ( $has_svg_animation ) {
 
 // ── Build inner markup ────────────────────────────────────────────────────────
 
+// Lottie pause control (U-17, design §3.1/§3.2) — built OUTSIDE the
+// ob_start() capture below and printed AFTER the closing `</a>` in the final
+// assembly, never nested inside the link (council fix 4: interactive content
+// inside `<a>` is invalid HTML).
+$lottie_pause_html = '';
+
 ob_start();
 
 if ( $link_to_home ) {
@@ -544,7 +579,44 @@ if ( $link_to_home ) {
 	);
 }
 
-if ( $has_svg_animation && $svg_html ) {
+if ( $has_lottie_animation ) {
+	// Lottie substrate: the desktop <picture> (built the same way the
+	// standard mode builds it) is the POSTER — shown until the player mounts
+	// and always shown under reduced motion. Inside an already-labelled home
+	// link, the lottie span is always `aria-hidden="true"` (design §3.2) so
+	// the accessible name is not announced twice; when the block is not
+	// linked, `alt`/`logoDecorative` drive it exactly as the standard mode
+	// does.
+	$lottie_poster_html = sprintf(
+		'<picture class="sgs-responsive-logo__picture">' .
+		'<source media="(max-width: 767px)" srcset="%1$s">' .
+		'<source media="(max-width: 1023px)" srcset="%2$s">' .
+		'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
+		'</picture>',
+		esc_url( $effective_mobile_url ),
+		esc_url( $effective_tablet_url ),
+		esc_url( $desktop_url ),
+		esc_attr( $img_alt ),
+		absint( $width ),
+		$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
+	);
+
+	$lottie_result = sgs_render_lottie(
+		$lottie_id,
+		array(
+			'poster_html' => $lottie_poster_html,
+			'alt'         => $img_alt,
+			'decorative'  => $link_to_home || $logo_decorative,
+			'trigger'     => $lottie_trigger,
+			'loop'        => $lottie_loop,
+			'speed'       => $lottie_speed,
+			'extra_class' => 'sgs-responsive-logo__lottie',
+		)
+	);
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
+	echo $lottie_result['wrapper'];
+	$lottie_pause_html = $lottie_result['pause'];
+} elseif ( $has_svg_animation && $svg_html ) {
 	// Animation mode: inline SVG for desktop; static images for tablet + mobile.
 	//
 	// Tier G DrawSVG wiring (Spec 38 FR-38-15). The
@@ -648,9 +720,26 @@ if ( $has_svg_animation && $svg_html ) {
 	}
 }
 
+// Dark-mode logo variant (U-17, design §3.1) — independent of
+// animationSubstrate. Hidden by default; shown (and the light logo hidden)
+// under :root[data-theme="dark"] / :root[data-theme="auto"][data-prefers-dark="true"]
+// via style.css. No width/height HTML attributes are set on it deliberately
+// — it shares the same box the light logo occupies (style.css positions both
+// absolutely on top of one another), so it must inherit that box's size
+// rather than impose its own intrinsic one.
+if ( '' !== $dark_logo_url ) {
+	printf(
+		'<img class="sgs-responsive-logo__dark" src="%s" alt="" aria-hidden="true" loading="eager" decoding="async">',
+		esc_url( $dark_logo_url )
+	);
+}
+
 if ( $link_to_home ) {
 	echo '</a>';
 }
+
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
+echo $lottie_pause_html;
 
 $inner_html = ob_get_clean();
 

@@ -78,6 +78,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		svgContent,
 		svgAnimation,
 		svgAnimationSpeed,
+		// Lottie (U-17, design §3.1).
+		lottieId,
+		thumbnail,
 	} = attributes;
 
 	const blockProps = useBlockProps();
@@ -88,6 +91,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const isImage = 'image' === mediaType || ! mediaType;
 	const isVideo = 'video' === mediaType;
 	const isSvg = 'svg' === mediaType;
+	const isLottie = 'lottie' === mediaType;
 
 	// -------------------------------------------------------------------------
 	// Media-atom canvas mirror (Wave 5-7 gap, closed 2026-09-01).
@@ -532,6 +536,70 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					dangerouslySetInnerHTML={ { __html: sanitiseSvg( svgContent ) } }
 				/>
 			</figure>
+		);
+	}
+
+	// -------------------------------------------------------------------------
+	// Canvas — Lottie mode (U-17, design §3.1). The editor never plays the
+	// animation (design §3.3 — `editor_story: no-preview`); it shows the
+	// poster with a "Lottie" badge, matching how the video path is a
+	// non-playing preview in this same canvas.
+	// -------------------------------------------------------------------------
+	if ( isLottie ) {
+		const posterUrl = thumbnail || '';
+		return (
+			<div { ...blockProps }>
+				{ inspectorControls }
+				{ lottieId ? (
+					<div className="sgs-media-el sgs-media__lottie-preview" style={ { position: 'relative' } }>
+						{ posterUrl ? (
+							<img
+								src={ posterUrl }
+								alt=""
+								aria-hidden="true"
+								style={ { display: 'block', maxWidth: '100%', height: 'auto' } }
+							/>
+						) : (
+							<Notice status="warning" isDismissible={ false }>
+								{ __(
+									'Add a poster image: visitors who prefer reduced motion see it instead.',
+									'sgs-blocks'
+								) }
+							</Notice>
+						) }
+						<span
+							className="sgs-media__lottie-badge"
+							aria-hidden="true"
+							style={ {
+								position: 'absolute',
+								top: '8px',
+								left: '8px',
+								padding: '2px 6px',
+								fontSize: '10px',
+								fontWeight: 600,
+								letterSpacing: '0.05em',
+								background: 'rgba(0,0,0,0.7)',
+								color: '#fff',
+								borderRadius: '2px',
+							} }
+						>
+							{ __( 'LOTTIE', 'sgs-blocks' ) }
+						</span>
+					</div>
+				) : (
+					<div className="components-placeholder">
+						<div className="components-placeholder__label">
+							{ __( 'SGS Media — Lottie animation', 'sgs-blocks' ) }
+						</div>
+						<div className="components-placeholder__instructions">
+							{ __(
+								'Select a Lottie JSON file in the block settings panel.',
+								'sgs-blocks'
+							) }
+						</div>
+					</div>
+				) }
+			</div>
 		);
 	}
 

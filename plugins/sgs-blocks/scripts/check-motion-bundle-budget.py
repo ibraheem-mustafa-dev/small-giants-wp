@@ -148,6 +148,10 @@ _BREACH_THRESHOLD_PCT = 20.0
 _TIER_ENTRY_MODULES: dict[str, tuple[str, ...]] = {
     "tier_w": ("@sgs/fx-surface-treatment",),
     "default": ("@sgs/fx-scrub",),
+    # U-17 (design §3.5): the Lottie player's own named 60 KB allowance —
+    # `@sgs/fx-lottie`'s only dynamic dep is `@sgs/lottie-web` (council fix 3:
+    # no GSAP anywhere in this effect), so this entry counts the player alone.
+    "tier_h_lottie": ("@sgs/fx-lottie",),
 }
 
 

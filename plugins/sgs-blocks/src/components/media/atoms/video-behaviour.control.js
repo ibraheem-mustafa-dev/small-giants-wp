@@ -81,6 +81,7 @@ import BooleanResponsiveControl from '../../BooleanResponsiveControl';
 import VideoCaptionsFields from '../controls/VideoCaptionsFields.js';
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { validate } from './video-behaviour.js';
+import { resolveMediaType } from './source.js';
 import './video-behaviour.control.css';
 
 // WP's native device-type names -> our breakpoint keys. Mirrors
@@ -187,6 +188,13 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug } )
 		}
 		setAttributes( next );
 	};
+
+	// A Lottie slot's playback lives in LottieControls (trigger, loop, speed);
+	// none of the video toggles apply to it. Returned after the hooks above so
+	// the hook order is the same on every render.
+	if ( 'lottie' === resolveMediaType( attributes, prefix, blockSlug ) ) {
+		return null;
+	}
 
 	return createElement(
 		'div',

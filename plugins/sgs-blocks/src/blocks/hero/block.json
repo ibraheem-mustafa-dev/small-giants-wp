@@ -385,7 +385,8 @@
 			"enum": [
 				"image",
 				"video",
-				"svg"
+				"svg",
+				"lottie"
 			]
 		},
 		"splitMediaTypeTablet": {
@@ -395,7 +396,8 @@
 				"",
 				"image",
 				"video",
-				"svg"
+				"svg",
+				"lottie"
 			]
 		},
 		"splitMediaTypeMobile": {
@@ -405,7 +407,8 @@
 				"",
 				"image",
 				"video",
-				"svg"
+				"svg",
+				"lottie"
 			]
 		},
 		"splitMediaVideoId": {
@@ -577,6 +580,14 @@
 		},
 		"bgVideoMobile": {
 			"type": "object"
+		},
+		"bgLottie": {
+			"type": "integer",
+			"default": 0
+		},
+		"bgLottieLoop": {
+			"type": "boolean",
+			"default": true
 		},
 		"splitMediaObjectFit": {
 			"type": "string",

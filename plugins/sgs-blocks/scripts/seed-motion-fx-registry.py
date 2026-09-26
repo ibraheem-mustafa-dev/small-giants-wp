@@ -614,6 +614,45 @@ FX_EFFECTS: list[dict] = [
         "requires": "none",
     },
     {
+        # U-17 (`.claude/reports/2026-09-26-u17-lottie-design.md` §3.3, Spec 38
+        # §1.2a, D1151). The Lottie player — `lottie-web` 5.13.0 light build,
+        # SVG renderer, playing a designer-supplied animation file
+        # (`data-sgs-fx="lottie"`, rendered by `sgs_render_lottie()`).
+        "effect": "lottie",
+        # in_picker=0: not offered in fx.js's generic effects picker — a
+        # Lottie instance is chosen via the media-type atom (mediaType:
+        # 'lottie'), never the fx ToolsPanel.
+        "in_picker": 0,
+        # pins/triggers (D416). Not a scroll-pin effect. `scroll` IS one of its
+        # four triggers (design §3.3's vanilla scroll-progress mapping), but
+        # alongside load/visible/hover — never pinning a section.
+        "pins": 0,
+        "triggers": "load,visible,hover,scroll",
+        # tier='H' (design §3.3): same shape as scroll-smoother above — Tier H
+        # is not GSAP-plugin shaped, plugin_set is empty (council fix 3: NO
+        # GSAP dependency anywhere in this effect; the scroll trigger is
+        # vanilla IntersectionObserver + rAF-throttled scroll, never
+        # ScrollTrigger).
+        "tier": "H",
+        "plugin_set": [],
+        "owns_scroll_transform": 0,
+        # reduced_motion='suppress' (design §3.3): under prefers-reduced-motion
+        # the player never even imports; the poster stays.
+        "reduced_motion": "suppress",
+        # editor_story='no-preview' (design §3.3), matching scroll-smoother's
+        # own no-live-editor-preview shape.
+        "editor_story": "no-preview",
+        # scope='element': this is a per-instance element effect (a media slot,
+        # a background layer, a logo), never a site-level setting.
+        "scope": "element",
+        "requires": "none",
+        # creates_panel=0 (design §3.3), DELIBERATE not inherited default: the
+        # atom system's own media-type/source/video-behaviour atoms already own
+        # every Lottie control (trigger, speed, loop, poster) — this effect row
+        # creates no fx-specific inspector panel of its own.
+        "creates_panel": 0,
+    },
+    {
         # Same rationale as scroll-smoother above — Page transitions has no
         # `data-sgs-fx` grammar value (cross-document View Transitions, a
         # theme-settings toggle, not a per-element attribute). Included for the

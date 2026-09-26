@@ -162,7 +162,8 @@ const REGISTRY_FILE = path.join(
 );
 const CHECK_DEAD_CONTROLS_SCRIPT = path.resolve( __dirname, '..', '..', 'check-dead-controls.js' );
 
-const MEDIA_TYPES = [ 'image', 'video', 'svg' ];
+// 'lottie' added 2026-09-26 (U-17, design §3.1) — the 4th media type.
+const MEDIA_TYPES = [ 'image', 'video', 'svg', 'lottie' ];
 
 // ── Module-level caches — one shell-out per scan, mirrors rule 34/38's own
 // documented rationale (a per-block rule must not re-spawn a child process

@@ -37,6 +37,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 // sgs_allowed_svg_tags() now delegates to sgs_svg_kses_allowed_tags() and would
 // fatal on an undefined function without this line.
 require_once __DIR__ . '/helpers-svg-kses.php';
+// U-17 (design §3.1) — not yet wired into render-helpers.php's autoload
+// chain, so required directly here (idempotent — require_once).
+require_once __DIR__ . '/lottie-render.php';
 
 if ( ! function_exists( 'sgs_allowed_svg_tags' ) ) {
 	/**
@@ -230,6 +233,34 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 					'desktop' === $tier ? 'metadata' : 'none',
 					esc_url( (string) ( $media['url'] ?? '' ) )
 				);
+			} elseif ( 'lottie' === $type ) {
+				$media      = is_array( $spec['media'] ?? null ) ? $spec['media'] : array();
+				$lottie_id  = ! empty( $media['id'] ) ? absint( $media['id'] ) : 0;
+				$lottie_opt = is_array( $options['lottie'] ?? null ) ? $options['lottie'] : array();
+
+				$result = sgs_render_lottie(
+					$lottie_id,
+					array(
+						'poster_html' => (string) ( $spec['poster'] ?? '' ),
+						'alt'         => $resolved_alt[ $tier ],
+						'trigger'     => (string) ( $lottie_opt['trigger'] ?? 'visible' ),
+						'loop'        => ! empty( $lottie_opt['loop'] ),
+						'speed'       => isset( $lottie_opt['speed'] ) ? (float) $lottie_opt['speed'] : 1.0,
+						'extra_class' => $class_attr,
+					)
+				);
+				$html .= $result['wrapper'];
+				if ( '' !== $result['pause'] ) {
+					// Carry the SAME tier-visibility classes as the wrapper
+					// (base_class + base_class--tier) so the shared toggle CSS
+					// built below (sgs_tier_media_toggle_css()) hides/shows the
+					// pause control together with its own tier's animation.
+					$html .= str_replace(
+						'class="sgs-lottie__pause',
+						'class="' . esc_attr( $class_attr ) . ' sgs-lottie__pause',
+						$result['pause']
+					);
+				}
 			} else {
 				$media = is_array( $spec['media'] ?? null ) ? $spec['media'] : array();
 				$attrs = array(
@@ -278,6 +309,12 @@ if ( ! function_exists( 'sgs_tier_media_has_source' ) ) {
 		}
 
 		$media = is_array( $spec['media'] ?? null ) ? $spec['media'] : array();
+
+		// Lottie has no `url` — its only source is the attachment `id`
+		// (`LottieId`, design §3.1); resolved to a URL inside sgs_render_lottie().
+		if ( 'lottie' === $type ) {
+			return ! empty( $media['id'] );
+		}
 
 		return '' !== trim( (string) ( $media['url'] ?? '' ) );
 	}

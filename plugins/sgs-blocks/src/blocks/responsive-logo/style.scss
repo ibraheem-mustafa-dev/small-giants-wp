@@ -21,6 +21,9 @@
 
 .sgs-responsive-logo {
 	display: inline-block;
+	// Anchors the Lottie substrate's WCAG 2.2.2 pause control (U-17), which
+	// prints as a sibling of &__link/&__picture, not nested inside either.
+	position: relative;
 	// Fill-width default -- `--logo-width`
 	// is only emitted by render.php when the operator has explicitly set a
 	// pixel width; an untouched instance falls through to this 100% default so
@@ -53,6 +56,7 @@
 	&__picture {
 		display: block;
 		line-height: 0;
+		position: relative; // anchors &__dark (U-17) when a dark-logo variant is set
 	}
 
 	// ── Images ────────────────────────────────────────────────────────────────
@@ -61,6 +65,49 @@
 		width: 100%;
 		height: auto;
 		max-width: 100%;
+	}
+
+	// ── Dark-mode logo variant (U-17, design §3.1) ──────────────────────────────
+	// Shares the light logo's box (absolutely positioned on top of it) so it
+	// inherits that box's size rather than imposing its own intrinsic one.
+	// Hidden by default; shown — with the light logo hidden — under an
+	// explicit dark theme or an auto theme currently resolving dark.
+	&__dark {
+		display: none;
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+
+	:root[data-theme='dark'] &,
+	:root[data-theme='auto'][data-prefers-dark='true'] & {
+		.sgs-responsive-logo__image--desktop,
+		.sgs-responsive-logo__lottie {
+			display: none;
+		}
+
+		.sgs-responsive-logo__dark {
+			display: block;
+		}
+	}
+
+	// ── Lottie substrate (U-17, design §3.1) ────────────────────────────────────
+	&__lottie {
+		display: block;
+		width: 100%;
+		line-height: 0;
+	}
+
+	// WCAG 2.2.2 pause control — printed as a SIBLING after the home link
+	// (render.php), never nested inside it. Bottom inline-end corner, above
+	// the logo, matching the shared background-layer pause control's shape.
+	.sgs-lottie__pause {
+		position: absolute;
+		inset-block-end: 4px;
+		inset-inline-end: 4px;
+		z-index: 2;
 	}
 
 	// ── SVG animation wrapper ─────────────────────────────────────────────────

@@ -27,6 +27,11 @@ import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import MediaPicker from '../../MediaPicker.js';
 import ResponsiveControl from '../../ResponsiveControl.js';
 import { resolveMediaType } from './source.js';
+// 'lottie' branch (U-17, design §3.1) — ALL Lottie controls for a slot
+// (picker + poster + trigger + loop + speed) live in one place so every
+// Lottie-offering surface gets identical rows. `pairPickerRow` is exported
+// below for that file to reuse for its own poster row.
+import { control as lottieControls } from '../controls/LottieControls.js';
 
 /** Tier key -> attribute-name suffix. Desktop carries no suffix. */
 const TIER_SUFFIX = { desktop: '', tablet: 'Tablet', mobile: 'Mobile' };
@@ -45,7 +50,7 @@ const TIER_SUFFIX = { desktop: '', tablet: 'Tablet', mobile: 'Mobile' };
  * @param {'image'|'video'} props.allowedType The single media-library type this slot accepts.
  * @return {JSX.Element} A bare row — no InspectorControls/PanelBody wrapper.
  */
-function pairPickerRow( { rowKey, label, attrs, setAttributes, name, idBase, urlBase, allowedType } ) {
+export function pairPickerRow( { rowKey, label, attrs, setAttributes, name, idBase, urlBase, allowedType } ) {
 	return (
 		<ResponsiveControl key={ rowKey } label={ label }>
 			{ ( tier ) => {
@@ -188,6 +193,10 @@ export function control( { attributes, setAttributes, prefix, blockSlug } ) {
 
 	if ( 'svg' === type ) {
 		return [ svgRow( { attrs, setAttributes, name } ) ];
+	}
+
+	if ( 'lottie' === type ) {
+		return lottieControls( { attributes: attrs, setAttributes, prefix, blockSlug } );
 	}
 
 	if ( 'video' === type ) {

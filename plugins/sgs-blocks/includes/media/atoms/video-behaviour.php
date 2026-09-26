@@ -106,6 +106,44 @@ if ( ! function_exists( 'sgs_media_atom_video_behaviour_requires' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_atom_video_behaviour_resolve_lottie' ) ) {
+	/**
+	 * Resolve `LottieTrigger` / `LottieSpeed` / (reused) `VideoLoop` for one
+	 * Lottie media-type instance (U-17, design §3.1). Mirrors the JS twin's
+	 * `validate()` reject-to-default rule for the two Lottie-only bases, so
+	 * every render.php Lottie branch (`sgs/media`, `sgs/hero` split media, the
+	 * shared wrapper background, `sgs/responsive-logo`) resolves the SAME way
+	 * rather than four separate ad-hoc reads.
+	 *
+	 * Untiered by design (§3.1 "trigger/loop/speed are not [tiered]") — only
+	 * `LottieId` carries Tablet/Mobile siblings.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $prefix     Surface prefix ('' for an unprefixed surface).
+	 * @param string $block_slug Block slug, for STORED_AS resolution.
+	 * @return array{trigger:string,loop:bool,speed:float}
+	 */
+	function sgs_media_atom_video_behaviour_resolve_lottie( array $attributes, $prefix, $block_slug ) {
+		$trigger_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'LottieTrigger' );
+		$speed_key   = sgs_media_element_stored_attr( $block_slug, $prefix, 'LottieSpeed' );
+		$loop_key    = sgs_media_element_stored_attr( $block_slug, $prefix, 'VideoLoop' );
+
+		$trigger_raw = $attributes[ $trigger_key ] ?? 'visible';
+		$trigger     = in_array( $trigger_raw, array( 'load', 'visible', 'hover', 'scroll' ), true ) ? $trigger_raw : 'visible';
+
+		$speed_raw = isset( $attributes[ $speed_key ] ) ? (float) $attributes[ $speed_key ] : 1.0;
+		$speed     = ( $speed_raw >= 0.25 && $speed_raw <= 3 ) ? $speed_raw : 1.0;
+
+		$loop = ! empty( $attributes[ $loop_key ] );
+
+		return array(
+			'trigger' => $trigger,
+			'loop'    => $loop,
+			'speed'   => $speed,
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_media_atom_video_behaviour_css' ) ) {
 	/**
 	 * Playback behaviour is HTML element state (attributes/properties on

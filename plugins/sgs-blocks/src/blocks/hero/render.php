@@ -165,6 +165,41 @@ $sgs_hero_resolve_split_video = static function ( array $attributes, string $suf
 $sgs_hero_resolve_split_svg   = static function ( array $attributes, string $suffix ) {
 	return (string) ( $attributes[ 'splitMediaSvgContent' . $suffix ] ?? '' );
 };
+// Lottie tier (U-17, design §3.1) — `LottieId` only (integer attachment id,
+// no URL sibling, matching how the `source` atom stores it everywhere else).
+// The poster is that SAME tier's `Thumbnail`/`ThumbnailId` (already injected
+// by the `source` atom for prefix 'splitMedia'), falling back to that tier's
+// own image when no poster was set (design §5).
+$sgs_hero_resolve_split_lottie = static function ( array $attributes, string $suffix ) {
+	$id = absint( $attributes[ 'splitMediaLottieId' . $suffix ] ?? 0 );
+	if ( ! $id ) {
+		return null;
+	}
+	return array( 'id' => $id );
+};
+$sgs_hero_resolve_split_poster = static function ( array $attributes, string $suffix, $tier_image ) {
+	$poster_id  = absint( $attributes[ 'splitMediaThumbnailId' . $suffix ] ?? 0 );
+	$poster_url = '';
+	if ( $poster_id ) {
+		$poster_src = wp_get_attachment_image_url( $poster_id, 'large' );
+		if ( $poster_src ) {
+			$poster_url = $poster_src;
+		}
+	}
+	if ( '' === $poster_url ) {
+		$poster_url = (string) ( $attributes[ 'splitMediaThumbnail' . $suffix ] ?? '' );
+	}
+	if ( '' === $poster_url && ! empty( $tier_image['url'] ) ) {
+		$poster_url = (string) $tier_image['url'];
+	}
+	if ( '' === $poster_url ) {
+		return '';
+	}
+	return sprintf(
+		'<img src="%s" alt="" aria-hidden="true" class="sgs-media-el" loading="lazy" decoding="async" />',
+		esc_url( $poster_url )
+	);
+};
 $split_image                  = $sgs_hero_resolve_split_image( $attributes, '' );
 $split_image_tablet           = $sgs_hero_resolve_split_image( $attributes, 'Tablet' );
 $split_image_mobile           = $sgs_hero_resolve_split_image( $attributes, 'Mobile' );
@@ -1448,12 +1483,15 @@ $content_html = '<div class="sgs-hero__content">' . $content . '</div>';
 // byte-identically. A tier with nothing resolved is simply absent from
 // $split_tiers; the helper's own upward cascade (mobile -> tablet -> desktop,
 // Spec 35 D3/D5) takes over from there, matching every other tier family here.
-$sgs_hero_resolve_split_type = static function ( string $declared_type, $image, $video, string $svg ): string {
+$sgs_hero_resolve_split_type = static function ( string $declared_type, $image, $video, string $svg, $lottie = null ): string {
 	if ( 'video' === $declared_type ) {
 		return ! empty( $video['url'] ) ? 'video' : '';
 	}
 	if ( 'svg' === $declared_type ) {
 		return '' !== trim( $svg ) ? 'svg' : '';
+	}
+	if ( 'lottie' === $declared_type ) {
+		return ! empty( $lottie['id'] ) ? 'lottie' : '';
 	}
 	// 'image' is STRICT, exactly like 'video' and 'svg' above. ⛔ It previously
 	// fell through to inference when the tier had no image, to cover a
@@ -1515,13 +1553,13 @@ if ( $split_media_decorative ) {
 $split_tiers = array();
 foreach (
 	array(
-		'desktop' => array( $split_media_type, $split_image, $split_video, $split_svg ),
-		'tablet'  => array( $split_media_type_tablet, $split_image_tablet, $split_video_tablet, $split_svg_tablet ),
-		'mobile'  => array( $split_media_type_mobile, $split_image_mobile, $split_video_mobile, $split_svg_mobile ),
+		'desktop' => array( $split_media_type, $split_image, $split_video, $split_svg, $sgs_hero_resolve_split_lottie( $attributes, '' ) ),
+		'tablet'  => array( $split_media_type_tablet, $split_image_tablet, $split_video_tablet, $split_svg_tablet, $sgs_hero_resolve_split_lottie( $attributes, 'Tablet' ) ),
+		'mobile'  => array( $split_media_type_mobile, $split_image_mobile, $split_video_mobile, $split_svg_mobile, $sgs_hero_resolve_split_lottie( $attributes, 'Mobile' ) ),
 	) as $sgs_hero_tier_name => $sgs_hero_tier_args
 ) {
-	list( $sgs_hero_tier_type_attr, $sgs_hero_tier_image, $sgs_hero_tier_video, $sgs_hero_tier_svg ) = $sgs_hero_tier_args;
-	$sgs_hero_resolved_type = $sgs_hero_resolve_split_type( (string) $sgs_hero_tier_type_attr, $sgs_hero_tier_image, $sgs_hero_tier_video, $sgs_hero_tier_svg );
+	list( $sgs_hero_tier_type_attr, $sgs_hero_tier_image, $sgs_hero_tier_video, $sgs_hero_tier_svg, $sgs_hero_tier_lottie ) = $sgs_hero_tier_args;
+	$sgs_hero_resolved_type = $sgs_hero_resolve_split_type( (string) $sgs_hero_tier_type_attr, $sgs_hero_tier_image, $sgs_hero_tier_video, $sgs_hero_tier_svg, $sgs_hero_tier_lottie );
 	if ( '' === $sgs_hero_resolved_type ) {
 		continue;
 	}
@@ -1529,6 +1567,15 @@ foreach (
 		$split_tiers[ $sgs_hero_tier_name ] = array(
 			'type' => 'svg',
 			'svg'  => $sgs_hero_tier_svg,
+		);
+		continue;
+	}
+	if ( 'lottie' === $sgs_hero_resolved_type ) {
+		$sgs_hero_tier_suffix               = 'desktop' === $sgs_hero_tier_name ? '' : ucfirst( $sgs_hero_tier_name );
+		$split_tiers[ $sgs_hero_tier_name ] = array(
+			'type'   => 'lottie',
+			'media'  => array( 'id' => absint( $sgs_hero_tier_lottie['id'] ?? 0 ) ),
+			'poster' => $sgs_hero_resolve_split_poster( $attributes, $sgs_hero_tier_suffix, $sgs_hero_tier_image ),
 		);
 		continue;
 	}
@@ -1593,9 +1640,10 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 		$uid,
 		$sgs_hero_split_alt,
 		array(
-			'image' => $sgs_hero_split_image_class . ' ' . $sgs_hero_media_el_extra,
-			'video' => $sgs_hero_media_el_extra,
-			'svg'   => $sgs_hero_media_el_extra,
+			'image'  => $sgs_hero_split_image_class . ' ' . $sgs_hero_media_el_extra,
+			'video'  => $sgs_hero_media_el_extra,
+			'svg'    => $sgs_hero_media_el_extra,
+			'lottie' => $sgs_hero_media_el_extra,
 		)
 	);
 	if ( '' !== $sgs_hero_tier_result['html'] ) {
