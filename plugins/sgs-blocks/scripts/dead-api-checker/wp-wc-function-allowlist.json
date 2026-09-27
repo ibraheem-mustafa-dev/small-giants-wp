@@ -446,6 +446,7 @@
     "wp_unslash",
     "wp_update_attachment_metadata",
     "wp_upload_dir",
+    "wp_validate_boolean",
     "wp_validate_redirect",
     "wp_verify_nonce",
     "wpautop",
