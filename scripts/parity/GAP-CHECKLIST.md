@@ -143,6 +143,43 @@ Fixed in the walker; keep them in mind when a number looks wrong:
 - **Accept safely:** an easing or property-name difference with matching durations needs Bean's sign-off
   when it is visible; a colour on an element that paints no text is not painted.
 
+## 11. Headers and footers (`mode: 'header'`)
+
+Built by proving the walker against a hand-read diff of two header copies
+(`reports/visual-diff/u18-hand-read-diff-2026-09-27.md`; configs `plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-*.mjs`).
+Each check below missed rows the eye caught; each has a negative control (run a reference against itself with
+`--self draft` and it reads 0; plant the difference with `--inject-live-css` and it turns red).
+
+- **Transient states:** an earlier hover closes the panel a later pair lives in. The hover pass re-runs the
+  state's action when a pair has gone, and reports `hover reached: unreached` rather than skipping it.
+- **Motion timeline:** every `h.click`/`h.tap`/`h.hover` samples the `timeline`/`inventory` roots at 30, 120,
+  250 and 450ms: growth of the box, root and children away from their settled pose, opacity, and staggered
+  animation delays (`timeline@<t>ms:<aspect>`, `stagger`). The old `running-after-action` read came after the
+  state's own wait, so every entrance had finished.
+- **Painted ground:** the ground an element paints (own background, else a covering `::before`/`::after`, else
+  a covering child) replaces the raw `background-color`, which read a `::before` ground as transparent.
+- **Text inset** (`text-inset-x/y`, pairs that carry text): where the first painted text sits in its box.
+- **Position along a bar:** `anchorLeft: true` compares left edges (`x-from-<anchor>`).
+- **Inventory** (`inventory: true`, on a bar, panel or drawer root): every painted text in reading order (rows
+  by vertical overlap) and every media or glyph (img, svg, video, canvas, a glyph of 2-4px dots) filed under
+  its row with a part count: `text-missing`, `text-extra`, `order`, `media "<row>"`, `media-spill` (a glyph
+  larger than its circle). Catches a missing logo row, glyph or showreel, and a CTA below the menu.
+- **Hover effects:** what a hover visibly does, as a set: ground appears, small left marker appears, inner part
+  scales, lifts, moves (`hoverAt: [fx, fy]` for a label that follows the pointer), indents, fades, and
+  `text changes mid-hover` (a scramble, read at 60 and 200ms).
+- **Taps:** `h.tap(finder)` clicks with the real mouse at the element's centre, so an overlay or a label that is
+  a link takes it; its outcome (`navigated`, `opened`, `nothing`) is compared as a `drive` difference.
+- **Phone widths:** below 500px the context is an iPhone 13 (touch, mobile user agent): lamalama hides its pill
+  message by device, not width.
+- **Viewport-scaled sizes:** put a width above 1440 in `widths` (1920): rem-fluid sites grow past 1440.
+- **`--self draft|live`:** points both sides at one side; the baseline every header check must read 0 on.
+
+**Exceptions, checked another way:** a canvas logo (content not in the DOM: presence and box, then the shot);
+a rotating message (`inventoryIgnore` drops its words; presence, type and place are compared, and its inset is
+accepted); scrambled characters (random, so only "text changes mid-hover" is compared); video content (presence
+and box only). The Indus draft's declared entrances never run in its runtime (`componentDidUpdate` gets no
+previous state), so the rendered draft is the reference until Bean decides otherwise.
+
 ## 10. Text, data and draft bugs
 
 - Word-multiset text comparison (DOM order ignored). Real-data differences (review counts, stock counts,

@@ -60,7 +60,7 @@ export function compareStructure( name, d, l ) {
 // one side and finds nothing on the other means a control is missing on that side.
 export function driveDiffs( dlog, llog ) {
 	const diffs = [];
-	const acts = ( log ) => log.filter( ( e ) => 'click' === e.type && e.hit );
+	const acts = ( log ) => log.filter( ( e ) => ( 'click' === e.type || 'hover' === e.type ) && e.hit );
 	const gone = ( log ) => log.some( ( e ) => 'goto' === e.type );
 	const label = ( log ) => acts( log ).map( ( e ) => e.target ).join( ', ' );
 	if ( acts( dlog ).length && ! acts( llog ).length && gone( llog ) ) {
@@ -69,7 +69,16 @@ export function driveDiffs( dlog, llog ) {
 	if ( acts( llog ).length && ! acts( dlog ).length && gone( dlog ) ) {
 		diffs.push( { kind: 'drive', key: 'draft-by-url', draft: 'loaded a URL only', live: `clicked ${ label( llog ) }` } );
 	}
-	for ( const e of dlog.filter( ( x ) => 'click' === x.type && x.optional ) ) {
+	// A real-mouse tap (h.tap) that navigates on one side and opens something on the other, or
+	// does nothing on one side (a label that does not take the click): paired by order.
+	const taps = ( log ) => log.filter( ( e ) => e.tap );
+	taps( dlog ).forEach( ( e, i ) => {
+		const twin = taps( llog )[ i ];
+		if ( twin && twin.outcome !== e.outcome ) {
+			diffs.push( { kind: 'drive', key: `tap ${ e.target }`, draft: e.outcome, live: twin.outcome } );
+		}
+	} );
+	for ( const e of dlog.filter( ( x ) => 'click' === x.type && x.optional && ! x.tap ) ) {
 		const twin = llog.find( ( x ) => 'click' === x.type && x.target === e.target );
 		if ( twin && twin.hit !== e.hit ) {
 			diffs.push( { kind: 'drive', key: `control ${ e.target }`, draft: e.hit ? 'found' : 'none', live: twin.hit ? 'found' : 'none' } );

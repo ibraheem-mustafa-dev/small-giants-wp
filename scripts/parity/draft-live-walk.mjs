@@ -8,8 +8,8 @@
 // accepted, or a shot with no review note. The gap classes: scripts/parity/GAP-CHECKLIST.md.
 //
 // Usage: node scripts/parity/draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375]
-//        [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"]
-// Needs NODE_EXTRA_CA_CERTS set to certifi's bundle for the Hostinger sites.
+//        [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"] [--headless] [--self draft|live]
+// Runs headed unless --headless is passed. Needs NODE_EXTRA_CA_CERTS set to certifi's bundle for the Hostinger sites.
 // --inject-live-css is the negative control: it plants a known difference on the live side.
 import fs from 'fs';
 import path from 'path';
@@ -20,9 +20,11 @@ import { writeReport, sideBySide } from './lib/report.mjs';
 import { lintConfig } from './lib/lint.mjs';
 import { collectStructure, compareStructure, driveDiffs } from './lib/structure.mjs';
 import { writeContactSheet } from './lib/review.mjs';
+import { makeHelpers, anchorOffset } from './lib/helpers.mjs';
+import { sampleTimeline, collectChrome, hoverChrome, compareChrome } from './lib/chrome-walk.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const { chromium } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+const { chromium, devices } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
 
 const argv = process.argv.slice( 2 );
 const flag = ( name ) => {
@@ -50,98 +52,23 @@ fs.mkdirSync( outDir, { recursive: true } );
 const tol = { box: 2, px: 0.5, ...( cfg.tolerance || {} ) };
 const RESOLVE = resolveFinder.toString();
 const cb = ( url ) => url.replace( '{cb}', String( Date.now() ) );
-
-// Helpers handed to a config's open() and state actions.
-// Every goto and click is logged per state (h.log) for the drive check: pass { nav: true }
-// on a click that only navigates (a single-page draft's menu link), so it counts as a URL
-// load; { quiet: true } waits until the network is idle (an Interactivity re-render).
-function helpers( page, side ) {
-	let inflight = 0;
-	page.on( 'request', () => inflight++ );
-	page.on( 'requestfinished', () => inflight-- );
-	page.on( 'requestfailed', () => inflight-- );
-	const after = async ( opts ) => {
-		await page.waitForTimeout( opts.wait ?? 700 );
-		if ( opts.quiet ) {
-			await h.quiet();
-		}
-	};
-	const h = {
-		page, side, log: [],
-		wait: ( ms ) => page.waitForTimeout( ms ),
-		// Resolves once no request has been in flight for 500ms (15s at most).
-		quiet: async () => {
-			for ( let calm = 0, t = 0; calm < 5 && t < 150; t++ ) {
-				calm = inflight > 0 ? 0 : calm + 1;
-				await page.waitForTimeout( 100 );
-			}
-		},
-		goto: async ( url ) => {
-			h.log.push( { type: 'goto', target: url } );
-			await page.goto( cb( url ), { waitUntil: 'networkidle' } );
-			await page.waitForTimeout( 500 );
-		},
-		// Clicks the smallest visible element whose rendered text matches the regex source.
-		clickText: async ( src, opts = {} ) => {
-			const ok = await page.evaluate( ( [ finder, res ] ) => {
-				// eslint-disable-next-line no-new-func
-				const el = new Function( `return (${ res });` )()( finder );
-				if ( el ) {
-					el.click();
-				}
-				return !! el;
-			}, [ { text: src, tag: opts.tag || 'a,button,[role=button],[role=tab],label,summary,h3,span,div', within: opts.within, nth: opts.nth }, RESOLVE ] );
-			h.log.push( opts.nav ? { type: 'goto', target: `/${ src }/` } : { type: 'click', target: `/${ src }/`, hit: ok, optional: !! opts.optional } );
-			if ( ! ok && ! opts.optional ) {
-				throw new Error( `${ side }: nothing visible matches /${ src }/` );
-			}
-			await after( opts );
-		},
-		click: async ( selector, opts = {} ) => {
-			h.log.push( opts.nav ? { type: 'goto', target: selector } : { type: 'click', target: selector, hit: true } );
-			await page.evaluate( ( [ sel, res ] ) => {
-				// eslint-disable-next-line no-new-func
-				const el = new Function( `return (${ res });` )()( sel );
-				if ( ! el ) {
-					throw new Error( 'no visible ' + sel );
-				}
-				el.click();
-			}, [ selector, RESOLVE ] );
-			await after( opts );
-		},
-		waitFor: ( selector ) => page.waitForSelector( selector, { state: 'visible', timeout: 15000 } ),
-	};
-	return h;
-}
-
-// A pair with `anchor: '<pair>'` is compared on its vertical distance from that pair,
-// so a missing gap or rule shows even when the pages above (a header) differ in height.
-// `anchorX: true` also compares the gap from the pair's right edge to the anchor's
-// (`right-from-<anchor>`): a tag pushed past its card's edge reads as a negative gap.
-function anchorOffset( p, ds, ls, t ) {
-	const a = p.anchor;
-	if ( ! a || ! ds[ a ] || ! ls[ a ] || ds[ a ].missing || ls[ a ].missing || ds[ p.name ].missing || ls[ p.name ].missing ) {
-		return [];
-	}
-	const out = [];
-	const dy = ds[ p.name ].box.y - ds[ a ].box.y;
-	const ly = ls[ p.name ].box.y - ls[ a ].box.y;
-	if ( Math.abs( dy - ly ) > t.box ) {
-		out.push( { kind: 'box', key: `y-from-${ a }`, draft: dy, live: ly } );
-	}
-	if ( p.anchorX ) {
-		const right = ( s ) => s[ a ].box.x + s[ a ].box.w - ( s[ p.name ].box.x + s[ p.name ].box.w );
-		if ( Math.abs( right( ds ) - right( ls ) ) > t.box ) {
-			out.push( { kind: 'box', key: `right-from-${ a }`, draft: right( ds ), live: right( ls ) } );
-		}
-	}
-	return out;
+// Header/footer mode (GAP-CHECKLIST.md section 11): motion timelines, painted grounds, inventories, hover effects.
+const header = 'header' === cfg.mode;
+// --self draft|live points both sides at one side (a negative-control baseline: every check must read 0).
+const self = flag( '--self' );
+if ( self ) {
+	cfg.draft = cfg.live = cfg[ self ];
+	cfg.states.forEach( ( st ) => ( st.draft = st.live = st[ self ] ) );
+	cfg.pairs.forEach( ( pr ) => ( pr.draft = pr.live = pr[ self ] ) );
 }
 
 const pairsFor = ( state ) => cfg.pairs.filter( ( p ) => ! p.states || p.states.includes( state.name ) );
 
 async function walkSide( browser, side, width ) {
-	const ctx = await browser.newContext( { viewport: { width, height: width < 500 ? 812 : 900 } } );
+	// Header mode runs a narrow width as a phone (touch, mobile user agent): a site can hide or swap
+	// header parts by device, not by width, and a 375px desktop window never shows it.
+	const phone = header && width < 500 ? devices[ 'iPhone 13' ] : {};
+	const ctx = await browser.newContext( { ...phone, viewport: { width, height: width < 500 ? 812 : 900 } } );
 	if ( side === 'live' && injectCss ) {
 		await ctx.addInitScript( ( css ) => document.addEventListener( 'DOMContentLoaded', () => {
 			const s = document.createElement( 'style' );
@@ -153,7 +80,13 @@ async function walkSide( browser, side, width ) {
 	const errors = [];
 	page.on( 'pageerror', ( e ) => errors.push( String( e ) ) );
 	page.on( 'console', ( m ) => m.type() === 'error' && errors.push( m.text() ) );
-	const h = helpers( page, side );
+	let tracked = [];
+	const onAction = header ? async () => {
+		const t = await sampleTimeline( page, tracked, side, RESOLVE );
+		h.timeline = t.samples;
+		return t.spent;
+	} : null;
+	const h = makeHelpers( page, side, { cb, RESOLVE, onAction } );
 	await h.goto( cfg[ side ].url );
 	if ( cfg[ side ].open ) {
 		await cfg[ side ].open( h );
@@ -161,6 +94,8 @@ async function walkSide( browser, side, width ) {
 	const states = {};
 	for ( const state of cfg.states ) {
 		h.log = [];
+		h.timeline = null;
+		tracked = pairsFor( state );
 		if ( state[ side ] ) {
 			await state[ side ]( h );
 		}
@@ -180,6 +115,9 @@ async function walkSide( browser, side, width ) {
 			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], p.props || DEFAULT_PROPS, RESOLVE ] );
 			snap[ p.name ].running = running[ p.name ];
 		}
+		if ( header ) {
+			await collectChrome( page, side, pairs, snap, RESOLVE, h.timeline );
+		}
 		const finders = Object.fromEntries( pairs.filter( ( p ) => p.structure !== false ).map( ( p ) => [ p.name, p[ side ] ] ) );
 		const structure = await page.evaluate( collectStructure, [ finders, RESOLVE ] );
 		// Scroll-in pairs are read before anything scrolls (a full-page shot reveals them too).
@@ -198,12 +136,27 @@ async function walkSide( browser, side, width ) {
 			snap[ p.name ].scroll.post = await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE ] );
 		}
 		for ( const p of pairs.filter( ( q ) => q.hover ) ) {
-			const at = await page.evaluate( centreOf, [ p[ side ], RESOLVE ] );
-			if ( ! at || snap[ p.name ].missing ) {
+			if ( snap[ p.name ].missing ) {
 				continue;
 			}
-			await page.mouse.move( at.x, at.y );
-			await page.waitForTimeout( p.hoverWait ?? 800 );
+			if ( header ) {
+				// Re-runs the state's action when an earlier hover closed what this pair lives in.
+				const reach = state[ side ] ? async () => {
+					h.log = [];
+					await state[ side ]( h );
+				} : null;
+				snap[ p.name ].hoverChrome = await hoverChrome( page, p, side, RESOLVE, centreOf, reach, p.hoverWait ?? 800, snap[ p.name ].box );
+				if ( snap[ p.name ].hoverChrome.unreached ) {
+					continue;
+				}
+			} else {
+				const at = await page.evaluate( centreOf, [ p[ side ], RESOLVE ] );
+				if ( ! at ) {
+					continue;
+				}
+				await page.mouse.move( at.x, at.y );
+				await page.waitForTimeout( p.hoverWait ?? 800 );
+			}
 			snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE ] );
 			await page.mouse.move( 1, 1 );
 			await page.waitForTimeout( 400 );
@@ -214,7 +167,8 @@ async function walkSide( browser, side, width ) {
 	return { states, errors };
 }
 
-const browser = await chromium.launch();
+// Headed by default: the Hostinger sites answer a headless browser with a 403 bot challenge.
+const browser = await chromium.launch( { headless: argv.includes( '--headless' ), args: [ '--hide-scrollbars' ] } );
 const results = { config: cfg.name, when: new Date().toISOString(), injectCss, runs: [], errors: {} };
 for ( const width of widths ) {
 	const draft = await walkSide( browser, 'draft', width );
@@ -248,7 +202,8 @@ for ( const width of widths ) {
 				...compareScroll( d.snap[ p.name ].scroll, l.snap[ p.name ].scroll ),
 				...anchorOffset( p, d.snap, l.snap, { ...tol, ...( p.tolerance || {} ) } ),
 			];
-			run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, diffs ) };
+			const all = header ? compareChrome( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) }, diffs ) : diffs;
+			run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, all ) };
 		}
 		results.runs.push( run );
 	}
