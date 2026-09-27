@@ -3232,13 +3232,35 @@ select.orderby:focus-visible {
 
 .sgs-shop-active-pills .sgs-shop-filters .wc-block-product-filter-removable-chips__item,
 .sgs-shop-active-pills .sgs-shop-filters .wc-block-product-filter-removable-chips__item:hover {
+	gap: 0;
 	min-height: 34px;
-	padding: 0 6px 0 14px;
+	padding: 0 8px 0 14px;
 	border: 0;
 	border-radius: 999px;
 	background: var(--wp--preset--color--text);
 	color: var(--wp--preset--color--text-inverse);
-	font-size: 13px;
+	font-size: 12.5px;
+	animation: sgs-shop-chip-pop 0.35s ease both;
+}
+
+@keyframes sgs-shop-chip-pop {
+	0% {
+		opacity: 0;
+		transform: scale(0.6);
+	}
+	60% {
+		transform: scale(1.15);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-shop-active-pills .sgs-shop-filters .wc-block-product-filter-removable-chips__item {
+		animation: none;
+	}
 }
 
 .sgs-shop-active-pills .sgs-shop-filters .wc-block-product-filter-removable-chips__remove svg {
@@ -3255,6 +3277,7 @@ select.orderby:focus-visible {
 	background: none;
 	color: var(--wp--preset--color--text);
 	font-size: 12.5px;
+	font-weight: 400;
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	text-decoration: underline;
@@ -3301,7 +3324,8 @@ select.orderby:focus-visible {
 	color: var(--wp--preset--color--text-label, var(--wp--preset--color--text));
 }
 
-/* A checkbox-list option's name follows the list's text size (WooCommerce sets 0.875em on it). */
-.sgs-shop-filters .wc-block-product-filter-checkbox-list__text {
+/* A checkbox-list option's name follows the list's text size (WooCommerce's inline
+   :where() rule sets 0.875em on the wrapper around the name and count). */
+.sgs-shop-filters .wc-block-product-filter-checkbox-list__text-wrapper {
 	font-size: 1em;
 }

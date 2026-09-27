@@ -101,6 +101,10 @@ export default {
 		{ name: 'polarised-toggle', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^polarised only$', within: 'aside', tag: 'label,button,div' }, live: `${ LF } .sgs-shop-filters__bool-filter` },
 		{ name: 'grid', draft: { js: DGRID }, live: '.sgs-shop-layout .wc-block-product-template', text: false, box: [ 'w' ], props: [ 'grid-template-columns', 'column-gap', 'row-gap' ] },
 		{ name: 'card-gucci', states: [ 'opening', 'women' ], draft: { js: dcard( 'Oversized Cat-Eye' ) }, live: { js: lcard( 'Oversized Cat-Eye' ) }, hover: true, props: [ 'background-color', 'border-top-width', 'border-top-color', 'border-radius', 'box-shadow' ] },
+		// A card below the fold at every width: how it appears as it scrolls into view.
+		{ name: 'card-7', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
+			draft: { js: `(r) => { const g = (${ DGRID })(r); const c = g && g.children[6]; return c && c.firstElementChild.firstElementChild; }` },
+			live: '.sgs-shop-layout .wc-block-product-template > li:nth-child(7) .product-card' },
 		// The Gucci card's parts: draft path from its bordered card, live class inside .product-card.
 		...[
 			[ 'media', 'c.children[0]', '.product-card__media', false ],
@@ -163,6 +167,13 @@ export default {
 		{ pair: 'brand-ray-ban', kind: 'text', reason: 'Accepted (Bean 2026-09-27): real brand counts; live’s brackets are painted at font-size 0, so "Ray-Ban 3" reads as the draft’s "Ray-Ban 48" does', when: ( d ) => /^ray-ban \d+$/i.test( d.draft ) && /^ray-ban \(\d+\)$/i.test( d.live ) },
 		{ pair: 'brand-ray-ban', kind: 'box', key: 'h', reason: 'Accepted (Bean 2026-09-27): 44px touch targets where the draft rows are 38px' },
 		{ pair: 'brand-ray-ban', kind: 'style', notPainted: true, reason: 'The same row: live puts the count right with margin-left auto and a 10px gap on the label, the draft with space-between and the gap on an inner span', when: ( d ) => [ 'justify-content', 'column-gap', 'row-gap' ].includes( d.key ) },
+		{ pair: 'active-pill', kind: 'text', reason: 'The draft’s "×" is live’s cross icon, whose name "Remove filter: Pilot" is screen-reader text', when: ( d ) => words( d.live ).includes( 'remove' ) && words( d.draft.replace( '×', '' ) ).split( ' ' ).every( ( w ) => words( d.live ).includes( w ) ) },
+		{ pair: 'active-pill', reason: 'The remove control keeps a 24px target (WCAG 2.5.8) where the draft’s "×" is a 9px glyph, so the pill is 6px wider with 8px after the cross', when: ( d ) => [ 'w', 'padding-right' ].includes( d.key ) },
+		{ pair: 'active-pill', kind: 'style', notPainted: true, reason: 'The same pill: live lays the label and cross out with flex, the draft centres one text run', when: ( d ) => [ 'line-height', 'text-align', 'justify-content', 'column-gap', 'row-gap' ].includes( d.key ) },
+		{ pair: 'clear-all', kind: 'box', key: 'h', reason: 'Accepted (Bean 2026-09-27): 44px touch targets; the draft’s text button is 19px tall' },
+		{ pair: 'clear-all', kind: 'style', reason: 'The same underlined capitals: live draws the 1px underline as a text decoration 5px below the text inside its 44px target, the draft as a bottom border under 2px padding', when: ( d ) => [ 'border-bottom-width', 'padding-bottom', 'display', 'justify-content', 'align-items', 'line-height' ].includes( d.key ) },
+		{ pair: 'clear-all', kind: 'style', key: 'color', reason: 'The draft’s text is the browser default black, live’s the palette’s text #141414' },
+		...[ 'active-pill', 'clear-all' ].map( ( pair ) => ( { pair, kind: 'structure', reason: 'PROPOSED to Bean: chosen filters sit at the top of the filter column (WooCommerce keeps them inside its filter block); the draft shows them in a row under the title' } ) ),
 		{ pair: 'filter-button', kind: 'style', key: 'color', reason: 'The draft’s button text is the browser default black, live’s the palette’s text #141414 (both near-black on white)' },
 		// Below the drawer breakpoint the live drawer is a sheet over the page (Bean 2026-09-27), so its rows share rows with the title bar.
 		...[ 768, 375 ].flatMap( ( width ) => [ 'filters-open', 'panel-after-click' ].map( ( state ) => ( {
