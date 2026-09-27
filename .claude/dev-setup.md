@@ -785,7 +785,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 25 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 935 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 936 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -1678,7 +1678,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 793 scripts
+#### `plugins/sgs-blocks/scripts/` — 794 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2201,6 +2201,7 @@ for the verb you happen to have in mind.
 | `nav-qa/u13-ink-probe.mjs` | — | U-13 live probe: section-adaptive header ink on /qa-section-ink/. |
 | `nav-qa/u16-editor-check.mjs` | — | U-16 editor check: the entrance panel's Distance and delay options through the real inspector. |
 | `nav-qa/u16-entrance-probe.mjs` | — | U-16 live probe: entrances as their own layer, on /qa-entrance/ (fixture case `entrance`). |
+| `nav-qa/u18-copy-probe.mjs` | — | U-18 copy-parity probe (Wave 3C Gate 3C item 4): measures a composed header copy while it is the ACTIVE header, and screenshots it closed and open at… |
 | `nav-qa/w2u-probe.mjs` | — | W2-u — mega-menu + drawer SAME-PAGE integration probe. |
 | `no-inline/check-no-inline.py` | manifest+npm+script-call | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
 | `no-inline/check-stranded-guards.py` | manifest+npm | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |

@@ -605,6 +605,23 @@ apply entrance && node scripts/nav-qa/u16-entrance-probe.mjs $URL
 node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs   # from the repo root
 ```
 
+## 13. `u18-copy-probe.mjs` — Gate 3C item 4's copies against their references
+
+Measures a composed header copy while it is the ACTIVE header (an in-page copy sits in a lower stacking layer
+and misleads) at 375 (mobile-emulated, no scrollbar), 768 and 1440, and screenshots it closed and open. lamalama:
+the pill, the burger box and its 44x44 tap area, the grown drawer against the closed pill. Indus: every mega
+panel's position at 1440, the burger and drawer below. Reference values sit in the script's `EXPECT`, from
+`lamalama.json` and `indus-foods.json`; exits 1 on a miss over 2px.
+
+```bash
+WP=domains/sandybrown-nightingale-600381.hostingersite.com/public_html
+scp scripts/nav-qa/qa-item-markup-fixture.php hd:/tmp/
+restore() { ssh hd "cd $WP && wp sgs header set-active 3777 --user=Claude && wp eval-file /tmp/qa-item-markup-fixture.php two-bar --user=Claude && wp litespeed-purge all"; }
+trap restore EXIT
+ssh hd "cd $WP && wp sgs header set-active 4435 --user=Claude && wp litespeed-purge all"
+node scripts/nav-qa/u18-copy-probe.mjs https://sandybrown-nightingale-600381.hostingersite.com/qa-copy-lamalama/ --copy lamalama --out <dir>
+```
+
 ## Notes for the acceptance gate
 
 - Run all of them against **both** gate targets, Mama's (flat bar plus drawer) and

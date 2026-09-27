@@ -210,7 +210,7 @@ visually. `none` means neither.
 | ‖ | U-12 — **DONE** | Header and footer furniture: local-time clock, language switch, store selector, wishlist (link, saved-items panel, Save for later), theme toggle with an automatic dark palette, back-to-top and account as `sgs/button` link sources, sound mute as an `sgs/audio` style (Bean, 2026-09-25). `headerEssential` on `product-search` only | M-18 | none | high | six new directories (`local-time/`, `language-switch/`, `store-selector/`, `theme-toggle/`, `wishlist-link/`, `wishlist-panel/`), plus `button/`, `audio/`, `product-card/`, `cart/`, `product-search/block.json`, `includes/wishlist/`, `includes/helpers-link-source.php`, `scripts/derive-dark-palette.py` and the theme's dark-mode files |
 | ‖ | U-15 — **DONE** | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*`, new `notice-message/` |
 | ‖ | U-17 — **DONE** | The Lottie player (DEC-13, section 1h): Spec 38 Tier H, the fourth media type, the wrapper background and the logo substrate | M-33 | design | high | `includes/lottie-*.php`, `src/shared/effects/{fx-lottie,lottie-adapter}.js`, `src/vendor-modules/lottie-light.js`, the media atoms, `media/`, `hero/`, `responsive-logo/`, `class-sgs-container-wrapper.php` |
-| 15 | U-18 — **open** | Copy-parity gaps found composing Gate 3C item 4's two copies: G1 burger width and height, G2 drawer grows from the header's box, G3 (first) every colour setting accepts any colour on the live page, with a detector and gate, G4 a narrower panel centres in its wrap, G5 per-card fills (composition first; M-42 only if it needs code). Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | `nav-bar-menu/{block.json,style.css}`, `nav-drawer/{block.json,render.php}`, `nav-menu-item-border-featured-css.php`, `nav-menu-submenu-css.php`, `src/shared/nav-interactivity/mega-disclosure.js`, a new colour gate under `scripts/` |
+| 15 | U-18 — **open** (G1-G5, G9 done; G6-G8, G10, G11 designed, awaiting Bean's go) | Copy-parity gaps found composing Gate 3C item 4's two copies. Done and live: G3 custom colours reach the page (gate `check-custom-colour-survives.py`), G1 burger width, G2 `header-box` drawer anchor, G4 narrow panels centre, G5 by composition. Open: G6 burger bar size, G7 drawer `stretch`, G8 pin a container to a screen corner, G10 narrow desktop panel stacks, G11 group-heading rule over-reach. Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | G6 `nav-bar-menu/{block.json,style.css,BurgerPanel.js}`, `nav-menu-trigger-css.php`; G7 `nav-drawer/{block.json,render.php,edit.js}`; G8 `container/{block.json,edit.js}`, `class-sgs-container-wrapper.php`, a footer portal; G10/G11 `mega-panel/{render.php,style.css}` |
 
 **U-1 — done** (live `reports/visual-diff/container-2026-09-23.md`, `nav-bar-menu-2026-09-23.md` and
 `nav-drawer-2026-09-23.md`, each `verdict: PASS`). Shipped: mega close-grace reads `submenuCloseGrace`; force-solid paints the header's own
@@ -409,36 +409,53 @@ to them.
 
 **Dark palette, the Mama's Munches refusal (fixed 2026-09-26).** Of the four refused colours, three were framework false alarms: `text-inverse`, `primary-text` and `accent-text` were paired with a fill by NAME, and those pairs already fail in light mode (cream on pink 2.4:1, olive on yellow 3.8:1). The real conflict was Mama's yellow `accent` buttons labelled in body `text`, which must turn light on the dark page. Fixed in the framework (Spec 33 FR-33-20): a name-guessed pair counts only when it reads in light mode (else a light-mode warning), and fill-scoped ink keeps a readable label inside the scope that paints text on a fill (`settings.custom.darkInk`, printed by `theme/sgs-theme/functions.php::dark_mode_ink_css`). Mama's now derives with no failures and no hand-set colours. Proved live on sandybrown with a temporary dark push (rolled back): the yellow button's label 8.77:1, page text 6.55:1; the same colours outside the button's scope measured 1.92:1 (the control). The same check found that a missing `settings.custom` key read as the whole settings array, which loaded dark mode on every site without a palette; fixed with `includes/helpers-global-settings.php::sgs_global_custom_setting` and gated by `scripts/check-nested-global-settings.py`. The notice banner also gained a full-width strip display mode and an icon size plus a trust-bar-style icon badge (`iconStyle`, `iconCircle*`).
 
-**U-18 — copy-parity gaps from Gate 3C item 4 (open, 2026-09-26).** Two composed copies exist on sandybrown, built
-only through `scripts/wp-build-page.js` (trees in `plugins/sgs-blocks/scripts/nav-qa/gate3c/`): lamalama's pill,
-page 4446 `/qa-copy-lamalama/` (`sgs_header` 4435, `sgs_drawer` 4428, menus 130 and 131, logo still 4415, Sometype
-Mono 4411), and the Indus draft, page 4465 `/qa-copy-indus/` (`sgs_header` 4461, `sgs_drawer` 4456, menu 132,
-`sgs_mega_menu` 4426 About, 4430 Trade, 4433 More, 4443 Sectors, 4440 Brands). Pill geometry, blur, 60% black fill,
-z-index, message type and the whole-pill trigger match lamalama at 1440 and 768. Framework gaps, each proven against
-the code or a live measurement; they go through the section 5 loop, never inline:
-- G1: `sgs/nav-bar-menu::burgerSize` sets width and height together; lamalama's burger is 30x36.
-- G2: no `sgs/nav-drawer::anchor` value lays the panel over the header's own box (lamalama's pill grows into its
-  438x436 card). `trigger` drops below the burger, right-aligned (`nav-drawer/render.php`, `case 'trigger'`).
-- G3, FIRST (Bean 2026-09-26: a breach of the universal colour standard, and nothing detects it): the editor's colour
-  panel lets any colour be picked and previewed, but three render paths drop a custom colour on the live page by
-  running it through `sanitize_html_class` (which strips the `#`) and a palette-name-only `sgs_resolve_palette_hex`:
-  `nav-drawer/render.php` (`drawerBg`) and `includes/nav-menu-item-border-featured-css.php` (`featuredBg`,
-  `featuredBgHover`). The precedent that accepts a slug or any CSS colour is `includes/nav-menu-css.php` (the
-  `$sgs_nm_hex` closure: `sgs_is_css_colour` then `sgs_functional_colour_to_hex`). `scripts/census-colour-paint-route.py`
-  counts which helper paints, not whether a custom colour survives, so it cannot see this. Build the detector before
-  fixing (`.claude/THE-MIGRATION-METHOD.md`): a static check for colour attributes read through `sanitize_html_class` or a
-  slug-only lookup, and a render proof that feeds every colour attribute in the framework DB a raw hex and asserts it
-  reaches the emitted CSS, red first on today's `drawerBg`; then fix every instance it finds and wire it as a gate.
-- G4: a panel narrower than the page-centred wrap sits at the wrap's left edge. Measured at 1440 on page 4465: the wrap
-  is 1120px at 153/153, Trade's 620px panel lands at left 153 (draft 410), More's 300px at 153 (draft 570).
-  `nav-menu-submenu-css.php` sizes `__mega-panel-wrap` by `--sgs-mm-panel-width`, default `min(1120px, calc(100vw - 56px))`.
-- G5 (check composition first): four differently filled cards in one Sectors panel; `sgs/mega-group` cards share one
-  `--sgs-mm-card`. Four separate containers in a grid may already express it.
-Composition still owed (no code): Plus Jakarta Sans font faces uploaded (files in the builder's scratchpad were not
-kept; re-download from Google Fonts, OFL); Request Catalogue hidden below the collapse point; lamalama's GET IN TOUCH
-card at 1440; the 1440/768/375 sweep of hover, focus, Escape and every panel against `indus-foods.json` and
-`lamalama.json`; then the evidence pack (reference and copy side by side at each width, measured table) as an
-Artifact with an external ping to Bean.
+**U-18 — copy-parity gaps from Gate 3C item 4 (open).** Two composed copies on sandybrown, built only through
+`scripts/wp-build-page.js` from trees in `plugins/sgs-blocks/scripts/nav-qa/gate3c/`: lamalama's pill, page 4446
+`/qa-copy-lamalama/` (`sgs_header` 4435, `sgs_drawer` 4428, menus 130/131, logo still 4415, Sometype Mono 4411), and
+the Indus draft, page 4465 `/qa-copy-indus/` (`sgs_header` 4461, `sgs_drawer` 4456, menu 132, `sgs_mega_menu` 4426
+About, 4430 Trade, 4433 More, 4443 Sectors, 4440 Brands, logo 4509, Plus Jakarta Sans 4414 with faces 4484/4485).
+Measure a copy only as the ACTIVE header (in-page copies sit in a lower stacking layer and mislead, as G9 showed):
+`plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs <url> --copy lamalama|indus --out <dir>` inside one trapped
+command that swaps `wp sgs header set-active 4435|4461` and always restores 3777 plus `qa-item-markup-fixture.php
+two-bar`.
+
+Done and live on sandybrown (2026-09-27, designs `.claude/reports/2026-09-27-u18-g1-g2-g4-design.md`, council GO
+WITH FIXES, Bean go):
+- G3: a custom colour picked in the editor reaches the page on every colour setting (19 settings on 8 blocks were
+  fixed: nav drawer, both nav menus' featured item, mega panel, CTA section, accordion item, pricing ribbon; plus
+  the notice banner's type fill showing through a transparent choice). `includes/helpers-colour-parse.php::
+  sgs_colour_hex_for_contrast` resolves any colour for the WCAG maths. Gate `scripts/check-custom-colour-survives.py`
+  (fast tier; static rules plus a slug-versus-hex render proof of 846 colour attributes; `--survey --live hd
+  --menu 132` repeats it through real WordPress: 540 PASS, 0 dropped, 306 unreachable without content).
+- G1 `sgs/nav-bar-menu::burgerWidth` (per tier) with a 44x44 `::after` tap area; G2 `sgs/nav-drawer::anchor`
+  `header-box`; G4 `mega-disclosure.js::repositionPanel` + `panel-bounds.js::placePanel` centre the panel's own
+  width. Probe: lamalama burger 30x36 and card top/left/width = the pill at 375/768/1440; Indus panels at x
+  410/180/180/410/570 at 1440, all PASS.
+- G5 by composition: Sectors as four `sgs/container` cards; every Indus panel, the logo, Request Catalogue (hidden
+  while the menu is a burger) and the scrim (#141923 at 25%, 2px) rebuilt to the draft; lamalama's card contents
+  (436 tall, rows 66-316, CTAs at 329/389, black text on the filled CTAs as the reference paints).
+- G9 (scrim over the panel) measured as not a defect with the copy active; a hard-coded `z-index:101` on the
+  fixed-panel path is folded into G10's commit as hardening.
+
+Open, designed in `.claude/reports/2026-09-27-u18-g6-g8-design.md` (council GO WITH FIXES applied; Bean's go
+pending, recommended options 1, 2, 3A plus G10/G11):
+- G6 burger bar size: `burgerIconWidth`/`burgerIconHeight` per tier; `x`/`x-rotate` poses derive their travel from
+  `--sgs-nbm-icon-h`. Exit: lamalama bars 16 wide, 3px gaps, single line open with 5px travel.
+- G7 `drawerAlign` `stretch` ("Full width"). Exit: lamalama's two CTAs 156.5 (375) / 204 (768, 1440) wide.
+- G8 `sgs/container::pinToScreen` + `pinInset` (per tier), printed at `wp_footer` like the scrim so a blurred
+  ancestor cannot capture it; untouched containers byte-identical. Exit: lamalama's GET IN TOUCH card 160x326 at
+  top 16, right 16 at 1440, absent at 375/768.
+- G10 the `@container (max-width: 640px)` reflow in `mega-panel/render.php` emitted only inside the drawer
+  (`$sgs_mm_in_drawer`). Exit: Indus About and Trade aside 300px beside the links at 1440.
+- G11 `.sgs-mega-group .wp-block-sgs-heading` selectors (render.php `$heading_sel`, three `style.css` rules) become
+  direct-child. Exit: the Indus copy's row labels move back from `sgs/text` to `sgs/heading` with their own styles.
+- Composition still owed after G6-G8: the Indus drawer 4456 (pink icons from the test palette) and lamalama's
+  burger bars/CTA widths/contact card once the code lands; then the evidence pack (reference and copy side by side
+  per width, measured table) as an Artifact with an external ping to Bean. Reference shots and the capture script
+  are not kept; recapture lamalama.com (force-click `button.js-menu-toggle-button`) and the draft file at
+  375 (mobile-emulated), 768 and 1440.
+- M-13, M-16, M-17 and M-39 stay `partial` until G6-G8 close; then flip them in `families-master.json` and
+  `FAMILIES-MASTER.md` with the live report `reports/visual-diff/u18-copy-parity-<date>.md` (verdict PASS).
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole

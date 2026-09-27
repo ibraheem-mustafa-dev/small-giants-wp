@@ -419,7 +419,7 @@ guarantee.** The `sgs_drawer` post itself is template-locked to one `sgs/nav-dra
 **Menu source:** the drawer's `sgs/nav-drawer-menu` has its own `ref` picker (FR-36-1; `ref` 0 resolves
 through the same shared chain as the bar); the inspector shows *which menu is bound* (bar vs drawer).
 **Geometry:** per-device `anchor` (`full-screen` | `header` | `side-start` | `side-end` | `container` |
-`trigger` | `centred`) + `panelSize` + `anchorOffset`, emitted per tier by
+`trigger` | `centred` | `header-box`) + `panelSize` + `anchorOffset`, emitted per tier by
 `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_geometry_for_anchor`.
 - `side-start` / `side-end`: a full-height edge panel on the inline-start or inline-end side, `panelSize` wide
   (default 400px, never wider than the viewport). Non-modal, it starts at the burger's own header row and paints
@@ -431,6 +431,12 @@ through the same shared chain as the bar); the inspector shows *which menu is bo
   row itself, minus the element's inline padding, published as `--sgs-drawer-container-left/-right`. Outside a
   header row the fallbacks are 16px each side.
 - `trigger`: the panel hangs below the burger by `anchorOffset` (per tier, default 8px); `container` defaults to 0.
+- `header-box` ("Grows out of the header"): the panel lays over the opener header's own border box (same top,
+  left and width), one layer below the header, its content starting below the header row; `store.js`
+  (`publishHeaderBox`) publishes `--sgs-drawer-hb-*` on open and resize and marks the header
+  `data-sgs-drawer-grown`, which drops the header's fill, blur and shadow (`site-header/style.css`) so the two read
+  as one card, and pauses hide-on-scroll. Any tier on `header-box` forces the drawer non-modal (a modal dialog is
+  top-layer and would cover the burger). lamalama's pill growing into its menu card.
 - **Item pitch.** The menu item `gap` (`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` `block.json::gap`) is a
   per-device tier object on both menu blocks, so a reference's tight pitch (a 0 gap on 44px rows) is reachable
   without changing padding. Stored flat values were folded into the tier shape by
@@ -757,8 +763,10 @@ plus a 180 degree turn | `line`, the bars collapse onto one line | `none`), `bur
 default 200) and `burgerMorphEasing` (named curves from the theme easing tokens plus a validated custom
 `cubic-bezier()`), delivered as custom properties; reduced motion still wins. `burgerBarCount` (3 default, or
 2) sets how many bars the default glyph draws; two bars sit 6.5px apart centre to centre and have their own pose
-under every `burgerMorph` value (wearecollins' two bars cross into an X). Bar thickness (2px) and width (24px)
-are structural, a recorded divergence from the references' 1.5px bars 16 to 18px wide. The bar items' label magnet
+under every `burgerMorph` value (wearecollins' two bars cross into an X). `burgerSize` is the button's height
+and `burgerWidth` (per tier, empty = square) its width; a button under 44px keeps a 44x44 tap area on its
+`::after`. The bar box (24x18) and bar thickness (2px) have no setting yet: Wave 3C U-18 G6 adds bar length and
+stack height (lamalama's bars are 16px in a 12px stack). The bar items' label magnet
 takes `itemMagnetStrength` (the pull factor; unset keeps the built-in 0.15 capped at 8px). The burger button
 carries `data-sgs-nav-collapse` (its `collapsePoint`) for FR-36-6's resize rule.
 **Reach, built (Wave 3C U-14):** `triggerSurface` (tier on/off, "Whole row opens the menu", M-39, DEC-14 as

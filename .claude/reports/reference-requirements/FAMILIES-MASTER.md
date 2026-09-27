@@ -2,7 +2,7 @@
 
 **Inputs:** `families-A.json` (header shell, bar, footer — 25), `families-B.json` (dropdown, mega, trigger and close — 25), `families-C.json` (drawer — 24). **Revised against:** `FAMILIES-REVIEW.md` (23 findings, verdict *sign after fixes*) — every finding re-verified against the raw cell or the tree before anything changed (V-34 to V-47). **Feeds:** W3B-5 (owner signs off the family list and the order) and Wave 3C.
 
-**74 source families merged to 46 masters**, 42 covered and 4 partial (M-13, M-16, M-17, M-39: gaps G1 to G4 found composing Gate 3C item 4's copies, open as U-18 in the Wave 3C plan); the per-family notes below record each one's route and accepted divergences. Reference counts are out of the 13-reference roster: away, buck, butcherbox, dogstudio, fantasy, halcyon, indus-foods, lamalama, lusion, rabbit, resn, studionamma, wearecollins.
+**74 source families merged to 46 masters**, 42 covered and 4 partial (M-13, M-16, M-17, M-39: Gate 3C item 4's copy gaps, Wave 3C U-18; G1 to G5 shipped 2026-09-27, G6 to G8, G10 and G11 open); the per-family notes below record each one's route and accepted divergences. Reference counts are out of the 13-reference roster: away, buck, butcherbox, dogstudio, fantasy, halcyon, indus-foods, lamalama, lusion, rabbit, resn, studionamma, wearecollins.
 
 **Two columns do different jobs.** *needed by* = references whose rows touch the family at all. *uncovered* = references with at least one value the framework cannot express today. Unit support is the union of **uncovered**, because a family that is covered for eleven references and short for two is two references of work, not eleven.
 
