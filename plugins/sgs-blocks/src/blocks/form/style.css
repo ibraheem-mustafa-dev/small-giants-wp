@@ -75,6 +75,25 @@
 	}
 }
 
+/* Short number boxes set to third width (a prescription's SPH, CYL and AXIS)
+   stay three across in a narrow form too, down to 300px; every other field
+   in that row set keeps the full width. */
+@container sgs-form (min-width: 300px) and (max-width: 559.98px) {
+	.sgs-form__inner:has(> .sgs-form-field--number.sgs-form-field--third),
+	.sgs-form-step:has(> .sgs-form-field--number.sgs-form-field--third) {
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+	}
+
+	.sgs-form__inner:has(> .sgs-form-field--number.sgs-form-field--third) > :not(.sgs-form-field--number.sgs-form-field--third),
+	.sgs-form-step:has(> .sgs-form-field--number.sgs-form-field--third) > :not(.sgs-form-field--number.sgs-form-field--third) {
+		grid-column: 1 / -1;
+	}
+
+	.sgs-form-field--number.sgs-form-field--third {
+		grid-column: span 2;
+	}
+}
+
 /* Conditionally-hidden field — display:none removes from layout entirely.
    Mirrors .sgs-form-step--hidden below; applyConditionalLogic() in view.js
    also disables the inputs so they are excluded from validation/submission,

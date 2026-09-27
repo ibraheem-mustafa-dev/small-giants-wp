@@ -150,15 +150,17 @@
 	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
 	cursor: pointer;
 	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
-		border-color var(--wp--custom--transition--fast, 0.15s ease), opacity var(--wp--custom--transition--fast, 0.15s ease);
+		border-color var(--wp--custom--transition--fast, 0.15s ease), color var(--wp--custom--transition--fast, 0.15s ease),
+		opacity var(--wp--custom--transition--fast, 0.15s ease);
 }
 
-/* Hover BRIGHTENS (never darkens) — the theme's own primary hover token
-   swaps to a darker ink for every OTHER primary button in this framework;
-   this one control deliberately keeps the fill and lifts opacity instead,
-   per this task's own design-taste rule, while active (not muted). */
+/* Hover takes the client's own primary-button hover (the preset's hover
+   fill, text and border), as every sgs/button primary does, while active
+   (not muted). */
 .sgs-choice-flow__continue:not(.is-muted):hover {
-	opacity: 0.85;
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary, #1F7A7A)));
+	background-color: var(--wp--custom--button-presets--primary--hover-background, var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary, #1F7A7A)));
+	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--custom--button-presets--primary--text, #fff));
 }
 
 .sgs-choice-flow__continue:focus-visible {
@@ -193,7 +195,8 @@
 	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
 	cursor: pointer;
 	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
-		border-color var(--wp--custom--transition--fast, 0.15s ease), opacity var(--wp--custom--transition--fast, 0.15s ease);
+		border-color var(--wp--custom--transition--fast, 0.15s ease), color var(--wp--custom--transition--fast, 0.15s ease),
+		opacity var(--wp--custom--transition--fast, 0.15s ease);
 }
 
 .sgs-choice-flow__add-to-basket {
@@ -223,10 +226,20 @@
 	color: var(--wp--custom--button-presets--primary--text, #fff);
 }
 
-/* Hover brightens both, never darkens. */
-.sgs-choice-flow__add-to-basket:hover,
-.sgs-choice-flow__buy-now:hover {
-	opacity: 0.85;
+/* Hover takes the client's own button-preset hover: the secondary preset's
+   for an outlined Add to basket, the primary's for Buy now and a lone
+   Add to basket. */
+.sgs-choice-flow__add-to-basket:hover {
+	border-color: var(--wp--custom--button-presets--secondary--hover-border, var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary, #1F7A7A)));
+	background-color: var(--wp--custom--button-presets--secondary--hover-background, var(--wp--preset--color--primary, #1F7A7A));
+	color: var(--wp--custom--button-presets--secondary--hover-text, #fff);
+}
+
+.sgs-choice-flow__buy-now:hover,
+.sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden]) .sgs-choice-flow__add-to-basket:hover {
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary, #1F7A7A)));
+	background-color: var(--wp--custom--button-presets--primary--hover-background, var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary, #1F7A7A)));
+	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--custom--button-presets--primary--text, #fff));
 }
 
 .sgs-choice-flow__add-to-basket:focus-visible,
@@ -642,9 +655,28 @@
 	grid-column: 1 / -1;
 }
 
-/* A step opened under its question (flow-inline.js) sits 20px below the options. */
+/* A step opened under its question (flow-inline.js) sits 20px below the
+   options and fades in each time an option opens it. */
 .sgs-choice-flow .sgs-choice-flow__step--inline {
 	margin-top: 20px;
+	transition: none;
+	animation: sgs-choice-flow-panel-in 0.3s ease both;
+}
+
+@keyframes sgs-choice-flow-panel-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-choice-flow .sgs-choice-flow__step--inline {
+		animation: none;
+	}
 }
 
 /* Showcase: an opened step holding fields reads as one bordered panel (the
