@@ -98,11 +98,25 @@ Content (Eye Care, in `build/gen_archive_product.py` and the product seed):
 5. **DONE 2026-09-27.** The theme's `archive-product.html` carries Price, Category and Brand only (no attribute IDs).
    Follow-up for the Mama's Munches track: its Flavour and Size groups need a site copy of the template (as Eye
    Care's `build/gen_archive_product.py`), until then the canary shop shows the generic groups.
-6. **Put to Bean 2026-09-27** (session message; answers recorded here and in `shop.mjs` when they land).
-7. Next (seen in the screenshots, not in any pair): at 768 and 375 the draft's Filter button is an outlined "FILTER"
-   inline with the count and sort, where live's is a black pill under the title (a toolbar placement and style
-   setting); the draft's cards fade in as they scroll into view (confirm and compare with the motion walk); the
-   drawer's brand names are 13px against the draft's 14.5px.
+6. **Bean's answers 2026-09-27** (recorded in `shop.mjs` as "Accepted (Bean 2026-09-27)"): accepted: no-reviews
+   stars, real brand counts, 44px touch targets, the drawer slide and view-fade motion, hover easing, the draft's
+   brand-page and Black-swatch bugs, pennies. The two-handle price slider is accepted as two handles, but its look
+   must match the draft's slider (thin track, round ends, "up to £340" style labels) with a ball at both ends.
+   Not accepted: the sort menu, whose extra 11px is a "Sort by" prefix on every option (Eye Care's configured labels
+   carry none, so find where the prefix is added and remove it). Asked: can card prices hide ".00" (the existing
+   `sgs_shop_hide_zero_decimals` covers saving badges only; extending it to card prices is a small change; pennies
+   stay the accepted default).
+7. Next, in order (Bean 2026-09-27):
+   a. **Filter interaction breaks the panel:** ticking or unticking any filter re-renders WooCommerce's blocks and the
+      theme's looks are lost (colour swatches fall back to text chips with the colour name). Reproduce by clicking,
+      not by URL (the parity states load filters by URL, which is why the run missed it); then make the per-group looks
+      survive WooCommerce's re-render and add a click-driven state to `shop.mjs`.
+   b. **Filter button at 768 and 375:** the draft's is an outlined "FILTER" inline with the count and sort in the
+      title row; live's is a black pill under the title, in the wrong place in the page structure. Match both.
+   c. **Visual check at all three widths:** look at every screenshot at 1440, 768 and 375 for every state (this pass
+      looked mainly at 1440 and the 375 drawer), and at the brand names (13px against 14.5px) and the draft's
+      scroll-in card fade.
+   d. The price slider restyle and the sort-menu prefix (item 6).
 
 Found and fixed along the way (framework): the drawer's live result count re-requested the Store API every 400ms
 (its observer counted the Apply button's own label change); the desktop sidebar took focus at page load and painted
