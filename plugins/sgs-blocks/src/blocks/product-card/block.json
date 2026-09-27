@@ -169,7 +169,8 @@
 					"label": "Wishlist heart",
 					"order": 18,
 					"clusters": [
-						"fill"
+						"fill",
+						"layout"
 					],
 					"prefix": "wishlist",
 					"attrMap": {
@@ -282,7 +283,8 @@
 					"label": "Brand overlay",
 					"order": 14,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "brand",
 					"attrMap": {

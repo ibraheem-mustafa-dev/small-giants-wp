@@ -18139,7 +18139,7 @@
       "slug": "sgs/nav-bar-menu",
       "attr": "burgerSize",
       "fields": {
-        "css_property": "height,width",
+        "css_property": "height",
         "css_element": "burger"
       }
     },
@@ -18148,6 +18148,14 @@
       "attr": "burgerTextTransform",
       "fields": {
         "css_property": "text-transform",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerWidth",
+      "fields": {
+        "css_property": "width",
         "css_element": "burger"
       }
     },
@@ -21071,6 +21079,14 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "brandPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "ctaColourBackgroundGradient",
       "fields": {
         "css_property": "background-image",
@@ -21147,6 +21163,15 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "mediaBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "savingBadgeBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -21160,6 +21185,15 @@
       "fields": {
         "css_property": "padding",
         "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "swatch"
       }
     },
     {
@@ -21265,6 +21299,15 @@
         "css_property": "color-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "wishlistBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wishlist"
       }
     },
     {

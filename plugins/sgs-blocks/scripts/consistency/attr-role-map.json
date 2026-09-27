@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8964,
+    "row_count": 8969,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4950,6 +4950,7 @@
     "sgs/nav-bar-menu::burgerMorphEasingCustom": "technical",
     "sgs/nav-bar-menu::burgerSize": "select-from-enum",
     "sgs/nav-bar-menu::burgerTextTransform": "typography",
+    "sgs/nav-bar-menu::burgerWidth": "layout",
     "sgs/nav-bar-menu::collapsePoint": "styling",
     "sgs/nav-bar-menu::disabledItemIds": null,
     "sgs/nav-bar-menu::drawerRef": "technical",
@@ -6123,6 +6124,7 @@
     "sgs/product-card::brandLetterSpacing": "typography",
     "sgs/product-card::brandLetterSpacingUnit": "typography",
     "sgs/product-card::brandName": "text-content",
+    "sgs/product-card::brandPadding": "layout",
     "sgs/product-card::cardMaxWidth": "layout",
     "sgs/product-card::cardPadding": "layout",
     "sgs/product-card::colourSwatches": null,
@@ -6280,6 +6282,7 @@
     "sgs/product-card::indexVariationUrl": "content",
     "sgs/product-card::loopCarousel": "behaviour",
     "sgs/product-card::maxWidth": "layout",
+    "sgs/product-card::mediaBackgroundColour": "color",
     "sgs/product-card::noReviewsText": "text-content",
     "sgs/product-card::overrideElements": "technical",
     "sgs/product-card::packSizes": "content",
@@ -6345,6 +6348,7 @@
     "sgs/product-card::showWishlist": "boolean-visibility",
     "sgs/product-card::sourceMode": "select-from-enum",
     "sgs/product-card::swatchAttribute": "technical",
+    "sgs/product-card::swatchBorderColour": "color",
     "sgs/product-card::swatchHoverGrow": null,
     "sgs/product-card::swatchMaxVisible": "behaviour",
     "sgs/product-card::swatchSize": "select-from-enum",
@@ -6399,6 +6403,7 @@
     "sgs/product-card::trialTag": "text-content",
     "sgs/product-card::variantStyle": "behaviour",
     "sgs/product-card::visibleAxes": "technical",
+    "sgs/product-card::wishlistBorderColour": "color",
     "sgs/product-faq-item::backgroundColour": "color",
     "sgs/product-faq-item::backgroundColourGradient": "colour-gradient",
     "sgs/product-faq-item::backgroundColourHover": "color",
