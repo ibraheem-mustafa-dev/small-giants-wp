@@ -66,9 +66,10 @@ All answered (recorded in `shop.mjs` as "Accepted (Bean 2026-09-27)"). Card pric
    b. **The Polarised tag sits unevenly on the card** (sgs/product-card `showAttributeTag`, class
       `.sgs-product-card__attribute-tag` in `plugins/sgs-blocks/src/blocks/product-card/style.css`): beside a
       wrapping name ("Lewis 10") it takes a wide box with space on both sides; beside "EA4033" at 375 its border
-      overlaps the card's border with no right padding. Target: the tag keeps its own width, sits at the right of
-      the name row inside the card's padding (at least the card's 16px inset), and the name wraps beside it. Add a
-      tag pair to `shop.mjs` (a card with the tag at every width, anchored to its card).
+      overlaps the card's border with no right padding. Target (Bean: placement uniform on every card): the tag
+      keeps its own width and sits in the same place on every card, at the right of the name row inside the card's
+      padding (at least the card's 16px inset), whatever the name's length; the name wraps beside it. Add tag pairs to
+      `shop.mjs` for two cards with different name lengths (one wrapping), anchored to their cards, at every width.
    c. **A floating Filter button appears at the bottom of the screen on mobile after scrolling**
       (`sgs-shop-filters__sticky-trigger`, built in `theme/sgs-theme/assets/js/sgs-shop-filters.js`). The draft has
       none: give it a Customizer switch (framework) and turn it off for Eye Care in `build/apply_shop_settings.py`.
