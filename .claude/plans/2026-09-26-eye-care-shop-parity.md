@@ -1,10 +1,9 @@
 # Eye Care shop archive: parity with the draft
 
-**Status:** REOPENED 2026-09-27 on Bean's review of the live shop (Remaining 8). `shop.mjs` read 0 open with every
-shot reviewed, but Bean found four things the pass missed; the review notes for the drawer and 375 shots are
-withdrawn until they are fixed and looked at again. States: opening, filters open, and Women, Black, Ray-Ban and a
-Pilot chip each chosen by clicking on both sides (the last with the drawer left open). Part of the parity re-review
-in `plans/2026-09-24-eye-care-hand-build-design.md` (Status, "Parity re-review owed before Wave D").
+**Status:** DONE 2026-09-27. `shop.mjs` exits 0 (0 open, 21 of 21 shots reviewed, 0 live console errors) after
+Bean's review items (Remaining 8). States: opening, filters open, Women, Black, Ray-Ban and a Pilot chip each chosen
+by clicking on both sides (the last with the drawer left open), and scrolled 1200px. Part of the parity re-review in
+`plans/2026-09-24-eye-care-hand-build-design.md` (Status, "Parity re-review owed before Wave D").
 **Verify with:** `node ../../scripts/parity/draft-live-walk.mjs ../../sites/eye-care-ward-end/build/qa/parity/shop.mjs`
 from `plugins/sgs-blocks` with `NODE_EXTRA_CA_CERTS` set to certifi's bundle (exit 0 = matches).
 
@@ -58,28 +57,25 @@ All answered (recorded in `shop.mjs` as "Accepted (Bean 2026-09-27)"). Card pric
 
 ## Remaining
 
-8. **Bean's review, 2026-09-27 (in order):**
-   a. **Card prices without ".00"** (Bean: yes). The theme setting `sgs_shop_hide_zero_decimals` covers saving badges
-      only; extend it to the product card's price and RRP (framework, any client), keep pennies where a price has
-      them (£59.50), and drop the "Pennies" accepts in `shop.mjs` and `lens.mjs` that no longer apply (the card-7
-      375 height accept mentions the wrap they caused).
-   b. **The Polarised tag sits unevenly on the card** (sgs/product-card `showAttributeTag`, class
-      `.sgs-product-card__attribute-tag` in `plugins/sgs-blocks/src/blocks/product-card/style.css`): beside a
-      wrapping name ("Lewis 10") it takes a wide box with space on both sides; beside "EA4033" at 375 its border
-      overlaps the card's border with no right padding. Target (Bean: placement uniform on every card): the tag
-      keeps its own width and sits in the same place on every card, at the right of the name row inside the card's
-      padding (at least the card's 16px inset), whatever the name's length; the name wraps beside it. Add tag pairs to
-      `shop.mjs` for two cards with different name lengths (one wrapping), anchored to their cards, at every width.
-   c. **A floating Filter button appears at the bottom of the screen on mobile after scrolling**
-      (`sgs-shop-filters__sticky-trigger`, built in `theme/sgs-theme/assets/js/sgs-shop-filters.js`). The draft has
-      none: give it a Customizer switch (framework) and turn it off for Eye Care in `build/apply_shop_settings.py`.
-      Add a scrolled state at 375 and 768 to `shop.mjs` (GAP-CHECKLIST.md 5a).
-   d. **The price slider in the drawer (768, 375):** its right handle is cut off at the drawer's content edge, and
-      the track should sit within the content width. Cause: the thin look's `padding-inline: 4px 0` (section 8k of
-      `theme/sgs-theme/assets/css/woocommerce.css`) removed the right inset that kept the handle inside. Target: the
-      track inside the content width with both 14px handles fully painted, in the drawer and the desktop column;
-      prove it by the handle's painted width in the shots (GAP-CHECKLIST.md 5b).
-   Then re-run `shop.mjs`, look at every shot again and rewrite the withdrawn notes.
+8. **DONE 2026-09-27 (e8ecda854, 75584d7a0, 7eb65d8ea, the two after).** Bean's review:
+   a. Card prices in whole pounds: `sgs_card_price_trim_zeros` (plugin `includes/product-card-price-trim.php`) turns
+      WooCommerce's trim on only while a product card renders; view.js does the same on a variation swap; the
+      theme's "Hide .00" Shop setting drives it with the saving badge. £59.50 keeps its pennies; the product page,
+      cart and checkout keep theirs. The shop's pennies accepts are gone; the lens flow's stays (not a card).
+   b. The Polarised tag keeps its width at the right of the name row, 17px in from the card edge, at every width; in
+      a card body under 200px (the phone grid) it takes its own line under the name, right-aligned (Bean), so no
+      name breaks mid-word. New Typography target for the tag (size, weight, letter spacing); Eye Care sets weight
+      400 and the `border-strong` border as in the draft. Pairs `tag-holbrook` and `tag-lewis` anchored to their
+      cards; the walker's new `anchorX` measures the right-edge gap.
+   c. Customizer "Show a floating Filter button" (default on), off for Eye Care; `shop.mjs` has a `scrolled` state
+      with the button as a pair.
+   d. Thin price slider inset 4px both sides: each handle paints 2px past its input, so flush right the scroll
+      area clipped it to 12px (measured in the drawer and the desktop column; 14px after).
+   Found on the shots: at 375 the dots dropped a whole line because they shared the price parts' flex row; the
+   price, RRP and notes now wrap in `.sgs-product-card__price-group` (never narrower than its widest part) and the
+   dots sit level with its last line. Accepted (Bean 2026-09-27): Aviator and Wayfarer put their dots on their own
+   line at 375 (live's "+2" pill against the draft's plain text); the price filter's two handles and no "up to
+   £X" heading value.
 
 The record of what items 0-7 did:
 

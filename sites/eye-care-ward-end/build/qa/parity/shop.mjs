@@ -144,22 +144,29 @@ export default {
 			hover: 'wishlist' === part || 'dot' === part,
 		} ) ),
 	],
-	// Screenshot review, region by region; header, footer and chat bubble are the nav track. Notes for the drawer and
-	// 375 shots were withdrawn 2026-09-27 (Bean: the price slider's right handle is clipped, the Polarised tag sits
-	// unevenly, a floating Filter button appears on scroll); they are rewritten after the fixes.
+	// Screenshot review, region by region; header, footer and chat bubble are the nav track.
 	review: {
-		'opening@1440': 'Title row: eyebrow, h1, count and sort aligned, hairline 24px under it, grid 101px below the title on both. Filter column: segments, swatches in order, thin slider, brand search and list, Style chips in the draft order. Grid 3 columns, cards match; the draft blanks rows 3+ until scrolled (its reveal, full-page artefact).',
-		'opening@768': 'Title row with the outlined FILTER between count and sort on both, hairline under it. Grid 2 columns, cards match (stars vs No reviews yet accepted); the draft shows 4 cards, the rest wait for its scroll reveal.',
-		'women@1440': 'Chosen-filter row under the title on both ("Women ×" pill, CLEAR ALL), panel copy hidden, Women segment chosen, 11 frames, grid 151px below the title on both. Cards match.',
-		'women@768': 'FILTER (1) in the title row on both, Women pill and CLEAR ALL under the hairline, drawer closed, 11 frames, 2 columns. Focus ring on FILTER is focus returning after the scripted close.',
-		'women@375': 'Count, FILTER (1) and sort in one row, the chosen-filter row under the hairline, cards 2 across with prices wrapping (pennies accepted).',
-		'colour-black@1440': 'Black swatch ringed at 3.5px on both, Black pill and CLEAR ALL under the title; the draft returns 0 frames (its bug, accepted) where live shows 14.',
-		'colour-black@768': 'FILTER (1), Black pill row under the hairline on both; draft empty state from its colour bug, live grid of 14.',
-		'colour-black@375': 'Toolbar row and chosen-filter row match; draft empty state (its bug) against live cards.',
-		'brand-ray-ban@1440': 'Ray-Ban pill row, 3 frames, the same three cards; the draft retitles to "Ray-Ban" with a Brand eyebrow (accepted). Live price labels follow the 3 results (WooCommerce narrows the range).',
-		'brand-ray-ban@768': 'FILTER (1), Ray-Ban pill and CLEAR ALL under the hairline, 3 frames, cards match; draft brand-page title accepted.',
-		'brand-ray-ban@375': 'Toolbar row, chosen-filter row and two cards across match; draft brand-page title accepted.',
-		'panel-after-click@1440': 'After clicking Pilot: the panel keeps every look (segments, round swatches, counts, groups), Pilot pill row under the title, 5 frames, same 3 cards; draft retitles "Pilot" (accepted); live slider shows £99-£169 for the results.',
+		'opening@1440': 'Title row: eyebrow, h1, count and sort aligned, hairline 24px under it on both. Filter column: segments, swatches in order, slider with both 14px handles whole, brand search and list, Style chips, Polarised toggle. Grid 3 columns; cards: whole-pound prices with the RRP beside, dots right, Polarised tag right of the name on Holbrook. The draft blanks rows 3+ until scrolled (its reveal).',
+		'opening@768': 'Title row with the outlined FILTER between count and sort, hairline under it. Grid 2 columns; every card reads price and RRP in whole pounds on one line with the dots at the right, Holbrook tag beside the name 17px from the card edge; stars against No reviews yet accepted.',
+		'opening@375': 'Count, FILTER and sort in one row, hairline under it. Two cards across: RRP under the price with dots beside it; the Polarised tag on its own line under the name, right-aligned, on Holbrook and PLD 6003/N (Bean); Aviator and Wayfarer put their dots on a line of their own (Bean: accepted). Nothing crosses a card edge.',
+		'filters-open@1440': 'The desktop column stays in place: segments, 12 round swatches in order, price slider with both handles whole and 4px in from each side, labels £59 and £339, brand count and search, list; no "up to £340" heading value (Bean: accepted earlier). Grid unchanged.',
+		'filters-open@768': 'Drawer over the page: ruled Filter header (its focus ring is the scripted click, section 7), Gender segments, Size closed, swatches in one row, slider track inside the content width with both 14px handles whole, brand search and list, CLEAR and SHOW 16 FRAMES in the footer on both.',
+		'filters-open@375': 'Drawer: header and close, segments, swatches in two rows, slider inside the content width with both handles fully painted and the £59 and £339 labels, brand heading count, search, Ray-Ban 3 and Balenciaga 1 (real counts, accepted), CLEAR and SHOW 16 FRAMES footer. No floating button.',
+		'women@1440': 'Chosen-filter row under the title on both ("Women ×" pill, CLEAR ALL), Women segment chosen, 11 frames, same first three cards with whole-pound prices and RRPs beside them, dots right.',
+		'women@768': 'FILTER (1) in the title row on both, Women pill and CLEAR ALL under the hairline, drawer closed, 11 frames, 2 columns with price and RRP on one line and dots at the right. Focus ring on FILTER is focus returning after the scripted close.',
+		'women@375': 'Count, FILTER (1) and sort in one row, the Women pill row under the hairline, two cards across with the RRP under the price and dots beside it on both; Aviator keeps its four dots on their own line (Bean: accepted).',
+		'colour-black@1440': 'Black swatch ringed on both, Black pill and CLEAR ALL under the title; the draft returns 0 frames (its bug, accepted) where live shows 14 cards with whole-pound prices.',
+		'colour-black@768': 'FILTER (1) and the Black pill row under the hairline on both; draft empty state from its colour bug, live 2-column grid of 14 with price, RRP and dots on one line.',
+		'colour-black@375': 'Toolbar row and chosen-filter row match; draft empty state (its bug) against live cards, RRP under the price with dots beside it.',
+		'brand-ray-ban@1440': 'Ray-Ban pill row, 3 frames, the same three cards with whole-pound prices, RRPs and dots; the draft retitles to "Ray-Ban" with a Brand eyebrow (accepted). Live price labels £129 to £139 follow the 3 results.',
+		'brand-ray-ban@768': 'FILTER (1), Ray-Ban pill and CLEAR ALL under the hairline, 3 frames, cards match (whole pounds, dots right); draft brand-page title accepted.',
+		'brand-ray-ban@375': 'Toolbar row, chosen-filter row and two cards across; Wayfarer keeps its dots and +2 on their own line (Bean: accepted), Aviator the same; draft brand-page title accepted.',
+		'panel-after-click@1440': 'After clicking Pilot: the panel keeps every look (segments, round swatches, counts, groups), Pilot pill row under the title, 5 frames, same 3 cards; draft retitles "Pilot" (accepted); live slider £99 to £169 for the results, both handles whole.',
+		'panel-after-click@768': 'Drawer left open after Pilot: header, segments, swatches in one row, slider £99 to £169 with both handles whole inside the content width, brand count 5 with Carrera, Ferrari Scuderia, Michael Kors, Police, Ray-Ban, SHOW 5 FRAMES on both.',
+		'panel-after-click@375': 'Drawer left open after Pilot: segments, two swatch rows, slider inside the content width with both handles whole, brand count 5, SHOW 5 FRAMES and CLEAR in the footer on both.',
+		'scrolled@1440': 'Scrolled 1200px: the filter column stays beside the grid on both, cards Medusa Biggie to Shield with whole-pound prices; PLD 6003/N tag beside the name at the right. No floating element apart from the chat bubble (nav track).',
+		'scrolled@768': 'Scrolled 1200px: no floating Filter button on either side; Wayfarer and Round Metal rows with price and RRP on one line and dots right, Versace and Polaroid below. Only the chat bubble floats (nav track).',
+		'scrolled@375': 'Scrolled 1200px: no floating Filter button on either side (the draft has none; live switched off). Cards two across, PLD 6003/N tag under the name right-aligned (Bean), RRP under the price with dots beside it; only the chat bubble floats.',
 	},
 	accept: [
 		// Measured, not painted: the property differs but the pixels do not.
@@ -207,6 +214,15 @@ export default {
 			pair: `tag-${ key }`, kind: 'box', key: `right-from-card-${ key }`,
 			reason: 'Accepted (Bean 2026-09-27): the tag sits in one place on every card, inside the card’s 16px inset, and the name wraps beside it; in the draft a one-word name at 375 pushes its tag past the card edge',
 			when: ( d ) => d.live >= 16,
+		} ) ),
+		...[ 'holbrook', 'lewis' ].map( ( key ) => ( {
+			pair: `tag-${ key }`, width: 375, kind: 'box', key: `y-from-card-${ key }`,
+			reason: 'Accepted (Bean 2026-09-27): in a two-across phone card the tag takes its own line under the name, right-aligned, so no name breaks mid-word beside it',
+			when: ( d ) => d.live - d.draft >= 20 && d.live - d.draft <= 40,
+		} ) ),
+		...[ 'holbrook', 'lewis' ].map( ( key ) => ( {
+			pair: `card-${ key }`, kind: 'motion', key: 'running-after-action',
+			reason: 'The same fade-up as card-7: the framework starts it once a card is within 200px of view, the draft on reaching view, so a snapshot can catch one side mid-play',
 		} ) ),
 		{ pair: 'filter-button', kind: 'style', key: 'color', reason: 'The draft’s button text is the browser default black, live’s the palette’s text #141414 (both near-black on white)' },
 		// Below the drawer breakpoint the live drawer is a sheet over the page (Bean 2026-09-27), so its rows share rows with the title bar.

@@ -17,13 +17,12 @@ key), with the owed Wave C polish alongside.
   or listed as accepted by Bean. Tool: `scripts/parity/draft-live-walk.mjs` with a config per page in
   `sites/eye-care-ward-end/build/qa/parity/`, run to the method in `scripts/parity/GAP-CHECKLIST.md` (a page
   passes only when the walker exits 0: config lint, 0 open, every state x width shot reviewed with a note, 0 console
-  errors). Progress: shop archive REOPENED 2026-09-27 (`plans/2026-09-26-eye-care-shop-parity.md` Remaining 8:
-  card prices without ".00", the Polarised tag's place on the card, a floating Filter button on scroll, the drawer's
-  price slider clipping its right handle); lens pop-up REOPENED 2026-09-27: its Q4 shots (never reviewed) show three
-  gaps the scripted run did not measure (the last question's footer reads "Continue" where the draft reads "Add to
-  bag £418"; at 768 the draft's "Perfect, order now and I'll WhatsApp you a link" note under the options is missing;
-  at 768 the "Send it later" description overflows its card, which Bean wants matched to the draft), and lint wants a
-  Q4-scoped pair; Bean accepted the help toggle's timing and glyph colour and live's clean 375 thumbnail (the
+  errors). Progress: shop archive DONE 2026-09-27 (`shop.mjs` exits 0 after Bean's four review items;
+`plans/2026-09-26-eye-care-shop-parity.md` Remaining 8); lens pop-up REOPENED 2026-09-27: its Q4 shots show the
+draft's last question is one screen (the chosen way to send the prescription opens its panel under the options: the
+WhatsApp note, an upload box or the prescription grid, with "Add to bag £418" in the footer) where live moves to a
+separate screen per choice after Continue; plan `plans/2026-09-27-choice-flow-inline-next-step.md`. The "Send it
+later" description overflow at 768 is fixed (the badge spans the title and description rows). Bean accepted the help toggle's timing and glyph colour and live's clean 375 thumbnail (the
   draft's shows a clipped "POLARIS" label). Product page, bag drawer, checkout, order confirmation, home, lenses, about, help,
   contact to do.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
