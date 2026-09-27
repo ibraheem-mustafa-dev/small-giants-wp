@@ -15,6 +15,7 @@ import { forgetAnswersFrom } from './flow-fields.js';
 import { clearVariationChoicesAfter } from './variation.js';
 import { FLOW_SELECTOR, STEP_SELECTOR, OPTIONS_GROUP_SELECTOR, OPTION_BUTTON_SELECTOR, SELECTED_CLASS } from './flow-constants.js';
 import { openInlineStep, showStep } from './flow-inline.js';
+import { refreshPricePanel } from './pricing.js';
 import { getSteps, updateContinueState, showContinueHint, hideContinueHint, advanceModeOf } from './flow-steps.js';
 import { flowState, ensureNavigationState, persistFlowState } from './flow-persistence.js';
 import { recordOptionAnswer, commitStepRouting } from './flow-routing.js';
@@ -71,6 +72,8 @@ export function handleOptionClick( buttonEl ) {
 	selectOption( buttonEl );
 	updateContinueState( flowRoot, currentStepEl );
 	hideContinueHint( flowRoot );
+	// A plain answer's stage line follows the pick (priced answers refresh as they record).
+	refreshPricePanel( flowRoot );
 	openInlineStep( flowRoot, currentStepEl );
 }
 
