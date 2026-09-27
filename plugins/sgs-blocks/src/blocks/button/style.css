@@ -142,6 +142,21 @@
 	transform: var(--sgs-btn-transform-hover, none);
 }
 
+/*
+ * Focus that is NOT keyboard focus — a mouse click, or a script moving focus
+ * (a mega panel focuses its first focusable element when it opens) — matches
+ * `:focus` without `:focus-visible`, so neither rule above applies. theme.json's
+ * `styles.elements.link[':focus']` prints `:root :where(a:where(:not(.wp-element-button)):focus)`
+ * (primary-dark text, underlined) at the same specificity as `.sgs-button` and
+ * later in the document, so on its own it repaints a focused link-button in the palette's
+ * link colour. This keeps the button's own resting colour and decoration there;
+ * keyboard focus keeps the hover treatment and the ring above.
+ */
+.sgs-button:focus:not(:focus-visible) {
+	color: var(--sgs-btn-color, var(--sgs-mb-btn-color-default, var(--wp--preset--color--text)));
+	text-decoration: none;
+}
+
 /* ── Style presets (Spec 32) — each SETS the six colour vars from the
    per-client token with a framework theme-token fallback. ──────────────── */
 .sgs-button--primary {
