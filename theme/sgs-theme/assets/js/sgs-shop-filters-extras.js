@@ -130,8 +130,9 @@
 				fetch( url.toString(), { credentials: 'same-origin' } )
 					.then( function ( response ) {
 						const total = parseInt( response.headers.get( 'X-WP-Total' ), 10 );
-						if ( ! isNaN( total ) ) {
-							applyBtn.textContent = config.label.replace( '%d', String( total ) );
+						const label = config.label.replace( '%d', String( total ) );
+						if ( ! isNaN( total ) && applyBtn.textContent !== label ) {
+							applyBtn.textContent = label;
 						}
 					} )
 					.catch( function () {
@@ -145,8 +146,15 @@
 		// WC's filter blocks re-render their own subtree on interaction —
 		// watch for that rather than polling (own observer, not shared with
 		// sgs-shop-filters.js's sticky-count observer, to keep this module
-		// self-contained).
-		new MutationObserver( request ).observe( dialog, { childList: true, subtree: true } );
+		// self-contained). The Apply button's own label change is ignored:
+		// counting it re-requested every 400ms for as long as the page was open.
+		new MutationObserver( function ( records ) {
+			if ( records.some( function ( record ) {
+				return ! applyBtn.contains( record.target );
+			} ) ) {
+				request();
+			}
+		} ).observe( dialog, { childList: true, subtree: true } );
 	}
 
 	/* ── 3. Wait for sgs-shop-filters.js to convert the aside into the dialog ── */

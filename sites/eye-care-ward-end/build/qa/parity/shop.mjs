@@ -4,8 +4,8 @@
 const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/shop/?cb={cb}';
 const LF = '#sgs-shop-filters';
-// The draft's product grid: the grid in main holding the cards (no aside below desktop, where filters are a drawer).
-const DGRID = `(r) => [...document.querySelectorAll('main div')].find((x) => getComputedStyle(x).display === 'grid' && x.children.length >= 2 && x.textContent.includes('£'))`;
+// The draft's product grid: the grid in main whose every child is a priced card (no aside below desktop).
+const DGRID = `(r) => [...document.querySelectorAll('main div')].find((x) => getComputedStyle(x).display === 'grid' && x.children.length >= 2 && [...x.children].every((c) => c.textContent.includes('£')))`;
 // A card in the draft's grid, by product name.
 const dcard = ( name ) => `(r) => { const g = (${ DGRID })(r); const c = g && [...g.children].find((c) => c.textContent.includes('${ name }')); return c && c.firstElementChild.firstElementChild; }`;
 const lcard = ( name ) => `(r) => [...document.querySelectorAll('.sgs-shop-layout .wc-block-product-template > li')].find((c) => c.textContent.includes('${ name }'))?.querySelector('.sgs-product-card, .product-card')`;
@@ -91,7 +91,7 @@ export default {
 		].map( ( [ part, dpath, lsel, text ] ) => ( {
 			name: `card-${ part }`,
 			states: [ 'opening' ],
-			draft: { js: `(r) => { const c = (${ dcard( 'Oversized Cat-Eye' ) })(r); return c && ${ dpath }; }` },
+			draft: { js: `(r) => { const c = (${ dcard( 'Oversized Cat-Eye' ) })(r); try { return c && ${ dpath }; } catch ( e ) { return null; } }` },
 			live: { js: `(r) => { const c = (${ lcard( 'Oversized Cat-Eye' ) })(r); return c && c.querySelector('${ lsel }'); }` },
 			text,
 			hover: 'wishlist' === part || 'dot' === part,
