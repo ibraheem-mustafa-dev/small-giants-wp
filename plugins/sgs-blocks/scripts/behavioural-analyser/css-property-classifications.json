@@ -18129,6 +18129,22 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerIconHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "burger-icon"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerIconWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "burger-icon"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "burgerLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",

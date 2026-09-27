@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8969,
+    "row_count": 8971,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4942,6 +4942,8 @@
     "sgs/nav-bar-menu::burgerFontSize": "typography",
     "sgs/nav-bar-menu::burgerFontWeight": "typography",
     "sgs/nav-bar-menu::burgerHoverColour": "color",
+    "sgs/nav-bar-menu::burgerIconHeight": "layout",
+    "sgs/nav-bar-menu::burgerIconWidth": "layout",
     "sgs/nav-bar-menu::burgerLetterSpacing": "typography",
     "sgs/nav-bar-menu::burgerLetterSpacingUnit": "typography",
     "sgs/nav-bar-menu::burgerMorph": "enum-mode",
@@ -6349,7 +6351,7 @@
     "sgs/product-card::sourceMode": "select-from-enum",
     "sgs/product-card::swatchAttribute": "technical",
     "sgs/product-card::swatchBorderColour": "color",
-    "sgs/product-card::swatchHoverGrow": null,
+    "sgs/product-card::swatchHoverGrow": "styling",
     "sgs/product-card::swatchMaxVisible": "behaviour",
     "sgs/product-card::swatchSize": "select-from-enum",
     "sgs/product-card::tagBackgroundColour": "color",
