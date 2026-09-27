@@ -72,7 +72,9 @@
               "triggerMode": { "desktop": "icon" },
               "burgerSize": "36px",
               "burgerWidth": { "desktop": "30px" },
-              "burgerColour": "#ffffff",
+              "burgerColour": "#f9f4eb",
+              "burgerMorph": "line",
+              "burgerBarCount": 3,
               "showBurger": true
             }
           }

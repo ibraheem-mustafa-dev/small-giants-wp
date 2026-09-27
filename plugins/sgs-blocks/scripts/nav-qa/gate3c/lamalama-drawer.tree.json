@@ -19,7 +19,7 @@
       "exitDuration": 350,
       "entryEasing": "ease-out-css",
       "drawerPadding": {
-        "desktop": { "top": "16px", "right": "13px", "bottom": "16px", "left": "13px" }
+        "desktop": { "top": "0px", "right": "13px", "bottom": "13px", "left": "13px" }
       },
       "drawerGap": { "desktop": "0px" },
       "accordionExclusive": true,
@@ -33,9 +33,13 @@
           "navLabel": "Lama Lama drawer menu",
           "gap": { "desktop": "0px" },
           "itemBorderWidth": { "bottom": "1px" },
-          "itemBorderColour": "border-light",
-          "itemColour": "#ffffff",
-          "submenuColour": "#ffffff",
+          "itemBorderColour": "rgba(249,244,235,0.1)",
+          "itemColour": "#f9f4eb",
+          "itemLineHeight": 33,
+          "itemLineHeightUnit": "px",
+          "itemLetterSpacing": { "desktop": -0.32 },
+          "itemLetterSpacingUnit": "px",
+          "submenuColour": "#f9f4eb",
           "submenuLinkBg": "transparent",
           "submenuLinkBgHover": "transparent"
         }
@@ -47,16 +51,36 @@
           "url": "https://lamalama.com/pitchdeck/",
           "inheritStyle": "outline",
           "widthType": { "desktop": "full" },
-          "margin": { "desktop": { "top": "16px" } }
+          "margin": { "desktop": { "top": "13px" } },
+          "minHeight": { "desktop": "50px" },
+          "minHeightUnit": "px",
+          "fontSize": { "desktop": 10 },
+          "fontSizeUnit": "px",
+          "fontWeight": "500",
+          "lineHeight": { "desktop": 18 },
+          "lineHeightUnit": "px",
+          "letterSpacing": { "desktop": -0.2 },
+          "letterSpacingUnit": "px",
+          "textTransform": "uppercase",
+          "colourText": "#f9f4eb",
+          "colourBackground": "transparent",
+          "borderWidth": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" },
+          "borderColour": "rgba(249,244,235,0.2)",
+          "borderRadius": {
+            "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
+          }
         }
       },
       {
         "name": "sgs/container",
         "attributes": {
           "layout": "grid",
+          "contentWidth": { "desktop": "full" },
+          "padding": { "desktop": { "top": "0", "right": "0", "bottom": "0", "left": "0" } },
           "columns": { "desktop": 2 },
-          "gap": { "desktop": "8px" },
-          "margin": { "desktop": { "top": "8px" } }
+          "gridTemplateColumns": { "desktop": "1fr 1fr" },
+          "gap": { "desktop": "4px" },
+          "margin": { "desktop": { "top": "10px" } }
         },
         "innerBlocks": [
           {
@@ -65,7 +89,23 @@
               "label": "Schedule a call",
               "url": "https://lamalama.com/contact/",
               "inheritStyle": "primary",
-              "widthType": { "desktop": "full" }
+              "widthType": { "desktop": "full" },
+              "minHeight": { "desktop": "50px" },
+              "minHeightUnit": "px",
+              "fontSize": { "desktop": 10 },
+              "fontSizeUnit": "px",
+              "fontWeight": "500",
+              "lineHeight": { "desktop": 18 },
+              "lineHeightUnit": "px",
+              "letterSpacing": { "desktop": -0.2 },
+              "letterSpacingUnit": "px",
+              "textTransform": "uppercase",
+              "colourText": "#000000",
+              "colourBackground": "#f9f4eb",
+              "borderWidth": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" },
+              "borderRadius": {
+                "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
+              }
             }
           },
           {
@@ -74,7 +114,23 @@
               "label": "Start a project",
               "url": "https://lamalama.com/contact/",
               "inheritStyle": "secondary",
-              "widthType": { "desktop": "full" }
+              "widthType": { "desktop": "full" },
+              "minHeight": { "desktop": "50px" },
+              "minHeightUnit": "px",
+              "fontSize": { "desktop": 10 },
+              "fontSizeUnit": "px",
+              "fontWeight": "500",
+              "lineHeight": { "desktop": 18 },
+              "lineHeightUnit": "px",
+              "letterSpacing": { "desktop": -0.2 },
+              "letterSpacingUnit": "px",
+              "textTransform": "uppercase",
+              "colourText": "#000000",
+              "colourBackground": "#f9f4eb",
+              "borderWidth": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" },
+              "borderRadius": {
+                "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
+              }
             }
           }
         ]
