@@ -19,7 +19,10 @@
         "bottom": "1px",
         "left": "1px"
       },
-      "borderRadius": "12px"
+      "borderRadius": "12px",
+      "panelPadding": {
+        "desktop": { "top": "0px", "right": "0px", "bottom": "0px", "left": "26px" }
+      }
     },
     "innerBlocks": [
       {
@@ -620,6 +623,7 @@
         "attributes": {
           "asideFormat": "cta",
           "asideBg": "rgba(10,126,168,0.06)",
+          "asideRadius": "0 12px 12px 0",
           "asideBorderColour": "#0A7EA8",
           "asideBorderWidth": {
             "top": "0px",
@@ -638,30 +642,43 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/label",
+            "name": "sgs/container",
             "attributes": {
-              "text": "Own Brands",
-              "textColour": "#1E2A3C",
-              "backgroundColour": "#D8CA50",
-              "fontSize": {
-                "desktop": "11px"
-              },
-              "fontWeight": "700",
-              "letterSpacing": 0.02,
-              "letterSpacingUnit": "em",
-              "padding": {
-                "desktop": {
-                  "top": "4px",
-                  "right": "10px",
-                  "bottom": "4px",
-                  "left": "10px"
-                }
-              },
-              "borderRadius": 20,
-              "textTransform": "none",
-              "fullWidth": false,
-              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-            }
+              "layout": "flex",
+              "flexDirection": "row",
+              "contentWidth": { "desktop": "full" },
+              "padding": { "desktop": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" } },
+              "justifyContent": "flex-start",
+              "alignItems": "flex-start"
+            },
+            "innerBlocks": [
+                      {
+                        "name": "sgs/label",
+                        "attributes": {
+                          "text": "Own Brands",
+                          "textColour": "#1E2A3C",
+                          "backgroundColour": "#D8CA50",
+                          "fontSize": {
+                            "desktop": "11px"
+                          },
+                          "fontWeight": "700",
+                          "letterSpacing": 0.02,
+                          "letterSpacingUnit": "em",
+                          "padding": {
+                            "desktop": {
+                              "top": "4px",
+                              "right": "10px",
+                              "bottom": "4px",
+                              "left": "10px"
+                            }
+                          },
+                          "borderRadius": 20,
+                          "textTransform": "none",
+                          "fullWidth": false,
+                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                        }
+                      }
+            ]
           },
           {
             "name": "sgs/text",
@@ -684,50 +701,63 @@
             }
           },
           {
-            "name": "sgs/button",
+            "name": "sgs/container",
             "attributes": {
-              "label": "View All Brands",
-              "url": "#",
-              "inheritStyle": "custom",
-              "colourText": "#FFFFFF",
-              "colourBackground": "#0A7EA8",
-              "borderWidth": {
-                "top": "0px",
-                "right": "0px",
-                "bottom": "0px",
-                "left": "0px"
-              },
-              "borderStyle": "none",
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "9px",
-                  "topRight": "9px",
-                  "bottomLeft": "9px",
-                  "bottomRight": "9px"
-                }
-              },
-              "padding": {
-                "desktop": {
-                  "top": "12px",
-                  "right": "18px",
-                  "bottom": "12px",
-                  "left": "18px"
-                }
-              },
-              "fontSize": {
-                "desktop": "14px"
-              },
-              "fontWeight": "700",
-              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-              "icon": "arrow-right",
-              "iconPosition": "after",
+              "layout": "flex",
+              "flexDirection": "row",
+              "contentWidth": { "desktop": "full" },
+              "padding": { "desktop": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" } },
+              "justifyContent": "flex-start",
+              "alignItems": "flex-start",
               "margin": {
-                "desktop": {
-                  "top": "18px"
-                }
+              "desktop": {
+              "top": "18px"
               }
-            }
-          }
+              }
+            },
+            "innerBlocks": [
+                      {
+                        "name": "sgs/button",
+                        "attributes": {
+                          "label": "View All Brands",
+                          "url": "#",
+                          "inheritStyle": "custom",
+                          "colourText": "#FFFFFF",
+                          "colourBackground": "#0A7EA8",
+                          "borderWidth": {
+                            "top": "0px",
+                            "right": "0px",
+                            "bottom": "0px",
+                            "left": "0px"
+                          },
+                          "borderStyle": "none",
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "9px",
+                              "topRight": "9px",
+                              "bottomLeft": "9px",
+                              "bottomRight": "9px"
+                            }
+                          },
+                          "padding": {
+                            "desktop": {
+                              "top": "12px",
+                              "right": "18px",
+                              "bottom": "12px",
+                              "left": "18px"
+                            }
+                          },
+                          "fontSize": {
+                            "desktop": "14px"
+                          },
+                          "fontWeight": "700",
+                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                          "icon": "arrow-right",
+                          "iconPosition": "after"
+                        }
+                      }
+                    ]
+                  }
         ]
       }
     ]

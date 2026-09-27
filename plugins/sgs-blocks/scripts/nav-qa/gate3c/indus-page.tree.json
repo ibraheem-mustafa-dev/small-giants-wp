@@ -9,11 +9,8 @@
       },
       "borderColour": "#D8CA50",
       "borderStyle": "solid",
-      "maxWidth": {
-        "desktop": "1240px"
-      },
       "minHeight": {
-        "desktop": "76px"
+        "desktop": "79px"
       }
     },
     "innerBlocks": [
@@ -23,10 +20,15 @@
           "rowSlot": "middle",
           "justifyContent": "space-between",
           "alignItems": "center",
+          "maxWidth": {
+            "desktop": "1240px"
+          },
           "padding": {
             "desktop": {
-              "top": "0px",
-              "bottom": "0px"
+              "top": "13px",
+              "right": "28px",
+              "bottom": "13px",
+              "left": "28px"
             }
           }
         },
@@ -81,6 +83,7 @@
               },
               "submenuCloseGrace": 170,
               "submenuIntentDelay": 0,
+              "submenuTopOffset": "12px",
               "drawerRef": 4456
             }
           },

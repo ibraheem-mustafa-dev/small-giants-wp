@@ -2,7 +2,7 @@
  * U-18 copy-parity probe (Wave 3C Gate 3C item 4): measures a composed header copy while it is the
  * ACTIVE header, and screenshots it closed and open at 375, 768 and 1440.
  *
- *   node plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs <url> --copy lamalama|indus --out <dir>
+ *   node plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs <url> --copy lamalama|indus --out <dir> [--headless]
  *
  * 375 runs in a mobile-emulated context (touch, no classic scrollbar): a desktop window's 15px
  * scrollbar narrows the page and made lamalama's 343px pill read 328px.
@@ -43,7 +43,7 @@ if ( ! url || ! [ 'lamalama', 'indus' ].includes( copy ) || ! out ) {
 mkdirSync( out, { recursive: true } );
 
 // Reference values (px). lamalama.json: trigger_close rect, drawer archetype open/closed rects.
-// indus-foods.json: widths_measured_at_1440 and each panel's panelRect.x.
+// indus-foods.json: widths_measured_at_1440 and each panel's panelRect x and y (y 91 = 12px below the header).
 const EXPECT = {
 	lamalama: {
 		// bars: lamalama.json trigger-close `barSize` 16x2 and its raw html (gap-y 3/16rem, open translate 0.3125rem).
@@ -56,11 +56,11 @@ const EXPECT = {
 		1440: {
 			panels: {
 				// aside: indus-foods.json dropdown rows 11/14 `zone_model.rail` (w 300 at x 729, beside the 318px links).
-				About: { x: 410, w: 620, aside: { x: 729, w: 300 } },
-				Sectors: { x: 180, w: 1080 },
-				Brands: { x: 180, w: 1080 },
-				Trade: { x: 410, w: 620, aside: { x: 729, w: 300 } },
-				More: { x: 570, w: 300 },
+				About: { x: 410, y: 91, w: 620, aside: { x: 729, w: 300 } },
+				Sectors: { x: 180, y: 91, w: 1080 },
+				Brands: { x: 180, y: 91, w: 1080 },
+				Trade: { x: 410, y: 91, w: 620, aside: { x: 729, w: 300 } },
+				More: { x: 570, y: 91, w: 300 },
 			},
 		},
 	},
@@ -85,13 +85,19 @@ const WIDTHS = [
 	{ width: 1440, ctx: { viewport: { width: 1440, height: 900 } } },
 ];
 
-const browser = await chromium.launch( { headless: true } );
+// Headed by default (CAPTURE-PROTOCOL.md: real and headed, never headless); the canary's bot
+// challenge answers a headless browser with a 403 "Just a moment" page. `--headless` opts out.
+// --hide-scrollbars: a headed desktop window's classic scrollbar narrows the page by 15px and
+// shifts every centred panel 7.5px left of the reference, which was measured without one.
+const browser = await chromium.launch( { headless: process.argv.includes( '--headless' ), args: [ '--hide-scrollbars' ] } );
 const results = {};
 
 async function measureDrawer( page, width, header ) {
 	const burger = header.locator( '.sgs-nav-bar-menu__burger' ).first();
 	const res = {};
 	if ( ! ( await burger.isVisible() ) ) {
+		console.log( `FAIL  ${ width } burger not visible, so no drawer check could run` );
+		failed++;
 		return res;
 	}
 	res.pill = box( await header.boundingBox() );
@@ -205,8 +211,19 @@ for ( const { width, ctx } of WIDTHS ) {
 	const context = await browser.newContext( ctx );
 	const page = await context.newPage();
 	await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }nocache=${ Date.now() }`, { waitUntil: 'networkidle' } );
-	await page.waitForTimeout( 800 );
 	const header = page.locator( 'header.sgs-site-header' ).first();
+	// Each width is a fresh context with no cookies, so the canary's bot challenge can answer
+	// first; a headed browser clears it on its own within seconds. A page that never shows the
+	// header FAILS rather than letting every check below skip silently.
+	try {
+		await header.waitFor( { state: 'attached', timeout: 30000 } );
+	} catch {
+		console.log( `FAIL  ${ width } page did not load (no header after 30s; title "${ await page.title() }")` );
+		failed++;
+		await context.close();
+		continue;
+	}
+	await page.waitForTimeout( 800 );
 	const res = { width };
 	if ( 'indus' === copy && 1440 === width ) {
 		res.pill = box( await header.boundingBox() );
@@ -293,6 +310,7 @@ for ( const { width, ctx } of WIDTHS ) {
 			}
 			near( got.panel.x, ref.x, `${ width } ${ name } panel x` );
 			near( got.panel.w, ref.w, `${ width } ${ name } panel width` );
+			near( got.panel.y, ref.y, `${ width } ${ name } panel top (12px below the header)` );
 			if ( ref.aside ) {
 				if ( ! got.aside ) {
 					console.log( `FAIL  ${ width } ${ name } aside: not found` );

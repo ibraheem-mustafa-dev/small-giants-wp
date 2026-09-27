@@ -18,7 +18,11 @@
         "left": "1px"
       },
       "borderRadius": "12px",
-      "asideWidth": "300px"
+      "asideWidth": "300px",
+      "groupGap": { "desktop": "26px" },
+      "panelPadding": {
+        "desktop": { "top": "0px", "right": "0px", "bottom": "0px", "left": "26px" }
+      }
     },
     "innerBlocks": [
       {
@@ -387,41 +391,60 @@
         "name": "sgs/mega-aside",
         "attributes": {
           "asideFormat": "feature",
-          "asideBg": "#0A7EA8"
+          "asideBg": "#0A7EA8",
+          "asideRadius": "0 12px 12px 0"
         },
         "innerBlocks": [
           {
-            "name": "sgs/media",
+            "name": "sgs/container",
             "attributes": {
-              "imageUrl": "",
-              "imageAlt": "trade photo (placeholder - draft ships no real image, image-slot is empty)"
+              "tagName": "div",
+              "minHeight": { "desktop": "128px" },
+              "backgroundColour": "rgba(255,255,255,0.08)",
+              "borderStyle": "dashed",
+              "borderWidth": { "top": "1.5px", "right": "1.5px", "bottom": "1.5px", "left": "1.5px" },
+              "borderColour": "rgba(255,255,255,0.35)",
+              "borderRadius": { "desktop": { "topLeft": "8px", "topRight": "8px", "bottomLeft": "8px", "bottomRight": "8px" } }
             }
           },
           {
-            "name": "sgs/label",
+            "name": "sgs/container",
             "attributes": {
-              "text": "Trade partners",
-              "textColour": "#1E2A3C",
-              "backgroundColour": "#D8CA50",
-              "fontSize": {
-                "desktop": "11px"
-              },
-              "fontWeight": "700",
-              "letterSpacing": 0.04,
-              "letterSpacingUnit": "em",
-              "textTransform": "uppercase",
-              "padding": {
-                "desktop": {
-                  "top": "5px",
-                  "right": "10px",
-                  "bottom": "5px",
-                  "left": "10px"
-                }
-              },
-              "borderRadius": 3,
-              "fullWidth": false,
-              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-            }
+              "layout": "flex",
+              "flexDirection": "row",
+              "contentWidth": { "desktop": "full" },
+              "padding": { "desktop": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" } },
+              "justifyContent": "flex-start",
+              "alignItems": "flex-start"
+            },
+            "innerBlocks": [
+                      {
+                        "name": "sgs/label",
+                        "attributes": {
+                          "text": "Trade partners",
+                          "textColour": "#1E2A3C",
+                          "backgroundColour": "#D8CA50",
+                          "fontSize": {
+                            "desktop": "11px"
+                          },
+                          "fontWeight": "700",
+                          "letterSpacing": 0.04,
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase",
+                          "padding": {
+                            "desktop": {
+                              "top": "5px",
+                              "right": "10px",
+                              "bottom": "5px",
+                              "left": "10px"
+                            }
+                          },
+                          "borderRadius": 3,
+                          "fullWidth": false,
+                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                        }
+                      }
+            ]
           },
           {
             "name": "sgs/text",
@@ -469,49 +492,62 @@
             }
           },
           {
-            "name": "sgs/button",
+            "name": "sgs/container",
             "attributes": {
-              "label": "Apply now",
-              "url": "#",
-              "inheritStyle": "custom",
-              "colourText": "#FFFFFF",
-              "colourBackground": "transparent",
-              "borderWidth": {
-                "top": "0px",
-                "right": "0px",
-                "bottom": "2px",
-                "left": "0px"
-              },
-              "borderStyle": "solid",
-              "borderColour": "#D8CA50",
-              "minHeight": {
-                "desktop": "0px"
-              },
-              "padding": {
-                "desktop": {
-                  "top": "0px",
-                  "right": "0px",
-                  "bottom": "3px",
-                  "left": "0px"
-                }
-              },
-              "fontSize": {
-                "desktop": "14px"
-              },
-              "fontWeight": "700",
-              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-              "icon": "arrow-right",
-              "iconPosition": "after",
-              "widthType": {
-                "desktop": "fit"
-              },
+              "layout": "flex",
+              "flexDirection": "row",
+              "contentWidth": { "desktop": "full" },
+              "padding": { "desktop": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" } },
+              "justifyContent": "flex-start",
+              "alignItems": "flex-start",
               "margin": {
-                "desktop": {
-                  "top": "18px"
-                }
+              "desktop": {
+              "top": "18px"
               }
-            }
-          }
+              }
+            },
+            "innerBlocks": [
+                      {
+                        "name": "sgs/button",
+                        "attributes": {
+                          "label": "Apply now",
+                          "url": "#",
+                          "inheritStyle": "custom",
+                          "colourText": "#FFFFFF",
+                          "colourBackground": "transparent",
+                          "borderWidth": {
+                            "top": "0px",
+                            "right": "0px",
+                            "bottom": "2px",
+                            "left": "0px"
+                          },
+                          "borderStyle": "solid",
+                          "borderColour": "#D8CA50",
+                          "minHeight": {
+                            "desktop": "0px"
+                          },
+                          "padding": {
+                            "desktop": {
+                              "top": "0px",
+                              "right": "0px",
+                              "bottom": "3px",
+                              "left": "0px"
+                            }
+                          },
+                          "fontSize": {
+                            "desktop": "14px"
+                          },
+                          "fontWeight": "700",
+                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                          "icon": "arrow-right",
+                          "iconPosition": "after",
+                          "widthType": {
+                            "desktop": "fit"
+                          }
+                        }
+                      }
+                    ]
+                  }
         ]
       }
     ]

@@ -20,7 +20,7 @@
       "exitDuration": 350,
       "entryEasing": "ease-out-css",
       "drawerPadding": {
-        "desktop": { "top": "0px", "right": "13px", "bottom": "13px", "left": "13px" }
+        "desktop": { "top": "0px", "right": "0px", "bottom": "13px", "left": "0px" }
       },
       "drawerGap": { "desktop": "0px" },
       "accordionExclusive": true,
@@ -35,6 +35,8 @@
           "gap": { "desktop": "0px" },
           "itemBorderWidth": { "bottom": "1px" },
           "itemBorderColour": "rgba(249,244,235,0.1)",
+          "itemBorderColourHover": "rgba(249,244,235,0.1)",
+          "itemBorderColourCurrent": "rgba(249,244,235,0.1)",
           "itemColour": "#f9f4eb",
           "itemLineHeight": 33,
           "itemLineHeightUnit": "px",
@@ -42,7 +44,8 @@
           "itemLetterSpacingUnit": "px",
           "submenuColour": "#f9f4eb",
           "submenuLinkBg": "transparent",
-          "submenuLinkBgHover": "transparent"
+          "submenuLinkBgHover": "transparent",
+          "itemExpanderIcon": { "source": "lucide", "name": "grip-horizontal" }
         }
       },
       {
@@ -52,9 +55,10 @@
           "url": "https://lamalama.com/pitchdeck/",
           "inheritStyle": "outline",
           "widthType": { "desktop": "full" },
-          "margin": { "desktop": { "top": "13px" } },
+          "margin": { "desktop": { "top": "13px", "right": "13px", "left": "13px" } },
           "minHeight": { "desktop": "50px" },
           "minHeightUnit": "px",
+          "fontFamily": "'Sometype Mono', monospace",
           "fontSize": { "desktop": 10 },
           "fontSizeUnit": "px",
           "fontWeight": "500",
@@ -81,7 +85,7 @@
           "columns": { "desktop": 2 },
           "gridTemplateColumns": { "desktop": "1fr 1fr" },
           "gap": { "desktop": "4px" },
-          "margin": { "desktop": { "top": "10px" } }
+          "margin": { "desktop": { "top": "10px", "right": "13px", "left": "13px" } }
         },
         "innerBlocks": [
           {
@@ -93,6 +97,7 @@
               "widthType": { "desktop": "full" },
               "minHeight": { "desktop": "50px" },
               "minHeightUnit": "px",
+              "fontFamily": "'Sometype Mono', monospace",
               "fontSize": { "desktop": 10 },
               "fontSizeUnit": "px",
               "fontWeight": "500",
@@ -118,6 +123,7 @@
               "widthType": { "desktop": "full" },
               "minHeight": { "desktop": "50px" },
               "minHeightUnit": "px",
+              "fontFamily": "'Sometype Mono', monospace",
               "fontSize": { "desktop": 10 },
               "fontSizeUnit": "px",
               "fontWeight": "500",

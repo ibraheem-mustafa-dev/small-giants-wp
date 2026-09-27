@@ -147,7 +147,7 @@
                     "name": "sgs/heading",
                     "attributes": {
                       "content": "Food Service",
-                      "level": "h3",
+                      "level": "h3", "margin": { "desktop": { "top": "0px", "bottom": "0px" } },
                       "textColour": "#1E2A3C",
                       "fontSize": {
                         "desktop": "17px"
@@ -341,7 +341,7 @@
                     "name": "sgs/heading",
                     "attributes": {
                       "content": "Manufacturing",
-                      "level": "h3",
+                      "level": "h3", "margin": { "desktop": { "top": "0px", "bottom": "0px" } },
                       "textColour": "#FFFFFF",
                       "fontSize": {
                         "desktop": "17px"
@@ -535,7 +535,7 @@
                     "name": "sgs/heading",
                     "attributes": {
                       "content": "Retail",
-                      "level": "h3",
+                      "level": "h3", "margin": { "desktop": { "top": "0px", "bottom": "0px" } },
                       "textColour": "#FFFFFF",
                       "fontSize": {
                         "desktop": "17px"
@@ -729,7 +729,7 @@
                     "name": "sgs/heading",
                     "attributes": {
                       "content": "Wholesale",
-                      "level": "h3",
+                      "level": "h3", "margin": { "desktop": { "top": "0px", "bottom": "0px" } },
                       "textColour": "#075E80",
                       "fontSize": {
                         "desktop": "17px"
