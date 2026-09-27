@@ -215,7 +215,7 @@
     "resn"
    ],
    "needed_by_count": 2,
-   "coverage_status": "covered",
+   "coverage_status": "partial",
    "evidence": "measured",
    "covered_by": [
     "sgs/nav-bar-menu::triggerDetach",
@@ -227,9 +227,11 @@
     "::triggerDetachZIndex",
     "sgs/site-header::headerPassThrough (resn)"
    ],
-   "note": "RE-SCOPED from five references to TWO. The first pass inflated this family by absorbing every pinned thing group A had clustered together. Re-read against the tree and the cells: studionamma's bottom strip is covered (M-06), and lamalama's top-right card and lusion's scroll indicator are decorative pinned elements, not header controls that need a header attribute. What is genuinely missing is ONE mechanism for ONE reference: buck's header scrolls away while its burger detaches into a fixed round chip with its own z-index (9100 over the header's 1400) and its own threshold (300-360px at 1440, 180-240px at 768), which buck.md states directly — 'The header is not the sticky element, the burger is'. Every SGS scroll behaviour acts on the header or a header row; nothing keeps a single CONTROL alive after its header has gone or changes that control's form. resn rides along only under DEC-01(b), and M-52 (band pass-through) is the mechanism that actually makes resn clonable as a header. U-14 (2026-09-25): the detaching chip, a second copy of the burger printed outside the header and shown once the header burger is off screen past a per-tier threshold. Live: hidden at scrollY 300, 68.6 x 68.6 fixed at 360 (buck's cells); resn rides M-52.",
-   "uncovered_references": [],
-   "uncovered_count": 0
+   "note": "RE-SCOPED from five references to TWO. The first pass inflated this family by absorbing every pinned thing group A had clustered together. Re-read against the tree and the cells: studionamma's bottom strip is covered (M-06), and lamalama's top-right card and lusion's scroll indicator are decorative pinned elements, not header controls that need a header attribute. What is genuinely missing is ONE mechanism for ONE reference: buck's header scrolls away while its burger detaches into a fixed round chip with its own z-index (9100 over the header's 1400) and its own threshold (300-360px at 1440, 180-240px at 768), which buck.md states directly — 'The header is not the sticky element, the burger is'. Every SGS scroll behaviour acts on the header or a header row; nothing keeps a single CONTROL alive after its header has gone or changes that control's form. resn rides along only under DEC-01(b), and M-52 (band pass-through) is the mechanism that actually makes resn clonable as a header. U-14 (2026-09-25): the detaching chip, a second copy of the burger printed outside the header and shown once the header burger is off screen past a per-tier threshold. Live: hidden at scrollY 300, 68.6 x 68.6 fixed at 360 (buck's cells); resn rides M-52. PARTIAL again 2026-09-27: this family absorbed F-A-19 (detached fixed controls outside the header box) but only its TRIGGER case was built. lamalama's card pinned top-right (160x326 at top 16 / right 16 at 1440, absent at 375/768; header-shell secondary_blocks.contactCardTopRight) is not a trigger and nothing expresses it. Open as U-18 G8, stopped at NO GO (.claude/reports/2026-09-27-u18-g6-g8-design.md sections 8-9 hold the spec a future G8 needs).",
+   "uncovered_references": [
+    "lamalama"
+   ],
+   "uncovered_count": 1
   },
   {
    "id": "M-09",
@@ -364,7 +366,7 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/site-header::surfaceBlur/::surfaceSaturate/::surfaceOpacity/::shadow/::shadowColour",
@@ -373,7 +375,7 @@
     "sgs/nav-drawer::surfaceBlur/::surfaceSaturate/::surfaceOpacity/::shadow/::shadowColour/::borderRadius",
     "sgs/container, sgs/cta-section, sgs/hero, sgs/multi-button, sgs/physics-canvas, sgs/site-footer, sgs/trust-bar::surfaceBlur/::surfaceSaturate/::surfaceOpacity (includes/helpers-surface-ground.php, one shared emitter)"
    ],
-   "note": "U-1 built the surface-ground trio (surfaceBlur/surfaceSaturate/surfaceOpacity) as one shared emitter (includes/helpers-surface-ground.php) across the header, the mega panel, the drawer and seven content blocks, plus a shadow/shadowColour writer on the mega panel and the drawer. Every needed_by reference has a coverable value for fill, blur, opacity and shadow: fantasy's faded ground is the header's own gradient fill (backgroundColourGradient), reproduced live as a gradient (top pixel 129, bottom 254 over white, no mask on the header, dropdown still clickable) after surfaceFadeEdge was removed from sgs/site-header (it masked the whole header, hiding every dropdown and mega panel below it). sgs/mega-panel::borderRadius stays a plain string while sgs/site-header and sgs/nav-drawer hold it as a {desktop,tablet,mobile} tier object; Bean ruled it stays a single value (no reference needs a per-device radius). Gate 3C item 4 copies (2026-09-26), open as U-18: G3: nav-drawer drawerBg takes palette slugs only, so lamalama's black and the Indus blue cannot be painted on the drawer.",
+   "note": "U-1 built the surface-ground trio (surfaceBlur/surfaceSaturate/surfaceOpacity) as one shared emitter (includes/helpers-surface-ground.php) across the header, the mega panel, the drawer and seven content blocks, plus a shadow/shadowColour writer on the mega panel and the drawer. Every needed_by reference has a coverable value for fill, blur, opacity and shadow: fantasy's faded ground is the header's own gradient fill (backgroundColourGradient), reproduced live as a gradient (top pixel 129, bottom 254 over white, no mask on the header, dropdown still clickable) after surfaceFadeEdge was removed from sgs/site-header (it masked the whole header, hiding every dropdown and mega panel below it). sgs/mega-panel::borderRadius stays a plain string while sgs/site-header and sgs/nav-drawer hold it as a {desktop,tablet,mobile} tier object; Bean ruled it stays a single value (no reference needs a per-device radius). Gate 3C item 4 copies (2026-09-26), open as U-18: G3: nav-drawer drawerBg takes palette slugs only, so lamalama's black and the Indus blue cannot be painted on the drawer. COVERED 2026-09-27 (U-18): G3 custom colours reach every colour setting, so lamalama's black and the Indus blue paint the drawer; both copies measured live (reports/visual-diff/u18-copy-parity-2026-09-27.md).",
    "ground_vocabulary_divergence": {
     "_why": "The merge test is 'ONE block attribute or mechanism would express both sides'. Verified from block.json, the attributes DIVERGE by name and type across the four blocks, which is itself the composite-mirror bug. Recorded as this family's gap; the alignment is assigned to U-1.",
     "fill": {
@@ -398,11 +400,8 @@
     },
     "target_shape": "tier object for every box property, one name per concept across the four blocks."
    },
-   "uncovered_references": [
-    "lamalama",
-    "indus-foods"
-   ],
-   "uncovered_count": 2
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-14",
@@ -475,7 +474,7 @@
     "rabbit"
    ],
    "needed_by_count": 6,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "mixed",
    "covered_by": [
     "sgs/mega-panel::maxWidth",
@@ -485,11 +484,9 @@
     "::submenuTopOffset (both forks, measured from the header bottom; U-8)",
     "mega-disclosure.js::repositionPanel + panel-bounds.js::placePanel (panel follows a pill header)"
    ],
-   "note": "MERGED (three geometry columns, one panel-positioning mechanism). The shipped wrap width min(1120px, calc(100vw - 56px)) is byte-for-byte the rule derived from both drafts, and maxWidth defaults to 1120px (VERIFIED). Gaps: (a) there is no anchor ENUM — viewport-centring is the mega fork's fixed behaviour and item-left is the dropdown's, so a wide item-left panel or an item-centred mega has no expression; (b) submenuTopOffset is a DROPDOWN attribute only, so halcyon's 10px and indus's 12px mega gaps have no operator control. rabbit's open state was never reproduced. COVERED VALUE ADDED on review, so W3C-1 has a row to cite: 'on a floating-pill header the dropdown and mega panels take the pill's left edge and width' is BUILT — panel-bounds.js states 'on a (\"pill\") header it is the pill ... the mega panel must be the pill's own width, flush to its bottom edge', written by mega-disclosure.js::repositionPanel as the --sgs-mm-panel-width / --sgs-mm-panel-top override when the header measures as inset from both viewport edges. It matches lamalama, the only reference with a real pill. COVERED (Wave 3C U-8, 2026-09-25): the anchor enum is one vocabulary for both forks, the top gap reaches mega panels and is measured from the header, as the references measure it. indus-foods' 620px panels are mega panel posts from the starter pattern sgs/mega-compact-links. Measured live: a mega panel and a dropdown centred on the page below the header. Gate 3C item 4 copies (2026-09-26), open as U-18: G4: a panel narrower than the page-centred wrap sits at the wrap's left edge (Trade 620px at left 153 against the draft's 410 at 1440).",
-   "uncovered_references": [
-    "indus-foods"
-   ],
-   "uncovered_count": 1
+   "note": "MERGED (three geometry columns, one panel-positioning mechanism). The shipped wrap width min(1120px, calc(100vw - 56px)) is byte-for-byte the rule derived from both drafts, and maxWidth defaults to 1120px (VERIFIED). Gaps: (a) there is no anchor ENUM — viewport-centring is the mega fork's fixed behaviour and item-left is the dropdown's, so a wide item-left panel or an item-centred mega has no expression; (b) submenuTopOffset is a DROPDOWN attribute only, so halcyon's 10px and indus's 12px mega gaps have no operator control. rabbit's open state was never reproduced. COVERED VALUE ADDED on review, so W3C-1 has a row to cite: 'on a floating-pill header the dropdown and mega panels take the pill's left edge and width' is BUILT — panel-bounds.js states 'on a (\"pill\") header it is the pill ... the mega panel must be the pill's own width, flush to its bottom edge', written by mega-disclosure.js::repositionPanel as the --sgs-mm-panel-width / --sgs-mm-panel-top override when the header measures as inset from both viewport edges. It matches lamalama, the only reference with a real pill. COVERED (Wave 3C U-8, 2026-09-25): the anchor enum is one vocabulary for both forks, the top gap reaches mega panels and is measured from the header, as the references measure it. indus-foods' 620px panels are mega panel posts from the starter pattern sgs/mega-compact-links. Measured live: a mega panel and a dropdown centred on the page below the header. Gate 3C item 4 copies (2026-09-26), open as U-18: G4: a panel narrower than the page-centred wrap sits at the wrap's left edge (Trade 620px at left 153 against the draft's 410 at 1440). COVERED 2026-09-27 (U-18): G4 centres a narrow panel on its own width and G10 stops a 620px desktop panel reflowing as its own narrow container; Indus About/Trade/More/Sectors/Brands at x 410/410/570/180/180, top 91, aside beside the links (reports/visual-diff/u18-copy-parity-2026-09-27.md).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-17",
@@ -515,19 +512,17 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
-    "sgs/nav-drawer::anchor (per tier: full-screen, header, side-start, side-end, container, trigger, centred)",
+    "sgs/nav-drawer::anchor (per tier: full-screen, header, side-start, side-end, container, trigger, centred, header-box)",
     "::panelSize (width cap for side, trigger, centred)",
     "::anchorOffset (per tier; gap below the burger or the header, U-3)",
     "store.js::publishContainerInsets (the header content box, measured on open and resize, U-3)"
    ],
-   "note": "MERGED (the cap is only meaningful under a non-full-screen anchor). VERIFIED: the anchor allow-list is exactly ['full-screen','header','trigger','centred']. Missing: the SIDE DRAWER (away@768: left 0, top 0, 390x900, full height, partial width) and lusion's CONTAINER-INSET card stack (insets matching the header container, not the viewport). away@768's 390px cap is blocked by the missing anchor, not by panelSize. MERGED: internal scrolling of the drawer's own content (formerly its own family) is a PROPERTY of this one — its covering attribute IS `anchor`, because every anchor emits a max-height:calc(100dvh - offset) and a bounded panel scrolls its body. Covered; it adds no gap. COVERED (Wave 3C U-3, 2026-09-25): away's 390px side drawer is `side-start`, lusion's header-content panel is `container`, lusion's 12.8px corner gap is `anchorOffset`; all measured live (reports/visual-diff/nav-drawer-2026-09-25.md). Gate 3C item 4 copies (2026-09-26), open as U-18: G2: no drawer anchor grows the panel from the header's own box (lamalama's pill to its 438x436 card).",
-   "uncovered_references": [
-    "lamalama"
-   ],
-   "uncovered_count": 1
+   "note": "MERGED (the cap is only meaningful under a non-full-screen anchor). VERIFIED: the anchor allow-list is exactly ['full-screen','header','trigger','centred']. Missing: the SIDE DRAWER (away@768: left 0, top 0, 390x900, full height, partial width) and lusion's CONTAINER-INSET card stack (insets matching the header container, not the viewport). away@768's 390px cap is blocked by the missing anchor, not by panelSize. MERGED: internal scrolling of the drawer's own content (formerly its own family) is a PROPERTY of this one — its covering attribute IS `anchor`, because every anchor emits a max-height:calc(100dvh - offset) and a bounded panel scrolls its body. Covered; it adds no gap. COVERED (Wave 3C U-3, 2026-09-25): away's 390px side drawer is `side-start`, lusion's header-content panel is `container`, lusion's 12.8px corner gap is `anchorOffset`; all measured live (reports/visual-diff/nav-drawer-2026-09-25.md). Gate 3C item 4 copies (2026-09-26), open as U-18: G2: no drawer anchor grows the panel from the header's own box (lamalama's pill to its 438x436 card). COVERED 2026-09-27 (U-18): G2 `sgs/nav-drawer::anchor` `header-box` grows lamalama's pill into its 343/438 x 436 card in place (reports/visual-diff/u18-copy-parity-2026-09-27.md).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-18",
@@ -1125,7 +1120,7 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/nav-bar-menu::triggerMode (icon|text|icon-and-text, per tier)",
@@ -1134,11 +1129,9 @@
     "::burger* paint row",
     "::triggerSurface"
    ],
-   "note": "MERGED — and the two groups DISAGREED on status (A partial, B covered); resolved to PARTIAL (see 'What I changed'). The three shapes, the icon choice, the label and the full paint set are covered. Residual gaps: (a) triggerMode is a plain string, NOT per-tier (VERIFIED), so fantasy's label dropping at 375 is unreachable; (b) the whole-bar-is-the-trigger pattern (lamalama) has no attribute — the trigger is always a discrete control inside the row. The detached-trigger values that made A read 'partial' move to M-08. Residue (a) closed by the per-tier triggerMode (44c949301); residue (b) closed by triggerSurface in U-14 (2026-09-25, DEC-14 resolution). Gate 3C item 4 copies (2026-09-26), open as U-18: G1: burger 30x36 needs separate width and height (burgerSize is one value).",
-   "uncovered_references": [
-    "lamalama"
-   ],
-   "uncovered_count": 1
+   "note": "MERGED — and the two groups DISAGREED on status (A partial, B covered); resolved to PARTIAL (see 'What I changed'). The three shapes, the icon choice, the label and the full paint set are covered. Residual gaps: (a) triggerMode is a plain string, NOT per-tier (VERIFIED), so fantasy's label dropping at 375 is unreachable; (b) the whole-bar-is-the-trigger pattern (lamalama) has no attribute — the trigger is always a discrete control inside the row. The detached-trigger values that made A read 'partial' move to M-08. Residue (a) closed by the per-tier triggerMode (44c949301); residue (b) closed by triggerSurface in U-14 (2026-09-25, DEC-14 resolution). Gate 3C item 4 copies (2026-09-26), open as U-18: G1: burger 30x36 needs separate width and height (burgerSize is one value). COVERED 2026-09-27 (U-18): G1 `burgerWidth` gives the 30x36 button and G6 `burgerIconWidth`/`burgerIconHeight` the 16px bars in a 12px stack, one line with 5px travel open (reports/visual-diff/u18-copy-parity-2026-09-27.md).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-40",

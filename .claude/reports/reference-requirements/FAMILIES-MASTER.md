@@ -2,7 +2,7 @@
 
 **Inputs:** `families-A.json` (header shell, bar, footer — 25), `families-B.json` (dropdown, mega, trigger and close — 25), `families-C.json` (drawer — 24). **Revised against:** `FAMILIES-REVIEW.md` (23 findings, verdict *sign after fixes*) — every finding re-verified against the raw cell or the tree before anything changed (V-34 to V-47). **Feeds:** W3B-5 (owner signs off the family list and the order) and Wave 3C.
 
-**74 source families merged to 46 masters**, 42 covered and 4 partial (M-13, M-16, M-17, M-39: Gate 3C item 4's copy gaps, Wave 3C U-18; G1 to G5 shipped 2026-09-27, G6 to G8, G10 and G11 open); the per-family notes below record each one's route and accepted divergences. Reference counts are out of the 13-reference roster: away, buck, butcherbox, dogstudio, fantasy, halcyon, indus-foods, lamalama, lusion, rabbit, resn, studionamma, wearecollins.
+**74 source families merged to 46 masters**, 45 covered and 1 partial (M-08: lamalama's corner card, Wave 3C U-18 G8, stopped at NO GO 2026-09-27; M-13, M-16, M-17 and M-39 closed by U-18 G1 to G7, G10 and G11, `reports/visual-diff/u18-copy-parity-2026-09-27.md`); the per-family notes below record each one's route and accepted divergences. Reference counts are out of the 13-reference roster: away, buck, butcherbox, dogstudio, fantasy, halcyon, indus-foods, lamalama, lusion, rabbit, resn, studionamma, wearecollins.
 
 **Two columns do different jobs.** *needed by* = references whose rows touch the family at all. *uncovered* = references with at least one value the framework cannot express today. Unit support is the union of **uncovered**, because a family that is covered for eleven references and short for two is two references of work, not eleven.
 
@@ -19,16 +19,16 @@
 | M-05 | Row track layout and rail alignment (header and footer) | 7 | 0 | covered | measured | F-A-07 |
 | M-06 | Stacked header rows (a strip above, below or off the bar) | 3 | 0 | covered | measured | F-A-08 |
 | M-07 | Self-changing header message (carousel, random, live clock) | 3 | 0 | covered | thin | F-A-09 |
-| M-08 | A trigger that outlives its header (detach to a fixed control) | 2 | 0 | covered | measured | F-A-19, F-B-24 |
+| M-08 | A trigger that outlives its header (detach to a fixed control) | 2 | 1 | partial | measured | F-A-19, F-B-24 |
 | M-09 | Header stacking order (z-index) | 9 | 0 | covered | measured | F-A-21 |
 | M-10 | Pointer-tracking label magnet on bar items | 2 | 0 | covered | measured | F-A-14 |
 | M-11 | Header and footer entrance animation | 6 | 0 | covered | measured | F-A-20 |
 | M-12 | Footer archetype | 11 | 0 | covered | mixed | F-A-22 |
-| M-13 | Surface ground: fill, opacity, blur, radius, border, shadow | 13 | 2 | partial | measured | F-A-03, F-A-04, F-B-05, F-C-04, F-C-05, F-A-23 |
+| M-13 | Surface ground: fill, opacity, blur, radius, border, shadow | 13 | 0 | covered | measured | F-A-03, F-A-04, F-B-05, F-C-04, F-C-05, F-A-23 |
 | M-14 | Surface scrim (viewport dimmer behind an open surface) | 6 | 0 | covered | measured | F-B-06, F-C-06 |
 | M-15 | Background media layer on a surface (image, video, per-link visual) | 7 | 0 | covered | measured | F-A-23, F-C-07 |
-| M-16 | Panel geometry: width, horizontal anchor, top offset | 6 | 1 | partial | mixed | F-B-02, F-B-03, F-B-04 |
-| M-17 | Drawer anchor archetype and width cap | 13 | 1 | partial | measured | F-C-02, F-C-03, F-C-20 |
+| M-16 | Panel geometry: width, horizontal anchor, top offset | 6 | 0 | covered | mixed | F-B-02, F-B-03, F-B-04 |
+| M-17 | Drawer anchor archetype and width cap | 13 | 0 | covered | measured | F-C-02, F-C-03, F-C-20 |
 | M-18 | Missing utility and furniture blocks (bar and footer roster gap) | 13 | 0 | covered | measured | F-A-10, F-A-24 |
 | M-19 | Per-tier role migration and secondary-block visibility | 10 | 0 | covered | mixed | F-C-23 |
 | M-20 | Panel side rail and callout tiles | 3 | 0 | covered | measured | F-B-08, F-B-09 |
@@ -47,7 +47,7 @@
 | M-34 | Dismissal routes (every way the menu can be shut) | 13 | 0 | covered | measured | F-B-16, F-B-25, F-C-18 |
 | M-35 | Modality: background scroll lock, focus trap, dialog semantics | 13 | 0 | covered | measured | F-B-25, F-C-19, F-B-16 |
 | M-36 | Trigger element semantics, accessible name and open state | 11 | 0 | covered | measured | F-B-22 |
-| M-39 | Menu trigger form and placement in the bar | 13 | 1 | partial | measured | F-A-18, F-B-18 |
+| M-39 | Menu trigger form and placement in the bar | 13 | 0 | covered | measured | F-A-18, F-B-18 |
 | M-40 | Collapse breakpoint: presence per tier, and what happens on a resize across it | 13 | 0 | covered | measured | F-A-11, F-B-17, F-C-01, F-C-24 |
 | M-41 | Panel ownership per bar item | 6 | 0 | covered | measured | F-B-01 |
 | M-42 | Panel content shape (columns / cards / minimal / logo grid) | 6 | 0 | covered | measured | F-B-07 |
@@ -68,12 +68,12 @@
 - **M-05 Row track layout and rail alignment (header and footer)** — One mechanism, identical attribute set on both row blocks. Covered by: `sgs/site-header-row::layout`, `::columns`, `::gridTemplateColumns`, `::justifyContent`
 - **M-06 Stacked header rows (a strip above, below or off the bar)** — RE-VERIFIED and UPGRADED from partial to covered. Covered by: `sgs/site-header (InnerBlocks of sgs/site-header-row)`, `sgs/site-header-row::rowSlot`, `::rowHideOnScroll`, `sgs/notice-banner::stickyPosition`
 - **M-07 Self-changing header message (carousel, random, live clock)** — notice-banner holds ONE string with one colour set. Covered by: `sgs/notice-banner::text (one static string only)`
-- **M-08 A trigger that outlives its header (detach to a fixed control)** — RE-SCOPED from five references to TWO. Covered by: *nothing*
+- **M-08 A trigger that outlives its header (detach to a fixed control)** — PARTIAL. The trigger case is covered by `sgs/nav-bar-menu::triggerDetach` / `::triggerDetachAfter` / `::triggerDetachSize` / `::triggerDetachOffset` (buck's detaching chip; resn rides M-52). Uncovered: lamalama's non-trigger card pinned top-right (160x326 at top 16 / right 16 at 1440, absent at 375 and 768), from source family F-A-19; nothing pins an ordinary block to the viewport. Open as U-18 G8, stopped at NO GO 2026-09-27 (`.claude/reports/2026-09-27-u18-g6-g8-design.md` sections 8 and 9).
 - **M-09 Header stacking order (z-index)** — VERIFIED: site-header/render.php emits 'z-index' => '100' in all three tri-state branches and style.css:25 sets z-index:100. Covered by: `sgs/site-header (z-index hardcoded 100; NO attribute)`
 - **M-10 Pointer-tracking label magnet on bar items** — VERIFIED: itemMagnetStrength and itemMagnetRadius are ABSENT while triggerMagnetStrength (default 24) and triggerMagnetRadius (default 120) exist. Covered by: `sgs/nav-bar-menu::itemMagnetEnabled (boolean only)`
 - **M-11 Header and footer entrance animation** — COVERED by U-16 (2026-09-26, measured in step 0d and live): the universal entrance runs on the header, footer, footer rows and their blocks as a script animation beside their own behaviours; distance presets reach dogstudio's 50px footer travel, `extra-slow` reaches lamalama's and studionamma's 800ms header. Divergence: their preloader-gated start (SGS has no preloader). Covered by: `sgsAnimation`, `sgsAnimationDistance`, `sgsAnimationDelay`, `sgs/site-footer-row::fxFooterStagger`
 - **M-12 Footer archetype** — All five shapes are rows of blocks, and 'absent' is covered by carrying no footer template part. Covered by: `sgs/site-footer::layout`, `::columns`, `::minHeight`, `::contentWidth`
-- **M-13 Surface ground: fill, opacity, blur, radius, border, shadow** — MERGED across header, panel, drawer and footer: one ground vocabulary, per the composite-mirror rule. Covered by: `sgs/site-header::backgroundColour/-Gradient/::backdropBlur/::border*/::shadow`, `sgs/mega-panel::panelBg/::bgBlur/::borderRadius/::border*`, `sgs/nav-drawer::drawerBg/::surfaceOpacity/::surfaceBlur/::borderRadius`, `sgs/site-footer::backgroundColour/-Gradient`
+- **M-13 Surface ground: fill, opacity, blur, radius, border, shadow** — MERGED across header, panel, drawer and footer: one ground vocabulary, per the composite-mirror rule. Covered by: `sgs/site-header::backgroundColour/-Gradient/::backdropBlur/::border*/::shadow`, `sgs/mega-panel::panelBg/::surfaceBlur/::borderRadius/::border*`, `sgs/nav-drawer::drawerBg/::surfaceOpacity/::surfaceBlur/::borderRadius`, `sgs/site-footer::backgroundColour/-Gradient`
 - **M-14 Surface scrim (viewport dimmer behind an open surface)** — MERGED: group B found no scrim element on the panel fork, group C found a hardcoded one on the drawer. Covered by: `(drawer scrim exists but is hardcoded; the panel fork has no scrim at all)`
 - **M-15 Background media layer on a surface (image, video, per-link visual)** — Static image layers, per-tier background video and a tinted overlay are covered (studionamma's looping footer video, fantasy's white-panel-over-black-90%, dogstudio's drawer image layer). Covered by: `sgs/site-footer::backgroundImage*/::bgVideo*/::backgroundOverlay*`, `sgs/nav-drawer::backgroundImage/::backgroundSize/::backgroundPosition`
 - **M-16 Panel geometry: width, horizontal anchor, top offset** — MERGED (three geometry columns, one panel-positioning mechanism). Covered by: `sgs/mega-panel::maxWidth`, `sgs/nav-bar-menu::submenuMinWidth`, `::submenuAlign`, `::submenuTopOffset (dropdown fork only)`
