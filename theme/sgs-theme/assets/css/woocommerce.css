@@ -2509,11 +2509,11 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"] {
 	background: var(--sgs-swatch, var(--wp--preset--color--surface-alt));
 	border-color: var(--wp--preset--color--border-strong, var(--sgs-filter-line));
-	box-shadow: 0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3px var(--wp--preset--color--text);
+	box-shadow: 0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3.5px var(--wp--preset--color--text);
 }
 @media (forced-colors:active){.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"]:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
-@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"]:hover{box-shadow:0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3px var(--wp--preset--color--text)}}
+@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"]:hover{box-shadow:0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3.5px var(--wp--preset--color--text)}}
 
 
 @media ( prefers-reduced-motion: reduce ) {
@@ -3299,4 +3299,9 @@ select.orderby:focus-visible {
 .sgs-shop-price-thin .sgs-shop-filters .wc-block-product-filter-price-slider__right {
 	font-size: 12px;
 	color: var(--wp--preset--color--text-label, var(--wp--preset--color--text));
+}
+
+/* A checkbox-list option's name follows the list's text size (WooCommerce sets 0.875em on it). */
+.sgs-shop-filters .wc-block-product-filter-checkbox-list__text {
+	font-size: 1em;
 }

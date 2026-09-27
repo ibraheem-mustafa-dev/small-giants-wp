@@ -155,7 +155,8 @@ export function compareScroll( d, l ) {
 // An accepted difference matches on pair, key and optionally state, width, kind and a
 // when(diff) test (e.g. "the texts are equal once pennies are dropped"). An entry with
 // notPainted: true (a property that differs without changing the pixels) only applies
-// while the pair's box matches: once the box differs the property may be what moved it.
+// while the pair's box matches or every box difference is itself accepted: an
+// unexplained box difference may be what the property moved.
 export function isAccepted( accept, ctx, diff ) {
 	return accept.find( ( a ) => ( ! a.notPainted || ctx.boxMatches ) &&
 		( ! a.pair || a.pair === ctx.pair ) &&

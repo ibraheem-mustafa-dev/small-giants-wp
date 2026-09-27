@@ -202,11 +202,17 @@ for ( const width of widths ) {
 		const shot = path.join( outDir, `pair-${ width }-${ state.name }.png` );
 		await sideBySide( browser, d.shot, l.shot, shot, width );
 		const run = { state: state.name, width, shot: path.basename( shot ), pairs: {} };
+		// Box differences are judged first: a notPainted accept holds only while every
+		// box difference on the pair is itself accepted (a 44px touch target, say).
 		const judge = ( name, diffs ) => {
-			const boxMatches = ! diffs.some( ( x ) => 'box' === x.kind );
-			for ( const diff of diffs ) {
-				const a = isAccepted( accept, { pair: name, state: state.name, width, boxMatches }, diff );
-				diff.accepted = a ? a.reason : null;
+			const ctx = { pair: name, state: state.name, width, boxMatches: false };
+			const boxes = diffs.filter( ( x ) => 'box' === x.kind );
+			for ( const diff of boxes ) {
+				diff.accepted = isAccepted( accept, ctx, diff )?.reason || null;
+			}
+			ctx.boxMatches = boxes.every( ( x ) => x.accepted );
+			for ( const diff of diffs.filter( ( x ) => 'box' !== x.kind ) ) {
+				diff.accepted = isAccepted( accept, ctx, diff )?.reason || null;
 			}
 			return diffs;
 		};

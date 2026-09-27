@@ -10,6 +10,8 @@ const DGRID = `(r) => [...document.querySelectorAll('main div')].find((x) => get
 // A card in the draft’s grid, by product name.
 const dcard = ( name ) => `(r) => { const g = (${ DGRID })(r); const c = g && [...g.children].find((c) => c.textContent.includes('${ name }')); return c && c.firstElementChild.firstElementChild; }`;
 const lcard = ( name ) => `(r) => [...document.querySelectorAll('.sgs-shop-layout .wc-block-product-template > li')].find((c) => c.textContent.includes('${ name }'))?.querySelector('.sgs-product-card, .product-card')`;
+// The draft's "CLEAR ALL" in its chosen-filter row above the grid.
+const DCLEAR = `(r) => { const c = [...document.querySelectorAll('main button')].find((b) => b.offsetParent && /^clear all$/i.test(b.textContent.trim())); return c; }`;
 const words = ( t ) => String( t ).replace( /\s+/g, ' ' ).trim().toLowerCase().split( ' ' ).sort().join( ' ' );
 
 // The draft is a single-page app: its "Sunglasses" link is navigation, not an interaction.
@@ -91,6 +93,11 @@ export default {
 		{ name: 'brand-heading', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^brand', within: 'aside', tag: 'button' }, live: { text: '^brand', within: LF, tag: 'summary' }, box: [ 'h' ] },
 		{ name: 'brand-ray-ban', states: [ 'filters-open', 'brand-ray-ban', 'panel-after-click' ], draft: { text: '^ray-ban', within: 'aside', tag: 'label' }, live: `${ LF } label[for="taxonomy/product_brand-ray-ban"]` },
 		{ name: 'style-chip', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^pilot$', within: 'aside', tag: 'button' }, live: { text: '^pilot', within: LF, tag: 'button' }, hover: true },
+		// Found on the screenshots: the chosen-filter row and the price slider's labels.
+		{ name: 'active-pill', states: [ 'panel-after-click' ], draft: { js: DCLEAR.replace( 'return c;', 'return c && c.parentElement.firstElementChild;' ) }, live: `${ LF } .wc-block-product-filter-removable-chips__item` },
+		{ name: 'clear-all', states: [ 'panel-after-click' ], draft: { js: DCLEAR }, live: `${ LF } .wp-block-woocommerce-product-filter-clear-button .sgs-button` },
+		{ name: 'price-min', states: [ 'filters-open' ], draft: { text: '^£59$', within: 'aside', tag: 'span' }, live: `${ LF } .wc-block-product-filter-price-slider__left` },
+		{ name: 'price-max', states: [ 'filters-open' ], draft: { text: '^£339$', within: 'aside', tag: 'span' }, live: `${ LF } .wc-block-product-filter-price-slider__right` },
 		{ name: 'polarised-toggle', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^polarised only$', within: 'aside', tag: 'label,button,div' }, live: `${ LF } .sgs-shop-filters__bool-filter` },
 		{ name: 'grid', draft: { js: DGRID }, live: '.sgs-shop-layout .wc-block-product-template', text: false, box: [ 'w' ], props: [ 'grid-template-columns', 'column-gap', 'row-gap' ] },
 		{ name: 'card-gucci', states: [ 'opening', 'women' ], draft: { js: dcard( 'Oversized Cat-Eye' ) }, live: { js: lcard( 'Oversized Cat-Eye' ) }, hover: true, props: [ 'background-color', 'border-top-width', 'border-top-color', 'border-radius', 'box-shadow' ] },
@@ -152,6 +159,16 @@ export default {
 		{ pair: 'filters', reason: 'Accepted (Bean 2026-09-27): the live drawer slides up from the bottom (a native dialog with its header inside its 24px top padding); the draft’s drawer appears in place', when: ( d ) => [ 'padding-top', 'transition' ].includes( d.key ) },
 		{ state: 'colour-black', pair: 'count', reason: 'Accepted (Bean 2026-09-27): a draft bug; its Black swatch returns "0 frames" where live returns 14' },
 		{ state: 'colour-black', pair: 'grid', reason: 'Accepted (Bean 2026-09-27): a draft bug; its Black swatch returns "0 frames" where live returns 14' },
+		{ pair: 'card-wishlist', kind: 'structure', key: 'inside', reason: 'The heart paints at the same place on both (283/276/115px across, 11px down from the card at 1440/768/375, 36px): live nests it in the photo box, the draft in the card' },
+		{ pair: 'brand-ray-ban', kind: 'text', reason: 'Accepted (Bean 2026-09-27): real brand counts; live’s brackets are painted at font-size 0, so "Ray-Ban 3" reads as the draft’s "Ray-Ban 48" does', when: ( d ) => /^ray-ban \d+$/i.test( d.draft ) && /^ray-ban \(\d+\)$/i.test( d.live ) },
+		{ pair: 'brand-ray-ban', kind: 'box', key: 'h', reason: 'Accepted (Bean 2026-09-27): 44px touch targets where the draft rows are 38px' },
+		{ pair: 'brand-ray-ban', kind: 'style', notPainted: true, reason: 'The same row: live puts the count right with margin-left auto and a 10px gap on the label, the draft with space-between and the gap on an inner span', when: ( d ) => [ 'justify-content', 'column-gap', 'row-gap' ].includes( d.key ) },
+		{ pair: 'filter-button', kind: 'style', key: 'color', reason: 'The draft’s button text is the browser default black, live’s the palette’s text #141414 (both near-black on white)' },
+		// Below the drawer breakpoint the live drawer is a sheet over the page (Bean 2026-09-27), so its rows share rows with the title bar.
+		...[ 768, 375 ].flatMap( ( width ) => [ 'filters-open', 'panel-after-click' ].map( ( state ) => ( {
+			state, width, kind: 'structure', key: 'row', reason: 'Accepted (Bean 2026-09-27): the live drawer is a sheet over the page, the draft’s sits in the page, so drawer rows share rows with the title bar on one side only',
+		} ) ) ),
+		...[ 'title', 'eyebrow' ].map( ( pair ) => ( { state: 'panel-after-click', pair, reason: 'Accepted (Bean 2026-09-27, as for brands): choosing one style turns the draft into that style’s page (title "Pilot", eyebrow "Shape"); live keeps "Sunglasses" with the filter applied' } ) ),
 		{ state: 'brand-ray-ban', pair: 'title', reason: 'Accepted (Bean 2026-09-27): choosing one brand turns the draft into that brand’s page (title "Ray-Ban", no Shop eyebrow); live keeps "Sunglasses" with the filter applied' },
 		{ state: 'brand-ray-ban', pair: 'eyebrow', reason: 'Accepted (Bean 2026-09-27): choosing one brand turns the draft into that brand’s page (title "Ray-Ban", no Shop eyebrow); live keeps "Sunglasses" with the filter applied' },
 		{ kind: 'motion', key: 'transition', reason: 'Accepted (Bean 2026-09-27): hover timing curves: live uses the site’s standard easing where the draft uses ease (card) and a custom curve (photo zoom); durations match' },
