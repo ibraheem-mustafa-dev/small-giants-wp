@@ -24,7 +24,7 @@ blocks: nav-bar-menu, nav-drawer, mega-panel, button (plus the copies' trees in 
 |---|---|---|---|
 | 1 | lamalama pill, burger, tap area, drawer grows from the pill | PASS | 343/438 x 50 pill, 30x36 burger, 44x44 corners true, card 343/438 x 436 at the pill's top-left, at 375/768/1440 |
 | 2 | G6 burger bars | PASS | three bars 16x2, gaps 3 and 3; open: one line (spread 0), travel 5 and 5, at every width |
-| 3 | G7 drawer CTAs | PASS | "Schedule a call" and "Start a project" 156.5 at 375, 204 at 768 and 1440 |
+| 3 | G7 drawer CTAs | PASS | "Schedule a call" and "Start a project" 156.5 at 375, 204 at 768 and 1440; "Our pitchdeck" 317 / 412 / 412, 13px inside the card |
 | 4 | Corner card | FAIL (named, not built) | absent at 375 and 768 as the reference; at 1440 "not found": G8 stopped |
 | 5 | Indus panels | PASS | About 410/620, Sectors 180/1080, Brands 180/1080, Trade 410/620, More 570/300; every top edge 91 (12px below a 79px header) |
 | 6 | G10 aside beside the links | PASS | About and Trade aside x 729, w 300, top level with the panel (not stacked) |
@@ -33,11 +33,12 @@ blocks: nav-bar-menu, nav-drawer, mega-panel, button (plus the copies' trees in 
 | 9 | Accessibility | PASS | axe 0 violations on: lamalama drawer open at 1440 and 375, Indus drawer open at 375, Indus About panel open at 1440 (5 contrast items axe could not decide; checked by hand, lowest pair 6:1) |
 | 10 | Negative control for G6/G7 | PASS | the design report's live pre-change reading (bars 24 wide in an 18px stack, CTAs 136.5) misses every new cell by more than 2px |
 
-Probe totals, final run: lamalama 69 of 70 (only row 4), Indus 23 of 23.
+Probe totals, final run: lamalama 75 of 76 (only row 4), Indus 23 of 23.
 
 ## Found and fixed during the live check
 - The eye check found what box sizes had passed: lamalama's CTA face, full-bleed rows and a white separator (the
-  current item's border colour defaulted to accent); Indus's inset aside, a 50px image slot, a stretched chip and link
+  current item's border colour defaulted to accent), and a pitchdeck button 26px too wide for its card (width 100%
+  plus side margins; it now sits in a full-width wrapper that carries the margins); Indus's inset aside, a 50px image slot, a stretched chip and link
   (a flex-column aside stretches every child, so fit width cannot hold there), a header 3px short (border-box), a
   missing 12px panel offset and a 44px column gap. All fixed in the trees.
 - `sgs/button` rendered as a link lost its colour to theme.json's `link:focus` whenever focus arrived without
@@ -53,7 +54,8 @@ Probe totals, final run: lamalama 69 of 70 (only row 4), Indus 23 of 23.
   shows Twitter. The draft's socials are letter glyphs; the copy uses the icon library's logos.
 - lamalama drawer: the reference marks "What we do" and "Careers" with dot glyphs; the copy has a lucide
   grip-horizontal on the expander and nothing on "Careers" (no trailing icon for a plain item). Item text sits 20px
-  nearer the card edge (the drawer menu has no item side-padding setting).
+  nearer the card edge (the drawer menu has no item side-padding setting), and the hairline the reference draws under
+  the pill's top row is absent.
 - Indus, small and screenshot-only: nav items about 9px left of the draft, heavier chevrons, arrow spacing in
   "Explore ..." links, the Sectors cards inset 4px less, and the image slots without the draft's placeholder icon.
 - Framework gap, not built: `widthType: fit` (and a label's `fullWidth: false`) does not hold inside a stretching

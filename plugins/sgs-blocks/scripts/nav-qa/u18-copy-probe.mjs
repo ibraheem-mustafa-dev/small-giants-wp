@@ -48,9 +48,9 @@ const EXPECT = {
 	lamalama: {
 		// bars: lamalama.json trigger-close `barSize` 16x2 and its raw html (gap-y 3/16rem, open translate 0.3125rem).
 		// ctas: drawer `secondary_blocks.ctas`. card: header-shell `secondary_blocks.contactCardTopRight`.
-		375: { pill: { x: 16, y: 16, w: 343, h: 50 }, burger: { w: 30, h: 36 }, open: { x: 16, y: 16, w: 343, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 156.5, card: null },
-		768: { pill: { w: 438, h: 50 }, burger: { w: 30, h: 36 }, open: { w: 438, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 204, card: null },
-		1440: { pill: { w: 438, h: 50 }, burger: { w: 30, h: 36 }, open: { w: 438, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 204, card: { top: 16, right: 16, w: 160, h: 326 } },
+		375: { pill: { x: 16, y: 16, w: 343, h: 50 }, burger: { w: 30, h: 36 }, open: { x: 16, y: 16, w: 343, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 156.5, pitch: 317, card: null },
+		768: { pill: { w: 438, h: 50 }, burger: { w: 30, h: 36 }, open: { w: 438, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 204, pitch: 412, card: null },
+		1440: { pill: { w: 438, h: 50 }, burger: { w: 30, h: 36 }, open: { w: 438, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 204, pitch: 412, card: { top: 16, right: 16, w: 160, h: 326 } },
 	},
 	indus: {
 		1440: {
@@ -153,6 +153,15 @@ async function measureDrawer( page, width, header ) {
 				.filter( ( b ) => /schedule a call|start a project/i.test( b.textContent ) )
 				.map( ( b ) => ( { text: b.textContent.trim(), w: b.getBoundingClientRect().width } ) )
 		);
+		res.pitch = await drawer.evaluate( ( el ) => {
+			const b = [ ...el.querySelectorAll( 'a, button' ) ].find( ( x ) => /our pitchdeck/i.test( x.textContent ) );
+			if ( ! b ) {
+				return null;
+			}
+			const r = b.getBoundingClientRect();
+			const card = el.getBoundingClientRect();
+			return { w: r.width, insetRight: card.right - r.right };
+		} );
 		res.burgerStillOnTop = await page.evaluate(
 			( [ x, y ] ) => !! document.elementFromPoint( x, y )?.closest( '.sgs-nav-bar-menu__burger' ),
 			[ cx, cy ]
@@ -281,6 +290,15 @@ for ( const { width, ctx } of WIDTHS ) {
 			failed++;
 		} else {
 			ctas.forEach( ( b ) => near( b.w, want.ctas, `${ width } CTA "${ b.text }" width` ) );
+		}
+	}
+	if ( undefined !== want.pitch ) {
+		if ( ! res.pitch ) {
+			console.log( `FAIL  ${ width } pitchdeck button: not found` );
+			failed++;
+		} else {
+			near( res.pitch.w, want.pitch, `${ width } pitchdeck width` );
+			near( res.pitch.insetRight, 13, `${ width } pitchdeck right inset inside the card` );
 		}
 	}
 	if ( undefined !== want.card ) {

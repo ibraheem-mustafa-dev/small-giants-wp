@@ -49,13 +49,21 @@
         }
       },
       {
+        "name": "sgs/container",
+        "attributes": {
+          "contentWidth": { "desktop": "full" },
+          "padding": { "desktop": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" } },
+          "margin": { "desktop": { "top": "13px", "right": "13px", "left": "13px" } }
+        },
+        "innerBlocks": [
+          {
         "name": "sgs/button",
         "attributes": {
           "label": "Our pitchdeck",
           "url": "https://lamalama.com/pitchdeck/",
           "inheritStyle": "outline",
           "widthType": { "desktop": "full" },
-          "margin": { "desktop": { "top": "13px", "right": "13px", "left": "13px" } },
+          "margin": { "desktop": { "top": "0px", "right": "0px", "left": "0px" } },
           "minHeight": { "desktop": "50px" },
           "minHeightUnit": "px",
           "fontFamily": "'Sometype Mono', monospace",
@@ -75,6 +83,8 @@
             "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
           }
         }
+      }
+        ]
       },
       {
         "name": "sgs/container",
