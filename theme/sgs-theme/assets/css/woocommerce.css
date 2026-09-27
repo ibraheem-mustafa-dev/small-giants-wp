@@ -2428,7 +2428,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	display: block;
 	box-sizing: border-box;
 	width: 100%;
-	height: 40px;
+	/* 44px tall: the block's own minimum touch target. */
 	margin: 0;
 	padding: 10px 12px;
 	border: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
@@ -2643,6 +2643,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 }
 
 /* The drawer's side margin matches the rows' own 20px inset. */
+body.sgs-shop-filters-plain #sgs-shop-filters:modal,
 body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 	padding-inline: 20px;
 }
@@ -2660,6 +2661,7 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 	--sgs-btn-bg: var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface));
 	--sgs-btn-border: var(--sgs-filter-line, var(--wp--preset--color--border));
 	background: var(--sgs-btn-bg);
+	padding-inline: 14px;
 }
 
 .sgs-shop-filters-plain .sgs-shop-filters__bool-filter-label {
