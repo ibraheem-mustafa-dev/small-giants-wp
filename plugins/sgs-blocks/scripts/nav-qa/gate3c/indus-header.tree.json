@@ -83,7 +83,8 @@
               "label": "Request Catalogue",
               "url": "#",
               "colourText": "#FFFFFF",
-              "colourBackground": "#0A7EA8"
+              "colourBackground": "#0A7EA8",
+              "sgsCollapseVisibility": "hide"
             }
           }
         ]
