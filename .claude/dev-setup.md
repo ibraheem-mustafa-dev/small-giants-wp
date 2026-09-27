@@ -785,7 +785,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 25 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 933 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 935 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -918,12 +918,13 @@ Each entry's purpose is quoted from the script's own header.
 | 116 | `check-nested-global-settings.py` | reject nested-path wp_get_global_settings() reads. |
 | 117 | `check-text-on-primary.py` | text on a primary-coloured ground must use the palette's |
 | 118 | `check-raw-box-control.py` | every 4-side box editor in the inspector is SgsBoxControl. |
-| 119 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 120 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 121 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 122 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 119 | `check-custom-colour-survives.py` | a custom colour picked in the editor must reach the live page. |
+| 120 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 121 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 122 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 123 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
 
-**122 gating scripts.** Regenerate this whole section with:
+**123 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -931,7 +932,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (122 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 123 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (123 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 124 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -1019,6 +1020,13 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: `BASELINE_FILE`, `blockJsonPath`
 - Writes: `BASELINE_FILE`
 - Non-zero exit sites found: exit(0), exit(1)
+
+**`plugins/sgs-blocks/scripts/check-custom-colour-survives.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
+- Reads: `LIVE_PROBE`, `bj`, `sqlite3:f"file:{DB}?mode=ro"`
+- Writes: `json.dump->fh`
+- DB tables (sgs-framework.db): block_attributes
+- Non-zero exit sites found: SystemExit(non-zero on failure)
 
 **`plugins/sgs-blocks/scripts/check-dead-api-calls.py`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
@@ -1670,7 +1678,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 790 scripts
+#### `plugins/sgs-blocks/scripts/` — 793 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1705,7 +1713,7 @@ for the verb you happen to have in mind.
 | `business_info/shapes.py` | script-call | Shape validation: a value is kept only if it LOOKS like the field it claims to be. |
 | `business_info/vocabulary.py` | script-call | Vocabulary and shape tables for the business-details extractor. DATA only, no behaviour. |
 | `capture-tier-fixture.py` | manifest+script-call | Measure the tier-fixture page — one scoped measurement per block, three viewports. |
-| `census-colour-paint-route.py` | manifest | Census: how does each block's render.php route its COLOUR PAINT? |
+| `census-colour-paint-route.py` | manifest+script-call | Census: how does each block's render.php route its COLOUR PAINT? |
 | `cheat-gate/__init__.py` | manifest+script-call | cheat-gate — F5 anti-cheat detection suite for the SGS cloning pipeline. |
 | `cheat-gate/check_bound_emit.py` | manifest+script-call | Check #8: static sourceMode='bound' EMIT in converter source. |
 | `cheat-gate/check_converter_source.py` | manifest+script-call | Check #9: static source cheats in the new converter/ tree. |
@@ -1728,6 +1736,7 @@ for the verb you happen to have in mind.
 | `check-control-ux.js` | manifest+npm+script-call | STRUCTURAL GUARD (Step 7a, 2026-06-11) — prevents the two editor anti-patterns that produce a sub-standard inspector UX: |
 | `check-converter-destination-shape.py` | manifest+script-call | GUARD gate (Step 8 shape 2 — 'compares a derived copy to its source; 0 |
 | `check-css-layer-orphans.py` | manifest | DB-first orphan gate for ``block_attributes.css_layer``. |
+| `check-custom-colour-survives.py` | manifest+npm+script-call | a custom colour picked in the editor must reach the live page. |
 | `check-dead-api-calls.py` | manifest+npm+script-call | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
 | `check-dead-controls.js` | manifest+npm+script-call | STRUCTURAL GUARD (HC2, 2026-06-08) — stops the "dead control" class of bug from regressing. A dead control is an editor control a client can change… |
 | `check-dead-pattern-attrs.py` | manifest+npm+script-call | Find block attributes in theme patterns/parts that WordPress silently DISCARDS |
@@ -1936,6 +1945,7 @@ for the verb you happen to have in mind.
 | `dbschema/wp_reference_archive.py` | manifest+script-call | Preserve the ORPHANED WordPress reference corpus (`hooks` + `docs`). |
 | `dead-api-checker/tokenize-calls.php` | manifest+script-call | Tokenize-calls.php |
 | `dedupe-shadow-colour-rows.py` | manifest+script-call | One writer for a shadow's colour: the ShadowControl. Any other colour row for the same attribute |
+| `deploy-client-notes-quick.py` | — | a small, one-off deploy path for |
 | `derive-dark-palette.py` | script-call | automatic dark palette derivation (U-12 §D). |
 | `detect-repeated-siblings.py` | manifest+script-call | - Q2 Tier 1 structural repeated-sibling triad CLI. |
 | `diff-gap-sanitiser.php` | — | Differential test: sgs_container_gap_value() old allowlist vs the new sgs_css_length_value()-delegating implementation. |
@@ -2298,7 +2308,7 @@ for the verb you happen to have in mind.
 | `programme-progress.py` | manifest+npm+script-call | burn-down reporter for the tier-object migration programme. |
 | `promote-icon.py` | script-call | human promote / reject step for SGS icon proposals. |
 | `prove-selftest-can-fail.py` | manifest+script-call | Prove a detector's --self-test is LOAD-BEARING, not decorative. |
-| `provision-site-mail.py` | — | : give a client site working SMTP email through FluentSMTP. |
+| `provision-site-mail.py` | script-call | : give a client site working SMTP email through FluentSMTP. |
 | `push-theme-snapshot.py` | manifest+script-call | Deploy a per-client theme.json snapshot to a WP site. |
 | `qa/assert-css-effect.js` | manifest+script-call | BACKGROUND. fix.js's own 15-assertion self-test (--self-test) is entirely edit-correctness: was the row planned fixable, does DRY RUN write nothing… |
 | `qa/capture-native-colour-ui.js` | manifest | Visual verification for the native-colour-ui migration (16 blocks). |
@@ -2308,8 +2318,9 @@ for the verb you happen to have in mind.
 | `qa/check-border-roundtrip.js` | manifest+script-call | Border round-trip probe — does the FRONTEND actually paint the border the block's `borderWidth` / `borderStyle` / `borderColour` attributes describe? |
 | `qa/check-colour-editor-roundtrip.js` | manifest+script-call | QA Gate C — the EDITOR half. |
 | `qa/check-colour-gradient-roundtrip.js` | manifest | Text-colour gradient round-trip probe — does the FRONTEND actually paint a `background-clip:text` gradient when a `{attr}Gradient` sibling is set… |
-| `qa/fr30-15-alerts-live-proof.php` | — | FR-30-15 live proof: saved-item alerts and the Notify me sender, on a real site. |
+| `qa/fr30-15-alerts-live-proof.php` | — | FR-30-15 live proof: saved-item alerts and the Notify me sender, on a real site (unified-email plan phase 3 — the emails now go through the… |
 | `qa/lib/google-reviews-settings-stub.php` | script-call | Thin stand-in for SGS\Blocks\Google_Reviews_Settings |
+| `qa/lib/live-colour-probe.php` | script-call | WP-CLI probe for check-custom-colour-survives.py --live: renders each job's block through the real render_block() on a live site and prints the… |
 | `qa/lib/render-css-harness.php` | manifest+script-call | Standalone render.php executor for CSS-effect assertions |
 | `qa/lib/sgs-is-frontend-render-stub.php` | script-call | Reproduces SGS\Blocks\sgs_is_frontend_render() (class-sgs-css-registry.php) verbatim, for plugins/sgs-blocks/src/blocks/business-info/render.php. |
 | `qa/lib/wp-stubs.php` | manifest+script-call | Minimal WordPress core function/class stubs for standalone render.php execution (scripts/qa/lib/render-css-harness.php). |
