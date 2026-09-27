@@ -132,6 +132,8 @@ rx = B("sgs/choice-flow-question", dict(
     layout="grid", questionFontWeight=WEIGHT,
     # The draft's own eyebrow for this last step (so the count reads "of 3"), and its stage line.
     eyebrow="Last bit — and it can wait", summaryLabel="Prescription",
+    # As in the draft, the chosen way to send it opens its panel underneath, with Add to bag in the footer.
+    showNextStepInline=True,
     question="Your prescription",
     intro="It needs to be under two years old and from a UK optician — whoever tested your eyes has to give "
           "you a copy if you ask. You don't need it to hand right now.",

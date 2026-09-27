@@ -14,7 +14,8 @@
 import { forgetAnswersFrom } from './flow-fields.js';
 import { clearVariationChoicesAfter } from './variation.js';
 import { FLOW_SELECTOR, STEP_SELECTOR, OPTIONS_GROUP_SELECTOR, OPTION_BUTTON_SELECTOR, SELECTED_CLASS } from './flow-constants.js';
-import { getSteps, showStepByIndex, updateContinueState, showContinueHint, hideContinueHint, advanceModeOf } from './flow-steps.js';
+import { openInlineStep, showStep } from './flow-inline.js';
+import { getSteps, updateContinueState, showContinueHint, hideContinueHint, advanceModeOf } from './flow-steps.js';
 import { flowState, ensureNavigationState, persistFlowState } from './flow-persistence.js';
 import { recordOptionAnswer, commitStepRouting } from './flow-routing.js';
 
@@ -70,6 +71,7 @@ export function handleOptionClick( buttonEl ) {
 	selectOption( buttonEl );
 	updateContinueState( flowRoot, currentStepEl );
 	hideContinueHint( flowRoot );
+	openInlineStep( flowRoot, currentStepEl );
 }
 
 /**
@@ -125,6 +127,6 @@ export function handleBackClick( buttonEl ) {
 	const previousIndex = instanceState.history.pop();
 	forgetAnswersFrom( flowRoot, previousIndex );
 	clearVariationChoicesAfter( flowRoot, previousIndex );
-	showStepByIndex( flowRoot, previousIndex );
+	showStep( flowRoot, previousIndex );
 	persistFlowState( flowRoot, previousIndex, instanceState.tags, instanceState.history );
 }

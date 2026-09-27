@@ -63,6 +63,11 @@
 			"default": "",
 			"description": "FR-43-24 (v1.8.0): an optional short paragraph shown under the question title, in both layouts — capped to about 56 characters wide in the showcase layout (style.css's own max-width). Empty string = no intro paragraph."
 		},
+		"showNextStepInline": {
+			"type": "boolean",
+			"default": false,
+			"description": "Open the chosen option's next step underneath the question on the same screen (its fields and its Add to bag in the footer) instead of moving to it with Continue. 'continue' advance mode only (src/blocks/choice-flow/flow-inline.js)."
+		},
 		"layout": {
 			"type": "string",
 			"enum": [ "grid", "list" ],

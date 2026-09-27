@@ -15,7 +15,8 @@ import { recordAddonAnswer, resetAddonAnswers } from './pricing.js';
 import { recordPlainAnswer } from './flow-fields.js';
 import { handleProductOptionClick } from './variation.js';
 import { STEP_SELECTOR, RESULT_SELECTOR, OPTIONS_GROUP_SELECTOR, DEFAULT_OPTION_SELECTOR, TERMINAL_SENTINEL } from './flow-constants.js';
-import { getSteps, showStepByIndex, advanceModeOf } from './flow-steps.js';
+import { getSteps, advanceModeOf } from './flow-steps.js';
+import { showStep } from './flow-inline.js';
 import { ensureNavigationState, persistFlowState } from './flow-persistence.js';
 
 /**
@@ -151,7 +152,7 @@ export function commitStepRouting( flowRoot, buttonEl, currentIndex ) {
 	}
 
 	instanceState.history.push( currentIndex );
-	showStepByIndex( flowRoot, targetIndex );
+	showStep( flowRoot, targetIndex );
 	persistFlowState( flowRoot, targetIndex, instanceState.tags, instanceState.history );
 
 	flowRoot.scrollIntoView( { behavior: 'smooth', block: 'start' } );

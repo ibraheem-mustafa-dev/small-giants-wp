@@ -284,6 +284,7 @@
               "questionFontWeight": "500",
               "eyebrow": "Last bit — and it can wait",
               "summaryLabel": "Prescription",
+              "showNextStepInline": true,
               "question": "Your prescription",
               "intro": "It needs to be under two years old and from a UK optician — whoever tested your eyes has to give you a copy if you ask. You don't need it to hand right now.",
               "options": [

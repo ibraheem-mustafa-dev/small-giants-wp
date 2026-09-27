@@ -186,6 +186,13 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ToggleControl
+						label={ __( "Open the chosen option's next step underneath", 'sgs-blocks' ) }
+						help={ __( 'The step an option leads to shows under the question on the same screen, with its own buttons in the footer, instead of after Continue.', 'sgs-blocks' ) }
+						checked={ !! attributes.showNextStepInline }
+						onChange={ ( v ) => setAttributes( { showNextStepInline: v } ) }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 				<ProductAttributePanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } context={ context } />
 				<TitlePanel attributes={ attributes } setAttributes={ setAttributes } />

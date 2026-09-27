@@ -51,6 +51,7 @@ import { applyDefaultSelections } from './defaults.js';
 import { applyDefaultAnswers } from './flow-routing.js';
 import { ensureNavigationState, restoreFlowState, flowState, getFlowTags } from './flow-persistence.js';
 import { getSteps, advanceModeOf, getActiveResultEl, showStepByIndex } from './flow-steps.js';
+import { showStep } from './flow-inline.js';
 import { handleOptionClick, handleContinueClick, handleBackClick } from './flow-options.js';
 
 export {
@@ -96,10 +97,10 @@ export function initFlow( flowRoot ) {
 			tags: new Set( restored.tags ),
 			history: restored.history,
 		} );
-		showStepByIndex( flowRoot, restored.stepIndex );
+		showStep( flowRoot, restored.stepIndex );
 		return;
 	}
 
 	ensureNavigationState( flowRoot );
-	showStepByIndex( flowRoot, 0 );
+	showStep( flowRoot, 0 );
 }
