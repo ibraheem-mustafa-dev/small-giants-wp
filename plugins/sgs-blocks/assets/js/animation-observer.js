@@ -12,7 +12,8 @@
  * Elements already in the viewport on load play at once (their own delay
  * plus a 100ms-per-index stagger). The rest are created — paused, which
  * already paints their start pose — once they come within 200px of the
- * viewport, then played when 15% of them is in view. Until this script has
+ * viewport, then played when 15% of them is in view; ones that reach view
+ * together play 100ms apart, like those in view at load. Until this script has
  * put the start poses in place, a head flag (sgs-entrance-pending, printed by
  * includes/animation-attributes.php) holds animated elements at opacity 0; it
  * lifts itself after 3s, and without JavaScript it never exists, so content
@@ -329,10 +330,11 @@
 		// has not fired yet.
 		var playObserver = new IntersectionObserver(
 			function ( entries ) {
-				entries.forEach( function ( entry ) {
-					if ( ! entry.isIntersecting ) {
-						return;
-					}
+				// Elements that come into view together (a row of cards) play in
+				// sequence, 100ms apart, like the ones in view at load.
+				entries.filter( function ( entry ) {
+					return entry.isIntersecting;
+				} ).forEach( function ( entry, index ) {
 					const el = entry.target;
 					let animation = animations.get( el );
 					if ( ! animation ) {
@@ -340,6 +342,9 @@
 					}
 					if ( animation ) {
 						animations.set( el, animation );
+						if ( index > 0 && animation.effect ) {
+							animation.effect.updateTiming( { delay: ( animation.effect.getTiming().delay || 0 ) + index * 100 } );
+						}
 						animation.play();
 					}
 					el.classList.add( 'sgs-animated' );

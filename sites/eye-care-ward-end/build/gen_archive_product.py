@@ -70,6 +70,9 @@ CARD = dict(
     # The draft's card hover: 4px lift over 0.4s, a soft 18/44 shadow, the photo to 106% over 0.9s, border #CFC7BB.
     sgsHoverLift=4, sgsHoverDurationMs=400, sgsHoverShadow="diffuse", sgsHoverImageZoom=True, sgsHoverZoom=106,
     sgsHoverZoomDuration=900, borderColourHover="border-hover",
+    # The draft's scroll-in: each card fades up as it comes into view, a row cascading (its 460ms, 26px, 70ms
+    # steps; the framework's nearest motion tokens are 500ms, 30px and 100ms).
+    sgsAnimation="fade-up", sgsAnimationDuration="slow", sgsAnimationEasing="ease-out", sgsAnimationDistance="30",
     # Card text parts: price 18/27, RRP in text-label, 17px colour dots growing to 125% when pointed at.
     priceLineHeight=27, priceLineHeightUnit="px", rrpColour="text-label", swatchSize=17, swatchHoverGrow=125,
     # The draft's photo fill, dot and heart rings, and the brand overlay's 12/14 padding.
@@ -94,7 +97,8 @@ filters = [
       # The prices as small plain text under the track, like the draft's "£59 ... £339".
       [B("woocommerce/product-filter-price-slider", {"showInputFields": False})]),
     *taxonomy_filter("Brand", "product_brand", "list", "sgs-filter-open sgs-filter-count", "Search brands"),
-    *attribute_filter("Style", "shape", "chips", "sgs-filter-open sgs-filter-count", counts=False),
+    *attribute_filter("Style", "shape", "chips", "sgs-filter-open sgs-filter-count", counts=False,
+                     order="menu_order-asc"),
     *attribute_filter("Material", "material", "list"),
     *attribute_filter("Frame type", "frame-type", "list"),
     *attribute_filter("Hinge", "hinge", "list"),

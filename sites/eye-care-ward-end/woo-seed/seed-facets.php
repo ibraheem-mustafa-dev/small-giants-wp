@@ -5,8 +5,9 @@
  *   one-choice Gender filter shows it under either, as the draft does.
  * - Size (pa_size): Small (eye ≤ 52mm), Medium (≤ 57), Large, the draft's bands.
  * - menu_order: the draft's PRODUCTS order, which is its "Featured" order.
- * - Colour (pa_colour) term order: the draft's swatch order (Black, Havana,
- *   Gold, ...), with the attribute sorted by that custom order.
+ * - Colour (pa_colour) and Style (pa_shape) term order: the draft's swatch and chip
+ *   orders (Black, Havana, Gold, ...; Pilot, Wayfarer, Square, ...), each attribute
+ *   sorted by that custom order.
  * Both attributes are filters only: not variations, not shown on the product page.
  *
  * Run: wp eval-file seed-facets.php data.json --user=Claude
@@ -79,33 +80,46 @@ $terms  = array(
 	),
 );
 
-// The draft's swatch order; the shop's Colour filter lists terms in it.
-$colour_order = array( 'Black', 'Havana', 'Gold', 'Tortoise', 'Gunmetal', 'Ivory', 'Rose gold', 'Silver', 'Navy', 'Crystal', 'Brown', 'Red' );
-$colour_id    = wc_attribute_taxonomy_id_by_name( 'pa_colour' );
-if ( $colour_id ) {
-	$colour_attribute = wc_get_attribute( $colour_id );
-	if ( $colour_attribute && 'menu_order' !== $colour_attribute->order_by ) {
+/**
+ * Sorts a global attribute by its custom term order and puts its terms in the given order.
+ *
+ * @param string   $slug  Attribute slug without pa_.
+ * @param string[] $names Term names in order.
+ * @return void
+ */
+function sgs_facets_order_terms( string $slug, array $names ): void {
+	$id = wc_attribute_taxonomy_id_by_name( 'pa_' . $slug );
+	if ( ! $id ) {
+		WP_CLI::warning( "no attribute $slug" );
+		return;
+	}
+	$attribute = wc_get_attribute( $id );
+	if ( $attribute && 'menu_order' !== $attribute->order_by ) {
 		wc_update_attribute(
-			$colour_id,
+			$id,
 			array(
-				'name'         => $colour_attribute->name,
-				'slug'         => 'colour',
-				'type'         => $colour_attribute->type,
+				'name'         => $attribute->name,
+				'slug'         => $slug,
+				'type'         => $attribute->type,
 				'order_by'     => 'menu_order',
-				'has_archives' => $colour_attribute->has_archives,
+				'has_archives' => $attribute->has_archives,
 			)
 		);
 	}
-	foreach ( $colour_order as $position => $name ) {
-		$term = get_term_by( 'name', $name, 'pa_colour' );
+	foreach ( $names as $position => $name ) {
+		$term = get_term_by( 'name', $name, 'pa_' . $slug );
 		if ( $term ) {
 			update_term_meta( $term->term_id, 'order', $position );
 		} else {
-			WP_CLI::warning( "no colour term $name" );
+			WP_CLI::warning( "no $slug term $name" );
 		}
 	}
-	WP_CLI::log( 'colour terms ordered' );
+	WP_CLI::log( "$slug terms ordered" );
 }
+
+// The draft's swatch and style chip orders; the shop's Colour and Style filters list terms in them.
+sgs_facets_order_terms( 'colour', array( 'Black', 'Havana', 'Gold', 'Tortoise', 'Gunmetal', 'Ivory', 'Rose gold', 'Silver', 'Navy', 'Crystal', 'Brown', 'Red' ) );
+sgs_facets_order_terms( 'shape', array( 'Pilot', 'Wayfarer', 'Square', 'Rectangle', 'Round', 'Oval', 'Cat-eye', 'Butterfly', 'Browline', 'Geometric', 'Shield', 'Oversized' ) );
 
 foreach ( $data['PRODUCTS'] as $index => $p ) {
 	// The same SKU rule as seed.php::sgs_seed_sku_from_code.

@@ -103,8 +103,8 @@ export default {
 		{ name: 'card-gucci', states: [ 'opening', 'women' ], draft: { js: dcard( 'Oversized Cat-Eye' ) }, live: { js: lcard( 'Oversized Cat-Eye' ) }, hover: true, props: [ 'background-color', 'border-top-width', 'border-top-color', 'border-radius', 'box-shadow' ] },
 		// A card below the fold at every width: how it appears as it scrolls into view.
 		{ name: 'card-7', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
-			draft: { js: `(r) => { const g = (${ DGRID })(r); const c = g && g.children[6]; return c && c.firstElementChild.firstElementChild; }` },
-			live: '.sgs-shop-layout .wc-block-product-template > li:nth-child(7) .product-card' },
+			draft: { js: `(r) => { const g = (${ DGRID })(r); const c = g && g.children[6]; return c; }` },
+			live: '.sgs-shop-layout .wc-block-product-template > li:nth-child(7)' },
 		// The Gucci card's parts: draft path from its bordered card, live class inside .product-card.
 		...[
 			[ 'media', 'c.children[0]', '.product-card__media', false ],
@@ -174,6 +174,8 @@ export default {
 		{ pair: 'clear-all', kind: 'style', reason: 'The same underlined capitals: live draws the 1px underline as a text decoration 5px below the text inside its 44px target, the draft as a bottom border under 2px padding', when: ( d ) => [ 'border-bottom-width', 'padding-bottom', 'display', 'justify-content', 'align-items', 'line-height' ].includes( d.key ) },
 		{ pair: 'clear-all', kind: 'style', key: 'color', reason: 'The draft’s text is the browser default black, live’s the palette’s text #141414' },
 		...[ 'active-pill', 'clear-all' ].map( ( pair ) => ( { pair, kind: 'structure', reason: 'PROPOSED to Bean: chosen filters sit at the top of the filter column (WooCommerce keeps them inside its filter block); the draft shows them in a row under the title' } ) ),
+		{ pair: 'card-7', reason: 'Off screen, nothing paints: the draft holds every card at its start pose (opacity 0, 26px down) from load, the framework only once a card is within 200px of view; both play the same fade-up on reaching view', when: ( d ) => 'opacity' === d.key || /^pre:/.test( d.key ) },
+		{ pair: 'card-7', kind: 'box', key: 'h', reason: 'Accepted (Bean 2026-09-27): "No reviews yet" is a line shorter than the draft’s made-up stars; at 375 the pennies (Bean 2026-09-25) wrap the price line in the 163px card', when: ( d ) => Math.abs( d.draft - d.live ) <= 12 },
 		{ pair: 'filter-button', kind: 'style', key: 'color', reason: 'The draft’s button text is the browser default black, live’s the palette’s text #141414 (both near-black on white)' },
 		// Below the drawer breakpoint the live drawer is a sheet over the page (Bean 2026-09-27), so its rows share rows with the title bar.
 		...[ 768, 375 ].flatMap( ( width ) => [ 'filters-open', 'panel-after-click' ].map( ( state ) => ( {

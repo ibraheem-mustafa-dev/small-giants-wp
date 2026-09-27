@@ -392,7 +392,8 @@
                           "attributeId": 3,
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-chips",
-                          "showCounts": false
+                          "showCounts": false,
+                          "sortOrder": "menu_order-asc"
                         },
                         "innerBlocks": [
                           {
@@ -626,6 +627,10 @@
                           "sgsHoverZoom": 106,
                           "sgsHoverZoomDuration": 900,
                           "borderColourHover": "border-hover",
+                          "sgsAnimation": "fade-up",
+                          "sgsAnimationDuration": "slow",
+                          "sgsAnimationEasing": "ease-out",
+                          "sgsAnimationDistance": "30",
                           "priceLineHeight": 27,
                           "priceLineHeightUnit": "px",
                           "rrpColour": "text-label",
