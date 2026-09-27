@@ -133,6 +133,7 @@
 .sgs-form-step:has(.sgs-form-field__row-heading),
 .sgs-form__inner:has(> .sgs-form-field > .sgs-form-field__row-heading) {
 	padding-left: 32px;
+	row-gap: 8px;
 }
 
 /* Steps span full width inside the form grid */
@@ -1085,6 +1086,16 @@ select.sgs-form-field__input {
 
 .sgs-form-field--textarea .sgs-form-field__label {
 	top: 2.1rem;
+}
+
+/* A screen-reader-only label (labelStyle 'hidden') never floats: the field
+   keeps no room above the box for it and shows its placeholder instead. */
+.sgs-form-field:has(> .sgs-form-field__label.sgs-sr-only) {
+	padding-top: 0;
+}
+
+.sgs-form-field:has(> .sgs-form-field__label.sgs-sr-only) .sgs-form-field__input::placeholder {
+	color: var(--wp--preset--color--text-muted, #555);
 }
 
 .sgs-form-field--text:has(.sgs-form-field__input:focus) .sgs-form-field__label,
