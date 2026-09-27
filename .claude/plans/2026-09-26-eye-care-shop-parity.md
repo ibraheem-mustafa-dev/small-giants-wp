@@ -1,11 +1,10 @@
 # Eye Care shop archive: parity with the draft
 
-**Status:** DONE 2026-09-27. `shop.mjs` exits 0 at 1440, 768 and 375 under the standard method
-(`scripts/parity/GAP-CHECKLIST.md`): config lint passes, 0 open, 462 accepted (each with its reason or Bean's dated
-decision), all 18 state x width shots reviewed with notes, 0 console errors, live on eye-care-test. States: opening,
-filters open, and Women, Black, Ray-Ban and a Pilot chip each chosen by clicking on both sides (the last with the
-drawer left open). Open with Bean: card prices without ".00" (see "Differences to put to Bean"). Part of the parity
-re-review in `plans/2026-09-24-eye-care-hand-build-design.md` (Status, "Parity re-review owed before Wave D").
+**Status:** REOPENED 2026-09-27 on Bean's review of the live shop (Remaining 8). `shop.mjs` read 0 open with every
+shot reviewed, but Bean found four things the pass missed; the review notes for the drawer and 375 shots are
+withdrawn until they are fixed and looked at again. States: opening, filters open, and Women, Black, Ray-Ban and a
+Pilot chip each chosen by clicking on both sides (the last with the drawer left open). Part of the parity re-review
+in `plans/2026-09-24-eye-care-hand-build-design.md` (Status, "Parity re-review owed before Wave D").
 **Verify with:** `node ../../scripts/parity/draft-live-walk.mjs ../../sites/eye-care-ward-end/build/qa/parity/shop.mjs`
 from `plugins/sgs-blocks` with `NODE_EXTRA_CA_CERTS` set to certifi's bundle (exit 0 = matches).
 
@@ -54,13 +53,34 @@ Content (Eye Care, in `build/gen_archive_product.py` and the product seed):
 
 ## Differences to put to Bean
 
-All answered 2026-09-27 (recorded in `shop.mjs` as "Accepted (Bean 2026-09-27)") except one question: can card
-prices hide ".00"? The theme setting `sgs_shop_hide_zero_decimals` covers saving badges only; extending it to card
-prices is a small change. Pennies stay the accepted default until Bean answers (at 375 they wrap the price line).
+All answered (recorded in `shop.mjs` as "Accepted (Bean 2026-09-27)"). Card prices without ".00": yes (Bean
+2026-09-27), Remaining 8a.
 
 ## Remaining
 
-None. The record of what each item did:
+8. **Bean's review, 2026-09-27 (in order):**
+   a. **Card prices without ".00"** (Bean: yes). The theme setting `sgs_shop_hide_zero_decimals` covers saving badges
+      only; extend it to the product card's price and RRP (framework, any client), keep pennies where a price has
+      them (£59.50), and drop the "Pennies" accepts in `shop.mjs` and `lens.mjs` that no longer apply (the card-7
+      375 height accept mentions the wrap they caused).
+   b. **The Polarised tag sits unevenly on the card** (sgs/product-card `showAttributeTag`, class
+      `.sgs-product-card__attribute-tag` in `plugins/sgs-blocks/src/blocks/product-card/style.css`): beside a
+      wrapping name ("Lewis 10") it takes a wide box with space on both sides; beside "EA4033" at 375 its border
+      overlaps the card's border with no right padding. Target: the tag keeps its own width, sits at the right of
+      the name row inside the card's padding (at least the card's 16px inset), and the name wraps beside it. Add a
+      tag pair to `shop.mjs` (a card with the tag at every width, anchored to its card).
+   c. **A floating Filter button appears at the bottom of the screen on mobile after scrolling**
+      (`sgs-shop-filters__sticky-trigger`, built in `theme/sgs-theme/assets/js/sgs-shop-filters.js`). The draft has
+      none: give it a Customizer switch (framework) and turn it off for Eye Care in `build/apply_shop_settings.py`.
+      Add a scrolled state at 375 and 768 to `shop.mjs` (GAP-CHECKLIST.md 5a).
+   d. **The price slider in the drawer (768, 375):** its right handle is cut off at the drawer's content edge, and
+      the track should sit within the content width. Cause: the thin look's `padding-inline: 4px 0` (section 8k of
+      `theme/sgs-theme/assets/css/woocommerce.css`) removed the right inset that kept the handle inside. Target: the
+      track inside the content width with both 14px handles fully painted, in the drawer and the desktop column;
+      prove it by the handle's painted width in the shots (GAP-CHECKLIST.md 5b).
+   Then re-run `shop.mjs`, look at every shot again and rewrite the withdrawn notes.
+
+The record of what items 0-7 did:
 
 0. **DONE 2026-09-27 (7240cb28d).** The duplicate brand search is gone: Eye Care's Brand group holds Spec 30
    FR-30-6's `sgs/filter-search` block (now able to search a core taxonomy filter, placeholder "Search brands",
@@ -106,8 +126,8 @@ None. The record of what each item did:
       own chips, so a choice applies in place and the drawer stays open.
    b. Filter button at 768/375: outlined "FILTER" in the toolbar before the sort menu, reading "FILTER (1)" while a
       filter is chosen (Customizer "Filter button look", "Filter button place", "counts the chosen filters").
-   c. Price slider: 6px round-ended track, 14px handles at both ends, prices as small plain text, spanning the column
-      (Customizer "Price slider look" Thin; measured by pixel against the draft).
+   c. Price slider: 6px round-ended track, 14px handles at both ends, prices as small plain text (Customizer "Price
+      slider look" Thin). Spanning the column clipped the right handle in the drawer: item 8d.
    d. Sort menu size (item 6).
    e. Brand names at 14.5px/500 with 7px rows (WooCommerce's wrapper set 0.875em); cards fade up 30px over 500ms as
       they reach view, a row cascading 100ms apart (the draft's 460ms/26px/70ms; the framework's nearest motion tokens,

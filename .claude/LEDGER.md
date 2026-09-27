@@ -53,14 +53,12 @@ https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-car
 commit).** Parity re-review: every page compared to the draft by `scripts/parity/draft-live-walk.mjs`
 (one config per page in `sites/eye-care-ward-end/build/qa/parity/`) under the standard method in
 `scripts/parity/GAP-CHECKLIST.md`: a page passes only when the walker exits 0 (config lint, 0 open, every state x width
-screenshot reviewed with a note, 0 console errors). Shop archive DONE (click-driven filter states, 18 shots
-reviewed). Lens pop-up REOPENED: its unreviewed Q4 shots show three gaps (footer "Continue" vs the draft's "Add to
-bag £418", a missing note at 768, a description overflowing its card at 768); four differences and the card ".00"
-question are with Bean. Product page, bag, checkout, confirmation, home, lenses, about, help, contact to follow.
+screenshot reviewed with a note, 0 console errors). Shop and lens both REOPENED on Bean's review: shop plan
+"Remaining" 8 (card ".00", Polarised tag place, floating Filter button, drawer slider handle clipped); lens Q4 has
+three unmeasured gaps (main plan Status). Product page, bag, checkout, confirmation, home, lenses, about, help, contact to follow.
 Payments decided (Stripe + Klarna + wallets, PayPal). No blockers.
 
-**Resume from:** the main plan's Status block ("Parity re-review owed before Wave D"): the lens Q4 gaps, then the
-remaining pages.
+**Resume from:** the shop plan's "Remaining" 8, then the lens Q4 gaps (main plan Status), then the remaining pages.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.

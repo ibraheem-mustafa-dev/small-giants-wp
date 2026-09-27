@@ -126,14 +126,12 @@ export default {
 			hover: 'wishlist' === part || 'dot' === part,
 		} ) ),
 	],
-	// Screenshot review of the final run (2026-09-27), region by region; header, footer and chat bubble are the nav track.
+	// Screenshot review, region by region; header, footer and chat bubble are the nav track. Notes for the drawer and
+	// 375 shots were withdrawn 2026-09-27 (Bean: the price slider's right handle is clipped, the Polarised tag sits
+	// unevenly, a floating Filter button appears on scroll); they are rewritten after the fixes.
 	review: {
 		'opening@1440': 'Title row: eyebrow, h1, count and sort aligned, hairline 24px under it, grid 101px below the title on both. Filter column: segments, swatches in order, thin slider, brand search and list, Style chips in the draft order. Grid 3 columns, cards match; the draft blanks rows 3+ until scrolled (its reveal, full-page artefact).',
 		'opening@768': 'Title row with the outlined FILTER between count and sort on both, hairline under it. Grid 2 columns, cards match (stars vs No reviews yet accepted); the draft shows 4 cards, the rest wait for its scroll reveal.',
-		'opening@375': 'Title, then count, outlined FILTER and sort in one row, hairline, grid 147px below the title on both. 2 columns; prices wrap under the name on both (pennies accepted). Live row 3 is at its reveal start pose in the full-page shot, as the draft rows 3+.',
-		'filters-open@1440': 'Desktop column (no drawer): segments, 12 swatches, 6px slider with round ends at 14px handles (the draft one handle and "up to £340", two handles accepted), Brand 40 vs 14 (real stock accepted), 44px rows. Cards match.',
-		'filters-open@768': 'Drawer: Filter header and close, Gender segments, Size closed, 12 swatches one row, 6px slider 24-746px vs 24-748px, brand search and list at 14.5px, CLEAR and SHOW 16 FRAMES footer. Heading ring is the scripted-click trap (a mouse click paints none).',
-		'filters-open@375': 'Drawer as at 768 in one column: swatches wrap 8 and 4 on both, slider and £59/£339 labels, brand list, footer buttons. Drawer slides up (accepted); heading ring is the scripted-click trap.',
 		'women@1440': 'Chosen-filter row under the title on both ("Women ×" pill, CLEAR ALL), panel copy hidden, Women segment chosen, 11 frames, grid 151px below the title on both. Cards match.',
 		'women@768': 'FILTER (1) in the title row on both, Women pill and CLEAR ALL under the hairline, drawer closed, 11 frames, 2 columns. Focus ring on FILTER is focus returning after the scripted close.',
 		'women@375': 'Count, FILTER (1) and sort in one row, the chosen-filter row under the hairline, cards 2 across with prices wrapping (pennies accepted).',
@@ -144,8 +142,6 @@ export default {
 		'brand-ray-ban@768': 'FILTER (1), Ray-Ban pill and CLEAR ALL under the hairline, 3 frames, cards match; draft brand-page title accepted.',
 		'brand-ray-ban@375': 'Toolbar row, chosen-filter row and two cards across match; draft brand-page title accepted.',
 		'panel-after-click@1440': 'After clicking Pilot: the panel keeps every look (segments, round swatches, counts, groups), Pilot pill row under the title, 5 frames, same 3 cards; draft retitles "Pilot" (accepted); live slider shows £99-£169 for the results.',
-		'panel-after-click@768': 'Drawer left open after the Pilot click: swatches stay round, segments and groups intact, brand list narrowed to 5 with real counts, SHOW 5 FRAMES on both.',
-		'panel-after-click@375': 'Drawer after the click at 375: swatches wrap 8 and 4, slider, brand search and list, SHOW 5 FRAMES on both; nothing lost to the re-render.',
 	},
 	accept: [
 		{

@@ -78,6 +78,23 @@ Each class below says how it is detected, how a "this page matches" claim is fal
 - **Config pattern:** mark one below-the-fold item of each repeated kind (a card in the second row, a
   section heading) `scrollIn: true`; put `fullPage: true` on the opening state so the review sees it all.
 
+## 5a. Scrolled states: what appears only after scrolling
+
+- **Gap:** a sticky or fixed element that appears once the page scrolls (the shop's floating Filter button at 375,
+  which the draft does not have) is absent from every at-rest state and every screenshot taken at the top.
+- **Detected by:** a state whose action scrolls the page (`h.page.evaluate( () => window.scrollTo( 0, 1200 ) )`,
+  then a wait), with a pair for each fixed element either side may show (a presence difference) and its review note.
+- **Falsified by:** a narrow-width page with no scrolled state, or a scrolled shot with an element one side only.
+
+## 5b. Clipped edges: a control cut off by its container
+
+- **Gap:** part of a control painted outside a container that clips it (`overflow` on a drawer's scroll area): the
+  price slider's right handle was cut off at 768 and 375 once its inset was removed. Box and style comparisons pass;
+  pseudo-element parts (a range thumb) cannot be pairs at all.
+- **Detected by:** the screenshot review (look at every edge of every control) and a pixel check where a part is not
+  an element: the handle's painted width in the shot must equal its declared size (14px for the thin slider).
+- **Falsified by:** a note that does not mention the control's edges, or a handle measuring less than its size.
+
 ## 6. Drawers and modals at narrow widths
 
 - **Gap:** a drawer can exist on one side only, open from another edge, or hide its trigger.
