@@ -57,7 +57,29 @@ Local screenshots (gitignored): `reports/visual-diff/u18-bean-review-2026-09-27/
   hairlines, then four round coloured socials centred at the bottom. Ours has no logo, a bare close, smaller items,
   the CTA and icons below the menu, and broken socials.
 
-## Questions this plan answers (next session: `/systematic-debugging`, then `/qc-council` on the method)
+## Method (Bean, 2026-09-27): prove the walker against a hand-read diff, then extend it
+
+The walker becomes the one tool for headers and footers, on this track and on the Eye Care track (whose page
+configs already live in `sites/eye-care-ward-end/build/qa/parity/`). Steps:
+
+1. **Hand-read baseline.** Read each reference directly (the Indus draft's markup and stylesheet rule by rule;
+   lamalama's live DOM and computed styles in a headed browser) and write the diff by hand: full structure and
+   element order, the contents of each element, its appearance and styling, and its behaviour (hover, open/close,
+   motion) at 375, 768 and 1440. Bean's L1-L10 and I-1 to I-3 above are the floor this diff must reach.
+2. **Walker run.** Write a config per copy and run `draft-live-walk.mjs` against the same pages.
+3. **Compare the two diffs.** For every row: did the walker find it, miss it, or find more? A miss is a walker gap.
+4. **Extend the walker** for every miss, most likely as a header/footer mode (drive burger, panel and drawer
+   states; hover every item; read entrance and open/close motion; check viewport-scaled sizing across widths;
+   read element order inside the drawer and panels). A miss is treated as an exception only when it is genuinely
+   anomalous (for example a canvas or video effect no DOM read can see), and each exception is named in
+   `scripts/parity/GAP-CHECKLIST.md` with how it is checked instead. Each extension gets a negative control
+   (`--inject-live-css`) that turns it red.
+5. **Re-run** until the walker reaches the hand-read diff or better on both copies. Its report is then the one
+   clear diff per copy: structure, contents, styling and behaviour of every element.
+6. **Then fix**, from that diff only: sort each row into composition or framework capability, and plan the fixes.
+   No fixing happens before step 5 closes.
+
+## Questions the method must settle
 
 1. **What is the reference, as data?** Indus: the draft file and its stylesheet, parsed rule by rule into every
    element's styles, hover and motion. lamalama: the live site, captured as computed styles, hover end states and
@@ -74,5 +96,5 @@ Local screenshots (gitignored): `reports/visual-diff/u18-bean-review-2026-09-27/
 
 ## Exit
 
-The walker exits 0 on both copies at 375, 768 and 1440, or every open row is an accepted difference Bean signed;
+The walker (with its header/footer mode) matches or beats the hand-read diff, then exits 0 on both copies at 375, 768 and 1440 after the fixes, or every open row is an accepted difference Bean signed;
 Bean's eye passes both (R-31-13). Then Gate 3C item 4 is re-assessed in the parent plan §7, the track doc and LEDGER.
