@@ -1,9 +1,10 @@
 # Eye Care shop archive: parity with the draft
 
-**Status:** IN PROGRESS. Built and live on eye-care-test 2026-09-26 (theme to the latest deploy): items 1-7 and 9-10
-below, the row-gap / filter-column / gap settings, the plain panel's rows, and the grid container query. First
-parity run (1440) found the differences listed under "Remaining", in order. Part of the parity re-review in
-`plans/2026-09-24-eye-care-hand-build-design.md` (Status, "Parity re-review owed before Wave D").
+**Status:** PARITY RUN CLEAN 2026-09-27: `shop.mjs` reports 0 open, 239 accepted, 0 console errors at 1440, 768
+and 375 (every state: opening, filters open, Women, Black, Ray-Ban), live on eye-care-test. Accepted differences are
+either measured-not-painted (reason in each `accept` entry) or PROPOSED to Bean (below). Three screenshot-only items
+remain (Remaining 7). Part of the parity re-review in `plans/2026-09-24-eye-care-hand-build-design.md` (Status,
+"Parity re-review owed before Wave D").
 **Verify with:** `node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/shop.mjs`
 (1440, 768, 375; states: opening, filters open, a brand applied, a colour applied, Women, a card hovered).
 
@@ -84,20 +85,29 @@ Content (Eye Care, in `build/gen_archive_product.py` and the product seed):
    - Follow-ups: card-grid's zoom amount has no control (it keeps its own toggle, not the shared panel);
      `scripts/surveys/survey-inspector-surface.js` doesn't follow the hover panels into `panels/*.js` (census
      only, no gate). Both are parked here.
-2. Title 48px / line-height 1; count 13.5px in `text-subtle`; sort control (draft: 14px side padding, native
-   chevron) - check the theme's `select.orderby` rule.
-3. Re-run `shop.mjs` at 1440/768/375, look at the screenshots, then the card text parts (price 18px/27px line,
-   RRP colour `text-label`, dots 17px with a hover scale 1.25), the Style chips (draft: 13px, white fill,
-   `border` colour, no count in the chip; live shows "Pilot (5)"), the swatch hover (draft scale 1.12), the brand
-   search box (40px tall, 10px padding), and the Gender segments (13px).
-4. Seen in the 1440 screenshot after the plain-panel deploy (84f04635e): the drawer's "Filter" heading and its
-   heavy rule show on desktop (the draft has none); swatch order follows the colour terms' order (the draft:
-   Black, Havana, Gold, Tortoise, Gunmetal, Ivory, Rose gold, Silver, Navy, Crystal, Brown, Red: set the term
-   order); the brand list is alphabetical with "(3)" counts where the draft orders by count with a right-aligned
-   number; heading rows sit taller than 52px (check the summary's padding and the heading's line height).
-5. Theme `archive-product.html` hard-codes another client's filters (Flavour, Size by attribute ID): replace with
-   attribute-agnostic defaults.
-6. Put to Bean with the list below, then record the shop result in the main plan's Status block.
+2. **DONE 2026-09-27.** Title steps 48px to 34px (one clamp); count 13.5px `text-subtle`; the sort menu takes the
+   browser's own arrow with 14px sides (Customizer "Sort menu arrow").
+3. **DONE 2026-09-27.** Card text parts, chips, swatch growth, search box, segments: price 18/27, RRP `text-label`,
+   dots 17px with a 125% hover, dot and heart rings, photo fill `surface-stage`, brand overlay 12/14 padding; 13px
+   chips and segments with the card fill, swatches grow to 112% (Customizer "Shop Filters" filter-look settings).
+4. **DONE 2026-09-27.** No "Filter" heading above the desktop column (Customizer switch, kept for screen readers);
+   swatches in the draft's order (`sortOrder: menu_order-asc` + term order in `woo-seed/seed-facets.php`); brand counts
+   a right-aligned number; groups touch at 52px rows (the gap belonged to WooCommerce's overlay content); the plain
+   drawer is the page surface with a ruled header and the site's button presets on its footer ("Show 16 frames",
+   "Clear", capitals by a Customizer switch).
+5. **DONE 2026-09-27.** The theme's `archive-product.html` carries Price, Category and Brand only (no attribute IDs).
+   Follow-up for the Mama's Munches track: its Flavour and Size groups need a site copy of the template (as Eye
+   Care's `build/gen_archive_product.py`), until then the canary shop shows the generic groups.
+6. **Put to Bean 2026-09-27** (session message; answers recorded here and in `shop.mjs` when they land).
+7. Next (seen in the screenshots, not in any pair): at 768 and 375 the draft's Filter button is an outlined "FILTER"
+   inline with the count and sort, where live's is a black pill under the title (a toolbar placement and style
+   setting); the draft's cards fade in as they scroll into view (confirm and compare with the motion walk); the
+   drawer's brand names are 13px against the draft's 14.5px.
+
+Found and fixed along the way (framework): the drawer's live result count re-requested the Store API every 400ms
+(its observer counted the Apply button's own label change); the desktop sidebar took focus at page load and painted
+a ring; the parity walker hovered before a smooth scroll finished and could not read text inside a
+`display: contents` span.
 
 Also to put to Bean: in the draft, choosing one brand turns the page into that brand's page (title "Ray-Ban", no
 "Shop" eyebrow); live keeps "Sunglasses" with the filter applied. The draft's Black swatch returns "0 frames" (a
