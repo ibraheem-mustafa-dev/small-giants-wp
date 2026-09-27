@@ -210,7 +210,7 @@ visually. `none` means neither.
 | ‖ | U-12 — **DONE** | Header and footer furniture: local-time clock, language switch, store selector, wishlist (link, saved-items panel, Save for later), theme toggle with an automatic dark palette, back-to-top and account as `sgs/button` link sources, sound mute as an `sgs/audio` style (Bean, 2026-09-25). `headerEssential` on `product-search` only | M-18 | none | high | six new directories (`local-time/`, `language-switch/`, `store-selector/`, `theme-toggle/`, `wishlist-link/`, `wishlist-panel/`), plus `button/`, `audio/`, `product-card/`, `cart/`, `product-search/block.json`, `includes/wishlist/`, `includes/helpers-link-source.php`, `scripts/derive-dark-palette.py` and the theme's dark-mode files |
 | ‖ | U-15 — **DONE** | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*`, new `notice-message/` |
 | ‖ | U-17 — **DONE** | The Lottie player (DEC-13, section 1h): Spec 38 Tier H, the fourth media type, the wrapper background and the logo substrate | M-33 | design | high | `includes/lottie-*.php`, `src/shared/effects/{fx-lottie,lottie-adapter}.js`, `src/vendor-modules/lottie-light.js`, the media atoms, `media/`, `hero/`, `responsive-logo/`, `class-sgs-container-wrapper.php` |
-| 15 | U-18 — **open** (G1-G5, G9 done; G6-G8, G10, G11 designed, Bean's go 2026-09-27) | Copy-parity gaps found composing Gate 3C item 4's two copies. Done and live: G3 custom colours reach the page (gate `check-custom-colour-survives.py`), G1 burger width, G2 `header-box` drawer anchor, G4 narrow panels centre, G5 by composition. Open: G6 burger bar size, G7 drawer `stretch`, G8 pin a container to a screen corner, G10 narrow desktop panel stacks, G11 group-heading rule over-reach. Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | G6 `nav-bar-menu/{block.json,style.css,BurgerPanel.js}`, `nav-menu-trigger-css.php`; G7 `nav-drawer/{block.json,render.php,edit.js}`; G8 `container/{block.json,edit.js}`, `class-sgs-container-wrapper.php`, a footer portal; G10/G11 `mega-panel/{render.php,style.css}` |
+| 15 | U-18 — **open** (G1-G5, G9 live; G6, G7, G10, G11 built 2026-09-27, deploy pending; **G8 stopped at NO GO**) | Copy-parity gaps found composing Gate 3C item 4's two copies. Done and live: G3 custom colours reach the page (gate `check-custom-colour-survives.py`), G1 burger width, G2 `header-box` drawer anchor, G4 narrow panels centre, G5 by composition. Built, deploy pending: G6 burger bar size, G7 drawer `stretch`, G10 narrow desktop panel stacks (four `@container` leaks), G11 group-heading over-reach plus the eyebrow selector-list bug. Stopped: G8 pin a container to a screen corner (plan §5 step 2a; design report §8-§9); not covered: `lamalama`/`header-shell`/`1440`/`contactCardTopRight`, reason: nothing expresses a viewport-pinned block yet. Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | G6 `nav-bar-menu/{block.json,style.css,BurgerPanel.js}`, `nav-menu-trigger-css.php`; G7 `nav-drawer/{block.json,render.php,edit.js}`; G8 `container/{block.json,edit.js}`, `class-sgs-container-wrapper.php`, a footer portal; G10/G11 `mega-panel/{render.php,style.css}` |
 
 **U-1 — done** (live `reports/visual-diff/container-2026-09-23.md`, `nav-bar-menu-2026-09-23.md` and
 `nav-drawer-2026-09-23.md`, each `verdict: PASS`). Shipped: mega close-grace reads `submenuCloseGrace`; force-solid paints the header's own
@@ -437,18 +437,34 @@ WITH FIXES, Bean go):
 - G9 (scrim over the panel) measured as not a defect with the copy active; a hard-coded `z-index:101` on the
   fixed-panel path is folded into G10's commit as hardening.
 
-Open, designed in `.claude/reports/2026-09-27-u18-g6-g8-design.md` (council GO WITH FIXES applied; Bean's go
-2026-09-27 on options 1, 2, 3A plus G10/G11):
-- G6 burger bar size: `burgerIconWidth`/`burgerIconHeight` per tier; `x`/`x-rotate` poses derive their travel from
-  `--sgs-nbm-icon-h`. Exit: lamalama bars 16 wide, 3px gaps, single line open with 5px travel.
-- G7 `drawerAlign` `stretch` ("Full width"). Exit: lamalama's two CTAs 156.5 (375) / 204 (768, 1440) wide.
-- G8 `sgs/container::pinToScreen` + `pinInset` (per tier), printed at `wp_footer` like the scrim so a blurred
-  ancestor cannot capture it; untouched containers byte-identical. Exit: lamalama's GET IN TOUCH card 160x326 at
-  top 16, right 16 at 1440, absent at 375/768.
-- G10 the `@container (max-width: 640px)` reflow in `mega-panel/render.php` emitted only inside the drawer
-  (`$sgs_mm_in_drawer`). Exit: Indus About and Trade aside 300px beside the links at 1440.
-- G11 `.sgs-mega-group .wp-block-sgs-heading` selectors (render.php `$heading_sel`, three `style.css` rules) become
-  direct-child. Exit: the Indus copy's row labels move back from `sgs/text` to `sgs/heading` with their own styles.
+Built and committed 2026-09-27 (design `.claude/reports/2026-09-27-u18-g6-g8-design.md`; Bean's go on options 1,
+2, 3A plus G10/G11), awaiting the deploy and the live check:
+- G6 `sgs/nav-bar-menu::burgerIconWidth`/`::burgerIconHeight` per tier, both writing `--sgs-nbm-icon-w`/
+  `--sgs-nbm-icon-h` on a uid-scoped rule so they beat `--two-bar`'s own (0,1,0) height; the `x` and `x-rotate`
+  poses hard-coded `translateY(8px)` and now derive travel from the property like `line` already did (9697d30d4).
+  Exit: lamalama bars 16 long, 3px gaps, single line open with 5px travel.
+- G7 `drawerAlign` `stretch` ("Full width"), with `$allowed_aligns`, `$align_items_map` and `$text_align_map` all
+  extended together — both maps are indexed unguarded (adab2705a). Exit: lamalama's two CTAs 156.5 (375) / 204
+  (768, 1440) wide.
+- G10 all FOUR `@container` emissions in `mega-panel/render.php` gated on `$sgs_mm_in_drawer`, not just the 640px
+  stack rule: the panel root is its own unnamed query container, so a 620px desktop panel also self-matched the
+  tablet and mobile tiers of max-width, padding and group-gap. `@media` twins unchanged (c598d260f). Exit: Indus
+  About and Trade aside 300px beside the links at 1440, still stacked in the 375 drawer.
+- G11 `$heading_sel` and the `style.css` rule go direct-child, and the eyebrow preset is rebuilt from a relative
+  fragment prefixed once per branch: `$heading_sel` is a comma-separated LIST whose every branch already carried
+  `$root_sel`, so the old concatenation left branch 1 self-nested (matching nothing) and branch 2 with no style
+  scope and no headings-off gate, painting the 11px mono eyebrow on every heading in every group under every style
+  (c598d260f). `style.css` lists a direct-child form for the frontend and a one-level-down form for the editor's
+  block-list wrapper. Exit: the Indus row labels move back from `sgs/text` to `sgs/heading` with their own styles.
+
+**G8 STOPPED at NO GO (2026-09-27), plan §5 step 2a.** `sgs/container::pinToScreen`/`pinInset` is not built. The
+design's mechanism ("printed at `wp_footer` like the scrim") does not hold — the scrim is not a `render_block`
+filter and portals only a CSS-free `aria-hidden` div. The revision that answered that was re-run past two
+reviewers: census VERIFIED all 14 facts, adversarial returned NO GO on two re-verified grounds (the container
+wrapper has no editor branch, so `position:fixed` covers the canvas; and a pinned container's output can carry
+three or more `<style>` tags, which a single front-split strands away from the CSS collector). One revision was
+permitted and is spent. Full verdicts and the spec a future G8 needs are in the design report §8 and §9.
+**Gate 3C item 4 therefore cannot pass yet**: lamalama's GET IN TOUCH card is one of its exit cells.
 - Composition still owed after G6-G8: the Indus drawer 4456 (pink icons from the test palette) and lamalama's
   burger bars/CTA widths/contact card once the code lands; then the evidence pack (reference and copy side by side
   per width, measured table) as an Artifact with an external ping to Bean. Reference shots and the capture script
@@ -546,13 +562,19 @@ Every test carries a negative control: a version of the test that FAILS against 
 code, proving it catches the defect, and passes after the fix. Assert the break landed before
 trusting it. Then `npm run build` and the prebuild gates.
 
-**5. Commit with explicit pathspecs.** The visual-diff gate (`.githooks/sgs-gates.sh`, a
-pre-commit hook) blocks a block commit that has no passing live capture report in
-`reports/visual-diff/` at the repo root. The capture needs the deploy and the deploy needs the
-commit, so break the cycle with
-`SGS_VISUAL_GATE_SKIP=<block> SGS_VISUAL_GATE_REASON="<truthful reason>"` (an empty reason
-fails closed; every skip is appended to the tracked `reports/visual-diff/manual-skips.log`),
-then commit the capture report straight after. The report is
+**5. Commit with explicit pathspecs.** ⚠ The visual-diff gate is NOT wired at commit time on this
+machine, so nothing blocks a block commit that has no capture report; the capture report is a
+deliverable this loop owes (and Gate 3C item 2 requires), not something a hook enforces. Verified
+2026-09-27: the per-machine `.git/hooks/pre-commit` runs gitleaks, then `.githooks/sgs-gates.sh`,
+then `.githooks/pre-commit`. `sgs-gates.sh` holds only Gate A (converter golden fixtures, staged
+converter code only) and `.githooks/pre-commit` holds only the extension-attribute drift check plus
+the cloning-pipeline gates. The D564 restructure note in the per-machine wrapper records that the
+visual-diff gate and its five auto-skip branches used to live in that untracked file; only Gate A
+reached `.githooks/`. `SGS_VISUAL_GATE_SKIP` / `SGS_VISUAL_GATE_REASON` are therefore no-ops and
+append nothing to `reports/visual-diff/manual-skips.log`. The gate roster that DOES run
+(`run-gates.py --tier fast`, inspector-scan, `audit-inline-styling.js` and the rest) runs from
+`npm run prebuild`, i.e. at BUILD time — so run the gates through `npm run build` and never treat a
+clean commit as gate evidence. The report is
 `reports/visual-diff/<block>-<YYYY-MM-DD>.md` with `verdict: PASS`,
 `intent_capture_passed: true`, and a `source_sha:` line whose value comes from
 `python plugins/sgs-blocks/scripts/visual-report-sha.py <block>`. After a manual skip the
