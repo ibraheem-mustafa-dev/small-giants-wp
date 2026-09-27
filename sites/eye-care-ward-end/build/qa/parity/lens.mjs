@@ -121,6 +121,6 @@ export default {
 		{ pair: 'help-toggle', kind: 'style', when: ( d ) => /^padding-|^line-height$/.test( d.key ), reason: 'No visible effect: the glyph is centred in a fixed 30px disc on both sides' },
 		{ pair: 'help-toggle', kind: 'motion', key: 'transition', reason: 'Accepted (Bean 2026-09-27): the draft snaps the glyph colour on hover while the fill fades; live fades both' },
 		{ pair: 'help-toggle', kind: 'hover', key: 'color', reason: 'Accepted (Bean 2026-09-27): hover glyph is the palette’s text-inverse #FAF8F5, the draft’s pure white' },
-		{ pair: 'stage', state: 'q4-prescription', width: 375, kind: 'text', reason: 'PROPOSED to Bean: the draft’s 72px thumbnail shows a clipped "POLARIS" label; live keeps the thumbnail clean' },
+		{ pair: 'stage', state: 'q4-prescription', width: 375, kind: 'text', reason: 'Accepted (Bean 2026-09-27): the draft’s 72px thumbnail shows a clipped "POLARIS" label; live keeps the thumbnail clean' },
 	],
 };

@@ -23,8 +23,8 @@ key), with the owed Wave C polish alongside.
   gaps the scripted run did not measure (the last question's footer reads "Continue" where the draft reads "Add to
   bag £418"; at 768 the draft's "Perfect, order now and I'll WhatsApp you a link" note under the options is missing;
   at 768 the "Send it later" description overflows its card, which Bean wants matched to the draft), and lint wants a
-  Q4-scoped pair; Bean accepted the help toggle's timing and glyph colour; the 375 thumbnail's clipped "POLARIS"
-  label is still PROPOSED in `lens.mjs`. Product page, bag drawer, checkout, order confirmation, home, lenses, about, help,
+  Q4-scoped pair; Bean accepted the help toggle's timing and glyph colour and live's clean 375 thumbnail (the
+  draft's shows a clipped "POLARIS" label). Product page, bag drawer, checkout, order confirmation, home, lenses, about, help,
   contact to do.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
