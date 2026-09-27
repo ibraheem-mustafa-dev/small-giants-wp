@@ -1,5 +1,6 @@
 // Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts
-// from a fresh page so both sides show the same single filter.
+// from a fresh page and applies one filter by clicking it on both sides, as a shopper does (a filter loaded
+// by URL skips WooCommerce's Interactivity re-render, which is where the panel's looks broke).
 // Run: node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/shop.mjs
 const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/shop/?cb={cb}';
@@ -11,21 +12,28 @@ const dcard = ( name ) => `(r) => { const g = (${ DGRID })(r); const c = g && [.
 const lcard = ( name ) => `(r) => [...document.querySelectorAll('.sgs-shop-layout .wc-block-product-template > li')].find((c) => c.textContent.includes('${ name }'))?.querySelector('.sgs-product-card, .product-card')`;
 const words = ( t ) => String( t ).replace( /\s+/g, ' ' ).trim().toLowerCase().split( ' ' ).sort().join( ' ' );
 
-const draftShop = async ( h ) => {
-	await h.goto( DRAFT );
-	await h.clickText( '^sunglasses$', { wait: 1200 } );
+// The draft is a single-page app: its "Sunglasses" link is navigation, not an interaction.
+const shopOn = {
+	draft: async ( h ) => {
+		await h.goto( DRAFT );
+		await h.clickText( '^sunglasses$', { wait: 1200, nav: true } );
+	},
+	live: ( h ) => h.goto( LIVE ),
 };
 // Below desktop both sides keep the filters in a drawer behind a "Filter" button (no-op on desktop).
 const openFilters = ( h ) => h.clickText( '^filter$', { tag: 'button', optional: true, wait: 900 } );
-// The draft’s drawer closes with "Show N frames"; it applies each choice as it is made.
-const closeDraftFilters = ( h ) => h.clickText( '^show \\d+ frames?$', { tag: 'button', optional: true, wait: 900 } );
-const draftPick = ( pick ) => async ( h ) => {
-	await draftShop( h );
+// Both drawers close with "Show N frames"; each applies a choice as it is made.
+const closeFilters = ( h ) => h.clickText( '^show \\d+ frames?$', { tag: 'button', optional: true, wait: 900 } );
+// One filter clicked on each side from a fresh shop page; `keepOpen` leaves the drawer open to compare the panel.
+const pick = ( draftClick, liveClick, keepOpen = false ) => Object.fromEntries( [ [ 'draft', draftClick ], [ 'live', liveClick ] ].map( ( [ side, click ] ) => [ side, async ( h ) => {
+	await shopOn[ side ]( h );
 	await openFilters( h );
-	await pick( h );
-	await closeDraftFilters( h );
-};
-const liveShop = ( query ) => async ( h ) => h.goto( LIVE + ( query ? '&' + query : '' ) );
+	await click( h );
+	if ( ! keepOpen ) {
+		await closeFilters( h );
+	}
+} ] ) );
+const liveSwatch = ( slug ) => ( h ) => h.click( `${ LF } [id="attribute/colour-${ slug }"]`, { quiet: true, wait: 1200 } );
 
 export default {
 	name: 'shop',
@@ -36,28 +44,33 @@ export default {
 		{
 			name: 'filters-open',
 			draft: async ( h ) => {
-				await draftShop( h );
+				await shopOn.draft( h );
 				await openFilters( h );
 			},
 			live: async ( h ) => {
-				await h.goto( LIVE );
+				await shopOn.live( h );
 				await openFilters( h );
 			},
 		},
 		{
 			name: 'women',
-			draft: draftPick( ( h ) => h.clickText( '^women$', { within: 'aside', tag: 'button' } ) ),
-			live: liveShop( 'filter_gender=women' ),
+			...pick( ( h ) => h.clickText( '^women$', { within: 'aside', tag: 'button' } ),
+				( h ) => h.clickText( '^women$', { within: LF, tag: '.sgs-shop-filters__segment', quiet: true, wait: 1500 } ) ),
 		},
 		{
 			name: 'colour-black',
-			draft: draftPick( ( h ) => h.click( 'aside button[aria-label="Black"]' ) ),
-			live: liveShop( 'filter_colour=black' ),
+			...pick( ( h ) => h.click( 'aside button[aria-label="Black"]' ), liveSwatch( 'black' ) ),
 		},
 		{
 			name: 'brand-ray-ban',
-			draft: draftPick( ( h ) => h.clickText( '^ray-ban', { within: 'aside', tag: 'label' } ) ),
-			live: liveShop( 'brands=ray-ban' ),
+			...pick( ( h ) => h.clickText( '^ray-ban', { within: 'aside', tag: 'label' } ),
+				( h ) => h.click( `${ LF } label[for="taxonomy/product_brand-ray-ban"]`, { quiet: true, wait: 1200 } ) ),
+		},
+		// The panel itself after a click (drawer left open): every group must keep its look through
+		// WooCommerce's re-render (swatches, segments, chips, counts).
+		{
+			name: 'panel-after-click',
+			...pick( ( h ) => h.click( 'aside button[aria-label="Havana"]' ), liveSwatch( 'havana' ), true ),
 		},
 	],
 	pairs: [
@@ -65,15 +78,19 @@ export default {
 		{ name: 'title', draft: 'h1', live: 'main h1', box: [ 'h' ] },
 		{ name: 'count', draft: { text: '^\\d+ frames?$', tag: 'span' }, live: '.wp-block-woocommerce-product-results-count p, .woocommerce-result-count', box: [ 'h' ] },
 		{ name: 'sort', draft: 'select[aria-label="Sort"]', live: 'select.orderby', hover: true },
-		{ name: 'filters', states: [ 'filters-open' ], draft: 'aside', live: LF, box: [ 'w' ], text: false, props: [ 'background-color', 'padding-top', 'padding-left' ] },
-		{ name: 'gender-heading', states: [ 'filters-open' ], draft: { text: '^gender$', within: 'aside', tag: 'button' }, live: { text: '^gender', within: LF, tag: 'summary' }, box: [ 'h' ] },
-		{ name: 'gender-all', states: [ 'filters-open' ], draft: { text: '^all$', within: 'aside', tag: 'button' }, live: `${ LF } .sgs-shop-filters__segment`, hover: true },
+		// The drawer's trigger below desktop: its place (row mates: count and sort) is checked by the structure pass.
+		{ name: 'filter-button', states: [ 'opening' ], draft: { text: '^filter$', tag: 'button' }, live: { text: '^filter$', tag: 'button' }, hover: true },
+		{ name: 'filters', states: [ 'filters-open', 'panel-after-click' ], draft: 'aside', live: LF, box: [ 'w' ], text: false, props: [ 'background-color', 'padding-top', 'padding-left' ] },
+		{ name: 'gender-heading', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^gender$', within: 'aside', tag: 'button' }, live: { text: '^gender', within: LF, tag: 'summary' }, box: [ 'h' ] },
+		{ name: 'gender-all', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^all$', within: 'aside', tag: 'button' }, live: `${ LF } .sgs-shop-filters__segment`, hover: true },
 		{ name: 'gender-women', states: [ 'women' ], draft: { text: '^women$', within: 'aside', tag: 'button' }, live: { text: '^women$', within: LF, tag: '.sgs-shop-filters__segment' } },
-		{ name: 'swatch-black', states: [ 'filters-open' ], draft: 'aside button[aria-label="Black"]', live: `${ LF } [id="attribute/colour-black"]`, text: false, hover: true },
-		{ name: 'brand-search', states: [ 'filters-open' ], draft: 'aside input[aria-label="Search brands"]', live: `${ LF } .sgs-filter-search__input`, text: false },
-		{ name: 'brand-heading', states: [ 'filters-open' ], draft: { text: '^brand', within: 'aside', tag: 'button' }, live: { text: '^brand', within: LF, tag: 'summary' }, box: [ 'h' ] },
-		{ name: 'style-chip', states: [ 'filters-open' ], draft: { text: '^pilot$', within: 'aside', tag: 'button' }, live: { text: '^pilot', within: LF, tag: 'button' }, hover: true },
-		{ name: 'polarised-toggle', states: [ 'filters-open' ], draft: { text: '^polarised only$', within: 'aside', tag: 'label,button,div' }, live: `${ LF } .sgs-shop-filters__bool-filter` },
+		{ name: 'swatch-black', states: [ 'filters-open', 'colour-black', 'panel-after-click' ], draft: 'aside button[aria-label="Black"]', live: `${ LF } [id="attribute/colour-black"]`, text: false, hover: true },
+		{ name: 'swatch-picked', states: [ 'panel-after-click' ], draft: 'aside button[aria-label="Havana"]', live: `${ LF } [id="attribute/colour-havana"]`, text: false },
+		{ name: 'brand-search', states: [ 'filters-open', 'panel-after-click' ], draft: 'aside input[aria-label="Search brands"]', live: `${ LF } .sgs-filter-search__input`, text: false },
+		{ name: 'brand-heading', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^brand', within: 'aside', tag: 'button' }, live: { text: '^brand', within: LF, tag: 'summary' }, box: [ 'h' ] },
+		{ name: 'brand-ray-ban', states: [ 'filters-open', 'brand-ray-ban', 'panel-after-click' ], draft: { text: '^ray-ban', within: 'aside', tag: 'label' }, live: `${ LF } label[for="taxonomy/product_brand-ray-ban"]` },
+		{ name: 'style-chip', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^pilot$', within: 'aside', tag: 'button' }, live: { text: '^pilot', within: LF, tag: 'button' }, hover: true },
+		{ name: 'polarised-toggle', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^polarised only$', within: 'aside', tag: 'label,button,div' }, live: `${ LF } .sgs-shop-filters__bool-filter` },
 		{ name: 'grid', draft: { js: DGRID }, live: '.sgs-shop-layout .wc-block-product-template', text: false, box: [ 'w' ], props: [ 'grid-template-columns', 'column-gap', 'row-gap' ] },
 		{ name: 'card-gucci', states: [ 'opening', 'women' ], draft: { js: dcard( 'Oversized Cat-Eye' ) }, live: { js: lcard( 'Oversized Cat-Eye' ) }, hover: true, props: [ 'background-color', 'border-top-width', 'border-top-color', 'border-radius', 'box-shadow' ] },
 		// The Gucci card's parts: draft path from its bordered card, live class inside .product-card.
@@ -104,7 +121,7 @@ export default {
 		},
 		// Measured, not painted: the property differs but the pixels do not.
 		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
-			kind: 'style', key, reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child or centred text)',
+			kind: 'style', key, notPainted: true, reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child or centred text)',
 		} ) ),
 		{ kind: 'hover', key: 'color', reason: 'Text colour on an element with no text (a swatch, dot or icon button): nothing paints it' },
 		...[ 'gender-heading', 'brand-heading' ].map( ( pair ) => ( {

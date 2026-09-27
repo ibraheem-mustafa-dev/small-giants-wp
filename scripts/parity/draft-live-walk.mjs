@@ -1,19 +1,25 @@
 // Draft-versus-live parity walker. Drives the design draft and the live site through
 // the same states (tabs, steps, open panels, filters, modals) at each width and compares
 // named element pairs: rendered text, box size, computed styles, motion (declared and
-// running right after each action) and hover end states. Writes report.json, report.md
-// and draft|live side-by-side screenshots. Exits 1 when any difference is not accepted.
+// running right after each action), hover end states, scroll-in reveals, structure (which
+// pairs contain each pair and share its row) and how each state was reached (click or URL).
+// Writes report.json, report.md, draft|live side-by-side screenshots and contact.md (every
+// shot with its review note). Exits 1 on a config lint problem, a difference that is not
+// accepted, or a shot with no review note. The gap classes: scripts/parity/GAP-CHECKLIST.md.
 //
 // Usage: node scripts/parity/draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375]
-//        [--states a,b] [--no-accept] [--inject-live-css "css"]
+//        [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"]
 // Needs NODE_EXTRA_CA_CERTS set to certifi's bundle for the Hostinger sites.
 // --inject-live-css is the negative control: it plants a known difference on the live side.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { DEFAULT_PROPS, HOVER_PROPS, resolveFinder, collectPair, collectRunning, centreOf, hoverStyles } from './lib/collect.mjs';
-import { comparePair, isAccepted } from './lib/compare.mjs';
+import { comparePair, compareScroll, isAccepted } from './lib/compare.mjs';
 import { writeReport, sideBySide } from './lib/report.mjs';
+import { lintConfig } from './lib/lint.mjs';
+import { collectStructure, compareStructure, driveDiffs } from './lib/structure.mjs';
+import { writeContactSheet } from './lib/review.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const { chromium } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
@@ -25,10 +31,16 @@ const flag = ( name ) => {
 };
 const cfgPath = path.resolve( argv[ 0 ] || '' );
 if ( ! argv[ 0 ] || ! fs.existsSync( cfgPath ) ) {
-	console.error( 'Usage: node draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375] [--states a,b] [--no-accept] [--inject-live-css "css"]' );
+	console.error( 'Usage: node draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375] [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"]' );
 	process.exit( 2 );
 }
 const cfg = ( await import( pathToFileURL( cfgPath ).href ) ).default;
+const problems = lintConfig( cfg );
+if ( problems.length || argv.includes( '--lint' ) ) {
+	console.log( problems.length ? `${ cfg.name }: config lint failed:\n- ${ problems.join( '\n- ' ) }` : `${ cfg.name }: config lint passed.` );
+	process.exit( problems.length ? 1 : 0 );
+}
+const SCROLL_PROPS = [ 'opacity', 'transform', 'translate', 'scale', 'filter' ];
 const widths = ( flag( '--widths' ) || ( cfg.widths || [ 1440, 768, 375 ] ).join( ',' ) ).split( ',' ).map( Number );
 const onlyStates = flag( '--states' )?.split( ',' );
 const accept = argv.includes( '--no-accept' ) ? [] : cfg.accept || [];
@@ -40,11 +52,32 @@ const RESOLVE = resolveFinder.toString();
 const cb = ( url ) => url.replace( '{cb}', String( Date.now() ) );
 
 // Helpers handed to a config's open() and state actions.
+// Every goto and click is logged per state (h.log) for the drive check: pass { nav: true }
+// on a click that only navigates (a single-page draft's menu link), so it counts as a URL
+// load; { quiet: true } waits until the network is idle (an Interactivity re-render).
 function helpers( page, side ) {
+	let inflight = 0;
+	page.on( 'request', () => inflight++ );
+	page.on( 'requestfinished', () => inflight-- );
+	page.on( 'requestfailed', () => inflight-- );
+	const after = async ( opts ) => {
+		await page.waitForTimeout( opts.wait ?? 700 );
+		if ( opts.quiet ) {
+			await h.quiet();
+		}
+	};
 	const h = {
-		page, side,
+		page, side, log: [],
 		wait: ( ms ) => page.waitForTimeout( ms ),
+		// Resolves once no request has been in flight for 500ms (15s at most).
+		quiet: async () => {
+			for ( let calm = 0, t = 0; calm < 5 && t < 150; t++ ) {
+				calm = inflight > 0 ? 0 : calm + 1;
+				await page.waitForTimeout( 100 );
+			}
+		},
 		goto: async ( url ) => {
+			h.log.push( { type: 'goto', target: url } );
 			await page.goto( cb( url ), { waitUntil: 'networkidle' } );
 			await page.waitForTimeout( 500 );
 		},
@@ -58,12 +91,14 @@ function helpers( page, side ) {
 				}
 				return !! el;
 			}, [ { text: src, tag: opts.tag || 'a,button,[role=button],[role=tab],label,summary,h3,span,div', within: opts.within, nth: opts.nth }, RESOLVE ] );
+			h.log.push( opts.nav ? { type: 'goto', target: `/${ src }/` } : { type: 'click', target: `/${ src }/`, hit: ok, optional: !! opts.optional } );
 			if ( ! ok && ! opts.optional ) {
 				throw new Error( `${ side }: nothing visible matches /${ src }/` );
 			}
-			await page.waitForTimeout( opts.wait ?? 700 );
+			await after( opts );
 		},
 		click: async ( selector, opts = {} ) => {
+			h.log.push( opts.nav ? { type: 'goto', target: selector } : { type: 'click', target: selector, hit: true } );
 			await page.evaluate( ( [ sel, res ] ) => {
 				// eslint-disable-next-line no-new-func
 				const el = new Function( `return (${ res });` )()( sel );
@@ -72,7 +107,7 @@ function helpers( page, side ) {
 				}
 				el.click();
 			}, [ selector, RESOLVE ] );
-			await page.waitForTimeout( opts.wait ?? 700 );
+			await after( opts );
 		},
 		waitFor: ( selector ) => page.waitForSelector( selector, { state: 'visible', timeout: 15000 } ),
 	};
@@ -101,9 +136,11 @@ async function walkSide( browser, side, width ) {
 	}
 	const states = {};
 	for ( const state of cfg.states ) {
+		h.log = [];
 		if ( state[ side ] ) {
 			await state[ side ]( h );
 		}
+		const log = h.log;
 		const pairs = pairsFor( state );
 		await page.waitForTimeout( 60 );
 		const running = {};
@@ -119,8 +156,23 @@ async function walkSide( browser, side, width ) {
 			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], p.props || DEFAULT_PROPS, RESOLVE ] );
 			snap[ p.name ].running = running[ p.name ];
 		}
+		const finders = Object.fromEntries( pairs.filter( ( p ) => p.structure !== false ).map( ( p ) => [ p.name, p[ side ] ] ) );
+		const structure = await page.evaluate( collectStructure, [ finders, RESOLVE ] );
+		// Scroll-in pairs are read before anything scrolls (a full-page shot reveals them too).
+		const scrollIns = pairs.filter( ( q ) => q.scrollIn && ! snap[ q.name ].missing );
+		for ( const p of scrollIns ) {
+			snap[ p.name ].scroll = { pre: await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE ] ) };
+		}
 		const shot = path.join( outDir, `${ side }-${ width }-${ state.name }.png` );
 		await page.screenshot( { path: shot, fullPage: !! state.fullPage } );
+		for ( const p of scrollIns ) {
+			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
+			await page.evaluate( centreOf, [ p[ side ], RESOLVE ] );
+			await page.waitForTimeout( 60 );
+			snap[ p.name ].scroll.running = await page.evaluate( collectRunning, [ p[ side ], RESOLVE ] );
+			await page.waitForTimeout( p.scrollWait ?? 1500 );
+			snap[ p.name ].scroll.post = await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE ] );
+		}
 		for ( const p of pairs.filter( ( q ) => q.hover ) ) {
 			const at = await page.evaluate( centreOf, [ p[ side ], RESOLVE ] );
 			if ( ! at || snap[ p.name ].missing ) {
@@ -132,7 +184,7 @@ async function walkSide( browser, side, width ) {
 			await page.mouse.move( 1, 1 );
 			await page.waitForTimeout( 400 );
 		}
-		states[ state.name ] = { snap, shot };
+		states[ state.name ] = { snap, shot, log, structure };
 	}
 	await ctx.close();
 	return { states, errors };
@@ -150,19 +202,29 @@ for ( const width of widths ) {
 		const shot = path.join( outDir, `pair-${ width }-${ state.name }.png` );
 		await sideBySide( browser, d.shot, l.shot, shot, width );
 		const run = { state: state.name, width, shot: path.basename( shot ), pairs: {} };
-		for ( const p of pairsFor( state ) ) {
-			const diffs = comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) } );
+		const judge = ( name, diffs ) => {
+			const boxMatches = ! diffs.some( ( x ) => 'box' === x.kind );
 			for ( const diff of diffs ) {
-				const a = isAccepted( accept, { pair: p.name, state: state.name, width }, diff );
+				const a = isAccepted( accept, { pair: name, state: state.name, width, boxMatches }, diff );
 				diff.accepted = a ? a.reason : null;
 			}
-			run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs };
+			return diffs;
+		};
+		run.pairs[ '(state)' ] = { draft: d.log, live: l.log, diffs: judge( '(state)', driveDiffs( d.log, l.log ) ) };
+		for ( const p of pairsFor( state ) ) {
+			const diffs = [
+				...comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) } ),
+				...compareStructure( p.name, d.structure, l.structure ),
+				...compareScroll( d.snap[ p.name ].scroll, l.snap[ p.name ].scroll ),
+			];
+			run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, diffs ) };
 		}
 		results.runs.push( run );
 	}
 }
 await browser.close();
 const { open, accepted } = writeReport( outDir, cfg, results );
+const unreviewed = argv.includes( '--no-review' ) ? 0 : writeContactSheet( outDir, cfg, results.runs );
 const liveErrors = Object.values( results.errors ).flatMap( ( e ) => e.live );
-console.log( `${ cfg.name }: ${ open } open, ${ accepted } accepted, ${ liveErrors.length } live console errors. Report: ${ path.join( outDir, 'report.md' ) }` );
-process.exit( open || liveErrors.length ? 1 : 0 );
+console.log( `${ cfg.name }: ${ open } open, ${ accepted } accepted, ${ unreviewed } shots unreviewed, ${ liveErrors.length } live console errors. Report: ${ path.join( outDir, 'report.md' ) }, contact sheet: ${ path.join( outDir, 'contact.md' ) }` );
+process.exit( open || unreviewed || liveErrors.length ? 1 : 0 );

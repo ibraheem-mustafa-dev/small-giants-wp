@@ -130,10 +130,35 @@ export function comparePair( pair, d, l, tol ) {
 	return diffs;
 }
 
+// Scroll-in: the element's opacity and transform before it is scrolled to, after it
+// settles in view, and the animations started by reaching it.
+export function compareScroll( d, l ) {
+	const diffs = [];
+	if ( ! d || ! l ) {
+		return diffs;
+	}
+	for ( const phase of [ 'pre', 'post' ] ) {
+		for ( const p of Object.keys( d[ phase ] || {} ) ) {
+			if ( ! sameValue( p, d[ phase ][ p ], l[ phase ]?.[ p ], 0.02 ) ) {
+				diffs.push( { kind: 'scroll', key: `${ phase }:${ p }`, draft: d[ phase ][ p ], live: l[ phase ]?.[ p ] } );
+			}
+		}
+	}
+	const rd = ( d.running || [] ).join( ' | ' ) || 'none';
+	const rl = ( l.running || [] ).join( ' | ' ) || 'none';
+	if ( rd !== rl ) {
+		diffs.push( { kind: 'scroll', key: 'running-on-reveal', draft: rd, live: rl } );
+	}
+	return diffs;
+}
+
 // An accepted difference matches on pair, key and optionally state, width, kind and a
-// when(diff) test (e.g. "the texts are equal once pennies are dropped").
+// when(diff) test (e.g. "the texts are equal once pennies are dropped"). An entry with
+// notPainted: true (a property that differs without changing the pixels) only applies
+// while the pair's box matches: once the box differs the property may be what moved it.
 export function isAccepted( accept, ctx, diff ) {
-	return accept.find( ( a ) => ( ! a.pair || a.pair === ctx.pair ) &&
+	return accept.find( ( a ) => ( ! a.notPainted || ctx.boxMatches ) &&
+		( ! a.pair || a.pair === ctx.pair ) &&
 		( ! a.key || a.key === diff.key ) &&
 		( ! a.kind || a.kind === diff.kind ) &&
 		( ! a.state || a.state === ctx.state ) &&
