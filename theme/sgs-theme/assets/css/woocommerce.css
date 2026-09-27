@@ -3356,7 +3356,7 @@ select.orderby:focus-visible {
 .sgs-shop-chosen__pill {
 	display: inline-flex;
 	align-items: center;
-	gap: 0;
+	gap: 8px;
 	min-height: 34px;
 	padding: 0 14px;
 	border: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
