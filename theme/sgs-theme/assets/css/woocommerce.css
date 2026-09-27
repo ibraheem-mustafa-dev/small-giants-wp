@@ -3377,7 +3377,8 @@ body.sgs-shop-active-bar .sgs-shop-filters .wp-block-woocommerce-product-filter-
 
 .sgs-shop-chosen__clear {
 	min-height: 44px;
-	margin-left: 6px;
+	/* The 44px target overhangs the 34px pill row, so the row keeps the pills' height. */
+	margin: -5px 0 -5px 6px;
 	padding: 0;
 	border: 0;
 	background: none;

@@ -114,6 +114,18 @@ function helpers( page, side ) {
 	return h;
 }
 
+// A pair with `anchor: '<pair>'` is compared on its vertical distance from that pair,
+// so a missing gap or rule shows even when the pages above (a header) differ in height.
+function anchorOffset( p, ds, ls, t ) {
+	const a = p.anchor;
+	if ( ! a || ! ds[ a ] || ! ls[ a ] || ds[ a ].missing || ls[ a ].missing || ds[ p.name ].missing || ls[ p.name ].missing ) {
+		return [];
+	}
+	const dy = ds[ p.name ].box.y - ds[ a ].box.y;
+	const ly = ls[ p.name ].box.y - ls[ a ].box.y;
+	return Math.abs( dy - ly ) > t.box ? [ { kind: 'box', key: `y-from-${ a }`, draft: dy, live: ly } ] : [];
+}
+
 const pairsFor = ( state ) => cfg.pairs.filter( ( p ) => ! p.states || p.states.includes( state.name ) );
 
 async function walkSide( browser, side, width ) {
@@ -222,6 +234,7 @@ for ( const width of widths ) {
 				...comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) } ),
 				...compareStructure( p.name, d.structure, l.structure ),
 				...compareScroll( d.snap[ p.name ].scroll, l.snap[ p.name ].scroll ),
+				...anchorOffset( p, d.snap, l.snap, { ...tol, ...( p.tolerance || {} ) } ),
 			];
 			run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, diffs ) };
 		}

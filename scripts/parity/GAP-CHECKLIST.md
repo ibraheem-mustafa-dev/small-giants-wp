@@ -63,7 +63,10 @@ Each class below says how it is detected, how a "this page matches" claim is fal
   neither containing the other). A differing set is an open `structure` difference.
 - **Config pattern:** name the neighbours as pairs too (title, count, sort beside a toolbar button), so the
   row has something to compare. `structure: false` on a pair opts it out (a full-page wrapper).
-- **Falsified by:** a `structure` row, or a control with no neighbouring pairs to anchor it.
+- **Spacing:** `anchor: '<pair>'` compares a pair's vertical distance from another pair (the grid from the
+  title), so a missing gap or rule shows even when the header above differs in height. The shop's title row
+  lacked the draft's 24px gap and hairline; `grid y-from-title` 101 against 77 is how that reads now.
+- **Falsified by:** a `structure` or `y-from-*` row, or a control with no neighbouring pairs to anchor it.
 
 ## 5. Hidden-by-scroll and scroll-in content
 
@@ -94,6 +97,12 @@ Fixed in the walker; keep them in mind when a number looks wrong:
 - **Outer grids matching a card finder:** a `{ text }` finder picks the smallest visible match; a `{ js }`
   finder for a draft with no class names must pin the element (the shop's `DGRID`: the grid whose every
   child is a priced card). The structure check exposes a wrong match: its `inside` set changes.
+- **Scripted clicks paint focus rings:** the helpers click with `el.click()`, which Chrome treats like a
+  keyboard action, so a dialog heading or a returned-to button shows its `:focus-visible` ring in the shot.
+  A real mouse click does not (proven on the shop drawer: mouse `focus-visible=false`, script and keyboard
+  `true`). A ring that appears only after a scripted open is this trap, not a gap.
+- **Hidden text is read:** `innerText` includes screen-reader text and text painted at `font-size: 0`
+  (WooCommerce's count brackets), so a text difference can be unpainted; confirm on the shot before fixing.
 - **Colour formats:** `oklab()`/`color()` values are normalised to sRGB through a canvas, channels within
   2/255.
 

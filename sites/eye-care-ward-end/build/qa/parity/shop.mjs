@@ -80,8 +80,8 @@ export default {
 	pairs: [
 		{ name: 'eyebrow', draft: { text: '^shop$', tag: 'p' }, live: { text: '^shop$', tag: 'p', within: 'main' }, box: [ 'h' ] },
 		{ name: 'title', draft: 'h1', live: 'main h1', box: [ 'h' ] },
-		{ name: 'count', draft: { text: '^\\d+ frames?$', tag: 'span' }, live: '.wp-block-woocommerce-product-results-count p, .woocommerce-result-count', box: [ 'h' ] },
-		{ name: 'sort', draft: 'select[aria-label="Sort"]', live: 'select.orderby', hover: true },
+		{ name: 'count', anchor: 'title', draft: { text: '^\\d+ frames?$', tag: 'span' }, live: '.wp-block-woocommerce-product-results-count p, .woocommerce-result-count', box: [ 'h' ] },
+		{ name: 'sort', anchor: 'title', draft: 'select[aria-label="Sort"]', live: 'select.orderby', hover: true },
 		// The drawer's trigger below desktop: its place (row mates: count and sort) is checked by the structure pass.
 		{ name: 'filter-button', states: [ 'opening', 'women' ], draft: { text: '^filter$', tag: 'button' }, live: { text: '^filter$', tag: 'button' }, hover: true },
 		{ name: 'filters', states: [ 'filters-open', 'panel-after-click' ], draft: 'aside', live: LF, box: [ 'w' ], text: false, props: [ 'background-color', 'padding-top', 'padding-left' ] },
@@ -99,7 +99,7 @@ export default {
 		{ name: 'price-min', states: [ 'filters-open' ], draft: { text: '^£59$', within: 'aside', tag: 'span' }, live: `${ LF } .wc-block-product-filter-price-slider__left` },
 		{ name: 'price-max', states: [ 'filters-open' ], draft: { text: '^£339$', within: 'aside', tag: 'span' }, live: `${ LF } .wc-block-product-filter-price-slider__right` },
 		{ name: 'polarised-toggle', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^polarised only$', within: 'aside', tag: 'label,button,div' }, live: `${ LF } .sgs-shop-filters__bool-filter` },
-		{ name: 'grid', draft: { js: DGRID }, live: '.sgs-shop-layout .wc-block-product-template', text: false, box: [ 'w' ], props: [ 'grid-template-columns', 'column-gap', 'row-gap' ] },
+		{ name: 'grid', anchor: 'title', draft: { js: DGRID }, live: '.sgs-shop-layout .wc-block-product-template', text: false, box: [ 'w' ], props: [ 'grid-template-columns', 'column-gap', 'row-gap' ] },
 		{ name: 'card-gucci', states: [ 'opening', 'women' ], draft: { js: dcard( 'Oversized Cat-Eye' ) }, live: { js: lcard( 'Oversized Cat-Eye' ) }, hover: true, props: [ 'background-color', 'border-top-width', 'border-top-color', 'border-radius', 'box-shadow' ] },
 		// A card below the fold at every width: how it appears as it scrolls into view.
 		{ name: 'card-7', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
