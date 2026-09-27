@@ -3,12 +3,14 @@
  * heading block (its Additional CSS class):
  *   sgs-filter-count     the number of options beside the heading ("Brand 40")
  *   sgs-filter-segmented  one choice at a time as a segmented row, "All" first
- *                 (an attribute group: it sets `filter_<attribute>` and reloads,
- *                 the same round trip WooCommerce's own filters take)
+ *                 (an attribute group: a segment presses WooCommerce's own chips,
+ *                 so the choice applies in place like every other filter)
  * Swatches (sgs-filter-swatches) are CSS only (woocommerce.css, inc/shop-toolbar-settings.php).
  *
  * Runs once sgs-shop-filters.js has turned the aside into its dialog and the
- * headings into <details> groups; a site with none of the classes is unchanged.
+ * headings into <details> groups, and again on `sgs-shop-filters:rebuilt` (a
+ * filter choice re-renders WooCommerce's region and the groups are rebuilt);
+ * a site with none of the classes is unchanged.
  *
  * @package SGS\Theme
  */
@@ -60,6 +62,22 @@
 			button.textContent = opt.label;
 			button.setAttribute( 'aria-pressed', opt.value === current ? 'true' : 'false' );
 			button.addEventListener( 'click', function () {
+				// Uncheck the chosen chip, then check the new one: WooCommerce applies
+				// both through its router, so the page and the drawer stay put.
+				const checked = chips.filter( function ( c ) {
+					return 'true' === c.getAttribute( 'aria-checked' ) && c.value !== opt.value;
+				} );
+				const target = chips.find( function ( c ) {
+					return opt.value && c.value === opt.value && 'true' !== c.getAttribute( 'aria-checked' );
+				} );
+				if ( chips.every( function ( c ) {
+					return c.isConnected;
+				} ) ) {
+					checked.concat( target ? [ target ] : [] ).forEach( function ( c ) {
+						c.click();
+					} );
+					return;
+				}
 				const url = new URL( window.location.href );
 				if ( opt.value ) {
 					url.searchParams.set( param, opt.value );
@@ -95,6 +113,9 @@
 		const dialog = ready();
 		if ( dialog ) {
 			run( dialog );
+			dialog.addEventListener( 'sgs-shop-filters:rebuilt', function () {
+				run( dialog );
+			} );
 			return;
 		}
 		const observer = new MutationObserver( function () {
@@ -102,6 +123,9 @@
 			if ( found ) {
 				observer.disconnect();
 				run( found );
+				found.addEventListener( 'sgs-shop-filters:rebuilt', function () {
+					run( found );
+				} );
 			}
 		} );
 		observer.observe( document.body, { childList: true, subtree: true } );

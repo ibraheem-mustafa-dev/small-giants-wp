@@ -545,10 +545,17 @@ function enqueue_styles(): void {
 		function_exists( 'is_shop' ) &&
 		( is_shop() || is_post_type_archive( 'product' ) || is_tax( 'product_cat' ) || is_tax( 'product_tag' ) )
 	) {
+		wp_register_script(
+			'sgs-shop-filters-accordion',
+			get_theme_file_uri( 'assets/js/sgs-shop-filters-accordion.js' ),
+			array(),
+			asset_version( 'assets/js/sgs-shop-filters-accordion.js', $theme_version ),
+			true
+		);
 		wp_enqueue_script(
 			'sgs-shop-filters',
 			get_theme_file_uri( 'assets/js/sgs-shop-filters.js' ),
-			array(),
+			array( 'sgs-shop-filters-accordion' ),
 			asset_version( 'assets/js/sgs-shop-filters.js', $theme_version ),
 			true // Load in footer — no DOM dependency at parse time.
 		);

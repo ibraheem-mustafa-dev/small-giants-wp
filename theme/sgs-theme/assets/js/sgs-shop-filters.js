@@ -136,72 +136,11 @@
 		}
 		dialog.appendChild( scrollWrap );
 
-		/* ── Collapse each filter group into a <details> accordion ───────────
-		 *
-		 * WHY: the panel is 1154px tall against an 818px viewport, which is the
-		 * reason `position: sticky` does nothing — a sticky element with no
-		 * travel room cannot move. Capping its height was measured to be inert
-		 * (852px is still taller than the 829px product column), so shortening
-		 * the CONTENT is the load-bearing fix. Collapsed groups shorten it at
-		 * every catalogue size, which capping never does.
-		 *
-		 * <details>/<summary> rather than hand-rolled buttons: native keyboard
-		 * support, native open/close semantics, and screen readers announce the
-		 * expanded state without any ARIA of our own. The heading is MOVED
-		 * inside the summary rather than replaced, so it keeps its own styling
-		 * and stays a real <h3> in the outline.
-		 *
-		 * Runs before the dialog is populated, so both presentations — the
-		 * desktop sidebar and the mobile sheet — get it from one pass. */
-		function buildAccordion( root ) {
-			const headings = Array.from(
-				root.querySelectorAll( '.sgs-shop-filters__group-heading' )
-			);
-
-			/* A heading with the class `sgs-filter-open` (the block's Additional CSS
-			   class) starts its group expanded. With none marked, the first
-			   group stays open so the panel never reads as an empty list of
-			   words, and every other one starts collapsed, which is what
-			   actually buys the height back. */
-			const anyMarked = headings.some( function ( h ) {
-				return h.classList.contains( 'sgs-filter-open' );
-			} );
-
-			headings.forEach( function ( heading, index ) {
-				const details = document.createElement( 'details' );
-				details.className = 'sgs-shop-filters__group';
-
-				if ( anyMarked ? heading.classList.contains( 'sgs-filter-open' ) : 0 === index ) {
-					details.open = true;
-				}
-
-				const summary = document.createElement( 'summary' );
-				summary.className = 'sgs-shop-filters__group-summary';
-
-				/* Collect everything between this heading and the next one:
-				   a filter group is a heading plus however many siblings follow
-				   it, and that count differs per filter type. */
-				const contents = [];
-				let node = heading.nextElementSibling;
-				while ( node && ! node.classList.contains( 'sgs-shop-filters__group-heading' ) ) {
-					contents.push( node );
-					node = node.nextElementSibling;
-				}
-
-				/* Nothing to collapse means no accordion — a lone heading with
-				   no controls would become an empty expander. */
-				if ( ! contents.length ) {
-					return;
-				}
-
-				heading.parentNode.insertBefore( details, heading );
-				summary.appendChild( heading );
-				details.appendChild( summary );
-				contents.forEach( function ( el ) {
-					details.appendChild( el );
-				} );
-			} );
-		}
+		/* Filter groups collapse into <details> accordions (sgs-shop-filters-accordion.js):
+		 * the panel is taller than the viewport, and collapsed groups are what give
+		 * the sticky sidebar room to travel. Built before the dialog is populated, so
+		 * the desktop sidebar and the mobile sheet get it from one pass. */
+		const accordion = window.sgsShopFiltersAccordion;
 
 		/* The boolean attribute toggle + live result count are built by the
 		 * sibling module sgs-shop-filters-extras.js (this file is already over
@@ -209,9 +148,14 @@
 		 * watches for this dialog to appear via its own MutationObserver, so
 		 * it needs no hook or load-order dependency from this file. */
 
-		buildAccordion( scrollWrap );
+		if ( accordion ) {
+			accordion.build( scrollWrap );
+		}
 
 		originalAside.replaceWith( dialog );
+		if ( accordion ) {
+			accordion.watch( dialog );
+		}
 
 		const heading = dialog.querySelector( '.sgs-shop-filters__heading' );
 		const closeBtn = dialog.querySelector( '.sgs-shop-filters__close' );
