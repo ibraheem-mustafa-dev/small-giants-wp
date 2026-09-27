@@ -683,14 +683,14 @@
    fields, then the result's note), so the result inside drops its own card.
    A file drop zone is its own panel. */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline:has(> .sgs-form-field:not(.sgs-form-field--file)) {
-	padding: 22px;
+	padding: 20px;
 	border: 1px solid var(--wp--preset--color--border, #D4DBE5);
 	background-color: var(--wp--preset--color--surface-alt, #fff);
 }
 
 /* A table of boxes with row headings keeps the 32px heading gutter inside the panel. */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline:has(> .sgs-form-field:not(.sgs-form-field--file)):has(.sgs-form-field__row-heading) {
-	padding-left: calc(22px + 32px);
+	padding-left: calc(20px + 32px);
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline:has(> .sgs-form-field) .sgs-choice-flow-result {
@@ -1468,6 +1468,20 @@
 @container sgs-choice-flow-showcase (min-width: 600px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__footer {
 		padding: 8px 28px calc(8px + env(safe-area-inset-bottom, 0px));
+	}
+}
+
+/* Showcase at every width: Back and the step's action share one row, Back
+   at its own width and the action taking the rest (both stay 44px+ tall). */
+@media (max-width: 480px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__footer-row {
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__footer-actions {
+		flex: 1 1 auto;
+		width: auto;
 	}
 }
 
