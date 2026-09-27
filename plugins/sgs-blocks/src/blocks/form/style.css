@@ -102,6 +102,39 @@
 	display: none;
 }
 
+/* Table headings for small boxes (field_headings()): a column heading above
+   the box ("SPH") and a row heading in the gutter to the left of the row ("R");
+   a form step holding row headings keeps that gutter. */
+.sgs-form-field__column-heading {
+	display: block;
+	margin-bottom: 8px;
+	color: var(--wp--preset--color--text-muted, #555);
+	font-size: 11px;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.sgs-form-field:has(> .sgs-form-field__row-heading) {
+	position: relative;
+}
+
+.sgs-form-field__row-heading {
+	position: absolute;
+	right: 100%;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	width: 32px;
+	height: 3rem;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.sgs-form-step:has(.sgs-form-field__row-heading),
+.sgs-form__inner:has(> .sgs-form-field > .sgs-form-field__row-heading) {
+	padding-left: 32px;
+}
+
 /* Steps span full width inside the form grid */
 .sgs-form-step {
 	grid-column: 1 / -1;
@@ -538,6 +571,44 @@ select.sgs-form-field__input {
 .sgs-form-field__file-hint {
 	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
 	color: var(--wp--preset--color--text-muted, #555);
+}
+
+/* The panel look (zoneStyle 'panel'): a quiet 1px dashed panel on the surface
+   colour holding the prompt, the help line and a Choose file cue; the size
+   limit stays for screen readers. The whole panel is the file input's target. */
+.sgs-form-field__file-zone--panel .sgs-form-field__file-label {
+	gap: 10px;
+	padding: 32px 24px;
+	border-width: 1px;
+	border-color: var(--wp--preset--color--border-strong, var(--wp--preset--color--border, #ccc));
+	border-radius: 0;
+	background-color: var(--wp--preset--color--surface-alt, #fff);
+}
+
+.sgs-form-field__file-zone--panel .sgs-form-field__file-hint {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.sgs-form-field__file-zone--panel .sgs-form-field__help {
+	margin: 0;
+}
+
+.sgs-form-field__file-button {
+	display: inline-flex;
+	align-items: center;
+	min-height: 40px;
+	margin-top: 6px;
+	padding: 0 20px;
+	border: 1px solid currentColor;
+	color: var(--wp--preset--color--text, #1a202c);
+	font-size: 12px;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
 }
 
 .sgs-form-file__progress {

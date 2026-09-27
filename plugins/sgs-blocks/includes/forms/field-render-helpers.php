@@ -114,13 +114,39 @@ function field_label( string $field_id, array $attributes ): string {
 	}
 
 	$required = ! empty( $attributes['required'] );
+	// labelStyle 'hidden': read by screen readers only (the field's headings,
+	// placeholder or panel text say what it is for).
+	$hidden = 'hidden' === ( $attributes['labelStyle'] ?? 'visible' );
 
 	return sprintf(
-		'<label for="%s" class="sgs-form-field__label">%s%s</label>',
+		'<label for="%s" class="sgs-form-field__label%s">%s%s</label>',
 		esc_attr( $field_id ),
+		$hidden ? ' sgs-sr-only' : '',
 		esc_html( $label ),
 		$required ? ' <span class="sgs-form-field__required" aria-hidden="true">*</span><span class="sgs-sr-only">(required)</span>' : ''
 	);
+}
+
+/**
+ * Render a field's visual table headings: a short column heading above the
+ * box ("SPH") and a row heading to its left ("R"). Visual only (aria-hidden):
+ * the label stays the accessible name ("Right SPH").
+ *
+ * @param array $attributes Block attributes (columnHeading, rowHeading).
+ * @return string Headings HTML (empty if neither is set).
+ */
+function field_headings( array $attributes ): string {
+	$out = '';
+	foreach ( array(
+		'columnHeading' => 'sgs-form-field__column-heading',
+		'rowHeading'    => 'sgs-form-field__row-heading',
+	) as $key => $class ) {
+		$text = trim( (string) ( $attributes[ $key ] ?? '' ) );
+		if ( '' !== $text ) {
+			$out .= '<span class="' . $class . '" aria-hidden="true">' . esc_html( $text ) . '</span>';
+		}
+	}
+	return $out;
 }
 
 /**

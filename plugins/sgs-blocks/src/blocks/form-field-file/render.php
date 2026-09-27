@@ -22,6 +22,8 @@ $field_name  = $attributes['fieldName'] ?? '';
 $required    = ! empty( $attributes['required'] );
 $max         = absint( $attributes['maxSize'] ?? 10 );
 $upload_text = $attributes['uploadText'] ?? '';
+// zoneStyle 'panel': a plain panel holding the help line and a Choose file button.
+$is_panel    = 'panel' === ( $attributes['zoneStyle'] ?? 'dashed' );
 
 // allowedTypes is an array in the block schema — join for the HTML accept attribute.
 $allowed_types_raw = $attributes['allowedTypes'] ?? array( 'image/*', 'application/pdf' );
@@ -38,7 +40,7 @@ $drop_label = ! empty( $upload_text )
 
 echo field_open( $attributes, 'file' );
 echo field_label( $fid, $attributes );
-echo '<div class="sgs-form-field__file-zone">';
+echo '<div class="sgs-form-field__file-zone' . ( $is_panel ? ' sgs-form-field__file-zone--panel' : '' ) . '">';
 
 // aria-describedby wires the error span and help text (when present) so that
 // screen readers announce inline validation messages for this field.
@@ -59,6 +61,12 @@ printf(
 echo '<div class="sgs-form-field__file-label">';
 echo '<span>' . esc_html( $drop_label ) . '</span>';
 echo '<span class="sgs-form-field__file-hint">' . sprintf( esc_html__( 'Max %d MB', 'sgs-blocks' ), $max ) . '</span>';
+if ( $is_panel ) {
+	// The help line and a button-look cue sit inside the panel; the whole panel is the file input's target.
+	echo field_help( $fid, $attributes );
+	$button_label = trim( (string) ( $attributes['buttonLabel'] ?? '' ) );
+	echo '<span class="sgs-form-field__file-button" aria-hidden="true">' . esc_html( '' !== $button_label ? $button_label : __( 'Choose file', 'sgs-blocks' ) ) . '</span>';
+}
 echo '</div>';
 
 echo '<div class="sgs-form-file__progress" hidden>' . esc_html__( 'Uploading…', 'sgs-blocks' ) . '</div>';
@@ -74,5 +82,7 @@ printf(
 echo '</div>';
 
 echo field_error( $fid );
-echo field_help( $fid, $attributes );
+if ( ! $is_panel ) {
+	echo field_help( $fid, $attributes );
+}
 echo field_close();

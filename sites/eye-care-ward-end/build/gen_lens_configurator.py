@@ -156,16 +156,19 @@ def result(label, heading, body, fields=None):
                                          addToBasketLabel="Add to bag", buttonShowsTotal=True))])
 
 
-def rx_box(name, label, step, lo, hi, placeholder, required=False):
+def rx_box(name, label, step, lo, hi, placeholder, required=False, column="", row=""):
+    """One prescription box: labelled for screen readers ("Right SPH"), shown as the draft's small table with a
+    column heading on the first row and R / L in the row gutter."""
     return B("sgs/form-field-number", dict(fieldName=name, label=label, width="third", step=step, min=lo, max=hi,
-                                          placeholder=placeholder, required=required))
+                                          placeholder=placeholder, required=required, labelStyle="hidden",
+                                          columnHeading=column, rowHeading=row))
 
 
 TYPED = [
-    rx_box("rx_r_sph", "Right SPH", "0.25", "-30", "30", "-2.25", True),
-    rx_box("rx_r_cyl", "Right CYL", "0.25", "-10", "10", "-0.50"),
-    rx_box("rx_r_axis", "Right AXIS", "1", "0", "180", "180"),
-    rx_box("rx_l_sph", "Left SPH", "0.25", "-30", "30", "-2.00", True),
+    rx_box("rx_r_sph", "Right SPH", "0.25", "-30", "30", "-2.25", True, "SPH", "R"),
+    rx_box("rx_r_cyl", "Right CYL", "0.25", "-10", "10", "-0.50", column="CYL"),
+    rx_box("rx_r_axis", "Right AXIS", "1", "0", "180", "180", column="AXIS"),
+    rx_box("rx_l_sph", "Left SPH", "0.25", "-30", "30", "-2.00", True, row="L"),
     rx_box("rx_l_cyl", "Left CYL", "0.25", "-10", "10", "-0.25"),
     rx_box("rx_l_axis", "Left AXIS", "1", "0", "180", "175"),
 ]
@@ -173,7 +176,7 @@ TYPED_HELP = ("Copy the numbers exactly, including the + or −. If a box is emp
               "every prescription myself before anything is cut.")
 
 PHOTO = [B("sgs/form-field-file", dict(
-    fieldName="rx_photo", label="Photo of your prescription", required=True,
+    fieldName="rx_photo", label="Photo of your prescription", required=True, labelStyle="hidden", zoneStyle="panel",
     allowedTypes=["image/jpeg", "image/png", "image/webp"], maxSize=10,
     uploadText="Drop a photo or screenshot here",
     helpText="A phone photo of the paper copy is fine, as long as every number is readable."))]

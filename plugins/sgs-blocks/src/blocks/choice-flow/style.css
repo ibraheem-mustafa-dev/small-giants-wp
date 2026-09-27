@@ -657,7 +657,7 @@
 
 /* A step opened under its question (flow-inline.js) sits 20px below the
    options and fades in each time an option opens it. */
-.sgs-choice-flow .sgs-choice-flow__step--inline {
+.sgs-choice-flow .sgs-form-step.sgs-choice-flow__step--inline {
 	margin-top: 20px;
 	transition: none;
 	animation: sgs-choice-flow-panel-in 0.3s ease both;
@@ -674,7 +674,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.sgs-choice-flow .sgs-choice-flow__step--inline {
+	.sgs-choice-flow .sgs-form-step.sgs-choice-flow__step--inline {
 		animation: none;
 	}
 }

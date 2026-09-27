@@ -116,6 +116,29 @@
         "uploadText": {
             "type": "string",
             "default": ""
+        },
+        "labelStyle": {
+            "type": "string",
+            "enum": [
+                "visible",
+                "hidden"
+            ],
+            "default": "visible",
+            "description": "Whether the label shows above the field or is read by screen readers only (includes/forms/field-render-helpers.php::field_label)."
+        },
+        "zoneStyle": {
+            "type": "string",
+            "enum": [
+                "dashed",
+                "panel"
+            ],
+            "default": "dashed",
+            "description": "The drop zone's look: a dashed drop zone, or a plain panel holding the help line and a Choose file button."
+        },
+        "buttonLabel": {
+            "type": "string",
+            "default": "",
+            "description": "The panel look's button text; empty reads \"Choose file\"."
         }
     },
     "render": "file:./render.php",

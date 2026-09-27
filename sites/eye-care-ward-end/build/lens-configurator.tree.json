@@ -347,6 +347,8 @@
               "fieldName": "rx_photo",
               "label": "Photo of your prescription",
               "required": true,
+              "labelStyle": "hidden",
+              "zoneStyle": "panel",
               "allowedTypes": [
                 "image/jpeg",
                 "image/png",
@@ -386,7 +388,10 @@
               "min": "-30",
               "max": "30",
               "placeholder": "-2.25",
-              "required": true
+              "required": true,
+              "labelStyle": "hidden",
+              "columnHeading": "SPH",
+              "rowHeading": "R"
             }
           },
           {
@@ -399,7 +404,10 @@
               "min": "-10",
               "max": "10",
               "placeholder": "-0.50",
-              "required": false
+              "required": false,
+              "labelStyle": "hidden",
+              "columnHeading": "CYL",
+              "rowHeading": ""
             }
           },
           {
@@ -412,7 +420,10 @@
               "min": "0",
               "max": "180",
               "placeholder": "180",
-              "required": false
+              "required": false,
+              "labelStyle": "hidden",
+              "columnHeading": "AXIS",
+              "rowHeading": ""
             }
           },
           {
@@ -425,7 +436,10 @@
               "min": "-30",
               "max": "30",
               "placeholder": "-2.00",
-              "required": true
+              "required": true,
+              "labelStyle": "hidden",
+              "columnHeading": "",
+              "rowHeading": "L"
             }
           },
           {
@@ -438,7 +452,10 @@
               "min": "-10",
               "max": "10",
               "placeholder": "-0.25",
-              "required": false
+              "required": false,
+              "labelStyle": "hidden",
+              "columnHeading": "",
+              "rowHeading": ""
             }
           },
           {
@@ -451,7 +468,10 @@
               "min": "0",
               "max": "180",
               "placeholder": "175",
-              "required": false
+              "required": false,
+              "labelStyle": "hidden",
+              "columnHeading": "",
+              "rowHeading": ""
             }
           },
           {

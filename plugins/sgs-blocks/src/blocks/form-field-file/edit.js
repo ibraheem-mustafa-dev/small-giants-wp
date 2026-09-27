@@ -7,6 +7,8 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import FieldLabelLayoutPanel from '../../components/FieldLabelLayoutPanel';
+import ZonePanel from './ZonePanel';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -198,6 +200,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
+				<FieldLabelLayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<ZonePanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<div { ...blockProps }>

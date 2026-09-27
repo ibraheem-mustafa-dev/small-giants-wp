@@ -6,6 +6,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import FieldLabelLayoutPanel from '../../components/FieldLabelLayoutPanel';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -201,6 +202,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
+				<FieldLabelLayoutPanel attributes={ attributes } setAttributes={ setAttributes } showHeadings />
 			</InspectorControls>
 
 			<div { ...blockProps }>

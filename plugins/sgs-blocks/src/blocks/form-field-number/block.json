@@ -109,6 +109,25 @@
         "conditionalValue": {
             "type": "string",
             "default": ""
+        },
+        "labelStyle": {
+            "type": "string",
+            "enum": [
+                "visible",
+                "hidden"
+            ],
+            "default": "visible",
+            "description": "Whether the label shows above the field or is read by screen readers only (includes/forms/field-render-helpers.php::field_label)."
+        },
+        "columnHeading": {
+            "type": "string",
+            "default": "",
+            "description": "A short visual heading above the box (e.g. \"SPH\"), for boxes laid out as a small table; the label stays the accessible name."
+        },
+        "rowHeading": {
+            "type": "string",
+            "default": "",
+            "description": "A short visual heading to the left of the box (e.g. \"R\"), set on the first box of each row."
         }
     },
     "render": "file:./render.php",
