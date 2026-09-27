@@ -3411,3 +3411,11 @@ body.sgs-shop-active-bar .sgs-shop-filters .wp-block-woocommerce-product-filter-
 	align-items: center;
 	gap: 8px;
 }
+
+/* WooCommerce's classic sheet gives the sort form a 1em bottom margin and a float,
+   which in a block toolbar makes the sort's wrapper 14px taller than its control
+   and pushes the controls beside it off-centre. */
+.wp-block-woocommerce-catalog-sorting form.woocommerce-ordering {
+	margin: 0;
+	float: none;
+}

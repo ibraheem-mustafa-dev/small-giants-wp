@@ -52,7 +52,20 @@
               },
               "contentWidth": {
                 "desktop": "full"
-              }
+              },
+              "padding": {
+                "desktop": {
+                  "bottom": "24px"
+                }
+              },
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "1px",
+                "left": "0px"
+              },
+              "borderStyle": "solid",
+              "borderColour": "border"
             },
             "innerBlocks": [
               {

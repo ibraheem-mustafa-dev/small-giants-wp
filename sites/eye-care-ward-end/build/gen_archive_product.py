@@ -112,9 +112,13 @@ tree = [
             "maxWidth": {"desktop": "1440px"},
             "padding": {"desktop": {"top": "48px", "right": "52px", "bottom": "90px", "left": "52px"},
                         "mobile": {"top": "28px", "right": "20px", "bottom": "60px", "left": "20px"}}}, [
+            # The title row ends 24px above a hairline in the border colour (the draft's, measured at every width).
             B("sgs/container", {"tagName": "div", "className": "sgs-shop-toolbar", "layout": "flex",
                                 "justifyContent": "space-between", "alignItems": "flex-end", "flexWrap": "wrap",
-                                "gap": {"desktop": "16px"}, "contentWidth": {"desktop": "full"}}, [
+                                "gap": {"desktop": "16px"}, "contentWidth": {"desktop": "full"},
+                                "padding": {"desktop": {"bottom": "24px"}},
+                                "borderWidth": {"top": "0px", "right": "0px", "bottom": "1px", "left": "0px"},
+                                "borderStyle": "solid", "borderColour": "border"}, [
                 B("sgs/container", {"tagName": "div", "contentWidth": {"desktop": "full"}}, [
                     B("sgs/text", {"text": "Shop", "fontSize": {"desktop": 12}, "fontSizeUnit": "px",
                                    "letterSpacing": {"desktop": 0.24}, "letterSpacingUnit": "em",
