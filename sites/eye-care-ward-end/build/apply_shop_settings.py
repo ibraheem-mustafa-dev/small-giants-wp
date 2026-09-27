@@ -22,6 +22,7 @@ SETTINGS = {
     'sgs_shop_filter_swatch_hover': '112',
     'sgs_shop_sort_arrow': 'browser',
     'sgs_shop_gap_phone': '10',
+    'sgs_shop_drawer_caps': '1',
     'sgs_shop_filter_panel_style': 'plain',
     'sgs_shop_filters_width': '270',
     'sgs_shop_layout_gap': '40',

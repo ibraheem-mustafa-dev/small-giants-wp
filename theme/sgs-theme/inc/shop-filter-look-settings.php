@@ -2,10 +2,10 @@
 /**
  * The look of the shop's filter controls (Customizer > Shop Filters): the
  * option text size on chips and one-choice segments, how far a colour swatch
- * grows when pointed at, the gap between products on phones, and whether the
- * sort menu draws the theme's arrow or the browser's own. Emitted as custom
- * properties and a body class that assets/css/woocommerce.css reads, so no
- * element carries an inline style.
+ * grows when pointed at, the gap between products on phones, capitals on the
+ * drawer's buttons, and whether the sort menu draws the theme's arrow or the
+ * browser's own. Emitted as custom properties and body classes that
+ * assets/css/woocommerce.css reads, so no element carries an inline style.
  *
  * @package SGS\Theme
  */
@@ -66,6 +66,22 @@ function register_shop_filter_look_settings( \WP_Customize_Manager $wp_customize
 			'section' => 'sgs_shop_filters',
 			'type'    => 'number',
 			'label'   => __( 'Gap between products on phones, both ways (px, blank for 16 across and the row gap down)', 'sgs-theme' ),
+		)
+	);
+
+	$wp_customize->add_setting(
+		'sgs_shop_drawer_caps',
+		array(
+			'default'           => false,
+			'sanitize_callback' => 'wp_validate_boolean',
+		)
+	);
+	$wp_customize->add_control(
+		'sgs_shop_drawer_caps',
+		array(
+			'section' => 'sgs_shop_filters',
+			'type'    => 'checkbox',
+			'label'   => __( 'Drawer buttons in capitals ("SHOW 16 FRAMES")', 'sgs-theme' ),
 		)
 	);
 
@@ -141,7 +157,8 @@ function output_shop_filter_look_style(): void {
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\output_shop_filter_look_style', 20 );
 
 /**
- * `sgs-shop-sort-native` on <body> when the sort menu keeps the browser's arrow.
+ * `sgs-shop-sort-native` on <body> when the sort menu keeps the browser's arrow,
+ * `sgs-shop-drawer-caps` when the drawer's buttons are in capitals.
  *
  * @param string[] $classes Body classes.
  * @return string[]
@@ -149,6 +166,9 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\output_shop_filter_look_styl
 function add_shop_filter_look_body_class( array $classes ): array {
 	if ( 'browser' === get_theme_mod( 'sgs_shop_sort_arrow', 'theme' ) ) {
 		$classes[] = 'sgs-shop-sort-native';
+	}
+	if ( wp_validate_boolean( get_theme_mod( 'sgs_shop_drawer_caps', false ) ) ) {
+		$classes[] = 'sgs-shop-drawer-caps';
 	}
 	return $classes;
 }

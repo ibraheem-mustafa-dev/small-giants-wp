@@ -2641,6 +2641,49 @@ body.woocommerce-cart .with-empty-cart-icon,
 	padding-right: 6px;
 }
 
+/* The plain drawer's header is ruled off full width, and its footer buttons
+   are the site's own buttons: Apply the primary preset, Clear the outline
+   preset (theme.json settings.custom.buttonPresets). */
+body.sgs-shop-filters-plain .sgs-shop-filters:modal .sgs-shop-filters__header {
+	margin: 0 -20px;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+}
+
+body.sgs-shop-filters-plain .sgs-shop-filters:modal .sgs-shop-filters__heading {
+	margin: 0;
+	font-weight: 500;
+}
+
+body.sgs-shop-filters-plain .sgs-shop-filters__sheet-footer .sgs-shop-filters__apply,
+body.sgs-shop-filters-plain .sgs-shop-filters__sheet-footer .sgs-shop-filters__clear-all {
+	min-height: var(--wp--custom--button-presets--primary--min-height, 44px);
+	font-size: var(--wp--custom--button-presets--primary--font-size, var(--wp--preset--font-size--small));
+	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	border-radius: var(--wp--custom--button-presets--primary--border-radius, 0);
+	text-decoration: none;
+}
+
+body.sgs-shop-filters-plain .sgs-shop-filters__sheet-footer .sgs-shop-filters__apply {
+	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
+	border: 0;
+}
+
+body.sgs-shop-filters-plain .sgs-shop-filters__sheet-footer .sgs-shop-filters__clear-all {
+	padding: 0 18px;
+	background: transparent;
+	color: var(--wp--custom--button-presets--outline--text, var(--wp--preset--color--text));
+	border: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+}
+
+/* Customizer > Shop Filters "Drawer buttons in capitals" (inc/shop-filter-look-settings.php). */
+body.sgs-shop-drawer-caps .sgs-shop-filters__sheet-footer .sgs-shop-filters__apply,
+body.sgs-shop-drawer-caps .sgs-shop-filters__sheet-footer .sgs-shop-filters__clear-all {
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+}
+
 /* The drawer's side margin matches the rows' own 20px inset. */
 body.sgs-shop-filters-plain #sgs-shop-filters:modal,
 body.sgs-shop-filters-plain .sgs-shop-filters:modal {
