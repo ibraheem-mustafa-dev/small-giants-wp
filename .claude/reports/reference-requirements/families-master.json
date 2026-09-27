@@ -215,7 +215,7 @@
     "resn"
    ],
    "needed_by_count": 2,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/nav-bar-menu::triggerDetach",
@@ -227,11 +227,9 @@
     "::triggerDetachZIndex",
     "sgs/site-header::headerPassThrough (resn)"
    ],
-   "note": "RE-SCOPED from five references to TWO. The first pass inflated this family by absorbing every pinned thing group A had clustered together. Re-read against the tree and the cells: studionamma's bottom strip is covered (M-06), and lamalama's top-right card and lusion's scroll indicator are decorative pinned elements, not header controls that need a header attribute. What is genuinely missing is ONE mechanism for ONE reference: buck's header scrolls away while its burger detaches into a fixed round chip with its own z-index (9100 over the header's 1400) and its own threshold (300-360px at 1440, 180-240px at 768), which buck.md states directly — 'The header is not the sticky element, the burger is'. Every SGS scroll behaviour acts on the header or a header row; nothing keeps a single CONTROL alive after its header has gone or changes that control's form. resn rides along only under DEC-01(b), and M-52 (band pass-through) is the mechanism that actually makes resn clonable as a header. U-14 (2026-09-25): the detaching chip, a second copy of the burger printed outside the header and shown once the header burger is off screen past a per-tier threshold. Live: hidden at scrollY 300, 68.6 x 68.6 fixed at 360 (buck's cells); resn rides M-52. PARTIAL again 2026-09-27: this family absorbed F-A-19 (detached fixed controls outside the header box) but only its TRIGGER case was built. lamalama's card pinned top-right (160x326 at top 16 / right 16 at 1440, absent at 375/768; header-shell secondary_blocks.contactCardTopRight) is not a trigger and nothing expresses it. Open as U-18 G8, stopped at NO GO (.claude/reports/2026-09-27-u18-g6-g8-design.md sections 8-9 hold the spec a future G8 needs).",
-   "uncovered_references": [
-    "lamalama"
-   ],
-   "uncovered_count": 1
+   "note": "RE-SCOPED from five references to TWO. The first pass inflated this family by absorbing every pinned thing group A had clustered together. Re-read against the tree and the cells: studionamma's bottom strip is covered (M-06), and lamalama's top-right card and lusion's scroll indicator are decorative pinned elements, not header controls that need a header attribute. What is genuinely missing is ONE mechanism for ONE reference: buck's header scrolls away while its burger detaches into a fixed round chip with its own z-index (9100 over the header's 1400) and its own threshold (300-360px at 1440, 180-240px at 768), which buck.md states directly — 'The header is not the sticky element, the burger is'. Every SGS scroll behaviour acts on the header or a header row; nothing keeps a single CONTROL alive after its header has gone or changes that control's form. resn rides along only under DEC-01(b), and M-52 (band pass-through) is the mechanism that actually makes resn clonable as a header. U-14 (2026-09-25): the detaching chip, a second copy of the burger printed outside the header and shown once the header burger is off screen past a per-tier threshold. Live: hidden at scrollY 300, 68.6 x 68.6 fixed at 360 (buck's cells); resn rides M-52. 2026-09-27: this family absorbed F-A-19 (detached fixed controls outside the header box) but only its TRIGGER case is built. lamalama's card pinned top-right (160x326 at top 16 / right 16 at 1440, absent at 375/768; header-shell secondary_blocks.contactCardTopRight) is an accepted difference under DEC-18; its rebuild is parked in .claude/plans/2026-09-27-g8-screen-corner-pin-plan.md.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-09",
@@ -2256,6 +2254,15 @@
     "(c) None this wave: record them as clone-time divergences and build them when a client build asks."
    ],
    "recommendation": "(b). It is the only option that keeps U-12 parallel-safe AND finishable, and every one of the four is furniture a paying client site needs anyway, so the work is not spent on the reference roster alone. The owner picks the four, not the engineer, because the trade is business value against clone completeness."
+  },
+  {
+   "id": "DEC-18",
+   "title": "lamalama's GET IN TOUCH card pinned to the top-right corner",
+   "families": [
+    "M-08"
+   ],
+   "why": "Nothing in the framework pins an authored block to a screen corner. U-18 G8 stopped at NO GO on 2026-09-27 (.claude/reports/2026-09-27-u18-g6-g8-design.md sections 8-9) and the header copies need a new reference-capture method before more building.",
+   "resolution": "Accepted difference (Bean, 2026-09-27). The card is not built in Wave 3C; M-08 is covered by acceptance for lamalama. The rebuild is parked in .claude/plans/2026-09-27-g8-screen-corner-pin-plan.md."
   }
  ],
  "engineering_notes": [

@@ -100,7 +100,8 @@ and `::engineering_notes`. Do not restate them elsewhere. What they change here:
 | DEC-14 | "The row's own surface is the trigger", built in U-14 as a SEPARATE tier on/off attribute, `sgs/nav-bar-menu::triggerSurface`, not a fourth `triggerMode` value (Bean, with both council members, 2026-09-25): `triggerMode` chooses what the button shows, the surface its hit area, so every presentation keeps it. Full text: `families-master.json::decisions` DEC-14 `resolution` |
 | DEC-15 | Amend FR-36-6: the drawer's own × becomes optional per `closeStyle` and per tier. Written into Spec 36 at Step 0b, before U-11 builds |
 | DEC-16, DEC-17 | NOT accepted as written. Their scope floor and four-of-eight split were not accepted; the plan builds every family and all eight furniture blocks (section 1c), smallest-support family last inside each unit |
-| DEC-01, DEC-02, DEC-07 | The three accepted divergences (section 1d). Nothing is built for them. M-08's trigger case is built, in U-14; its non-trigger card (lamalama) is U-18 G8. DEC-13: the Lottie player is built as U-17 (section 1h) |
+| DEC-01, DEC-02, DEC-07 | The three accepted divergences (section 1d). Nothing is built for them. M-08's trigger case is built, in U-14; its non-trigger card (lamalama) is DEC-18. DEC-13: the Lottie player is built as U-17 (section 1h) |
+| DEC-18 | lamalama's GET IN TOUCH card pinned to the top-right corner: accepted difference (Bean, 2026-09-27). Not built in Wave 3C; M-08 is covered by acceptance. Rebuild parked in `.claude/plans/2026-09-27-g8-screen-corner-pin-plan.md` |
 | ENG-01 | z-index becomes a per-tier attribute defaulting to 100. Inside U-1 |
 | ENG-02 | `accordionExclusive` boolean, default true. Inside U-9 |
 | ENG-03 | Six `sgs/site-header` attributes are in `block.json` and rendered but missing from the framework DB. Step 0a |
@@ -210,7 +211,7 @@ visually. `none` means neither.
 | ‖ | U-12 — **DONE** | Header and footer furniture: local-time clock, language switch, store selector, wishlist (link, saved-items panel, Save for later), theme toggle with an automatic dark palette, back-to-top and account as `sgs/button` link sources, sound mute as an `sgs/audio` style (Bean, 2026-09-25). `headerEssential` on `product-search` only | M-18 | none | high | six new directories (`local-time/`, `language-switch/`, `store-selector/`, `theme-toggle/`, `wishlist-link/`, `wishlist-panel/`), plus `button/`, `audio/`, `product-card/`, `cart/`, `product-search/block.json`, `includes/wishlist/`, `includes/helpers-link-source.php`, `scripts/derive-dark-palette.py` and the theme's dark-mode files |
 | ‖ | U-15 — **DONE** | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*`, new `notice-message/` |
 | ‖ | U-17 — **DONE** | The Lottie player (DEC-13, section 1h): Spec 38 Tier H, the fourth media type, the wrapper background and the logo substrate | M-33 | design | high | `includes/lottie-*.php`, `src/shared/effects/{fx-lottie,lottie-adapter}.js`, `src/vendor-modules/lottie-light.js`, the media atoms, `media/`, `hero/`, `responsive-logo/`, `class-sgs-container-wrapper.php` |
-| 15 | U-18 — **open** (G1-G5, G9 live; G6, G7, G10, G11 live and measured 2026-09-27; **G8 stopped at NO GO, rebuild next**) | Copy-parity gaps found composing Gate 3C item 4's two copies. Done and live: G3 custom colours reach the page (gate `check-custom-colour-survives.py`), G1 burger width, G2 `header-box` drawer anchor, G4 narrow panels centre, G5 by composition. Live (report `reports/visual-diff/u18-copy-parity-2026-09-27.md`): G6 burger bar size, G7 drawer `stretch`, G10 narrow desktop panel stacks (four `@container` leaks), G11 group-heading over-reach plus the eyebrow selector-list bug. Stopped: G8 pin a container to a screen corner (plan §5 step 2a; design report §8-§9); not covered: `lamalama`/`header-shell`/`1440`/`contactCardTopRight`, reason: nothing expresses a viewport-pinned block yet. Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | G6 `nav-bar-menu/{block.json,style.css,BurgerPanel.js}`, `nav-menu-trigger-css.php`; G7 `nav-drawer/{block.json,render.php,edit.js}`; G8 `container/{block.json,edit.js}`, `class-sgs-container-wrapper.php`, a footer portal; G10/G11 `mega-panel/{render.php,style.css}` |
+| 15 | U-18 — **open** (G1-G7, G9-G11 live; G8 accepted as DEC-18 and parked; **both copies fail Bean's eye 2026-09-27: next is `.claude/plans/2026-09-27-reference-capture-method-plan.md`**) | Copy-parity gaps found composing Gate 3C item 4's two copies. Done and live: G3 custom colours reach the page (gate `check-custom-colour-survives.py`), G1 burger width, G2 `header-box` drawer anchor, G4 narrow panels centre, G5 by composition. Live (report `reports/visual-diff/u18-copy-parity-2026-09-27.md`): G6 burger bar size, G7 drawer `stretch`, G10 narrow desktop panel stacks (four `@container` leaks), G11 group-heading over-reach plus the eyebrow selector-list bug. G8 (pin a block to a screen corner) stopped at NO GO and is accepted as DEC-18, parked in `2026-09-27-g8-screen-corner-pin-plan.md`. Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | G6 `nav-bar-menu/{block.json,style.css,BurgerPanel.js}`, `nav-menu-trigger-css.php`; G7 `nav-drawer/{block.json,render.php,edit.js}`; G8 `container/{block.json,edit.js}`, `class-sgs-container-wrapper.php`, a footer portal; G10/G11 `mega-panel/{render.php,style.css}` |
 
 **U-1 — done** (live `reports/visual-diff/container-2026-09-23.md`, `nav-bar-menu-2026-09-23.md` and
 `nav-drawer-2026-09-23.md`, each `verdict: PASS`). Shipped: mega close-grace reads `submenuCloseGrace`; force-solid paints the header's own
@@ -457,33 +458,21 @@ Live and measured 2026-09-27 (design `.claude/reports/2026-09-27-u18-g6-g8-desig
   (c598d260f). `style.css` lists a direct-child form for the frontend and a one-level-down form for the editor's
   block-list wrapper. Exit: the Indus row labels move back from `sgs/text` to `sgs/heading` with their own styles.
 
-**G8 STOPPED at NO GO (2026-09-27), plan §5 step 2a.** `sgs/container::pinToScreen`/`pinInset` is not built. The
-design's mechanism ("printed at `wp_footer` like the scrim") does not hold — the scrim is not a `render_block`
-filter and portals only a CSS-free `aria-hidden` div. The revision that answered that was re-run past two
-reviewers: census VERIFIED all 14 facts, adversarial returned NO GO on two re-verified grounds (the container
-wrapper has no editor branch, so `position:fixed` covers the canvas; and a pinned container's output can carry
-three or more `<style>` tags, which a single front-split strands away from the CSS collector). One revision was
-permitted and is spent. Full verdicts and the spec a future G8 needs are in the design report §8 and §9.
-**Gate 3C item 4 therefore cannot pass yet**: lamalama's GET IN TOUCH card is one of its exit cells.
-- Copies finished 2026-09-27 by composition (trees in `plugins/sgs-blocks/scripts/nav-qa/gate3c/`), live report
-  `reports/visual-diff/u18-copy-parity-2026-09-27.md` (verdict PASS for G6, G7, G10, G11): lamalama 75/76 (only the
-  corner card), Indus 23/23, axe 0 on four open menus. Also fixed on the way: `sgs/button` rendered as a link lost its
-  colour to theme.json's `link:focus` when focused by a click or script (076279a31, `button/style.css`). M-13, M-16,
-  M-17, M-39 are `covered`; M-08 is `partial` (F-A-19's non-trigger card fell out when M-08 was scoped to triggers).
-  Evidence pack published to Bean (https://claude.ai/artifact/TP1uzkbxQxthan7DLzBkNg); his item 4 decision is open.
-- **Next: rebuild G8 (the corner card) as a fresh design gate.** Bean (2026-09-27): it should be a standard fix,
-  because the framework already renders floating UI separately at `wp_footer`:
-  `plugins/sgs-blocks/includes/class-sgs-floating-ui-renderer.php` (`Sgs_Floating_UI_Renderer::register()` /
-  `::render()`, back-to-top and reading progress, Spec 18 `.claude/specs/18-SGS-FLOATING-UI.md`). Start the design
-  from that precedent: content that is authored for the floating layer and printed there, instead of lifting an
-  in-page `sgs/container` out of the block tree (the NO GO mechanism). Two cautions from U-14 (row 12) apply: the
-  renderer's container is `aria-hidden` (a card with a real link cannot sit inside it as is), and FR-36-8's
-  priority-plus-More text contradicts reusing it unchanged; read both before designing. The design must still answer design report
-  §9 (a)-(e): every `<style>` tag reaches the CSS collector, the editor shows the card without it covering the
-  canvas, behaviour inside `sgs/nav-drawer`/`sgs/modal`, its own z-index token (clear of `sgs/whatsapp-cta` 200 and
-  `sgs/notice-banner` 1000), and the portal-conformance detector owed at six `wp_footer` adopters. Exit: lamalama's
-  card 160x326 at top 16 / right 16 at 1440, absent at 375 and 768, measured by `u18-copy-probe.mjs` (its `card`
-  cell); then M-08 back to `covered` and Gate 3C items 1 and 4 re-assessed.
+**G8 STOPPED at NO GO (2026-09-27), then accepted as DEC-18 (Bean, 2026-09-27).** The design lifted an in-page
+`sgs/container` to `wp_footer`; two reviewers returned NO GO (no editor branch, so `position:fixed` covers the canvas;
+several `<style>` tags stranded from the CSS collector; design report §8-§9). lamalama's corner card is an accepted
+difference for Wave 3C and the rebuild brief is parked in `.claude/plans/2026-09-27-g8-screen-corner-pin-plan.md`.
+- Copies composed 2026-09-27 (trees in `plugins/sgs-blocks/scripts/nav-qa/gate3c/`). The live report
+  `reports/visual-diff/u18-copy-parity-2026-09-27.md` (lamalama 75/76, Indus 23/23, axe 0) measured box positions and
+  widths only, so it is a geometry check, never a copy verdict. It still proves G6, G7, G10, G11 and the `sgs/button`
+  focus-colour fix (076279a31, `button/style.css`). M-13, M-16, M-17, M-39 are `covered`; M-08 is covered by DEC-18.
+- **Both copies FAIL Bean's eye (2026-09-27, R-31-13).** lamalama: wrong and missing item glyphs, the missing
+  "This is Us" media circle, hover markers, hover colours, button text scramble, item fade-in, the slide-open drawer,
+  a pill that is too small and does not scale with the viewport, pill text that blocks the click, and middle text
+  hidden at 375 (L1-L10). Indus: text sizes, every hover colour and motion, mega-panel spacing and order, and the
+  drawer's order and contents (I-1 to I-3). The cause is proven: `u18-copy-probe.mjs` reads no type, hover, motion
+  or order, and the draft's stylesheet was never parsed. Full list and the method questions:
+  `.claude/plans/2026-09-27-reference-capture-method-plan.md`. **Next is that plan, not more fixes.**
 - Residue, named (not built): `widthType: fit` and a label's `fullWidth: false` do not hold inside a stretching flex
   column, and `sgs/mega-aside` has no alignment control (worked around with flex-row wrappers); the Indus drawer's
   fourth social is Twitter because no block draws the draft's flat white Google G; lamalama's drawer menu has no
@@ -688,14 +677,9 @@ Gate 3C passes when:
    co-authoritative (R-31-13).
 5. Spec 36, Spec 37, the verify doc and `LEDGER.md` state the model.
 
-**Status 2026-09-27.** Items 2, 3 and 5 pass. Item 1 is open on M-08 (partial: lamalama's corner card, found to
-have fallen out of the table when F-A-19 merged into a trigger-only family) and item 4 on the same card: U-18 G8
-stopped at NO GO. Everything else in item 4 measures within 2px (lamalama 75/76, Indus 23/23, live report
-`reports/visual-diff/u18-copy-parity-2026-09-27.md`). The evidence pack is published
-(https://claude.ai/artifact/TP1uzkbxQxthan7DLzBkNg) and Bean has been pinged; his decision is open.
-
-Bean's session for item 4 is booked at the last unit's close, with the evidence pack pre-built
-and an external ping rather than an in-session message.
+**Status 2026-09-27.** Items 2, 3 and 5 pass. Item 1 passes: M-08's one uncovered cell, lamalama's corner card,
+is accepted as DEC-18 (Bean, 2026-09-27). Item 4 FAILS on Bean's eye: both copies are far from visual copies, and
+the 75/76 and 23/23 counts measured geometry only. Next: `.claude/plans/2026-09-27-reference-capture-method-plan.md`.
 
 ## 8. Wave 4 preconditions
 

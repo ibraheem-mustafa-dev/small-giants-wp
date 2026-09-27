@@ -4,6 +4,9 @@ verdict: PASS
 intent_capture_passed: true
 scope: the four gaps built today and the copies they finish. Gate 3C item 4 as a whole stays OPEN: lamalama's
 corner "GET IN TOUCH" card cannot be expressed (G8 stopped at NO GO, design report §8-§9).
+limit: this report measures box positions and widths only (no type, hover, motion or element order), so it is
+never a copy verdict. Bean's eye failed both copies on 2026-09-27; see
+`.claude/plans/2026-09-27-reference-capture-method-plan.md`. The corner card is accepted as DEC-18.
 source_commits: adab2705a (G7 drawer stretch), 9697d30d4 (G6 burger bar-stack box), c598d260f (G10 + G11 mega
 panel), 076279a31 (button focus colour), 88312509a (reseed), f9d84ec78, 83e8f4347, bba764035 (copy trees, probe)
 source_sha: not computed; the SHA script hashes staged files only (same as the lottie and furniture reports).
