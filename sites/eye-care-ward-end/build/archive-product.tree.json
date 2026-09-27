@@ -633,6 +633,8 @@
                           "attributeTagSource": "tag",
                           "attributeTagTerm": "polarised",
                           "attributeTagText": "Polarised",
+                          "attributeTagFontWeight": "400",
+                          "attributeTagBorderColour": "border-strong",
                           "sgsHoverLift": 4,
                           "sgsHoverDurationMs": 400,
                           "sgsHoverShadow": "diffuse",

@@ -1074,6 +1074,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 		echo sgs_product_card_rating_markup( $attributes );
 		?>
 		<div class="price-row">
+			<div class="sgs-product-card__price-group">
 			<?php if ( ! empty( $data['price_from_html'] ) ) : ?>
 				<div class="price price--from">
 					<span class="price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
@@ -1085,6 +1086,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_rrp_markup( $attributes );
+			echo '</div>';
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
 			?>
@@ -1609,6 +1611,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 
 				<?php // ── 2c. Price slot — bound to seeded context literals (SSR-wipe-safe). ?>
 				<div class="price-row" aria-live="polite">
+					<div class="sgs-product-card__price-group">
 					<span
 						class="price price--current"
 						data-wp-text="context.priceDisplay"
@@ -1632,6 +1635,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					<?php
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 					echo sgs_product_card_rrp_markup( $attributes );
+					echo '</div>';
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 					echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
 					?>
@@ -2048,6 +2052,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 	?>
 
 	<div class="price-row" aria-live="polite">
+		<div class="sgs-product-card__price-group">
 		<?php
 		// Static SSR price. For a VARIABLE product we show "From <min>" — a
 		// single inviting price reads far better than a bare range
@@ -2071,6 +2076,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 		<?php
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 		echo sgs_product_card_rrp_markup( $attributes );
+		echo '</div>';
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 		echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
 		?>

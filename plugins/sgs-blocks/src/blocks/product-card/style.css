@@ -1503,6 +1503,26 @@
 	flex-shrink: 0;
 }
 
+/*
+ * The price parts (price, RRP, notes) wrap inside their own group, so in a
+ * narrow card the RRP drops under the price and the dots stay beside it,
+ * level with the group's last line.
+ */
+.sgs-product-card__price-group {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: inherit;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.price-row:has(> .sgs-product-card__swatches),
+.sgs-product-card__price-row:has(> .sgs-product-card__swatches) {
+	flex-wrap: nowrap;
+	align-items: flex-end;
+}
+
 .sgs-product-card__swatch {
 	display: inline-block;
 	/* swatchSize → --sgs-pc-swatch-size (includes/product-card-card-parts.php). */

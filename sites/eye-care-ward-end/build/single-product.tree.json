@@ -1826,7 +1826,9 @@
                           "showAttributeTag": true,
                           "attributeTagSource": "tag",
                           "attributeTagTerm": "polarised",
-                          "attributeTagText": "Polarised"
+                          "attributeTagText": "Polarised",
+                          "attributeTagFontWeight": "400",
+                          "attributeTagBorderColour": "border-strong"
                         }
                       }
                     ]
@@ -1967,7 +1969,9 @@
                           "showAttributeTag": true,
                           "attributeTagSource": "tag",
                           "attributeTagTerm": "polarised",
-                          "attributeTagText": "Polarised"
+                          "attributeTagText": "Polarised",
+                          "attributeTagFontWeight": "400",
+                          "attributeTagBorderColour": "border-strong"
                         }
                       }
                     ]

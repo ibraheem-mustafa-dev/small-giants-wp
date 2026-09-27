@@ -240,12 +240,14 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 			if ( '' !== $sgs_pcard_price || '' !== $sgs_pcard_note ) :
 				?>
 				<div class="sgs-product-card__price-row">
+					<div class="sgs-product-card__price-group">
 					<?php if ( '' !== $sgs_pcard_price ) : ?>
 						<span class="sgs-product-card__price"><?php echo esc_html( $sgs_pcard_price ); ?></span>
 					<?php endif; ?>
 					<?php if ( '' !== $sgs_pcard_note ) : ?>
 						<span class="sgs-product-card__price-note"><?php echo esc_html( $sgs_pcard_note ); ?></span>
 					<?php endif; ?>
+					</div>
 					<?php
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 					echo sgs_product_card_swatches_markup( $attributes, $card_uid );
