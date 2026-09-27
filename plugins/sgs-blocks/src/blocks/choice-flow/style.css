@@ -689,7 +689,7 @@
 }
 
 /* A table of boxes with row headings keeps the 32px heading gutter inside the panel. */
-.sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline:has(.sgs-form-field__row-heading) {
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline:has(> .sgs-form-field:not(.sgs-form-field--file)):has(.sgs-form-field__row-heading) {
 	padding-left: calc(22px + 32px);
 }
 
