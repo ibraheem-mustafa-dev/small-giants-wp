@@ -691,7 +691,7 @@ scoped `<style>`, zero inline):
 |---|---|---|---|---|
 | Background | `drawerBg` | string slug | `surface` | fg computed (WCAG resolver — contrast holds with zero config) |
 | Close icon colour | `toggleCloseColour` | string slug | `""` = computed from header context | × colour when open; burger colour untouched (owned by header styling) |
-| Content alignment | `drawerAlign` | enum `left`/`center`/`right` (CSS keyword — US spelling is the syntax, UK-rule exempt) | `left` | maps to align-items on the drawer body; children may override |
+| Content alignment | `drawerAlign` | enum `left`/`center`/`right`/`stretch` (CSS keyword — US spelling is the syntax, UK-rule exempt) | `left` | maps to align-items on the drawer body; children may override. `stretch` ("Full width") is the only value that makes a child span the drawer: align-items can move a shrunk-to-content box but never widen it, so a container or a row of buttons needs it (U-18 G7) |
 | Inner element spacing | `drawerGap` | object `{desktop,tablet,mobile}` | `{desktop:"20px"}` | gap between child rows |
 | Popup padding | `drawerPadding` | object `{desktop:{top,right,bottom,left},…}` | `{}` | emitted via `sgs_emit_responsive_css` |
 
@@ -765,8 +765,11 @@ default 200) and `burgerMorphEasing` (named curves from the theme easing tokens 
 2) sets how many bars the default glyph draws; two bars sit 6.5px apart centre to centre and have their own pose
 under every `burgerMorph` value (wearecollins' two bars cross into an X). `burgerSize` is the button's height
 and `burgerWidth` (per tier, empty = square) its width; a button under 44px keeps a 44x44 tap area on its
-`::after`. The bar box (24x18) and bar thickness (2px) have no setting yet: Wave 3C U-18 G6 adds bar length and
-stack height (lamalama's bars are 16px in a 12px stack). The bar items' label magnet
+`::after`. The bar-stack BOX is `burgerIconWidth` (bar length) and `burgerIconHeight` (bar stack height), both
+per tier and both empty by default, which keeps the box at 24x18 (U-18 G6; lamalama's bars are 16px in a 12px
+stack). They write `--sgs-nbm-icon-w` and `--sgs-nbm-icon-h` rather than bare `width`/`height`, because every
+`burgerMorph` pose derives its open travel from `--sgs-nbm-icon-h` through `calc()`, so one property reaches
+every pose. Bar THICKNESS (2px) still has no setting; no reference has needed one. The bar items' label magnet
 takes `itemMagnetStrength` (the pull factor; unset keeps the built-in 0.15 capped at 8px). The burger button
 carries `data-sgs-nav-collapse` (its `collapsePoint`) for FR-36-6's resize rule.
 **Reach, built (Wave 3C U-14):** `triggerSurface` (tier on/off, "Whole row opens the menu", M-39, DEC-14 as
