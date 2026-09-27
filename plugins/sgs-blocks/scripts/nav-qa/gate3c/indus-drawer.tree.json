@@ -46,6 +46,9 @@
             "attributes": {
               "iconName": "mail",
               "iconSize": 18,
+              "iconColour": "#1E2A3C",
+              "backgroundColour": "#D8CA50",
+              "backgroundShape": "circle",
               "ariaLabel": "Email",
               "linkUrl": "mailto:#"
             }
@@ -55,6 +58,9 @@
             "attributes": {
               "iconName": "phone",
               "iconSize": 18,
+              "iconColour": "#1E2A3C",
+              "backgroundColour": "#D8CA50",
+              "backgroundShape": "circle",
               "ariaLabel": "Call",
               "linkUrl": "tel:#"
             }
@@ -70,8 +76,23 @@
           {
             "name": "sgs/icon",
             "attributes": {
+              "iconName": "linkedin",
+              "iconSize": 20,
+              "iconColour": "#FFFFFF",
+              "backgroundColour": "#0A66C2",
+              "backgroundShape": "circle",
+              "ariaLabel": "LinkedIn",
+              "linkUrl": "#"
+            }
+          },
+          {
+            "name": "sgs/icon",
+            "attributes": {
               "iconName": "facebook",
               "iconSize": 20,
+              "iconColour": "#FFFFFF",
+              "backgroundColour": "#1877F2",
+              "backgroundShape": "circle",
               "ariaLabel": "Facebook",
               "linkUrl": "#"
             }
@@ -81,16 +102,10 @@
             "attributes": {
               "iconName": "instagram",
               "iconSize": 20,
+              "iconColour": "#FFFFFF",
+              "backgroundColour": "#E1306C",
+              "backgroundShape": "circle",
               "ariaLabel": "Instagram",
-              "linkUrl": "#"
-            }
-          },
-          {
-            "name": "sgs/icon",
-            "attributes": {
-              "iconName": "linkedin",
-              "iconSize": 20,
-              "ariaLabel": "LinkedIn",
               "linkUrl": "#"
             }
           },
@@ -99,6 +114,7 @@
             "attributes": {
               "iconName": "twitter",
               "iconSize": 20,
+              "iconColour": "#FFFFFF",
               "ariaLabel": "Twitter/X",
               "linkUrl": "#"
             }
