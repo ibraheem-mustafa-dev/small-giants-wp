@@ -30,11 +30,12 @@ def group_heading(text, looks=""):
                              "textTransform": "uppercase"})
 
 
-def attribute_filter(label, slug, style, looks=""):
+def attribute_filter(label, slug, style, looks="", counts=True):
+    # counts: False drops the "(5)" after each option (the draft's Style chips carry none).
     display = "woocommerce/product-filter-chips" if style == "chips" else "woocommerce/product-filter-checkbox-list"
     return [group_heading(label, looks),
             B("woocommerce/product-filter-attribute", {"attributeId": ATTR[slug],
-                                                       "queryType": "or", "displayStyle": display, "showCounts": True},
+                                                       "queryType": "or", "displayStyle": display, "showCounts": counts},
               [B(display)])]
 
 
@@ -83,7 +84,7 @@ filters = [
     B("woocommerce/product-filter-price", {},
       [B("woocommerce/product-filter-price-slider")]),
     *taxonomy_filter("Brand", "product_brand", "list", "sgs-filter-open sgs-filter-count", "Search brands"),
-    *attribute_filter("Style", "shape", "chips", "sgs-filter-open sgs-filter-count"),
+    *attribute_filter("Style", "shape", "chips", "sgs-filter-open sgs-filter-count", counts=False),
     *attribute_filter("Material", "material", "list"),
     *attribute_filter("Frame type", "frame-type", "list"),
     *attribute_filter("Hinge", "hinge", "list"),
@@ -106,13 +107,14 @@ tree = [
                                    "textTransform": "uppercase", "textColour": "accent-text",
                                    "margin": {"desktop": {"bottom": "10px"}}}),
                     B("core/query-title", {"type": "archive", "level": 1, "showPrefix": False,
-                                           "style": {"typography": {"fontSize": "46px", "fontWeight": "500",
-                                                                    "lineHeight": "1.02"}},
+                                           "style": {"typography": {"fontSize": "48px", "fontWeight": "500",
+                                                                    "lineHeight": "1"}},
                                            "fontFamily": "heading"}),
                 ]),
                 B("sgs/container", {"tagName": "div", "layout": "flex", "alignItems": "center",
                                     "gap": {"desktop": "12px"}, "contentWidth": {"desktop": "full"}}, [
-                    B("woocommerce/product-results-count"),
+                    B("woocommerce/product-results-count", {"textColor": "text-subtle",
+                                                            "style": {"typography": {"fontSize": "13.5px"}}}),
                     B("woocommerce/catalog-sorting"),
                 ]),
             ]),

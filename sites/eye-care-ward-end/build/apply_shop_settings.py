@@ -14,6 +14,7 @@ SETTINGS = {
     'sgs_shop_col_gap': '18',
     'sgs_shop_row_gap': '18',
     'sgs_shop_narrow_layout': 'grid',
+    'sgs_shop_filter_desktop_heading': '0',
     'sgs_shop_filter_panel_style': 'plain',
     'sgs_shop_filters_width': '270',
     'sgs_shop_layout_gap': '40',

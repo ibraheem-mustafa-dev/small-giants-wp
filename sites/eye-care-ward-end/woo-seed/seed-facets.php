@@ -5,6 +5,8 @@
  *   one-choice Gender filter shows it under either, as the draft does.
  * - Size (pa_size): Small (eye ≤ 52mm), Medium (≤ 57), Large, the draft's bands.
  * - menu_order: the draft's PRODUCTS order, which is its "Featured" order.
+ * - Colour (pa_colour) term order: the draft's swatch order (Black, Havana,
+ *   Gold, ...), with the attribute sorted by that custom order.
  * Both attributes are filters only: not variations, not shown on the product page.
  *
  * Run: wp eval-file seed-facets.php data.json --user=Claude
@@ -76,6 +78,34 @@ $terms  = array(
 		'Large'  => sgs_facets_term( 'Large', $size, 2 ),
 	),
 );
+
+// The draft's swatch order; the shop's Colour filter lists terms in it.
+$colour_order = array( 'Black', 'Havana', 'Gold', 'Tortoise', 'Gunmetal', 'Ivory', 'Rose gold', 'Silver', 'Navy', 'Crystal', 'Brown', 'Red' );
+$colour_id    = wc_attribute_taxonomy_id_by_name( 'pa_colour' );
+if ( $colour_id ) {
+	$colour_attribute = wc_get_attribute( $colour_id );
+	if ( $colour_attribute && 'menu_order' !== $colour_attribute->order_by ) {
+		wc_update_attribute(
+			$colour_id,
+			array(
+				'name'         => $colour_attribute->name,
+				'slug'         => 'colour',
+				'type'         => $colour_attribute->type,
+				'order_by'     => 'menu_order',
+				'has_archives' => $colour_attribute->has_archives,
+			)
+		);
+	}
+	foreach ( $colour_order as $position => $name ) {
+		$term = get_term_by( 'name', $name, 'pa_colour' );
+		if ( $term ) {
+			update_term_meta( $term->term_id, 'order', $position );
+		} else {
+			WP_CLI::warning( "no colour term $name" );
+		}
+	}
+	WP_CLI::log( 'colour terms ordered' );
+}
 
 foreach ( $data['PRODUCTS'] as $index => $p ) {
 	// The same SKU rule as seed.php::sgs_seed_sku_from_code.

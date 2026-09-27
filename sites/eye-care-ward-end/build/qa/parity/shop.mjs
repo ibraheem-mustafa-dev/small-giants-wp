@@ -14,6 +14,16 @@ const draftShop = async ( h ) => {
 	await h.goto( DRAFT );
 	await h.clickText( '^sunglasses$', { wait: 1200 } );
 };
+// Below desktop both sides keep the filters in a drawer behind a "Filter" button (no-op on desktop).
+const openFilters = ( h ) => h.clickText( '^filter$', { tag: 'button', optional: true, wait: 900 } );
+// The draft's drawer closes with "Show N frames"; it applies each choice as it is made.
+const closeDraftFilters = ( h ) => h.clickText( '^show \\d+ frames?$', { tag: 'button', optional: true, wait: 900 } );
+const draftPick = ( pick ) => async ( h ) => {
+	await draftShop( h );
+	await openFilters( h );
+	await pick( h );
+	await closeDraftFilters( h );
+};
 const liveShop = ( query ) => async ( h ) => h.goto( LIVE + ( query ? '&' + query : '' ) );
 
 export default {
@@ -23,27 +33,29 @@ export default {
 	states: [
 		{ name: 'opening', fullPage: true },
 		{
-			name: 'women',
+			name: 'filters-open',
 			draft: async ( h ) => {
 				await draftShop( h );
-				await h.clickText( '^women$', { within: 'aside', tag: 'button' } );
+				await openFilters( h );
 			},
+			live: async ( h ) => {
+				await h.goto( LIVE );
+				await openFilters( h );
+			},
+		},
+		{
+			name: 'women',
+			draft: draftPick( ( h ) => h.clickText( '^women$', { within: 'aside', tag: 'button' } ) ),
 			live: liveShop( 'filter_gender=women' ),
 		},
 		{
 			name: 'colour-black',
-			draft: async ( h ) => {
-				await draftShop( h );
-				await h.click( 'aside button[aria-label="Black"]' );
-			},
+			draft: draftPick( ( h ) => h.click( 'aside button[aria-label="Black"]' ) ),
 			live: liveShop( 'filter_colour=black' ),
 		},
 		{
 			name: 'brand-ray-ban',
-			draft: async ( h ) => {
-				await draftShop( h );
-				await h.clickText( '^ray-ban', { within: 'aside', tag: 'label' } );
-			},
+			draft: draftPick( ( h ) => h.clickText( '^ray-ban', { within: 'aside', tag: 'label' } ) ),
 			live: liveShop( 'brands=ray-ban' ),
 		},
 	],
@@ -52,15 +64,15 @@ export default {
 		{ name: 'title', draft: 'h1', live: 'main h1', box: [ 'h' ] },
 		{ name: 'count', draft: { text: '^\\d+ frames?$', tag: 'span' }, live: '.wp-block-woocommerce-product-results-count p, .woocommerce-result-count', box: [ 'h' ] },
 		{ name: 'sort', draft: 'select[aria-label="Sort"]', live: 'select.orderby', hover: true },
-		{ name: 'filters', draft: 'aside', live: LF, box: [ 'w' ], text: false, props: [ 'background-color', 'padding-top', 'padding-left' ] },
-		{ name: 'gender-heading', states: [ 'opening' ], draft: { text: '^gender$', within: 'aside', tag: 'button' }, live: { text: '^gender', within: LF, tag: 'summary' }, box: [ 'h' ] },
-		{ name: 'gender-all', states: [ 'opening' ], draft: { text: '^all$', within: 'aside', tag: 'button' }, live: `${ LF } .sgs-shop-filters__segment`, hover: true },
+		{ name: 'filters', states: [ 'filters-open' ], draft: 'aside', live: LF, box: [ 'w' ], text: false, props: [ 'background-color', 'padding-top', 'padding-left' ] },
+		{ name: 'gender-heading', states: [ 'filters-open' ], draft: { text: '^gender$', within: 'aside', tag: 'button' }, live: { text: '^gender', within: LF, tag: 'summary' }, box: [ 'h' ] },
+		{ name: 'gender-all', states: [ 'filters-open' ], draft: { text: '^all$', within: 'aside', tag: 'button' }, live: `${ LF } .sgs-shop-filters__segment`, hover: true },
 		{ name: 'gender-women', states: [ 'women' ], draft: { text: '^women$', within: 'aside', tag: 'button' }, live: { text: '^women$', within: LF, tag: '.sgs-shop-filters__segment' } },
-		{ name: 'swatch-black', states: [ 'opening', 'colour-black' ], draft: 'aside button[aria-label="Black"]', live: `${ LF } [id="attribute/colour-black"]`, text: false, hover: true },
-		{ name: 'brand-search', states: [ 'opening' ], draft: 'aside input[aria-label="Search brands"]', live: `${ LF } .sgs-shop-filters__group-search`, text: false },
-		{ name: 'brand-heading', states: [ 'opening' ], draft: { text: '^brand', within: 'aside', tag: 'button' }, live: { text: '^brand', within: LF, tag: 'summary' }, box: [ 'h' ] },
-		{ name: 'style-chip', states: [ 'opening' ], draft: { text: '^pilot$', within: 'aside', tag: 'button' }, live: { text: '^pilot', within: LF, tag: 'button' }, hover: true },
-		{ name: 'polarised-toggle', states: [ 'opening' ], draft: { text: '^polarised only$', within: 'aside', tag: 'label,button,div' }, live: `${ LF } .sgs-shop-filters__bool-filter-label` },
+		{ name: 'swatch-black', states: [ 'filters-open' ], draft: 'aside button[aria-label="Black"]', live: `${ LF } [id="attribute/colour-black"]`, text: false, hover: true },
+		{ name: 'brand-search', states: [ 'filters-open' ], draft: 'aside input[aria-label="Search brands"]', live: `${ LF } .sgs-filter-search__input`, text: false },
+		{ name: 'brand-heading', states: [ 'filters-open' ], draft: { text: '^brand', within: 'aside', tag: 'button' }, live: { text: '^brand', within: LF, tag: 'summary' }, box: [ 'h' ] },
+		{ name: 'style-chip', states: [ 'filters-open' ], draft: { text: '^pilot$', within: 'aside', tag: 'button' }, live: { text: '^pilot', within: LF, tag: 'button' }, hover: true },
+		{ name: 'polarised-toggle', states: [ 'filters-open' ], draft: { text: '^polarised only$', within: 'aside', tag: 'label,button,div' }, live: `${ LF } .sgs-shop-filters__bool-filter-label` },
 		{ name: 'grid', draft: { js: DGRID }, live: '.sgs-shop-layout .wc-block-product-template', text: false, box: [ 'w' ], props: [ 'grid-template-columns', 'column-gap', 'row-gap' ] },
 		{ name: 'card-gucci', states: [ 'opening', 'women' ], draft: { js: dcard( 'Oversized Cat-Eye' ) }, live: { js: lcard( 'Oversized Cat-Eye' ) }, hover: true, props: [ 'background-color', 'border-top-width', 'border-top-color', 'border-radius', 'box-shadow' ] },
 		// The Gucci card's parts: draft path from its bordered card, live class inside .product-card.

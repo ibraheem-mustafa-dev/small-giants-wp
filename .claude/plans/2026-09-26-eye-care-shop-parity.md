@@ -65,18 +65,25 @@ Content (Eye Care, in `build/gen_archive_product.py` and the product seed):
    threshold 2); the theme's `sgs-filter-search` class, its CSS and the `sgs_shop_filter_search_label` setting are
    deleted (theme mod removed on eye-care-test). Live: "ray" narrows 14 brands to 1; ticking Ray-Ban loads
    `?brands=ray-ban` with 3 frames.
-1. **Hover, library-wide (Bean 2026-09-26: "a library wide feature improvement instead of only doing it for
-   product cards").** Extend the shared hover extension (`src/blocks/extensions/hover-effects.js`,
-   `includes/hover-effects.php`, `assets/css/extensions.css`; 11 blocks opt in) with lift in px (`sgsHoverLift`,
-   combinable with scale), photo zoom amount (`sgsHoverZoom`, %) and zoom duration (`sgsHoverZoomDuration`); the
-   five blocks that hard-code `scale(1.1)` for `sgs-has-img-zoom` (card-grid, gallery, info-box, team-member,
-   testimonial) read `--sgs-hover-zoom`. Both files are over the size cap: split each first. Then `sgs/product-card`
-   opts in (`enabledExtensions: ["hover"]`, `hoverDefaults` = today's 4px lift), its own hard-coded hover (a brown
-   `rgba(58,46,38,.16)` shadow from another client) goes, and `product-card--flat` stops removing the hover
-   shadow (it is later in the file at equal specificity). The hover border colour is a card colour row (the
-   extension's hover colours were removed 2026-08-20). Eye Care: a `card-hover` shadow preset
-   (`0 18px 44px 0 color-mix(... shadow-colour 9%)`), lift 4px over 400ms, zoom 106% over 900ms, border
-   `border-strong`-ish #CFC7BB on hover (the draft's).
+1. **Hover, library-wide: BUILT 2026-09-27 (4ed3c08a3, 00eb08f6d, 282debfd6, e1abe5a99, b3a131451); live check
+   pending the eye-care-test deploy.** Bean asked for a library-wide feature instead of a product-card-only fix.
+   - Split: `src/blocks/extensions/hover-effects/` (index, attributes, resolve, constants, panels/) and
+     `includes/hover-effects/` (hover-effects, resolve, vars, classes, link-overlay), each under the size cap.
+   - New shared settings: `sgsHoverLift` (px), `sgsHoverZoom` (%, 0 = the block's 110%), `sgsHoverZoomDuration`
+     (ms) and `sgsHoverDurationMs` (an exact duration over the token). `hoverDefaults` takes `lift`, `zoom` and
+     `zoomDuration`. Lift and scale share one transform; the transition uses the easing setting; reduced motion
+     drops the transform.
+   - Corrected facts: 6 blocks opt in, not 11 (cta-section, google-reviews, pricing-table, whatsapp-cta, info-box,
+     team-member), and now sgs/product-card. The hard-coded `scale(1.1)` zooms were card-grid (its own
+     `imageZoomHover` toggle), cta-section and team-member; all read `--sgs-hover-zoom` now. info-box got the zoom
+     rule its default never had.
+   - sgs/product-card: opted in (4px lift, Lifted shadow); the brown hover shadow is gone; `--flat` clears only the
+     resting shadow. New controls: card border colour on hover, RRP colour, dot size, dot grow on hover (Colour dots
+     panel), price line height. The Typography panel now shows in bound mode too (bound cards had no size controls).
+   - A framework Diffuse shadow preset (0 18px 44px, 9%) in every snapshot; Eye Care `border-hover` #CFC7BB.
+   - Follow-ups: card-grid's zoom amount has no control (it keeps its own toggle, not the shared panel);
+     `scripts/surveys/survey-inspector-surface.js` doesn't follow the hover panels into `panels/*.js` (census
+     only, no gate). Both are parked here.
 2. Title 48px / line-height 1; count 13.5px in `text-subtle`; sort control (draft: 14px side padding, native
    chevron) - check the theme's `select.orderby` rule.
 3. Re-run `shop.mjs` at 1440/768/375, look at the screenshots, then the card text parts (price 18px/27px line,

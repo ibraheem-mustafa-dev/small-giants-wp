@@ -637,6 +637,21 @@ body.sgs-shop-filters-plain .sgs-shop-filters:not(:modal) {
 	margin-bottom: var(--wp--preset--spacing--30, 1rem);
 }
 
+/* Customizer > Shop Filters "Show the Filter heading above the desktop filter
+   column" off: the non-modal (desktop sidebar) panel keeps its heading for
+   screen readers only; the modal drawer is untouched. */
+body.sgs-shop-filters-no-desktop-heading .sgs-shop-filters:not(:modal) .sgs-shop-filters__header {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
 /* Close button — hidden on desktop, shown in drawer */
 .sgs-shop-filters__close {
 	display: none;

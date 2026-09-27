@@ -93,9 +93,9 @@
                       "showPrefix": false,
                       "style": {
                         "typography": {
-                          "fontSize": "46px",
+                          "fontSize": "48px",
                           "fontWeight": "500",
-                          "lineHeight": "1.02"
+                          "lineHeight": "1"
                         }
                       },
                       "fontFamily": "heading"
@@ -119,7 +119,14 @@
                 "innerBlocks": [
                   {
                     "name": "woocommerce/product-results-count",
-                    "attributes": {}
+                    "attributes": {
+                      "textColor": "text-subtle",
+                      "style": {
+                        "typography": {
+                          "fontSize": "13.5px"
+                        }
+                      }
+                    }
                   },
                   {
                     "name": "woocommerce/catalog-sorting",
@@ -379,7 +386,7 @@
                           "attributeId": 3,
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-chips",
-                          "showCounts": true
+                          "showCounts": false
                         },
                         "innerBlocks": [
                           {

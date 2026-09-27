@@ -115,6 +115,23 @@ function register_shop_layout_customizer_settings( \WP_Customize_Manager $wp_cus
 	);
 
 	$wp_customize->add_setting(
+		'sgs_shop_filter_desktop_heading',
+		array(
+			'default'           => true,
+			'sanitize_callback' => 'wp_validate_boolean',
+		)
+	);
+	$wp_customize->add_control(
+		'sgs_shop_filter_desktop_heading',
+		array(
+			'section'     => 'sgs_shop_filters',
+			'type'        => 'checkbox',
+			'label'       => __( 'Show the "Filter" heading above the desktop filter column', 'sgs-theme' ),
+			'description' => __( 'Off hides it on desktop, where the filters sit beside the products; screen readers still hear it. The mobile filter drawer always shows its heading and Close button.', 'sgs-theme' ),
+		)
+	);
+
+	$wp_customize->add_setting(
 		'sgs_shop_filter_panel_style',
 		array(
 			'default'           => 'panel',
@@ -264,6 +281,10 @@ function add_shop_layout_body_classes( array $classes ): array {
 
 	if ( 'plain' === get_theme_mod( 'sgs_shop_filter_panel_style', 'panel' ) ) {
 		$classes[] = 'sgs-shop-filters-plain';
+	}
+
+	if ( ! wp_validate_boolean( get_theme_mod( 'sgs_shop_filter_desktop_heading', true ) ) ) {
+		$classes[] = 'sgs-shop-filters-no-desktop-heading';
 	}
 
 	return $classes;
