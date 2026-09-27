@@ -54,7 +54,15 @@ export function collectPair( [ finder, props, resolveSrc ] ) {
 	// button's label span, not the button), so a wrapper's unused font-size is ignored.
 	const TEXT_PROPS = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color' ];
 	const walker = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, {
-		acceptNode: ( n ) => ( n.textContent.trim() && n.parentElement.getClientRects().length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP ),
+		// The text node's own rects: its parent can be display:contents (no box of its own) and still paint it.
+		acceptNode: ( n ) => {
+			if ( ! n.textContent.trim() ) {
+				return NodeFilter.FILTER_SKIP;
+			}
+			const range = document.createRange();
+			range.selectNodeContents( n );
+			return range.getClientRects().length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+		},
 	} );
 	const carrier = walker.nextNode()?.parentElement || null;
 	const ccs = carrier ? getComputedStyle( carrier ) : null;

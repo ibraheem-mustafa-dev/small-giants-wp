@@ -2688,6 +2688,25 @@ body.sgs-shop-drawer-caps .sgs-shop-filters__sheet-footer .sgs-shop-filters__cle
 body.sgs-shop-filters-plain #sgs-shop-filters:modal,
 body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 	padding-inline: 20px;
+	padding-top: 0;
+}
+
+/* Plain option counts: a right-aligned grey number, without WooCommerce's
+   literal brackets (the number sits in its own inner span). */
+.sgs-shop-filters-plain .wc-block-product-filter-checkbox-list__text-wrapper {
+	display: flex;
+	flex: 1 1 auto;
+	align-items: center;
+}
+
+.sgs-shop-filters-plain .wc-block-product-filter-checkbox-list__count {
+	margin-left: auto;
+	font-size: 0;
+}
+
+.sgs-shop-filters-plain .wc-block-product-filter-checkbox-list__count > span {
+	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
+	color: var(--wp--preset--color--text-label, var(--wp--preset--color--text-muted));
 }
 
 .sgs-shop-filters-plain .sgs-shop-filters__bool-filter {

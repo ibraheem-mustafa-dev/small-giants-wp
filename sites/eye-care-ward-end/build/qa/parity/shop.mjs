@@ -4,9 +4,9 @@
 const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/shop/?cb={cb}';
 const LF = '#sgs-shop-filters';
-// The draft's product grid: the grid in main whose every child is a priced card (no aside below desktop).
+// The draft’s product grid: the grid in main whose every child is a priced card (no aside below desktop).
 const DGRID = `(r) => [...document.querySelectorAll('main div')].find((x) => getComputedStyle(x).display === 'grid' && x.children.length >= 2 && ! x.querySelector('aside') && [...x.children].every((c) => c.textContent.includes('£')))`;
-// A card in the draft's grid, by product name.
+// A card in the draft’s grid, by product name.
 const dcard = ( name ) => `(r) => { const g = (${ DGRID })(r); const c = g && [...g.children].find((c) => c.textContent.includes('${ name }')); return c && c.firstElementChild.firstElementChild; }`;
 const lcard = ( name ) => `(r) => [...document.querySelectorAll('.sgs-shop-layout .wc-block-product-template > li')].find((c) => c.textContent.includes('${ name }'))?.querySelector('.sgs-product-card, .product-card')`;
 const words = ( t ) => String( t ).replace( /\s+/g, ' ' ).trim().toLowerCase().split( ' ' ).sort().join( ' ' );
@@ -17,7 +17,7 @@ const draftShop = async ( h ) => {
 };
 // Below desktop both sides keep the filters in a drawer behind a "Filter" button (no-op on desktop).
 const openFilters = ( h ) => h.clickText( '^filter$', { tag: 'button', optional: true, wait: 900 } );
-// The draft's drawer closes with "Show N frames"; it applies each choice as it is made.
+// The draft’s drawer closes with "Show N frames"; it applies each choice as it is made.
 const closeDraftFilters = ( h ) => h.clickText( '^show \\d+ frames?$', { tag: 'button', optional: true, wait: 900 } );
 const draftPick = ( pick ) => async ( h ) => {
 	await draftShop( h );
@@ -102,5 +102,41 @@ export default {
 			kind: 'text', reason: 'Pennies on every price (Bean 2026-09-25)',
 			when: ( d ) => words( d.draft ) === words( d.live.replace( /(£\d+)\.00/g, '$1' ) ),
 		},
+		// Measured, not painted: the property differs but the pixels do not.
+		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
+			kind: 'style', key, reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child or centred text)',
+		} ) ),
+		{ kind: 'hover', key: 'color', reason: 'Text colour on an element with no text (a swatch, dot or icon button): nothing paints it' },
+		...[ 'gender-heading', 'brand-heading' ].map( ( pair ) => ( {
+			pair, kind: 'style', reason: 'The same 52px heading row: live centres the text by min-height, the draft by 16px padding',
+			when: ( d ) => [ 'line-height', 'padding-top', 'padding-bottom' ].includes( d.key ),
+		} ) ),
+		...[ 'gender-all', 'gender-women' ].map( ( pair ) => ( {
+			pair, reason: 'The same segment box (within 3px): the label is centred by flex, so padding and line height do not move it',
+			when: ( d ) => [ 'line-height', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'w' ].includes( d.key ),
+		} ) ),
+		{ pair: 'card-photo', kind: 'style', reason: 'The same photo: the draft paints it as a div background, live as an <img> with object-fit cover' },
+		{ pair: 'card-brand', kind: 'style', key: 'background-image', reason: 'The same gradient written with and without the 0% and 100% stops', when: ( d ) => d.live.includes( '62%' ) },
+		{ pair: 'card-name', reason: 'The title link is inline live and block in the draft; the text and its position match', when: ( d ) => [ 'display', 'w' ].includes( d.key ) },
+		{ pair: 'style-chip', kind: 'style', key: 'border-radius', reason: 'A 999px or 9999px radius paints the same pill' },
+		{ pair: 'style-chip', kind: 'style', key: 'line-height', reason: 'One line of text inside the chip’s 44px minimum height: the line height moves nothing' },
+		{ kind: 'motion', key: 'transition', reason: 'The same timings listed by property name (background vs background-color) or including a property that does not change on hover', when: ( d ) => ! /cubic-bezier\(0\.2, 0\.7/.test( d.draft ) && ! /\b0\.3s\b/.test( d.draft ) },
+		// PROPOSED to Bean: differences kept on purpose.
+		{ pair: 'card-gucci', reason: 'PROPOSED to Bean: "No reviews yet" until real reviews exist, where the draft shows made-up stars (the card is 5-6px shorter for it)', when: ( d ) => 'text' === d.kind || 'h' === d.key },
+		{ pair: 'card-body', key: 'h', reason: 'PROPOSED to Bean: "No reviews yet" in place of made-up stars' },
+		{ pair: 'card-rrp', reason: 'Pennies (Bean 2026-09-25); "Recommended retail price:" is screen-reader text only' },
+		{ pair: 'card-price', key: 'w', reason: 'Pennies (Bean 2026-09-25)' },
+		{ pair: 'brand-heading', kind: 'text', reason: 'PROPOSED to Bean: live counts the real 14 brands; the draft counts a made-up catalogue of 40' },
+		{ pair: 'style-chip', reason: 'PROPOSED to Bean: 44px touch targets (the accessibility baseline) where the draft chips are 38px', when: ( d ) => [ 'h', 'padding-top', 'padding-bottom' ].includes( d.key ) },
+		{ pair: 'filters', key: 'padding-left', reason: 'The same 20px inset: the draft pads each row, live pads the drawer' },
+		{ pair: 'brand-search', key: 'h', reason: 'PROPOSED to Bean: 44px touch target where the draft box is 40px' },
+		{ pair: 'filters', kind: 'motion', reason: 'PROPOSED to Bean: the draft fades its filter column in because it is a single-page app changing view; the live page loads with it' },
+		{ pair: 'filters', reason: 'PROPOSED to Bean: the live drawer slides up from the bottom (a native dialog with its header inside its 24px top padding); the draft’s drawer appears in place', when: ( d ) => [ 'padding-top', 'transition' ].includes( d.key ) },
+		{ state: 'colour-black', pair: 'count', reason: 'PROPOSED to Bean: a draft bug; its Black swatch returns "0 frames" where live returns 14' },
+		{ state: 'colour-black', pair: 'grid', reason: 'PROPOSED to Bean: a draft bug; its Black swatch returns "0 frames" where live returns 14' },
+		{ state: 'brand-ray-ban', pair: 'title', reason: 'PROPOSED to Bean: choosing one brand turns the draft into that brand’s page (title "Ray-Ban", no Shop eyebrow); live keeps "Sunglasses" with the filter applied' },
+		{ state: 'brand-ray-ban', pair: 'eyebrow', reason: 'PROPOSED to Bean: choosing one brand turns the draft into that brand’s page (title "Ray-Ban", no Shop eyebrow); live keeps "Sunglasses" with the filter applied' },
+		{ pair: 'sort', reason: 'PROPOSED to Bean: the browser’s own sort menu is 11px wider than the draft’s at the same text size', when: ( d ) => [ 'w', 'display' ].includes( d.key ) },
+		{ kind: 'motion', key: 'transition', reason: 'PROPOSED to Bean: hover timing curves: live uses the site’s standard easing where the draft uses ease (card) and a custom curve (photo zoom); durations match' },
 	],
 };
