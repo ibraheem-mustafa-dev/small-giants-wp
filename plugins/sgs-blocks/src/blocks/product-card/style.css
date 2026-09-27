@@ -1368,6 +1368,30 @@
 }
 
 /*
+ * In a narrow card (a two-across phone grid) the name would break mid-word
+ * beside the tag, so the tag takes its own line under the name, still at the
+ * right in the same place on every card.
+ */
+.product-card-body:has(.sgs-product-card__attribute-tag),
+.sgs-product-card__body:has(.sgs-product-card__attribute-tag) {
+	container: sgs-card-body / inline-size;
+}
+
+@container sgs-card-body (max-width: 200px) {
+	.sgs-product-card__title-row:has(> .sgs-product-card__attribute-tag) {
+		flex-wrap: wrap;
+	}
+
+	.sgs-product-card__title-row:has(> .sgs-product-card__attribute-tag) > :first-child {
+		flex-basis: 100%;
+	}
+
+	.sgs-product-card__title-row > .sgs-product-card__attribute-tag {
+		margin-left: auto;
+	}
+}
+
+/*
  * Generic attribute tag — shown beside the title when the resolved product
  * carries an operator-chosen product attribute term or product tag (e.g. an
  * optician site's "Polarised" lens attribute). Bordered-only chip, no fill,
