@@ -73,9 +73,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Our Story",
+                      "content": "Our Story",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {
@@ -161,9 +162,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Certifications",
+                      "content": "Certifications",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {
@@ -249,9 +251,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Community & Charity",
+                      "content": "Community & Charity",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {
@@ -337,9 +340,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Sustainability",
+                      "content": "Sustainability",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {
@@ -425,9 +429,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Careers",
+                      "content": "Careers",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {

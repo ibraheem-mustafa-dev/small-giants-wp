@@ -72,9 +72,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Contact Us",
+                      "content": "Contact Us",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {
@@ -160,9 +161,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "FAQs",
+                      "content": "FAQs",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {

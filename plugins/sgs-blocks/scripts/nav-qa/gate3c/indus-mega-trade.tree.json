@@ -73,9 +73,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Apply for Trade Account",
+                      "content": "Apply for Trade Account",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {
@@ -161,9 +162,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Request Catalogue",
+                      "content": "Request Catalogue",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {
@@ -249,9 +251,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Delivery & Logistics",
+                      "content": "Delivery & Logistics",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {
@@ -337,9 +340,10 @@
                 },
                 "innerBlocks": [
                   {
-                    "name": "sgs/text",
+                    "name": "sgs/heading",
                     "attributes": {
-                      "text": "Terms & Conditions",
+                      "content": "Terms & Conditions",
+                      "level": "h4",
                       "textColour": "#1E2A3C",
                       "textTransform": "none",
                       "fontSize": {
