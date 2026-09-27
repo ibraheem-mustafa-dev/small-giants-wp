@@ -244,7 +244,7 @@
 		const clearBtn = document.createElement( 'button' );
 		clearBtn.type = 'button';
 		clearBtn.className = 'sgs-shop-filters__clear-all';
-		clearBtn.textContent = 'Clear all';
+		clearBtn.textContent = SETTINGS.clearLabel || 'Clear all';
 
 		footer.appendChild( clearBtn );
 		footer.appendChild( applyBtn );

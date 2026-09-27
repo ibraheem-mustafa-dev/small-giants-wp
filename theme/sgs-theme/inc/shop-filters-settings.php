@@ -79,6 +79,11 @@ function register_shop_filter_customizer_settings( \WP_Customize_Manager $wp_cus
 			'default' => false,
 			'label'   => __( 'Show a live result count on the drawer\'s Apply button', 'sgs-theme' ),
 		),
+		'sgs_shop_clear_label'              => array(
+			'type'    => 'text',
+			'default' => __( 'Clear all', 'sgs-theme' ),
+			'label'   => __( 'Label of the drawer\'s clear-all button', 'sgs-theme' ),
+		),
 		'sgs_shop_result_count_label'       => array(
 			'type'    => 'text',
 			/* translators: %d: number of matching products. */
@@ -216,6 +221,7 @@ function localise_shop_filter_settings(): void {
 		'breakpoint'    => $breakpoint,
 		'booleanFilter' => get_shop_filter_boolean_config(),
 		'resultCount'   => null,
+		'clearLabel'    => (string) get_theme_mod( 'sgs_shop_clear_label', __( 'Clear all', 'sgs-theme' ) ),
 	);
 
 	if (

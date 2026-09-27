@@ -93,7 +93,7 @@
                       "showPrefix": false,
                       "style": {
                         "typography": {
-                          "fontSize": "48px",
+                          "fontSize": "clamp(34px, 20.64px + 3.562vw, 48px)",
                           "fontWeight": "500",
                           "lineHeight": "1"
                         }
@@ -219,7 +219,8 @@
                           "attributeId": 9,
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-chips",
-                          "showCounts": true
+                          "showCounts": true,
+                          "sortOrder": "menu_order-asc"
                         },
                         "innerBlocks": [
                           {
@@ -252,7 +253,8 @@
                           "attributeId": 10,
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-chips",
-                          "showCounts": true
+                          "showCounts": true,
+                          "sortOrder": "menu_order-asc"
                         },
                         "innerBlocks": [
                           {
@@ -285,7 +287,8 @@
                           "attributeId": 2,
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-chips",
-                          "showCounts": true
+                          "showCounts": true,
+                          "sortOrder": "menu_order-asc"
                         },
                         "innerBlocks": [
                           {
@@ -624,7 +627,16 @@
                           "priceLineHeightUnit": "px",
                           "rrpColour": "text-label",
                           "swatchSize": 17,
-                          "swatchHoverGrow": 125
+                          "swatchHoverGrow": 125,
+                          "mediaBackgroundColour": "surface-stage",
+                          "swatchBorderColour": "border-strong",
+                          "wishlistBorderColour": "#E0DAD1",
+                          "brandPadding": {
+                            "top": "12px",
+                            "right": "14px",
+                            "bottom": "12px",
+                            "left": "14px"
+                          }
                         }
                       }
                     ]

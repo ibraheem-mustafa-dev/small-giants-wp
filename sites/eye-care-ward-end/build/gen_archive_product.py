@@ -30,12 +30,15 @@ def group_heading(text, looks=""):
                              "textTransform": "uppercase"})
 
 
-def attribute_filter(label, slug, style, looks="", counts=True):
+def attribute_filter(label, slug, style, looks="", counts=True, order=""):
     # counts: False drops the "(5)" after each option (the draft's Style chips carry none).
+    # order: "menu_order-asc" lists terms in their set order (woo-seed/seed-facets.php) instead of WooCommerce's
+    # default, most products first.
     display = "woocommerce/product-filter-chips" if style == "chips" else "woocommerce/product-filter-checkbox-list"
     return [group_heading(label, looks),
             B("woocommerce/product-filter-attribute", {"attributeId": ATTR[slug],
-                                                       "queryType": "or", "displayStyle": display, "showCounts": counts},
+                                                       "queryType": "or", "displayStyle": display, "showCounts": counts,
+                                                       **({"sortOrder": order} if order else {})},
               [B(display)])]
 
 
@@ -66,7 +69,10 @@ CARD = dict(
     sgsHoverLift=4, sgsHoverDurationMs=400, sgsHoverShadow="diffuse", sgsHoverImageZoom=True, sgsHoverZoom=106,
     sgsHoverZoomDuration=900, borderColourHover="border-hover",
     # Card text parts: price 18/27, RRP in text-label, 17px colour dots growing to 125% when pointed at.
-    priceLineHeight=27, priceLineHeightUnit="px", rrpColour="text-label", swatchSize=17, swatchHoverGrow=125)
+    priceLineHeight=27, priceLineHeightUnit="px", rrpColour="text-label", swatchSize=17, swatchHoverGrow=125,
+    # The draft's photo fill, dot and heart rings, and the brand overlay's 12/14 padding.
+    mediaBackgroundColour="surface-stage", swatchBorderColour="border-strong", wishlistBorderColour="#E0DAD1",
+    brandPadding={"top": "12px", "right": "14px", "bottom": "12px", "left": "14px"})
 
 # The Filter button and the panel header are built by the theme's sgs-shop-filters.js (WordPress 7.1 saves an
 # editor-made Custom HTML block empty, so the template carries no raw HTML).
@@ -77,9 +83,9 @@ filters = [
        B("woocommerce/product-filter-clear-button", {}, [B("sgs/button", {"label": "Clear all filters",
                                                                          "className": "wp-block-button__link"})])]),
     # The draft's order and open state; "Polarised only" is the theme's toggle (apply_shop_settings.py).
-    *attribute_filter("Gender", "gender", "chips", "sgs-filter-open sgs-filter-segmented"),
-    *attribute_filter("Size", "size", "chips"),
-    *attribute_filter("Colour", "colour", "chips", "sgs-filter-open sgs-filter-swatches"),
+    *attribute_filter("Gender", "gender", "chips", "sgs-filter-open sgs-filter-segmented", order="menu_order-asc"),
+    *attribute_filter("Size", "size", "chips", order="menu_order-asc"),
+    *attribute_filter("Colour", "colour", "chips", "sgs-filter-open sgs-filter-swatches", order="menu_order-asc"),
     group_heading("Price", "sgs-filter-open"),
     B("woocommerce/product-filter-price", {},
       [B("woocommerce/product-filter-price-slider")]),
@@ -107,8 +113,10 @@ tree = [
                                    "textTransform": "uppercase", "textColour": "accent-text",
                                    "margin": {"desktop": {"bottom": "10px"}}}),
                     B("core/query-title", {"type": "archive", "level": 1, "showPrefix": False,
-                                           "style": {"typography": {"fontSize": "48px", "fontWeight": "500",
-                                                                    "lineHeight": "1"}},
+                                           # The draft's 48px from 768 up and 34px at 375, as one clamp (WordPress would
+                                           # otherwise scale a fixed 48px down fluidly from 1440).
+                                           "style": {"typography": {"fontSize": "clamp(34px, 20.64px + 3.562vw, 48px)",
+                                                                    "fontWeight": "500", "lineHeight": "1"}},
                                            "fontFamily": "heading"}),
                 ]),
                 B("sgs/container", {"tagName": "div", "layout": "flex", "alignItems": "center",

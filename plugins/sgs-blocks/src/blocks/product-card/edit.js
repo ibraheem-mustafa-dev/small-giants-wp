@@ -19,7 +19,7 @@ import {
 	MediaElementPanel,
 	SsrPreviewGuard, SgsBoxControl } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
-import { ListingContentPanel, ListingShapePanel, ListingDotsPanel } from './listing-panels';
+import { ListingContentPanel, ListingShapePanel, ListingDotsPanel, ListingOverlaysPanel } from './listing-panels';
 import { cardPartColourRows } from './card-part-rows';
 import {
 	PanelBody,
@@ -1883,6 +1883,10 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					setAttributes={ setAttributes }
 				/>
 				<ListingDotsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<ListingOverlaysPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

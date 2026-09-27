@@ -1,6 +1,7 @@
 /**
  * Colour rows for sgs/product-card's card parts that the main colour list in
- * edit.js doesn't build: the card's hover border colour and the RRP colour.
+ * edit.js doesn't build: the card's hover border colour, the RRP colour, the
+ * photo's fill, the colour dots' ring and the wishlist heart's ring.
  * Both apply in typed and bound modes (includes/product-card-card-parts.php
  * emits them from the shared, pre-branch section of render.php).
  */
@@ -12,7 +13,7 @@ import { __ } from '@wordpress/i18n';
  * @return {Object[]} SgsColourPanel rows.
  */
 export function cardPartColourRows( attributes, setAttributes ) {
-	const { borderColourHover, rrpColour } = attributes;
+	const { borderColourHover, rrpColour, mediaBackgroundColour, swatchBorderColour, wishlistBorderColour } = attributes;
 
 	return [
 		{
@@ -37,6 +38,45 @@ export function cardPartColourRows( attributes, setAttributes ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: rrpColour,
 					onChange: ( val ) => setAttributes( { rrpColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'mediaBackground',
+			label: __( 'Photo background colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: mediaBackgroundColour,
+					onChange: ( val ) => setAttributes( { mediaBackgroundColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'swatchBorder',
+			label: __( 'Colour dot ring colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: swatchBorderColour,
+					onChange: ( val ) => setAttributes( { swatchBorderColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'wishlistBorder',
+			label: __( 'Wishlist heart ring colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: wishlistBorderColour,
+					onChange: ( val ) => setAttributes( { wishlistBorderColour: val ?? '' } ),
 					linked: true,
 				},
 			],

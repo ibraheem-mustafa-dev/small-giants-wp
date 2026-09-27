@@ -11,7 +11,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { MEDIA_SIZING_RATIO_OPTIONS } from '../../components';
+import { MEDIA_SIZING_RATIO_OPTIONS, SgsBoxControl } from '../../components';
 
 /**
  * Connected-product panel: which elements a live card shows and where its
@@ -196,6 +196,28 @@ export function ListingDotsPanel( { attributes, setAttributes } ) {
 				resetFallbackValue={ 0 }
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
+			/>
+		</PanelBody>
+	);
+}
+
+/**
+ * Photo overlays panel: the padding of the brand overlay on the photo
+ * (includes/product-card-card-parts.php).
+ *
+ * @param {Object}   props               Component props.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Attribute setter.
+ * @return {Element} The panel.
+ */
+export function ListingOverlaysPanel( { attributes, setAttributes } ) {
+	return (
+		<PanelBody title={ __( 'Photo overlays', 'sgs-blocks' ) } initialOpen={ false }>
+			<SgsBoxControl
+				label={ __( 'Brand overlay padding', 'sgs-blocks' ) }
+				values={ attributes.brandPadding ?? {} }
+				presets
+				onChange={ ( next ) => setAttributes( { brandPadding: next } ) }
 			/>
 		</PanelBody>
 	);

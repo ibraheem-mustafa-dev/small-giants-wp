@@ -1414,7 +1414,6 @@
 	top: 0;
 	left: 0;
 	z-index: 1;
-	padding: 10px 12px;
 	max-width: 80%;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1425,9 +1424,10 @@
 	background: linear-gradient( 135deg, rgba( 255, 255, 255, 0.92 ) 0%, rgba( 255, 255, 255, 0.82 ) 62%, rgba( 255, 255, 255, 0 ) 100% );
 }
 
-/* Weight and spacing defaults at specificity 0, so brandFontWeight and
-   brandLetterSpacing (the scoped brand typography rule) always win. */
+/* Padding, weight and spacing defaults at specificity 0, so brandPadding,
+   brandFontWeight and brandLetterSpacing (the scoped brand rules) always win. */
 :where(.sgs-product-card__brand) {
+	padding: 10px 12px;
 	font-weight: 600;
 	letter-spacing: 0.12em;
 }
@@ -1598,7 +1598,8 @@
 	padding: 0;
 	border-radius: 50%;
 	border: 1px solid var( --wp--preset--color--border, #e0dad1 );
-	background: color-mix( in srgb, var( --wp--preset--color--surface, #ffffff ) 92%, transparent );
+	/* The card fill, not the page surface: the heart sits on a photo. */
+	background: color-mix( in srgb, var( --wp--preset--color--surface-alt, #ffffff ) 92%, transparent );
 	color: var( --wp--preset--color--text, #141414 );
 	cursor: pointer;
 	transition: background-color 0.2s ease, transform 0.2s ease;
@@ -1622,7 +1623,7 @@
 }
 
 .sgs-product-card__wishlist:hover {
-	background: var( --wp--preset--color--surface, #ffffff );
+	background: var( --wp--preset--color--surface-alt, #ffffff );
 	transform: scale( 1.08 );
 }
 

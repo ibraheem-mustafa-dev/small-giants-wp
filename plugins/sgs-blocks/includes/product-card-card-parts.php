@@ -2,8 +2,9 @@
 /**
  * Product card (sgs/product-card): scoped CSS for the card parts that have their own
  * inspector controls outside the shared typography and colour emitters —
- * the hover border colour, the RRP colour, and the colour dots' size and
- * hover growth.
+ * the hover border colour, the RRP colour, the colour dots' size, ring and
+ * hover growth, the photo's fill, the brand overlay's padding and the
+ * wishlist heart's ring.
  *
  * Kept out of the block's render.php (over the PHP file-length limit); the
  * render appends this function's result to its one scoped <style> rule.
@@ -52,6 +53,34 @@ if ( ! function_exists( 'sgs_product_card_parts_css' ) ) {
 		$swatch_hover = min( 200, absint( $attributes['swatchHoverGrow'] ?? 0 ) );
 		if ( $swatch_hover > 100 ) {
 			$css .= $root_sel . '{--sgs-pc-swatch-hover-scale:' . number_format( $swatch_hover / 100, 2 ) . ';}';
+		}
+
+		$swatch_border = (string) ( $attributes['swatchBorderColour'] ?? '' );
+		if ( '' !== $swatch_border ) {
+			$css .= $root_sel . ' .sgs-product-card__swatch{border-color:' . sgs_colour_value( $swatch_border ) . ';}';
+		}
+
+		$media_bg = (string) ( $attributes['mediaBackgroundColour'] ?? '' );
+		if ( '' !== $media_bg ) {
+			$css .= $root_sel . ' .product-card__media,' . $root_sel . ' .sgs-product-card__media-wrap{background:' . sgs_colour_value( $media_bg ) . ';}';
+		}
+
+		$wishlist_border = (string) ( $attributes['wishlistBorderColour'] ?? '' );
+		if ( '' !== $wishlist_border ) {
+			$css .= $root_sel . ' .sgs-product-card__wishlist{border-color:' . sgs_colour_value( $wishlist_border ) . ';}';
+		}
+
+		// Brand overlay padding: the same box helper as the saving badge.
+		if ( is_array( $attributes['brandPadding'] ?? null ) && array() !== $attributes['brandPadding'] && function_exists( 'sgs_label_box_css_rule' ) ) {
+			$css .= sgs_label_box_css_rule(
+				array(
+					'padding'    => $attributes['brandPadding'],
+					'radius'     => '',
+					'background' => '',
+					'fullWidth'  => false,
+				),
+				$root_sel . ' .sgs-product-card__brand'
+			);
 		}
 
 		return $css;

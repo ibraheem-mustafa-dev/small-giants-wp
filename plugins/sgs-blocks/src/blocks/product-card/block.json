@@ -70,6 +70,9 @@
 				],
 				"savingBadgePadding": [
 					"savingBadgePadding"
+				],
+				"brandPadding": [
+					"brandPadding"
 				]
 			},
 			"variantAttr": "variantStyle",
@@ -137,7 +140,8 @@
 					],
 					"attrMap": {
 						"css:height": "imageHeight",
-						"css:aspect-ratio": "imageAspectRatio"
+						"css:aspect-ratio": "imageAspectRatio",
+						"css:background-color": "mediaBackgroundColour"
 					},
 					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls). imageHeight resolves via css:height (render.php:129-130 `--sgs-product-card-image-height`, consumed as `height: var(--sgs-product-card-image-height, 220px)` in style.css:53/665/704/938 — Spec 35 vocabulary fix). Full-bleed direct child of the card root, OUTSIDE the padded body — never wrapped in card padding."
 				},
@@ -160,6 +164,18 @@
 						"text"
 					],
 					"prefix": "price"
+				},
+				"wishlist": {
+					"label": "Wishlist heart",
+					"order": 18,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "wishlist",
+					"attrMap": {
+						"css:border-color": "wishlistBorderColour"
+					},
+					"_note": "The round wishlist button on the photo's top-right corner (showWishlist, .sgs-product-card__wishlist). Its fill is the card fill (surface-alt) in style.css; the ring colour is wishlistBorderColour, emitted by includes/product-card-card-parts.php::sgs_product_card_parts_css."
 				},
 				"rrp": {
 					"label": "RRP",
@@ -269,6 +285,9 @@
 						"text"
 					],
 					"prefix": "brand",
+					"attrMap": {
+						"css:padding": "brandPadding"
+					},
 					"_note": "Brand wordmark overlaid top-left on the product image (Frame Card component). brandColour resolves via the default {prefix}Colour convention; brandFontSize/Unit via the shared TypographyControls prefix. Rendered by sgs_product_card_brand_markup() (product-card-builtin-render.php), called from every render branch's media area per R-31-9."
 				},
 				"savingBadge": {
@@ -294,7 +313,8 @@
 					],
 					"prefix": "swatch",
 					"attrMap": {
-						"css:width": "swatchSize"
+						"css:width": "swatchSize",
+						"css:border-color": "swatchBorderColour"
 					},
 					"states": {
 						"hover": {
@@ -942,6 +962,26 @@
 			"type": "number",
 			"default": 0,
 			"description": "How far a colour dot grows when pointed at, in % (125 = a quarter larger). 0 = no growth."
+		},
+		"swatchBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Ring colour of a card's colour dots. Theme token slug or raw hex. Empty = a faint dark ring."
+		},
+		"mediaBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fill behind the product photo (shows around a cut-out photo and on the placeholder). Theme token slug or raw hex. Empty = the card style's default."
+		},
+		"brandPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the brand overlay on the photo { top, right, bottom, left }. Rendered via the shared sgs_label_box_css_rule() helper, mirroring savingBadgePadding. Empty = theme default (style.css)."
+		},
+		"wishlistBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Ring colour of the wishlist heart button. Theme token slug or raw hex. Empty = the palette's border colour."
 		},
 		"descFontSize": {
 			"type": "object",

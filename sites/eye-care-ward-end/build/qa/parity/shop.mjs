@@ -4,8 +4,9 @@
 const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/shop/?cb={cb}';
 const LF = '#sgs-shop-filters';
-// The draft's product grid, and a card in it by product name.
-const DGRID = `(r) => { const a = document.querySelector('aside'); const s = a && (a.nextElementSibling || a.parentElement.nextElementSibling); return s && [s, ...s.querySelectorAll('div')].find((x) => getComputedStyle(x).display === 'grid'); }`;
+// The draft's product grid: the grid in main holding the cards (no aside below desktop, where filters are a drawer).
+const DGRID = `(r) => [...document.querySelectorAll('main div')].find((x) => getComputedStyle(x).display === 'grid' && x.children.length >= 2 && x.textContent.includes('£'))`;
+// A card in the draft's grid, by product name.
 const dcard = ( name ) => `(r) => { const g = (${ DGRID })(r); const c = g && [...g.children].find((c) => c.textContent.includes('${ name }')); return c && c.firstElementChild.firstElementChild; }`;
 const lcard = ( name ) => `(r) => [...document.querySelectorAll('.sgs-shop-layout .wc-block-product-template > li')].find((c) => c.textContent.includes('${ name }'))?.querySelector('.sgs-product-card, .product-card')`;
 const words = ( t ) => String( t ).replace( /\s+/g, ' ' ).trim().toLowerCase().split( ' ' ).sort().join( ' ' );

@@ -137,7 +137,8 @@ export function centreOf( [ finder, resolveSrc ] ) {
 	if ( ! el ) {
 		return null;
 	}
-	el.scrollIntoView( { block: 'center', inline: 'nearest' } );
+	// Instant: a site with smooth scrolling would still be moving when the rect is read.
+	el.scrollIntoView( { block: 'center', inline: 'nearest', behavior: 'instant' } );
 	const r = el.getBoundingClientRect();
 	return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
 }

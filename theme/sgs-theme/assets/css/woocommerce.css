@@ -596,6 +596,14 @@ h2.wc-block-mini-cart__title {
  * it regardless of this setting. Higher specificity than the panel rule above
  * (id + class + element beats id alone) wins outright, independent of source
  * order. */
+/* Plain keeps no brand tint anywhere: the drawer's fill is the page surface
+   and every rule is the palette's border colour. */
+body.sgs-shop-filters-plain #sgs-shop-filters,
+body.sgs-shop-filters-plain .sgs-shop-filters {
+	--sgs-filter-surface: var(--wp--preset--color--surface);
+	--sgs-filter-line: var(--wp--preset--color--border);
+}
+
 body.sgs-shop-filters-plain #sgs-shop-filters:not(:modal),
 body.sgs-shop-filters-plain .sgs-shop-filters:not(:modal) {
 	background: none;
@@ -1768,9 +1776,11 @@ body.woocommerce-cart .with-empty-cart-icon,
  * than two squashed ones. No column count is stated here either. */
 @media ( max-width: 767px ) {
 	.sgs-shop-layout .wc-block-product-template {
-		--sgs-shop-col-gap: 16px;
+		/* Customizer > Shop Filters gap between products on phones
+		   (inc/shop-filter-look-settings.php) sets both gaps here. */
+		--sgs-shop-col-gap: var(--sgs-shop-gap-phone-setting, 16px);
 
-		row-gap: var(--sgs-shop-row-gap-setting, 24px);
+		row-gap: var(--sgs-shop-gap-phone-setting, var(--sgs-shop-row-gap-setting, 24px));
 	}
 }
 
@@ -1951,12 +1961,18 @@ body.woocommerce-cart .with-empty-cart-icon,
 
 /* The divider belongs BETWEEN groups, never between a group's heading and its
  * own controls. `sgs/heading` sits as a sibling immediately BEFORE each filter
- * group, so that group's `border-top` otherwise draws a line directly under the
- * label and above its own slider or chips - which reads as a broken rule rather
- * than a separator. */
+ * group, and the accordion then moves the filter block inside its group's
+ * <details> after the <summary>; either way the block's own `border-top` would
+ * draw a line directly under the label and above its own slider or chips, which
+ * reads as a broken rule rather than a separator. */
 .sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-price,
 .sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-attribute,
-.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-rating {
+.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-taxonomy,
+.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-rating,
+.sgs-shop-filters .sgs-shop-filters__group > .wp-block-woocommerce-product-filter-price,
+.sgs-shop-filters .sgs-shop-filters__group > .wp-block-woocommerce-product-filter-attribute,
+.sgs-shop-filters .sgs-shop-filters__group > .wp-block-woocommerce-product-filter-taxonomy,
+.sgs-shop-filters .sgs-shop-filters__group > .wp-block-woocommerce-product-filter-rating {
 	border-top: 0;
 	padding-top: 0;
 	margin-top: 0;
@@ -2142,7 +2158,8 @@ body.woocommerce-cart .with-empty-cart-icon,
 	border: 1px solid var(--sgs-btn-border);
 	border-radius: var(--wp--custom--border-radius--pill, 9999px);
 	font-family: inherit;
-	font-size: var(--wp--preset--font-size--small);
+	/* Customizer > Shop Filters option text size (inc/shop-filter-look-settings.php). */
+	font-size: var(--sgs-filter-option-size, var(--wp--preset--font-size--small));
 	line-height: 1.2;
 	color: var(--sgs-btn-color);
 	cursor: pointer;
@@ -2413,7 +2430,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	width: 100%;
 	min-height: 40px;
 	margin: 0;
-	padding: 0 12px;
+	padding: 10px 12px;
 	border: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
 	border-radius: 0;
 	background: var(--wp--preset--color--surface-alt, #fff);
@@ -2442,7 +2459,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	background: transparent;
 	color: var(--wp--preset--color--text);
 	font: inherit;
-	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-size: var(--sgs-filter-option-size, var(--wp--preset--font-size--small, 0.875rem));
 	cursor: pointer;
 	transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -2483,7 +2500,8 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item:hover {
 	background: var(--sgs-swatch, var(--wp--preset--color--surface-alt));
 	border-color: var(--wp--preset--color--border-strong, var(--sgs-filter-line));
-	transform: scale(1.08);
+	/* Customizer > Shop Filters swatch growth (inc/shop-filter-look-settings.php). */
+	transform: scale(var(--sgs-swatch-hover-scale, 1.08));
 }
 
 .sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"] {
@@ -2609,6 +2627,13 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters-plain .sgs-shop-filters__bool-filter {
 	margin: 0;
 	padding: 0;
+	border-bottom: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+}
+
+/* Plain chips: the page's card fill and the palette's border colour. */
+.sgs-shop-filters-plain .sgs-shop-filters button.wc-block-product-filter-chips__item:not([aria-checked="true"]) {
+	--sgs-btn-bg: var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface));
+	--sgs-btn-border: var(--sgs-filter-line, var(--wp--preset--color--border));
 }
 
 .sgs-shop-filters-plain .sgs-shop-filters__bool-filter-label {
@@ -2765,6 +2790,16 @@ select.orderby,
 	background-position: calc(100% - 1.1em) 55%, calc(100% - 0.75em) 55%;
 	background-size: 0.35em 0.35em, 0.35em 0.35em;
 	background-repeat: no-repeat;
+}
+
+/* Customizer > Shop Filters > Sort menu arrow: the browser's own. */
+body.sgs-shop-sort-native .sgs-shop-toolbar select,
+body.sgs-shop-sort-native select.orderby,
+body.sgs-shop-sort-native .wc-block-product-sort-select select,
+body.sgs-shop-sort-native .wp-block-woocommerce-product-sort-select select {
+	appearance: auto;
+	background-image: none;
+	padding: 0 14px;
 }
 
 .sgs-shop-toolbar select:focus-visible,
