@@ -2428,7 +2428,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	display: block;
 	box-sizing: border-box;
 	width: 100%;
-	min-height: 40px;
+	height: 40px;
 	margin: 0;
 	padding: 10px 12px;
 	border: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
@@ -2624,16 +2624,42 @@ body.woocommerce-cart .with-empty-cart-icon,
 	min-height: 52px;
 }
 
+/* The groups touch (their rules separate them): no gap from WooCommerce's
+   filters container between them, none under the one-choice segments, and a
+   long option list scrolls inside 280px rather than pushing the rest down. */
+.sgs-shop-filters-plain .wp-block-woocommerce-product-filters,
+.sgs-shop-filters-plain .wc-block-product-filters {
+	gap: 0;
+}
+
+.sgs-shop-filters-plain .sgs-shop-filters__segmented {
+	margin-bottom: 0;
+}
+
+.sgs-shop-filters-plain .wc-block-product-filter-checkbox-list__items {
+	max-height: 280px;
+	overflow-y: auto;
+	padding-right: 6px;
+}
+
+/* The drawer's side margin matches the rows' own 20px inset. */
+body.sgs-shop-filters-plain .sgs-shop-filters:modal {
+	padding-inline: 20px;
+}
+
 .sgs-shop-filters-plain .sgs-shop-filters__bool-filter {
 	margin: 0;
 	padding: 0;
 	border-bottom: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
 }
 
-/* Plain chips: the page's card fill and the palette's border colour. */
-.sgs-shop-filters-plain .sgs-shop-filters button.wc-block-product-filter-chips__item:not([aria-checked="true"]) {
+/* Plain chips (not colour swatches): the page's card fill and the palette's
+   border colour, at rest and on hover (hover never darkens the fill). */
+.sgs-shop-filters-plain .sgs-shop-filters__group:not(:has( .sgs-filter-swatches )) button.wc-block-product-filter-chips__item:not([aria-checked="true"]),
+.sgs-shop-filters-plain .sgs-shop-filters__group:not(:has( .sgs-filter-swatches )) button.wc-block-product-filter-chips__item:not([aria-checked="true"]):hover {
 	--sgs-btn-bg: var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface));
 	--sgs-btn-border: var(--sgs-filter-line, var(--wp--preset--color--border));
+	background: var(--sgs-btn-bg);
 }
 
 .sgs-shop-filters-plain .sgs-shop-filters__bool-filter-label {

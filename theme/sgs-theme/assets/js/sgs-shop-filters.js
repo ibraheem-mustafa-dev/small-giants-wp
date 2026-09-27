@@ -466,7 +466,18 @@
 					dialog.close(); // Demote out of the modal/top-layer state first.
 				}
 				if ( ! dialog.open ) {
+					// show() moves focus into the dialog (its focusing steps), which
+					// painted a focus ring on the first group at page load. The in-flow
+					// sidebar is not something the shopper opened, so focus stays put.
+					const previous = document.activeElement;
 					dialog.show(); // Non-modal, always-visible, in-flow sidebar.
+					if ( dialog.contains( document.activeElement ) ) {
+						if ( previous && previous !== document.body && 'function' === typeof previous.focus ) {
+							previous.focus( { preventScroll: true } );
+						} else {
+							document.activeElement.blur();
+						}
+					}
 				}
 				stickyTrigger.hidden = true;
 				document.body.classList.remove( 'sgs-scroll-locked' );
