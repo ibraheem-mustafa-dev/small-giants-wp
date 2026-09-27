@@ -187,7 +187,7 @@
                               {
                                 "name": "sgs/button",
                                 "attributes": {
-                                  "label": "Clear all filters",
+                                  "label": "Clear all",
                                   "className": "wp-block-button__link"
                                 }
                               }
@@ -288,7 +288,8 @@
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-chips",
                           "showCounts": true,
-                          "sortOrder": "menu_order-asc"
+                          "sortOrder": "menu_order-asc",
+                          "hideEmpty": false
                         },
                         "innerBlocks": [
                           {
@@ -321,7 +322,9 @@
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-price-slider",
-                            "attributes": {}
+                            "attributes": {
+                              "showInputFields": false
+                            }
                           }
                         ]
                       },

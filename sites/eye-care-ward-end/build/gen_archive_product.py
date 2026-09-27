@@ -30,15 +30,17 @@ def group_heading(text, looks=""):
                              "textTransform": "uppercase"})
 
 
-def attribute_filter(label, slug, style, looks="", counts=True, order=""):
+def attribute_filter(label, slug, style, looks="", counts=True, order="", keep_empty=False):
     # counts: False drops the "(5)" after each option (the draft's Style chips carry none).
+    # keep_empty: True keeps options with no matching products once a filter is chosen (the draft's swatches).
     # order: "menu_order-asc" lists terms in their set order (woo-seed/seed-facets.php) instead of WooCommerce's
     # default, most products first.
     display = "woocommerce/product-filter-chips" if style == "chips" else "woocommerce/product-filter-checkbox-list"
     return [group_heading(label, looks),
             B("woocommerce/product-filter-attribute", {"attributeId": ATTR[slug],
                                                        "queryType": "or", "displayStyle": display, "showCounts": counts,
-                                                       **({"sortOrder": order} if order else {})},
+                                                       **({"sortOrder": order} if order else {}),
+                                                       **({"hideEmpty": False} if keep_empty else {})},
               [B(display)])]
 
 
@@ -80,15 +82,17 @@ CARD = dict(
 filters = [
     B("woocommerce/product-filter-active", {},
       [B("woocommerce/product-filter-removable-chips"),
-       B("woocommerce/product-filter-clear-button", {}, [B("sgs/button", {"label": "Clear all filters",
+       B("woocommerce/product-filter-clear-button", {}, [B("sgs/button", {"label": "Clear all",
                                                                          "className": "wp-block-button__link"})])]),
     # The draft's order and open state; "Polarised only" is the theme's toggle (apply_shop_settings.py).
     *attribute_filter("Gender", "gender", "chips", "sgs-filter-open sgs-filter-segmented", order="menu_order-asc"),
     *attribute_filter("Size", "size", "chips", order="menu_order-asc"),
-    *attribute_filter("Colour", "colour", "chips", "sgs-filter-open sgs-filter-swatches", order="menu_order-asc"),
+    *attribute_filter("Colour", "colour", "chips", "sgs-filter-open sgs-filter-swatches", order="menu_order-asc",
+                     keep_empty=True),
     group_heading("Price", "sgs-filter-open"),
     B("woocommerce/product-filter-price", {},
-      [B("woocommerce/product-filter-price-slider")]),
+      # The prices as small plain text under the track, like the draft's "£59 ... £339".
+      [B("woocommerce/product-filter-price-slider", {"showInputFields": False})]),
     *taxonomy_filter("Brand", "product_brand", "list", "sgs-filter-open sgs-filter-count", "Search brands"),
     *attribute_filter("Style", "shape", "chips", "sgs-filter-open sgs-filter-count", counts=False),
     *attribute_filter("Material", "material", "list"),

@@ -2198,7 +2198,8 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button.is-active,
 .sgs-shop-filters .wc-block-product-filter-chips__item button.is-active {
 	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
-	border-color: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
+	/* The chip's own fill: a preset's border belongs to buttons on a dark ground. */
+	border-color: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
 	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
 }
 
@@ -2234,10 +2235,11 @@ body.woocommerce-cart .with-empty-cart-icon,
 	align-items: center;
 	gap: 0.625rem;
 	min-height: 44px;
-	font-size: 0.875rem;
+	font-size: var(--sgs-filter-list-size, 0.875rem); /* Customizer > Shop Filters */
+	font-weight: var(--sgs-filter-list-weight, 400);
 	color: var(--wp--preset--color--text, #1e1e1e);
 	cursor: pointer;
-	padding: 0.125rem 0;
+	padding: var(--sgs-filter-list-row, 0.125rem) 0;
 }
 
 /* Native checkbox — hidden, replaced by custom square */
@@ -2722,6 +2724,10 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 	--sgs-btn-bg: var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface));
 	--sgs-btn-border: var(--sgs-filter-line, var(--wp--preset--color--border));
 	background: var(--sgs-btn-bg);
+}
+
+/* Chosen or not, a plain chip keeps its 14px sides. */
+.sgs-shop-filters-plain .sgs-shop-filters__group:not(:has( .sgs-filter-swatches )) button.wc-block-product-filter-chips__item {
 	padding-inline: 14px;
 }
 
@@ -2863,7 +2869,7 @@ select.orderby,
 .wc-block-product-sort-select select,
 .wp-block-woocommerce-product-sort-select select {
 	font-family: inherit;
-	font-size: 0.9375rem; /* shop sort/filter dropdown button text size -- component-scoped WooCommerce UI chrome */
+	font-size: var(--sgs-shop-sort-size, 0.9375rem); /* Customizer > Shop Filters > Sort menu text size */
 	line-height: 1.2;
 	color: var(--wp--preset--color--text);
 	background-color: var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface));
@@ -3184,4 +3190,113 @@ select.orderby:focus-visible {
 	.sgs-product-rail .wc-block-product-template.wc-block-product-template__responsive {
 		scroll-behavior: auto;
 	}
+}
+
+/* ── 8k. Toolbar and filter looks (Customizer > Shop Filters; inc/shop-controls-look-settings.php) ── */
+
+/* A checkbox-list option's count keeps the regular weight whatever the name's weight. */
+.sgs-shop-filters .wc-block-product-filter-checkbox-list__count {
+	font-weight: 400;
+}
+
+/* Filter button: outlined text in capitals, and its place in the toolbar. */
+@media ( max-width: 781px ) {
+	body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle,
+	body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle:hover {
+		gap: 0;
+		min-height: 44px;
+		padding: 0 16px;
+		border: 1px solid var(--wp--preset--color--text);
+		border-radius: var(--wp--custom--button-presets--outline--border-radius, 0);
+		background: var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface));
+		color: var(--wp--preset--color--text);
+		font-size: 12.5px;
+		font-weight: 400;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle svg {
+		display: none;
+	}
+
+	body.is-enhanced .sgs-shop-filters__toggle--toolbar {
+		margin-bottom: 0;
+	}
+}
+
+/* Chosen filters as filled pills with a text "Clear all". */
+.sgs-shop-active-pills .sgs-shop-filters .wc-block-product-filter-removable-chips__items {
+	gap: 8px;
+}
+
+.sgs-shop-active-pills .sgs-shop-filters .wc-block-product-filter-removable-chips__item,
+.sgs-shop-active-pills .sgs-shop-filters .wc-block-product-filter-removable-chips__item:hover {
+	min-height: 34px;
+	padding: 0 6px 0 14px;
+	border: 0;
+	border-radius: 999px;
+	background: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--text-inverse);
+	font-size: 13px;
+}
+
+.sgs-shop-active-pills .sgs-shop-filters .wc-block-product-filter-removable-chips__remove svg {
+	width: 18px;
+	height: 18px;
+	fill: currentColor;
+}
+
+.sgs-shop-active-pills .sgs-shop-filters .wp-block-woocommerce-product-filter-clear-button .sgs-button,
+.sgs-shop-active-pills .sgs-shop-filters .wp-block-woocommerce-product-filter-clear-button .sgs-button:hover {
+	min-height: 44px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--wp--preset--color--text);
+	font-size: 12.5px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 5px;
+	box-shadow: none;
+	transform: none;
+}
+
+/* Price slider: a thin track in the border colour, the chosen range in the text
+   colour, small round handles at both ends and the prices as small plain text. */
+.sgs-shop-price-thin .sgs-shop-filters .range-bar {
+	height: 2px;
+	background-color: var(--wp--preset--color--border);
+	border-radius: 2px;
+	background-image: linear-gradient(
+		to right,
+		transparent var(--low, 0%),
+		var(--wp--preset--color--text) var(--low, 0%),
+		var(--wp--preset--color--text) var(--high, 100%),
+		transparent var(--high, 100%)
+	) !important; /* WooCommerce writes this gradient inline (8h) */
+}
+
+.sgs-shop-price-thin .sgs-shop-filters input[type="range"]::-webkit-slider-thumb {
+	width: 14px;
+	height: 14px;
+	border: 0;
+	background: var(--wp--preset--color--text);
+	box-shadow: none;
+}
+
+.sgs-shop-price-thin .sgs-shop-filters input[type="range"]::-moz-range-thumb {
+	width: 14px;
+	height: 14px;
+	border: 0;
+	background: var(--wp--preset--color--text);
+	box-shadow: none;
+}
+
+.sgs-shop-price-thin .sgs-shop-filters .wc-block-product-filter-price-slider__left,
+.sgs-shop-price-thin .sgs-shop-filters .wc-block-product-filter-price-slider__right {
+	font-size: 12px;
+	color: var(--wp--preset--color--text-label, var(--wp--preset--color--text));
 }

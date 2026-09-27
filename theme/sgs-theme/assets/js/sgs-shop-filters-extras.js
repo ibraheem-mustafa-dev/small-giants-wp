@@ -164,9 +164,21 @@
 		return el && 'DIALOG' === el.tagName ? el : null;
 	}
 
+	/* The Filter button's place (Customizer > Shop Filters > Filter button place):
+	 * "toolbar" moves it beside the result count, just before the sort menu. */
+	function placeToggle() {
+		const toggle = document.querySelector( '.sgs-shop-filters__toggle' );
+		const sort = document.querySelector( '.wp-block-woocommerce-catalog-sorting, .wc-block-catalog-sorting' );
+		if ( 'toolbar' === SETTINGS.togglePlace && toggle && sort && toggle.nextElementSibling !== sort ) {
+			sort.parentNode.insertBefore( toggle, sort );
+			toggle.classList.add( 'sgs-shop-filters__toggle--toolbar' );
+		}
+	}
+
 	function run( dialog ) {
 		buildBooleanFilterToggle( dialog, SETTINGS.booleanFilter );
 		setupResultCount( dialog );
+		placeToggle();
 	}
 
 	function init() {

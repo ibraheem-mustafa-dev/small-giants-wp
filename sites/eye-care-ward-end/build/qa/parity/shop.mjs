@@ -70,7 +70,9 @@ export default {
 		// WooCommerce's re-render (swatches, segments, chips, counts).
 		{
 			name: 'panel-after-click',
-			...pick( ( h ) => h.click( 'aside button[aria-label="Havana"]' ), liveSwatch( 'havana' ), true ),
+			// A style chip, not a colour: the draft's colour filter returns 0 frames for every colour.
+			...pick( ( h ) => h.clickText( '^pilot$', { within: 'aside', tag: 'button' } ),
+				( h ) => h.clickText( '^pilot', { within: LF, tag: 'button', quiet: true, wait: 1200 } ), true ),
 		},
 	],
 	pairs: [
@@ -85,7 +87,6 @@ export default {
 		{ name: 'gender-all', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^all$', within: 'aside', tag: 'button' }, live: `${ LF } .sgs-shop-filters__segment`, hover: true },
 		{ name: 'gender-women', states: [ 'women' ], draft: { text: '^women$', within: 'aside', tag: 'button' }, live: { text: '^women$', within: LF, tag: '.sgs-shop-filters__segment' } },
 		{ name: 'swatch-black', states: [ 'filters-open', 'colour-black', 'panel-after-click' ], draft: 'aside button[aria-label="Black"]', live: `${ LF } [id="attribute/colour-black"]`, text: false, hover: true },
-		{ name: 'swatch-picked', states: [ 'panel-after-click' ], draft: 'aside button[aria-label="Havana"]', live: `${ LF } [id="attribute/colour-havana"]`, text: false },
 		{ name: 'brand-search', states: [ 'filters-open', 'panel-after-click' ], draft: 'aside input[aria-label="Search brands"]', live: `${ LF } .sgs-filter-search__input`, text: false },
 		{ name: 'brand-heading', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^brand', within: 'aside', tag: 'button' }, live: { text: '^brand', within: LF, tag: 'summary' }, box: [ 'h' ] },
 		{ name: 'brand-ray-ban', states: [ 'filters-open', 'brand-ray-ban', 'panel-after-click' ], draft: { text: '^ray-ban', within: 'aside', tag: 'label' }, live: `${ LF } label[for="taxonomy/product_brand-ray-ban"]` },
