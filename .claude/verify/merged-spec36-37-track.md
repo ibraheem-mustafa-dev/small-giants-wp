@@ -133,9 +133,12 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
 ## Wave 3C — Header and nav architecture harmonised
 - STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5,
   U-3+U-8, U-6+U-7, U-4, U-10+U-14, with its batched QA pass), all of lane C (U-12, U-15, U-17), U-13 and U-16 are
-  closed. Gate 3C items 1, 2, 3 and 5 pass (audit 2026-09-26). Open: item 4. The two copies it judges exist
-  (pages 4446 lamalama, 4465 Indus) and composing them found framework gaps G1 to G4, open as U-18 in the plan;
-  the evidence pack goes to Bean once U-18 closes.
+  closed. Gate 3C items 2, 3 and 5 pass. Items 1 and 4 are open on one cell: lamalama's card pinned to the top-right
+  corner (U-18 G8, stopped at NO GO 2026-09-27; `.claude/reports/2026-09-27-u18-g6-g8-design.md` §8-§9). U-18
+  G1-G7, G10 and G11 are live; the copies measure lamalama 75/76 (only that card) and Indus 23/23
+  (`reports/visual-diff/u18-copy-parity-2026-09-27.md`); `families-master.json` M-08 is partial for the card. The
+  evidence pack went to Bean on 2026-09-27 (https://claude.ai/artifact/TP1uzkbxQxthan7DLzBkNg); his decision is open:
+  pass item 4 with the card as a named gap, or hold until G8 is rebuilt.
 - U-16 exit criteria (live report `reports/visual-diff/entrance-2026-09-26.md`, verdict PASS; sandybrown 2026-09-26, fixture `qa-item-markup-fixture.php entrance` on `/qa-entrance/`,
   restored to `two-bar`): the header's `fade-in` extra-slow rises from 0 to 1 over 713 to 761ms with no flash at
   375/768/1440; shrink (16px to 4px) and hide-on-scroll (slides away and back, pins) keep working; a dropdown opened

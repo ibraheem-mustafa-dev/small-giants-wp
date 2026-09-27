@@ -670,6 +670,12 @@ Gate 3C passes when:
    co-authoritative (R-31-13).
 5. Spec 36, Spec 37, the verify doc and `LEDGER.md` state the model.
 
+**Status 2026-09-27.** Items 2, 3 and 5 pass. Item 1 is open on M-08 (partial: lamalama's corner card, found to
+have fallen out of the table when F-A-19 merged into a trigger-only family) and item 4 on the same card: U-18 G8
+stopped at NO GO. Everything else in item 4 measures within 2px (lamalama 75/76, Indus 23/23, live report
+`reports/visual-diff/u18-copy-parity-2026-09-27.md`). The evidence pack is published
+(https://claude.ai/artifact/TP1uzkbxQxthan7DLzBkNg) and Bean has been pinged; his decision is open.
+
 Bean's session for item 4 is booked at the last unit's close, with the evidence pack pre-built
 and an external ping rather than an in-session message.
 
