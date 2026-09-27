@@ -321,6 +321,13 @@ $scoped_css[] = sgs_block_background_layer_css(
 	$sgs_nb_bg_decls['normal'][0] ?? '',
 	$sgs_nb_bg_decls['hover'][0] ?? ''
 );
+// A chosen background replaces the message type's default fill, which the
+// stylesheet paints on the root itself (`:where(.sgs-notice-banner--info)`
+// and siblings): without this, a transparent or see-through choice showed the
+// type's colour through the layer.
+if ( '' !== ( $sgs_nb_bg_decls['normal'][0] ?? '' ) ) {
+	$scoped_css[] = "{$root_sel}{background-color:transparent;}";
+}
 
 // --- Width (base only, kept-scalar). ---
 if ( $max_width ) {
