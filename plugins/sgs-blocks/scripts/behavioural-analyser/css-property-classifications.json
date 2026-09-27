@@ -8827,6 +8827,30 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "attributeTagFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "attribute-tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "attribute-tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "attribute-tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "attributeTagTextColour",
       "fields": {
         "css_property": "color",
