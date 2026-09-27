@@ -12,8 +12,14 @@
  * the burger), then the burger is clicked and the open drawer's box is read beside the pill's
  * closed box (same top, left and width = the pill grows in place), with the header's grown state
  * and its painted background.
+ * lamalama also reads the burger's three bars closed and open (16 long, 3px gaps, one line open
+ * with 5px travel), the two drawer CTAs' widths, and the corner "GET IN TOUCH" card: pinned
+ * 160x326 at top 16 / right 16 at 1440 and absent (no box, or 0x0) at 375 and 768.
  * indus, 1440: every mega trigger is clicked in turn and its panel's box read (the wrap and its
- * widest child); 768 and 375: the burger and the open drawer, as above.
+ * widest child) plus its aside (`.sgs-mega-aside`), which must sit beside the links, not below;
+ * 768 and 375: the burger and the open drawer, as above.
+ *
+ * A check whose element is missing FAILS; it never silently skips.
  *
  * Writes <out>/<copy>-measure.json and <copy>-<width>-closed.png / -open.png. Exits 1 when an
  * expected value (EXPECT below, from .claude/reports/reference-requirements/<copy>.json) is missed
@@ -40,17 +46,20 @@ mkdirSync( out, { recursive: true } );
 // indus-foods.json: widths_measured_at_1440 and each panel's panelRect.x.
 const EXPECT = {
 	lamalama: {
-		375: { pill: { x: 16, y: 16, w: 343, h: 50 }, burger: { w: 30, h: 36 }, open: { x: 16, y: 16, w: 343, h: 436 } },
-		768: { pill: { w: 438, h: 50 }, burger: { w: 30, h: 36 }, open: { w: 438, h: 436 } },
-		1440: { pill: { w: 438, h: 50 }, burger: { w: 30, h: 36 }, open: { w: 438, h: 436 } },
+		// bars: lamalama.json trigger-close `barSize` 16x2 and its raw html (gap-y 3/16rem, open translate 0.3125rem).
+		// ctas: drawer `secondary_blocks.ctas`. card: header-shell `secondary_blocks.contactCardTopRight`.
+		375: { pill: { x: 16, y: 16, w: 343, h: 50 }, burger: { w: 30, h: 36 }, open: { x: 16, y: 16, w: 343, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 156.5, card: null },
+		768: { pill: { w: 438, h: 50 }, burger: { w: 30, h: 36 }, open: { w: 438, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 204, card: null },
+		1440: { pill: { w: 438, h: 50 }, burger: { w: 30, h: 36 }, open: { w: 438, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 204, card: { top: 16, right: 16, w: 160, h: 326 } },
 	},
 	indus: {
 		1440: {
 			panels: {
-				About: { x: 410, w: 620 },
+				// aside: indus-foods.json dropdown rows 11/14 `zone_model.rail` (w 300 at x 729, beside the 318px links).
+				About: { x: 410, w: 620, aside: { x: 729, w: 300 } },
 				Sectors: { x: 180, w: 1080 },
 				Brands: { x: 180, w: 1080 },
-				Trade: { x: 410, w: 620 },
+				Trade: { x: 410, w: 620, aside: { x: 729, w: 300 } },
 				More: { x: 570, w: 300 },
 			},
 		},
@@ -98,9 +107,34 @@ async function measureDrawer( page, width, header ) {
 			} ),
 		[ cx, cy ]
 	);
+	const readBars = () =>
+		burger.evaluate( ( el ) =>
+			[ ...el.querySelectorAll( '.sgs-nav-bar-menu__burger-bar' ) ].map( ( b ) => {
+				const r = b.getBoundingClientRect();
+				return { x: r.x, y: r.y, w: r.width, h: r.height };
+			} )
+		);
+	res.barsClosed = await readBars();
+	res.card = await page.evaluate( () => {
+		const a = [ ...document.querySelectorAll( 'a' ) ].find(
+			( el ) => /get in touch/i.test( el.textContent ) && ! el.closest( 'header, dialog' )
+		);
+		if ( ! a ) {
+			return null;
+		}
+		// The card is the fixed-position box that holds the link (or the link itself).
+		let el = a;
+		while ( el && el !== document.body && 'fixed' !== getComputedStyle( el ).position ) {
+			el = el.parentElement;
+		}
+		const box = el && el !== document.body ? el : a;
+		const r = box.getBoundingClientRect();
+		return { top: r.top, right: innerWidth - r.right, w: r.width, h: r.height, fixed: box !== a || 'fixed' === getComputedStyle( a ).position };
+	} );
 	await page.screenshot( { path: join( out, `${ copy }-${ width }-closed.png` ) } );
 	await burger.click();
 	await page.waitForTimeout( 900 );
+	res.barsOpen = await readBars();
 	const drawer = page.locator( 'dialog.wp-block-sgs-nav-drawer[open]' ).first();
 	if ( await drawer.count() ) {
 		res.open = box( await drawer.boundingBox() );
@@ -108,6 +142,11 @@ async function measureDrawer( page, width, header ) {
 		res.headerBackground = await header.evaluate( ( el ) => getComputedStyle( el ).backgroundColor + ' ' + getComputedStyle( el ).backgroundImage );
 		res.drawerBackground = await drawer.evaluate( ( el ) => getComputedStyle( el ).backgroundColor );
 		res.drawerRadius = await drawer.evaluate( ( el ) => getComputedStyle( el ).borderTopLeftRadius );
+		res.ctas = await drawer.evaluate( ( el ) =>
+			[ ...el.querySelectorAll( 'a, button' ) ]
+				.filter( ( b ) => /schedule a call|start a project/i.test( b.textContent ) )
+				.map( ( b ) => ( { text: b.textContent.trim(), w: b.getBoundingClientRect().width } ) )
+		);
 		res.burgerStillOnTop = await page.evaluate(
 			( [ x, y ] ) => !! document.elementFromPoint( x, y )?.closest( '.sgs-nav-bar-menu__burger' ),
 			[ cx, cy ]
@@ -145,7 +184,15 @@ async function measurePanels( page, header ) {
 				}
 				return widest;
 			} );
-			panels[ name ] = { wrap: w, panel: child };
+			const aside = await wrap.evaluate( ( el ) => {
+				const a = el.querySelector( '.sgs-mega-aside' );
+				if ( ! a ) {
+					return null;
+				}
+				const r = a.getBoundingClientRect();
+				return { x: r.x, y: r.y, w: r.width, h: r.height };
+			} );
+			panels[ name ] = { wrap: w, panel: child, aside };
 			await page.screenshot( { path: join( out, `${ copy }-1440-panel-${ name.toLowerCase().replace( /\W+/g, '-' ) }.png` ) } );
 		}
 		await page.keyboard.press( 'Escape' );
@@ -195,6 +242,47 @@ for ( const { width, ctx } of WIDTHS ) {
 		console.log( `${ res.grown && res.burgerStillOnTop ? 'PASS' : 'FAIL' }  ${ width } header grown ${ res.grown }, burger on top ${ res.burgerStillOnTop }` );
 		failed += res.grown && res.burgerStillOnTop ? 0 : 1;
 	}
+	if ( want.bars && 'lamalama' === copy ) {
+		const c = res.barsClosed || [];
+		const o = res.barsOpen || [];
+		if ( 3 !== c.length || 3 !== o.length ) {
+			console.log( `FAIL  ${ width } burger bars: found ${ c.length } closed / ${ o.length } open, expected 3` );
+			failed++;
+		} else {
+			c.forEach( ( b, i ) => near( b.w, want.bars.w, `${ width } bar ${ i + 1 } length` ) );
+			near( c[ 1 ].y - ( c[ 0 ].y + c[ 0 ].h ), want.bars.gap, `${ width } gap bar 1-2` );
+			near( c[ 2 ].y - ( c[ 1 ].y + c[ 1 ].h ), want.bars.gap, `${ width } gap bar 2-3` );
+			near( o[ 0 ].y - c[ 0 ].y, want.bars.travel, `${ width } open travel bar 1` );
+			near( c[ 2 ].y - o[ 2 ].y, want.bars.travel, `${ width } open travel bar 3` );
+			near( Math.max( ...o.map( ( b ) => b.y ) ) - Math.min( ...o.map( ( b ) => b.y ) ), 0, `${ width } open bars on one line (spread)` );
+		}
+	}
+	if ( undefined !== want.ctas ) {
+		const ctas = res.ctas || [];
+		if ( 2 !== ctas.length ) {
+			console.log( `FAIL  ${ width } drawer CTAs: found ${ ctas.length }, expected 2` );
+			failed++;
+		} else {
+			ctas.forEach( ( b ) => near( b.w, want.ctas, `${ width } CTA "${ b.text }" width` ) );
+		}
+	}
+	if ( undefined !== want.card ) {
+		const got = res.card;
+		const visible = got && got.w > 0 && got.h > 0;
+		if ( null === want.card ) {
+			console.log( `${ visible ? 'FAIL' : 'PASS' }  ${ width } corner card absent: ${ visible ? `${ got.w }x${ got.h }` : 'yes' }` );
+			failed += visible ? 1 : 0;
+		} else if ( ! visible ) {
+			console.log( `FAIL  ${ width } corner card: not found` );
+			failed++;
+		} else {
+			console.log( `${ got.fixed ? 'PASS' : 'FAIL' }  ${ width } corner card fixed to the viewport: ${ got.fixed }` );
+			failed += got.fixed ? 0 : 1;
+			for ( const k of [ 'top', 'right', 'w', 'h' ] ) {
+				near( got[ k ], want.card[ k ], `${ width } corner card ${ k }` );
+			}
+		}
+	}
 	if ( want.panels && res.panels ) {
 		for ( const [ name, ref ] of Object.entries( want.panels ) ) {
 			const got = res.panels[ name ];
@@ -205,6 +293,19 @@ for ( const { width, ctx } of WIDTHS ) {
 			}
 			near( got.panel.x, ref.x, `${ width } ${ name } panel x` );
 			near( got.panel.w, ref.w, `${ width } ${ name } panel width` );
+			if ( ref.aside ) {
+				if ( ! got.aside ) {
+					console.log( `FAIL  ${ width } ${ name } aside: not found` );
+					failed++;
+					continue;
+				}
+				near( got.aside.x, ref.aside.x, `${ width } ${ name } aside x (beside the links)` );
+				near( got.aside.w, ref.aside.w, `${ width } ${ name } aside width` );
+				// Stacked would put the aside under ~300px of links; beside keeps its top within the panel's first 40px.
+				const beside = got.aside.y - got.panel.y <= 40;
+				console.log( `${ beside ? 'PASS' : 'FAIL' }  ${ width } ${ name } aside beside the links, not below (top offset ${ Math.round( got.aside.y - got.panel.y ) }px)` );
+				failed += beside ? 0 : 1;
+			}
 		}
 	}
 	await context.close();

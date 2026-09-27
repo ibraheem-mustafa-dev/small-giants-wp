@@ -72,6 +72,8 @@
               "triggerMode": { "desktop": "icon" },
               "burgerSize": "36px",
               "burgerWidth": { "desktop": "30px" },
+              "burgerIconWidth": { "desktop": "16px" },
+              "burgerIconHeight": { "desktop": "12px" },
               "burgerColour": "#f9f4eb",
               "burgerMorph": "line",
               "burgerBarCount": 3,

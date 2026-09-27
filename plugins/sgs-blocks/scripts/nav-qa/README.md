@@ -609,9 +609,13 @@ node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs   # from the repo ro
 
 Measures a composed header copy while it is the ACTIVE header (an in-page copy sits in a lower stacking layer
 and misleads) at 375 (mobile-emulated, no scrollbar), 768 and 1440, and screenshots it closed and open. lamalama:
-the pill, the burger box and its 44x44 tap area, the grown drawer against the closed pill. Indus: every mega
-panel's position at 1440, the burger and drawer below. Reference values sit in the script's `EXPECT`, from
-`lamalama.json` and `indus-foods.json`; exits 1 on a miss over 2px.
+the pill, the burger box and its 44x44 tap area, the three bars closed and open (16 long, 3px gaps, one line
+with 5px travel), the grown drawer against the closed pill, the two drawer CTAs' widths, and the corner "GET IN
+TOUCH" card (pinned 160x326 at top 16 / right 16 at 1440, absent at 375 and 768). Indus: every mega panel's
+position at 1440 and, for About and Trade, the aside beside the links rather than below them; the burger and
+drawer below 1440. Reference values sit in the script's `EXPECT`, from `lamalama.json` and `indus-foods.json`;
+exits 1 on a miss over 2px. A check whose element is missing FAILS rather than skipping, so an absent bar, CTA,
+card or aside reads as a failure, never as silence.
 
 ```bash
 WP=domains/sandybrown-nightingale-600381.hostingersite.com/public_html

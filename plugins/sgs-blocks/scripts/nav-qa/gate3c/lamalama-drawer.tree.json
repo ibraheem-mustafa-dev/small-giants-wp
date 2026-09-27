@@ -3,6 +3,7 @@
     "name": "sgs/nav-drawer",
     "attributes": {
       "anchor": { "desktop": "header-box", "tablet": "header-box", "mobile": "header-box" },
+      "drawerAlign": "stretch",
       "modality": "non-modal",
       "surfaceBlur": "4px",
       "drawerBg": "#000000",
