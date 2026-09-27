@@ -232,8 +232,10 @@ function localise_shop_filter_settings(): void {
 		/* translators: %d: number of matching products. */
 		$default_label           = __( 'Show %d results', 'sgs-theme' );
 		$settings['resultCount'] = array(
-			'endpoint' => rest_url( 'wc/store/v1/products' ),
-			'label'    => (string) get_theme_mod( 'sgs_shop_result_count_label', $default_label ),
+			'endpoint'      => rest_url( 'wc/store/v1/products' ),
+			'label'         => (string) get_theme_mod( 'sgs_shop_result_count_label', $default_label ),
+			// The Store API takes prices in the currency's smallest unit.
+			'priceDecimals' => function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2,
 		);
 	}
 

@@ -101,6 +101,33 @@
 	 * on every products list request — one source of truth, not a second
 	 * count kept in step by hand. Debounced so a burst of chip changes (WC
 	 * re-renders its filter subtree once per interaction) fires one request. */
+	/* The shop URL's filters in the Store API's own terms: it ignores `filter_*`,
+	 * wants each attribute as attributes[i][attribute] with an array of slugs,
+	 * brand/tag/category for the taxonomy filters, and prices in the currency's
+	 * smallest unit. */
+	function storeQuery( params, decimals ) {
+		const out = new URLSearchParams();
+		const minor = Math.pow( 10, Number( decimals ) >= 0 ? Number( decimals ) : 2 );
+		const names = { brands: 'brand', tags: 'tag', categories: 'category' };
+		let i = 0;
+		params.forEach( function ( value, key ) {
+			if ( 0 === key.indexOf( 'filter_' ) ) {
+				const attr = key.slice( 7 );
+				out.set( 'attributes[' + i + '][attribute]', 'pa_' + attr );
+				value.split( ',' ).forEach( function ( slug ) {
+					out.append( 'attributes[' + i + '][slug][]', slug );
+				} );
+				out.set( 'attributes[' + i + '][operator]', 'and' === params.get( 'query_type_' + attr ) ? 'and' : 'in' );
+				i++;
+			} else if ( names[ key ] ) {
+				out.set( names[ key ], value );
+			} else if ( 'min_price' === key || 'max_price' === key ) {
+				out.set( key, String( Math.round( parseFloat( value ) * minor ) ) );
+			}
+		} );
+		return out.toString();
+	}
+
 	function setupResultCount( dialog ) {
 		const config = SETTINGS.resultCount;
 		const applyBtn = dialog.querySelector( '.sgs-shop-filters__apply' );
@@ -114,17 +141,7 @@
 			window.clearTimeout( debounceTimer );
 			debounceTimer = window.setTimeout( function () {
 				const url = new URL( config.endpoint );
-				const currentParams = new URLSearchParams( window.location.search );
-				currentParams.forEach( function ( value, key ) {
-					if (
-						0 === key.indexOf( 'filter_' ) ||
-						0 === key.indexOf( 'query_type_' ) ||
-						'min_price' === key ||
-						'max_price' === key
-					) {
-						url.searchParams.set( key, value );
-					}
-				} );
+				url.search = storeQuery( new URLSearchParams( window.location.search ), config.priceDecimals );
 				url.searchParams.set( 'per_page', '1' );
 
 				fetch( url.toString(), { credentials: 'same-origin' } )

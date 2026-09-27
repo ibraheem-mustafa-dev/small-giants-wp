@@ -3337,8 +3337,8 @@ select.orderby:focus-visible {
 
 /* Chosen filters in a row under the title (Customizer > Chosen filters place;
    assets/js/sgs-shop-filters-chosen.js). The panel's own copy steps aside. */
-.sgs-shop-active-bar .sgs-shop-filters .wp-block-woocommerce-product-filter-active {
-	display: none;
+body.sgs-shop-active-bar .sgs-shop-filters .wp-block-woocommerce-product-filter-active {
+	display: none; /* (0,3,1): beats the one-line layout for chips kept in the panel */
 }
 
 .sgs-shop-chosen {
