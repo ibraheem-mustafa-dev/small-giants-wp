@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-09-26
+last_updated: 2026-09-27
 ---
 
 # small-giants-wp — LEDGER (the one living status)
@@ -18,7 +18,7 @@ equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3
 ships, the Eye Care site is built by hand to client-ready from Claude Design's gap map, full scope including the lens
 configurator and prescription upload. The finished site then becomes the pipeline's answer key. Plan:
 `plans/2026-09-24-eye-care-hand-build-design.md`. Waves A-C are built; every page is being re-reviewed against the
-draft with the parity tool before Wave D (Front F). The old clone on test page 11 and its
+draft with the parity tool and its gap checklist before Wave D (Front F). The old clone on test page 11 and its
 converter fixes (C1, C3, C4, C5) wait for Phase 7.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
@@ -49,17 +49,18 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-09-27; eye-care-test runs the plugin at a5630daf4 and the theme at b129a508f).** Waves A-C built.
-Parity re-review: every page compared to the draft by `scripts/parity/draft-live-walk.mjs` (one config per page in
-`sites/eye-care-ward-end/build/qa/parity/`). Lens pop-up DONE (four differences still PROPOSED to Bean in
-`lens.mjs`). Shop archive: scripted run clean (0 open at 1440/768/375) after the brand search, library-wide hover
-upgrade and filter-panel settings shipped, but Bean found gaps the run missed (filter clicks break the panel's looks,
-the Filter button at 768/375, no full screenshot pass): shop plan "Remaining" 7. Product page, bag, checkout,
-confirmation, home, lenses, about, help, contact to follow. Payments decided (Stripe + Klarna + wallets, PayPal). No
-blockers.
+**Now (2026-09-27; eye-care-test runs the plugin at a38652b95 and the theme at ef2de1573, `main` at the handoff
+commit).** Parity re-review: every page compared to the draft by `scripts/parity/draft-live-walk.mjs`
+(one config per page in `sites/eye-care-ward-end/build/qa/parity/`) under the standard method in
+`scripts/parity/GAP-CHECKLIST.md`: a page passes only when the walker exits 0 (config lint, 0 open, every state x width
+screenshot reviewed with a note, 0 console errors). Shop archive DONE (click-driven filter states, 18 shots
+reviewed). Lens pop-up REOPENED: its unreviewed Q4 shots show three gaps (footer "Continue" vs the draft's "Add to
+bag £418", a missing note at 768, a description overflowing its card at 768); four differences and the card ".00"
+question are with Bean. Product page, bag, checkout, confirmation, home, lenses, about, help, contact to follow.
+Payments decided (Stripe + Klarna + wallets, PayPal). No blockers.
 
-**Resume from:** the main plan's Status block ("Before the next page: a standardised gap method"), then the shop
-plan's "Remaining" 7.
+**Resume from:** the main plan's Status block ("Parity re-review owed before Wave D"): the lens Q4 gaps, then the
+remaining pages.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.

@@ -784,7 +784,7 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 25 | repo-wide tooling (naming lint, site utilities) |
+| `scripts/` | 28 | repo-wide tooling (naming lint, site utilities) |
 | `plugins/sgs-blocks/scripts/` | 936 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
@@ -2477,7 +2477,7 @@ for the verb you happen to have in mind.
 | `visual-report-sha.py` | manifest+script-call | Content hash binding a visual-diff report to the change it actually describes. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 23 scripts
+#### `scripts/` — 26 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2493,7 +2493,10 @@ for the verb you happen to have in mind.
 | `parity/draft-live-walk.mjs` | script-call | Draft-versus-live parity walker. Drives the design draft and the live site through the same states (tabs, steps, open panels, filters, modals) at… |
 | `parity/lib/collect.mjs` | script-call | In-page collectors for draft-live-walk.mjs. Every function here is passed to page.evaluate(), so each one is self-contained (no closures over module… |
 | `parity/lib/compare.mjs` | manifest+script-call | Compares one pair's draft and live snapshots and returns the differences. |
+| `parity/lib/lint.mjs` | script-call | Config lint for draft-live-walk.mjs: runs before any browser opens and fails the run on a config that cannot prove what it claims (GAP-CHECKLIST.md… |
 | `parity/lib/report.mjs` | manifest+script-call | Writes the parity report: report.json (everything), report.md (the differences), and one side-by-side screenshot per state and width (draft left… |
+| `parity/lib/review.mjs` | manifest+script-call+skill | The screenshot review gate for draft-live-walk.mjs. Writes contact.md: every state x width side-by-side shot, full size, with the config's review… |
+| `parity/lib/structure.mjs` | script-call+skill | Structure and drive checks for draft-live-walk.mjs: where each pair sits relative to the other pairs (inside which, in whose row), and how each state… |
 | `qc-anti-cheat.py` | script-call | Static-analysis gate that fails on converter-cheating patterns. |
 | `qc-correctness-regression.py` | — | Mechanical regression checker for the SGS clone pipeline. |
 | `qc_anti_cheat_checks.py` | script-call | Cheat-pattern definitions, AST visitor, and file analysers. |

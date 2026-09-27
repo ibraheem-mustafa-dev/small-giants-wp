@@ -173,7 +173,8 @@ key), with the owed Wave C polish alongside.
   - Option pictures: `sgs/choice-flow` `optionMediaSize` (Bean 2026-09-26: one proportion per device, each set so
     the picture matches the draft's 140px plate at that device's width): 76 / 156 / 96.7%.
   - **Re-verified 2026-09-26 with the parity tool** (`scripts/parity/draft-live-walk.mjs`, config
-    `build/qa/parity/lens.mjs`, 4 questions x 3 widths): 0 open differences after fixing what it found that
+    `build/qa/parity/lens.mjs`, 4 questions x 3 widths; REOPENED 2026-09-27, see Status: its Q4 screenshots were
+    never reviewed and show three unmeasured gaps): 0 open measured differences after fixing what it found that
     the earlier checks missed: Close and '?' in Arial (form controls did not inherit the font; theme rule), every
     pop-up text #000 (a `<dialog>` defaults to CanvasText; theme rule), the '?' and header step-name colours
     (new palette tokens and choice-flow colour settings), the position line's line height, text cards 6px tall, the

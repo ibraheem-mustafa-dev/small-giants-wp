@@ -1331,7 +1331,7 @@ All SGS blocks receive animation and interaction controls via the block extensio
 - `sgsAnimationEasing` — the theme easing tokens: default | ease-out | ease-in | spring | linear (default: default)
 - `sgsAnimationDistance` — '' | 15 | 30 | 50 | 100 px, directional effects only (default: '' = the effect's own 30px fade or 100px slide)
 
-**Implementation:** `assets/js/animation-observer.js` plays each entrance with `element.animate()`, so it never shares a block's own `transition`, `animation` or `transform`; elements in view at load play with a 100ms-per-index stagger, the rest play at 15% in view. A render-blocking head flag (`plugins/sgs-blocks/includes/animation-attributes.php::print_entrance_pending_flag`) holds entrances until their start pose is placed. Reduced motion and no-JS show content unanimated. Full contract: Spec 38 §4.3a.
+**Implementation:** `assets/js/animation-observer.js` plays each entrance with `element.animate()`, so it never shares a block's own `transition`, `animation` or `transform`; elements in view at load play with a 100ms-per-index stagger, the rest play at 15% in view, 100ms apart when several reach view together. A render-blocking head flag (`plugins/sgs-blocks/includes/animation-attributes.php::print_entrance_pending_flag`) holds entrances until their start pose is placed. Reduced motion and no-JS show content unanimated. Full contract: Spec 38 §4.3a.
 
 #### Hover Animations (CSS-first, JS for complex effects)
 

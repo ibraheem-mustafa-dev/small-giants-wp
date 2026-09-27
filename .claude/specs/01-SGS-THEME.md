@@ -52,6 +52,8 @@ sgs-theme/
 │   │   ├── sgs-shop-filters.js      # Accessible mobile filter drawer for shop archive (Spec 30)
 │   │   ├── sgs-shop-filters-extras.js # One-switch filter toggle + live result count (Spec 30)
 │   │   ├── sgs-shop-filters-groups.js # Filter group looks set by a heading class (Spec 30 FR-30-3)
+│   │   ├── sgs-shop-filters-accordion.js # Filter groups as <details>, rebuilt after each filter re-render (Spec 30)
+│   │   ├── sgs-shop-filters-chosen.js # Chosen filters in a row under the title; Filter button count (Spec 30)
 │   │   ├── smooth-scroll.js         # Smooth anchor scrolling
 │   │   └── viewport-width.js        # Viewport-width helper for responsive JS
 │   ├── fonts/                       # Self-hosted font files (WOFF2)

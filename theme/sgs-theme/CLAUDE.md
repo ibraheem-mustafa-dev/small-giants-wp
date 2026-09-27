@@ -43,8 +43,10 @@ sgs-theme/
 │   │   ├── dark-mode.js             # Dark-mode toggle
 │   │   ├── smooth-scroll.js
 │   │   ├── viewport-width.js
-│   │   ├── sgs-shop-filters.js      # Mobile filter drawer; filter groups as <details> (open with sgs-filter-open)
-│   │   ├── sgs-shop-filters-extras.js # One-switch filter toggle, live result count on Apply
+│   │   ├── sgs-shop-filters.js      # Mobile filter drawer (the aside becomes a <dialog>)
+│   │   ├── sgs-shop-filters-accordion.js # Filter groups as <details> (open with sgs-filter-open), rebuilt after each re-render
+│   │   ├── sgs-shop-filters-chosen.js # Chosen filters in a row under the title; "FILTER (1)" count
+│   │   ├── sgs-shop-filters-extras.js # One-switch filter toggle, live result count on Apply, Filter button place
 │   │   └── sgs-shop-filters-groups.js # Group looks by heading class: sgs-filter-count, -segmented (swatches are CSS)
 │   └── fonts/                # Self-hosted WOFF2 files
 └── screenshot.png

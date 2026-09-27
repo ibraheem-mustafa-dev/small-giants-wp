@@ -1461,7 +1461,8 @@ seeder (`scripts/dbschema/seed-motion-shape-signatures.py::_extract_entrance_row
 
 - **Timing.** Duration and easing resolve from the theme tokens (`--wp--custom--duration--*`,
   `--wp--custom--easing--*`); delay is `sgsAnimationDelay` (0 to 800ms) plus a 100ms-per-index
-  stagger for elements in view at load. `sgsAnimationDistance` (15, 30, 50 or 100px, written only
+  stagger for elements in view at load and for elements that reach view in the same observer batch
+  (a row of cards scrolled into view cascades rather than popping at once). `sgsAnimationDistance` (15, 30, 50 or 100px, written only
   when set) replaces a directional effect's own travel (30px fade, 100px slide).
 - **When it plays.** In view at load: at once. Otherwise the animation is created paused (start
   pose) within 200px of the viewport and plays at 15% in view; it plays once (a script animation
