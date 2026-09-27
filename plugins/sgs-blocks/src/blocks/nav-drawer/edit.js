@@ -103,6 +103,7 @@ const ALIGN_ITEMS = {
 	left: 'flex-start',
 	center: 'center',
 	right: 'flex-end',
+	stretch: 'stretch',
 };
 
 /**
@@ -950,6 +951,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleGroupControlOption value="left" label={ __( 'Left', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="right" label={ __( 'Right', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="stretch" label={ __( 'Full width', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
 
 					<ResponsiveControl label={ __( 'Inner element spacing', 'sgs-blocks' ) }>

@@ -498,8 +498,10 @@
 			"enum": [
 				"left",
 				"center",
-				"right"
-			]
+				"right",
+				"stretch"
+			],
+			"description": "How the drawer's InnerBlocks content sits in the body flex column. left/center/right map to align-items flex-start/center/flex-end; stretch makes a child (a container or a row of buttons) span the full width of the drawer — the only way for a row to fill it, since align-items can only move a shrunk-to-content box, never widen it. Default left. FR-U18-G7."
 		},
 		"drawerGap": {
 			"type": "object",

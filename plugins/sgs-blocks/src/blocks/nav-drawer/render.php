@@ -212,22 +212,27 @@ $sgs_nd_panel_is_set  = is_array( $panel_size_attr_raw ) && ! empty( $panel_size
 $sgs_nd_offset_is_set = is_array( $anchor_offset_raw ) && ! empty( $anchor_offset_raw );
 
 // ── Content alignment → align-items on the drawer body. 'left'/'center'/'right'
-// map to flex-start/center/flex-end (CSS keyword — US spelling is the syntax).
-$allowed_aligns  = array( 'left', 'center', 'right' );
+// map to flex-start/center/flex-end and 'stretch' maps to itself (CSS keywords —
+// US spelling is the syntax).
+$allowed_aligns  = array( 'left', 'center', 'right', 'stretch' );
 $drawer_align    = in_array( $attributes['drawerAlign'] ?? 'left', $allowed_aligns, true )
 	? (string) $attributes['drawerAlign']
 	: 'left';
 $align_items_map = array(
-	'left'   => 'flex-start',
-	'center' => 'center',
-	'right'  => 'flex-end',
+	'left'    => 'flex-start',
+	'center'  => 'center',
+	'right'   => 'flex-end',
+	'stretch' => 'stretch',
 );
 // Logical text-align equivalents of the same pick, for descendants whose BOX is
 // full-width (so align-items can move nothing) and whose LABEL is what must move.
+// 'stretch' has no logical text-align counterpart (the whole point is the BOX
+// spans the drawer, not the label) so it maps to 'start', same as 'left'.
 $text_align_map = array(
-	'left'   => 'start',
-	'center' => 'center',
-	'right'  => 'end',
+	'left'    => 'start',
+	'center'  => 'center',
+	'right'   => 'end',
+	'stretch' => 'start',
 );
 
 // ── Background (drawerBg: a palette slug or any CSS colour, default 'surface') +
