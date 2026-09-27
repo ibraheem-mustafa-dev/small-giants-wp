@@ -161,6 +161,9 @@ node scripts/nav-qa/axe-run.mjs <fixture-page-url> \
 
 ## 1. `axe-run.mjs` — accessibility gate
 
+Against the sandybrown canary pass `--headed`: its bot challenge answers a headless browser with a 403 page, which
+the openness guard then reports as a scope that matched nothing. A mega panel opens reliably with `--open-via keyboard`.
+
 **Covers:** FR-36-16 *"axe = 0 on the OPEN drawer AND an OPEN desktop mega"*.
 
 ```bash
@@ -615,7 +618,9 @@ TOUCH" card (pinned 160x326 at top 16 / right 16 at 1440, absent at 375 and 768)
 position at 1440 and, for About and Trade, the aside beside the links rather than below them; the burger and
 drawer below 1440. Reference values sit in the script's `EXPECT`, from `lamalama.json` and `indus-foods.json`;
 exits 1 on a miss over 2px. A check whose element is missing FAILS rather than skipping, so an absent bar, CTA,
-card or aside reads as a failure, never as silence.
+card or aside reads as a failure, never as silence. It runs headed (a real window) with `--hide-scrollbars` by default: the canary's bot
+challenge answers a headless browser with a 403 "Just a moment" page, and a page that never shows its header now
+FAILS. Pass `--headless` only against a site without that challenge.
 
 ```bash
 WP=domains/sandybrown-nightingale-600381.hostingersite.com/public_html

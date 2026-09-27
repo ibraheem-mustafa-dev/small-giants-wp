@@ -282,7 +282,7 @@ drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 | W3C-2 | Furniture blocks (U-12), in parallel — DONE | local-time, language-switch, store-selector, wishlist (link, panel, Save for later), theme-toggle with an automatic dark palette; back-to-top and account as `sgs/button` link sources, sound as an `sgs/audio` style (Wave 3C plan, lane C paragraph) | 1 session | no |
 | W3C-3 | Self-changing header message (U-15), in parallel — DONE | `notice-banner` rotate, random and live-clock modes via `sgs/notice-message`, plus a full-width strip display mode | 1h | no |
 | W3C-3b | Lottie player (U-17), in parallel — DONE | Spec 38 Tier H admits `lottie-web` light (D1151); Lottie on the logo, `sgs/media`, the hero's split media and every wrapper background (`bgLottie`); validated upload, loads only on demand, never under reduced motion | 1 session | no |
-| W3C-4 | Gate 3C composed-header check | two composed headers (copies of lamalama's pill and the Indus draft) are 100% visual copies of their references, with Bean's eye (R-31-13); open on U-18 | ½ session | YES |
+| W3C-4 | Gate 3C composed-header check | two composed headers (copies of lamalama's pill and the Indus draft) are 100% visual copies of their references, with Bean's eye (R-31-13); open on U-18 G8 (lamalama's corner card) and Bean's decision | ½ session | YES |
 
 **TEST (critical path):** Happy = every reference's row is expressible with block attributes and one
 composed real header matches its row. Edge = the header at 375, 768 and 1440px with panels open.

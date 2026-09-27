@@ -100,7 +100,7 @@ and `::engineering_notes`. Do not restate them elsewhere. What they change here:
 | DEC-14 | "The row's own surface is the trigger", built in U-14 as a SEPARATE tier on/off attribute, `sgs/nav-bar-menu::triggerSurface`, not a fourth `triggerMode` value (Bean, with both council members, 2026-09-25): `triggerMode` chooses what the button shows, the surface its hit area, so every presentation keeps it. Full text: `families-master.json::decisions` DEC-14 `resolution` |
 | DEC-15 | Amend FR-36-6: the drawer's own × becomes optional per `closeStyle` and per tier. Written into Spec 36 at Step 0b, before U-11 builds |
 | DEC-16, DEC-17 | NOT accepted as written. Their scope floor and four-of-eight split were not accepted; the plan builds every family and all eight furniture blocks (section 1c), smallest-support family last inside each unit |
-| DEC-01, DEC-02, DEC-07 | The three accepted divergences (section 1d). Nothing is built for them. M-08 is built, in U-14. DEC-13: the Lottie player is built as U-17 (section 1h) |
+| DEC-01, DEC-02, DEC-07 | The three accepted divergences (section 1d). Nothing is built for them. M-08's trigger case is built, in U-14; its non-trigger card (lamalama) is U-18 G8. DEC-13: the Lottie player is built as U-17 (section 1h) |
 | ENG-01 | z-index becomes a per-tier attribute defaulting to 100. Inside U-1 |
 | ENG-02 | `accordionExclusive` boolean, default true. Inside U-9 |
 | ENG-03 | Six `sgs/site-header` attributes are in `block.json` and rendered but missing from the framework DB. Step 0a |
@@ -210,7 +210,7 @@ visually. `none` means neither.
 | ‖ | U-12 — **DONE** | Header and footer furniture: local-time clock, language switch, store selector, wishlist (link, saved-items panel, Save for later), theme toggle with an automatic dark palette, back-to-top and account as `sgs/button` link sources, sound mute as an `sgs/audio` style (Bean, 2026-09-25). `headerEssential` on `product-search` only | M-18 | none | high | six new directories (`local-time/`, `language-switch/`, `store-selector/`, `theme-toggle/`, `wishlist-link/`, `wishlist-panel/`), plus `button/`, `audio/`, `product-card/`, `cart/`, `product-search/block.json`, `includes/wishlist/`, `includes/helpers-link-source.php`, `scripts/derive-dark-palette.py` and the theme's dark-mode files |
 | ‖ | U-15 — **DONE** | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*`, new `notice-message/` |
 | ‖ | U-17 — **DONE** | The Lottie player (DEC-13, section 1h): Spec 38 Tier H, the fourth media type, the wrapper background and the logo substrate | M-33 | design | high | `includes/lottie-*.php`, `src/shared/effects/{fx-lottie,lottie-adapter}.js`, `src/vendor-modules/lottie-light.js`, the media atoms, `media/`, `hero/`, `responsive-logo/`, `class-sgs-container-wrapper.php` |
-| 15 | U-18 — **open** (G1-G5, G9 live; G6, G7, G10, G11 built 2026-09-27, deploy pending; **G8 stopped at NO GO**) | Copy-parity gaps found composing Gate 3C item 4's two copies. Done and live: G3 custom colours reach the page (gate `check-custom-colour-survives.py`), G1 burger width, G2 `header-box` drawer anchor, G4 narrow panels centre, G5 by composition. Built, deploy pending: G6 burger bar size, G7 drawer `stretch`, G10 narrow desktop panel stacks (four `@container` leaks), G11 group-heading over-reach plus the eyebrow selector-list bug. Stopped: G8 pin a container to a screen corner (plan §5 step 2a; design report §8-§9); not covered: `lamalama`/`header-shell`/`1440`/`contactCardTopRight`, reason: nothing expresses a viewport-pinned block yet. Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | G6 `nav-bar-menu/{block.json,style.css,BurgerPanel.js}`, `nav-menu-trigger-css.php`; G7 `nav-drawer/{block.json,render.php,edit.js}`; G8 `container/{block.json,edit.js}`, `class-sgs-container-wrapper.php`, a footer portal; G10/G11 `mega-panel/{render.php,style.css}` |
+| 15 | U-18 — **open** (G1-G5, G9 live; G6, G7, G10, G11 live and measured 2026-09-27; **G8 stopped at NO GO, rebuild next**) | Copy-parity gaps found composing Gate 3C item 4's two copies. Done and live: G3 custom colours reach the page (gate `check-custom-colour-survives.py`), G1 burger width, G2 `header-box` drawer anchor, G4 narrow panels centre, G5 by composition. Live (report `reports/visual-diff/u18-copy-parity-2026-09-27.md`): G6 burger bar size, G7 drawer `stretch`, G10 narrow desktop panel stacks (four `@container` leaks), G11 group-heading over-reach plus the eyebrow selector-list bug. Stopped: G8 pin a container to a screen corner (plan §5 step 2a; design report §8-§9); not covered: `lamalama`/`header-shell`/`1440`/`contactCardTopRight`, reason: nothing expresses a viewport-pinned block yet. Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | G6 `nav-bar-menu/{block.json,style.css,BurgerPanel.js}`, `nav-menu-trigger-css.php`; G7 `nav-drawer/{block.json,render.php,edit.js}`; G8 `container/{block.json,edit.js}`, `class-sgs-container-wrapper.php`, a footer portal; G10/G11 `mega-panel/{render.php,style.css}` |
 
 **U-1 — done** (live `reports/visual-diff/container-2026-09-23.md`, `nav-bar-menu-2026-09-23.md` and
 `nav-drawer-2026-09-23.md`, each `verdict: PASS`). Shipped: mega close-grace reads `submenuCloseGrace`; force-solid paints the header's own
@@ -437,8 +437,8 @@ WITH FIXES, Bean go):
 - G9 (scrim over the panel) measured as not a defect with the copy active; a hard-coded `z-index:101` on the
   fixed-panel path is folded into G10's commit as hardening.
 
-Built and committed 2026-09-27 (design `.claude/reports/2026-09-27-u18-g6-g8-design.md`; Bean's go on options 1,
-2, 3A plus G10/G11), awaiting the deploy and the live check:
+Live and measured 2026-09-27 (design `.claude/reports/2026-09-27-u18-g6-g8-design.md`; Bean's go on options 1,
+2, 3A plus G10/G11):
 - G6 `sgs/nav-bar-menu::burgerIconWidth`/`::burgerIconHeight` per tier, both writing `--sgs-nbm-icon-w`/
   `--sgs-nbm-icon-h` on a uid-scoped rule so they beat `--two-bar`'s own (0,1,0) height; the `x` and `x-rotate`
   poses hard-coded `translateY(8px)` and now derive travel from the property like `line` already did (9697d30d4).
@@ -465,13 +465,31 @@ wrapper has no editor branch, so `position:fixed` covers the canvas; and a pinne
 three or more `<style>` tags, which a single front-split strands away from the CSS collector). One revision was
 permitted and is spent. Full verdicts and the spec a future G8 needs are in the design report §8 and §9.
 **Gate 3C item 4 therefore cannot pass yet**: lamalama's GET IN TOUCH card is one of its exit cells.
-- Composition still owed after G6-G8: the Indus drawer 4456 (pink icons from the test palette) and lamalama's
-  burger bars/CTA widths/contact card once the code lands; then the evidence pack (reference and copy side by side
-  per width, measured table) as an Artifact with an external ping to Bean. Reference shots and the capture script
-  are not kept; recapture lamalama.com (force-click `button.js-menu-toggle-button`) and the draft file at
-  375 (mobile-emulated), 768 and 1440.
-- M-13, M-16, M-17 and M-39 stay `partial` until G6-G8 close; then flip them in `families-master.json` and
-  `FAMILIES-MASTER.md` with the live report `reports/visual-diff/u18-copy-parity-<date>.md` (verdict PASS).
+- Copies finished 2026-09-27 by composition (trees in `plugins/sgs-blocks/scripts/nav-qa/gate3c/`), live report
+  `reports/visual-diff/u18-copy-parity-2026-09-27.md` (verdict PASS for G6, G7, G10, G11): lamalama 75/76 (only the
+  corner card), Indus 23/23, axe 0 on four open menus. Also fixed on the way: `sgs/button` rendered as a link lost its
+  colour to theme.json's `link:focus` when focused by a click or script (076279a31, `button/style.css`). M-13, M-16,
+  M-17, M-39 are `covered`; M-08 is `partial` (F-A-19's non-trigger card fell out when M-08 was scoped to triggers).
+  Evidence pack published to Bean (https://claude.ai/artifact/TP1uzkbxQxthan7DLzBkNg); his item 4 decision is open.
+- **Next: rebuild G8 (the corner card) as a fresh design gate.** Bean (2026-09-27): it should be a standard fix,
+  because the framework already renders floating UI separately at `wp_footer`:
+  `plugins/sgs-blocks/includes/class-sgs-floating-ui-renderer.php` (`Sgs_Floating_UI_Renderer::register()` /
+  `::render()`, back-to-top and reading progress, Spec 18 `.claude/specs/18-SGS-FLOATING-UI.md`). Start the design
+  from that precedent: content that is authored for the floating layer and printed there, instead of lifting an
+  in-page `sgs/container` out of the block tree (the NO GO mechanism). Two cautions from U-14 (row 12) apply: the
+  renderer's container is `aria-hidden` (a card with a real link cannot sit inside it as is), and FR-36-8's
+  priority-plus-More text contradicts reusing it unchanged; read both before designing. The design must still answer design report
+  §9 (a)-(e): every `<style>` tag reaches the CSS collector, the editor shows the card without it covering the
+  canvas, behaviour inside `sgs/nav-drawer`/`sgs/modal`, its own z-index token (clear of `sgs/whatsapp-cta` 200 and
+  `sgs/notice-banner` 1000), and the portal-conformance detector owed at six `wp_footer` adopters. Exit: lamalama's
+  card 160x326 at top 16 / right 16 at 1440, absent at 375 and 768, measured by `u18-copy-probe.mjs` (its `card`
+  cell); then M-08 back to `covered` and Gate 3C items 1 and 4 re-assessed.
+- Residue, named (not built): `widthType: fit` and a label's `fullWidth: false` do not hold inside a stretching flex
+  column, and `sgs/mega-aside` has no alignment control (worked around with flex-row wrappers); the Indus drawer's
+  fourth social is Twitter because no block draws the draft's flat white Google G; lamalama's drawer menu has no
+  item side-padding setting (text 20px nearer the edge), no hairline under the pill's top row and no trailing glyph
+  for a plain item; small Indus offsets (nav about 9px left, heavier chevrons, arrow spacing, Sectors cards 4px
+  inset, placeholder boxes without their icon).
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole
