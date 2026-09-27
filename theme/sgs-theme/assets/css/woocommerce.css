@@ -2625,10 +2625,9 @@ body.woocommerce-cart .with-empty-cart-icon,
 }
 
 /* The groups touch (their rules separate them): no gap from WooCommerce's
-   filters container between them, none under the one-choice segments, and a
+   filters overlay content between them, none under the one-choice segments, and a
    long option list scrolls inside 280px rather than pushing the rest down. */
-.sgs-shop-filters-plain .wp-block-woocommerce-product-filters,
-.sgs-shop-filters-plain .wc-block-product-filters {
+.sgs-shop-filters-plain .wc-block-product-filters__overlay-content {
 	gap: 0;
 }
 
@@ -2667,6 +2666,7 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 .sgs-shop-filters-plain .sgs-shop-filters__bool-filter-label {
 	justify-content: space-between;
 	min-height: 52px;
+	margin: 0;
 }
 
 .sgs-shop-filters-plain .sgs-shop-filters__bool-filter-text {
