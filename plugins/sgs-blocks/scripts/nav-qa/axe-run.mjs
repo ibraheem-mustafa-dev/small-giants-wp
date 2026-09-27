@@ -37,7 +37,7 @@
  * Usage
  * -----
  *   node axe-run.mjs <url> [--open <selector>] [--open-via click|keyboard]
- *                          [--scope <selector>] [--viewport <width>]
+ *                          [--scope <selector>] [--viewport <width>] [--headed]
  *                          [--height <px>] [--scroll <px>] [--require-open] [--allow-closed] [--json]
  *
  * --scroll <px> scrolls the page before the open step, for a trigger that only
@@ -116,6 +116,7 @@ function parseArgs( argv ) {
 		openVia: 'click',
 		scroll: 0,
 		height: 1200,
+		headed: false,
 	};
 	const rest = [ ...argv ];
 	args.url = rest.shift();
@@ -130,6 +131,7 @@ function parseArgs( argv ) {
 		else if ( flag === '--json' ) args.json = true;
 		else if ( flag === '--require-open' ) args.requireOpen = true;
 		else if ( flag === '--allow-closed' ) args.allowClosed = true;
+		else if ( flag === '--headed' ) args.headed = true;
 		else {
 			process.stderr.write( `axe-run: unrecognised argument "${ flag }"\n` );
 			process.exit( 2 );
@@ -186,7 +188,9 @@ async function main() {
 		usageAndExit( `--viewport must be a positive number, got "${ process.argv.includes( '--viewport' ) }".` );
 	}
 
-	const browser = await chromium.launch( { headless: true } );
+	// --headed: a real window, which clears the canary's bot challenge (it answers a headless
+	// browser with a 403 "Just a moment" page). --hide-scrollbars keeps a true viewport width.
+	const browser = await chromium.launch( { headless: ! args.headed, args: [ '--hide-scrollbars' ] } );
 	let exitCode = 0;
 
 	try {
