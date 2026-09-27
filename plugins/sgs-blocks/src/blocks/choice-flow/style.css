@@ -642,6 +642,26 @@
 	grid-column: 1 / -1;
 }
 
+/* A step opened under its question (flow-inline.js) sits 20px below the options. */
+.sgs-choice-flow .sgs-choice-flow__step--inline {
+	margin-top: 20px;
+}
+
+/* Showcase: an opened step holding fields reads as one bordered panel (the
+   fields, then the result's note), so the result inside drops its own card.
+   A file drop zone is its own panel. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline:has(> .sgs-form-field:not(.sgs-form-field--file)) {
+	padding: 22px;
+	border: 1px solid var(--wp--preset--color--border, #D4DBE5);
+	background-color: var(--wp--preset--color--surface-alt, #fff);
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline:has(> .sgs-form-field) .sgs-choice-flow-result {
+	padding: 0;
+	border: 0;
+	background-color: transparent;
+}
+
 /* With the header on, its eyebrow carries "Step N of M"; the indicator row keeps only the step label. */
 .sgs-choice-flow--has-header .sgs-choice-flow__step-count {
 	display: none;
@@ -1375,7 +1395,7 @@
 /* ----- Step pane (the existing __inner) ----- */
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__inner {
-	container: sgs-choice-flow-pane / inline-size;
+	container: sgs-choice-flow-pane sgs-form / inline-size;
 	padding: 24px 20px 40px;
 }
 

@@ -147,8 +147,6 @@ rx = B("sgs/choice-flow-question", dict(
      "description": "If you've got the numbers in front of you.", "summaryText": "Entered online"},
 ]))
 
-READY = "Your frame and lenses go in together."
-
 
 def result(label, heading, body, fields=None):
     """A purchase step: optional fields, then the add-to-bag result (Spec 43 FR-43-21). As in the draft, one
@@ -223,12 +221,13 @@ tree = [
         step("How thin", thickness),
         step("Finish", finish),
         step("Your prescription", rx),
-        # The three prescription endings keep the header's "Your prescription", as the draft's one screen does.
+        # The three prescription endings open under the prescription question (showNextStepInline) as the draft's
+        # panels: the note, the drop zone alone, and the boxes with the help line under them.
         result("Your prescription", "Perfect — order now and I'll WhatsApp you a link for it.",
                "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut "
                "them I refund the lenses in full."),
-        result("Your prescription", "Add your photo", READY, PHOTO),
-        result("Your prescription", "Type in your prescription", TYPED_HELP, TYPED),
+        result("Your prescription", "", "", PHOTO),
+        result("Your prescription", "", TYPED_HELP, TYPED),
         result("Frame only", "Your frame, as the brand made it",
                "It goes in your bag with its original tinted lenses. You can add prescription lenses later."),
     ]),

@@ -361,8 +361,8 @@
             "name": "sgs/choice-flow-result",
             "attributes": {
               "action": "add-to-bag",
-              "heading": "Add your photo",
-              "body": "Your frame and lenses go in together.",
+              "heading": "",
+              "body": "",
               "showBuyNow": false,
               "addToBasketLabel": "Add to bag",
               "buttonShowsTotal": true
@@ -458,7 +458,7 @@
             "name": "sgs/choice-flow-result",
             "attributes": {
               "action": "add-to-bag",
-              "heading": "Type in your prescription",
+              "heading": "",
               "body": "Copy the numbers exactly, including the + or −. If a box is empty or says “DS”, leave it blank. I read every prescription myself before anything is cut.",
               "showBuyNow": false,
               "addToBasketLabel": "Add to bag",
