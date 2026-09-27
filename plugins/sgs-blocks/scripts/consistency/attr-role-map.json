@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8976,
+    "row_count": 8977,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1621,6 +1621,7 @@
     "sgs/choice-flow-question::productAttribute": "technical",
     "sgs/choice-flow-question::question": "text-content",
     "sgs/choice-flow-question::questionFontWeight": "typography",
+    "sgs/choice-flow-question::showNextStepInline": "boolean-visibility",
     "sgs/choice-flow-question::summaryLabel": null,
     "sgs/choice-flow-result::action": "enum-mode",
     "sgs/choice-flow-result::addToBasketLabel": null,
