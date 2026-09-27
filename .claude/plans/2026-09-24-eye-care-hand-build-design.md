@@ -15,10 +15,17 @@ key), with the owed Wave C polish alongside.
   98), every state walked (tabs, steps, open panels, filters), text and positions and computed styles and motion and
   hover end states compared by script at 1440, 768 and 375, screenshots looked at, and every difference either fixed
   or listed as accepted by Bean. Tool: `scripts/parity/draft-live-walk.mjs` with a config per page in
-  `sites/eye-care-ward-end/build/qa/parity/`. Progress: lens pop-up DONE (below); shop archive IN PROGRESS
-  (`plans/2026-09-26-eye-care-shop-parity.md`: filters, toolbar and Featured order built and live; its "Remaining"
-  list is next); product page, bag drawer, checkout, order confirmation, home,
-  lenses, about, help, contact to do.
+  `sites/eye-care-ward-end/build/qa/parity/`. Progress: lens pop-up DONE (below; 4 differences still PROPOSED to
+  Bean in `lens.mjs`); shop archive IN PROGRESS (`plans/2026-09-26-eye-care-shop-parity.md`: the scripted run is
+  clean, 0 open at 1440/768/375, 2026-09-27, but Bean found what it missed: filter clicks break the panel's looks, the
+  Filter button's place and look at 768/375, and a full three-width screenshot pass is owed; Remaining 7); product
+  page, bag drawer, checkout, order confirmation, home, lenses, about, help, contact to do.
+- **Before the next page (Bean, 2026-09-27): a standardised gap method.** The shop took two sessions. Turn every
+  gap class the lens and shop passes found (listed in the shop plan's Remaining and "Found and fixed" notes, and in
+  `lens.mjs` / `shop.mjs` accept entries) into a written checklist plus tooling, so a claim that a page matches its
+  draft can be falsified cheaply: interaction-driven states (click, not URL), screenshot review at every width and
+  state, hidden-by-scroll and scroll-in content, element structure (where a control sits in the page), and the
+  measurement traps the walker hit (smooth scroll before hover, `display: contents` text).
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,

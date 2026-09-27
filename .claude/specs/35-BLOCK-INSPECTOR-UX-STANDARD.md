@@ -1142,7 +1142,7 @@ its element's panel (TIER 1) regardless of this field.)*
    them:**
    - a **preset `SelectControl`** (None/Small/Medium) writing a shadow attr — *the only shape rule 07
      inspects*;
-   - a preset `SelectControl` on a shadow attr via `extensions/hover-effects.js`'s `hover`
+   - a preset `SelectControl` on a shadow attr via `extensions/hover-effects/`'s `hover`
      extension (opt-in via `enabledExtensions`; derive its reach with
      `grep -A3 enabledExtensions src/blocks/*/block.json`). The shape itself — a preset select standing
      in for `ShadowControl` — is banned wherever it occurs block-locally;

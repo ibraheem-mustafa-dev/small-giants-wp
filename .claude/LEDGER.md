@@ -49,20 +49,20 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-09-26, main 26287602b; eye-care-test runs the plugin at a174a8f3d and the theme at 84f04635e).** Waves
-A-C built (listing card, product page, shop, lens configurator post 463, size guide, bag, checkout). Parity
-re-review to the new standard: every page compared to the draft by `scripts/parity/draft-live-walk.mjs` (one config
-per page in `sites/eye-care-ward-end/build/qa/parity/`). Lens pop-up DONE (0 open differences at 1440/768/375, £268
-path intact; four differences PROPOSED for Bean in the plan's "Lens-flow parity" bullet). Shop archive IN PROGRESS:
-filters, toolbar, Featured order live; `plans/2026-09-26-eye-care-shop-parity.md` "Remaining" is next (first:
-replace the duplicate brand search with Spec 30's `sgs/filter-search`, then the library-wide hover upgrade Bean
-asked for). Product page, bag, checkout, confirmation, home, lenses, about, help, contact to follow before Wave D.
-Payments decided (Stripe with Klarna and wallets, plus PayPal Payments, test mode). No blockers.
+**Now (2026-09-27; eye-care-test runs the plugin at a5630daf4 and the theme at b129a508f).** Waves A-C built.
+Parity re-review: every page compared to the draft by `scripts/parity/draft-live-walk.mjs` (one config per page in
+`sites/eye-care-ward-end/build/qa/parity/`). Lens pop-up DONE (four differences still PROPOSED to Bean in
+`lens.mjs`). Shop archive: scripted run clean (0 open at 1440/768/375) after the brand search, library-wide hover
+upgrade and filter-panel settings shipped, but Bean found gaps the run missed (filter clicks break the panel's looks,
+the Filter button at 768/375, no full screenshot pass): shop plan "Remaining" 7. Product page, bag, checkout,
+confirmation, home, lenses, about, help, contact to follow. Payments decided (Stripe + Klarna + wallets, PayPal). No
+blockers.
 
-**Resume from:** the shop plan's "Remaining" list, then the main plan's Status block ("Parity re-review owed").
+**Resume from:** the main plan's Status block ("Before the next page: a standardised gap method"), then the shop
+plan's "Remaining" 7.
 
-**Parked (detail in the plans):** theme default shop template hard-codes another client's filters (shop plan);
-`disabled` as a golden state (Bean, only if wanted); nav-drawer badge/disabled; the shared `IconPicker` `id` prop.
+**Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
+groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.
 
 ### Spec 36+37 merged track (after Front F)
 

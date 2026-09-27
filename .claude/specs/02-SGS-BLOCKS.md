@@ -134,7 +134,7 @@ sgs-blocks/
 │   │   └── extensions/           # Not a block (no block.json): editor extensions applied to many blocks
 │   │       ├── animation.js          # Entrance animation extension (script animations)
 │   │       ├── responsive-visibility.js  # Show/hide per breakpoint
-│   │       ├── hover-effects.js      # Hover-effect controls
+│   │       ├── hover-effects/        # Hover-effect controls (index, attributes, resolve, constants, panels/)
 │   │       ├── image-controls.js     # Universal image controls (blocks declaring `supports.sgs.imageControls`)
 │   │       ├── custom-css.js         # Per-block custom CSS field
 │   │       └── fx.js                 # FX (effects) panel
@@ -1352,17 +1352,17 @@ All SGS blocks receive animation and interaction controls via the block extensio
 **JS-required effects (loaded only when used):**
 - `tilt-3d` — **BUILT**. Perspective-based 3D tilt following mouse position. Uses `mousemove` event + `requestAnimationFrame`. `transform: perspective(800px) rotateX({tiltY}deg) rotateY({tiltX}deg)` with MAX_TILT 6deg. Resets smoothly on `mouseleave`. Skips entirely when `prefers-reduced-motion: reduce`. ~30 lines vanilla JS at `assets/js/tilt-3d.js`. Enabled per-block via `sgsHoverTilt3D` boolean attribute.
 
-**Universal hover attributes registered by hover-effects.js (12 total):**
-- `sgsHoverBgColour`, `sgsHoverTextColour`, `sgsHoverBorderColour` — colour shifts (3)
-- `sgsHoverScale`, `sgsHoverScalePreset` — scale (2, default 1.02)
-- `sgsHoverShadow` — shadow elevation (default 'medium')
-- `sgsHoverImageZoom` — inner image zoom on hover (default true on most blocks)
-- `sgsHoverGrayscale` — grayscale filter on hover
-- `sgsHoverBorderAccent` — border-accent line slides in from left on hover **(universal)**
-- `sgsHoverTilt3D` — mouse-tracking 3D rotation **(BUILT)**
-- `sgsHoverDuration` — transition duration ms (default 250)
-- `sgsStaggerDelay` — stagger delay for child animations
-- `sgsBlockLink`, `sgsBlockLinkTarget` — wrap entire block in link
+**Universal hover attributes** (registered by `src/blocks/extensions/hover-effects/attributes.js` only on blocks that
+list `"hover"` in `supports.sgs.enabledExtensions`; rendered by `includes/hover-effects/hover-effects.php` as classes
+plus scoped custom properties; per-block defaults from `supports.sgs.hoverDefaults`):
+- `sgsHoverScale` (fine %, 0 = off), `sgsHoverScalePreset` (1.02 / 1.05 / 1.1) and `sgsHoverLift` (px) — one transform
+- `sgsHoverShadow` — a shadow preset slug (never defaulted on a block that draws the automatic lift, `shadowLiftOnHover`)
+- `sgsHoverImageZoom`, `sgsHoverZoom` (%, 0 = the block's 110%), `sgsHoverZoomDuration` (ms) — the photo zoom, read by
+  each block's own image rule as `scale(var(--sgs-hover-zoom, 1.1))`
+- `sgsHoverDuration` (a duration token), `sgsHoverDurationMs` (exact ms, overrides the token), `sgsHoverEasing`
+- `sgsHoverGrayscale`, `sgsHoverBorderAccent`, `sgsHoverTilt3D` **(BUILT)**, `sgsStaggerDelay`, `sgsFocusRing`
+- `sgsBlockLink`, `sgsBlockLinkTarget`, `sgsBlockLinkLabel` (opt-in `"blockLink"`) — a stretched overlay link
+- `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration` — click ripple
 
 **Several blocks opt out of universal scale/shadow/image-zoom defaults** (breadcrumbs, container, countdown-timer, counter, form, form-step, all form-field-* blocks, hero, tabs, tab) — these blocks shouldn't lift or scale visually. Colour hovers and block-link still work on them. (Exact roster is DB-authoritative — query `/sgs-db`.)
 

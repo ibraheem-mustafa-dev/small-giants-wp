@@ -366,7 +366,7 @@ Implemented as a **single `render_block` chokepoint**, NOT ~60 per-block emit-si
 > **first-tag-is-root** and inserts its class/attribute/overlay output INSIDE that leading `<style>`
 > string has that output silently **stripped along with the style tag** by the p99 lift, erasing both
 > the injected markup and the evidence it ever ran. The `render_block` injectors
-> (`hover-effects.php`, `animation-attributes.php`, `parallax.php`, `image-controls.php`) therefore
+> (`hover-effects/hover-effects.php`, `animation-attributes.php`, `parallax.php`, `image-controls.php`) therefore
 > skip-offset past the leading `style`/`script` tags before inserting.
 >
 > Injectors' per-instance `--var` writes MUST NOT ride inline `style="--var:…"`: an inline write into

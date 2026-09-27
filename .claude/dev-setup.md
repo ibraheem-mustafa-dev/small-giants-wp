@@ -60,7 +60,7 @@ small-giants-wp/
 │   │   ├── migrations/          # Framework migrations run by `wp sgs migrations`
 │   │   ├── helpers-*.php        # Shared render helpers
 │   │   ├── device-visibility.php
-│   │   ├── hover-effects.php
+│   │   ├── hover-effects/ (hover-effects, resolve, vars, classes, link-overlay)
 │   │   └── review-schema.php
 │   ├── src/
 │   │   ├── blocks/              # One folder per block (see structure below)
@@ -415,7 +415,7 @@ extensions/
 ├── animation.js              # Scroll-triggered animation controls
 ├── responsive-visibility.js  # Per-device show/hide attributes + classes
 ├── conditional-visibility.js # "Visibility conditions" inspector panel
-├── hover-effects.js          # Hover effect controls
+├── hover-effects/            # Hover effect controls (index, attributes, resolve, constants, panels/)
 ├── custom-css.js             # Per-block scoped CSS field
 └── index.js                  # Imports all extensions (the authoritative list)
 ```
@@ -425,7 +425,7 @@ extensions/
 1. `index.js` is compiled to `build/extensions/index.js`.
 2. `class-sgs-blocks.php` enqueues this bundle via `enqueue_block_editor_assets` so it loads once in the editor.
 3. Each extension file calls `addFilter( 'editor.BlockEdit', 'sgs/...', withMyPanel )` to inject an extra InspectorControls panel into every block's settings panel.
-4. For the **Responsive Visibility** and **Hover Effects** extensions, a corresponding PHP `render_block` filter in `includes/device-visibility.php` and `includes/hover-effects.php` applies the class or custom properties server-side so the output is correct on the frontend too.
+4. For the **Responsive Visibility** and **Hover Effects** extensions, a corresponding PHP `render_block` filter in `includes/device-visibility.php` and `includes/hover-effects/hover-effects.php` applies the class or custom properties server-side so the output is correct on the frontend too.
 
 ### Adding a new extension
 

@@ -965,7 +965,7 @@ every block, so an extension's `group` prop corrects (or breaks) placement on ev
 | File | Group | Verdict |
 |---|---|---|
 | `animation.js` | `styles` | correct — motion is Styles |
-| `hover-effects.js` | `styles` (Hover + Click Effects); bare (Block Link) | Block Link bare is defensible |
+| `hover-effects/` | `styles` (Hover + Click Effects); bare (Block Link) | Block Link bare is defensible |
 | `image-controls.js` | `styles` | correct — sizing/position is Styles |
 | `conditional-visibility.js` | bare | defensible (utility); owns the pinned "Visibility conditions" position |
 | `fx.js` | `styles` | correct |

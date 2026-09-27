@@ -1945,7 +1945,7 @@ shape:
 the framework's established shape for a fact both halves of a block need. PHP already reads
 `supports.sgs.*` in this codebase
 (`plugins/sgs-blocks/includes/helpers-container.php::sgs_block_wants_intrinsic_columns` reads
-`$type->supports['sgs']['intrinsicColumns']`; `plugins/sgs-blocks/includes/hover-effects.php` reads
+`$type->supports['sgs']['intrinsicColumns']`; `plugins/sgs-blocks/includes/hover-effects/resolve.php` reads
 `$type->supports['sgs']`; `plugins/sgs-blocks/includes/image-controls.php` reads
 `$supports['sgs']['imageControls']`), and each block's own JS half imports its own manifest
 (`plugins/sgs-blocks/src/blocks/nav-bar-menu/index.js` and
@@ -2785,7 +2785,7 @@ surface re-derives the rule. Four notes:
    property. Declaring it under `elements` would create phantom routing slots, the same failure
    §8.6(e) refuses for `triggerMode` / `triggerLabel`.
 2. ✅ **Both read paths are proven.** PHP reads `supports.sgs.*`
-   (`plugins/sgs-blocks/includes/helpers-container.php`, `plugins/sgs-blocks/includes/hover-effects.php`,
+   (`plugins/sgs-blocks/includes/helpers-container.php`, `plugins/sgs-blocks/includes/hover-effects/resolve.php`,
    `plugins/sgs-blocks/includes/image-controls.php`); JS imports the manifest — both blocks' `index.js`
    do this identically
    (`plugins/sgs-blocks/src/blocks/nav-bar-menu/index.js::metadata` and
