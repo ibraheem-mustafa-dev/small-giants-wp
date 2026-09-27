@@ -172,6 +172,90 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 		}
 
 		/*
+		 * U-18 G6 — the default glyph's bar-STACK BOX (`.sgs-nav-bar-menu__burger-icon`),
+		 * distinct from the BUTTON handled above ($burger_sel): `burgerWidth`/`burgerSize`
+		 * already claim `css:width`/`css:height` on the button, so this pair of per-tier
+		 * length objects gets its own element and its own CSS custom properties.
+		 *
+		 * Height writes `--sgs-nbm-icon-h`, never a bare `height` declaration:
+		 * `.sgs-nav-bar-menu__burger-icon--two-bar` already sets that property at full
+		 * (0,1,0) specificity in style.css, so this rule targets
+		 * `.sgs-nav-bar-menu__burger-icon` scoped under `.{uid}` (specificity 0,2,0) to win
+		 * over it — every morph pose (`x`, `x-rotate`, `line`, two-bar) already derives its
+		 * travel from that one property via `calc()`, so setting it here reaches every pose
+		 * for free. Width writes a NEW `--sgs-nbm-icon-w` property, consumed by a
+		 * `width: var(--sgs-nbm-icon-w)` read in style.css's zero-specificity `:where()`
+		 * box rule, which declares that property's 24px default.
+		 *
+		 * Same tier-diff shape as `burgerWidth` above, EXCEPT the resolve fallback is
+		 * `null` (not a forced px value) — an unresolved property emits no declaration at
+		 * all, so `:where()`'s own 24px/18px (or 8.5px height under `burgerBarCount: 2`)
+		 * keeps winning. Nothing is emitted at all when BOTH `burgerIconWidth` and
+		 * `burgerIconHeight` are empty objects — byte-identical to before this pair
+		 * existed.
+		 */
+		$sgs_nm_icon_width_raw  = $attributes['burgerIconWidth'] ?? array();
+		$sgs_nm_icon_height_raw = $attributes['burgerIconHeight'] ?? array();
+		if ( ! empty( $sgs_nm_icon_width_raw ) || ! empty( $sgs_nm_icon_height_raw ) ) {
+			$sgs_nm_icon_sel = $uid_sel . ' .sgs-nav-bar-menu__burger-icon';
+
+			$sgs_nm_icon_w_tiers = sgs_responsive_normalise_object( $sgs_nm_icon_width_raw, false );
+			$sgs_nm_icon_h_tiers = sgs_responsive_normalise_object( $sgs_nm_icon_height_raw, false );
+			$sgs_nm_icon_w_clean = array();
+			$sgs_nm_icon_h_clean = array();
+			foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_nm_icon_tier_key ) {
+				$sgs_nm_icon_w_raw                            = $sgs_nm_icon_w_tiers[ $sgs_nm_icon_tier_key ] ?? null;
+				$sgs_nm_icon_w_safe                           = ( null !== $sgs_nm_icon_w_raw && '' !== $sgs_nm_icon_w_raw ) ? sgs_css_length_value( (string) $sgs_nm_icon_w_raw ) : '';
+				$sgs_nm_icon_w_clean[ $sgs_nm_icon_tier_key ] = '' !== $sgs_nm_icon_w_safe ? $sgs_nm_icon_w_safe : null;
+
+				$sgs_nm_icon_h_raw                            = $sgs_nm_icon_h_tiers[ $sgs_nm_icon_tier_key ] ?? null;
+				$sgs_nm_icon_h_safe                           = ( null !== $sgs_nm_icon_h_raw && '' !== $sgs_nm_icon_h_raw ) ? sgs_css_length_value( (string) $sgs_nm_icon_h_raw ) : '';
+				$sgs_nm_icon_h_clean[ $sgs_nm_icon_tier_key ] = '' !== $sgs_nm_icon_h_safe ? $sgs_nm_icon_h_safe : null;
+			}
+
+			$sgs_nm_resolve_icon_w = static function ( $tier ) use ( $sgs_nm_icon_w_clean ) {
+				return sgs_resolve_tier( $sgs_nm_icon_w_clean, $tier, null )['value'];
+			};
+			$sgs_nm_resolve_icon_h = static function ( $tier ) use ( $sgs_nm_icon_h_clean ) {
+				return sgs_resolve_tier( $sgs_nm_icon_h_clean, $tier, null )['value'];
+			};
+			$sgs_nm_icon_decl_for  = static function ( $tier ) use ( $sgs_nm_resolve_icon_w, $sgs_nm_resolve_icon_h ) {
+				$sgs_nm_icon_w    = $sgs_nm_resolve_icon_w( $tier );
+				$sgs_nm_icon_h    = $sgs_nm_resolve_icon_h( $tier );
+				$sgs_nm_icon_decl = '';
+				if ( null !== $sgs_nm_icon_w ) {
+					$sgs_nm_icon_decl .= '--sgs-nbm-icon-w:' . $sgs_nm_icon_w . ';';
+				}
+				if ( null !== $sgs_nm_icon_h ) {
+					$sgs_nm_icon_decl .= '--sgs-nbm-icon-h:' . $sgs_nm_icon_h . ';';
+				}
+				return $sgs_nm_icon_decl;
+			};
+
+			$sgs_nm_icon_desktop_decl = $sgs_nm_icon_decl_for( 'desktop' );
+			if ( '' !== $sgs_nm_icon_desktop_decl ) {
+				$css .= $sgs_nm_icon_sel . '{' . $sgs_nm_icon_desktop_decl . '}';
+			}
+
+			$sgs_nm_icon_prev_decl = $sgs_nm_icon_desktop_decl;
+			foreach ( array(
+				'tablet' => SGS_Breakpoints::TABLET_MAX,
+				'mobile' => SGS_Breakpoints::MOBILE_MAX,
+			) as $sgs_nm_icon_tier_key => $sgs_nm_icon_tier_bp ) {
+				$sgs_nm_icon_tier_decl = $sgs_nm_icon_decl_for( $sgs_nm_icon_tier_key );
+				if ( $sgs_nm_icon_tier_decl === $sgs_nm_icon_prev_decl ) {
+					$sgs_nm_icon_prev_decl = $sgs_nm_icon_tier_decl;
+					continue;
+				}
+				if ( '' !== $sgs_nm_icon_tier_decl ) {
+					$css .= '@media (max-width:' . $sgs_nm_icon_tier_bp . 'px){' . $sgs_nm_icon_sel . '{' . $sgs_nm_icon_tier_decl . '}}';
+				}
+
+				$sgs_nm_icon_prev_decl = $sgs_nm_icon_tier_decl;
+			}
+		}
+
+		/*
 		 * Menu-button LABEL typography. Scoped to the TEXT SPAN
 		 * (`.sgs-nav-bar-menu__burger-text`), never the button itself ($burger_sel), so
 		 * `icon-and-text` mode never accidentally resizes the icon SVG. Both the

@@ -302,7 +302,11 @@
    real icon geometry rather than a hardcoded px twin of this `18px` — the two
    values can never drift apart because the pose reads this one. */
 :where(.sgs-nav-bar-menu__burger-icon:has(.sgs-nav-bar-menu__burger-bar)) {
-	width: 24px;
+	/* `width` READS `--sgs-nbm-icon-w`, the same way `height` reads
+	   `--sgs-nbm-icon-h` below, so the per-tier `burgerIconWidth` custom
+	   property that nav-menu-trigger-css.php emits has a consumer. */
+	--sgs-nbm-icon-w: 24px;
+	width: var( --sgs-nbm-icon-w );
 	/* Spec 35/32 audit SHOULD 3 (2026-09-24) — `height` now READS the custom
 	   property rather than twinning its own literal beside it, so the
 	   comment's "can never drift apart" claim is actually true (two
@@ -349,7 +353,11 @@
  * attribute existed: a classic hamburger-to-X cross.
  */
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(1) {
-	transform: translateY(8px) rotate(45deg);
+	/* Travel is derived from `--sgs-nbm-icon-h` (the icon box's own stack
+	   height), exactly as `line` and the two-bar poses below derive theirs, so
+	   every pose follows `burgerIconWidth`/`burgerIconHeight`. At the 18px
+	   default this computes to 8px. */
+	transform: translateY(calc((var(--sgs-nbm-icon-h, 18px) - 2px) / 2)) rotate(45deg);
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(2) {
@@ -357,7 +365,7 @@
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(3) {
-	transform: translateY(-8px) rotate(-45deg);
+	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 18px) - 2px) / 2)) rotate(-45deg);
 }
 
 /*
@@ -367,7 +375,8 @@
  * 0.44, 1)` reference.
  */
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(1) {
-	transform: translateY(8px) rotate(45deg);
+	/* Same derivation as the `x` pose above: travel from `--sgs-nbm-icon-h`. */
+	transform: translateY(calc((var(--sgs-nbm-icon-h, 18px) - 2px) / 2)) rotate(45deg);
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(2) {
@@ -375,7 +384,7 @@
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(3) {
-	transform: translateY(-8px) rotate(-45deg);
+	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 18px) - 2px) / 2)) rotate(-45deg);
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon:has(.sgs-nav-bar-menu__burger-bar) {

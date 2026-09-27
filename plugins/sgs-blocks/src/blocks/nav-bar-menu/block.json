@@ -240,6 +240,19 @@
 					},
 					"_note": "Wave B. The optional per-item marker chip (\"SOON\", \"NEW\") rendered after an item's or sublink's label via includes/nav-menu-markup.php::sgs_nav_shared_badge_html(). Badge COPY is per-item (the operator's WordPress classic-menu-item Description field, repurposed -- see that function's own docblock); badge COLOUR is block-level, one Colour-panel row applying to every badge this bar renders, matching sgs/cart's badgeColour/badgeTextColour precedent (sgs-db.py: sgs/cart badgeColour default \"accent\", badgeTextColour default \"accent-text\"). No hover state -- a badge is never itself interactive. Zero-specificity `:where()` default in style.css paints a neutral accent-light/accent-text chip when an operator has not touched either attribute; render.php's own #uid-scoped rule (specificity 0,2,0) always wins over it."
 				},
+				"burger-icon": {
+					"label": "Burger icon box",
+					"order": 7.5,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "burgerIcon",
+					"attrMap": {
+						"css:width": "burgerIconWidth",
+						"css:height": "burgerIconHeight"
+					},
+					"_note": "U-18 G6. The `.sgs-nav-bar-menu__burger-icon` bar-stack BOX — a genuinely separate element from `burger` above, whose own `css:width`/`css:height` are already claimed by `burgerWidth` (the BUTTON's width) and `burgerSize` (the BUTTON's height). Its own element, matching `detach-chip`'s precedent for a sub-part that cannot share its parent's element entry. `burgerIconHeight` writes the `--sgs-nbm-icon-h` custom property (not a bare `height` declaration) because `.sgs-nav-bar-menu__burger-icon--two-bar` already sets that property at full (0,1,0) specificity in style.css; the emitted rule targets `.sgs-nav-bar-menu__burger-icon` at (0,2,0) so it wins, and every morph pose (`x`, `x-rotate`, `line`, two-bar) already derives its travel from that one property, so setting it here reaches every pose for free. `burgerIconWidth` writes a new `--sgs-nbm-icon-w` custom property, declared with its 24px default and consumed by a `width: var(--sgs-nbm-icon-w)` read in the same zero-specificity `:where()` box rule in style.css, mirroring how `height` reads `--sgs-nbm-icon-h` there."
+				},
 				"burger": {
 					"label": "Burger toggle",
 					"order": 7,
@@ -675,6 +688,16 @@
 			"type": "object",
 			"default": {},
 			"description": "FR-U18-G1. Per-tier {desktop,tablet,mobile} CSS length overriding the burger button's WIDTH only (burgerSize keeps height/min-height), so the button can be a genuinely non-square touch target (e.g. 30px wide x 36px tall, lamalama.com). A tier left unset inherits the tier above (sgs_resolve_tier() cascade), and an empty object falls all the way back to burgerSize -- byte-identical to pre-G1 output."
+		},
+		"burgerIconWidth": {
+			"type": "object",
+			"default": {},
+			"description": "FR-U18-G6. Per-tier {desktop,tablet,mobile} CSS length overriding the width of the default glyph's bar-stack BOX (`.sgs-nav-bar-menu__burger-icon`) -- distinct from burgerWidth (the BUTTON's width). A tier left unset inherits the tier above (sgs_resolve_tier() cascade), and an empty object falls all the way back to today's 24px -- byte-identical to pre-G6 output. Reference: lamalama.com's bars are 16px long."
+		},
+		"burgerIconHeight": {
+			"type": "object",
+			"default": {},
+			"description": "FR-U18-G6. Per-tier {desktop,tablet,mobile} CSS length overriding the height of the default glyph's bar-stack BOX (`.sgs-nav-bar-menu__burger-icon`) -- the stack's own travel distance, published as --sgs-nbm-icon-h and read by every morph pose's calc(). A tier left unset inherits the tier above, and an empty object falls all the way back to today's 18px (8.5px when burgerBarCount is 2) -- byte-identical to pre-G6 output. Reference: lamalama.com's 12px-tall stack collapses to a single line with 5px of travel on open."
 		},
 		"burgerFontSize": {
 			"type": "string",

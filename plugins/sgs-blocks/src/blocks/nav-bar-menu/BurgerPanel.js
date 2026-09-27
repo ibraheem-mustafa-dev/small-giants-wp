@@ -98,6 +98,16 @@ export default function BurgerPanel( {
 		( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.burgerWidth,
 		[ clientId ]
 	);
+	// U-18 G6: same reason as `burgerWidth` above — this panel's `edit.js`
+	// caller does not pass `burgerIconWidth`/`burgerIconHeight` as props.
+	const burgerIconWidth = useSelect(
+		( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.burgerIconWidth,
+		[ clientId ]
+	);
+	const burgerIconHeight = useSelect(
+		( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.burgerIconHeight,
+		[ clientId ]
+	);
 
 	// `triggerMode` is a TIER OBJECT. The icon picker, the
 	// Label field and the morph controls apply to EVERY tier at once (one
@@ -240,6 +250,46 @@ export default function BurgerPanel( {
 						units={ [ { value: 'px', label: 'px', default: 44 } ] }
 						onChange={ ( val ) => setOwnValue( val || undefined ) }
 						help={ __( 'Leave empty to match the height.', 'sgs-blocks' ) }
+						presets={ false }
+					/>
+				) }
+			</ResponsiveOverride>
+
+			{ /* U-18 G6 — the default glyph's bar-stack BOX size, distinct from the
+			   button's own Width/Height above (lamalama.com: 16px-long bars in a
+			   12px stack). Same ResponsiveOverride + SgsLengthControl shape as
+			   Width, on the same global device toggle. */ }
+			<ResponsiveOverride
+				label={ __( 'Bar length', 'sgs-blocks' ) }
+				value={ burgerIconWidth }
+				onChange={ ( obj ) => setAttributes( { burgerIconWidth: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SgsLengthControl
+						hideLabelFromVision
+						label={ __( 'Bar length', 'sgs-blocks' ) }
+						value={ ownValue || '' }
+						placeholder={ inherited ? effectiveValue || '24px' : '24px' }
+						units={ [ { value: 'px', label: 'px', default: 24 } ] }
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
+						presets={ false }
+					/>
+				) }
+			</ResponsiveOverride>
+
+			<ResponsiveOverride
+				label={ __( 'Bar stack height', 'sgs-blocks' ) }
+				value={ burgerIconHeight }
+				onChange={ ( obj ) => setAttributes( { burgerIconHeight: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SgsLengthControl
+						hideLabelFromVision
+						label={ __( 'Bar stack height', 'sgs-blocks' ) }
+						value={ ownValue || '' }
+						placeholder={ inherited ? effectiveValue || '18px' : '18px' }
+						units={ [ { value: 'px', label: 'px', default: 18 } ] }
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
 						presets={ false }
 					/>
 				) }
