@@ -3,10 +3,10 @@
  * The look of the shop's toolbar and filter controls (Customizer > Shop Filters),
  * second set: the sort menu's text size, the Filter button's look and place, the
  * text of checkbox-list filters (a brand list), the chosen-filter chips and
- * whether they name their group ("Shape: Pilot" or "Pilot"), and the price
- * slider's look. Emitted as custom properties, body classes and one setting for
- * sgs-shop-filters-extras.js, which assets/css/woocommerce.css reads, so no
- * element carries an inline style.
+ * whether they name their group ("Shape: Pilot" or "Pilot"), where they sit, and
+ * the price slider's look. Emitted as custom properties and body classes that
+ * assets/css/woocommerce.css reads, so no element carries an inline style; the
+ * scripts' settings and the group-name switch live in inc/shop-chosen-filters.php.
  *
  * @package SGS\Theme
  */
@@ -45,6 +45,14 @@ function shop_controls_look_choices(): array {
 				'pills' => __( 'Filled pills', 'sgs-theme' ),
 			),
 			'theme',
+		),
+		'sgs_shop_active_place' => array(
+			__( 'Chosen filters place', 'sgs-theme' ),
+			array(
+				'panel' => __( 'At the top of the filter panel', 'sgs-theme' ),
+				'bar'   => __( 'In a row under the title, at every width', 'sgs-theme' ),
+			),
+			'panel',
 		),
 		'sgs_shop_price_look'   => array(
 			__( 'Price slider look', 'sgs-theme' ),
@@ -204,9 +212,10 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\output_shop_controls_look_st
  */
 function add_shop_controls_look_body_class( array $classes ): array {
 	$map = array(
-		'sgs_shop_toggle_look' => array( 'outlined', 'sgs-shop-toggle-outlined' ),
-		'sgs_shop_active_look' => array( 'pills', 'sgs-shop-active-pills' ),
-		'sgs_shop_price_look'  => array( 'thin', 'sgs-shop-price-thin' ),
+		'sgs_shop_toggle_look'  => array( 'outlined', 'sgs-shop-toggle-outlined' ),
+		'sgs_shop_active_look'  => array( 'pills', 'sgs-shop-active-pills' ),
+		'sgs_shop_price_look'   => array( 'thin', 'sgs-shop-price-thin' ),
+		'sgs_shop_active_place' => array( 'bar', 'sgs-shop-active-bar' ),
 	);
 	foreach ( $map as $id => $on ) {
 		$value = shop_controls_look_value( $id );
@@ -217,67 +226,3 @@ function add_shop_controls_look_body_class( array $classes ): array {
 	return $classes;
 }
 add_filter( 'body_class', __NAMESPACE__ . '\add_shop_controls_look_body_class' );
-
-/**
- * The Filter button's place, read by sgs-shop-filters-extras.js.
- *
- * @return void
- */
-function localise_shop_toggle_place(): void {
-	if ( ! wp_script_is( 'sgs-shop-filters-extras', 'enqueued' ) ) {
-		return;
-	}
-	wp_add_inline_script(
-		'sgs-shop-filters-extras',
-		'window.sgsShopFilters = Object.assign( window.sgsShopFilters || {}, ' . wp_json_encode( array( 'togglePlace' => shop_controls_look_value( 'sgs_shop_toggle_place' ) ) ) . ' );',
-		'before'
-	);
-}
-add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\localise_shop_toggle_place', 22 );
-
-/**
- * With the group prefix off, a chosen filter reads "Pilot": the server's list of
- * chosen filters and each filter block's label template ("Shape: {{label}}",
- * used for choices made on the page) both lose the "<group>: " part. Price and
- * other built-in filters keep their wording.
- *
- * @param array<int,array<string,mixed>> $items Chosen filters.
- * @return array<int,array<string,mixed>>
- */
-function strip_shop_active_filter_prefix( $items ) {
-	if ( ! is_array( $items ) || wp_validate_boolean( get_theme_mod( 'sgs_shop_active_prefix', true ) ) ) {
-		return $items;
-	}
-	foreach ( $items as $i => $item ) {
-		if ( isset( $item['type'], $item['activeLabel'] ) && preg_match( '#^(attribute|taxonomy)/#', (string) $item['type'] ) ) {
-			$items[ $i ]['activeLabel'] = preg_replace( '/^[^:]+:\s*/', '', (string) $item['activeLabel'] );
-		}
-	}
-	return $items;
-}
-add_filter( 'woocommerce_blocks_product_filters_selected_items', __NAMESPACE__ . '\strip_shop_active_filter_prefix', 20 );
-
-/**
- * The label template on an attribute or taxonomy filter block, without the group.
- *
- * @param string $html Rendered filter block.
- * @return string
- */
-function strip_shop_filter_label_template( $html ) {
-	if ( ! is_string( $html ) || wp_validate_boolean( get_theme_mod( 'sgs_shop_active_prefix', true ) ) ) {
-		return $html;
-	}
-	$tags = new \WP_HTML_Tag_Processor( $html );
-	if ( ! $tags->next_tag() ) {
-		return $html;
-	}
-	$context = json_decode( (string) $tags->get_attribute( 'data-wp-context' ), true );
-	if ( ! is_array( $context ) || empty( $context['activeLabelTemplate'] ) ) {
-		return $html;
-	}
-	$context['activeLabelTemplate'] = '{{label}}';
-	$tags->set_attribute( 'data-wp-context', (string) wp_json_encode( $context ) );
-	return $tags->get_updated_html();
-}
-add_filter( 'render_block_woocommerce/product-filter-attribute', __NAMESPACE__ . '\strip_shop_filter_label_template' );
-add_filter( 'render_block_woocommerce/product-filter-taxonomy', __NAMESPACE__ . '\strip_shop_filter_label_template' );

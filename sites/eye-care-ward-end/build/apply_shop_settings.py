@@ -29,6 +29,8 @@ SETTINGS = {
     'sgs_shop_filter_list_weight': '500',
     'sgs_shop_active_look': 'pills',
     'sgs_shop_active_prefix': '0',
+    'sgs_shop_active_place': 'bar',
+    'sgs_shop_toggle_count': '1',
     'sgs_shop_price_look': 'thin',
     'sgs_shop_gap_phone': '10',
     'sgs_shop_drawer_caps': '1',
