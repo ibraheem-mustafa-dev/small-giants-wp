@@ -7,7 +7,18 @@
       "maxWidth": {
         "desktop": "620px"
       },
-      "colourScheme": "light"
+      "colourScheme": "light",
+      "panelBg": "#FFFFFF",
+      "borderColour": "rgba(30,42,60,0.1)",
+      "borderStyle": "solid",
+      "borderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      },
+      "borderRadius": "12px",
+      "asideWidth": "300px"
     },
     "innerBlocks": [
       {
@@ -15,46 +26,444 @@
         "attributes": {},
         "innerBlocks": [
           {
-            "name": "sgs/icon-list",
+            "name": "sgs/container",
             "attributes": {
-              "items": [
-                {
-                  "text": "01  Our Story",
-                  "description": "Three decades of heritage",
-                  "iconSource": "lucide",
-                  "iconName": "circle",
-                  "url": "#"
-                },
-                {
-                  "text": "02  Certifications",
-                  "description": "Quality & safety standards",
-                  "iconSource": "lucide",
-                  "iconName": "square",
-                  "url": "#"
-                },
-                {
-                  "text": "03  Community & Charity",
-                  "description": "Giving back locally",
-                  "iconSource": "lucide",
-                  "iconName": "circle-dot",
-                  "url": "#"
-                },
-                {
-                  "text": "04  Sustainability",
-                  "description": "Responsible sourcing",
-                  "iconSource": "lucide",
-                  "iconName": "diamond",
-                  "url": "#"
-                },
-                {
-                  "text": "05  Careers",
-                  "description": "Join our growing team",
-                  "iconSource": "lucide",
-                  "iconName": "menu",
-                  "url": "#"
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "baseline",
+              "gap": {
+                "desktop": "16px"
+              },
+              "padding": {
+                "desktop": {
+                  "top": "16px",
+                  "right": "6px",
+                  "bottom": "16px",
+                  "left": "6px"
                 }
-              ]
-            }
+              },
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "1px",
+                "left": "0px"
+              },
+              "borderStyle": "solid",
+              "borderColour": "rgba(30,42,60,0.09)"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "01",
+                  "textColour": "#0A7EA8",
+                  "fontSize": {
+                    "desktop": "12px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Our Story",
+                      "textColour": "#1E2A3C",
+                      "textTransform": "none",
+                      "fontSize": {
+                        "desktop": "15px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.15
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Three decades of heritage",
+                      "textColour": "#68727C",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "margin": {
+                        "desktop": {
+                          "top": "2px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "baseline",
+              "gap": {
+                "desktop": "16px"
+              },
+              "padding": {
+                "desktop": {
+                  "top": "16px",
+                  "right": "6px",
+                  "bottom": "16px",
+                  "left": "6px"
+                }
+              },
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "1px",
+                "left": "0px"
+              },
+              "borderStyle": "solid",
+              "borderColour": "rgba(30,42,60,0.09)"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "02",
+                  "textColour": "#0A7EA8",
+                  "fontSize": {
+                    "desktop": "12px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Certifications",
+                      "textColour": "#1E2A3C",
+                      "textTransform": "none",
+                      "fontSize": {
+                        "desktop": "15px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.15
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Quality & safety standards",
+                      "textColour": "#68727C",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "margin": {
+                        "desktop": {
+                          "top": "2px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "baseline",
+              "gap": {
+                "desktop": "16px"
+              },
+              "padding": {
+                "desktop": {
+                  "top": "16px",
+                  "right": "6px",
+                  "bottom": "16px",
+                  "left": "6px"
+                }
+              },
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "1px",
+                "left": "0px"
+              },
+              "borderStyle": "solid",
+              "borderColour": "rgba(30,42,60,0.09)"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "03",
+                  "textColour": "#0A7EA8",
+                  "fontSize": {
+                    "desktop": "12px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Community & Charity",
+                      "textColour": "#1E2A3C",
+                      "textTransform": "none",
+                      "fontSize": {
+                        "desktop": "15px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.15
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Giving back locally",
+                      "textColour": "#68727C",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "margin": {
+                        "desktop": {
+                          "top": "2px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "baseline",
+              "gap": {
+                "desktop": "16px"
+              },
+              "padding": {
+                "desktop": {
+                  "top": "16px",
+                  "right": "6px",
+                  "bottom": "16px",
+                  "left": "6px"
+                }
+              },
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "1px",
+                "left": "0px"
+              },
+              "borderStyle": "solid",
+              "borderColour": "rgba(30,42,60,0.09)"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "04",
+                  "textColour": "#0A7EA8",
+                  "fontSize": {
+                    "desktop": "12px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Sustainability",
+                      "textColour": "#1E2A3C",
+                      "textTransform": "none",
+                      "fontSize": {
+                        "desktop": "15px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.15
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Responsible sourcing",
+                      "textColour": "#68727C",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "margin": {
+                        "desktop": {
+                          "top": "2px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "baseline",
+              "gap": {
+                "desktop": "16px"
+              },
+              "padding": {
+                "desktop": {
+                  "top": "16px",
+                  "right": "6px",
+                  "bottom": "16px",
+                  "left": "6px"
+                }
+              },
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "1px",
+                "left": "0px"
+              },
+              "borderStyle": "solid",
+              "borderColour": "rgba(30,42,60,0.09)"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "05",
+                  "textColour": "#0A7EA8",
+                  "fontSize": {
+                    "desktop": "12px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Careers",
+                      "textColour": "#1E2A3C",
+                      "textTransform": "none",
+                      "fontSize": {
+                        "desktop": "15px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.15
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Join our growing team",
+                      "textColour": "#68727C",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "margin": {
+                        "desktop": {
+                          "top": "2px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -69,28 +478,78 @@
             "name": "sgs/media",
             "attributes": {
               "imageUrl": "",
-              "imageAlt": "heritage photo (placeholder \u2014 draft ships no real image, image-slot is empty)"
+              "imageAlt": "heritage photo (placeholder - draft ships no real image, image-slot is empty)"
             }
           },
           {
             "name": "sgs/label",
             "attributes": {
               "text": "Since 1994",
-              "textColour": "#EAF4F7"
+              "textColour": "#1E2A3C",
+              "backgroundColour": "#D8CA50",
+              "fontSize": {
+                "desktop": "11px"
+              },
+              "fontWeight": "700",
+              "letterSpacing": 0.04,
+              "letterSpacingUnit": "em",
+              "textTransform": "uppercase",
+              "padding": {
+                "desktop": {
+                  "top": "5px",
+                  "right": "10px",
+                  "bottom": "5px",
+                  "left": "10px"
+                }
+              },
+              "borderRadius": 3,
+              "fullWidth": false,
+              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
             }
           },
           {
-            "name": "sgs/heading",
+            "name": "sgs/text",
             "attributes": {
-              "content": "Three decades of heritage",
-              "textColour": "#FFFFFF"
+              "text": "Three decades of heritage",
+              "textColour": "#FFFFFF",
+              "textTransform": "none",
+              "fontSize": {
+                "desktop": "19px"
+              },
+              "fontWeight": "700",
+              "letterSpacing": {
+                "desktop": -0.19
+              },
+              "letterSpacingUnit": "px",
+              "lineHeight": {
+                "desktop": 1.2
+              },
+              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+              "margin": {
+                "desktop": {
+                  "top": "12px"
+                }
+              }
             }
           },
           {
             "name": "sgs/text",
             "attributes": {
               "text": "From a single stall to the UK's trusted ethnic food wholesaler.",
-              "textColour": "#EAF4F7"
+              "textColour": "rgba(255,255,255,0.8)",
+              "fontSize": {
+                "desktop": "13.5px"
+              },
+              "fontWeight": "400",
+              "lineHeight": {
+                "desktop": 1.45
+              },
+              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+              "margin": {
+                "desktop": {
+                  "top": "8px"
+                }
+              }
             }
           },
           {
@@ -98,8 +557,43 @@
             "attributes": {
               "label": "Read our story",
               "url": "#",
+              "inheritStyle": "custom",
               "colourText": "#FFFFFF",
-              "colourBackground": "#0A7EA8"
+              "colourBackground": "transparent",
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "2px",
+                "left": "0px"
+              },
+              "borderStyle": "solid",
+              "borderColour": "#D8CA50",
+              "minHeight": {
+                "desktop": "0px"
+              },
+              "padding": {
+                "desktop": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "3px",
+                  "left": "0px"
+                }
+              },
+              "fontSize": {
+                "desktop": "14px"
+              },
+              "fontWeight": "700",
+              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+              "icon": "arrow-right",
+              "iconPosition": "after",
+              "widthType": {
+                "desktop": "fit"
+              },
+              "margin": {
+                "desktop": {
+                  "top": "18px"
+                }
+              }
             }
           }
         ]

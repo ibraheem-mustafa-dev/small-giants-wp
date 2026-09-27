@@ -8,82 +8,724 @@
         "desktop": "1080px"
       },
       "colourScheme": "light",
-      "brandsEyebrow": "Our Brands"
+      "brandsEyebrow": "Our Brands",
+      "asideWidth": "300px",
+      "panelBg": "#FFFFFF",
+      "borderColour": "rgba(30,42,60,0.1)",
+      "borderStyle": "solid",
+      "borderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      },
+      "borderRadius": "12px"
     },
     "innerBlocks": [
       {
-        "name": "sgs/card-grid",
+        "name": "sgs/container",
         "attributes": {
-          "columns": {
-            "desktop": 4
+          "tagName": "div",
+          "layout": "grid",
+          "contentWidth": {
+            "desktop": "full"
           },
-          "items": [
-            {
-              "title": "Sanam",
-              "link": "#"
+          "columns": {
+            "desktop": 4,
+            "tablet": 2,
+            "mobile": 1
+          },
+          "minColumnWidth": {
+            "desktop": 140
+          },
+          "gap": {
+            "desktop": "10px"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "justifyContent": "center",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "64px"
+              },
+              "backgroundColour": "#FAFAF8",
+              "borderStyle": "dashed",
+              "borderColour": "rgba(30,42,60,0.35)",
+              "borderWidth": {
+                "top": "1.5px",
+                "right": "1.5px",
+                "bottom": "1.5px",
+                "left": "1.5px"
+              },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "12px",
+                  "topRight": "12px",
+                  "bottomLeft": "12px",
+                  "bottomRight": "12px"
+                }
+              }
             },
-            {
-              "title": "The Lemon Tree",
-              "link": "#"
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "lucide",
+                  "iconName": "image",
+                  "iconSize": 16,
+                  "iconColour": "rgba(30,42,60,0.45)",
+                  "backgroundColour": "",
+                  "backgroundShape": "none"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Sanam",
+                  "textColour": "rgba(30,42,60,0.75)",
+                  "fontSize": {
+                    "desktop": "13px"
+                  },
+                  "fontWeight": "500",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "justifyContent": "center",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "64px"
+              },
+              "backgroundColour": "#FAFAF8",
+              "borderStyle": "dashed",
+              "borderColour": "rgba(30,42,60,0.35)",
+              "borderWidth": {
+                "top": "1.5px",
+                "right": "1.5px",
+                "bottom": "1.5px",
+                "left": "1.5px"
+              },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "12px",
+                  "topRight": "12px",
+                  "bottomLeft": "12px",
+                  "bottomRight": "12px"
+                }
+              }
             },
-            {
-              "title": "Green Leaf",
-              "link": "#"
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "lucide",
+                  "iconName": "image",
+                  "iconSize": 16,
+                  "iconColour": "rgba(30,42,60,0.45)",
+                  "backgroundColour": "",
+                  "backgroundShape": "none"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "The Lemon Tree",
+                  "textColour": "rgba(30,42,60,0.75)",
+                  "fontSize": {
+                    "desktop": "13px"
+                  },
+                  "fontWeight": "500",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "justifyContent": "center",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "64px"
+              },
+              "backgroundColour": "#FAFAF8",
+              "borderStyle": "dashed",
+              "borderColour": "rgba(30,42,60,0.35)",
+              "borderWidth": {
+                "top": "1.5px",
+                "right": "1.5px",
+                "bottom": "1.5px",
+                "left": "1.5px"
+              },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "12px",
+                  "topRight": "12px",
+                  "bottomLeft": "12px",
+                  "bottomRight": "12px"
+                }
+              }
             },
-            {
-              "title": "Shan",
-              "link": "#"
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "lucide",
+                  "iconName": "image",
+                  "iconSize": 16,
+                  "iconColour": "rgba(30,42,60,0.45)",
+                  "backgroundColour": "",
+                  "backgroundShape": "none"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Green Leaf",
+                  "textColour": "rgba(30,42,60,0.75)",
+                  "fontSize": {
+                    "desktop": "13px"
+                  },
+                  "fontWeight": "500",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "justifyContent": "center",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "64px"
+              },
+              "backgroundColour": "#FAFAF8",
+              "borderStyle": "dashed",
+              "borderColour": "rgba(30,42,60,0.35)",
+              "borderWidth": {
+                "top": "1.5px",
+                "right": "1.5px",
+                "bottom": "1.5px",
+                "left": "1.5px"
+              },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "12px",
+                  "topRight": "12px",
+                  "bottomLeft": "12px",
+                  "bottomRight": "12px"
+                }
+              }
             },
-            {
-              "title": "Indus Foods",
-              "link": "#"
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "lucide",
+                  "iconName": "image",
+                  "iconSize": 16,
+                  "iconColour": "rgba(30,42,60,0.45)",
+                  "backgroundColour": "",
+                  "backgroundShape": "none"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Shan",
+                  "textColour": "rgba(30,42,60,0.75)",
+                  "fontSize": {
+                    "desktop": "13px"
+                  },
+                  "fontWeight": "500",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "justifyContent": "center",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "64px"
+              },
+              "backgroundColour": "#FAFAF8",
+              "borderStyle": "dashed",
+              "borderColour": "rgba(30,42,60,0.35)",
+              "borderWidth": {
+                "top": "1.5px",
+                "right": "1.5px",
+                "bottom": "1.5px",
+                "left": "1.5px"
+              },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "12px",
+                  "topRight": "12px",
+                  "bottomLeft": "12px",
+                  "bottomRight": "12px"
+                }
+              }
             },
-            {
-              "title": "logo ipsum",
-              "link": "#"
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "lucide",
+                  "iconName": "image",
+                  "iconSize": 16,
+                  "iconColour": "rgba(30,42,60,0.45)",
+                  "backgroundColour": "",
+                  "backgroundShape": "none"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Indus Foods",
+                  "textColour": "rgba(30,42,60,0.75)",
+                  "fontSize": {
+                    "desktop": "13px"
+                  },
+                  "fontWeight": "500",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "justifyContent": "center",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "64px"
+              },
+              "backgroundColour": "#FAFAF8",
+              "borderStyle": "dashed",
+              "borderColour": "rgba(30,42,60,0.35)",
+              "borderWidth": {
+                "top": "1.5px",
+                "right": "1.5px",
+                "bottom": "1.5px",
+                "left": "1.5px"
+              },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "12px",
+                  "topRight": "12px",
+                  "bottomLeft": "12px",
+                  "bottomRight": "12px"
+                }
+              }
             },
-            {
-              "title": "logo ipsum",
-              "link": "#"
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "lucide",
+                  "iconName": "image",
+                  "iconSize": 16,
+                  "iconColour": "rgba(30,42,60,0.45)",
+                  "backgroundColour": "",
+                  "backgroundShape": "none"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "logo ipsum",
+                  "textColour": "rgba(30,42,60,0.75)",
+                  "fontSize": {
+                    "desktop": "13px"
+                  },
+                  "fontWeight": "500",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "justifyContent": "center",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "64px"
+              },
+              "backgroundColour": "#FAFAF8",
+              "borderStyle": "dashed",
+              "borderColour": "rgba(30,42,60,0.35)",
+              "borderWidth": {
+                "top": "1.5px",
+                "right": "1.5px",
+                "bottom": "1.5px",
+                "left": "1.5px"
+              },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "12px",
+                  "topRight": "12px",
+                  "bottomLeft": "12px",
+                  "bottomRight": "12px"
+                }
+              }
             },
-            {
-              "title": "logo ipsum",
-              "link": "#"
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "lucide",
+                  "iconName": "image",
+                  "iconSize": 16,
+                  "iconColour": "rgba(30,42,60,0.45)",
+                  "backgroundColour": "",
+                  "backgroundShape": "none"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "logo ipsum",
+                  "textColour": "rgba(30,42,60,0.75)",
+                  "fontSize": {
+                    "desktop": "13px"
+                  },
+                  "fontWeight": "500",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "justifyContent": "center",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "64px"
+              },
+              "backgroundColour": "#FAFAF8",
+              "borderStyle": "dashed",
+              "borderColour": "rgba(30,42,60,0.35)",
+              "borderWidth": {
+                "top": "1.5px",
+                "right": "1.5px",
+                "bottom": "1.5px",
+                "left": "1.5px"
+              },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "12px",
+                  "topRight": "12px",
+                  "bottomLeft": "12px",
+                  "bottomRight": "12px"
+                }
+              }
             },
-            {
-              "title": "logo ipsum",
-              "link": "#"
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "lucide",
+                  "iconName": "image",
+                  "iconSize": 16,
+                  "iconColour": "rgba(30,42,60,0.45)",
+                  "backgroundColour": "",
+                  "backgroundShape": "none"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "logo ipsum",
+                  "textColour": "rgba(30,42,60,0.75)",
+                  "fontSize": {
+                    "desktop": "13px"
+                  },
+                  "fontWeight": "500",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "justifyContent": "center",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "64px"
+              },
+              "backgroundColour": "#FAFAF8",
+              "borderStyle": "dashed",
+              "borderColour": "rgba(30,42,60,0.35)",
+              "borderWidth": {
+                "top": "1.5px",
+                "right": "1.5px",
+                "bottom": "1.5px",
+                "left": "1.5px"
+              },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "12px",
+                  "topRight": "12px",
+                  "bottomLeft": "12px",
+                  "bottomRight": "12px"
+                }
+              }
             },
-            {
-              "title": "logo ipsum",
-              "link": "#"
-            }
-          ]
-        }
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "lucide",
+                  "iconName": "image",
+                  "iconSize": 16,
+                  "iconColour": "rgba(30,42,60,0.45)",
+                  "backgroundColour": "",
+                  "backgroundShape": "none"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "logo ipsum",
+                  "textColour": "rgba(30,42,60,0.75)",
+                  "fontSize": {
+                    "desktop": "13px"
+                  },
+                  "fontWeight": "500",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "justifyContent": "center",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "64px"
+              },
+              "backgroundColour": "#FAFAF8",
+              "borderStyle": "dashed",
+              "borderColour": "rgba(30,42,60,0.35)",
+              "borderWidth": {
+                "top": "1.5px",
+                "right": "1.5px",
+                "bottom": "1.5px",
+                "left": "1.5px"
+              },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "12px",
+                  "topRight": "12px",
+                  "bottomLeft": "12px",
+                  "bottomRight": "12px"
+                }
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "lucide",
+                  "iconName": "image",
+                  "iconSize": 16,
+                  "iconColour": "rgba(30,42,60,0.45)",
+                  "backgroundColour": "",
+                  "backgroundShape": "none"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "logo ipsum",
+                  "textColour": "rgba(30,42,60,0.75)",
+                  "fontSize": {
+                    "desktop": "13px"
+                  },
+                  "fontWeight": "500",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              }
+            ]
+          }
+        ]
       },
       {
         "name": "sgs/mega-aside",
         "attributes": {
-          "asideFormat": "cta"
+          "asideFormat": "cta",
+          "asideBg": "rgba(10,126,168,0.06)",
+          "asideBorderColour": "#0A7EA8",
+          "asideBorderWidth": {
+            "top": "0px",
+            "right": "0px",
+            "bottom": "0px",
+            "left": "3px"
+          },
+          "asidePadding": {
+            "desktop": {
+              "top": "26px",
+              "right": "26px",
+              "bottom": "26px",
+              "left": "26px"
+            }
+          }
         },
         "innerBlocks": [
           {
             "name": "sgs/label",
             "attributes": {
-              "text": "Own Brands"
+              "text": "Own Brands",
+              "textColour": "#1E2A3C",
+              "backgroundColour": "#D8CA50",
+              "fontSize": {
+                "desktop": "11px"
+              },
+              "fontWeight": "700",
+              "letterSpacing": 0.02,
+              "letterSpacingUnit": "em",
+              "padding": {
+                "desktop": {
+                  "top": "4px",
+                  "right": "10px",
+                  "bottom": "4px",
+                  "left": "10px"
+                }
+              },
+              "borderRadius": 20,
+              "textTransform": "none",
+              "fullWidth": false,
+              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
             }
           },
           {
             "name": "sgs/text",
             "attributes": {
-              "text": "We develop and market our own range of quality food products alongside our distribution brands."
+              "text": "We develop and market our own range of quality food products alongside our distribution brands.",
+              "textColour": "#4B5561",
+              "fontSize": {
+                "desktop": "14px"
+              },
+              "fontWeight": "400",
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+              "margin": {
+                "desktop": {
+                  "top": "12px"
+                }
+              }
             }
           },
           {
             "name": "sgs/button",
             "attributes": {
               "label": "View All Brands",
-              "url": "#"
+              "url": "#",
+              "inheritStyle": "custom",
+              "colourText": "#FFFFFF",
+              "colourBackground": "#0A7EA8",
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
+              },
+              "borderStyle": "none",
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "9px",
+                  "topRight": "9px",
+                  "bottomLeft": "9px",
+                  "bottomRight": "9px"
+                }
+              },
+              "padding": {
+                "desktop": {
+                  "top": "12px",
+                  "right": "18px",
+                  "bottom": "12px",
+                  "left": "18px"
+                }
+              },
+              "fontSize": {
+                "desktop": "14px"
+              },
+              "fontWeight": "700",
+              "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+              "icon": "arrow-right",
+              "iconPosition": "after",
+              "margin": {
+                "desktop": {
+                  "top": "18px"
+                }
+              }
             }
           }
         ]

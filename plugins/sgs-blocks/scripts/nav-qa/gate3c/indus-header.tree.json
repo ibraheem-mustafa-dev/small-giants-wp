@@ -34,8 +34,11 @@
           {
             "name": "sgs/responsive-logo",
             "attributes": {
-              "width": 140,
-              "linkToHome": true
+              "width": 144,
+              "linkToHome": true,
+              "logoId": 4509,
+              "logoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-foods-logo-qa-copy.png",
+              "alt": "Indus Foods"
             }
           },
           {
@@ -43,6 +46,7 @@
             "attributes": {
               "ref": 132,
               "navLabel": "QA copy Indus",
+              "collapsePoint": 1024,
               "gap": {
                 "desktop": "4px"
               },
@@ -84,7 +88,35 @@
               "url": "#",
               "colourText": "#FFFFFF",
               "colourBackground": "#0A7EA8",
-              "sgsCollapseVisibility": "hide"
+              "sgsCollapseVisibility": "hide",
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
+              },
+              "borderStyle": "none",
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "10px",
+                  "topRight": "10px",
+                  "bottomLeft": "10px",
+                  "bottomRight": "10px"
+                }
+              },
+              "padding": {
+                "desktop": {
+                  "top": "11px",
+                  "right": "20px",
+                  "bottom": "11px",
+                  "left": "20px"
+                }
+              },
+              "fontSize": {
+                "desktop": "15px"
+              },
+              "fontWeight": "700",
+              "boxShadow": "0 4px 14px -6px rgba(10,126,168,.5)"
             }
           }
         ]

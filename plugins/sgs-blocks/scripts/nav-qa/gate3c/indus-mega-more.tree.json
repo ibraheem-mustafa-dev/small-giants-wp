@@ -7,7 +7,17 @@
       "maxWidth": {
         "desktop": "300px"
       },
-      "colourScheme": "light"
+      "colourScheme": "light",
+      "panelBg": "#FFFFFF",
+      "borderColour": "rgba(30,42,60,0.1)",
+      "borderStyle": "solid",
+      "borderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      },
+      "borderRadius": "12px"
     },
     "innerBlocks": [
       {
@@ -15,25 +25,180 @@
         "attributes": {},
         "innerBlocks": [
           {
-            "name": "sgs/icon-list",
+            "name": "sgs/container",
             "attributes": {
-              "items": [
-                {
-                  "text": "01  Contact Us",
-                  "description": "Get in touch with the team",
-                  "iconSource": "lucide",
-                  "iconName": "circle-dot",
-                  "url": "#"
-                },
-                {
-                  "text": "02  FAQs",
-                  "description": "Common questions answered",
-                  "iconSource": "lucide",
-                  "iconName": "circle",
-                  "url": "#"
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "baseline",
+              "gap": {
+                "desktop": "16px"
+              },
+              "padding": {
+                "desktop": {
+                  "top": "16px",
+                  "right": "6px",
+                  "bottom": "16px",
+                  "left": "6px"
                 }
-              ]
-            }
+              },
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "1px",
+                "left": "0px"
+              },
+              "borderStyle": "solid",
+              "borderColour": "rgba(30,42,60,0.09)"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "01",
+                  "textColour": "#0A7EA8",
+                  "fontSize": {
+                    "desktop": "12px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Contact Us",
+                      "textColour": "#1E2A3C",
+                      "textTransform": "none",
+                      "fontSize": {
+                        "desktop": "15px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.15
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Get in touch with the team",
+                      "textColour": "#68727C",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "margin": {
+                        "desktop": {
+                          "top": "2px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "baseline",
+              "gap": {
+                "desktop": "16px"
+              },
+              "padding": {
+                "desktop": {
+                  "top": "16px",
+                  "right": "6px",
+                  "bottom": "16px",
+                  "left": "6px"
+                }
+              },
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "1px",
+                "left": "0px"
+              },
+              "borderStyle": "solid",
+              "borderColour": "rgba(30,42,60,0.09)"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "02",
+                  "textColour": "#0A7EA8",
+                  "fontSize": {
+                    "desktop": "12px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "FAQs",
+                      "textColour": "#1E2A3C",
+                      "textTransform": "none",
+                      "fontSize": {
+                        "desktop": "15px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.15
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Common questions answered",
+                      "textColour": "#68727C",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "margin": {
+                        "desktop": {
+                          "top": "2px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       }

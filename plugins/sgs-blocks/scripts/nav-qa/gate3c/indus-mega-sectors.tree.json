@@ -2,49 +2,822 @@
   {
     "name": "sgs/mega-panel",
     "attributes": {
-      "variant": "media-cards",
-      "style": "cards",
+      "variant": "general",
+      "style": "columns",
       "maxWidth": {
         "desktop": "1080px"
       },
-      "colourScheme": "light"
+      "colourScheme": "light",
+      "panelBg": "#FFFFFF",
+      "borderColour": "rgba(30,42,60,0.1)",
+      "borderStyle": "solid",
+      "borderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      },
+      "borderRadius": "12px"
     },
     "innerBlocks": [
       {
-        "name": "sgs/card-grid",
+        "name": "sgs/container",
         "attributes": {
-          "columns": {
-            "desktop": 4
+          "tagName": "div",
+          "layout": "grid",
+          "contentWidth": {
+            "desktop": "full"
           },
-          "cardRadius": "18px",
-          "cardBackground": "#0A7EA8",
-          "titleColour": "#FFFFFF",
-          "subtitleColour": "rgba(255,255,255,.82)",
-          "scaleHover": "1",
-          "cardShadowHover": "floating",
-          "items": [
-            {
-              "title": "Food Service",
-              "subtitle": "Quality ingredients for venues, caterers & events across the UK.",
-              "link": "#"
+          "columns": {
+            "desktop": 4,
+            "tablet": 2,
+            "mobile": 1
+          },
+          "minColumnWidth": {
+            "desktop": 200
+          },
+          "gap": {
+            "desktop": "14px"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "flexDirection": "column",
+              "justifyContent": "space-between",
+              "minHeight": {
+                "desktop": "282px"
+              },
+              "backgroundColour": "#D8CA50",
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "18px",
+                  "topRight": "18px",
+                  "bottomLeft": "18px",
+                  "bottomRight": "18px"
+                }
+              },
+              "padding": {
+                "desktop": {
+                  "top": "18px",
+                  "right": "18px",
+                  "bottom": "18px",
+                  "left": "18px"
+                }
+              }
             },
-            {
-              "title": "Manufacturing",
-              "subtitle": "High-quality, healthy & delicious food products at scale.",
-              "link": "#"
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column",
+                  "gap": {
+                    "desktop": "14px"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "flexDirection": "column",
+                      "alignItems": "center",
+                      "justifyContent": "center",
+                      "gap": {
+                        "desktop": "6px"
+                      },
+                      "minHeight": {
+                        "desktop": "110px"
+                      },
+                      "backgroundColour": "rgba(30,42,60,0.08)",
+                      "borderStyle": "dashed",
+                      "borderColour": "rgba(30,42,60,0.35)",
+                      "borderWidth": {
+                        "top": "1.5px",
+                        "right": "1.5px",
+                        "bottom": "1.5px",
+                        "left": "1.5px"
+                      },
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "12px",
+                          "topRight": "12px",
+                          "bottomLeft": "12px",
+                          "bottomRight": "12px"
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/icon",
+                        "attributes": {
+                          "iconSource": "lucide",
+                          "iconName": "image",
+                          "iconSize": 22,
+                          "iconColour": "rgba(30,42,60,0.45)",
+                          "backgroundColour": "",
+                          "backgroundShape": "none"
+                        }
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "food service",
+                          "textColour": "rgba(30,42,60,0.75)",
+                          "fontSize": {
+                            "desktop": "11px"
+                          },
+                          "fontWeight": "500",
+                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                          "letterSpacing": {
+                            "desktop": 0.01
+                          },
+                          "letterSpacingUnit": "em"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/heading",
+                    "attributes": {
+                      "content": "Food Service",
+                      "level": "h3",
+                      "textColour": "#1E2A3C",
+                      "fontSize": {
+                        "desktop": "17px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.17
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Quality ingredients for venues, caterers & events across the UK.",
+                      "textColour": "rgba(30,42,60,0.72)",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "margin": {
+                        "desktop": {
+                          "top": "8px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "flex-start"
+                },
+                "innerBlocks": [
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "label": "Explore Food Service",
+                  "url": "#",
+                  "inheritStyle": "custom",
+                  "colourText": "#1E2A3C",
+                  "colourBackground": "transparent",
+                  "borderWidth": {
+                    "top": "0px",
+                    "right": "0px",
+                    "bottom": "0px",
+                    "left": "0px"
+                  },
+                  "fontSize": {
+                    "desktop": "13.5px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "textAlign": "left",
+                  "icon": "arrow-right",
+                  "iconPosition": "after",
+                  "minHeight": {
+                    "desktop": "0px"
+                  },
+                  "padding": {
+                    "desktop": {
+                      "top": "0px",
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px"
+                    }
+                  },
+                  "widthType": {
+                    "desktop": "fit"
+                  }
+                }
+              }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "flexDirection": "column",
+              "justifyContent": "space-between",
+              "minHeight": {
+                "desktop": "282px"
+              },
+              "backgroundColour": "#0A7EA8",
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "18px",
+                  "topRight": "18px",
+                  "bottomLeft": "18px",
+                  "bottomRight": "18px"
+                }
+              },
+              "padding": {
+                "desktop": {
+                  "top": "18px",
+                  "right": "18px",
+                  "bottom": "18px",
+                  "left": "18px"
+                }
+              }
             },
-            {
-              "title": "Retail",
-              "subtitle": "Retail-ready packaging for independent & national retailers.",
-              "link": "#"
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column",
+                  "gap": {
+                    "desktop": "14px"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "flexDirection": "column",
+                      "alignItems": "center",
+                      "justifyContent": "center",
+                      "gap": {
+                        "desktop": "6px"
+                      },
+                      "minHeight": {
+                        "desktop": "110px"
+                      },
+                      "backgroundColour": "rgba(255,255,255,0.14)",
+                      "borderStyle": "dashed",
+                      "borderColour": "rgba(255,255,255,0.35)",
+                      "borderWidth": {
+                        "top": "1.5px",
+                        "right": "1.5px",
+                        "bottom": "1.5px",
+                        "left": "1.5px"
+                      },
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "12px",
+                          "topRight": "12px",
+                          "bottomLeft": "12px",
+                          "bottomRight": "12px"
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/icon",
+                        "attributes": {
+                          "iconSource": "lucide",
+                          "iconName": "image",
+                          "iconSize": 22,
+                          "iconColour": "rgba(255,255,255,0.45)",
+                          "backgroundColour": "",
+                          "backgroundShape": "none"
+                        }
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "manufacturing",
+                          "textColour": "rgba(255,255,255,0.75)",
+                          "fontSize": {
+                            "desktop": "11px"
+                          },
+                          "fontWeight": "500",
+                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                          "letterSpacing": {
+                            "desktop": 0.01
+                          },
+                          "letterSpacingUnit": "em"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/heading",
+                    "attributes": {
+                      "content": "Manufacturing",
+                      "level": "h3",
+                      "textColour": "#FFFFFF",
+                      "fontSize": {
+                        "desktop": "17px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.17
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "High-quality, healthy & delicious food products at scale.",
+                      "textColour": "rgba(255,255,255,0.82)",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "margin": {
+                        "desktop": {
+                          "top": "8px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "flex-start"
+                },
+                "innerBlocks": [
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "label": "Explore Manufacturing",
+                  "url": "#",
+                  "inheritStyle": "custom",
+                  "colourText": "#FFFFFF",
+                  "colourBackground": "transparent",
+                  "borderWidth": {
+                    "top": "0px",
+                    "right": "0px",
+                    "bottom": "0px",
+                    "left": "0px"
+                  },
+                  "fontSize": {
+                    "desktop": "13.5px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "textAlign": "left",
+                  "icon": "arrow-right",
+                  "iconPosition": "after",
+                  "minHeight": {
+                    "desktop": "0px"
+                  },
+                  "padding": {
+                    "desktop": {
+                      "top": "0px",
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px"
+                    }
+                  },
+                  "widthType": {
+                    "desktop": "fit"
+                  }
+                }
+              }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "flexDirection": "column",
+              "justifyContent": "space-between",
+              "minHeight": {
+                "desktop": "282px"
+              },
+              "backgroundColour": "#075E80",
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "18px",
+                  "topRight": "18px",
+                  "bottomLeft": "18px",
+                  "bottomRight": "18px"
+                }
+              },
+              "padding": {
+                "desktop": {
+                  "top": "18px",
+                  "right": "18px",
+                  "bottom": "18px",
+                  "left": "18px"
+                }
+              }
             },
-            {
-              "title": "Wholesale",
-              "subtitle": "Reliable stock levels & fast delivery across the whole of the UK.",
-              "link": "#"
-            }
-          ]
-        }
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column",
+                  "gap": {
+                    "desktop": "14px"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "flexDirection": "column",
+                      "alignItems": "center",
+                      "justifyContent": "center",
+                      "gap": {
+                        "desktop": "6px"
+                      },
+                      "minHeight": {
+                        "desktop": "110px"
+                      },
+                      "backgroundColour": "rgba(255,255,255,0.14)",
+                      "borderStyle": "dashed",
+                      "borderColour": "rgba(255,255,255,0.35)",
+                      "borderWidth": {
+                        "top": "1.5px",
+                        "right": "1.5px",
+                        "bottom": "1.5px",
+                        "left": "1.5px"
+                      },
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "12px",
+                          "topRight": "12px",
+                          "bottomLeft": "12px",
+                          "bottomRight": "12px"
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/icon",
+                        "attributes": {
+                          "iconSource": "lucide",
+                          "iconName": "image",
+                          "iconSize": 22,
+                          "iconColour": "rgba(255,255,255,0.45)",
+                          "backgroundColour": "",
+                          "backgroundShape": "none"
+                        }
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "retail",
+                          "textColour": "rgba(255,255,255,0.75)",
+                          "fontSize": {
+                            "desktop": "11px"
+                          },
+                          "fontWeight": "500",
+                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                          "letterSpacing": {
+                            "desktop": 0.01
+                          },
+                          "letterSpacingUnit": "em"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/heading",
+                    "attributes": {
+                      "content": "Retail",
+                      "level": "h3",
+                      "textColour": "#FFFFFF",
+                      "fontSize": {
+                        "desktop": "17px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.17
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Retail-ready packaging for independent & national retailers.",
+                      "textColour": "rgba(255,255,255,0.82)",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "margin": {
+                        "desktop": {
+                          "top": "8px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "flex-start"
+                },
+                "innerBlocks": [
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "label": "Explore Retail",
+                  "url": "#",
+                  "inheritStyle": "custom",
+                  "colourText": "#FFFFFF",
+                  "colourBackground": "transparent",
+                  "borderWidth": {
+                    "top": "0px",
+                    "right": "0px",
+                    "bottom": "0px",
+                    "left": "0px"
+                  },
+                  "fontSize": {
+                    "desktop": "13.5px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "textAlign": "left",
+                  "icon": "arrow-right",
+                  "iconPosition": "after",
+                  "minHeight": {
+                    "desktop": "0px"
+                  },
+                  "padding": {
+                    "desktop": {
+                      "top": "0px",
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px"
+                    }
+                  },
+                  "widthType": {
+                    "desktop": "fit"
+                  }
+                }
+              }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "flexDirection": "column",
+              "justifyContent": "space-between",
+              "minHeight": {
+                "desktop": "282px"
+              },
+              "backgroundColour": "#EAF4F7",
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "18px",
+                  "topRight": "18px",
+                  "bottomLeft": "18px",
+                  "bottomRight": "18px"
+                }
+              },
+              "padding": {
+                "desktop": {
+                  "top": "18px",
+                  "right": "18px",
+                  "bottom": "18px",
+                  "left": "18px"
+                }
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "flexDirection": "column",
+                  "gap": {
+                    "desktop": "14px"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "flexDirection": "column",
+                      "alignItems": "center",
+                      "justifyContent": "center",
+                      "gap": {
+                        "desktop": "6px"
+                      },
+                      "minHeight": {
+                        "desktop": "110px"
+                      },
+                      "backgroundColour": "rgba(10,126,168,0.08)",
+                      "borderStyle": "dashed",
+                      "borderColour": "rgba(7,94,128,0.35)",
+                      "borderWidth": {
+                        "top": "1.5px",
+                        "right": "1.5px",
+                        "bottom": "1.5px",
+                        "left": "1.5px"
+                      },
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "12px",
+                          "topRight": "12px",
+                          "bottomLeft": "12px",
+                          "bottomRight": "12px"
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/icon",
+                        "attributes": {
+                          "iconSource": "lucide",
+                          "iconName": "image",
+                          "iconSize": 22,
+                          "iconColour": "rgba(7,94,128,0.45)",
+                          "backgroundColour": "",
+                          "backgroundShape": "none"
+                        }
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "wholesale",
+                          "textColour": "rgba(7,94,128,0.75)",
+                          "fontSize": {
+                            "desktop": "11px"
+                          },
+                          "fontWeight": "500",
+                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                          "letterSpacing": {
+                            "desktop": 0.01
+                          },
+                          "letterSpacingUnit": "em"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/heading",
+                    "attributes": {
+                      "content": "Wholesale",
+                      "level": "h3",
+                      "textColour": "#075E80",
+                      "fontSize": {
+                        "desktop": "17px"
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": -0.17
+                      },
+                      "letterSpacingUnit": "px",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Reliable stock levels & fast delivery across the whole of the UK.",
+                      "textColour": "rgba(7,94,128,0.68)",
+                      "fontSize": {
+                        "desktop": "13px"
+                      },
+                      "fontWeight": "400",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": 1.4
+                      },
+                      "margin": {
+                        "desktop": {
+                          "top": "8px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "flex-start"
+                },
+                "innerBlocks": [
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "label": "Explore Wholesale",
+                  "url": "#",
+                  "inheritStyle": "custom",
+                  "colourText": "#075E80",
+                  "colourBackground": "transparent",
+                  "borderWidth": {
+                    "top": "0px",
+                    "right": "0px",
+                    "bottom": "0px",
+                    "left": "0px"
+                  },
+                  "fontSize": {
+                    "desktop": "13.5px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "textAlign": "left",
+                  "icon": "arrow-right",
+                  "iconPosition": "after",
+                  "minHeight": {
+                    "desktop": "0px"
+                  },
+                  "padding": {
+                    "desktop": {
+                      "top": "0px",
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px"
+                    }
+                  },
+                  "widthType": {
+                    "desktop": "fit"
+                  }
+                }
+              }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }
