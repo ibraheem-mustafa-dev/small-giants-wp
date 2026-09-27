@@ -1584,6 +1584,26 @@
 			"default": "",
 			"description": "Border radius for the attribute tag as a CSS length (e.g. '4px'). Empty = the style.css default (square corners, matching the Frame Card design source). Mirrors tagBorderRadius/savingBadgeBorderRadius."
 		},
+		"attributeTagFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"attributeTagFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"attributeTagFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"attributeTagLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"attributeTagLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
 		"noReviewsText": {
 			"type": "string",
 			"default": "",

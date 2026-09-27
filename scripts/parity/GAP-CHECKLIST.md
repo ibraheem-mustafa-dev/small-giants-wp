@@ -66,6 +66,8 @@ Each class below says how it is detected, how a "this page matches" claim is fal
 - **Spacing:** `anchor: '<pair>'` compares a pair's vertical distance from another pair (the grid from the
   title), so a missing gap or rule shows even when the header above differs in height. The shop's title row
   lacked the draft's 24px gap and hairline; `grid y-from-title` 101 against 77 is how that reads now.
+  `anchorX: true` adds the right-edge gap (`right-from-<anchor>`): a card's tag anchored to its card reads
+  17 when it sits inside the 16px inset and a negative number when a long name pushes it past the edge.
 - **Falsified by:** a `structure` or `y-from-*` row, or a control with no neighbouring pairs to anchor it.
 
 ## 5. Hidden-by-scroll and scroll-in content

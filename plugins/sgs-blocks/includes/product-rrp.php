@@ -67,8 +67,9 @@ if ( ! function_exists( 'sgs_product_rrp_saving' ) ) {
 
 		/**
 		 * Whether a whole-pound saving drops its ".00" ("Save £32", not
-		 * "Save £32.00"). Only the saving amount: prices and the RRP always
-		 * show their pennies. The theme's Shop setting switches it on.
+		 * "Save £32.00"). Only the saving amount; a product card's price and
+		 * RRP follow `sgs_card_price_trim_zeros` (product-card-price-trim.php).
+		 * The theme's Shop setting switches both on.
 		 *
 		 * @param bool $trim Default false.
 		 */

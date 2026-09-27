@@ -116,14 +116,26 @@ function helpers( page, side ) {
 
 // A pair with `anchor: '<pair>'` is compared on its vertical distance from that pair,
 // so a missing gap or rule shows even when the pages above (a header) differ in height.
+// `anchorX: true` also compares the gap from the pair's right edge to the anchor's
+// (`right-from-<anchor>`): a tag pushed past its card's edge reads as a negative gap.
 function anchorOffset( p, ds, ls, t ) {
 	const a = p.anchor;
 	if ( ! a || ! ds[ a ] || ! ls[ a ] || ds[ a ].missing || ls[ a ].missing || ds[ p.name ].missing || ls[ p.name ].missing ) {
 		return [];
 	}
+	const out = [];
 	const dy = ds[ p.name ].box.y - ds[ a ].box.y;
 	const ly = ls[ p.name ].box.y - ls[ a ].box.y;
-	return Math.abs( dy - ly ) > t.box ? [ { kind: 'box', key: `y-from-${ a }`, draft: dy, live: ly } ] : [];
+	if ( Math.abs( dy - ly ) > t.box ) {
+		out.push( { kind: 'box', key: `y-from-${ a }`, draft: dy, live: ly } );
+	}
+	if ( p.anchorX ) {
+		const right = ( s ) => s[ a ].box.x + s[ a ].box.w - ( s[ p.name ].box.x + s[ p.name ].box.w );
+		if ( Math.abs( right( ds ) - right( ls ) ) > t.box ) {
+			out.push( { kind: 'box', key: `right-from-${ a }`, draft: right( ds ), live: right( ls ) } );
+		}
+	}
+	return out;
 }
 
 const pairsFor = ( state ) => cfg.pairs.filter( ( p ) => ! p.states || p.states.includes( state.name ) );

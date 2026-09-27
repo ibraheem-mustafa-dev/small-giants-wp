@@ -136,6 +136,21 @@ function register_shop_controls_look_settings( \WP_Customize_Manager $wp_customi
 			'label'   => __( 'Chosen filters name their group ("Shape: Pilot"; off shows "Pilot")', 'sgs-theme' ),
 		)
 	);
+	$wp_customize->add_setting(
+		'sgs_shop_sticky_trigger',
+		array(
+			'default'           => true,
+			'sanitize_callback' => 'wp_validate_boolean',
+		)
+	);
+	$wp_customize->add_control(
+		'sgs_shop_sticky_trigger',
+		array(
+			'section' => 'sgs_shop_filters',
+			'type'    => 'checkbox',
+			'label'   => __( 'Show a floating Filter button at the bottom of the screen once the shopper scrolls (below the drawer breakpoint)', 'sgs-theme' ),
+		)
+	);
 }
 add_action( 'customize_register', __NAMESPACE__ . '\register_shop_controls_look_settings', 22 );
 

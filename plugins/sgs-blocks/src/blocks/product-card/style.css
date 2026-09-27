@@ -1356,6 +1356,18 @@
 }
 
 /*
+ * With a tag beside it the name takes the rest of the row and wraps inside it,
+ * hyphenating a word too long for the space ("Hol-brook" in a 163px card), so
+ * the tag keeps its width and the same place on every card at every width.
+ */
+.sgs-product-card__title-row:has(> .sgs-product-card__attribute-tag) > :first-child {
+	flex: 1 1 0;
+	min-width: 0;
+	overflow-wrap: break-word;
+	hyphens: auto;
+}
+
+/*
  * Generic attribute tag — shown beside the title when the resolved product
  * carries an operator-chosen product attribute term or product tag (e.g. an
  * optician site's "Polarised" lens attribute). Bordered-only chip, no fill,
@@ -1366,9 +1378,6 @@
 .sgs-product-card__attribute-tag {
 	flex-shrink: 0;
 	display: inline-block;
-	font-size: 9.5px;
-	font-weight: 600;
-	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	white-space: nowrap;
 	background: transparent;
@@ -1376,8 +1385,12 @@
 	color: var( --wp--preset--color--text-muted, #5e584f );
 }
 
+/* Defaults the Typography panel's "Attribute tag" settings override. */
 :where(.sgs-product-card__attribute-tag) {
 	padding: 4px 7px;
+	font-size: 9.5px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
 }
 
 /* Rating row — star glyphs + numeric label/review-count, or the zero-review line. */

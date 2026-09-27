@@ -260,7 +260,8 @@
 
 		let scrollTicking = false;
 		function onScroll() {
-			if ( scrollTicking || isDesktop() ) {
+			// Customizer "Show a floating Filter button": off keeps it hidden.
+			if ( scrollTicking || isDesktop() || 'off' === SETTINGS.stickyTrigger ) {
 				return;
 			}
 			scrollTicking = true;

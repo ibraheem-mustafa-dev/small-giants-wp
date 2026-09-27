@@ -31,6 +31,8 @@ SETTINGS = {
     'sgs_shop_active_prefix': '0',
     'sgs_shop_active_place': 'bar',
     'sgs_shop_toggle_count': '1',
+    # The draft has no floating Filter button after scrolling (Bean 2026-09-27).
+    'sgs_shop_sticky_trigger': '0',
     'sgs_shop_price_look': 'thin',
     'sgs_shop_gap_phone': '10',
     'sgs_shop_drawer_caps': '1',

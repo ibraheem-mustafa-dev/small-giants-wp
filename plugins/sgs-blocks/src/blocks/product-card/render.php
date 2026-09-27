@@ -235,6 +235,7 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag' );
 // 'brand' typography targets the Frame Card brand overlay (image top-left).
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'brand', '.' . $sgs_card_uid . ' .sgs-product-card__brand' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'attributeTag', '.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag' );
 
 // ── Frame Card component colours: rating stars/text, brand overlay ───────
 // Both attrs resolve css:color via the default {prefix}Colour convention
@@ -1218,6 +1219,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'productId'           => (string) $data['id'],
 			'addToCartId'         => absint( $data['wc_id'] ),
 			'decimals'            => $decimals,
+			'trimZeros'           => sgs_card_price_trim_zeros_enabled(),
 			'currencySymbol'      => $manifest['currencySymbol'],
 			'combos'              => $seed_combos,
 			'axes'                => $manifest['axes'],

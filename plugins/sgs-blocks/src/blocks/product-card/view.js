@@ -358,11 +358,15 @@ function recordDemandAttempt( ctx, comboKey, reason ) {
  */
 function formatPrice( minor, ctx ) {
 	const decimals = typeof ctx.decimals === 'number' ? ctx.decimals : 2;
+	// Whole amounts drop ".00" when the card is set to (context.trimZeros,
+	// includes/product-card-price-trim.php), as wc_trim_zeros() does server-side.
+	const shown =
+		ctx.trimZeros && minor % Math.pow( 10, decimals ) === 0 ? 0 : decimals;
 	const amount = ( minor / Math.pow( 10, decimals ) ).toLocaleString(
 		undefined,
 		{
-			minimumFractionDigits: decimals,
-			maximumFractionDigits: decimals,
+			minimumFractionDigits: shown,
+			maximumFractionDigits: shown,
 		}
 	);
 	return ( ctx.currencySymbol || '' ) + amount;

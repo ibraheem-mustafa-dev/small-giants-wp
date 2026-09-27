@@ -3289,9 +3289,11 @@ select.orderby:focus-visible {
 
 /* Price slider: a 6px round-ended track in the border colour, the chosen range in
    the text colour, 14px round handles at both ends and the prices as small plain
-   text, spanning the column (the handles stay inside their inputs). */
+   text. Each handle paints 2px past its input, so the track sits 4px in on both
+   sides: flush right, the filter panel's scroll area clipped the right handle to
+   12px in the drawer and the desktop column. */
 .sgs-shop-price-thin .sgs-shop-filters .wc-block-product-filter-price-slider {
-	padding-inline: 4px 0;
+	padding-inline: 4px;
 }
 
 .sgs-shop-price-thin .sgs-shop-filters .range-bar {

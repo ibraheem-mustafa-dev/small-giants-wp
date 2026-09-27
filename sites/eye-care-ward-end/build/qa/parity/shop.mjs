@@ -35,7 +35,12 @@ const pick = ( draftClick, liveClick, keepOpen = false ) => Object.fromEntries( 
 		await closeFilters( h );
 	}
 } ] ) );
-const liveSwatch = ( slug ) => ( h ) => h.click( `${ LF } [id="attribute/colour-${ slug }"]`, { quiet: true, wait: 1200 } );
+const scrollDown = async ( h, side ) => {
+	await shopOn[ side ]( h );
+	await h.page.evaluate( () => window.scrollTo( { top: 1200, behavior: 'instant' } ) );
+	await h.wait( 1200 );
+};
+const liveSwatch =( slug ) => ( h ) => h.click( `${ LF } [id="attribute/colour-${ slug }"]`, { quiet: true, wait: 1200 } );
 
 export default {
 	name: 'shop',
@@ -76,6 +81,8 @@ export default {
 			...pick( ( h ) => h.clickText( '^pilot$', { within: 'aside', tag: 'button' } ),
 				( h ) => h.clickText( '^pilot', { within: LF, tag: 'button', quiet: true, wait: 1200 } ), true ),
 		},
+		// Scrolled a screen and a half down: anything fixed that appears only after scrolling (GAP-CHECKLIST 5a).
+		{ name: 'scrolled', draft: ( h ) => scrollDown( h, 'draft' ), live: ( h ) => scrollDown( h, 'live' ) },
 	],
 	pairs: [
 		{ name: 'eyebrow', draft: { text: '^shop$', tag: 'p' }, live: { text: '^shop$', tag: 'p', within: 'main' }, box: [ 'h' ] },
@@ -100,7 +107,18 @@ export default {
 		{ name: 'price-max', states: [ 'filters-open' ], draft: { text: '^£339$', within: 'aside', tag: 'span' }, live: `${ LF } .wc-block-product-filter-price-slider__right` },
 		{ name: 'polarised-toggle', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^polarised only$', within: 'aside', tag: 'label,button,div' }, live: `${ LF } .sgs-shop-filters__bool-filter` },
 		{ name: 'grid', anchor: 'title', draft: { js: DGRID }, live: '.sgs-shop-layout .wc-block-product-template', text: false, box: [ 'w' ], props: [ 'grid-template-columns', 'column-gap', 'row-gap' ] },
+		// The floating Filter button live showed once scrolled on narrow screens; the draft has none.
+		{ name: 'floating-filter', states: [ 'scrolled' ], draft: { js: `() => [...document.querySelectorAll('button')].find((b) => /^filter/i.test(b.textContent.trim()) && b.offsetParent && getComputedStyle(b).position === 'fixed')` }, live: '.sgs-shop-filters__sticky-trigger' },
 		{ name: 'card-gucci', states: [ 'opening', 'women' ], draft: { js: dcard( 'Oversized Cat-Eye' ) }, live: { js: lcard( 'Oversized Cat-Eye' ) }, hover: true, props: [ 'background-color', 'border-top-width', 'border-top-color', 'border-radius', 'box-shadow' ] },
+		// The Polarised tag in one place on every card (Bean 2026-09-27): a one-word name (Holbrook) and one that wraps
+		// (Lewis 10), each tag's top and right edge measured from its own card.
+		...[ [ 'holbrook', 'Holbrook' ], [ 'lewis', 'Lewis 10' ] ].flatMap( ( [ key, name ] ) => [
+			{ name: `card-${ key }`, states: [ 'opening' ], draft: { js: dcard( name ) }, live: { js: lcard( name ) }, text: false, box: [ 'w' ], props: [], structure: false },
+			{ name: `tag-${ key }`, states: [ 'opening' ], anchor: `card-${ key }`, anchorX: true,
+				draft: { js: `(r) => { const c = (${ dcard( name ) })(r); return c && [...c.querySelectorAll('span, div')].find((e) => ! e.children.length && /^polarised$/i.test(e.textContent.trim())); }` },
+				live: { js: `(r) => { const c = (${ lcard( name ) })(r); return c && c.querySelector('.sgs-product-card__attribute-tag'); }` },
+				props: [ 'font-size', 'font-weight', 'letter-spacing', 'text-transform', 'color', 'border-top-width', 'border-top-color', 'padding-top', 'padding-right' ] },
+		] ),
 		// A card below the fold at every width: how it appears as it scrolls into view.
 		{ name: 'card-7', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
 			draft: { js: `(r) => { const g = (${ DGRID })(r); const c = g && g.children[6]; return c; }` },
@@ -144,10 +162,6 @@ export default {
 		'panel-after-click@1440': 'After clicking Pilot: the panel keeps every look (segments, round swatches, counts, groups), Pilot pill row under the title, 5 frames, same 3 cards; draft retitles "Pilot" (accepted); live slider shows £99-£169 for the results.',
 	},
 	accept: [
-		{
-			kind: 'text', reason: 'Pennies on every price (Bean 2026-09-25)',
-			when: ( d ) => words( d.draft ) === words( d.live.replace( /(£\d+)\.00/g, '$1' ) ),
-		},
 		// Measured, not painted: the property differs but the pixels do not.
 		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
 			kind: 'style', key, notPainted: true, reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child or centred text)',
@@ -170,8 +184,7 @@ export default {
 		// Accepted (Bean 2026-09-27): differences kept on purpose.
 		{ pair: 'card-gucci', reason: 'Accepted (Bean 2026-09-27): "No reviews yet" until real reviews exist, where the draft shows made-up stars (the card is 5-6px shorter for it)', when: ( d ) => 'text' === d.kind || 'h' === d.key },
 		{ pair: 'card-body', key: 'h', reason: 'Accepted (Bean 2026-09-27): "No reviews yet" in place of made-up stars' },
-		{ pair: 'card-rrp', reason: 'Pennies (Bean 2026-09-25); "Recommended retail price:" is screen-reader text only' },
-		{ pair: 'card-price', key: 'w', reason: 'Pennies (Bean 2026-09-25)' },
+		{ pair: 'card-rrp', kind: 'text', reason: '"Recommended retail price:" is screen-reader text only', when: ( d ) => words( d.draft ) === words( d.live.replace( /recommended retail price:/i, '' ) ) },
 		{ pair: 'brand-heading', kind: 'text', reason: 'Accepted (Bean 2026-09-27): live counts the real 14 brands; the draft counts a made-up catalogue of 40' },
 		{ pair: 'style-chip', reason: 'Accepted (Bean 2026-09-27): 44px touch targets (the accessibility baseline) where the draft chips are 38px', when: ( d ) => [ 'h', 'padding-top', 'padding-bottom' ].includes( d.key ) },
 		{ pair: 'filters', key: 'padding-left', reason: 'The same 20px inset: the draft pads each row, live pads the drawer' },
@@ -189,7 +202,12 @@ export default {
 		{ pair: 'clear-all', kind: 'style', reason: 'The same underlined capitals: live draws the 1px underline as a text decoration 5px below the text inside its 44px target, the draft as a bottom border under 2px padding', when: ( d ) => [ 'border-bottom-width', 'padding-bottom', 'display', 'justify-content', 'align-items', 'line-height' ].includes( d.key ) },
 		{ pair: 'clear-all', kind: 'style', key: 'color', reason: 'The draft’s text is the browser default black, live’s the palette’s text #141414' },
 		{ pair: 'card-7', reason: 'Off screen, nothing paints: the draft holds every card at its start pose (opacity 0, 26px down) from load, the framework only once a card is within 200px of view; both play the same fade-up on reaching view', when: ( d ) => 'opacity' === d.key || /^pre:/.test( d.key ) },
-		{ pair: 'card-7', kind: 'box', key: 'h', reason: 'Accepted (Bean 2026-09-27): "No reviews yet" is a line shorter than the draft’s made-up stars; at 375 the pennies (Bean 2026-09-25) wrap the price line in the 163px card', when: ( d ) => Math.abs( d.draft - d.live ) <= 12 },
+		{ pair: 'card-7', kind: 'box', key: 'h', reason: 'Accepted (Bean 2026-09-27): "No reviews yet" is a line shorter than the draft’s made-up stars', when: ( d ) => Math.abs( d.draft - d.live ) <= 12 },
+		...[ 'holbrook', 'lewis' ].map( ( key ) => ( {
+			pair: `tag-${ key }`, kind: 'box', key: `right-from-card-${ key }`,
+			reason: 'Accepted (Bean 2026-09-27): the tag sits in one place on every card, inside the card’s 16px inset, and the name wraps beside it; in the draft a one-word name at 375 pushes its tag past the card edge',
+			when: ( d ) => d.live >= 16,
+		} ) ),
 		{ pair: 'filter-button', kind: 'style', key: 'color', reason: 'The draft’s button text is the browser default black, live’s the palette’s text #141414 (both near-black on white)' },
 		// Below the drawer breakpoint the live drawer is a sheet over the page (Bean 2026-09-27), so its rows share rows with the title bar.
 		...[ 768, 375 ].flatMap( ( width ) => [ 'filters-open', 'panel-after-click' ].map( ( state ) => ( {

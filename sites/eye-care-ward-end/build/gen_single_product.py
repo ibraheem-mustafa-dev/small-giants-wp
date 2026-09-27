@@ -47,7 +47,7 @@ CARD = dict(
     titleFontFamily="body", titleFontSize={"desktop": 16}, titleFontSizeUnit="px", titleFontWeight="400",
     titleLineHeight=1.25, priceFontFamily="body", priceFontSize={"desktop": 18}, priceFontSizeUnit="px",
     priceFontWeight="500", showAttributeTag=True, attributeTagSource="tag", attributeTagTerm="polarised",
-    attributeTagText="Polarised")
+    attributeTagText="Polarised", attributeTagFontWeight="400", attributeTagBorderColour="border-strong")
 
 
 def collection(taxonomy, query_id):

@@ -2403,7 +2403,15 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showStyle: false,
 									showLineHeight: false,
 								},
-							].filter( ( target ) => isBuiltIn || 'brand' !== target.key ) }
+								attributes.showAttributeTag && {
+									key: 'attributeTag',
+									label: __( 'Attribute tag', 'sgs-blocks' ),
+									prefix: 'attributeTag',
+									showStyle: false,
+									showLineHeight: false,
+									showLetterSpacing: true,
+								},
+							].filter( ( target ) => target && ( isBuiltIn || 'brand' !== target.key ) ) }
 						/>
 						{ isTrial && (
 							<>
