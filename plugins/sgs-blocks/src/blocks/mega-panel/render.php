@@ -313,7 +313,14 @@ $root_sel    = '.' . $uid . '.wp-block-sgs-mega-panel';
 $content_sel = $root_sel . ' .sgs-mega-panel__content';
 $group_sel   = $root_sel . ' .sgs-mega-group';
 $aside_sel   = $root_sel . ' .sgs-mega-aside';
-$heading_sel = $group_sel . ' > .sgs-heading, ' . $group_sel . ' .wp-block-sgs-heading';
+// G11: the group's own heading is ALWAYS a direct child on the frontend
+// (mega-group/render.php prints $content straight inside its wrapper, no
+// intermediate element in either the `<a>` or `<div>` branch), so both
+// branches are direct-child selectors — a descendant selector here reaches
+// any heading nested deeper inside the group (e.g. a heading nested inside
+// another block placed in the group), wrongly painting it with the group
+// label's preset or hiding it.
+$heading_sel = $group_sel . ' > .sgs-heading, ' . $group_sel . ' > .wp-block-sgs-heading';
 
 // Per-`style` SHAPE selectors. These are keyed to `[data-mega-style="…"]` on
 // the ROOT, so they are built by appending a RELATIVE descendant suffix to
@@ -492,6 +499,14 @@ if ( ! $sgs_mm_in_drawer ) {
 // ---------------------------------------------------------------------------
 
 if ( ! $sgs_mm_in_drawer && function_exists( 'sgs_emit_responsive_css' ) ) {
+	// This whole block only runs when NOT in the drawer (the drawer draws no
+	// floating shell at all), so an unconditional `'container' => true` here
+	// leaked the @container tablet/mobile tiers onto a genuine floating desktop
+	// panel — which is its OWN inline-size query container (G10) — making a
+	// 620px desktop panel self-match the narrow-container rule and take its
+	// tablet/mobile max-width. `$sgs_mm_in_drawer` is always false in this
+	// scope, so this now emits the @media viewport twin only, never the
+	// self-leaking @container variant.
 	$css .= sgs_emit_responsive_css(
 		$root_sel,
 		array(
@@ -501,7 +516,7 @@ if ( ! $sgs_mm_in_drawer && function_exists( 'sgs_emit_responsive_css' ) ) {
 				'unit_default' => 'px',
 			),
 		),
-		array( 'container' => true )
+		array( 'container' => $sgs_mm_in_drawer )
 	);
 	if ( ! empty( $panel_padding_obj ) ) {
 		$css .= sgs_emit_responsive_css(
@@ -514,7 +529,7 @@ if ( ! $sgs_mm_in_drawer && function_exists( 'sgs_emit_responsive_css' ) ) {
 					'unit_default' => 'px',
 				),
 			),
-			array( 'container' => true )
+			array( 'container' => $sgs_mm_in_drawer )
 		);
 	}
 }
@@ -583,6 +598,12 @@ if ( ! empty( $panel_backdrop_decls ) && ! $sgs_mm_in_drawer ) {
 // ---------------------------------------------------------------------------
 
 if ( function_exists( 'sgs_emit_responsive_css' ) ) {
+	// Unlike the max-width/padding block above, this one runs in BOTH contexts
+	// (drawer and floating panel), so `'container' => true` unconditionally
+	// leaked the tablet/mobile group-gap onto a genuine floating desktop panel
+	// (G10) — the same self-query-container mechanism. The @container variant
+	// is only meaningful inside the drawer's narrow ancestor, so it is gated
+	// on $sgs_mm_in_drawer; the @media viewport twin is unchanged either way.
 	$css .= sgs_emit_responsive_css(
 		$content_sel,
 		array(
@@ -592,7 +613,7 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 				'unit_default' => 'px',
 			),
 		),
-		array( 'container' => true )
+		array( 'container' => $sgs_mm_in_drawer )
 	);
 }
 
@@ -802,8 +823,28 @@ $css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;o
  *
  * The theme defines no `mono` font-family preset, so this uses a system
  * monospace stack.
+ *
+ * G11 (pre-existing bug, fixed here): $heading_sel is a comma-separated
+ * selector LIST, and EVERY branch already carries $root_sel (it is built from
+ * $group_sel, which begins with $root_sel). Prefixing that list with a second
+ * style-scope string by plain concatenation therefore only scopes the FIRST
+ * branch correctly — the SECOND branch ends up self-nested
+ * (`.uid[style]:not(...) .uid .sgs-mega-group > .wp-block-sgs-heading`, a
+ * "panel nested inside itself" selector that matches nothing, the exact
+ * failure mode this file's own selector-building comment already warns
+ * about for $content_sel/$group_sel). The fix builds the eyebrow selector
+ * from a RELATIVE (unrooted) heading fragment instead — mirroring how
+ * $style_col/_crd/_min are built from $root_sel + $rel_* elsewhere in this
+ * file — so each branch is prefixed with the style scope exactly once, never
+ * with $root_sel twice.
  */
-$css .= $root_sel . '[data-mega-style="columns"]:not(.sgs-mega-panel--headings-off) ' . $heading_sel . '{'
+$eyebrow_scope    = $root_sel . '[data-mega-style="columns"]:not(.sgs-mega-panel--headings-off) ';
+$rel_heading_list = array( ' .sgs-mega-group > .sgs-heading', ' .sgs-mega-group > .wp-block-sgs-heading' );
+$eyebrow_sel_list = array();
+foreach ( $rel_heading_list as $rel_heading_branch ) {
+	$eyebrow_sel_list[] = $eyebrow_scope . $rel_heading_branch;
+}
+$css .= implode( ', ', $eyebrow_sel_list ) . '{'
 	. 'font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;'
 	. 'font-size:11px;'
 	. 'font-weight:500;'
@@ -855,6 +896,16 @@ $css .= ':where(' . $aside_sel . '){background-color:var(--sgs-mm-card);border-r
 // panel inside a narrow ancestor (mobile drawer); the @media fallback covers
 // the same reflow by viewport width. Cards is a GRID (collapses via
 // grid-template-columns); the flex styles collapse via flex-direction.
+//
+// G10: every panel root is its OWN inline-size query container (`container-
+// type:inline-size` above), and this @container rule is the only UNNAMED one
+// in the plugin, so a narrow-but-genuinely-desktop panel (e.g. a 620px
+// `maxWidth`) self-matches it and stacks as if it were in the drawer. The
+// @container variant is only correct when this panel is actually rendering
+// INSIDE the drawer's own narrow ancestor, so it is gated on
+// $sgs_mm_in_drawer; the @media viewport twin is unchanged and keeps the
+// drawer (and any genuinely narrow viewport) reflowing via its own,
+// independent route.
 // ---------------------------------------------------------------------------
 
 $stack_rules = $content_sel . '{flex-direction:column;}'
@@ -862,7 +913,9 @@ $stack_rules = $content_sel . '{flex-direction:column;}'
 	. $group_sel . '{flex:none;width:100%;}'
 	. $aside_sel . '{flex:none;width:100%;}';
 
-$css .= '@container (max-width: 640px){' . $stack_rules . '}';
+if ( $sgs_mm_in_drawer ) {
+	$css .= '@container (max-width: 640px){' . $stack_rules . '}';
+}
 $css .= '@media (max-width: 1023px){' . $stack_rules . '}';
 
 // ---------------------------------------------------------------------------

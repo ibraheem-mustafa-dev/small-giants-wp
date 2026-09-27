@@ -352,13 +352,28 @@
 /* -- group-heading visibility — cards + minimal always hide the group heading
    (visually-hidden, a11y — a screen reader still hears it); columns hides it
    only when the operator toggles `headings` off (the wrapper carries
-   `.sgs-mega-panel--headings-off` in that case). ---------------------------- */
+   `.sgs-mega-panel--headings-off` in that case).
+
+   G11: a bare `.sgs-mega-group .wp-block-sgs-heading` descendant selector
+   over-reaches to any heading nested deeper inside the group. The group's
+   own heading is a direct child on the frontend, so render.php's own copy of
+   this rule goes plain `> .wp-block-sgs-heading` — but the editor canvas
+   inserts WP's own block-list wrapper `<div>` between a parent and each
+   child, so a bare `>` stops matching there. Both forms are therefore listed:
+   `> .wp-block-sgs-heading` reaches the group's own heading on the frontend,
+   and `> * > .wp-block-sgs-heading` reaches it through the canvas's block-list
+   wrapper — exactly one level down and no further, the SAME idiom the aside
+   rule above already uses (`> *:has(.sgs-mega-aside)`). So the group label
+   keeps its hidden state on both surfaces. ------------------------------- */
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group > .sgs-heading,
-.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group .wp-block-sgs-heading,
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group > .wp-block-sgs-heading,
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group > * > .wp-block-sgs-heading,
 .wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-mega-group > .sgs-heading,
-.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-mega-group .wp-block-sgs-heading,
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-mega-group > .wp-block-sgs-heading,
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-mega-group > * > .wp-block-sgs-heading,
 .wp-block-sgs-mega-panel[ data-mega-style='columns' ].sgs-mega-panel--headings-off .sgs-mega-group > .sgs-heading,
-.wp-block-sgs-mega-panel[ data-mega-style='columns' ].sgs-mega-panel--headings-off .sgs-mega-group .wp-block-sgs-heading {
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ].sgs-mega-panel--headings-off .sgs-mega-group > .wp-block-sgs-heading,
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ].sgs-mega-panel--headings-off .sgs-mega-group > * > .wp-block-sgs-heading {
 	position: absolute;
 	width: 1px;
 	height: 1px;
@@ -413,15 +428,25 @@
    its content, the row just reflows to one column). @container covers the
    panel inside a narrow ancestor (mobile drawer); the @media fallback covers
    the same reflow by viewport width. Cards is a GRID (collapses via
-   grid-template-columns); the flex styles collapse via flex-direction. ------ */
+   grid-template-columns); the flex styles collapse via flex-direction.
+
+   G10: every panel root is its OWN inline-size query container, and this is
+   the only UNNAMED @container query in the plugin, so an ungated rule here
+   self-matches on a genuinely narrow DESKTOP panel (e.g. a 620px `maxWidth`)
+   and wrongly stacks it as if it were in the drawer. Scoped to
+   `.sgs-mega-panel--in-drawer` (the class render.php's wrapper carries only
+   when this instance is rendering inside the drawer), so a floating desktop
+   panel never self-matches it. The @media viewport twin below is left
+   completely unscoped/unchanged — it still reflows the drawer (and any
+   genuinely narrow viewport) via its own, independent route. ------------- */
 @container ( max-width: 640px ) {
-	.wp-block-sgs-mega-panel .sgs-mega-panel__content {
+	.wp-block-sgs-mega-panel.sgs-mega-panel--in-drawer .sgs-mega-panel__content {
 		flex-direction: column;
 	}
-	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-panel__content {
+	.wp-block-sgs-mega-panel.sgs-mega-panel--in-drawer[ data-mega-style='cards' ] .sgs-mega-panel__content {
 		grid-template-columns: 1fr;
 	}
-	.wp-block-sgs-mega-panel .sgs-mega-panel__content > * {
+	.wp-block-sgs-mega-panel.sgs-mega-panel--in-drawer .sgs-mega-panel__content > * {
 		flex: none;
 		width: 100%;
 	}
