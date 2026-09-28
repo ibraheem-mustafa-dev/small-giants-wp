@@ -33,7 +33,7 @@ key), with the owed Wave C polish alongside.
   with no config naming it, an `auto-scrolled` state, and a pixel check for a control cut off at a clipping edge)
   catches **5 of 5** with 0 noise rows on shop and lens. The sixth gap (the Polarised tag) was the draft's own flaw
   (measured identical to the draft), so no comparison can catch it: page waves keep an Opus design review of the
-  shots. Next: close the rows the check opens on shop.mjs and lens.mjs (fix or Bean's decision), then the waves.
+  shots. Next: the page waves (the shop and lens rows are closed, below).
   - **Bean's decisions on the rows it opened (2026-09-28), all as recommended.** Accepted (in the configs, with
     reasons): styles with frames in stock only (9 of the draft's 12); "Most people pick this" in text-inverse #FAF8F5;
     the 44px touch targets' lower label inset; the Spec 43 Continue model on questions 1-3; secondary text in the
@@ -47,23 +47,21 @@ key), with the owed Wave C polish alongside.
     the 375 stage name bar at 14/17px; (13) the question's new "Intro width", 58 on thickness and prescription.
     Found not to be draft differences: (5) the 375 RRP beside the price on Aviator and Wayfarer comes from their
     dots taking their own line (Bean accepted 2026-09-27); (11) the stage price column is the pennies' width.
-  - **Open, to close before the page waves (walker 2026-09-28: shop 36 open rows, lens 52):**
-    - Shop at 375: the card after a tagged card starts ~28px lower (the tag under the name, Bean 2026-09-27): an
-      accept for `moved "£... → photo to come ..."` rows at 375 when only the y offset differs by up to 32px.
-    - Shop: brand chips at the fold edge missing on one side in a few states (text-missing "police", "michael kors",
-      "versace" at 1440; extra "superdry", "balenciaga" at 375 scrolled): check whether the reveal trigger still
-      differs, else accept as reveal timing at the fold.
-    - Shop 1440 scrolled: the sticky filter column sits 31px higher on live (`moved "frames → gender ..."`): real;
-      find the sticky top offset and match it.
-    - Shop 1440: the last grid row's card lands in another column (`moved "£145 → every pair is genuine,"` -59
-      against -371): check the product order at the end of the grid.
-    - Shop 375 colour-black: the chosen-filter pill row 6px apart (`moved "(1) → black × clear all"`).
-    - Lens at 768: option descriptions wrap differently beside their price and badge ("included", "+£60" move to
-      the next line; `text-missing "±4.00 to ±6.00."`), and the Q4 EASIEST badge sits 27px nearer the title: real.
-    - Lens q4-type: the SPH/CYL/AXIS columns 10px wider apart and the note 5px closer than the draft: real.
-    - Walker artefacts on the lens (fix in scripts/parity/lib/auto-compare.mjs, then rerun the benchmark): the two
-      cards' identical "from £59" pair across cards (`moved "distance → from £59"` 327 against 743), and the "?"
-      help toggles anchor "Frame only? Skip the lenses".
+  - **The shop and lens tail: closed 2026-09-28** (ca0079b8f, cf827970e; walker exit 0 on both). Fixed and live:
+    the desktop filter column's gap under the header is a new Customizer setting ("Space between the header and the
+    desktop filter column", `sgs_shop_filter_sticky_gap`; Eye Care 33px, so it pins 110px from the top as the draft's);
+    the "Every pair is genuine" note sits in the products column (it started under the filter column, which read as
+    the last card in another column); the lens text cards share their row's height and the title-to-price gap is the
+    draft's 10px; the typed prescription table uses the draft's 56px R/L column, 15px numbers 10px in, 11.5px
+    headings and a note 14px under the boxes (`--sgs-form-row-heading-gutter`, 32px elsewhere); an empty form error
+    line no longer adds 4px under every field in every form; Eye Care has a site icon (the draft's glasses mark,
+    `build/apply_site_icon.py`; the walker's one console error was the missing /favicon.ico). Accepted with the
+    decision each follows: the 375 card after a tagged card and FZ6001's price (tag, 2026-09-27); brand chips at the
+    fold (reveal timing: live's page sits 21px lower under the taller nav-track header); the pinned column (same
+    place on screen, 128 against 129px); "Polarised only" under the brand and style lists; lens titles wrapping at
+    768 (pennies, 2026-09-25); the pre-selected stage line (2026-09-26); the EASIEST tag inside its card (Bean
+    2026-09-28, as the Polarised tag). Walker: repeated words pair by geometry (the "from £59" and "Frame only?"
+    mis-pairs), `--dump-auto`, console errors name their URL; benchmark re-run: 5 of 5, 0 noise rows.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,

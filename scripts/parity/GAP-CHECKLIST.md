@@ -190,6 +190,12 @@ alone against their declared timings, not compared with the draft.
 - **Detected by:** the `(auto)` pseudo-pair, in every state at every width, with nothing to configure:
   - **Words:** every painted word on both sides, matched in reading order (a Myers diff, then blocks moved elsewhere
     in the DOM; a lone word pairs across the DOM only when unique among the leftovers and in the same type).
+    Repeated words ("from £59" on two cards, "frame" in a stage line and a footer link) are then checked by
+    geometry: a matched run moves to its twin when that fits the matched words either side far better (a
+    quarter of the error and 24px less), and a repeated word left over on both sides pairs with the one twin
+    within 24px of where its neighbours put it. Two sides that order a card's parts differently in the DOM
+    (price before or after the description) no longer cross-pair. `--dump-auto` writes each side's words
+    (`auto-<side>-<width>-<state>.json`) to diagnose a pairing.
     Not painted, so left out: screen-reader-only and zero-size text, a closed `<details>` beyond its summary (Chrome
     still gives it boxes), and text clipped away by an ancestor's or its own overflow. Unmatched runs are
     `text-missing` / `text-extra` (".00", a missing panel, a button on one side only).
@@ -236,7 +242,7 @@ NODE_EXTRA_CA_CERTS=<certifi cacert.pem> node ../../scripts/parity/benchmark.mjs
 
 **Measured 2026-09-28:** the walker before this section caught **1 of 5** (only ".00", which the shop config then
 accepted as pennies); with the automatic check it catches **5 of 5**, with 0 noise rows on the shop and 0 on the
-lens. The catching rows: b `text-extra "filter"` in `auto-scrolled` at 768 and 375; c `clipped input:range "maximum
+lens (re-run after the repeated-word pairing, 2026-09-28: 5 of 5, 0 and 0). The catching rows: b `text-extra "filter"` in `auto-scrolled` at 768 and 375; c `clipped input:range "maximum
 price"` (whole → right) at 768 and 375; d `text-extra "… £139.00 £171.00"` on every card; e `text-missing "perfect —
 order now and i'll whatsapp you…"`, `"add to bag £418"` and `text-extra "continue"` at every width; f `moved "back →
 add to bag"` (160,0 → 135,64).
