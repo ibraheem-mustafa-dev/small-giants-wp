@@ -1,5 +1,5 @@
 // Parity config: Bean's Indus Foods mega-menu draft against its copy on sandybrown (page 4465, header 4461).
-// Header mode (scripts/parity/GAP-CHECKLIST.md section 11). Measure only while 4461 is the ACTIVE header, inside
+// Full checks (scripts/parity/GAP-CHECKLIST.md section 11). Measure only while 4461 is the ACTIVE header, inside
 // one trapped command that restores 3777 and qa-item-markup-fixture.php two-bar (nav-qa/README.md §13).
 // Run: node scripts/parity/draft-live-walk.mjs plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-indus.mjs
 // The draft opens a panel on pointer-enter and switches to its drawer below 960px; the copy's bar is a burger below 1024.
@@ -64,7 +64,6 @@ const LLABEL = inRoot( LDRAWER, '^about$', 'a' );
 
 export default {
 	name: 'indus',
-	mode: 'header',
 	draft: { url: DRAFT, open: ( h ) => h.wait( 1500 ) },
 	live: { url: LIVE },
 	states: [

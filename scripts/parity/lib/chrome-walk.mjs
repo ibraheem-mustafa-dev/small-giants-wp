@@ -1,4 +1,4 @@
-// Header/footer mode glue for draft-live-walk.mjs: samples motion after each action, collects each
+// Full-check glue for draft-live-walk.mjs: samples motion after each action, collects each
 // pair's painted ground, text inset and (for `inventory: true` roots) inventory, reads what a hover
 // visibly does, and compares all of it. GAP-CHECKLIST.md section 11.
 import { paintedExtras, inventory, timelineSample, hoverDetail } from './chrome.mjs';
@@ -70,7 +70,7 @@ export async function hoverChrome( page, p, side, RESOLVE, centreOf, reach, wait
 	return { at, fx: [ ...hoverEffects( rest, end, mids ) ] };
 }
 
-// Header-mode differences for one pair. The painted ground replaces the raw background-color,
+// Full-check differences for one pair. The painted ground replaces the raw background-color,
 // which misreads a ground painted by a ::before or a child.
 export function compareChrome( p, d, l, tol, diffs ) {
 	const kept = diffs.filter( ( x ) => ! ( [ 'style', 'hover' ].includes( x.kind ) && 'background-color' === x.key ) );

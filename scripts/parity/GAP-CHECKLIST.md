@@ -143,9 +143,9 @@ Fixed in the walker; keep them in mind when a number looks wrong:
 - **Accept safely:** an easing or property-name difference with matching durations needs Bean's sign-off
   when it is visible; a colour on an element that paints no text is not painted.
 
-## 11. Headers and footers (`mode: 'header'`)
+## 11. Full checks (every page; `mode: 'basic'` turns them off)
 
-Built by proving the walker against a hand-read diff of two header copies
+On by default for every page since 2026-09-28. Built by proving the walker against a hand-read diff of two header copies
 (`reports/visual-diff/u18-hand-read-diff-2026-09-27.md`; configs `plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-*.mjs`).
 Each check below missed rows the eye caught; each has a negative control (run a reference against itself with
 `--self draft` and it reads 0; plant the difference with `--inject-live-css` and it turns red).

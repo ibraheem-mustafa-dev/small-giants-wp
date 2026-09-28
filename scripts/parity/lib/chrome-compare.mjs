@@ -1,4 +1,4 @@
-// Header/footer mode comparisons for draft-live-walk.mjs (GAP-CHECKLIST.md section 11): painted
+// Full-check comparisons for draft-live-walk.mjs (GAP-CHECKLIST.md section 11): painted
 // ground and text inset, a root's inventory (text, order, media, glyphs, spill), the motion
 // timeline after the state's action, and what a hover visibly does.
 import { sameValue } from './compare.mjs';

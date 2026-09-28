@@ -1,4 +1,4 @@
-// Header/footer mode (`mode: 'header'`) in-page collectors for draft-live-walk.mjs. Each is
+// Full-check in-page collectors for draft-live-walk.mjs. Each is
 // passed to page.evaluate(), so each is self-contained. GAP-CHECKLIST.md section 11 says what each proves.
 
 // The ground an element actually paints (its own background, else a ::before/::after, else a

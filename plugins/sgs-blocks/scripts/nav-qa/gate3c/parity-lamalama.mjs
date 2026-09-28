@@ -1,5 +1,5 @@
 // Parity config: lamalama.com's floating pill against its copy on sandybrown (page 4446, header 4435).
-// Header mode (scripts/parity/GAP-CHECKLIST.md section 11). Measure only while 4435 is the ACTIVE header, inside
+// Full checks (scripts/parity/GAP-CHECKLIST.md section 11). Measure only while 4435 is the ACTIVE header, inside
 // one trapped command that restores 3777 and qa-item-markup-fixture.php two-bar (nav-qa/README.md §13).
 // Run: node scripts/parity/draft-live-walk.mjs plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-lamalama.mjs
 // The corner "GET IN TOUCH" card is accepted as absent (DEC-18) and has no pair.
@@ -37,7 +37,6 @@ const state = ( name, act ) => ( { name, ...Object.fromEntries( [ 'draft', 'live
 
 export default {
 	name: 'lamalama',
-	mode: 'header',
 	widths: [ 1920, 1440, 768, 375 ],
 	draft: { url: REF, open: ( h ) => h.wait( 5000 ) },
 	live: { url: LIVE },

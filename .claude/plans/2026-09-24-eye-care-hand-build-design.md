@@ -5,6 +5,16 @@
 2026-09-25). **Wave C DONE 2026-09-25** (tasks 1-6 live on eye-care-test and proven; the design review's owed items
 are in "Wave C design review" below). **Next: Wave D** (section 8: Phase 6 launch readiness, then the Phase 7 answer
 key), with the owed Wave C polish alongside.
+- **The walker's full checks are now on for every page (Bean, 2026-09-28), and shop.mjs and lens.mjs reopened.**
+  Added: hover re-reach, a motion timeline read right after each action, painted grounds, text inset, inventories,
+  hover effects (including scramble), and 375 as a phone (GAP-CHECKLIST section 11). Self-baselines read 0 open on
+  both drafts.
+  - `shop.mjs`: 35 open. `brand-ray-ban` column-gap, row-gap and justify-content come back because the new
+    `text-inset-y` (10 against 13) is a box difference, so the notPainted accept no longer holds. `clear-all`
+    text-inset-y 0 against 13. `card-gucci` hover: its border goes to a lighter tone, and live also scales an inner part.
+  - `lens.mjs`: 29 open. `option-card` text-inset-x 24 against 198 at q4-prescription (every width). `stage`
+    text-inset x/y 41/49 against 102/14 at q4 steps (375). `back` hover border colour at 375.
+  - Each row is either real or needs an accept with Bean's reason.
 - **Parity re-review owed before Wave D (Bean, 2026-09-26).** Only the lens configurator is verified to the standard
   below; every other page's "verified at 1440/768/375" in this plan came from lighter checks (the opening state,
   different content on each side, no motion or hover end states), the same kind that wrongly passed the lens flow.

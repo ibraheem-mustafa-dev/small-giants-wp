@@ -52,8 +52,9 @@ fs.mkdirSync( outDir, { recursive: true } );
 const tol = { box: 2, px: 0.5, ...( cfg.tolerance || {} ) };
 const RESOLVE = resolveFinder.toString();
 const cb = ( url ) => url.replace( '{cb}', String( Date.now() ) );
-// Header/footer mode (GAP-CHECKLIST.md section 11): motion timelines, painted grounds, inventories, hover effects.
-const header = 'header' === cfg.mode;
+// The full checks (GAP-CHECKLIST.md section 11: motion timelines, painted grounds, inventories, hover
+// effects, phone widths) run on every page; `mode: 'basic'` turns them off for a quick look.
+const header = 'basic' !== cfg.mode;
 // --self draft|live points both sides at one side (a negative-control baseline: every check must read 0).
 const self = flag( '--self' );
 if ( self ) {
@@ -65,7 +66,7 @@ if ( self ) {
 const pairsFor = ( state ) => cfg.pairs.filter( ( p ) => ! p.states || p.states.includes( state.name ) );
 
 async function walkSide( browser, side, width ) {
-	// Header mode runs a narrow width as a phone (touch, mobile user agent): a site can hide or swap
+	// A narrow width runs as a phone (touch, mobile user agent): a site can hide or swap
 	// header parts by device, not by width, and a 375px desktop window never shows it.
 	const phone = header && width < 500 ? devices[ 'iPhone 13' ] : {};
 	const ctx = await browser.newContext( { ...phone, viewport: { width, height: width < 500 ? 812 : 900 } } );

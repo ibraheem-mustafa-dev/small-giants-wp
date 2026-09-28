@@ -5,7 +5,7 @@ import { centreOf } from './collect.mjs';
 // Every goto, click, tap and hover is logged per state (h.log) for the drive check: pass
 // { nav: true } on a click that only navigates (a single-page draft's menu link), so it counts
 // as a URL load; { quiet: true } waits until the network is idle (an Interactivity re-render).
-// onAction (header mode) runs right after each click, tap or hover, before the settle wait, so
+// onAction (the full checks) runs right after each click, tap or hover, before the settle wait, so
 // motion is sampled while it plays.
 export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 	let inflight = 0;
