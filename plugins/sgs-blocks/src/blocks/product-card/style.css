@@ -1376,22 +1376,16 @@
 }
 
 /*
- * A narrow card (a two-across phone grid, body under 200px): the name would
- * break mid-word beside the tag, so the tag takes its own line under the name,
- * still at the right in the same place on every card; and the RRP always sits
- * under the price rather than beside it only when it happens to fit, so every
- * card's price block reads the same.
+ * In a narrow card (a two-across phone grid) the name would break mid-word
+ * beside the tag, so the tag takes its own line under the name, still at the
+ * right in the same place on every card.
  */
-.product-card-body,
-.sgs-product-card__body {
+.product-card-body:has(.sgs-product-card__attribute-tag),
+.sgs-product-card__body:has(.sgs-product-card__attribute-tag) {
 	container: sgs-card-body / inline-size;
 }
 
 @container sgs-card-body (max-width: 200px) {
-	.sgs-product-card__price-group > .sgs-product-card__rrp {
-		flex-basis: 100%;
-	}
-
 	.sgs-product-card__title-row:has(> .sgs-product-card__attribute-tag) {
 		flex-wrap: wrap;
 	}

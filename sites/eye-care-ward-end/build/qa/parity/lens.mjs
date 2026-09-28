@@ -213,6 +213,11 @@ export default {
 		// The automatic check (GAP-CHECKLIST section 12): the differences Bean has already decided, row by row.
 		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-25): "Frame size 55" for the draft’s "Size M" on the stage', when: ( d ) => ( ( d ) => /^text-missing "(size )?m"$|^text-extra "(frame|55|frame size 55)"$|^moved "(·|size|frame) → (size|frame|total)/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		{ pair: '(auto)', reason: 'Accepted (Bean, confirmed 2026-09-28): secondary text uses the darker text-muted #5E584F where the draft uses lighter greys (#6B655E, #77716A, #8B8478, #A39C90; the lightest fail 4.5:1 contrast)', when: ( d ) => /^style:color /.test( d.key ) && 'rgb(94,88,79)' === d.live && [ 'rgb(107,101,94)', 'rgb(119,113,106)', 'rgb(139,132,120)', 'rgb(163,156,144)' ].includes( d.draft ) },
+		{ pair: '(auto)', reason: 'Pennies on every price (Bean 2026-09-25): a right-aligned price carrying ".00" starts further left, so its offset from the label before it (and to the line after it) differs by the width of the pennies', when: ( d ) => {
+			const [ dx, dy ] = String( d.draft ).split( ',' ).map( Number );
+			const [ lx, ly ] = String( d.live ).split( ',' ).map( Number );
+			return /^moved "[^"]*£\d/.test( d.key ) && Math.abs( dy - ly ) <= 2 && Math.abs( dx - lx ) <= 60;
+		} },
 		{ pair: '(auto)', reason: 'Spec 43 Continue model (shipped 2026-09-26): choosing an option selects it and a muted Continue advances, where the draft advances on the card click', when: ( d ) => ( ( d ) => /^text-extra "continue"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-28, as the help toggle 2026-09-27): badge text is the palette’s text-inverse #FAF8F5, the draft’s pure white', when: ( d ) => ( ( d ) => /^style:color "most people pick this"$/.test( d.key ) && 'rgb(255,255,255)' === d.draft )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		...[ 'q4-prescription', 'q4-upload', 'q4-type' ].map( ( state ) => ( { pair: 'option-card', state, kind: 'box', reason: 'Measured, not painted: live’s first text in DOM order is the EASIEST badge at the card’s right; the titles start 24px in on both (the automatic check compares every word’s place)', when: ( d ) => /^text-inset-/.test( d.key ) } ) ),

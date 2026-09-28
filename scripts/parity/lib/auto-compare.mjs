@@ -35,9 +35,12 @@ function matchWords( dw, lw ) {
 	const count = ( idx, words ) => idx.reduce( ( m, i ) => m.set( words[ i ].t, ( m.get( words[ i ].t ) || 0 ) + 1 ), new Map() );
 	const onceD = count( restD, dw );
 	const onceL = count( restL, lw );
+	// A lone word pairs only as itself moved: unique among the leftovers, with letters, in the same type
+	// ("9" or a brand name in a filter list must not pair with a card's across the page).
+	const sameLone = ( a, b ) => 1 === onceD.get( a.t ) && 1 === onceL.get( b.t ) && /[a-z]{2}/.test( a.t ) && a.fs === b.fs && a.ff === b.ff;
 	const kept = second.filter( ( p, i ) => {
 		const linked = ( q ) => q && Math.abs( q[ 0 ] - p[ 0 ] ) === 1 && Math.abs( q[ 1 ] - p[ 1 ] ) === 1;
-		return linked( second[ i - 1 ] ) || linked( second[ i + 1 ] ) || ( 1 === onceD.get( dw[ p[ 0 ] ].t ) && 1 === onceL.get( lw[ p[ 1 ] ].t ) );
+		return linked( second[ i - 1 ] ) || linked( second[ i + 1 ] ) || sameLone( dw[ p[ 0 ] ], lw[ p[ 1 ] ] );
 	} );
 	// Blocks that crossed each other in the DOM: a leftover run on each side with the same words.
 	const taken = new Set( [ ...first, ...kept ].flatMap( ( p ) => [ `d${ p[ 0 ] }`, `l${ p[ 1 ] }` ] ) );
@@ -67,7 +70,8 @@ function matchWords( dw, lw ) {
 		} );
 		// One word pairs only when it is the only leftover run with that text on each side (a brand name on
 		// a card chip and in the filter list must not pair across the page).
-		const single = 1 === run.length && ( draftRuns.filter( ( r ) => textOf( r, dw ) === text ).length > 1 || liveRuns.filter( ( r ) => r && textOf( r, lw ) === text ).length > 1 );
+		const single = 1 === run.length && ( draftRuns.filter( ( r ) => textOf( r, dw ) === text ).length > 1 || liveRuns.filter( ( r ) => r && textOf( r, lw ) === text ).length > 1
+			|| ( k >= 0 && ! ( /[a-z]{2}/.test( text ) && dw[ run[ 0 ] ].fs === lw[ liveRuns[ k ][ 0 ] ].fs && dw[ run[ 0 ] ].ff === lw[ liveRuns[ k ][ 0 ] ].ff ) ) );
 		if ( k >= 0 && ! single ) {
 			run.forEach( ( i, n ) => crossed.push( [ i, liveRuns[ k ][ n ] ] ) );
 			liveRuns[ k ] = null;
