@@ -32,7 +32,7 @@ import {
 	Notice,
 	Spinner,
 } from '@wordpress/components';
-import ServerSideRender from '@wordpress/server-side-render';
+import ServerSideRender from '../../components/ServerSideRender';
 import {
 	SgsColourPanel,
 	SsrPreviewGuard,

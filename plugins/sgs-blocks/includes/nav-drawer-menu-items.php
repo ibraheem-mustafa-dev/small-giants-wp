@@ -27,7 +27,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 	 * Resolve the drawer menu's per-row options once per render.
 	 *
 	 * @param array $attributes Block attributes.
-	 * @return array{mega_mode:string,roll:string,ornament_html:string,ornament_hover_html:string,has_ornament:bool,expander_html:string,media:bool,media_size:string,disabled_ids:string[],ornament_hidden_ids:string[]}
+	 * @return array{mega_mode:string,roll:string,ornament_html:string,ornament_hover_html:string,has_ornament:bool,expander_html:string,media:bool,media_size:string,disabled_ids:string[],ornament_hidden_ids:string[],ornament_reserve:bool}
 	 */
 	function sgs_nav_drawer_menu_row_options( array $attributes ): array {
 		$ornament      = is_array( $attributes['itemOrnament'] ?? null ) ? $attributes['itemOrnament'] : array();
@@ -78,6 +78,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 			// span at all, read by sgs_nav_drawer_menu_label_inner() for both
 			// leaf and accordion-parent rows.
 			'ornament_hidden_ids' => is_array( $attributes['ornamentHiddenItemIds'] ?? null ) ? $attributes['ornamentHiddenItemIds'] : array(),
+			'ornament_reserve'    => ! empty( $attributes['itemOrnamentReserveSpace'] ),
 		);
 	}
 }
@@ -163,11 +164,10 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_label_inner' ) ) {
 	 * and media. The ornament is decorative (`aria-hidden`); an `index`
 	 * ornament is painted by CSS as a counter on this span.
 	 *
-	 * An item listed in `ornamentHiddenItemIds` (2026-09-28) gets no
-	 * `.sgs-nav-drawer-menu__ornament` span at all — omitting the span, not
-	 * just hiding it, is what "reserves no ornament space" means: the span's
-	 * own `margin-inline-end` (style.css) is the only source of the gap
-	 * before the label, so a row with no span has no gap either.
+	 * An item listed in `ornamentHiddenItemIds` shows no ornament. With
+	 * `itemOrnamentReserveSpace` on it keeps the ornament's space (an empty,
+	 * invisible `--blank` span, so its label lines up with the other rows);
+	 * otherwise it gets no span and so no gap before the label.
 	 *
 	 * @param array $item    A flattened menu item.
 	 * @param array $options sgs_nav_drawer_menu_row_options().
@@ -184,6 +184,8 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_label_inner' ) ) {
 			$ornament .= '' !== (string) $options['ornament_html'] ? '<span class="sgs-nav-drawer-menu__ornament-glyph">' . $options['ornament_html'] . '</span>' : '';
 			$ornament .= '' !== $hover ? '<span class="sgs-nav-drawer-menu__ornament-glyph sgs-nav-drawer-menu__ornament-glyph--hover">' . $hover . '</span>' : '';
 			$ornament .= '</span>';
+		} elseif ( $ornament_hidden && ! empty( $options['has_ornament'] ) && ! empty( $options['ornament_reserve'] ) ) {
+			$ornament = '<span class="sgs-nav-drawer-menu__ornament sgs-nav-drawer-menu__ornament--blank" aria-hidden="true"><span class="sgs-nav-drawer-menu__ornament-glyph"></span></span>';
 		}
 		return $ornament
 			. '<span class="sgs-nav-drawer-menu__link-text">' . sgs_label_roll_markup( (string) ( $item['label'] ?? '' ), (string) ( $options['roll'] ?? '' ) ) . '</span>'

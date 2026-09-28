@@ -22,7 +22,7 @@
  * own commit — never both checked for the same slug at once.
  *
  * Recognised denylist slugs: clickEffects · parallax · spacing · animation
- * Recognised allowlist slugs: hover · blockLink
+ * Recognised allowlist slugs: hover · blockLink · childSizing
  *
  * @param {string|Object} nameOrSettings Block name (from an editor HOC) OR the
  *                                        settings object (from a

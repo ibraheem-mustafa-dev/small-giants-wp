@@ -34,7 +34,7 @@ import {
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import ServerSideRender from '@wordpress/server-side-render';
+import ServerSideRender from '../../components/ServerSideRender';
 import {
 	NumberControl,
 	ToggleGroupControl,

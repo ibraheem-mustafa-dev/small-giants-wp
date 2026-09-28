@@ -33,7 +33,8 @@
 			"iconPicker": true,
 			"is_section_root": true,
 			"enabledExtensions": [
-				"blockLink"
+				"blockLink",
+				"childSizing"
 			],
 			"boxFamilies": {
 				"padding": [

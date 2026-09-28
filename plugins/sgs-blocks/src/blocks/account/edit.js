@@ -11,7 +11,7 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
-import ServerSideRender from '@wordpress/server-side-render';
+import ServerSideRender from '../../components/ServerSideRender';
 import { ResponsiveControl, SgsBorderControl, SgsColourPanel, SsrPreviewGuard, fillRow, textRow, TypographyControls } from '../../components';
 import { UnitControl } from '../../components/primitives';
 import { patchTier } from '../../utils';

@@ -15,7 +15,7 @@ import {
 	Spinner,
 	FocalPointPicker,
 } from '@wordpress/components';
-import ServerSideRender from '@wordpress/server-side-render';
+import ServerSideRender from '../../components/ServerSideRender';
 import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,

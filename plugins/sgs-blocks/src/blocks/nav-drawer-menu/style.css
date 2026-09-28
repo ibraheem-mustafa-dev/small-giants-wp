@@ -239,6 +239,11 @@
 	}
 }
 
+/* An item whose ornament is hidden but whose space is reserved keeps the box, paints nothing. */
+.sgs-nav-drawer-menu__ornament--blank {
+	visibility: hidden;
+}
+
 .sgs-nav-drawer-menu__ornament-glyph {
 	display: var(--sgs-ndm-orn-glyph, none);
 	height: 1em;

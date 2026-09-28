@@ -31,6 +31,7 @@
 			"text": false
 		},
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"iconPicker": true,
 			"imageControls": false,
 			"boxFamilies": {

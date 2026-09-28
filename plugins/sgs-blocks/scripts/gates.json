@@ -1244,5 +1244,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 137
+  },
+  {
+    "id": "audit-ssr-http-method",
+    "cmd": "node scripts/consistency/audit-ssr-http-method.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 138
   }
 ]

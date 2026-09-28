@@ -21,7 +21,7 @@ import {
 // ToolsPanel / ToolsPanelItem exist only as `__experimental*` on WP 7.1. Importing the bare names from
 // '@wordpress/components' gives `undefined`, so selecting a slider block died with React error #130.
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import ServerSideRender from '@wordpress/server-side-render';
+import ServerSideRender from '../../components/ServerSideRender';
 import SsrPreviewGuard from '../../components/SsrPreviewGuard';
 import { SampleNotice, EmptyState, LoadingState, ErrorState } from './editor-preview';
 import { omitNullish, showsSampleNotice } from './preview-plan';

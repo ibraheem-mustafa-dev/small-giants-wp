@@ -11,7 +11,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl, TextControl, Notice } from '@wordpress/components';
-import ServerSideRender from '@wordpress/server-side-render';
+import ServerSideRender from '../../components/ServerSideRender';
 import { ResponsiveBoxControl, SgsColourPanel, SsrPreviewGuard, textRow, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 
 /** Labels for the type selector drop-down. */

@@ -33,6 +33,7 @@
 		},
 		"html": false,
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"headerEssential": true,
 			"fx": {
 				"providesNatively": [

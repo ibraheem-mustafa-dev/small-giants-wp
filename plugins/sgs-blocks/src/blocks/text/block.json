@@ -24,6 +24,7 @@
 		"html": false,
 		"color": false,
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"boxFamilies": {
 				"borderWidth": [
 					"borderWidth"

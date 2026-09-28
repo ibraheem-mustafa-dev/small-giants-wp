@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import ServerSideRender from '@wordpress/server-side-render';
+import ServerSideRender from '../../components/ServerSideRender';
 import {
 	useBlockProps,
 	InspectorControls,

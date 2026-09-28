@@ -264,6 +264,11 @@ if ( ! function_exists( 'sgs_nav_shared_icon_markup' ) ) {
 		$source = (string) ( $icon['source'] ?? $fallback['source'] );
 		$name   = (string) ( $icon['name'] ?? $fallback['name'] );
 
+		if ( 'custom' === $source ) {
+			// A pasted SVG from the IconPicker, re-sanitised here (never trust the editor's pass).
+			$svg = function_exists( 'sgs_svg_kses_allowed_tags' ) ? wp_kses( (string) ( $icon['svg'] ?? '' ), sgs_svg_kses_allowed_tags() ) : '';
+			return '' !== trim( $svg ) ? $svg : (string) sgs_get_lucide_icon( sanitize_key( (string) $fallback['name'] ) );
+		}
 		if ( ! in_array( $source, array( 'lucide', 'wp-icon', 'dashicon', 'emoji' ), true ) ) {
 			$source = (string) $fallback['source'];
 			$name   = (string) $fallback['name'];

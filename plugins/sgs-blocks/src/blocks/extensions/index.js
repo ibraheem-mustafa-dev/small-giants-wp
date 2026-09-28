@@ -10,6 +10,8 @@
  *   so its position in this list does not affect panel order.
  * - Animation: controls for sgs/* blocks only (scroll-triggered animations).
  * - Hover effects: hover animations for sgs/* blocks.
+ * - Child sizing: fit / fill / fixed width inside a flex row, per device, for
+ *   blocks that opt in with supports.sgs.enabledExtensions ["childSizing"].
  * - Custom CSS: per-block scoped CSS textarea in Advanced panel (also
  *   disables WP core's native `customCSS` support so only one CSS control
  *   shows — see custom-css.js).
@@ -36,6 +38,7 @@
 import './responsive-device-toggle';
 import './animation';
 import './hover-effects';
+import './child-sizing';
 import './custom-css';
 import './block-defaults';
 import './parallax';
@@ -64,4 +67,6 @@ import '../../components/colour-picker/dropdown/editor.scss';
 // attributed to an arbitrary block's FRONTEND bundle by webpack's per-entry CSS
 // extraction, which the F5 anti-cheat gate catches on sgs/accordion.
 import './fx-panel.scss';
+// Child sizing's editor-canvas preview rules (same reason as fx-panel.scss).
+import './child-sizing.scss';
 import './conditional-visibility';

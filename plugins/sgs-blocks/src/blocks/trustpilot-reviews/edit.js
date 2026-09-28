@@ -16,7 +16,7 @@ import { ResponsiveOverride, SgsColourPanel, fillRow, textRow,
 	SsrPreviewGuard,
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import ServerSideRender from '@wordpress/server-side-render';
+import ServerSideRender from '../../components/ServerSideRender';
 import {
 	PanelBody,
 	SelectControl,

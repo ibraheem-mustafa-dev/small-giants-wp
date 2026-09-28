@@ -26,6 +26,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"iconPicker": true,
 			"boxFamilies": {
 				"padding": [

@@ -104,6 +104,8 @@ return array(
 	'sgsBlockLink' => array( 'type' => 'string' ),
 	'sgsBlockLinkLabel' => array( 'type' => 'string' ),
 	'sgsBlockLinkTarget' => array( 'type' => 'boolean' ),
+	'sgsChildSizing' => array( 'type' => 'object' ),
+	'sgsChildWidth' => array( 'type' => 'object' ),
 	'sgsClickEffect' => array( 'type' => 'string' ),
 	'sgsClickRippleColour' => array( 'type' => 'string' ),
 	'sgsClickRippleDuration' => array( 'type' => 'number' ),

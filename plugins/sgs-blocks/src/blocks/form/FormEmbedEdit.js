@@ -30,7 +30,7 @@ import { cloneBlock, createBlock, serialize } from '@wordpress/blocks';
 import { useState } from '@wordpress/element';
 import { decodeEntities } from '@wordpress/html-entities';
 import { addQueryArgs } from '@wordpress/url';
-import ServerSideRender from '@wordpress/server-side-render';
+import ServerSideRender from '../../components/ServerSideRender';
 import { formIcon } from '../../utils';
 import SavedFormPicker, { FORM_CPT } from './SavedFormPicker';
 

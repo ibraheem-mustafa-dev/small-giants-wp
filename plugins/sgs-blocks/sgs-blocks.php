@@ -115,8 +115,8 @@ require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
 // image-controls.php, which all depend on it.
 require_once SGS_BLOCKS_PATH . 'includes/helpers-scoped-instance-vars.php';
 
-// Universal hover effects — server-side CSS variable injection.
-require_once SGS_BLOCKS_PATH . 'includes/hover-effects/hover-effects.php';
+// Cross-block wrapper extensions (hover effects, child sizing in flex rows).
+require_once SGS_BLOCKS_PATH . 'includes/wrapper-extensions.php';
 
 // Dark-background shadow presets: the stylesheet a dark container's children use.
 require_once SGS_BLOCKS_PATH . 'includes/shadow-dark-assets.php';

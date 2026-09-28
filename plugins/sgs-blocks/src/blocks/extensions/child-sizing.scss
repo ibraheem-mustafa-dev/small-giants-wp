@@ -1,0 +1,18 @@
+// Editor-canvas preview for the child-sizing extension (child-sizing.js).
+// The frontend rules are emitted per instance by includes/child-sizing.php;
+// these mirror them for the tier the editor is previewing.
+.sgs-child-sizing--fit {
+	flex: 0 1 auto;
+}
+
+.sgs-child-sizing--fill {
+	flex: 1 1 0%;
+	min-width: 0;
+}
+
+.sgs-child-sizing--fixed {
+	flex: 0 0 auto;
+	width: var(--sgs-child-width, auto);
+	max-width: 100%;
+	box-sizing: border-box;
+}
