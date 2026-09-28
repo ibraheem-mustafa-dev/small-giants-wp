@@ -227,12 +227,23 @@ recorded run with `node scripts/parity/benchmark/score.mjs <out dir>`.
 NODE_EXTRA_CA_CERTS=<certifi cacert.pem> node ../../scripts/parity/benchmark.mjs --noise
 ```
 
-**Measured 2026-09-28:** the walker before this section caught **1 of 6** (only ".00", which the shop config then
-accepted as pennies); with the automatic check it catches **6 of 6**, with 0 noise rows on the shop and 0 on the
-lens. The catching rows: a `moved "polarised → £119 …"` (the tag's offset -60 → -83 at 375); b `text-extra
-"filter"` in `auto-scrolled` at 768 and 375; c `clipped input:range "maximum price"` (whole → right) at 768 and
-375; d `text-extra "… £139.00 £171.00"` on every card; e `text-missing "perfect — order now and i'll whatsapp you…"`,
-`"add to bag £418"` and `text-extra "continue"` at every width; f `moved "back → add to bag"` (160,0 → 135,64).
+**Measured 2026-09-28:** the walker before this section caught **1 of 5** (only ".00", which the shop config then
+accepted as pennies); with the automatic check it catches **5 of 5**, with 0 noise rows on the shop and 0 on the
+lens. The catching rows: b `text-extra "filter"` in `auto-scrolled` at 768 and 375; c `clipped input:range "maximum
+price"` (whole → right) at 768 and 375; d `text-extra "… £139.00 £171.00"` on every card; e `text-missing "perfect —
+order now and i'll whatsapp you…"`, `"add to bag £418"` and `text-extra "continue"` at every width; f `moved "back →
+add to bag"` (160,0 → 135,64).
+
+**What no draft comparison can catch:** gap a (the Polarised tag's uneven place) is not scored (`draftHasIt`).
+Measured, the pre-fix tag sat exactly as the draft's at every width (box 77x24, 8px each side, 17px from the card
+edge, past the edge on a one-word name at 375): the draft has the flaw, and Bean's fix went beyond it. A flaw in the
+draft itself is caught only by judging the design, so every page wave keeps an Opus review of the shots for the
+draft's own faults (tags, overflow, uneven placement), not only for differences.
+
+**False alarms on passing pages:** the first automatic check opened 4,100 rows on the shop and 480 on the lens,
+nearly all from pairing controls built from different elements and from text in closed groups; after the fixes
+the rows left are real differences. Every one is fixed, or accepted with Bean's dated decision (config `accept`
+entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such as pennies).
 
 ## 10. Text, data and draft bugs
 

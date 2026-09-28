@@ -31,14 +31,28 @@ key), with the owed Wave C polish alongside.
   (`plans/archive/2026-09-27-choice-flow-inline-next-step.md`: the last question opens the chosen way under the options,
   as the draft). Both may reopen: another session is making the walker's header-mode checks the default for every
   page. Product page, bag drawer, checkout, order confirmation, home, lenses, about, help, contact to do.
-- **The walker's catch rate: measured and raised to 6 of 6 (2026-09-28).** Bean wants the remaining pages cloned by
+- **The walker's catch rate: measured and raised to 5 of 5 (2026-09-28).** Bean wants the remaining pages cloned by
   Sonnet subagents in waves with Opus QC, which needs a method that catches at least 95% of draft-vs-live
   differences. `scripts/parity/benchmark.mjs` replays the six gaps Bean found by eye on today's live site against
-  the page configs as they stood before the gaps were found: the walker before caught **1 of 6** (".00", then
-  accepted as pennies by the config). The automatic check (GAP-CHECKLIST.md section 12: every painted word, control
-  and picture compared with no config naming it, an `auto-scrolled` state, and a pixel check for a control cut off
-  at a clipping edge) catches **6 of 6** with 0 noise rows on shop and lens. Next: shop.mjs and lens.mjs rerun under
-  it (their automatic rows are the false-alarm count), then the page waves.
+  the page configs as they stood before the gaps were found: the walker before caught **1 of 5** (".00", then
+  accepted as pennies by the config). The automatic check (GAP-CHECKLIST.md section 12: every painted word compared
+  with no config naming it, an `auto-scrolled` state, and a pixel check for a control cut off at a clipping edge)
+  catches **5 of 5** with 0 noise rows on shop and lens. The sixth gap (the Polarised tag) was the draft's own flaw
+  (measured identical to the draft), so no comparison can catch it: page waves keep an Opus design review of the
+  shots. Next: close the rows the check opens on shop.mjs and lens.mjs (fix or Bean's decision), then the waves.
+  - **Bean's decisions on the rows it opened (2026-09-28), all as recommended.** Accepted (in the configs): style
+    chips live shows only styles with frames in stock (9 of the draft's 12); "Most people pick this" in text-inverse
+    #FAF8F5 against white; the 44px touch targets' lower label inset (brand rows, Clear all); the Spec 43 Continue
+    model on questions 1-3; secondary text in the darker text-muted #5E584F where the draft uses lighter greys
+    (confirmed 2026-09-28, an earlier approval); no hover comparison at phone widths (the walker skips it). To fix
+    (open): (1) "PHOTO TO COME" as text like the draft, not a faint picture (a product card "no photo" label with
+    type and colour controls; Eye Care products without a photo lose the placeholder image); (3) the gap from the
+    rating line to the price, 27px against the draft's 33px; (4) 30px too much space between the grid and the
+    "Every pair is genuine" note; (5) at phone width the RRP always under the price; (6) "Oversized Cat-Eye" on one
+    line at 375 as the draft; (7) the filter drawer heading 22px, not 20px; (9) cards in view after scrolling
+    reveal (the bottom row at 1440 stays blank); lens (11) the stage's price column ~21px (total 50px) further in
+    than the draft; (12) the 375 stage brand 14px and name 17px; (13) description lines breaking at the draft's
+    words at 1440.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,

@@ -1297,13 +1297,10 @@
 	display: none;
 }
 
-.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-name .sgs-choice-flow__summary-brand {
-	font-size: 13px;
-}
-
+/* The compact name bar keeps the stage's 14px brand and 17px name (as the lens
+   draft at 375), only drawing the two lines closer. */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-name .sgs-choice-flow__summary-product {
 	margin-top: 4px;
-	font-size: 16px;
 }
 
 /* The running lines: the chosen things; answers and the placeholder muted. */

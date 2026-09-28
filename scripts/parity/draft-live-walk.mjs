@@ -159,7 +159,8 @@ async function walkSide( browser, side, width ) {
 			await page.waitForTimeout( p.scrollWait ?? 1500 );
 			snap[ p.name ].scroll.post = await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE ] );
 		}
-		for ( const p of pairs.filter( ( q ) => q.hover ) ) {
+		// A phone has no hover (Bean 2026-09-28): hover end states are compared at desktop and tablet widths only.
+		for ( const p of pairs.filter( ( q ) => q.hover && ! phone.isMobile ) ) {
 			if ( snap[ p.name ].missing ) {
 				continue;
 			}

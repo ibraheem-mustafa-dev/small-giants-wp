@@ -37,7 +37,8 @@ H2 = dict(level="h2", fontFamily="heading", fontWeight="500", fontSize={"desktop
 SECTION_GAP = {"desktop": {"top": "84px"}, "mobile": {"top": "56px"}}
 
 CARD = dict(
-    sourceMode="wc-product", showRating=True, noReviewsText="No reviews yet", showSavingBadge=True,
+    # The name wraps as the draft's, not balanced (the theme balances every heading): "Oversized Cat-" / "Eye".
+    sourceMode="wc-product", titleTextWrap="wrap", showRating=True, noReviewsText="No reviews yet", showSavingBadge=True,
     savingBadgePosition="bottom-left", showBrandOverlay=True, brandFontFamily="heading", brandFontWeight="500",
     brandFontSize={"desktop": 12.5}, brandFontSizeUnit="px", brandLetterSpacing={"desktop": 0.26},
     brandLetterSpacingUnit="em", showPickers=False, showDescription=False, showCta=False, showWishlist=True,

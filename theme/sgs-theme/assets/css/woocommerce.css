@@ -492,11 +492,19 @@ h2.wc-block-mini-cart__title {
 	}
 
 	/* Reserve space for the sticky filter trigger (8d-ii) so its reveal never
-	   occludes the last product row. Reserved unconditionally (not only while
-	   visible) to avoid a layout shift when it fades in on scroll. */
-	body.is-enhanced .sgs-shop-layout {
+	   occludes the last product row. Reserved whether or not it is showing (no
+	   layout shift when it fades in on scroll), and only while the Customizer's
+	   "Show a floating Filter button" is on. */
+	body.is-enhanced:not(.sgs-shop-no-sticky-trigger) .sgs-shop-layout {
 		padding-bottom: calc(48px + var(--wp--preset--spacing--30, 1rem) * 2 + env(safe-area-inset-bottom, 0px));
 	}
+}
+
+/* WooCommerce gives its product collection a fixed 30px bottom margin and no
+   spacing control: in the shop layout the space after the grid comes from the
+   layout container and the block that follows, which both have controls. */
+.sgs-shop-layout .wp-block-woocommerce-product-collection {
+	margin-bottom: 0;
 }
 
 /* ── 8b. Filter sidebar / drawer ── */
@@ -2954,9 +2962,10 @@ select.orderby:focus-visible {
 }
 
 /* (6) "Filters" is the panel's title and the group labels sit beneath it, but
- * both measured 16px, so the hierarchy read flat. */
+ * both measured 16px, so the hierarchy read flat. Customizer > Shop Filters
+ * "Filter panel heading size" sets --sgs-filter-heading-size. */
 .sgs-shop-filters .sgs-shop-filters__heading {
-	font-size: var(--wp--preset--font-size--large);
+	font-size: var(--sgs-filter-heading-size, var(--wp--preset--font-size--large));
 	line-height: 1.2;
 }
 

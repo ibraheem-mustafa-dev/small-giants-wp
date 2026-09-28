@@ -46,9 +46,25 @@ function matchWords( dw, lw ) {
 	const crossed = [];
 	const draftRuns = leftRuns( dw, 'd' );
 	const textOf = ( run, words ) => run.map( ( i ) => words[ i ].t ).join( ' ' );
+	// Where the run should land on live: just after the live partner of the matched word before it.
+	const partner = new Map( [ ...first, ...kept ] );
+	const expected = ( run ) => {
+		for ( let i = run[ 0 ] - 1; i >= 0; i-- ) {
+			if ( partner.has( i ) ) {
+				return partner.get( i ) + 1;
+			}
+		}
+		return 0;
+	};
 	for ( const run of draftRuns ) {
 		const text = textOf( run, dw );
-		const k = liveRuns.findIndex( ( lr ) => lr && textOf( lr, lw ) === text );
+		// Of several live runs with the same words ("from £59" on two cards), the one nearest where it should be.
+		let k = -1;
+		liveRuns.forEach( ( lr, n ) => {
+			if ( lr && textOf( lr, lw ) === text && ( k < 0 || Math.abs( lr[ 0 ] - expected( run ) ) < Math.abs( liveRuns[ k ][ 0 ] - expected( run ) ) ) ) {
+				k = n;
+			}
+		} );
 		// One word pairs only when it is the only leftover run with that text on each side (a brand name on
 		// a card chip and in the filter list must not pair across the page).
 		const single = 1 === run.length && ( draftRuns.filter( ( r ) => textOf( r, dw ) === text ).length > 1 || liveRuns.filter( ( r ) => r && textOf( r, lw ) === text ).length > 1 );

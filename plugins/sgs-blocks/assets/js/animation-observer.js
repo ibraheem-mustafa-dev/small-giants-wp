@@ -326,8 +326,10 @@
 		);
 
 		// "Play" observer — plays the animation once 15% of the element is
-		// in view. Creates it first on a fast scroll where the near observer
-		// has not fired yet.
+		// in view, with no margin at the bottom edge (a 450px card reveals with
+		// 68px showing, as the Eye Care draft measured; a -40px margin left a
+		// row just inside the fold blank). Creates it first on a fast scroll
+		// where the near observer has not fired yet.
 		var playObserver = new IntersectionObserver(
 			function ( entries ) {
 				// Elements that come into view together (a row of cards) play in
@@ -352,7 +354,7 @@
 					nearObserver.unobserve( el );
 				} );
 			},
-			{ threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+			{ threshold: 0.15 }
 		);
 
 		// Elements already in the viewport on page load play at once — both

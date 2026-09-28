@@ -76,6 +76,7 @@ function shop_controls_look_numbers(): array {
 		'sgs_shop_filter_list_size'   => __( 'Text size of checkbox-list filters, e.g. brands (px, blank for the theme\'s small size)', 'sgs-theme' ),
 		'sgs_shop_filter_list_row'    => __( 'Space above and below each checkbox-list option (px, blank for 2)', 'sgs-theme' ),
 		'sgs_shop_filter_list_weight' => __( 'Weight of checkbox-list option text (100 to 900, blank for 400)', 'sgs-theme' ),
+		'sgs_shop_filter_heading_size' => __( 'Filter panel heading size (px, blank for the theme large size)', 'sgs-theme' ),
 	);
 }
 
@@ -201,6 +202,7 @@ function output_shop_controls_look_style(): void {
 		'sgs_shop_sort_size'        => '--sgs-shop-sort-size',
 		'sgs_shop_filter_list_size' => '--sgs-filter-list-size',
 		'sgs_shop_filter_list_row'  => '--sgs-filter-list-row',
+		'sgs_shop_filter_heading_size' => '--sgs-filter-heading-size',
 	);
 	$decls = array();
 	foreach ( $vars as $id => $prop ) {
@@ -220,7 +222,8 @@ function output_shop_controls_look_style(): void {
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\output_shop_controls_look_style', 20 );
 
 /**
- * `sgs-shop-toggle-outlined`, `sgs-shop-active-pills` and `sgs-shop-price-thin` on <body>.
+ * `sgs-shop-toggle-outlined`, `sgs-shop-active-pills`, `sgs-shop-price-thin`, `sgs-shop-active-bar` and
+ * `sgs-shop-no-sticky-trigger` on <body>.
  *
  * @param string[] $classes Body classes.
  * @return string[]
@@ -237,6 +240,10 @@ function add_shop_controls_look_body_class( array $classes ): array {
 		if ( $value === $on[0] ) {
 			$classes[] = $on[1];
 		}
+	}
+	// No floating Filter button: the shop layout keeps no space for it on narrow screens.
+	if ( ! wp_validate_boolean( get_theme_mod( 'sgs_shop_sticky_trigger', true ) ) ) {
+		$classes[] = 'sgs-shop-no-sticky-trigger';
 	}
 	return $classes;
 }

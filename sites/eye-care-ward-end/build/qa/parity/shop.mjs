@@ -53,7 +53,7 @@ export default {
 		// The brand list: live lists the real 14 brands, the draft a made-up 40 (Bean 2026-09-27), so its words
 		// pair badly with card chips; the named brand pairs check its look.
 		draft: [ 'a[aria-label^="Message Fatima"]', { js: '(r) => { const h = [...document.querySelectorAll("aside button")].find((b) => /^brand/i.test(b.textContent.trim())); return h && h.parentElement; }' }, { js: '(r) => { let e = [...document.querySelectorAll("span")].find((s) => /^100% genuine/i.test(s.textContent.trim())); while (e && e.parentElement && e.getBoundingClientRect().width < innerWidth - 2) e = e.parentElement; return e; }' } ],
-		live: [ '.sgs-trust-bar', { js: '(r) => [...document.querySelectorAll("#sgs-shop-filters details")].find((g) => /^\s*brand/i.test(g.querySelector("summary")?.textContent || ""))' } ],
+		live: [ '.sgs-trust-bar', { js: '(r) => { const l = document.querySelector("#sgs-shop-filters [for^=\\"taxonomy/product_brand\\"]"); return l && ( l.closest("details") || l.closest(".wp-block-woocommerce-product-filter-taxonomy")?.parentElement ); }' } ],
 	} },
 	states: [
 		{ name: 'opening', fullPage: true },
@@ -176,6 +176,9 @@ export default {
 		'scrolled@1440': 'Scrolled 1200px: the filter column stays beside the grid on both, cards Medusa Biggie to Shield with whole-pound prices; PLD 6003/N tag beside the name at the right. No floating element apart from the chat bubble (nav track).',
 		'scrolled@768': 'Scrolled 1200px: no floating Filter button on either side; Wayfarer and Round Metal rows with price and RRP on one line and dots right, Versace and Polaroid below. Only the chat bubble floats (nav track).',
 		'scrolled@375': 'Scrolled 1200px: no floating Filter button on either side (the draft has none; live switched off). Cards two across, PLD 6003/N tag under the name right-aligned (Bean), RRP under the price with dots beside it; only the chat bubble floats.',
+		'auto-scrolled@1440': 'Scrolled a screen and a half (2026-09-28): filter column beside the grid on both; rows Medusa Biggie to Shield match with whole-pound prices and the PLD tag beside the name. The live bottom row (Police, Dolce & Gabbana, Michael Kors) is still blank where the draft shows it: its scroll reveal has not fired (open, with Bean). Only the chat bubble floats (nav track).',
+		'auto-scrolled@768': 'Scrolled (2026-09-28): Wayfarer and Round Metal, then Medusa Biggie and PLD 6003/N, two across on both, prices and RRPs on one line, dots right, the PLD tag beside the name. Live draws "PHOTO TO COME" far fainter and smaller than the draft (open, with Bean). No floating Filter button; only the chat bubble floats.',
+		'auto-scrolled@375': 'Scrolled (2026-09-28): two across, Medusa Biggie, PLD 6003/N (tag under the name, Bean), Carrera 1055/S and FZ6001 on both; RRP under the price with dots beside it; "No reviews yet" for the stars (Bean). Live "PHOTO TO COME" far fainter (open, with Bean). No floating Filter button; only the chat bubble floats.',
 	},
 	accept: [
 		// Measured, not painted: the property differs but the pixels do not.
@@ -253,5 +256,10 @@ export default {
 		{ pair: '(auto)', reason: 'The draft’s button text is the browser default black, live’s the palette’s text #141414 (both near-black on white), as the named clear-all and filter-button pairs', when: ( d ) => ( ( d ) => /^style:color "(clear all|filter|filter \(1\))"$/.test( d.key ) && 'rgb(0,0,0)' === d.draft )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		{ pair: '(auto)', width: 375, reason: 'Accepted (Bean 2026-09-27): in a two-across phone card the tag takes its own line under the name, right-aligned, where the draft puts it beside the name', when: ( d ) => ( ( d ) => /^moved "[^"]*(polarised|6003\/n|lewis|ea4033|holbrook)/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		{ pair: '(auto)', reason: 'The same close cross: a × glyph in the draft’s drawer, an icon on live (not text)', when: ( d ) => ( ( d ) => /^text-missing "×"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-28): live shows the 9 styles with frames in stock where the draft lists 12 (Browline, Geometric, Oversized have none), so the chip rows wrap differently', when: ( d ) => ( ( d ) => /^text-missing "(browline|geometric|oversized|browline geometric|square|oval|square rectangle|oval cat-eye butterfly browline geometric shield oversized)"$/.test( d.key ) || /^moved "(square|oval|butterfly|shield|wayfarer|rectangle|round|oversized) → /.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', reason: 'Accepted (Bean, confirmed 2026-09-28): secondary text uses the darker text-muted #5E584F where the draft uses lighter greys (#6B655E, #77716A, #8B8478, #A39C90; the lightest fail 4.5:1 contrast)', when: ( d ) => /^style:color /.test( d.key ) && 'rgb(94,88,79)' === d.live && [ 'rgb(107,101,94)', 'rgb(119,113,106)', 'rgb(139,132,120)', 'rgb(163,156,144)' ].includes( d.draft ) },
+		// Bean 2026-09-27: 44px touch targets; a label centred in a 44px row sits lower in it than in the draft's 38px row.
+		{ pair: 'brand-ray-ban', kind: 'box', key: 'text-inset-y', reason: 'Accepted (Bean 2026-09-27, 44px touch targets): the label centred in a 44px row sits 3px lower than in the draft’s 38px row', when: ( d ) => d.live - d.draft <= 4 },
+		{ pair: 'clear-all', kind: 'box', key: 'text-inset-y', reason: 'Accepted (Bean 2026-09-27, 44px touch targets): the draft’s 19px text button has its text at the top; live centres it in 44px' },
 	],
 };

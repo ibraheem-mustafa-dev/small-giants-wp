@@ -27,6 +27,8 @@ SETTINGS = {
     'sgs_shop_filter_list_size': '14.5',
     'sgs_shop_filter_list_row': '7',
     'sgs_shop_filter_list_weight': '500',
+    # The drawer's "Filter" heading at the draft's 22px (Bean 2026-09-28).
+    'sgs_shop_filter_heading_size': '22',
     'sgs_shop_active_look': 'pills',
     'sgs_shop_active_prefix': '0',
     'sgs_shop_active_place': 'bar',
