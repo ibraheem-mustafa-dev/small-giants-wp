@@ -9,7 +9,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/memory-cap-guard.py",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/memory-cap-guard.py\"",
             "timeout": 5
           }
         ]
@@ -21,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/commit-gates.py",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/commit-gates.py\"",
             "timeout": 120
           }
         ]
