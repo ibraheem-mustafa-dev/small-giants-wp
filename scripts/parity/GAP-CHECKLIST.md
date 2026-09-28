@@ -178,7 +178,8 @@ Each check below missed rows the eye caught; each has a negative control (run a 
 a rotating message (`inventoryIgnore` drops its words; presence, type and place are compared, and its inset is
 accepted); scrambled characters (random, so only "text changes mid-hover" is compared); video content (presence
 and box only). The Indus draft's declared entrances never run in its runtime (`componentDidUpdate` gets no
-previous state), so the rendered draft is the reference until Bean decides otherwise.
+previous state). Bean (2026-09-28): the source intent is the reference; those entrances are proved on the copy
+alone against their declared timings, not compared with the draft.
 
 ## 10. Text, data and draft bugs
 

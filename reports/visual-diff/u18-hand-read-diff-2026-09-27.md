@@ -27,7 +27,8 @@ before hovering About and was never called, and `document.getAnimations()` showe
 runtime (`support.js`) calls the component's `componentDidUpdate(prevProps)` with one argument, and the draft's
 `componentDidUpdate(pp, ps)` returns at once when `ps` is missing. So the draft **as rendered** has no panel or drawer
 entrance: panels appear instantly, and only the backdrop fades (300ms). **Decision for Bean:** is the reference what the draft renders
-(no entrance) or what its source intends (the three entrances above)? Rows I-M1 to I-M3 carry both readings.
+(no entrance) or what its source intends (the three entrances above)? **Decided (Bean, 2026-09-28): source intent.**
+I-M1 to I-M3 are proved on the copy alone against the declared timings, not compared with the draft.
 
 ## Indus (draft vs page 4465, header 4461)
 

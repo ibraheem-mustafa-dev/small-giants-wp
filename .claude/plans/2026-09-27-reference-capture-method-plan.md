@@ -78,8 +78,10 @@ configs already live in `sites/eye-care-ward-end/build/qa/parity/`). Steps:
    clear diff per copy: structure, contents, styling and behaviour of every element.
 **Steps 1 to 5 done (2026-09-28):** hand-read diff and step 2-5 comparison `reports/visual-diff/u18-hand-read-diff-2026-09-27.md`;
 walker header mode (`scripts/parity/GAP-CHECKLIST.md` section 11); walker reports
-`reports/visual-diff/u18-walker-{indus,lamalama}-2026-09-28.md`. Open before step 6: Bean decides whether the Indus
-reference is the draft as rendered (no panel or drawer entrance: its runtime never runs them) or its source intent.
+`reports/visual-diff/u18-walker-{indus,lamalama}-2026-09-28.md`. Decided (Bean, 2026-09-28): the Indus reference is the
+draft's source intent: panel entrance 340ms from `translateY(-8px) scale(.99)`, links rising 460ms 26ms apart (max 320ms),
+drawer items sliding in 420ms 55ms apart. It is not compared against the draft (which never plays it); the copy's motion
+is proved by its own timeline read against those declared values.
 
 6. **Then fix**, from that diff only: sort each row into composition or framework capability, and plan the fixes.
    No fixing happens before step 5 closes.
