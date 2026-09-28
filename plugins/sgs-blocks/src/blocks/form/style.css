@@ -94,6 +94,65 @@
 	}
 }
 
+/* ----------------------------------------------------------------
+   1b. Configurable field-columns breakpoint — fieldColumnsFrom
+   ----------------------------------------------------------------
+   The 560px threshold above is fixed in the two @container rules it lives in
+   (lines 53 and 68) — a form nested in a column narrower than 560px (a
+   two-column page split, a sidebar) never reaches it, so half/third fields
+   never pair up there even though the column has room. `fieldColumnsFrom`
+   (block.json, default "560") lowers that threshold; render.php emits one of
+   the three modifier classes below only when the client picks a non-default
+   value, so an untouched form's markup and the rules above are unchanged.
+   Container queries cannot read a custom property for their own min-width,
+   so each value needs its own literal rule pair (not a single var()-driven
+   one) — the same six-track grid and half/third spans as the 560px default,
+   repeated per threshold. */
+@container sgs-form (min-width: 480px) {
+	.sgs-form--field-cols-480 .sgs-form__inner,
+	.sgs-form--field-cols-480 .sgs-form-step {
+		grid-template-columns: repeat(6, 1fr);
+	}
+
+	.sgs-form--field-cols-480 .sgs-form-field--half {
+		grid-column: span 3;
+	}
+
+	.sgs-form--field-cols-480 .sgs-form-field--third {
+		grid-column: span 2;
+	}
+}
+
+@container sgs-form (min-width: 400px) {
+	.sgs-form--field-cols-400 .sgs-form__inner,
+	.sgs-form--field-cols-400 .sgs-form-step {
+		grid-template-columns: repeat(6, 1fr);
+	}
+
+	.sgs-form--field-cols-400 .sgs-form-field--half {
+		grid-column: span 3;
+	}
+
+	.sgs-form--field-cols-400 .sgs-form-field--third {
+		grid-column: span 2;
+	}
+}
+
+@container sgs-form (min-width: 320px) {
+	.sgs-form--field-cols-320 .sgs-form__inner,
+	.sgs-form--field-cols-320 .sgs-form-step {
+		grid-template-columns: repeat(6, 1fr);
+	}
+
+	.sgs-form--field-cols-320 .sgs-form-field--half {
+		grid-column: span 3;
+	}
+
+	.sgs-form--field-cols-320 .sgs-form-field--third {
+		grid-column: span 2;
+	}
+}
+
 /* Conditionally-hidden field — display:none removes from layout entirely.
    Mirrors .sgs-form-step--hidden below; applyConditionalLogic() in view.js
    also disables the inputs so they are excluded from validation/submission,

@@ -23,6 +23,13 @@ import FormEmbedEdit from './FormEmbedEdit';
 import { FORM_CPT } from './SavedFormPicker';
 import EmailSettingsPanel from './EmailSettingsPanel';
 
+const FIELD_COLUMNS_FROM_OPTIONS = [
+	{ label: __( '560px (default)', 'sgs-blocks' ), value: '560' },
+	{ label: __( '480px', 'sgs-blocks' ), value: '480' },
+	{ label: __( '400px', 'sgs-blocks' ), value: '400' },
+	{ label: __( '320px', 'sgs-blocks' ), value: '320' },
+];
+
 const SUBMIT_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
 	{ label: __( 'Accent', 'sgs-blocks' ), value: 'accent' },
@@ -103,6 +110,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		formFocusRingWidth,
 		formFocusRingOpacity,
 		formFocusRingOffset,
+		fieldColumnsFrom,
 		prevColourBackground,
 		prevColourBackgroundHover,
 		prevColourBackgroundGradient,
@@ -530,6 +538,20 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						}
 						help={ __(
 							'Human-readable name for admin display.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Put half-width fields side by side from a form width of', 'sgs-blocks' ) }
+						value={ fieldColumnsFrom || '560' }
+						options={ FIELD_COLUMNS_FROM_OPTIONS }
+						onChange={ ( value ) =>
+							setAttributes( { fieldColumnsFrom: value } )
+						}
+						help={ __(
+							'The form’s own width, not the screen’s — lower this when the form sits in a narrow column (a two-column page split, a sidebar) so Half/Third fields still pair up there.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

@@ -204,6 +204,16 @@ $sgs_form_style_group      = is_array( $attributes['style'] ?? null ) ? $attribu
 $sgs_form_supports_css     = '';
 $sgs_form_supports_classes = array( 'sgs-form' );
 
+// The container-width breakpoint at which half/third fields sit side by side
+// (style.css's @container sgs-form rules). '560' is the unmodified default —
+// no modifier class, so an untouched form's output is byte-for-byte unchanged.
+// Only 480/400/320 add a class; style.css supplies the matching @container
+// rules for each.
+$sgs_field_columns_from = (string) ( $attributes['fieldColumnsFrom'] ?? '560' );
+if ( in_array( $sgs_field_columns_from, array( '480', '400', '320' ), true ) ) {
+	$sgs_form_supports_classes[] = 'sgs-form--field-cols-' . $sgs_field_columns_from;
+}
+
 $sgs_form_style_engine_input = array();
 
 if ( ! empty( $sgs_form_style_group['color'] ) && is_array( $sgs_form_style_group['color'] ) ) {

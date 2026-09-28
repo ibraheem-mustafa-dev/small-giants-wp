@@ -428,6 +428,12 @@
 			"type": "number",
 			"default": 2
 		},
+		"fieldColumnsFrom": {
+			"type": "string",
+			"enum": [ "560", "480", "400", "320" ],
+			"default": "560",
+			"description": "The form's own CONTAINER width (not the viewport) at which half/third fields sit side by side — a @container sgs-form threshold (style.css). Default 560 matches the unmodified stylesheet exactly (no modifier class emitted). Lower it when the form is nested in a column narrower than 560px (a two-column page split, a sidebar) so half-width fields still pair up there."
+		},
 		"layout": {
 			"type": "string",
 			"enum": [
