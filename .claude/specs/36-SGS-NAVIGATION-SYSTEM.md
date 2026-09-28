@@ -216,6 +216,31 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` (the two blocks were one menu block; every item-level control
   exists on both unless it is meaningless in one form). Unset sides keep the defaults (top-level 8px 12px,
   submenu 16px inline-start). All four hover pairs are touch-guarded via `sgs_hover_state_rules()`.
+  Both are emitted by `plugins/sgs-blocks/includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css` for
+  either block; the sublink default is `--sgs-nav-sublink-pad-start` (16px), which `itemPaddingShiftHover` adds to.
+  `itemMotionDuration`/`itemMotionEasing` time the item's own colour and background transition
+  (`includes/nav-menu-item-transition-css.php::sgs_nav_item_transition_css`; unset keeps the fast token) as well
+  as the label roll.
+- **Bar item hover scope and caret (U-18).** `sgs/nav-bar-menu::itemHoverScope` `all` | `with-submenu`: with
+  `with-submenu` every hover paint channel (text, ground, opacity, border swap/sweep, highlight weight) applies
+  only to items that open a dropdown or mega panel (`includes/nav-menu-item-hover-scope-css.php`). The caret takes
+  `submenuCaretSize`, `submenuCaretGap`, `submenuCaretOpacity`/`submenuCaretOpacityHover` and its open turn
+  `submenuCaretTurnDuration` + `submenuCaretTurnEasing`(`Custom`) (`includes/nav-menu-caret-css.php`). The bar's
+  scrim fades over `scrimFadeDuration`, mirroring `sgs/nav-drawer`. `submenuItemStaggerScope` `columns` | `rows`
+  staggers either a panel's columns or every link row and card inside them. With `triggerSurface` on, plain
+  non-interactive content in the trigger row passes its tap to the menu trigger; links, buttons and inputs keep
+  their own (`includes/nav-trigger-surface-css.php`).
+- **Drawer row states and extras (U-18).** `sgs/nav-drawer-menu::itemColourOpen` paints a row's label while its own
+  accordion section is open (distinct from Current, which is page identity). A top-level item with children and
+  no destination of its own (empty URL, `#`, or an object whose post type is not publicly queryable, such as
+  `sgs_mega_menu`) renders its whole row as the `<summary>` toggle; an item that is a real page keeps label = link,
+  caret = toggle (`includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_has_real_destination`).
+  `itemOrnamentRevealMode` (tier: `static` | `hover-draw`) hides the ornament at rest and draws its SVG strokes in
+  sequence on hover or focus, and `itemOrnamentReserveSpace` keeps its space at rest
+  (`includes/nav-drawer-menu-ornament-reveal-css.php`). `itemTrailingIcons` (per-item map), `itemTrailingIconColour`
+  and `itemTrailingIconSize` put a trailing glyph on any row; the shared IconPicker takes a pasted custom SVG,
+  re-sanitised server-side with `sgs_svg_kses_allowed_tags()`. The drawer also takes the bar's badge colours and
+  `disabledItemIds`/`itemDisabledColour`.
 - **Item type scale (U-4).** A menu item's font size (`itemFontSize`/`itemFontSizeUnit`, `submenuFontSize`/
   `submenuFontSizeUnit` on both menu blocks) and `sgs/business-info`'s own text sizes take `vw`/`vh` alongside
   `px`/`em`/`rem`, through the shared unit list (`plugins/sgs-blocks/src/components/TypographyControls.js::FONT_SIZE_UNIT_SLUGS`),
@@ -365,37 +390,41 @@ icon-picker object `{source,name}`, default `{lucide, x}`, resolved by
 never goes below 44px), the close-label typography set, and the `toggleCloseColour*` colour/hover/gradient
 set. Gradient is routed per icon source by `sgs_icon_gradient_css()`; never restrict the icon source enum.
 
-*NOT BUILT — the rest of the chrome row:*
+*NOT BUILT:*
 - **Canvas/frontend icon parity.** The frontend renders the picker-driven `closeIcon`; the editor canvas
-  preview (`plugins/sgs-blocks/src/blocks/nav-drawer/edit.js`) renders the `close` glyph imported from
-  `@wordpress/icons` for `separate-x` and `icon-and-text`. Both MUST resolve to the same picker-driven source,
-  or the canvas and the frontend show different icons.
-- **An optional logo** — show/hide, responsive per device. Use the per-tier scalar pattern
-  `sgs/responsive-logo` uses (`plugins/sgs-blocks/src/blocks/responsive-logo/block.json::attributes.logoId` /
-  `.logoUrl`, plus their `…Tablet` / `…Mobile` siblings): a logo is art-direction per device, not one image
-  with controls, so the generic image-controls path does not fit it. The shared media-atoms family
-  (`plugins/sgs-blocks/src/components/media/atoms/registry.js`, PHP twins under
-  `plugins/sgs-blocks/includes/media/atoms/`) is real but is not the logo pattern.
-- **An optional free slot** — ONE of heading / label / text / button. Button styling via the shared
-  `sgs_button_element_style_css()` with its own prefix (precedent: `sgs/modal`, `sgs/product-card`); heading
-  level switchable per `product-card`'s `headingLevel` (`css_property: tag`). This exists because two
-  references put a non-logo item in the close row — a "YOU MADE IT" label and a "LET'S TALK!" CTA — while 4
-  of the 7 close-bearing references are logo+close only, so the slot is optional, not a layout system.
-- **The row itself** carries background / padding / height controls. **The row is NET-NEW markup:** the × is
-  a bare sibling `<button>` inside the `<dialog>` (built as
-  `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$close_html`, printed as the second argument of the
-  final `<dialog>` `printf`), so a row element must be BUILT before it can be styled, and the hardcoded
-  `padding-top:64px` in `plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.sgs-nav-drawer__body` (which
-  reserves space for the floating ×) goes away as part of that work — the row occupies that space instead.
+  preview MUST resolve the same picker-driven source, or the canvas and the frontend show different icons.
 
-⛔ **THE CHROME ROW REPLACES THE SEEDED BLOCKS — it does not sit above them.**
-`plugins/sgs-blocks/src/blocks/nav-drawer/edit.js::TEMPLATE` seeds `[ sgs/nav-drawer-menu,
-sgs/responsive-logo, sgs/button ]` today. When the chrome row lands, **`sgs/responsive-logo` and
-`sgs/button` leave that template** — their roles become the row's logo element and free slot. Leaving them
-produces a drawer with two logos and two CTAs, one of each in chrome and one still droppable in the body.
-**Done-check (a build passing every other gate can still fail this one):** `edit.js`'s `TEMPLATE` contains
-`sgs/nav-drawer-menu` ONLY, and the logo / free-slot markup appears in `render.php`'s printed chrome, never
-inside `useInnerBlocksProps` output. Assert both; no existing gate covers this.
+**The chrome row (built, U-18).** `plugins/sgs-blocks/includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome`
+prints `.sgs-nav-drawer__chrome`, a flex row outside InnerBlocks; its CSS is
+`includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css`. The × stays first in the DOM (focus lands on it)
+and `order` places it (`top-row-end` 1 with an auto inline-start margin, `top-row-start` -1, `same-slot`
+absolute within the row). The row takes `chromeRowHeight`, `chromeRowGap`, `chromeRowPadding` (tier objects;
+defaults 64px / 12px / 0 12px inside `:where()`) and `chromeRowBg`/`chromeRowBgGradient`, and replaces the body's
+reserved 64px: `.sgs-nav-drawer__body` padding-top is `var(--sgs-nd-close-room, 0px)`.
+- **Logo:** `chromeLogoId`/`chromeLogoUrl` plus `…Tablet`/`…Mobile` art direction (the `sgs/responsive-logo`
+  per-tier scalar pattern) in a `<picture>`, `chromeLogoAlt`, `chromeLogoLink` (home; named "<site name> home"
+  without alt text), `chromeLogoWidth` and `chromeLogoShow` (tier objects).
+- **One free slot:** `chromeSlotType` heading | label | text | button, `chromeSlotText`, `chromeSlotHeadingLevel`
+  (h2 | h3 | h4 | p), `chromeSlotPlacement` after-logo | centre | end, `chromeSlotShow`, the `chromeSlot`
+  typography set and `chromeSlotColour`/`…Gradient`. The button type is a link (`chromeSlotUrl`,
+  `chromeSlotNewTab`) styled by `sgs_button_element_style_css()` with the `chromeButton` prefix.
+- **Close box:** `closeBorderWidth` (one box for every device, the border-control rule), `closeBorderStyle`,
+  `closeBorderColour` (style written only with a width) and `closeIconSize` (tier); the hit area never drops
+  below 44px (`::after`).
+- A row holding only the × carries `--close-only`; under the `trigger` close style the row goes with the × and
+  the body gets its padding back (`--sgs-nd-close-room`), so an empty row costs no space.
+- `plugins/sgs-blocks/src/blocks/nav-drawer/edit.js::TEMPLATE` seeds `sgs/nav-drawer-menu` ONLY; the logo and
+  slot are chrome, never blocks, so a drawer never carries two logos or two CTAs.
+
+**Drawer motion (U-18).** `entryAnimation` `grow-from-anchor`: the box's own height grows from its anchor's
+height (the header's for `header-box`, else 0) to full with the top fixed, and shrinks back on close; never a
+clip. `plugins/sgs-blocks/src/blocks/nav-drawer/grow-from-anchor.js` measures `--sgs-nd-grow-from/-to` in the
+dialog's own pixels and keeps `-to` current while open. Item entrance shape: `itemStaggerAxis` (tier: vertical |
+start | end, mirrored right-to-left) and `itemStaggerReveal` (translate | clip: `inset(0 0 100% 0)` to
+`inset(0)` with the travel, no fade), emitted by
+`includes/helpers-nav-drawer-stagger-shape.php::sgs_nav_drawer_stagger_shape`. With the `header-box` anchor the
+panel takes `zoom: var(--sgs-header-fluid-scale, 1)` and divides each measured box length by it, so it scales
+with a fluid header (`sgs/site-header::fluidScale`).
 
 **2. The body** — the single InnerBlocks region, `templateLock:false`. Seeds `sgs/nav-drawer-menu` with the
 primary menu preselected on every new drawer. Everything beyond that is ordinary blocks — `sgs/container`

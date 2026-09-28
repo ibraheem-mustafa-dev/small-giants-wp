@@ -851,7 +851,7 @@ easing while the end-state shadow still applies. Live-verified at 1440px and 375
 `headerSticky`; `attributes.headerFloatInset` is a tier-of-boxes gap to the viewport edges (default `1rem` top,
 left and right, each floored by the device safe-area inset); `attributes.headerFloatCollapse`
 (`{enabled, breakpoint}`, off by default) switches the pill to full width, square, below the breakpoint, so the
-pill persists at mobile unless the operator opts out. The width cap is the existing `maxWidth`, the shape is the
+pill persists at mobile unless the operator opts out. `attributes.fluidScale` (`{enabled, breakpoint}`, off by default) scales the whole header with the viewport above the breakpoint (`zoom: max(1, tan(atan2(100vw, <breakpoint>px)))`, `includes/sgs-header-fluid-scale.php`), rescales the float inset, and publishes the unitless factor as `--sgs-header-fluid-scale` on `:root` for a drawer anchored to the header box. `attributes.rowsAlign` (tier: start | center | end | stretch; unset is centre) places the rows inside a header taller than them (`includes/sgs-header-rows-align-css.php`). The width cap is the existing `maxWidth`, the shape is the
 existing `borderRadius` and `shadow`, and the surface-ground trio (`surfaceBlur`, `surfaceSaturate`,
 `surfaceOpacity`, `includes/helpers-surface-ground.php`) gives the frosted look the reference measurements
 show (a pill with no shadow, border or fill); a faded ground (fantasy) is the header's own gradient fill

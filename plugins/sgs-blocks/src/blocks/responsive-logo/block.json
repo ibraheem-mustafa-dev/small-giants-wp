@@ -322,7 +322,7 @@
 				"desktop": {}
 			}
 		},
-		"hoverOpacity": {
+		"opacityHover": {
 			"type": "number",
 			"default": 0.85,
 			"description": "Fades the home link to this opacity on hover/focus (0-1; 1 = no visible change). Default 0.85: a subtle dip is the standard affordance signalling a linked logo is interactive, independent of whatever look shipped before this control existed. 0 disables the fade entirely."

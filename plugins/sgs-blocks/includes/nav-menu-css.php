@@ -24,6 +24,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// Helpers this module calls, loaded here so either menu block (or the editor's
+// REST render, where no bar may have run) finds them.
+require_once __DIR__ . '/nav-menu-item-padding-css.php';
+require_once __DIR__ . '/nav-menu-item-transition-css.php';
+require_once __DIR__ . '/nav-menu-item-hover-scope-css.php';
+
 if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	/**
 	 * Build the item/state-colour half of the nav blocks' scoped <style>.

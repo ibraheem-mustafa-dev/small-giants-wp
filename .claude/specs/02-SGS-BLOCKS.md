@@ -1360,6 +1360,8 @@ plus scoped custom properties; per-block defaults from `supports.sgs.hoverDefaul
 - `sgsHoverImageZoom`, `sgsHoverZoom` (%, 0 = the block's 110%), `sgsHoverZoomDuration` (ms) — the photo zoom, read by
   each block's own image rule as `scale(var(--sgs-hover-zoom, 1.1))`
 - `sgsHoverDuration` (a duration token), `sgsHoverDurationMs` (exact ms, overrides the token), `sgsHoverEasing`
+  (a token, or `custom` with `sgsHoverEasingCustom`, validated by `sgs_motion_easing_css()`)
+- `sgsHoverOpacity` (0 to 1, 0 = off) — the hover fade, touch-guarded like the transform
 - `sgsHoverGrayscale`, `sgsHoverBorderAccent`, `sgsHoverTilt3D` **(BUILT)**, `sgsStaggerDelay`, `sgsFocusRing`
 - `sgsBlockLink`, `sgsBlockLinkTarget`, `sgsBlockLinkLabel` (opt-in `"blockLink"`) — a stretched overlay link
 - `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration` — click ripple

@@ -221,7 +221,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		maxWidthUnit,
 		maxHeightUnit,
 		linkToHome,
-		hoverOpacity,
+		opacityHover,
 		alt,
 		logoDecorative,
 		borderColour,
@@ -641,8 +641,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						<RangeControl
 							label={ __( 'Hover opacity', 'sgs-blocks' ) }
 							help={ __( 'Fades the logo link on hover/focus. 1 = no fade. Default 0.85 signals it is clickable.', 'sgs-blocks' ) }
-							value={ hoverOpacity ?? 0.85 }
-							onChange={ ( val ) => setAttributes( { hoverOpacity: val ?? 0 } ) }
+							value={ opacityHover ?? 0.85 }
+							onChange={ ( val ) => setAttributes( { opacityHover: val ?? 0 } ) }
 							min={ 0 }
 							max={ 1 }
 							step={ 0.05 }

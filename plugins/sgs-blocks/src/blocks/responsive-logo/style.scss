@@ -51,7 +51,7 @@
 		transition: opacity 150ms ease;
 
 		// --sgs-logo-hover-opacity is emitted by render.php from the block's
-		// own `hoverOpacity` attribute (a real editor control — Bean's
+		// own `opacityHover` attribute (a real editor control — Bean's
 		// framework has no inline style="" contract, Spec 32) — never a
 		// hardcoded literal here. The :hover rule below is guarded against
 		// sticky touch-hover at build time (scripts/hover-guard postbuild

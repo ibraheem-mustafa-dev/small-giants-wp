@@ -103,8 +103,8 @@ $bg_colour_hover_gradient = isset( $attributes['backgroundColourHoverGradient'] 
 // Hover opacity on the home link (0-1; 0 = off, the same sentinel every other
 // numeric hover control in the framework uses). Replaces the hardcoded
 // `&__link:hover{opacity:0.85}` that used to live in style.scss with a real
-// editor control — see block.json's `hoverOpacity` attribute.
-$hover_opacity = isset( $attributes['hoverOpacity'] ) ? (float) $attributes['hoverOpacity'] : 0.0;
+// editor control — see block.json's `opacityHover` attribute.
+$hover_opacity = isset( $attributes['opacityHover'] ) ? (float) $attributes['opacityHover'] : 0.0;
 $hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
 
 // Validate animationStyle against allowed values.
