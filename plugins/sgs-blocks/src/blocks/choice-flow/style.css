@@ -688,6 +688,21 @@
 	background-color: var(--wp--preset--color--surface-alt, #fff);
 }
 
+/* The opened table of boxes (a prescription): rows 8px apart, 46px boxes and
+   a 13.5px note under them, as the lens draft's table. */
+.sgs-choice-flow .sgs-form-step.sgs-choice-flow__step--inline:has(.sgs-form-field__row-heading) {
+	row-gap: 8px;
+}
+
+.sgs-choice-flow .sgs-choice-flow__step--inline:has(.sgs-form-field__row-heading) .sgs-form-field__input {
+	min-height: 46px;
+	padding-block: 0;
+}
+
+.sgs-choice-flow .sgs-choice-flow__step--inline:has(.sgs-form-field__row-heading) .sgs-choice-flow-result__body {
+	font-size: 13.5px;
+}
+
 /* A table of boxes with row headings keeps the 32px heading gutter inside the panel. */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline:has(> .sgs-form-field:not(.sgs-form-field--file)):has(.sgs-form-field__row-heading) {
 	padding-left: calc(20px + 32px);
