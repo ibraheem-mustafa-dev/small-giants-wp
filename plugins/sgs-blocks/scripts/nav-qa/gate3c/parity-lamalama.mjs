@@ -9,11 +9,11 @@ const LIVE = 'https://sandybrown-nightingale-600381.hostingersite.com/qa-copy-la
 const RPILL = 'header.ll-header > div.fixed';
 const LBAR = 'header.sgs-site-header';
 const LDRAWER = `() => document.querySelector('dialog.sgs-nav-drawer[open]')`;
-const inSel = ( rootJs, re, tags = '*' ) => ( { js: `() => { const r = (${ rootJs })(); return r && [...r.querySelectorAll('${ tags }')].filter((e) => e.getClientRects().length && /${ re }/i.test(e.innerText.trim())).sort((a, b) => a.innerText.length - b.innerText.length)[0]; }` } );
+const inSel = ( rootJs, re, tags = '*' ) => ( { js: `() => { const r = (${ rootJs })(); return r && [...r.querySelectorAll('${ tags }')].filter((e) => e.getClientRects().length && /${ re }/i.test((e.innerText || '').trim())).sort((a, b) => a.innerText.length - b.innerText.length)[0]; }` } );
 const rpill = `() => document.querySelector('${ RPILL }')`;
 // The message in the pill's top row (the reference rotates it; the copy's is a notice banner): only a text in
-// the first 50px of the pill counts, so a message that is absent reads as absent.
-const message = ( root ) => ( { js: `() => { const r = document.querySelector('${ root }'); if (!r) return null; const top = r.getBoundingClientRect().top; return [...r.querySelectorAll('*')].find((e) => e.children.length === 0 && e.innerText && e.innerText.trim() && getComputedStyle(e).opacity !== '0' && e.getClientRects().length && e.getBoundingClientRect().top - top < 40 && e.getBoundingClientRect().width > 20) || null; }` } );
+// the pill's top row, centred and set in capitals, counts, so a message that is absent reads as absent.
+const message = ( root ) => ( { js: `() => { const r = document.querySelector('${ root }'); if (!r) return null; const top = r.getBoundingClientRect().top; return [...r.querySelectorAll('*')].find((e) => e.children.length === 0 && e.innerText && e.innerText.trim() && getComputedStyle(e).opacity !== '0' && getComputedStyle(e).textTransform === 'uppercase' && e.getClientRects().length && e.getBoundingClientRect().top - top < 40 && e.getBoundingClientRect().width > 20 && Math.abs(e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2 - (r.getBoundingClientRect().left + r.getBoundingClientRect().width / 2)) < 40) || null; }` } );
 
 // lamalama plays an intro before its pill is interactive; every state starts from a fresh page.
 const fresh = {
@@ -26,6 +26,9 @@ const fresh = {
 // The reference's pill message rotates on a timer (GAP-CHECKLIST.md section 11, exceptions): its words are
 // dropped from inventories; the message is compared by presence, type and place.
 const ROTATING = "nice entrance|you made it|let.s do damage|looking sharp today|good to see you|welcome back";
+// The reference's in-pill contact form keeps its Cancel and Next buttons in the pill; they appear in no open
+// screenshot at any width, so they are dropped from the open drawer's inventory.
+const FORM = `${ ROTATING }|^cancel$|^next$`;
 const burger = { draft: 'button.js-menu-toggle-button', live: '.sgs-nav-bar-menu__burger' };
 const state = ( name, act ) => ( { name, ...Object.fromEntries( [ 'draft', 'live' ].map( ( side ) => [ side, async ( h ) => {
 	await fresh[ side ]( h );
@@ -50,9 +53,9 @@ export default {
 		{ name: 'burger', states: [ 'closed' ], draft: burger.draft, live: burger.live, text: false, anchor: 'pill', hover: true },
 		{ name: 'message', states: [ 'closed' ], draft: message( RPILL ), live: message( LBAR ), text: false, anchor: 'pill' },
 		{ name: 'tap-result', states: [ 'tap-message' ], draft: RPILL, live: { js: `() => document.querySelector('dialog.sgs-nav-drawer[open]') || document.querySelector('${ LBAR }')` }, text: false, structure: false, props: [] },
-		{ name: 'drawer', states: [ 'open' ], draft: RPILL, live: { js: LDRAWER }, text: false, inventory: true, inventoryIgnore: ROTATING, props: [ 'border-radius' ] },
+		{ name: 'drawer', states: [ 'open' ], draft: RPILL, live: { js: LDRAWER }, text: false, inventory: true, inventoryIgnore: FORM, props: [ 'border-radius' ] },
 		{ name: 'blur', states: [ 'open' ], draft: 'div.js-menu-blur', live: { js: `() => [...document.querySelectorAll('[class*="-scrim"]')].find((s) => parseFloat(getComputedStyle(s).opacity) > 0)` }, text: false, structure: false, timeline: true, props: [ 'opacity', 'backdrop-filter' ] },
-		{ name: 'showreel', states: [ 'open' ], draft: inSel( `() => document.querySelector('header.ll-header')`, '^this is us$', 'button' ), live: inSel( `() => document.body`, '^this is us$', 'button,a' ), text: false },
+		{ name: 'showreel', states: [ 'open' ], draft: inSel( `() => document.querySelector('header.ll-header')`, '^this is us', '*' ), live: inSel( `() => document.body`, '^this is us', '*' ), text: false },
 		{ name: 'item-work', states: [ 'open' ], draft: inSel( rpill, '^work$', 'a' ), live: inSel( LDRAWER, '^work$', 'a' ), hover: true, anchor: 'drawer' },
 		{ name: 'item-careers', states: [ 'open' ], draft: inSel( rpill, '^careers$', 'a' ), live: inSel( LDRAWER, '^careers$', 'a' ), hover: true },
 		{ name: 'cta-pitchdeck', states: [ 'open' ], draft: `${ RPILL } button.ll-part--buttons-button`, live: { js: `() => { const d = (${ LDRAWER })(); return d && d.querySelector('.sgs-button--outline'); }` }, text: false, hover: true, anchor: 'drawer' },

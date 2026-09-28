@@ -88,6 +88,7 @@ export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 			const before = await surface();
 			await page.mouse.click( point.x, point.y );
 			await after( opts );
+			await page.waitForLoadState( 'domcontentloaded' ).catch( () => {} );
 			const now = await surface().catch( () => ( { url: 'unknown', open: 0, fixed: 0, shown: 0 } ) );
 			const outcome = now.url.split( '?' )[ 0 ] !== before.url.split( '?' )[ 0 ] ? 'navigated'
 				: now.open > before.open || now.fixed - before.fixed > 40 || now.shown - before.shown >= 3 ? 'opened' : 'nothing';

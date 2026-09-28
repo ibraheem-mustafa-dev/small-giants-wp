@@ -25,12 +25,20 @@ const LBAR = 'header.sgs-site-header';
 const item = ( scope, label, tag ) => ( { text: `^${ label }$`, tag, within: scope } );
 const caret = ( scope, label, tag ) => ( { js: `() => { const b = [...document.querySelectorAll('${ scope } ${ tag }')].find((x) => x.offsetParent && /^${ label }$/i.test(x.innerText.trim())); const s = b && b.querySelector('svg'); return s && s.parentElement.tagName === 'SPAN' && s.parentElement.children.length === 1 ? s.parentElement : s; }` } );
 
-// Each panel state points at its bar item; a no-op where the bar is a burger.
-const panel = ( name, label ) => ( {
-	name,
-	draft: ( h ) => h.hover( item( 'header nav', label, 'button' ), { wait: 900 } ),
-	live: ( h ) => h.hover( item( LBAR, label, 'button' ), { wait: 900 } ),
-} );
+// Each panel state moves the pointer off the header, then points at its bar item (hovering again once if
+// no panel opened: the draft closes on a 170ms leave timer); a no-op where the bar is a burger.
+const openPanel = ( scope, label, root ) => async ( h ) => {
+	for ( let tries = 0; tries < 2; tries++ ) {
+		await h.page.mouse.move( 1, 700 );
+		await h.wait( 400 );
+		await h.hover( item( scope, label, 'button' ), { wait: 900 } );
+		if ( ! ( await h.page.evaluate( ( [ l, src ] ) => !! document.querySelector( 'header' ) && new Function( `return (${ src })();` )() && l, [ label, root ] ) ) ) {
+			continue;
+		}
+		return;
+	}
+};
+const panel = ( name, label ) => ( { name, draft: openPanel( 'header nav', label, DPANEL ), live: openPanel( LBAR, label, LPANEL ) } );
 // Each drawer state starts from a fresh page, so an earlier tap (a label that navigates) cannot leak into it.
 const drawer = ( then ) => ( {
 	draft: async ( h ) => {
@@ -57,7 +65,7 @@ const LLABEL = inRoot( LDRAWER, '^about$', 'a' );
 export default {
 	name: 'indus',
 	mode: 'header',
-	draft: { url: DRAFT },
+	draft: { url: DRAFT, open: ( h ) => h.wait( 1500 ) },
 	live: { url: LIVE },
 	states: [
 		{ name: 'opening' },
@@ -87,11 +95,13 @@ export default {
 		{ name: 'about-aside', states: [ 'panel-about' ], draft: { js: `() => { const p = (${ DPANEL })(); return p && p.firstElementChild && p.firstElementChild.children[1]; }` }, live: { js: `() => { const p = (${ LPANEL })(); return p && p.querySelector('.sgs-mega-aside'); }` }, text: false, props: [ 'border-left-width', 'padding-top', 'padding-left' ] },
 		{ name: 'about-tag', states: [ 'panel-about' ], anchor: 'about-panel', draft: inRoot( DPANEL, '^since 1994$', 'span' ), live: inRoot( LPANEL, '^since 1994$', 'span' ) },
 		{ name: 'about-link', states: [ 'panel-about' ], anchor: 'about-panel', draft: inRoot( DPANEL, '^read our story', 'a' ), live: inRoot( LPANEL, '^read our story', 'a' ), hover: true },
+		{ name: 'about-frame', states: [ 'panel-about' ], anchor: 'about-panel', draft: { js: `() => { const a = (${ DPANEL })(); const s = a && a.firstElementChild && a.firstElementChild.children[1]; return s && s.firstElementChild; }` }, live: { js: `() => { const p = (${ LPANEL })(); const s = p && p.querySelector('.sgs-mega-aside'); return s && s.firstElementChild; }` }, text: false, props: [ 'border-top-width', 'border-top-color', 'border-radius', 'background-color' ] },
 		// Sectors and Brands panels
 		{ name: 'sectors-panel', states: [ 'panel-sectors' ], draft: { js: DPANEL }, live: { js: LPANEL }, text: false, inventory: true, props: [ 'padding-top' ] },
 		{ name: 'sectors-card-1', states: [ 'panel-sectors' ], draft: inRoot( DPANEL, '^food service', 'a' ), live: { js: `() => [...document.querySelectorAll('.sgs-mega-panel .sgs-container')].find((c) => c.offsetParent && getComputedStyle(c).borderRadius === '18px' && /Food Service/.test(c.innerText))` }, hover: true, text: false, anchor: 'sectors-panel' },
 		{ name: 'brands-panel', states: [ 'panel-brands' ], draft: { js: DPANEL }, live: { js: LPANEL }, text: false, inventory: true, props: [ 'padding-top' ] },
 		{ name: 'brands-eyebrow', states: [ 'panel-brands' ], anchor: 'brands-panel', draft: inRoot( DPANEL, '^our brands$', 'div' ), live: inRoot( LPANEL, '^our brands$', 'p' ) },
+		{ name: 'brands-aside', states: [ 'panel-brands' ], draft: { js: `() => { const p = (${ DPANEL })(); return p && p.firstElementChild && p.firstElementChild.children[1]; }` }, live: { js: `() => { const p = (${ LPANEL })(); return p && p.querySelector('.sgs-mega-aside'); }` }, text: false, props: [ 'border-left-width', 'border-left-color', 'justify-content', 'padding-left' ] },
 		{ name: 'brands-cta', states: [ 'panel-brands' ], draft: inRoot( DPANEL, '^view all brands', 'a' ), live: inRoot( LPANEL, '^view all brands', 'a' ), hover: true },
 		// Drawer
 		{ name: 'drawer', states: [ 'drawer-open', 'drawer-about' ], draft: { js: DDRAWER }, live: { js: LDRAWER }, text: false, inventory: true, props: [ 'background-color' ] },
@@ -102,10 +112,9 @@ export default {
 		{ name: 'drawer-about-caret', states: [ 'drawer-open' ], draft: { js: `() => { const b = (${ DACC.js })(); return b && b.querySelector('svg'); }` }, live: { js: `() => { const s = (${ LACC.js })(); return s && s.querySelector('svg'); }` }, text: false, props: [ 'opacity', 'transform' ] },
 		{ name: 'drawer-linkedin', states: [ 'drawer-open' ], draft: inRoot( DDRAWER, '^in$', 'span' ), live: 'dialog[open] a[aria-label=LinkedIn]', text: false, anchor: 'drawer', anchorLeft: true },
 		{ name: 'drawer-email', states: [ 'drawer-open' ], draft: 'a[aria-label=Email]', live: 'dialog[open] a[aria-label=Email]', text: false, anchor: 'drawer', anchorLeft: true },
-		{ name: 'acc-label', states: [ 'drawer-about' ], draft: DACC, live: LLABEL, props: [ 'color', 'font-size', 'font-weight' ] },
+		{ name: 'acc-label', states: [ 'drawer-about', 'drawer-tap-label' ], draft: DACC, live: LLABEL, props: [ 'color', 'font-size', 'font-weight' ] },
 		{ name: 'acc-row-1', states: [ 'drawer-about' ], draft: inRoot( DDRAWER, '^01\\s*our story', 'a' ), live: inRoot( LDRAWER, '^01\\s*our story', 'div' ) },
 		{ name: 'acc-tag', states: [ 'drawer-about' ], draft: inRoot( DDRAWER, '^since 1994$', 'span' ), live: inRoot( LDRAWER, '^since 1994$', 'span' ) },
-		{ name: 'tap-probe', states: [ 'drawer-tap-label' ], draft: { js: DDRAWER }, live: { js: `() => document.body` }, text: false, structure: false, props: [] },
 	],
 	review: {},
 	accept: [],

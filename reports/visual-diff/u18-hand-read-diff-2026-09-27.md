@@ -147,3 +147,46 @@ Classes of evidence this diff rests on (the walker's current reach is compared i
 5. Element order inside the drawer and panels, and elements present on one side only (logo row, feature card, "This is Us", glyphs).
 6. Sizes at 1920 as well as 1440 (viewport-scaled rem).
 7. What takes a click at a point (the pill text overlay) and what a click on a drawer label does (opens vs navigates).
+
+## Steps 2 to 5: the walker against this diff (2026-09-28)
+
+**Step 2, walker as it was** (configs `plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-indus.mjs` and `parity-lamalama.mjs`,
+using only the existing features). It found about half the rows. It missed:
+- every panel-link and card hover, because an earlier bar hover closed the panel and the pair was skipped silently;
+- all entrance motion, because running motion was read after the state's own wait;
+- `::before` and child grounds (read as transparent, which gave false positives);
+- horizontal positions, element order, and elements present on one side only (logo row, glyphs, socials, "This is Us");
+- the pill text taking the click (L9), and a drawer label navigating instead of opening (I-D9);
+- the scramble (L5) and the hover marker (L4);
+- L10, because its 375 was a desktop window and the site hides the message by device.
+
+**Step 4, header mode added to the walker** (`scripts/parity/GAP-CHECKLIST.md` section 11). Each check has a
+self-baseline (a reference against itself reads 0 at every width) and a planted-CSS negative control that turns it
+red. Both are recorded in the commit messages.
+
+**Step 5, final runs** (`reports/visual-diff/u18-walker-indus-2026-09-28.md`, `u18-walker-lamalama-2026-09-28.md`;
+self-baselines 0 open at every width for both references):
+
+| Rows | Walker result |
+|---|---|
+| Indus bar I-B1 to I-B15 | all found except I-B14: the header's 1px height difference is within the 2px box tolerance |
+| Indus panels I-P1 to I-P20 | all found. I-P20 (panel switch) is found as timing (Brands grows 1.41x at 30ms on the copy), with no dedicated state |
+| Indus motion I-M1 to I-M4 | found for the draft **as rendered**. The source-intended entrances need Bean's decision (top of this report) |
+| Indus drawer I-D1 to I-D14 | all found (order, missing logo row, close, CTA, email/call, type, hairline, caret, label navigates, open colour, accordion body, socials, hover) |
+| lamalama L1 to L10 and L-O rows | all found: glyphs (dots/5 vs svg/6; Careers svg/4 vs none), "This is Us" presence, hover ground and marker, scramble, rise (`timeline:children`), grow-from-pill (`timeline:growth`), 1920 scaling, logo/burger/message offsets, pill text tap (opened vs nothing), message absent at 375 on a phone, text indent 43 vs 12 |
+
+**Found by the walker only (beyond the hand-read):**
+- the Indus copy's panel sits inside the header element where the draft's is a sibling of the bar (a structural
+  fact, nothing painted);
+- the lamalama copy's first drawer link opens focused, with a gold glow (the dialog focuses it on open);
+- the message line-height is 20 against 16.
+
+**Exceptions, named in GAP-CHECKLIST section 11:**
+- canvas logo (content not DOM-readable);
+- rotating message (words ignored);
+- scrambled glyphs (only the fact of change is compared);
+- video content;
+- the reference's hidden in-pill contact form (Cancel/Next, dropped from the inventory).
+
+Next is step 6 (sort each row into composition or framework capability, then plan the fixes). Its first input is
+Bean's decision on the draft's entrances.

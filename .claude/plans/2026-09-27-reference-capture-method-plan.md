@@ -76,6 +76,11 @@ configs already live in `sites/eye-care-ward-end/build/qa/parity/`). Steps:
    (`--inject-live-css`) that turns it red.
 5. **Re-run** until the walker reaches the hand-read diff or better on both copies. Its report is then the one
    clear diff per copy: structure, contents, styling and behaviour of every element.
+**Steps 1 to 5 done (2026-09-28):** hand-read diff and step 2-5 comparison `reports/visual-diff/u18-hand-read-diff-2026-09-27.md`;
+walker header mode (`scripts/parity/GAP-CHECKLIST.md` section 11); walker reports
+`reports/visual-diff/u18-walker-{indus,lamalama}-2026-09-28.md`. Open before step 6: Bean decides whether the Indus
+reference is the draft as rendered (no panel or drawer entrance: its runtime never runs them) or its source intent.
+
 6. **Then fix**, from that diff only: sort each row into composition or framework capability, and plan the fixes.
    No fixing happens before step 5 closes.
 

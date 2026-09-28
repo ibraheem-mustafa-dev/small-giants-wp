@@ -19,7 +19,9 @@ export async function sampleTimeline( page, pairs, side, RESOLVE ) {
 	for ( const t of SAMPLES ) {
 		await page.waitForTimeout( t - last );
 		last = t;
-		samples.push( { t, data: await page.evaluate( timelineSample, [ finders, RESOLVE ] ) } );
+		// A tap that navigates destroys the page mid-sample: the sample reads as nothing there.
+		const data = await page.evaluate( timelineSample, [ finders, RESOLVE ] ).catch( () => Object.fromEntries( roots.map( ( p ) => [ p.name, null ] ) ) );
+		samples.push( { t, data } );
 	}
 	return { samples, spent: last };
 }

@@ -13,15 +13,23 @@ export function paintedExtras( [ finder, resolveSrc ] ) {
 	const clear = ( c ) => ! c || c === 'transparent' || /rgba\([^)]*,\s*0\)$/.test( c );
 	const covers = ( b ) => b.width * b.height >= 0.8 * r.width * r.height;
 	const visible = ( cs ) => cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat( cs.opacity ) > 0.05;
+	// A colour with its layer's opacity folded into the alpha, so the same paint reads the same.
+	const fold = ( c, op ) => {
+		const ctx = document.createElement( 'canvas' ).getContext( '2d' );
+		ctx.fillStyle = c;
+		ctx.fillRect( 0, 0, 1, 1 );
+		const [ R, G, B, A ] = ctx.getImageData( 0, 0, 1, 1 ).data;
+		return `rgba(${ R }, ${ G }, ${ B }, ${ Math.round( ( A / 255 ) * parseFloat( op ) * 100 ) / 100 })`;
+	};
 	let ground = 'none';
 	const own = getComputedStyle( el );
 	if ( ! clear( own.backgroundColor ) ) {
-		ground = own.backgroundColor;
+		ground = fold( own.backgroundColor, own.opacity );
 	} else {
 		for ( const p of [ '::before', '::after' ] ) {
 			const ps = getComputedStyle( el, p );
 			if ( ps.content !== 'none' && visible( ps ) && ! clear( ps.backgroundColor ) && parseFloat( ps.width ) * parseFloat( ps.height ) >= 0.8 * r.width * r.height ) {
-				ground = ps.backgroundColor;
+				ground = fold( ps.backgroundColor, ps.opacity );
 				break;
 			}
 		}
@@ -32,7 +40,7 @@ export function paintedExtras( [ finder, resolveSrc ] ) {
 			} );
 			if ( kid ) {
 				const cs = getComputedStyle( kid );
-				ground = parseFloat( cs.opacity ) < 1 ? cs.backgroundColor.replace( /\)$/, ` @${ cs.opacity })` ) : cs.backgroundColor;
+				ground = fold( cs.backgroundColor, cs.opacity );
 			}
 		}
 	}
@@ -65,9 +73,24 @@ export function inventory( [ finder, resolveSrc ] ) {
 		const b = e.getBoundingClientRect();
 		const cs = getComputedStyle( e );
 		const inside = b.right > rb.left && b.left < rb.right && b.bottom > rb.top && b.top < rb.bottom;
+		// Clipped to nothing by itself or an ancestor (a hidden form layer, a closed submenu), or
+		// outside an ancestor that hides its overflow.
+		for ( let a = e; a && a !== root; a = a.parentElement ) {
+			// Inside a closed <details> (other than its summary): collapsed, whatever its box says.
+			if ( 'DETAILS' === a.tagName && ! a.open && ! e.closest( 'summary' ) ) {
+				return false;
+			}
+			const ab = a.getBoundingClientRect();
+			if ( a !== e && 'visible' !== getComputedStyle( a ).overflow && ! ( b.right > ab.left && b.left < ab.right && b.bottom > ab.top && b.top < ab.bottom ) ) {
+				return false;
+			}
+			if ( /inset\((0(px|%)? )?0(px|%)? 100%|100%/.test( getComputedStyle( a ).clipPath ) ) {
+				return false;
+			}
+		}
 		return b.width > 0 && b.height > 0 && inside && cs.visibility !== 'hidden' && parseFloat( cs.opacity ) > 0.05;
 	};
-	const norm = ( s ) => ( s || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase();
+	const norm = ( s ) => ( s || '' ).replace( /[‘’]/g, "'" ).replace( /\s+/g, ' ' ).trim().toLowerCase();
 	const host = ( e ) => {
 		for ( let a = e.parentElement; a && a !== root.parentElement; a = a.parentElement ) {
 			const t = norm( a.innerText );
@@ -136,7 +159,8 @@ export function timelineSample( [ finders, resolveSrc ] ) {
 			out[ name ] = null;
 			continue;
 		}
-		// A leaf's pose includes its ancestors up to the root: a row that slides in moves its label.
+		// A pose includes the ancestors up to `upTo`: a row that slides in moves its label, a wrapper
+		// that fades in fades the panel inside it.
 		const pose = ( e, upTo ) => {
 			let op = 1;
 			let tf = 'none';
@@ -146,9 +170,6 @@ export function timelineSample( [ finders, resolveSrc ] ) {
 				op *= parseFloat( cs.opacity );
 				tf = 'none' !== cs.transform && 'matrix(1, 0, 0, 1, 0, 0)' !== cs.transform ? cs.transform : tf;
 				clip = 'none' !== cs.clipPath ? cs.clipPath : clip;
-				if ( ! upTo ) {
-					break;
-				}
 			}
 			return { op: Math.round( op * 100 ) / 100, tf, clip };
 		};
@@ -156,7 +177,7 @@ export function timelineSample( [ finders, resolveSrc ] ) {
 		const leaves = [ ...el.querySelectorAll( '*' ) ].filter( ( e ) => [ ...e.childNodes ].some( ( n ) => n.nodeType === 3 && n.textContent.trim() ) && e.getClientRects().length ).slice( 0, 6 );
 		const anims = document.getAnimations().filter( ( a ) => a.effect?.target && ( el.contains( a.effect.target ) || a.effect.target.contains( el ) ) )
 			.map( ( a ) => Math.round( a.effect.getTiming().delay || 0 ) );
-		out[ name ] = { w: Math.round( b.width ), h: Math.round( b.height ), ...pose( el, null ), leaves: leaves.map( ( x ) => pose( x, el ) ), delays: anims };
+		out[ name ] = { w: Math.round( b.width ), h: Math.round( b.height ), ...pose( el, document.documentElement ), leaves: leaves.map( ( x ) => pose( x, el ) ), delays: anims };
 	}
 	return out;
 }
