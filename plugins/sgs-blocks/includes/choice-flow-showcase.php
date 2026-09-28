@@ -30,7 +30,10 @@ if ( ! function_exists( 'sgs_choice_flow_question_intro_html' ) ) {
 		if ( '' === $intro ) {
 			return '';
 		}
-		return '<p class="sgs-choice-flow-question__intro">' . esc_html( $intro ) . '</p>';
+		// introWidth: a set width in characters as a modifier class (style.css), never an inline style.
+		$width = (string) ( $attributes['introWidth'] ?? '' );
+		$class = in_array( $width, array( '52', '56', '58', '60', '64', 'none' ), true ) ? ' sgs-choice-flow-question__intro--w' . $width : '';
+		return '<p class="sgs-choice-flow-question__intro' . esc_attr( $class ) . '">' . esc_html( $intro ) . '</p>';
 	}
 }
 

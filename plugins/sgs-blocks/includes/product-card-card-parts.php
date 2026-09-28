@@ -63,6 +63,8 @@ if ( ! function_exists( 'sgs_product_card_parts_css' ) ) {
 		$media_bg = (string) ( $attributes['mediaBackgroundColour'] ?? '' );
 		if ( '' !== $media_bg ) {
 			$css .= $root_sel . ' .product-card__media,' . $root_sel . ' .sgs-product-card__media-wrap{background:' . sgs_colour_value( $media_bg ) . ';}';
+			// The no-photo box is the photo area too: the same fill, no rule under it.
+			$css .= $root_sel . ' .product-card__no-image{background:' . sgs_colour_value( $media_bg ) . ';border-bottom:0;}';
 		}
 
 		$wishlist_border = (string) ( $attributes['wishlistBorderColour'] ?? '' );

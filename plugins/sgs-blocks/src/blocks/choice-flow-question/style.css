@@ -292,6 +292,15 @@
 	text-wrap: pretty;
 }
 
+/* introWidth: the question's own intro width (the lens draft runs 56ch on the
+   first question and 58ch on later ones). */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__intro--w52 { max-width: 52ch; }
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__intro--w56 { max-width: 56ch; }
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__intro--w58 { max-width: 58ch; }
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__intro--w60 { max-width: 60ch; }
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__intro--w64 { max-width: 64ch; }
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__intro--wnone { max-width: none; }
+
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__title {
 	font-family: var( --wp--preset--font-family--heading, inherit );
 	font-size: 28px;

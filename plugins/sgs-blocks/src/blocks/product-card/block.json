@@ -345,6 +345,26 @@
 					},
 					"_note": "Frame Card component: generic tag next to the product title shown when the resolved product carries a chosen WooCommerce product-attribute term or product tag (attributeTagSource/attributeTagTaxonomy/attributeTagTerm) — never hardcoded to one client's vocabulary (e.g. an optician site's 'Polarised' lens attribute). Distinct from the existing 'tag' element (trial/featured, keyed to variantStyle) and 'savingBadge' (media-overlay, independent of variant): this one sits inline beside the title, matching Frame Card.dc.html's title-row markup. css:color needed an EXPLICIT attrMap entry (2026-09-24 compliance fix) — the default `{prefix}Colour` convention would look for `attributeTagColour`, which does not exist; the real attribute is `attributeTagTextColour`, so the prior note claiming the convention resolved it was wrong and the colour reached the DB with no css_property (check-colour-attr-css-property finding). `attributeTagBorderWidth` (2026-09-24, Spec 35 C1 compliance fix) is new — border colour now lives in `SgsBorderControl` alongside width/radius rather than as a sibling `SgsColourPanel` row (radius stays the block's existing scalar `SgsLengthControl`, outside the border-control pair, per Spec 32 §6.1's pill/tag/badge scalar-radius carve-out — `onRadiusChange` is deliberately not wired to `SgsBorderControl`). Rendered via sgs_product_card_attribute_tag_markup()/sgs_product_card_wrap_title_with_attribute_tag() (src/blocks/product-card/attribute-tag.php — a block-directory-private file, NOT includes/product-card-builtin-render.php, because the typed-mode title element is owned by that shared file and this task's touch-only-this-block-directory scope could not edit it; the typed branch is instead wired by post-processing the shared render's returned HTML — see that file's own docblock)."
 				},
+				"noImageLabel": {
+					"label": "No-photo label",
+					"order": 18,
+					"clusters": [
+						"text"
+					],
+					"prefix": "noImageLabel",
+					"_note": "The text in the no-photo box (noImageLabel, e.g. 'Photo to come') shown on a product whose image is empty, WooCommerce's placeholder or the site's chosen placeholder image (includes/product-card-no-photo.php). Colour resolves by the default {prefix}Colour convention (noImageLabelColour)."
+				},
+				"priceRow": {
+					"label": "Price row",
+					"order": 19,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:margin-top": "priceRowSpaceAbove"
+					},
+					"_note": "priceRowSpaceAbove: extra space above the price row, over the card body's own gap between rows (includes/product-card-no-photo.php::sgs_product_card_no_photo_css)."
+				},
 				"cta": {
 					"label": "Call to action",
 					"order": 11,
@@ -1603,6 +1623,45 @@
 		"attributeTagLetterSpacingUnit": {
 			"type": "string",
 			"default": "em"
+		},
+		"noImageLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Text shown in the no-photo box on a product with no real photo (e.g. 'Photo to come'). Empty = a picture icon."
+		},
+		"noImageLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"noImageLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"noImageLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"noImageLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"noImageLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"noImageLabelTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"noImageLabelColour": {
+			"type": "string",
+			"default": "",
+			"description": "No-photo label colour. Theme token slug or raw hex. Empty = the no-photo box's muted text colour."
+		},
+		"priceRowSpaceAbove": {
+			"type": "string",
+			"default": "",
+			"description": "Extra space above the price row as a CSS length (e.g. '6px'), added to the card body's gap between rows. Empty = none."
 		},
 		"noReviewsText": {
 			"type": "string",

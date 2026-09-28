@@ -1,7 +1,8 @@
 /**
  * Colour rows for sgs/product-card's card parts that the main colour list in
  * edit.js doesn't build: the card's hover border colour, the RRP colour, the
- * photo's fill, the colour dots' ring and the wishlist heart's ring.
+ * photo's fill, the no-photo label, the colour dots' ring and the wishlist
+ * heart's ring.
  * Both apply in typed and bound modes (includes/product-card-card-parts.php
  * emits them from the shared, pre-branch section of render.php).
  */
@@ -13,7 +14,7 @@ import { __ } from '@wordpress/i18n';
  * @return {Object[]} SgsColourPanel rows.
  */
 export function cardPartColourRows( attributes, setAttributes ) {
-	const { borderColourHover, rrpColour, mediaBackgroundColour, swatchBorderColour, wishlistBorderColour } = attributes;
+	const { borderColourHover, rrpColour, mediaBackgroundColour, noImageLabelColour, swatchBorderColour, wishlistBorderColour } = attributes;
 
 	return [
 		{
@@ -51,6 +52,19 @@ export function cardPartColourRows( attributes, setAttributes ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: mediaBackgroundColour,
 					onChange: ( val ) => setAttributes( { mediaBackgroundColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'noImageLabel',
+			label: __( 'No-photo label colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: noImageLabelColour,
+					onChange: ( val ) => setAttributes( { noImageLabelColour: val ?? '' } ),
 					linked: true,
 				},
 			],

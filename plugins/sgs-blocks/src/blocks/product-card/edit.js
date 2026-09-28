@@ -2403,6 +2403,15 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showStyle: false,
 									showLineHeight: false,
 								},
+								{
+									key: 'noImageLabel',
+									label: __( 'No-photo label', 'sgs-blocks' ),
+									prefix: 'noImageLabel',
+									showStyle: false,
+									showLineHeight: false,
+									showLetterSpacing: true,
+									showTransform: true,
+								},
 								attributes.showAttributeTag && {
 									key: 'attributeTag',
 									label: __( 'Attribute tag', 'sgs-blocks' ),

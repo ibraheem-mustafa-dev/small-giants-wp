@@ -653,6 +653,9 @@ foreach ( $data['PRODUCTS'] as $p ) {
 		$placeholder_id = sgs_seed_placeholder_image();
 		if ( $placeholder_id ) {
 			set_post_thumbnail( $product_id, $placeholder_id );
+			// The shop's placeholder image too: product cards then show their "Photo to come" label instead of
+			// the picture (sgs/product-card noImageLabel), while the cart and product page keep the picture.
+			update_option( 'woocommerce_placeholder_image', $placeholder_id );
 		}
 		$img_skipped[] = $sku . ' (' . $name . ') - placeholder';
 		$stats['images_skipped']++;

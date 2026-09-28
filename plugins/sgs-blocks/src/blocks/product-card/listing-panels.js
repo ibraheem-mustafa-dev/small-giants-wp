@@ -11,7 +11,8 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { MEDIA_SIZING_RATIO_OPTIONS, SgsBoxControl } from '../../components';
+import { MEDIA_SIZING_RATIO_OPTIONS, SgsBoxControl, SgsLengthControl } from '../../components';
+import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
 
 /**
  * Connected-product panel: which elements a live card shows and where its
@@ -121,7 +122,7 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
  * @return {Element} The panel.
  */
 export function ListingShapePanel( { attributes, setAttributes } ) {
-	const { imageAspectRatio, showShadow } = attributes;
+	const { imageAspectRatio, showShadow, noImageLabel, priceRowSpaceAbove } = attributes;
 
 	return (
 		<PanelBody
@@ -152,6 +153,25 @@ export function ListingShapePanel( { attributes, setAttributes } ) {
 				checked={ showShadow !== false }
 				onChange={ ( v ) => setAttributes( { showShadow: v } ) }
 				__nextHasNoMarginBottom
+			/>
+			<TextControl
+				label={ __( 'No-photo label', 'sgs-blocks' ) }
+				help={ __(
+					'Shown in the photo box of a product with no photo (or the shop’s placeholder image), e.g. “Photo to come”. Empty shows a picture icon. Its size and spacing are in Typography.',
+					'sgs-blocks'
+				) }
+				value={ noImageLabel || '' }
+				onChange={ ( v ) => setAttributes( { noImageLabel: v } ) }
+				__next40pxDefaultSize
+				__nextHasNoMarginBottom
+			/>
+			<SgsLengthControl
+				label={ __( 'Space above the price', 'sgs-blocks' ) }
+				help={ __( 'Added to the gap between the card’s rows, above the price row. Empty = none.', 'sgs-blocks' ) }
+				value={ priceRowSpaceAbove ?? '' }
+				units={ SGS_LENGTH_UNITS }
+				presets={ false }
+				onChange={ ( v ) => setAttributes( { priceRowSpaceAbove: sgsNormaliseLength( v ) } ) }
 			/>
 		</PanelBody>
 	);

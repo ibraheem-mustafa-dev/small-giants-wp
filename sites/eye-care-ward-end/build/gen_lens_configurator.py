@@ -82,6 +82,8 @@ thickness = B("sgs/choice-flow-question", dict(
     intro="Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is "
           "a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth "
           "it.",
+    # The draft runs this intro 58 characters wide (56 on questions 1 and 3), so its lines break there.
+    introWidth="58",
     options=[
     opt("std", "Standard · 1.5", 451, "thickness-std.png",
         "The standard lens material. Perfectly good for a mild prescription — going thinner would make no visible "
@@ -137,6 +139,7 @@ rx = B("sgs/choice-flow-question", dict(
     question="Your prescription",
     intro="It needs to be under two years old and from a UK optician — whoever tested your eyes has to give "
           "you a copy if you ask. You don't need it to hand right now.",
+    introWidth="58",
     options=[
     {"label": "Send it later", "value": "later", "nextStepId": str(STEP_LATER),
      "description": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives.",

@@ -57,6 +57,11 @@ def taxonomy_filter(label, taxonomy, style, looks="", search=""):
 
 CARD = dict(
     # The name wraps as the draft's, not balanced (the theme balances every heading): "Oversized Cat-" / "Eye".
+    # "PHOTO TO COME" as the draft's label (10.5px, 0.16em spaced capitals) on a product showing the shop's
+    # placeholder image, in text-muted (Bean 2026-09-28); the price row 6px further from the rating line.
+    noImageLabel="Photo to come", noImageLabelFontSize={"desktop": 10.5}, noImageLabelFontSizeUnit="px",
+    noImageLabelFontWeight="400", noImageLabelLetterSpacing={"desktop": 0.16}, noImageLabelLetterSpacingUnit="em",
+    noImageLabelTextTransform="uppercase", priceRowSpaceAbove="6px",
     sourceMode="wc-product", titleTextWrap="wrap", showRating=True, noReviewsText="No reviews yet", showSavingBadge=True,
     savingBadgePosition="bottom-left", showBrandOverlay=True, brandFontFamily="heading", brandFontWeight="500",
     brandFontSize={"desktop": 12.5}, brandFontSizeUnit="px", brandLetterSpacing={"desktop": 0.26},

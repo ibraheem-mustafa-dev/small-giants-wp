@@ -791,6 +791,14 @@
 	opacity: 0.5;
 }
 
+/* The no-photo label ("Photo to come", noImageLabel): small spaced capitals in
+   the box's muted colour; the Typography target and colour override these. */
+:where(.product-card__no-image-label) {
+	font-size: 11px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
 /*
  * ── A4: Per-variation image gallery (thumbnail strip) ───────────────────────
  *

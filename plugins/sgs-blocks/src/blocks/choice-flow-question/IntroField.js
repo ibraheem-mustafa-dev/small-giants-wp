@@ -24,7 +24,7 @@ import { SelectControl, TextControl, TextareaControl } from '@wordpress/componen
  * @param {Function} props.setAttributes Block attribute setter.
  */
 export default function IntroField( { attributes, setAttributes } ) {
-	const { intro, eyebrow, pricePrefix, priceGroup, summaryLabel } = attributes;
+	const { intro, introWidth, eyebrow, pricePrefix, priceGroup, summaryLabel } = attributes;
 
 	return (
 		<>
@@ -39,6 +39,25 @@ export default function IntroField( { attributes, setAttributes } ) {
 				rows={ 2 }
 				__nextHasNoMarginBottom
 			/>
+			{ intro && (
+				<SelectControl
+					label={ __( 'Intro width', 'sgs-blocks' ) }
+					value={ introWidth || '' }
+					options={ [
+						{ label: __( 'Layout default (56 characters)', 'sgs-blocks' ), value: '' },
+						{ label: __( '52 characters', 'sgs-blocks' ), value: '52' },
+						{ label: __( '56 characters', 'sgs-blocks' ), value: '56' },
+						{ label: __( '58 characters', 'sgs-blocks' ), value: '58' },
+						{ label: __( '60 characters', 'sgs-blocks' ), value: '60' },
+						{ label: __( '64 characters', 'sgs-blocks' ), value: '64' },
+						{ label: __( 'Full column', 'sgs-blocks' ), value: 'none' },
+					] }
+					onChange={ ( val ) => setAttributes( { introWidth: val } ) }
+					help={ __( 'How wide the intro runs in the showcase layout; where its lines break follows.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
 			<TextControl
 				label={ __( 'Eyebrow', 'sgs-blocks' ) }
 				value={ eyebrow || '' }

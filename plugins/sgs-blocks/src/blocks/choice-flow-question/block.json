@@ -40,6 +40,18 @@
 					},
 					"_note": "v1 (Spec 43 Phase 2): plain-question step only, no colour/typography attrMap yet — kept minimal per FR-43-1's plain-question scope. Element declared for structural documentation; no styling attrs exist on this block to map."
 				},
+				"intro": {
+					"label": "Intro paragraph",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:max-width": "introWidth"
+					},
+					"_note": "introWidth: the intro's width in ch as a class (sgs-choice-flow-question__intro--w{n}, includes/choice-flow-showcase.php), never an inline style."
+				},
 				"options": {
 					"label": "Options list",
 					"layer": "CONTENT",
@@ -62,6 +74,12 @@
 			"type": "string",
 			"default": "",
 			"description": "FR-43-24 (v1.8.0): an optional short paragraph shown under the question title, in both layouts — capped to about 56 characters wide in the showcase layout (style.css's own max-width). Empty string = no intro paragraph."
+		},
+		"introWidth": {
+			"type": "string",
+			"enum": [ "", "52", "56", "58", "60", "64", "none" ],
+			"default": "",
+			"description": "How wide the intro paragraph runs, in characters (ch), in the showcase layout. Empty = the layout's 56. 'none' = the full column."
 		},
 		"showNextStepInline": {
 			"type": "boolean",

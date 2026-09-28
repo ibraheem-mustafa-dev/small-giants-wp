@@ -236,6 +236,7 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_ca
 // 'brand' typography targets the Frame Card brand overlay (image top-left).
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'brand', '.' . $sgs_card_uid . ' .sgs-product-card__brand' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'attributeTag', '.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag' );
+$sgs_card_typo_css .= sgs_product_card_no_photo_css( $attributes, $sgs_card_uid );
 
 // ── Frame Card component colours: rating stars/text, brand overlay ───────
 // Both attrs resolve css:color via the default {prefix}Colour convention
@@ -1436,7 +1437,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			$context['valueLadderHidden'] = ( count( $ladder ) < 2 );
 
 			$card_permalink     = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
-			$sgs_has_real_image = ( '' !== $image_src ) && ( false === strpos( (string) $image_src, 'woocommerce-placeholder' ) );
+			$sgs_has_real_image = sgs_product_card_has_real_image( (string) $image_src );
 
 			// A4: resolve default image dimensions for the aspect-ratio box (CLS 0).
 			$def_img_w = ( ! empty( $def['gallery'][0]['w'] ) ) ? (int) $def['gallery'][0]['w'] : 0;
@@ -1468,9 +1469,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				</a>
 				<?php endif; ?>
 			<?php else : ?>
-				<div class="product-card__no-image" aria-hidden="true">
-					<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
-				</div>
+				<?php echo sgs_product_card_no_photo_markup( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally. ?>
 			<?php endif; ?>
 
 			<?php
@@ -1915,7 +1914,7 @@ $nonvar_opts = array_merge(
 
 $card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
 // FP-H: image resolved through the override helper (typed image wins when overridden).
-$sgs_has_real_image = ( '' !== $sgs_resolved_img ) && ( false === strpos( (string) $sgs_resolved_img, 'woocommerce-placeholder' ) );
+$sgs_has_real_image = sgs_product_card_has_real_image( (string) $sgs_resolved_img );
 
 ob_start();
 ?>
@@ -1941,9 +1940,7 @@ ob_start();
 	</a>
 	<?php endif; ?>
 <?php else : ?>
-	<div class="product-card__no-image" aria-hidden="true">
-		<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
-	</div>
+	<?php echo sgs_product_card_no_photo_markup( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally. ?>
 <?php endif; ?>
 <?php
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
