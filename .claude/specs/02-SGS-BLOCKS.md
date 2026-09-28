@@ -1153,6 +1153,7 @@ These blocks follow the Block Customisation Standard (below) plus:
 - **48-SKU configurator:** value-ladder, per-axis pickers, live price row via `/sgs/v1` proxy.
 - **CTA model:** max 2 text buttons (1 primary + 1 secondary); behaviours learn-more / add-to-basket / buy-now; express-pay = phase-2 gateway toggle.
 - **Typography controls:** shared `TypographyControls` component (number+unit+responsive; `sgs_typography_css_rule()` for PHP render).
+- **No photo:** a product whose image is empty, WooCommerce's placeholder or the shop's chosen placeholder image (WooCommerce > Products > Placeholder image) shows the no-photo box: the `noImageLabel` text ("Photo to come") with its own Typography target and colour, else a picture icon (`includes/product-card-no-photo.php`). With a photo background colour set the box takes it. "Space above the price" (`priceRowSpaceAbove`) pads the price row over the body's row gap.
 - **Schema:** card emits NO schema itself; ONE page-level ItemList per singular page (recursive walker, shared public API). `ProductGroup` emission gated to single-product-focus pages.
 
 ### product-card `featured` variant

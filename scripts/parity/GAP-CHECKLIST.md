@@ -170,7 +170,7 @@ Each check below missed rows the eye caught; each has a negative control (run a 
 - **Taps:** `h.tap(finder)` clicks with the real mouse at the element's centre, so an overlay or a label that is
   a link takes it; its outcome (`navigated`, `opened`, `nothing`) is compared as a `drive` difference.
 - **Phone widths:** below 500px the context is an iPhone 13 (touch, mobile user agent): lamalama hides its pill
-  message by device, not width.
+  message by device, not width. A phone has no hover, so no hover end state is compared there (Bean 2026-09-28).
 - **Viewport-scaled sizes:** put a width above 1440 in `widths` (1920): rem-fluid sites grow past 1440.
 - **`--self draft|live`:** points both sides at one side; the baseline every header check must read 0 on.
 
@@ -188,35 +188,42 @@ alone against their declared timings, not compared with the draft.
   the lens last question as two screens, its 375 footer stacking Back above the action). A config only measures
   what its author thought of.
 - **Detected by:** the `(auto)` pseudo-pair, in every state at every width, with nothing to configure:
-  - **Words:** every painted word on both sides (screen-reader-only and zero-size text left out), matched in
-    reading order (a Myers diff, then blocks moved elsewhere in the DOM). Unmatched runs are `text-missing` /
-    `text-extra` (".00", a missing panel, a button on one side only).
+  - **Words:** every painted word on both sides, matched in reading order (a Myers diff, then blocks moved elsewhere
+    in the DOM; a lone word pairs across the DOM only when unique among the leftovers and in the same type).
+    Not painted, so left out: screen-reader-only and zero-size text, a closed `<details>` beyond its summary (Chrome
+    still gives it boxes), and text clipped away by an ancestor's or its own overflow. Unmatched runs are
+    `text-missing` / `text-extra` (".00", a missing panel, a button on one side only).
   - **Position:** each matched word's offset from the previous matched word; a change of more than 4px is one
-    `moved "<prev> → <words>"` row, so a cascade reads as one row where it starts (a tag beside the name on one
-    side and under it on the other, Back above the action instead of beside it). A reveal's start pose (a
-    faded ancestor's transform) is taken off first; fixed layers are compared on their own.
+    `moved "<prev> → <words>"` row, so a cascade reads as one row where it starts (Back above the action instead
+    of beside it). Across words on one side only, only a horizontal change counts (made-up stars against "No
+    reviews yet" push every later price down). A reveal's start pose (a faded ancestor's transform) is taken off
+    first; fixed layers are compared on their own.
   - **Text style:** size, weight, family, style, case, letter spacing and colour per word, runs grouped.
-  - **Controls and media** (inputs, selects, sliders, buttons and links with no words, pictures): paired through
-    their nearest matched word, else by type in order; `control-missing/extra`, `control-size`, `control-moved`.
-  - **Clipped:** a control flush (3px) with the left or right edge of an ancestor that clips its overflow is
-    `cut` when the screenshot shows ink in the last pixel column inside that edge over its rows; a pseudo-element
-    part (a range handle) cut off on one side only is a `clipped` row.
+  - **Clipped controls:** controls (inputs, sliders, buttons and links with no words, pictures) are paired through
+    their nearest matched word only for this check; their presence, size and place are left to the words around
+    them, the named pairs and the review (a draft and a live page build the same control from different elements).
+    A range input flush (3px) with, or any other control crossing, the left or right edge of an ancestor that clips
+    its overflow is `cut` when the screenshot shows ink in the last pixel column inside that edge; cut on one side
+    only is a `clipped` row (a range handle, a pseudo-element, clipped by a drawer's scroll area).
   - **Scrolled state:** `auto-scrolled`, added after the opening state, scrolls a screen and a half (a floating
     button, a sticky bar, content below the first screen). `autoScroll: false` for a page that opens in a modal.
   - **Modals:** when both sides show a modal (`dialog[open]`, `aria-modal`, `role=dialog`), only its contents
     are compared; when one side draws its drawer in the page, both whole pages are.
 - **Config:** `auto.exclude: { draft: [...], live: [...] }` adds to the default exclusions (header, footer,
-  banner and contentinfo landmarks: the nav track); `auto.root` limits a side to one element; `autoTolerance`
-  (`move`, `box`, `px`). Accept an `(auto)` row like any other, with `pair: '(auto)'` and a `when` on its key.
-  `auto: false` or `--no-auto` turns it off.
-- **Falsified by:** an `(auto)` row left open; the catch-rate benchmark below scoring under 6 of 6.
+  banner and contentinfo landmarks, the framework's floating WhatsApp button: the nav track); an entry is a selector
+  or a `{ js: '(root) => element' }` finder (a draft with no class names); `auto.root` limits a side to one
+  element; `auto.normalise: [{ side, from, to, reason }]` rewrites words before matching (a decision such as
+  pennies on every price; linted for a reason); `autoTolerance` (`move`, `box`, `px`). Accept an `(auto)` row like
+  any other, with `pair: '(auto)'` and a `when` on its key (strip a trailing ` #n` repeat counter). `auto: false`
+  or `--no-auto` turns it off.
+- **Falsified by:** an `(auto)` row left open; the catch-rate benchmark below scoring under 5 of 5.
 
 ### The catch-rate benchmark
 
 `scripts/parity/benchmark.mjs` replays the six gaps (`benchmark/cases.mjs`) on today's live site (the pre-fix
 CSS, or an init script, injected on the live side with `--inject-live-css` / `--inject-live-js`) against each
 page config as it stood before the gaps were found (so no pair was written with the gap in mind), and scores
-caught / 6 with `benchmark/score.mjs`. A row is new when the control run lacks it, or when its live value moved
+caught / 5 with `benchmark/score.mjs` (gap a is reported, never scored: the draft has it too). A row is new when the control run lacks it, or when its live value moved
 more than 4px while its draft value held (the injection touches live only, so a moving draft value is noise). A
 case is caught only when a new row matches its `match`, written from the gap alone ("polarised", ".00", "filter"
 in a scrolled state), so noise elsewhere on the page never counts. `--noise` adds a no-op injection per config:

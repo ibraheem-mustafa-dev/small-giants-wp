@@ -49,16 +49,15 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-09-28; eye-care-test runs the plugin at 23e9df009 and the theme at e8ecda854; `main` at the handoff
-commit).** Parity re-review: every page compared to the draft by `scripts/parity/draft-live-walk.mjs`
-(one config per page in `sites/eye-care-ward-end/build/qa/parity/`) under the method in
-`scripts/parity/GAP-CHECKLIST.md` (a page passes when the walker exits 0: config lint, 0 open, every state x width shot
-reviewed with a note, 0 console errors). Shop (`shop.mjs`) and lens pop-up (`lens.mjs`) passed, then
-reopened under the walker's stricter default checks (2026-09-28; rows in the main plan Status). Other pages to do.
-The walker's catch rate is unmeasured (Bean found six gaps by eye on shop and lens). No blockers.
+**Now (2026-09-28; eye-care-test runs plugin and theme at fdb844df8 = `main` before the handoff commit).** Parity
+re-review: every page compared to the draft by `scripts/parity/draft-live-walk.mjs` (one config per page in
+`sites/eye-care-ward-end/build/qa/parity/`; method `scripts/parity/GAP-CHECKLIST.md`: exit 0 = lint, 0 open, every shot
+reviewed, 0 console errors). The walker's new automatic check (every painted word compared, no config needed)
+catches 5 of 5 benchmark gaps (was 1 of 5; `scripts/parity/benchmark.mjs`), 0 noise. Shop: 36 open rows, lens: 52,
+a small tail listed in the main plan. Other pages to do. No blockers.
 
-**Resume from:** main plan Status, "Parity re-review owed before Wave D": measure and raise the walker's catch rate,
-then the remaining pages in Sonnet waves with Opus QC.
+**Resume from:** main plan Status, "Bean's decisions on the rows it opened": close the shop and lens tail, then the
+remaining pages in Sonnet waves with Opus QC.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.

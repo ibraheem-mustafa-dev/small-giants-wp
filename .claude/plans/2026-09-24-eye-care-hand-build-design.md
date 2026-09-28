@@ -5,16 +5,10 @@
 2026-09-25). **Wave C DONE 2026-09-25** (tasks 1-6 live on eye-care-test and proven; the design review's owed items
 are in "Wave C design review" below). **Next: Wave D** (section 8: Phase 6 launch readiness, then the Phase 7 answer
 key), with the owed Wave C polish alongside.
-- **The walker's full checks are now on for every page (Bean, 2026-09-28), and shop.mjs and lens.mjs reopened.**
-  Added: hover re-reach, a motion timeline read right after each action, painted grounds, text inset, inventories,
-  hover effects (including scramble), and 375 as a phone (GAP-CHECKLIST section 11). Self-baselines read 0 open on
-  both drafts.
-  - `shop.mjs`: 35 open. `brand-ray-ban` column-gap, row-gap and justify-content come back because the new
-    `text-inset-y` (10 against 13) is a box difference, so the notPainted accept no longer holds. `clear-all`
-    text-inset-y 0 against 13. `card-gucci` hover: its border goes to a lighter tone, and live also scales an inner part.
-  - `lens.mjs`: 29 open. `option-card` text-inset-x 24 against 198 at q4-prescription (every width). `stage`
-    text-inset x/y 41/49 against 102/14 at q4 steps (375). `back` hover border colour at 375.
-  - Each row is either real or needs an accept with Bean's reason.
+- **The walker's full checks and its automatic check run on every page (2026-09-28).** Full checks (GAP-CHECKLIST
+  section 11: hover re-reach, motion timelines, painted grounds, text inset, inventories, 375 as a phone, no hover
+  compared at phone widths) and the automatic check (section 12: every painted word compared with no config naming
+  it). The rows they opened on shop.mjs and lens.mjs were decided by Bean on 2026-09-28 (below).
 - **Parity re-review owed before Wave D (Bean, 2026-09-26).** Only the lens configurator is verified to the standard
   below; every other page's "verified at 1440/768/375" in this plan came from lighter checks (the opening state,
   different content on each side, no motion or hover end states), the same kind that wrongly passed the lens flow.
@@ -40,19 +34,36 @@ key), with the owed Wave C polish alongside.
   catches **5 of 5** with 0 noise rows on shop and lens. The sixth gap (the Polarised tag) was the draft's own flaw
   (measured identical to the draft), so no comparison can catch it: page waves keep an Opus design review of the
   shots. Next: close the rows the check opens on shop.mjs and lens.mjs (fix or Bean's decision), then the waves.
-  - **Bean's decisions on the rows it opened (2026-09-28), all as recommended.** Accepted (in the configs): style
-    chips live shows only styles with frames in stock (9 of the draft's 12); "Most people pick this" in text-inverse
-    #FAF8F5 against white; the 44px touch targets' lower label inset (brand rows, Clear all); the Spec 43 Continue
-    model on questions 1-3; secondary text in the darker text-muted #5E584F where the draft uses lighter greys
-    (confirmed 2026-09-28, an earlier approval); no hover comparison at phone widths (the walker skips it). To fix
-    (open): (1) "PHOTO TO COME" as text like the draft, not a faint picture (a product card "no photo" label with
-    type and colour controls; Eye Care products without a photo lose the placeholder image); (3) the gap from the
-    rating line to the price, 27px against the draft's 33px; (4) 30px too much space between the grid and the
-    "Every pair is genuine" note; (5) at phone width the RRP always under the price; (6) "Oversized Cat-Eye" on one
-    line at 375 as the draft; (7) the filter drawer heading 22px, not 20px; (9) cards in view after scrolling
-    reveal (the bottom row at 1440 stays blank); lens (11) the stage's price column ~21px (total 50px) further in
-    than the draft; (12) the 375 stage brand 14px and name 17px; (13) description lines breaking at the draft's
-    words at 1440.
+  - **Bean's decisions on the rows it opened (2026-09-28), all as recommended.** Accepted (in the configs, with
+    reasons): styles with frames in stock only (9 of the draft's 12); "Most people pick this" in text-inverse #FAF8F5;
+    the 44px touch targets' lower label inset; the Spec 43 Continue model on questions 1-3; secondary text in the
+    darker text-muted #5E584F where the draft's greys are lighter (confirmed 2026-09-28); the lens stage's prices
+    carrying pennies; no hover compared at phone widths. Fixed and live on eye-care-test (13413e0a2 to fdb844df8):
+    (1) "PHOTO TO COME" is the product card's new no-photo label (the shop's WooCommerce placeholder image is
+    "Photo to come", attachment 353; products keep it as their photo for the preflight gate); (3) the card's new
+    "Space above the price" (padding, 6px); (4) the grid-to-note gap (the floating Filter button's reserved space
+    follows its switch; WooCommerce's 30px collection margin gone); (6) titleTextWrap wrap; (7) Customizer "Filter
+    panel heading size" 22px; (9) reveal at 15% visible with no bottom margin (the draft's trigger, measured); (12)
+    the 375 stage name bar at 14/17px; (13) the question's new "Intro width", 58 on thickness and prescription.
+    Found not to be draft differences: (5) the 375 RRP beside the price on Aviator and Wayfarer comes from their
+    dots taking their own line (Bean accepted 2026-09-27); (11) the stage price column is the pennies' width.
+  - **Open, to close before the page waves (walker 2026-09-28: shop 36 open rows, lens 52):**
+    - Shop at 375: the card after a tagged card starts ~28px lower (the tag under the name, Bean 2026-09-27): an
+      accept for `moved "£... → photo to come ..."` rows at 375 when only the y offset differs by up to 32px.
+    - Shop: brand chips at the fold edge missing on one side in a few states (text-missing "police", "michael kors",
+      "versace" at 1440; extra "superdry", "balenciaga" at 375 scrolled): check whether the reveal trigger still
+      differs, else accept as reveal timing at the fold.
+    - Shop 1440 scrolled: the sticky filter column sits 31px higher on live (`moved "frames → gender ..."`): real;
+      find the sticky top offset and match it.
+    - Shop 1440: the last grid row's card lands in another column (`moved "£145 → every pair is genuine,"` -59
+      against -371): check the product order at the end of the grid.
+    - Shop 375 colour-black: the chosen-filter pill row 6px apart (`moved "(1) → black × clear all"`).
+    - Lens at 768: option descriptions wrap differently beside their price and badge ("included", "+£60" move to
+      the next line; `text-missing "±4.00 to ±6.00."`), and the Q4 EASIEST badge sits 27px nearer the title: real.
+    - Lens q4-type: the SPH/CYL/AXIS columns 10px wider apart and the note 5px closer than the draft: real.
+    - Walker artefacts on the lens (fix in scripts/parity/lib/auto-compare.mjs, then rerun the benchmark): the two
+      cards' identical "from £59" pair across cards (`moved "distance → from £59"` 327 against 743), and the "?"
+      help toggles anchor "Frame only? Skip the lenses".
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,

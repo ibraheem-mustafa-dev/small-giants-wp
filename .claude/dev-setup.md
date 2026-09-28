@@ -784,7 +784,7 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 63 | repo-wide tooling (naming lint, site utilities) |
+| `scripts/` | 71 | repo-wide tooling (naming lint, site utilities) |
 | `plugins/sgs-blocks/scripts/` | 939 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
@@ -2486,7 +2486,7 @@ for the verb you happen to have in mind.
 | `visual-report-sha.py` | manifest+script-call | Content hash binding a visual-diff report to the change it actually describes. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 61 scripts
+#### `scripts/` — 37 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2500,30 +2500,6 @@ for the verb you happen to have in mind.
 | `lint-naming-conventions.py` | manifest | CI linter for the SGS WordPress Framework naming conventions. |
 | `lint-patterns-for-personal-data.py` | manifest+npm | Lint SGS pattern PHP files for hardcoded personal data. |
 | `parity/benchmark/cases.mjs` | manifest+script-call | The walker's catch-rate benchmark: six Eye Care gaps the walker passed and Bean found by eye |
-| `parity/benchmark/out/auto-1/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/auto-1/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
-| `parity/benchmark/out/auto-1/configs/shop-fd9115ba2-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/auto-1/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
-| `parity/benchmark/out/auto-2/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/auto-2/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
-| `parity/benchmark/out/auto-2/configs/shop-fd9115ba2-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/auto-2/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
-| `parity/benchmark/out/auto-3/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/auto-3/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
-| `parity/benchmark/out/auto-3/configs/shop-fd9115ba2-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/auto-3/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
-| `parity/benchmark/out/auto-4/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/auto-4/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
-| `parity/benchmark/out/auto-4/configs/shop-fd9115ba2-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/auto-4/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
-| `parity/benchmark/out/auto-5/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/auto-5/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
-| `parity/benchmark/out/auto-5/configs/shop-fd9115ba2-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/auto-5/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
-| `parity/benchmark/out/baseline/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
-| `parity/benchmark/out/baseline/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
-| `parity/benchmark/out/baseline-lens/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
-| `parity/benchmark/out/baseline-lens/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
 | `parity/benchmark/score.mjs` | manifest+script-call+skill | Scores a catch-rate benchmark run from its recorded walker reports (<out>/<config>-control and <out>/case-<id>): benchmark.mjs calls it after the… |
 | `parity/benchmark.mjs` | script-call+skill | The walker's catch-rate benchmark. For each page config it runs the walker once as a control |
 | `parity/draft-live-walk.mjs` | script-call | Draft-versus-live parity walker. Drives the design draft and the live site through the same states (tabs, steps, open panels, filters, modals) at… |

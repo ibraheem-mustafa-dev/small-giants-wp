@@ -397,7 +397,8 @@ to edge (the modal's own padding drops, and a full-screen modal fades in rather 
   - a position line in the accent ink ("Question 1 of 3": `stepCountLabel`; a question's own `eyebrow` replaces it
     and leaves that question out of the count; a result step shows none)
   - the step title in the heading font (38px from a 600px container, 28px under), wrapping plainly
-  - an intro paragraph (the question's `intro` attribute, at most 56 characters wide)
+  - an intro paragraph (the question's `intro` attribute), 56 characters wide unless the question's "Intro width"
+    (`introWidth`: 52, 56, 58, 60, 64 or the full column) sets its own
   - the options as large cards: two columns once the flow is 620px wide, one under; a step whose options carry no
     pictures runs three across from 768px as text cards. A picture card has a full-width 16:9 image band, then the
     title with its price aligned right (accent ink), then the description, then its badge as a solid accent tag; a

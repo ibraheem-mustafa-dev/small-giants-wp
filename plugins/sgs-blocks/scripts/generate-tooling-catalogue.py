@@ -23,6 +23,7 @@ from __future__ import annotations
 import ast
 import json
 import re
+import subprocess
 import sys
 import warnings
 from pathlib import Path
@@ -613,8 +614,14 @@ def build() -> str:
         if not rp.exists():
             continue
         entries = []
+        # Only files git tracks: a gitignored run folder (scripts/parity/benchmark/out/) is output, not tooling.
+        tracked = set(
+            subprocess.run(["git", "ls-files", rel_root], cwd=REPO, capture_output=True, text=True).stdout.splitlines()
+        )
         for f in sorted(rp.rglob("*")):
             if not f.is_file() or f.suffix not in _RUNNABLE:
+                continue
+            if f.relative_to(REPO).as_posix() not in tracked:
                 continue
             if any(x in f.parts for x in ("node_modules", "fixtures", "__pycache__", "tests")):
                 continue
