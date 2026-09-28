@@ -59,5 +59,4 @@ lines removed).
 - Choice flow: an unpriced answer's stage line follows the pick; footer buttons hover with the client's button
   preset; on phones the showcase footer keeps Back and the action in one row; the opened step fades in over 0.3s.
 - Number boxes set to third width stay three across in a form 300 to 559px wide.
-- Noted, not changed: the prescription boxes use the site's off-white input fill (#FAF8F5) where the draft's are
-  white (every form field on the site shares it).
+- Boxes inside an opened panel take the panel's white (`surface-alt`), as the draft's (Bean 2026-09-28).
