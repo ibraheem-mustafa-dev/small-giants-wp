@@ -784,8 +784,8 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 28 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 936 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 63 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 939 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -919,12 +919,13 @@ Each entry's purpose is quoted from the script's own header.
 | 117 | `check-text-on-primary.py` | text on a primary-coloured ground must use the palette's |
 | 118 | `check-raw-box-control.py` | every 4-side box editor in the inspector is SgsBoxControl. |
 | 119 | `check-custom-colour-survives.py` | a custom colour picked in the editor must reach the live page. |
-| 120 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 121 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 122 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 123 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 120 | `audit-ssr-http-method.js` | Every `<ServerSideRender>` preview under `src/` must come from the SGS drop-in `src/components/ServerSideRender.js`, which always POSTs. Fails when: |
+| 121 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 122 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 123 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 124 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
 
-**123 gating scripts.** Regenerate this whole section with:
+**124 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -932,7 +933,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (123 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 124 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (124 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 125 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -1317,6 +1318,11 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `OUT_JSON`, `OUT_MD`
 - Non-zero exit sites found: exitCode=1
 
+**`plugins/sgs-blocks/scripts/consistency/audit-ssr-http-method.js`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites found: exit(1)
+
 **`plugins/sgs-blocks/scripts/consistency/build-roster.py`** (build)
 - Path constants: `OUT` = Path(__file__).parent / "roster.json"; `BLOCKS_DIR` = Path(__file__).parent.parent.parent / "src" / "blocks"
 - Reads: `css_path`, `out_path`, `sqlite3:str(DB_PATH`
@@ -1678,7 +1684,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 794 scripts
+#### `plugins/sgs-blocks/scripts/` — 797 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1807,6 +1813,7 @@ for the verb you happen to have in mind.
 | `colour-codemod/survey.js` | manifest+script-call | WHY THIS EXISTS. rule 31 already answers "which rows are wrong?" (388 findings across 61 blocks). It does NOT answer "which of those can a codemod… |
 | `colour-codemod/wire-border-contrast.js` | manifest+npm | (a WCAG 3:1 border-contrast warning, built and working on the component itself — see `src/components/SgsBorderControl.js`) into every block's… |
 | `consistency/audit-serverside-render-disabled.js` | manifest+npm | Finds every `<ServerSideRender` JSX usage across `src/blocks/*\/edit.js` and flags any that is NOT wrapped in `<Disabled>` (from… |
+| `consistency/audit-ssr-http-method.js` | manifest | Every `<ServerSideRender>` preview under `src/` must come from the SGS drop-in `src/components/ServerSideRender.js`, which always POSTs. Fails when: |
 | `consistency/build-roster.py` | manifest+npm+script-call | Spec 35 UNIT A0 — enumerate the block roster + per-block surface flags from the DB. |
 | `consistency/build-setting-types.py` | manifest | Spec 35 UNIT A+ Phase 1 — dedup every SGS attribute to its unique SEMANTIC SETTING. |
 | `consistency/check-box-flat.py` | manifest+script-call | DISCOVERY GATE — flags box-object-capable controls still stored as FLAT |
@@ -2182,6 +2189,8 @@ for the verb you happen to have in mind.
 | `nav-qa/crawl-assert.mjs` | manifest | bar+dropdown+mega link AND mega content must be present in the PRE-JS HTML (what a crawler / no-JS user gets), never injected client-side. |
 | `nav-qa/elementfrompoint-sweep.mjs` | manifest+script-call | occlusion sweep, carried verbatim from Spec 34 FR-S9-5 / FR-34-7. |
 | `nav-qa/extended-probe.mjs` | — | Extended open-drawer measurement probe (measurement-vs-eye rule). |
+| `nav-qa/gate3c/parity-indus.mjs` | — | Parity config: Bean's Indus Foods mega-menu draft against its copy on sandybrown (page 4465, header 4461). |
+| `nav-qa/gate3c/parity-lamalama.mjs` | — | Parity config: lamalama.com's floating pill against its copy on sandybrown (page 4446, header 4435). |
 | `nav-qa/lib/elementfrompoint-sweep-selftest.mjs` | script-call | `elementFromPoint` occlusion sweep. |
 | `nav-qa/lib/openness-guard.mjs` | manifest+script-call | for every nav-qa script that measures or captures an interactive surface. |
 | `nav-qa/lib/shoot-drawer-pairs-selftest.mjs` | script-call | WHY |
@@ -2477,7 +2486,7 @@ for the verb you happen to have in mind.
 | `visual-report-sha.py` | manifest+script-call | Content hash binding a visual-diff report to the change it actually describes. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 26 scripts
+#### `scripts/` — 61 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2490,13 +2499,48 @@ for the verb you happen to have in mind.
 | `lib/oldshape-mappings.js` | script-call | wp-migrate-oldshape-blocks.js (Track B content restore, 2026-07-15). |
 | `lint-naming-conventions.py` | manifest | CI linter for the SGS WordPress Framework naming conventions. |
 | `lint-patterns-for-personal-data.py` | manifest+npm | Lint SGS pattern PHP files for hardcoded personal data. |
+| `parity/benchmark/cases.mjs` | manifest+script-call | The walker's catch-rate benchmark: six Eye Care gaps the walker passed and Bean found by eye |
+| `parity/benchmark/out/auto-1/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/auto-1/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
+| `parity/benchmark/out/auto-1/configs/shop-fd9115ba2-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/auto-1/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
+| `parity/benchmark/out/auto-2/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/auto-2/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
+| `parity/benchmark/out/auto-2/configs/shop-fd9115ba2-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/auto-2/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
+| `parity/benchmark/out/auto-3/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/auto-3/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
+| `parity/benchmark/out/auto-3/configs/shop-fd9115ba2-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/auto-3/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
+| `parity/benchmark/out/auto-4/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/auto-4/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
+| `parity/benchmark/out/auto-4/configs/shop-fd9115ba2-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/auto-4/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
+| `parity/benchmark/out/auto-5/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/auto-5/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
+| `parity/benchmark/out/auto-5/configs/shop-fd9115ba2-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/auto-5/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
+| `parity/benchmark/out/baseline/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
+| `parity/benchmark/out/baseline/configs/shop-fd9115ba2.mjs` | script-call | Parity config: the shop archive (draft "Sunglasses" view vs eye-care-test /shop/). Each filter state starts from a fresh page and applies one filter… |
+| `parity/benchmark/out/baseline-lens/configs/lens-3495ae7e0-linted.mjs` | — | .map( ( s ) => ( { name: `benchmark-lint-${ s.name }`, states: [ s.name ], draft: '#benchmark-none', live: '#benchmark-none' } ) ); export default {… |
+| `parity/benchmark/out/baseline-lens/configs/lens-3495ae7e0.mjs` | script-call | Parity config: the lens configurator pop-up on the Gucci Oversized Cat-Eye (eye-care-test product 76, photographed in the draft), walked through its… |
+| `parity/benchmark/score.mjs` | manifest+script-call+skill | Scores a catch-rate benchmark run from its recorded walker reports (<out>/<config>-control and <out>/case-<id>): benchmark.mjs calls it after the… |
+| `parity/benchmark.mjs` | script-call+skill | The walker's catch-rate benchmark. For each page config it runs the walker once as a control |
 | `parity/draft-live-walk.mjs` | script-call | Draft-versus-live parity walker. Drives the design draft and the live site through the same states (tabs, steps, open panels, filters, modals) at… |
+| `parity/lib/auto-align.mjs` | script-call | Word and control alignment for the walker's automatic check (auto-compare.mjs). |
+| `parity/lib/auto-collect.mjs` | script-call | In-page collector for the walker's automatic check (GAP-CHECKLIST.md section 12): every painted word and every control or media item on the page, so… |
+| `parity/lib/auto-compare.mjs` | script-call | The walker's automatic check (GAP-CHECKLIST.md section 12): aligns every painted word of the draft with the live page's, then reports what no config… |
+| `parity/lib/auto-walk.mjs` | script-call | Walker glue for the automatic check (GAP-CHECKLIST.md section 12): the scrolled state every page gets, the in-page collection (rooted at an open… |
+| `parity/lib/chrome-compare.mjs` | script-call | Full-check comparisons for draft-live-walk.mjs (GAP-CHECKLIST.md section 11): painted ground and text inset, a root's inventory (text, order, media… |
+| `parity/lib/chrome-walk.mjs` | script-call | Full-check glue for draft-live-walk.mjs: samples motion after each action, collects each pair's painted ground, text inset and (for `inventory: true`… |
+| `parity/lib/chrome.mjs` | manifest+script-call | Full-check in-page collectors for draft-live-walk.mjs. Each is passed to page.evaluate(), so each is self-contained. GAP-CHECKLIST.md section 11 says… |
 | `parity/lib/collect.mjs` | script-call | In-page collectors for draft-live-walk.mjs. Every function here is passed to page.evaluate(), so each one is self-contained (no closures over module… |
 | `parity/lib/compare.mjs` | manifest+script-call | Compares one pair's draft and live snapshots and returns the differences. |
+| `parity/lib/helpers.mjs` | script-call+skill | The helpers handed to a config's open() and state actions, and the anchor-offset check, for draft-live-walk.mjs. |
 | `parity/lib/lint.mjs` | script-call | Config lint for draft-live-walk.mjs: runs before any browser opens and fails the run on a config that cannot prove what it claims (GAP-CHECKLIST.md… |
 | `parity/lib/report.mjs` | manifest+script-call | Writes the parity report: report.json (everything), report.md (the differences), and one side-by-side screenshot per state and width (draft left… |
 | `parity/lib/review.mjs` | manifest+script-call+skill | The screenshot review gate for draft-live-walk.mjs. Writes contact.md: every state x width side-by-side shot, full size, with the config's review… |
-| `parity/lib/structure.mjs` | script-call+skill | Structure and drive checks for draft-live-walk.mjs: where each pair sits relative to the other pairs (inside which, in whose row), and how each state… |
+| `parity/lib/structure.mjs` | manifest+script-call+skill | Structure and drive checks for draft-live-walk.mjs: where each pair sits relative to the other pairs (inside which, in whose row), and how each state… |
 | `qc-anti-cheat.py` | script-call | Static-analysis gate that fails on converter-cheating patterns. |
 | `qc-correctness-regression.py` | — | Mechanical regression checker for the SGS clone pipeline. |
 | `qc_anti_cheat_checks.py` | script-call | Cheat-pattern definitions, AST visitor, and file analysers. |
@@ -2504,7 +2548,7 @@ for the verb you happen to have in mind.
 | `sgs-block-grep.py` | — | SGS block-name search utility — fixes the block-name-search-blindspot failure mode. |
 | `verify-restored-page.js` | — | The Track B definition-of-done requires the restore to be proven on the REAL page via computed DOM (R-31-11), not on assertion output or the emitted… |
 | `wc-pages-responsive-audit.js` | manifest+script-call | FR-30-11 — WooCommerce page-type responsive + budget verification gate. |
-| `wp-build-page.js` | — | Builds a whole page (or header, footer, drawer, modal, mega menu) through the real block editor from a JSON block tree, so every block is serialised… |
+| `wp-build-page.js` | script-call | Builds a whole page (or header, footer, drawer, modal, mega menu) through the real block editor from a JSON block tree, so every block is serialised… |
 | `wp-migrate-oldshape-blocks.js` | manifest+script-call | block migrations (Track B, 2026-07-15), through the BLOCK EDITOR ONLY. |
 | `wp-update-block-attrs.js` | script-call+skill | Reusable Playwright helper that updates a block's attributes on a live WordPress post by going through the editor — using wp.blocks.createBlock(name… |
 
@@ -2547,6 +2591,18 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_border_radius_tiers` | `function sgs_border_radius_tiers( array $attributes ): array` | Resolve a block's `borderRadius` attribute into desktop/tablet/mobile corner objects, shape-agnostic (Phase 2 tier-object migration… |
 | `sgs_label_box_css_rule` | `function sgs_label_box_css_rule( array $box, string $selector ): string` | Build the SCOPED CSS for a label-style box on ONE selector. |
 
+#### `includes/helpers-brand-glyphs.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_whatsapp_glyph_svg` | `function sgs_whatsapp_glyph_svg( string $class_name, int $size = 24 ): string` | The WhatsApp logo (official brand path), filled with `currentColor` so CSS sets its colour. Decorative: the caller's own text names the… |
+
+#### `includes/helpers-button-note.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_button_note_html` | `function sgs_button_note_html( array $attributes ): string` | The note's markup. |
+
 #### `includes/helpers-button-style.php` — 1 function(s)
 
 | Function | Signature | Purpose |
@@ -2561,11 +2617,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_cart_panel_body_html` | `function sgs_cart_panel_body_html( array $args ): string` | Build the shared mini-cart panel body. |
 | `sgs_cart_panel_wrapper_html` | `function sgs_cart_panel_wrapper_html( string $mode, string $body_html, array $args ): string` | Wrap the panel body in the element the display mode's ARIA pattern requires. |
 
-#### `includes/helpers-colour-parse.php` — 2 function(s)
+#### `includes/helpers-colour-parse.php` — 3 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_colour_resolve_hex_alpha` | `function sgs_colour_resolve_hex_alpha( string $value ): array` | Resolve a SOLID colour value to a 6-digit hex plus its own alpha (0.0-1.0). |
+| `sgs_colour_hex_for_contrast` | `function sgs_colour_hex_for_contrast( string $value ): string` | Resolve a colour attribute as the editor stores it — a palette slug OR any CSS colour the client picked — to a 6-digit hex for contrast… |
 | `sgs_split_top_level_commas` | `function sgs_split_top_level_commas( string $value ): array` | Split a comma-separated CSS argument list on TOP-LEVEL commas only — i.e. commas that are not nested inside a function call's parentheses.… |
 
 #### `includes/helpers-colour-variants.php` — 9 function(s)
@@ -2632,6 +2689,18 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_css_sizing_keyword` | `function sgs_css_sizing_keyword( $value ): string` | Return a CSS intrinsic sizing keyword in canonical form, or '' when the value is not one. |
 | `sgs_css_length_or_sizing_keyword` | `function sgs_css_length_or_sizing_keyword( $value ): string` | Sanitise a CSS length, letting the intrinsic sizing keywords through intact. |
 
+#### `includes/helpers-empty-tab.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_tab_content_is_empty` | `function sgs_tab_content_is_empty( string $html ): bool` | Whether a rendered tab's HTML carries no visible text and no media. |
+
+#### `includes/helpers-global-settings.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_global_custom_setting` | `function sgs_global_custom_setting( string $key )` | The value at `settings.custom.<key>`, or null when it is not set. |
+
 #### `includes/helpers-gradient-tone.php` — 3 function(s)
 
 | Function | Signature | Purpose |
@@ -2653,6 +2722,23 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_render_info_toggle` | `function sgs_render_info_toggle( string $panel_text, string $aria_label = '', string $extra_class = '' )…` | Render an info-toggle button + its (initially hidden) panel. |
+
+#### `includes/helpers-item-effects.php` — 6 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_item_motion_transition` | `function sgs_item_motion_transition( array $attributes ): string` | The `<duration> <easing>` pair every item effect transitions with. |
+| `sgs_sibling_dim_css` | `function sgs_sibling_dim_css( string $list_sel, string $item_sel, string $paint_sel, array $attributes )…` | Dim the siblings of the hovered (or keyboard-focused) item in one list. |
+| `sgs_label_roll_value` | `function sgs_label_roll_value( $raw ): string` | Validate a `labelRoll` value: '' (off), `up` or `up-scale`. |
+| `sgs_label_roll_markup` | `function sgs_label_roll_markup( string $text, string $roll, string $alt_hover = '', string $alt_open = ''…` | A label with its roll copies, or the plain escaped label when the roll is off (no extra DOM for anyone who has not asked for it). |
+| `sgs_label_roll_wrap_html` | `function sgs_label_roll_wrap_html( string $safe_html, string $roll ): string` | The roll around label HTML that is already safe (e.g. an icon-list item's kses'd text, which may carry inline formatting). The copy is the… |
+| `sgs_label_roll_css` | `function sgs_label_roll_css( string $scope_sel, string $trigger_sel, string $open_sel, array $attributes )…` | The roll's motion, scoped to one block instance. |
+
+#### `includes/helpers-link-source.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_resolve_link_source` | `function sgs_resolve_link_source( string $source, string $typed_url ): array` | Resolve a button's `linkSource` attribute to a final href plus any extra wrapper attributes the source needs on the rendered element. |
 
 #### `includes/helpers-link.php` — 1 function(s)
 
@@ -2696,11 +2782,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_render_stars` | `function sgs_render_stars( float $rating, int $best_rating = 5, int $size = 20, string $colour_css =…` | Render inline SVG star icons for a given rating value. |
 | `sgs_render_media` | `function sgs_render_media( $attrs, $context = '' )` | Render an image or video from a unified SGS media-slot attribute. |
 
-#### `includes/helpers-mega-render.php` — 1 function(s)
+#### `includes/helpers-mega-render.php` — 3 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
-| `sgs_mega_render_panel_content` | `function sgs_mega_render_panel_content( int $panel_id ): ?string` | Resolve a mega panel post ID to its rendered inner HTML, guarding against self-reference recursion + runaway depth. |
+| `sgs_mega_render_panel_content` | `function sgs_mega_render_panel_content( int $panel_id, string $context = '' ): ?string` | Resolve a mega panel post ID to its rendered inner HTML, guarding against self-reference recursion + runaway depth. |
+| `sgs_mega_render_context` | `function sgs_mega_render_context(): string` | The context of the mega panel currently rendering: '' (bar, or no panel on the stack) or 'drawer'. |
+| `sgs_mega_render_item_panel` | `function sgs_mega_render_item_panel( array $item, string $viewall_class, string $context = '' ): ?string` | Render a mega menu item's panel with its "View all" fallback, for either menu fork. One path for the bar and the drawer. |
 
 #### `includes/helpers-motion-easing.php` — 4 function(s)
 
@@ -2717,9 +2805,16 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|
 | `sgs_nav_drawer_motion_shapes` | `function sgs_nav_drawer_motion_shapes(): array` | Every `entryAnimation` value. Mirrors the JSON enum of the tier values. |
 | `sgs_nav_drawer_motion_keyframes` | `function sgs_nav_drawer_motion_keyframes( string $shape, string $anchor ): array` | The keyframe pair and transform origin for one resolved shape. |
-| `sgs_nav_drawer_motion_tier_decls` | `function sgs_nav_drawer_motion_tier_decls( string $shape, string $anchor ): string` | The custom-property declarations for one tier's shape. |
+| `sgs_nav_drawer_motion_tier_decls` | `function sgs_nav_drawer_motion_tier_decls( string $shape, string $anchor, bool $grow_any = false ): string` | The custom-property declarations for one tier's shape. |
 | `sgs_nav_drawer_motion` | `function sgs_nav_drawer_motion( array $attributes, string $root_sel, $anchor_raw, array $allowed_anchors )…` | Build the drawer's motion CSS, root classes and root data attributes. |
 | `sgs_nav_drawer_motion_distance` | `function sgs_nav_drawer_motion_distance( $raw )` | One tier's item travel distance: a bare number is pixels, and negative means the item falls from above. |
+
+#### `includes/helpers-nav-drawer-stagger-shape.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_nav_drawer_stagger_axes` | `function sgs_nav_drawer_stagger_axes(): array` | Every `itemStaggerAxis` tier value, with its (x, y) travel multipliers. |
+| `sgs_nav_drawer_stagger_shape` | `function sgs_nav_drawer_stagger_shape( array $attributes, string $root_sel ): array` | The shaped-entrance CSS and class for one drawer. |
 
 #### `includes/helpers-responsive.php` — 15 function(s)
 
@@ -2888,6 +2983,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_tier_media_has_source` | `function sgs_tier_media_has_source( array $spec ): bool` | Does a tier spec resolve to something renderable? |
 | `sgs_tier_media_toggle_css` | `function sgs_tier_media_toggle_css( array $present, string $base_class, string $uid ): string` | Breakpoint rules that show exactly one tier at any width. |
 
+#### `includes/helpers-tier-queries.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_tier_media_queries` | `function sgs_tier_media_queries( array $tiers, string $extra = '' ): array` | The exact media condition for each named tier (desktop >= 1024, tablet 768 to 1023, mobile <= 767), each optionally narrowed by `$extra`. |
+| `sgs_tier_exact_media_css` | `function sgs_tier_exact_media_css( array $tiers, string $rules, string $extra = '' ): string` | Wrap `$rules` so they apply at exactly the given tiers, with no cascade into other tiers. All three tiers and no extra condition: no… |
+
 #### `includes/helpers-tokens.php` — 33 function(s)
 
 | Function | Signature | Purpose |
@@ -2949,12 +3051,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_trust_bar_seconds` | `function sgs_trust_bar_seconds( float $seconds ): string` | Format a duration in seconds for CSS ("30s", "12.5s"); locale-independent. |
 | `sgs_trust_bar_marquee_css` | `function sgs_trust_bar_marquee_css( string $uid_scope, int $below, float $duration ): string` | Scoped CSS for the marquee options. Empty when neither option is set, so a default block's output is unchanged. |
 
-#### `includes/helpers-typography.php` — 4 function(s)
+#### `includes/helpers-typography.php` — 5 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_typography_attr` | `function sgs_typography_attr( $prefix, $base )` | Build a prefixed attribute key. '' + 'FontSize' → 'fontSize'; 'label' + 'FontSize' → 'labelFontSize'. |
 | `sgs_font_family_sanitise` | `function sgs_font_family_sanitise( $value ): string` | Sanitise a font-family value for safe CSS interpolation. |
+| `sgs_font_family_preset_slugs` | `function sgs_font_family_preset_slugs(): array` | Slugs of every font-family preset the site defines (theme, custom and default origins), cached per request. |
 | `sgs_typography_css_rule` | `function sgs_typography_css_rule( array $attributes, $prefix, $selector, $indent_sibling_selector = ''…` | Build a scoped typography CSS rule string (base + responsive) for one element. The caller wraps the return value in a single <style> tag. |
 | `sgs_link_colour_css` | `function sgs_link_colour_css( array $attributes, $prefix, $selector )` | Two-state, flat-or-gradient LINK colour for a RichText field whose `allowedFormats` permits `core/link` — a linked selection and the… |
 
@@ -2965,7 +3068,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_saving_display` | `function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_pence, string $framing_mode, bool…` | Plain-text saving label for one row of the comparative value ladder (Spec 28 P1). |
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 28 P1). |
 
-**42 files, 222 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**50 files, 241 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -2980,6 +3083,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `CursorFieldRowControls.js` | `CursorFieldRowControls` | CursorFieldRowControls — shared cursor-reactive-field (FR-38-25) controls for blocks that are NOT on the shared fx ToolsPanel… |
 | `DateTimePickerField.js` | `DateTimePickerField (default)` | DateTimePickerField — the SGS standard DATE control (golden-controls.json goldens/input.json `date` row, Bean-approved live… |
 | `DesignTokenPicker.js` | `DesignTokenPicker (default)`, `resolveColourToken` | Colour picker that reads the active theme.json palette. |
+| `FieldLabelLayoutPanel.js` | `FieldLabelLayoutPanel (default)` | "Label and headings" panel for SGS form fields: whether the field's label shows or is read only by screen readers, and (for boxes… |
 | `FlowingGradientRowControls.js` | `isCssOnlyFlowingGradientVariant`, `FlowingGradientRowControls` | FlowingGradientRowControls — shared "flowing gradient" (`wave-gradient`) controls for blocks that reach the effect via a… |
 | `FocalPositionField.js` | `FocalPositionField (default)` | FocalPositionField — the SGS wrapper around WP-native `FocalPointPicker` |
 | `GradientCapableColourControl.js` | `GradientCapableColourControl (default)`, `isGradientValue` | GradientCapableColourControl — the text-colour gradient rollout's shared control (D636 Task 1b, "text" builder). |
@@ -3003,6 +3107,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `RowScrollBehaviourControls.js` | `RowScrollBehaviourControls (default)` | RowScrollBehaviourControls — per-row transparent / hide-on-scroll toggles |
 | `ScaleAxisControl.js` | `ScaleAxisControl (default)` | ScaleAxisControl — 2-axis (X/Y) proportional scale control with a link/unlink toggle (Spec 35A §F.2.3, D637). |
 | `ScrimControls.js` | `ScrimControls (default)`, `scrimColourRow` | ScrimControls: the shared inspector controls for a viewport scrim, the see-through layer that dims the page behind an open… |
+| `ServerSideRender.js` | `ServerSideRender (default)`, `omitNullish` | ServerSideRender: the SGS drop-in for `@wordpress/server-side-render`. |
 | `SgsBooleanField.js` | `SgsBooleanField (default)` | SgsBooleanField — the SGS standard BOOLEAN control (golden-controls.json goldens/input.json `boolean` row, Bean-approved live… |
 | `SgsBorderControl.js` | `SgsBorderControl (default)` | SgsBorderControl — the border control PAIR, matching WP core's native `BorderBoxControl` layout (Bean-directed 2026-08-27 Task 0… |
 | `SgsBoxControl.js` | `SgsBoxControl (default)` | SgsBoxControl — compact 4-side box editor (padding / margin / border-width), built from native primitives with a hand-aligned row… |
@@ -3018,9 +3123,9 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `StarterLookPresetControl.js` | `StarterLookPresetControl (default)` | SGS Starter Look preset control (FR-37-47). |
 | `SurfaceGroundControls.js` | `SurfaceGroundControls (default)` | SurfaceGroundControls: the shared inspector controls for a frosted surface |
 | `SurfaceTreatmentPanel.js` | `isSimpleBackgroundImage`, `SurfaceTreatmentPanel` | SurfaceTreatmentPanel — shared surface-treatment (grain/halftone/duotone) controls for blocks that reach the effect via… |
-| `TypographyControls.js` | `TypographyControls (default)`, `typographyAttrName`, `typographyAttrKeys`… | TypographyControls — shared, uniform typography UI for every SGS block. |
+| `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**46 files.**
+**48 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
@@ -3055,7 +3160,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `registry.js` | `basesForAtoms`, `atomsForElement`, `MEDIA_ATOMS`, `MEDIA_ATOM_IDS` | L2b — the ATOM registry. The middle level between names and panels. |
 | `shadow.control.js` | `control` | `shadow` atom — CONTROL half (JSX). |
 | `shadow.js` | `attrKeys`, `resolveShadow`, `disclosure`, `validate`, `css` | `shadow` atom: L2b control + disclosure + validator + value-setter. |
-| `source.control.js` | `control` | Atom: SOURCE (control half) — the editor UI. |
+| `source.control.js` | `pairPickerRow`, `control` | Atom: SOURCE (control half) — the editor UI. |
 | `source.js` | `resolveMediaType`, `disclosure`, `validate`, `css`, `TYPE_VOCABULARY` | Atom: SOURCE (logic half) — which media is showing. |
 | `svg-presentation.control.js` | `control` | `svg-presentation` atom — CONTROL half (JSX). |
 | `svg-presentation.js` | `validatePosition`, `validateAnimation`, `validateSpeed`, `attrKeys`, `disclosure`… | `svg-presentation` atom — L2b control + disclosure + validator + value-setter. |

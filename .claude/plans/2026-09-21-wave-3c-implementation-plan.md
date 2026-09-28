@@ -211,7 +211,7 @@ visually. `none` means neither.
 | ‖ | U-12 — **DONE** | Header and footer furniture: local-time clock, language switch, store selector, wishlist (link, saved-items panel, Save for later), theme toggle with an automatic dark palette, back-to-top and account as `sgs/button` link sources, sound mute as an `sgs/audio` style (Bean, 2026-09-25). `headerEssential` on `product-search` only | M-18 | none | high | six new directories (`local-time/`, `language-switch/`, `store-selector/`, `theme-toggle/`, `wishlist-link/`, `wishlist-panel/`), plus `button/`, `audio/`, `product-card/`, `cart/`, `product-search/block.json`, `includes/wishlist/`, `includes/helpers-link-source.php`, `scripts/derive-dark-palette.py` and the theme's dark-mode files |
 | ‖ | U-15 — **DONE** | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*`, new `notice-message/` |
 | ‖ | U-17 — **DONE** | The Lottie player (DEC-13, section 1h): Spec 38 Tier H, the fourth media type, the wrapper background and the logo substrate | M-33 | design | high | `includes/lottie-*.php`, `src/shared/effects/{fx-lottie,lottie-adapter}.js`, `src/vendor-modules/lottie-light.js`, the media atoms, `media/`, `hero/`, `responsive-logo/`, `class-sgs-container-wrapper.php` |
-| 15 | U-18 — **open** (G1-G7, G9-G11 live; G8 accepted as DEC-18 and parked; **both copies fail Bean's eye 2026-09-27: next is `.claude/plans/2026-09-27-reference-capture-method-plan.md`**) | Copy-parity gaps found composing Gate 3C item 4's two copies. Done and live: G3 custom colours reach the page (gate `check-custom-colour-survives.py`), G1 burger width, G2 `header-box` drawer anchor, G4 narrow panels centre, G5 by composition. Live (report `reports/visual-diff/u18-copy-parity-2026-09-27.md`): G6 burger bar size, G7 drawer `stretch`, G10 narrow desktop panel stacks (four `@container` leaks), G11 group-heading over-reach plus the eyebrow selector-list bug. G8 (pin a block to a screen corner) stopped at NO GO and is accepted as DEC-18, parked in `2026-09-27-g8-screen-corner-pin-plan.md`. Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | G6 `nav-bar-menu/{block.json,style.css,BurgerPanel.js}`, `nav-menu-trigger-css.php`; G7 `nav-drawer/{block.json,render.php,edit.js}`; G8 `container/{block.json,edit.js}`, `class-sgs-container-wrapper.php`, a footer portal; G10/G11 `mega-panel/{render.php,style.css}` |
+| 15 | U-18 — **open** (G1-G7, G9-G11 live; G8 accepted as DEC-18 and parked; **both copies failed Bean's eye 2026-09-27; the framework capabilities they lacked are live (2026-09-28); the copies' settings, accepts and final walker run continue in `.claude/plans/2026-09-27-reference-capture-method-plan.md` "Build status"**) | Copy-parity gaps found composing Gate 3C item 4's two copies. Done and live: G3 custom colours reach the page (gate `check-custom-colour-survives.py`), G1 burger width, G2 `header-box` drawer anchor, G4 narrow panels centre, G5 by composition. Live (report `reports/visual-diff/u18-copy-parity-2026-09-27.md`): G6 burger bar size, G7 drawer `stretch`, G10 narrow desktop panel stacks (four `@container` leaks), G11 group-heading over-reach plus the eyebrow selector-list bug. G8 (pin a block to a screen corner) stopped at NO GO and is accepted as DEC-18, parked in `2026-09-27-g8-screen-corner-pin-plan.md`. Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | G6 `nav-bar-menu/{block.json,style.css,BurgerPanel.js}`, `nav-menu-trigger-css.php`; G7 `nav-drawer/{block.json,render.php,edit.js}`; G8 `container/{block.json,edit.js}`, `class-sgs-container-wrapper.php`, a footer portal; G10/G11 `mega-panel/{render.php,style.css}` |
 
 **U-1 — done** (live `reports/visual-diff/container-2026-09-23.md`, `nav-bar-menu-2026-09-23.md` and
 `nav-drawer-2026-09-23.md`, each `verdict: PASS`). Shipped: mega close-grace reads `submenuCloseGrace`; force-solid paints the header's own
@@ -472,9 +472,9 @@ difference for Wave 3C and the rebuild brief is parked in `.claude/plans/2026-09
   hidden at 375 (L1-L10). Indus: text sizes, every hover colour and motion, mega-panel spacing and order, and the
   drawer's order and contents (I-1 to I-3). The cause is proven: `u18-copy-probe.mjs` reads no type, hover, motion
   or order, and the draft's stylesheet was never parsed. Full list and the method questions:
-  `.claude/plans/2026-09-27-reference-capture-method-plan.md`. Its steps 1-5 are done (2026-09-28): the
-  hand-read diff and walker reports are in `reports/visual-diff/u18-*`, and the walker's full checks find every
-  row. **Next is that plan's step 6** (sort each row into composition or framework capability, plan, fix).
+  `.claude/plans/2026-09-27-reference-capture-method-plan.md`. Its steps 1-6 are done (2026-09-28): the
+  hand-read diff and walker reports are in `reports/visual-diff/u18-*`, every row is sorted, and every framework gap
+  is built as a real control (Specs 36, 37, 02). **Resume at that plan's "Build status" open list.**
 - Residue, named (not built): `widthType: fit` and a label's `fullWidth: false` do not hold inside a stretching flex
   column, and `sgs/mega-aside` has no alignment control (worked around with flex-row wrappers); the Indus drawer's
   fourth social is Twitter because no block draws the draft's flat white Google G; lamalama's drawer menu has no
@@ -679,9 +679,10 @@ Gate 3C passes when:
    co-authoritative (R-31-13).
 5. Spec 36, Spec 37, the verify doc and `LEDGER.md` state the model.
 
-**Status 2026-09-27.** Items 2, 3 and 5 pass. Item 1 passes: M-08's one uncovered cell, lamalama's corner card,
+**Status 2026-09-28.** Items 2, 3 and 5 pass. Item 1 passes: M-08's one uncovered cell, lamalama's corner card,
 is accepted as DEC-18 (Bean, 2026-09-27). Item 4 FAILS on Bean's eye: both copies are far from visual copies, and
-the 75/76 and 23/23 counts measured geometry only. Next: step 6 of `.claude/plans/2026-09-27-reference-capture-method-plan.md`.
+the 75/76 and 23/23 counts measured geometry only. The capabilities are built (2026-09-28); the walker reads lamalama
+295 open and Indus 692 open, closing in `.claude/plans/2026-09-27-reference-capture-method-plan.md` "Build status".
 
 ## 8. Wave 4 preconditions
 

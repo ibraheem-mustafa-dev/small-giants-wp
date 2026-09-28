@@ -237,7 +237,8 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   caret = toggle (`includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_has_real_destination`).
   `itemOrnamentRevealMode` (tier: `static` | `hover-draw`) hides the ornament at rest and draws its SVG strokes in
   sequence on hover or focus, and `itemOrnamentReserveSpace` keeps its space at rest
-  (`includes/nav-drawer-menu-ornament-reveal-css.php`). `itemTrailingIcons` (per-item map), `itemTrailingIconColour`
+  (`includes/nav-drawer-menu-ornament-reveal-css.php`). `ornamentHiddenItemIds` (item ids, `id:<menu item>`) turns
+  the ornament off per item; with reserved space on, that row keeps an invisible placeholder so its label lines up. `itemTrailingIcons` (per-item map), `itemTrailingIconColour`
   and `itemTrailingIconSize` put a trailing glyph on any row; the shared IconPicker takes a pasted custom SVG,
   re-sanitised server-side with `sgs_svg_kses_allowed_tags()`. The drawer also takes the bar's badge colours and
   `disabledItemIds`/`itemDisabledColour`.
@@ -250,7 +251,9 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   On `sgs/mega-panel`: `panelCardLift`
   (default `3px`) sets the `cards` style's group-tile hover/focus-within lift distance
   (`translateY(calc(-1 * <value>))`; empty or `0` means no lift); the same block's `itemPaddingShiftHover` grows a group item's own
-  inline-start padding on hover, independently of the bar/drawer attribute of the same name. `sliding pill`
+  inline-start padding on hover, independently of the bar/drawer attribute of the same name. The `brands` variant's
+  eyebrow ("Our Brands") takes `brandsEyebrow*` typography (via `sgs_typography_css_rule()`), `brandsEyebrowColour` and
+  per-device `brandsEyebrowPadding`, defaulting to the mono 11px/500 uppercase muted look. `sliding pill`
   (`itemBgHoverTreatment`), tint swap, colour, weight, underline and border stay owned by Spec 41.
 - The timing constants apply to the hover path only; WCAG 1.4.13 (Dismissible/Hoverable/Persistent) on the
   hover panel; caret on expandable items only; distinct hover+focus states; active-trail
@@ -385,8 +388,9 @@ option list); `closePlacement` tier object (`top-row-end` default | `top-row-sta
 on the opener's centre, measured by `store.js`; `same-slot` needs `modal` and resolves to `top-row-end` under
 `non-modal`, where the header paints above the drawer); `closeOffset` tier object `{x,y}` px (x on the inline
 axis); `closeRadius` tier object; `closeLabel`, `closeIcon` (an
-icon-picker object `{source,name}`, default `{lucide, x}`, resolved by
-`plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_shared_icon_markup`), `closeSize` (the hit box
+icon-picker object `{source,name}` or `{source:'custom',svg}`, default `{lucide, x}`, resolved by
+`plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_shared_icon_markup`, which re-sanitises a custom SVG with
+`sgs_svg_kses_allowed_tags()`; the same resolver draws every nav icon picker: ornament, expander, sublink marker), `closeSize` (the hit box
 never goes below 44px), the close-label typography set, and the `toggleCloseColour*` colour/hover/gradient
 set. Gradient is routed per icon source by `sgs_icon_gradient_css()`; never restrict the icon source enum.
 

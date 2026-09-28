@@ -180,7 +180,7 @@ sgs-blocks/
 
 Full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUTTON-ARCHITECTURE.md). Summary:
 
-- **`sgs/button`** is the canonical button block. Replaces all uses of `core/button` inside SGS blocks. 87 attributes (full surface — see spec 11 §8 comparison vs Spectra/Kadence/Stackable/core).
+- **`sgs/button`** is the canonical button block. Replaces all uses of `core/button` inside SGS blocks; its full attribute surface is compared with Spectra, Kadence, Stackable and core in spec 11 §8.
 - **`sgs/multi-button`** is the container. Accepts 0..N `sgs/button` instances via InnerBlocks (restricted to children of type `sgs/button`). Per-breakpoint layout direction + alignment. Gap is provided by the shared `ContainerWrapperControls` gap control (raw-px free-input, `sgs_container_gap_value()`) — no separate per-block gap control.
 - **Composition pattern:** every composite block that renders CTAs (`sgs/hero`, `sgs/cta-section`, `sgs/feature-grid`, etc.) exposes an InnerBlocks slot whose default template is `sgs/multi-button` containing 2 `sgs/button` instances. **NEW SGS BLOCKS WITH CTAs MUST USE THIS PATTERN** — never render CTAs internally via per-block `ctaPrimary*` attributes. **RECORDED EXCEPTION (Bean sign-off):** `sgs/product-card` is a BUILT-IN-ELEMENT card — its CTA (and every other commerce element) renders from the block's own typed attributes via the element-MIRROR pattern (the CTA mirrors `sgs/button`'s control set through shared helpers; auto-propagation: a new `sgs/button` capability is a gap candidate on the mirror), with ZERO InnerBlocks in typed mode. CTA model (approved): max 2 text buttons (1 primary + 1 secondary), behaviours add-to-basket / buy-now / learn-more, express-pay as a phase-2 gateway-rendered toggle.
 - **Preset binding** via `inheritStyle: 'primary' | 'secondary' | 'outline' | 'custom'` reads from `wp_options.sgs_button_presets`, mirrored to `theme.json` `settings.custom.buttonPresets`. Three editing paths (Settings page, Site Editor block-style-variations, theme.json) write the same backing store.
@@ -1362,6 +1362,11 @@ plus scoped custom properties; per-block defaults from `supports.sgs.hoverDefaul
 - `sgsHoverDuration` (a duration token), `sgsHoverDurationMs` (exact ms, overrides the token), `sgsHoverEasing`
   (a token, or `custom` with `sgsHoverEasingCustom`, validated by `sgs_motion_easing_css()`)
 - `sgsHoverOpacity` (0 to 1, 0 = off) — the hover fade, touch-guarded like the transform
+- `sgsHoverIndent` (a length; the block's inline-start padding grows by it on hover and focus-within) and
+  `sgsHoverShadow` `custom` + `sgsHoverShadowCustom` (a box-shadow, sanitised by `sgs_shadow_value()`)
+- `sgsChildSizing` / `sgsChildWidth` (opt-in `"childSizing"`) — how a block sizes as a child of a flex row, per device:
+  `fit`, `fill` (takes the space the others leave) or `fixed` (with `sgsChildWidth`); `includes/child-sizing.php`
+- Block-own hover fades: `opacityHover` on `sgs/button`, `sgs/icon` (linked) and `sgs/responsive-logo` (0 = off)
 - `sgsHoverGrayscale`, `sgsHoverBorderAccent`, `sgsHoverTilt3D` **(BUILT)**, `sgsStaggerDelay`, `sgsFocusRing`
 - `sgsBlockLink`, `sgsBlockLinkTarget`, `sgsBlockLinkLabel` (opt-in `"blockLink"`) — a stretched overlay link
 - `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration` — click ripple

@@ -2,7 +2,7 @@
 doc_type: implementation-plan
 project: small-giants-wp
 spec_id: 36+37 (merged execution track), cloning pipeline
-status: READY TO START (brief, not a design)
+status: IN PROGRESS (step 6: framework built; copies closing)
 parent_plan: .claude/plans/2026-09-21-wave-3c-implementation-plan.md (Gate 3C item 4, U-18)
 ---
 
@@ -185,10 +185,15 @@ Walker (committed version, `auto: false` on header configs), 2026-09-28 09:30: l
 - Settings: hover text colour held on the linked row, logo and card containers (Mama's brown still reaches the
   container); Indus About/Brands panel heights and positions; the drawer CTA row (email and call beside the CTA).
 - lamalama's marker plays three alternate glyph frames on hover before settling (a frame sequence the ornament can't
-  play: it swaps one alternate). Bean to decide: build or accept.
+  play: it swaps one alternate). Decided (Bean, 2026-09-28): build it as an ornament frame sequence.
 - The canary's host serves a "Checking your browser" page under load: walker states and console errors (403) come from
-  it. Bean to decide: allow-list the test site or live with retries.
+  it. Decided (Bean, 2026-09-28): allow-list or switch off the check for the test site in hPanel, so
+  walker runs and console errors reflect the copies only.
 - Walker timeline noise: the 30ms samples (blur, drawer growth) move by up to 0.2 between runs on the same reference.
+- Trees: `plugins/sgs-blocks/scripts/nav-qa/gate3c/*.tree.json` rebuilt with `scripts/wp-build-page.js`. The copies are
+  measured only as the ACTIVE header (header posts 4461 Indus, 4435 lamalama); pages 4465 and 4446 also carry their own
+  inline header copy (`indus-page.tree.json` / `lamalama-page.tree.json`), kept in step but never measured. Some box
+  settings refuse per-device objects in the builder (see the DB item below): give the flat value.
 - Structure-only rows get their dated accepts under the same-paint rule in the final pass, which runs without
   `--no-review` so every state x width screenshot carries a review note.
 - The framework DB marks `itemPadding`, `chromeRowPadding`, `itemBorderRadius`, `itemOrnamentGap` as not per-device
@@ -200,8 +205,7 @@ Walker (committed version, `auto: false` on header configs), 2026-09-28 09:30: l
 
 ### Defects to diagnose
 
-- **D-1** L-C3/L-C4: logo and burger sit 7px and 3px high in the pill.
-- **D-2** I-P20: Brands grows 1.41x at 30ms when switching from another panel.
+- **D-2** I-P20: Brands grows 1.41x at 30ms when switching from another panel (not yet re-read after the fixes).
 
 ### Matches and accepts
 
