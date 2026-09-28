@@ -1773,6 +1773,7 @@
                         "name": "sgs/product-card",
                         "attributes": {
                           "sourceMode": "wc-product",
+                          "titleTextWrap": "wrap",
                           "showRating": true,
                           "noReviewsText": "No reviews yet",
                           "showSavingBadge": true,
@@ -1916,6 +1917,7 @@
                         "name": "sgs/product-card",
                         "attributes": {
                           "sourceMode": "wc-product",
+                          "titleTextWrap": "wrap",
                           "showRating": true,
                           "noReviewsText": "No reviews yet",
                           "showSavingBadge": true,
