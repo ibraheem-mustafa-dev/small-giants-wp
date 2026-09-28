@@ -120,7 +120,11 @@ async function walkSide( browser, side, width ) {
 		await page.waitForTimeout( 60 );
 		const running = {};
 		for ( const p of pairs ) {
-			running[ p.name ] = await page.evaluate( collectRunning, [ p[ side ], RESOLVE ] );
+			// A filter that reloads the page can still be navigating here: wait for the new page and read again.
+			running[ p.name ] = await page.evaluate( collectRunning, [ p[ side ], RESOLVE ] ).catch( async () => {
+				await page.waitForLoadState( 'networkidle' ).catch( () => {} );
+				return page.evaluate( collectRunning, [ p[ side ], RESOLVE ] );
+			} );
 		}
 		await page.waitForTimeout( state.settle ?? 900 );
 		if ( onlyStates && ! onlyStates.includes( state.name ) ) {
@@ -229,7 +233,7 @@ for ( const width of widths ) {
 			run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, all ) };
 		}
 		if ( autoOn ) {
-			const a = autoPair( d.auto, l.auto, cfg.autoTolerance );
+			const a = autoPair( d.auto, l.auto, cfg );
 			run.pairs[ '(auto)' ] = { words: a.words, diffs: judge( '(auto)', a.diffs ) };
 		}
 		results.runs.push( run );

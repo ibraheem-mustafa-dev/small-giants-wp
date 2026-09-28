@@ -46,8 +46,15 @@ export default {
 	name: 'shop',
 	draft: { url: DRAFT, open: ( h ) => h.clickText( '^sunglasses$', { wait: 1200 } ) },
 	live: { url: LIVE },
-	// The draft's floating WhatsApp bubble sits outside its footer (the nav track checks it).
-	auto: { exclude: { draft: [ 'a[aria-label^="Message Fatima"]' ] } },
+	// Nav-track chrome outside the header and footer on both sides: the draft's floating WhatsApp bubble and
+	// the "100% genuine" trust bar above the header (the draft's has no class names: the full-width row
+	// holding its text).
+	auto: { exclude: {
+		// The brand list: live lists the real 14 brands, the draft a made-up 40 (Bean 2026-09-27), so its words
+		// pair badly with card chips; the named brand pairs check its look.
+		draft: [ 'a[aria-label^="Message Fatima"]', { js: '(r) => { const h = [...document.querySelectorAll("aside button")].find((b) => /^brand/i.test(b.textContent.trim())); return h && h.parentElement; }' }, { js: '(r) => { let e = [...document.querySelectorAll("span")].find((s) => /^100% genuine/i.test(s.textContent.trim())); while (e && e.parentElement && e.getBoundingClientRect().width < innerWidth - 2) e = e.parentElement; return e; }' } ],
+		live: [ '.sgs-trust-bar', { js: '(r) => [...document.querySelectorAll("#sgs-shop-filters details")].find((g) => /^\s*brand/i.test(g.querySelector("summary")?.textContent || ""))' } ],
+	} },
 	states: [
 		{ name: 'opening', fullPage: true },
 		{
@@ -235,5 +242,16 @@ export default {
 		{ state: 'brand-ray-ban', pair: 'title', reason: 'Accepted (Bean 2026-09-27): choosing one brand turns the draft into that brand’s page (title "Ray-Ban", no Shop eyebrow); live keeps "Sunglasses" with the filter applied' },
 		{ state: 'brand-ray-ban', pair: 'eyebrow', reason: 'Accepted (Bean 2026-09-27): choosing one brand turns the draft into that brand’s page (title "Ray-Ban", no Shop eyebrow); live keeps "Sunglasses" with the filter applied' },
 		{ kind: 'motion', key: 'transition', reason: 'Accepted (Bean 2026-09-27): hover timing curves: live uses the site’s standard easing where the draft uses ease (card) and a custom curve (photo zoom); durations match' },
+		// The automatic check (GAP-CHECKLIST section 12): the differences Bean has already decided, row by row.
+		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-27): "No reviews yet" until real reviews exist, where the draft shows made-up stars', when: ( d ) => ( ( d ) => /^text-missing "★|^text-missing "\)"$|^text-extra "no reviews yet"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-27): each card is 5-6px shorter for "No reviews yet" against the draft’s stars, so the next card in the column starts that much higher', when: ( d ) => ( ( d ) => /^moved "[^"]* → [^"]*save £/.test( d.key ) && Math.abs( Number( d.draft.split( ',' )[ 0 ] ) - Number( d.live.split( ',' )[ 0 ] ) ) <= 4 && Math.abs( Number( d.draft.split( ',' )[ 1 ] ) - Number( d.live.split( ',' )[ 1 ] ) ) <= 8 )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-27): live lists and counts the real catalogue (14 brands, real counts per option); the draft a made-up one (40 brands)', when: ( d ) => ( ( d ) => /^text-(missing|extra) "[\d ()]+"$|^text-(missing|extra) "([a-z&'.-]+ )*\d+( [a-z&'.-]+( [a-z&'.-]+)* \d+)*"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', state: 'brand-ray-ban', reason: 'Accepted (Bean 2026-09-27): choosing one brand turns the draft into that brand’s page (Brand eyebrow, "Ray-Ban" title); live keeps "Shop / Sunglasses"', when: ( d ) => ( ( d ) => /^text-(missing|extra) "(brand ray-ban|shop sunglasses|ray-ban)"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', state: 'panel-after-click', reason: 'Accepted (Bean 2026-09-27): choosing one style turns the draft into that style’s page (Shape eyebrow, "Pilot" title); live keeps "Shop / Sunglasses"', when: ( d ) => ( ( d ) => /^text-(missing|extra) "(shape pilot|shop sunglasses)"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', state: 'colour-black', reason: 'Accepted (Bean 2026-09-27): a draft bug; its Black swatch returns "0 frames" and an empty message where live returns 14 frames', when: ( d ) => ( ( d ) => /^text-missing "(0|nothing matches all of that)|^text-extra "[^"]*(no reviews yet|£\d)/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', reason: 'Accepted earlier (Bean): the price filter shows no "up to £X" heading value, and its two labels follow the prices of the results', when: ( d ) => ( ( d ) => /^text-missing "up to £\d+( £\d+ £\d+)?"$|^text-extra "£\d+ £\d+"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', reason: 'The draft’s button text is the browser default black, live’s the palette’s text #141414 (both near-black on white), as the named clear-all and filter-button pairs', when: ( d ) => ( ( d ) => /^style:color "(clear all|filter|filter \(1\))"$/.test( d.key ) && 'rgb(0,0,0)' === d.draft )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', width: 375, reason: 'Accepted (Bean 2026-09-27): in a two-across phone card the tag takes its own line under the name, right-aligned, where the draft puts it beside the name', when: ( d ) => ( ( d ) => /^moved "[^"]*(polarised|6003\/n|lewis|ea4033|holbrook)/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', reason: 'The same close cross: a × glyph in the draft’s drawer, an icon on live (not text)', when: ( d ) => ( ( d ) => /^text-missing "×"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 	],
 };

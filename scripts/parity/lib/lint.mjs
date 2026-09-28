@@ -31,6 +31,12 @@ export function lintConfig( cfg ) {
 			problems.push( `accept #${ i } names unknown pair "${ a.pair }"` );
 		}
 	}
+	// A normalise rule is a decision, like an accept: it needs a reason.
+	for ( const [ i, n ] of ( cfg.auto?.normalise || [] ).entries() ) {
+		if ( ! ( n.from instanceof RegExp ) || 'string' !== typeof n.to || ! n.reason || n.reason.trim().length < 12 ) {
+			problems.push( `auto.normalise #${ i } needs a from regex, a to string and a real reason` );
+		}
+	}
 	// A review note says what was looked at in that shot, not that it "looks fine".
 	for ( const [ key, note ] of Object.entries( cfg.review || {} ) ) {
 		if ( ! /^[\w-]+@\d+$/.test( key ) ) {

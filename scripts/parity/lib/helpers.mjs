@@ -43,6 +43,12 @@ export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 		goto: async ( url ) => {
 			h.log.push( { type: 'goto', target: url } );
 			await page.goto( cb( url ), { waitUntil: 'networkidle' } );
+			// The host sometimes serves its "Checking your browser" page first, then swaps in the real one:
+			// a state read from it compares nothing (up to 15s).
+			for ( let t = 0; t < 50 && /checking your browser/i.test( await page.title().catch( () => 'checking your browser' ) ); t++ ) {
+				await page.waitForTimeout( 300 );
+			}
+			await page.waitForLoadState( 'networkidle' ).catch( () => {} );
 			await page.waitForTimeout( 500 );
 		},
 		// Clicks the smallest visible element whose rendered text matches the regex source.

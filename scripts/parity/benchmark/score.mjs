@@ -67,7 +67,11 @@ export function scoreDir( outDir, meta = {} ) {
 		const hits = c.match ? rows.filter( ( r ) => c.match.test( rowText( r ) ) ) : [];
 		return { id: c.id, config: c.config, label: c.label, fix: c.fix, noise: !! c.noise, match: String( c.match || '' ), caught: hits.length > 0, onlyAccepted: hits.length > 0 && hits.every( ( r ) => r.accepted ), hits, rows };
 	} );
-	const scored = results.filter( ( r ) => ! r.noise );
+	for ( const r of results ) {
+		r.draftHasIt = !! CASES.find( ( k ) => k.id === r.id )?.draftHasIt;
+	}
+	// A gap the draft itself has is not a draft-versus-live difference: reported, never scored.
+	const scored = results.filter( ( r ) => ! r.noise && ! r.draftHasIt );
 	for ( const n of results.filter( ( r ) => r.noise ) ) {
 		for ( const r of scored.filter( ( x ) => x.config === n.config ) ) {
 			const re = CASES.find( ( k ) => k.id === r.id ).match;
@@ -78,7 +82,9 @@ export function scoreDir( outDir, meta = {} ) {
 	const lines = [ '# Walker catch-rate benchmark', '', `Run ${ meta.stamp || path.basename( outDir ) }. Walker args: ${ ( meta.extra || [] ).join( ' ' ) || '(default)' }.`, '', `**Caught ${ score } of ${ scored.length }.**`, '' ];
 	for ( const r of results ) {
 		let verdict = `${ r.rows.length } noise row(s)`;
-		if ( ! r.noise ) {
+		if ( r.draftHasIt ) {
+			verdict = `NOT SCORED: the draft has this gap too, so only design review can catch it (${ r.hits.length } matching row(s) this run)`;
+		} else if ( ! r.noise ) {
 			verdict = r.caught ? `CAUGHT by ${ r.hits.length } row(s)${ r.onlyAccepted ? ', every one accepted by the config' : '' }` : 'MISSED';
 			verdict += ` · ${ r.rows.length - r.hits.length } other new row(s) · match ${ r.match }${ r.noiseHits ? ` · ${ r.noiseHits } noise row(s) also match` : '' }`;
 		}
@@ -102,7 +108,13 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const dir = path.resolve( process.argv[ 2 ] || '' );
 	const { score, of, results } = scoreDir( dir );
 	for ( const r of results ) {
-		console.log( `${ r.id }: ${ r.noise ? `${ r.rows.length } noise rows` : `${ r.caught ? 'CAUGHT' : 'MISSED' } (${ r.hits.length } hit, ${ r.noiseHits || 0 } noise match)` }` );
+		let line = `${ r.caught ? 'CAUGHT' : 'MISSED' } (${ r.hits.length } hit, ${ r.noiseHits || 0 } noise match)`;
+		if ( r.noise ) {
+			line = `${ r.rows.length } noise rows`;
+		} else if ( r.draftHasIt ) {
+			line = 'not scored: the draft has it too';
+		}
+		console.log( `${ r.id }: ${ line }` );
 	}
 	console.log( `Caught ${ score } of ${ of }. Summary: ${ path.join( dir, 'summary.md' ) }` );
 }

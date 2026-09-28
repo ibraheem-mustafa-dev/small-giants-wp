@@ -31,6 +31,7 @@ export default {
 	name: 'lens',
 	// The pop-up is a modal over the product page: scrolling the window moves nothing in it.
 	autoScroll: false,
+	auto: { normalise: [ { side: 'live', from: /^(\+?£[\d,]+)\.00$/, to: '$1', reason: 'Pennies on every price in the lens pop-up, product page, cart and checkout (Bean 2026-09-25)' } ] },
 	draft: {
 		url: 'https://mintcream-lyrebird-224487.hostingersite.com/',
 		open: async ( h ) => {
@@ -209,5 +210,8 @@ export default {
 		{ pair: 'add-to-bag', reason: 'The site’s primary button preset (28px sides, as every primary button on the site) against the draft’s 26px; the width also carries the pennies (Bean 2026-09-25)', when: ( d ) => [ 'padding-left', 'padding-right', 'w' ].includes( d.key ) },
 		{ pair: 'add-to-bag', kind: 'style', notPainted: true, reason: 'The same button: a 0px border has no style to paint; live spaces the total with a 14px margin, the draft with a 14px flex gap', when: ( d ) => [ 'border-top-style', 'column-gap', 'row-gap', 'justify-content' ].includes( d.key ) },
 		{ pair: 'add-to-bag', kind: 'motion', key: 'transition', reason: 'The same 0.2s fill change: live lists background-color with border and text colour (which do not change here) where the draft writes background' },
+		// The automatic check (GAP-CHECKLIST section 12): the differences Bean has already decided, row by row.
+		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-25): "Frame size 55" for the draft’s "Size M" on the stage', when: ( d ) => ( ( d ) => /^text-missing "(size )?m"$|^text-extra "(frame|55|frame size 55)"$|^moved "(·|size|frame) → (size|frame|total)/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', reason: 'The footer’s Add to bag is the site’s primary button preset and carries the pennies (Bean 2026-09-25), so it starts further left beside Back', when: ( d ) => ( ( d ) => /^moved "back → add to bag/.test( d.key ) && d.draft.split( ',' )[ 1 ] === d.live.split( ',' )[ 1 ] && Math.abs( Number( d.draft.split( ',' )[ 0 ] ) - Number( d.live.split( ',' )[ 0 ] ) ) <= 40 )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 	],
 };

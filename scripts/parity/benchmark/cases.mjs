@@ -52,6 +52,10 @@ export const CASES = [
 	{
 		id: 'a', config: 'shop', widths: [ 1440, 768, 375 ], states: [ 'opening', 'women' ], match: /polarised|attribute-tag/i, fix: 'e8ecda854, b503570ed',
 		label: 'Polarised tag sits in an uneven place on shop cards (follows the name; past the card edge at 375)',
+		// Measured 2026-09-28: the pre-fix tag sits exactly as the draft's at every width (box 77x24, 8px each side,
+		// 17px from the card edge; beside the name, past the edge on a one-word name at 375). Bean's fix went beyond
+		// the draft, so no draft-versus-live comparison can see it: scored apart as the draft's own flaw.
+		draftHasIt: true,
 		css: `.sgs-product-card__title-row:has(> .sgs-product-card__attribute-tag) { flex-wrap: nowrap !important; }
 .sgs-product-card__title-row:has(> .sgs-product-card__attribute-tag) > :first-child { flex: 0 1 auto !important; min-width: auto !important; overflow-wrap: normal !important; hyphens: manual !important; }
 .sgs-product-card__title-row > .sgs-product-card__attribute-tag { margin-left: 0 !important; }`,

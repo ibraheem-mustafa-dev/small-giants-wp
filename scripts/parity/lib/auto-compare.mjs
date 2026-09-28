@@ -1,7 +1,9 @@
 // The walker's automatic check (GAP-CHECKLIST.md section 12): aligns every painted word of the
-// draft with the live page's, and every control and media item, then reports what no config has to
-// name: words on one side only, words that moved against their neighbour, text styles, controls
-// missing or resized or moved, and controls cut off at a clipping edge.
+// draft with the live page's, then reports what no config has to name: words on one side only, words
+// that moved against their neighbour, text styles, and controls cut off at a clipping edge. Controls
+// are paired only for that last check: a draft and a live page build the same control from different
+// elements (a swatch button against a label and input), so their presence, size and place are left to
+// the words around them, the named pairs and the screenshot review.
 import { sameValue } from './compare.mjs';
 import { lcsPairs } from './auto-align.mjs';
 
@@ -17,8 +19,9 @@ const runsOf = ( idx ) => idx.reduce( ( out, i ) => {
 }, [] );
 const quote = ( ws ) => `"${ ws.map( ( w ) => w.t ).join( ' ' ).slice( 0, 60 ) }"`;
 
-// Words matched in reading order, then words that moved to another place in the DOM (runs of two
-// or more, so a lone common word is not paired across the page).
+// Words matched in reading order, then words that moved to another place in the DOM: runs of two or
+// more, or a word found once among the leftovers on each side (a lone common word is not paired across
+// the page).
 function matchWords( dw, lw ) {
 	const first = lcsPairs( dw.map( ( w ) => w.t ), lw.map( ( w ) => w.t ) );
 	if ( ! first ) {
@@ -29,11 +32,32 @@ function matchWords( dw, lw ) {
 	const restD = dw.map( ( w, i ) => i ).filter( ( i ) => ! usedD.has( i ) );
 	const restL = lw.map( ( w, i ) => i ).filter( ( i ) => ! usedL.has( i ) );
 	const second = ( lcsPairs( restD.map( ( i ) => dw[ i ].t ), restL.map( ( i ) => lw[ i ].t ) ) || [] ).map( ( [ a, b ] ) => [ restD[ a ], restL[ b ] ] );
+	const count = ( idx, words ) => idx.reduce( ( m, i ) => m.set( words[ i ].t, ( m.get( words[ i ].t ) || 0 ) + 1 ), new Map() );
+	const onceD = count( restD, dw );
+	const onceL = count( restL, lw );
 	const kept = second.filter( ( p, i ) => {
 		const linked = ( q ) => q && Math.abs( q[ 0 ] - p[ 0 ] ) === 1 && Math.abs( q[ 1 ] - p[ 1 ] ) === 1;
-		return linked( second[ i - 1 ] ) || linked( second[ i + 1 ] );
+		return linked( second[ i - 1 ] ) || linked( second[ i + 1 ] ) || ( 1 === onceD.get( dw[ p[ 0 ] ].t ) && 1 === onceL.get( lw[ p[ 1 ] ].t ) );
 	} );
-	return [ ...first, ...kept ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] );
+	// Blocks that crossed each other in the DOM: a leftover run on each side with the same words.
+	const taken = new Set( [ ...first, ...kept ].flatMap( ( p ) => [ `d${ p[ 0 ] }`, `l${ p[ 1 ] }` ] ) );
+	const leftRuns = ( words, tag ) => runsOf( words.map( ( w, i ) => i ).filter( ( i ) => ! taken.has( tag + i ) ) );
+	const liveRuns = leftRuns( lw, 'l' );
+	const crossed = [];
+	const draftRuns = leftRuns( dw, 'd' );
+	const textOf = ( run, words ) => run.map( ( i ) => words[ i ].t ).join( ' ' );
+	for ( const run of draftRuns ) {
+		const text = textOf( run, dw );
+		const k = liveRuns.findIndex( ( lr ) => lr && textOf( lr, lw ) === text );
+		// One word pairs only when it is the only leftover run with that text on each side (a brand name on
+		// a card chip and in the filter list must not pair across the page).
+		const single = 1 === run.length && ( draftRuns.filter( ( r ) => textOf( r, dw ) === text ).length > 1 || liveRuns.filter( ( r ) => r && textOf( r, lw ) === text ).length > 1 );
+		if ( k >= 0 && ! single ) {
+			run.forEach( ( i, n ) => crossed.push( [ i, liveRuns[ k ][ n ] ] ) );
+			liveRuns[ k ] = null;
+		}
+	}
+	return [ ...first, ...kept, ...crossed ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] );
 }
 
 const STYLE_KEYS = [ 'fs', 'fw', 'ff', 'fst', 'tt', 'ls', 'c' ];
@@ -41,9 +65,17 @@ const STYLE_NAMES = { fs: 'font-size', fw: 'font-weight', ff: 'font-family', fst
 const px0 = ( v ) => ( 'normal' === v ? '0px' : v );
 const sameStyle = ( k, a, b, tol ) => ( 'ls' === k ? sameValue( 'letter-spacing', px0( a ), px0( b ), tol.px ) : sameValue( STYLE_NAMES[ k ], a, b, tol.px ) );
 
-// Returns [{ kind: 'auto', key, draft, live }] for one state at one width.
-export function compareAuto( D, L, tol = {} ) {
-	const t = { move: 4, box: 3, px: 0.5, ...tol };
+// A config's `auto.normalise` ([{ side: 'draft'|'live'|'both', from: /re/, to, reason }]) rewrites words
+// before matching: a decided difference (pennies on every price) stops being reported word by word.
+function normalise( X, side, rules ) {
+	const mine = ( rules || [] ).filter( ( r ) => ! r.side || 'both' === r.side || side === r.side );
+	return mine.length ? { ...X, words: X.words.map( ( w ) => ( { ...w, t: mine.reduce( ( t, r ) => t.replace( r.from, r.to ), w.t ) } ) ) } : X;
+}
+
+// Returns [{ kind: 'auto', key, draft, live }] for one state at one width. `opts`: move, box and px
+// tolerances and the config's normalise rules.
+export function compareAuto( D, L, opts = {} ) {
+	const t = { move: 4, box: 3, px: 0.5, ...opts };
 	const rows = [];
 	const seen = new Map();
 	const add = ( key, draft, live ) => {
@@ -60,6 +92,8 @@ export function compareAuto( D, L, tol = {} ) {
 		D = only( D );
 		L = only( L );
 	}
+	D = normalise( D, 'draft', opts.normalise );
+	L = normalise( L, 'live', opts.normalise );
 	const pairs = matchWords( D.words, L.words );
 	if ( ! pairs ) {
 		add( 'align', `${ D.words.length } words`, `${ L.words.length } words: too different to align word by word` );
@@ -75,6 +109,8 @@ export function compareAuto( D, L, tol = {} ) {
 	}
 
 	// Position: each word's offset from the previous matched word (fixed layers compared on their own).
+	// Across words on one side only, the vertical offset follows their height (made-up stars against "No
+	// reviews yet" push every price down), so there only a horizontal break is reported.
 	for ( const fixed of [ false, true ] ) {
 		let prev = null;
 		for ( const [ di, li ] of pairs.filter( ( [ di ] ) => D.words[ di ].fixed === fixed ) ) {
@@ -83,12 +119,13 @@ export function compareAuto( D, L, tol = {} ) {
 			if ( prev ) {
 				const rd = [ d.x - prev.d.x, d.y - prev.d.y ];
 				const rl = [ l.x - prev.l.x, l.y - prev.l.y ];
-				if ( Math.abs( rd[ 0 ] - rl[ 0 ] ) > t.move || Math.abs( rd[ 1 ] - rl[ 1 ] ) > t.move ) {
+				const across = di !== prev.di + 1 || li !== prev.li + 1;
+				if ( Math.abs( rd[ 0 ] - rl[ 0 ] ) > t.move || ( ! across && Math.abs( rd[ 1 ] - rl[ 1 ] ) > t.move ) ) {
 					const next = pairs.filter( ( p ) => p[ 0 ] > di ).slice( 0, 3 ).map( ( p ) => D.words[ p[ 0 ] ] );
 					add( `moved "${ prev.d.t } → ${ [ d, ...next ].map( ( w ) => w.t ).join( ' ' ).slice( 0, 50 ) }"${ fixed ? ' (fixed layer)' : '' }`, `${ rd[ 0 ] },${ rd[ 1 ] }`, `${ rl[ 0 ] },${ rl[ 1 ] }` );
 				}
 			}
-			prev = { d, l };
+			prev = { d, l, di, li };
 		}
 	}
 
@@ -167,48 +204,16 @@ function pairControls( D, L, pairs ) {
 	const restD = D.controls.map( ( c, i ) => i ).filter( ( i ) => ! cp.some( ( p ) => p[ 0 ] === i ) );
 	const restL = L.controls.map( ( c, j ) => j ).filter( ( j ) => ! used.has( j ) );
 	const rest = ( lcsPairs( restD.map( ( i ) => D.controls[ i ].type ), restL.map( ( j ) => L.controls[ j ].type ) ) || [] ).map( ( [ a, b ] ) => [ restD[ a ], restL[ b ] ] );
-	return { cp: [ ...cp, ...rest ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] ), da };
+	return { cp: [ ...cp, ...rest ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] ) };
 }
 
+// A control flush with a clipping edge whose ink is cut there on one side only (a range handle).
 function compareControls( D, L, pairs, t, add ) {
-	const dc = D.controls;
-	const lc = L.controls;
-	const { cp, da } = pairControls( D, L, pairs );
-	const inD = new Set( cp.map( ( p ) => p[ 0 ] ) );
-	const inL = new Set( cp.map( ( p ) => p[ 1 ] ) );
+	const { cp } = pairControls( D, L, pairs );
 	const name = ( c ) => `${ c.type }${ c.label ? ` "${ c.label }"` : '' }`;
-	dc.forEach( ( c, i ) => ! inD.has( i ) && add( `control-missing ${ name( c ) }`, `${ c.w }x${ c.h }`, 'missing' ) );
-	lc.forEach( ( c, i ) => ! inL.has( i ) && add( `control-extra ${ name( c ) }`, 'missing', `${ c.w }x${ c.h }` ) );
-	const partner = new Map( pairs );
-	// How far the text around a control moved: its anchor word's shift, else the nearest matched word's.
-	const shift = ( c, i ) => {
-		if ( partner.has( da[ i ] ) ) {
-			const w = D.words[ da[ i ] ];
-			const lw = L.words[ partner.get( da[ i ] ) ];
-			return { dx: lw.x - w.x, dy: lw.y - w.y, t: w.t };
-		}
-		let best = null;
-		for ( const [ di, li ] of pairs ) {
-			const w = D.words[ di ];
-			const dist = w.fixed === c.fixed ? Math.hypot( w.x - c.x, w.y - c.y ) : Infinity;
-			if ( ! best || dist < best.dist ) {
-				best = { dist, dx: L.words[ li ].x - w.x, dy: L.words[ li ].y - w.y, t: w.t };
-			}
-		}
-		return best;
-	};
 	for ( const [ di, li ] of cp ) {
-		const d = dc[ di ];
-		const l = lc[ li ];
-		// A range input's height does not paint (its handles do), so only its width is compared.
-		if ( Math.abs( d.w - l.w ) > t.box || ( 'input:range' !== d.type && Math.abs( d.h - l.h ) > t.box ) ) {
-			add( `control-size ${ name( d ) }`, `${ d.w }x${ d.h }`, `${ l.w }x${ l.h }` );
-		}
-		const s = shift( d, di );
-		if ( s && ( Math.abs( l.x - d.x - s.dx ) > t.move || Math.abs( l.y - d.y - s.dy ) > t.move ) ) {
-			// Draft 0,0 is where live would sit had it moved with the text; live is how far off it is.
-			add( `control-moved ${ name( d ) } (against "${ s.t }")`, '0,0', `${ l.x - d.x - s.dx },${ l.y - d.y - s.dy }` );
-		}
+		const d = D.controls[ di ];
+		const l = L.controls[ li ];
 		if ( d.cut !== undefined && l.cut !== undefined && d.cut !== l.cut ) {
 			add( `clipped ${ name( d ) }`, d.cut || 'whole', l.cut || 'whole' );
 		}

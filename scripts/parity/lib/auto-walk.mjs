@@ -30,10 +30,19 @@ export function collectAutoOn( page, side, cfg ) {
 	return page.evaluate( ( [ fn, rootSel, ex ] ) => {
 		// eslint-disable-next-line no-new-func
 		const collect = new Function( `return (${ fn });` )();
+		// An exclusion is a selector or a { js: '(root) => element' } finder (a draft with no class names).
+		const excludeEls = ex.filter( ( e ) => e && e.js ).map( ( e ) => {
+			try {
+				// eslint-disable-next-line no-new-func
+				return new Function( 'root', `return (${ e.js })(root);` )( document );
+			} catch {
+				return null;
+			}
+		} ).filter( Boolean );
 		const shown = ( e ) => e.getClientRects().length && 'hidden' !== getComputedStyle( e ).visibility;
 		const root = rootSel ? [ ...document.querySelectorAll( rootSel ) ].find( shown ) : null;
 		const modal = [ ...document.querySelectorAll( 'dialog[open], [aria-modal="true"], [role="dialog"]' ) ].find( shown );
-		return collect( [ { root, modal }, ex, 4000 ] );
+		return collect( [ { root, modal, excludeEls }, ex.filter( ( e ) => 'string' === typeof e ), 4000 ] );
 	}, [ collectAuto.toString(), opts.root?.[ side ] || null, exclude ] );
 }
 
@@ -49,10 +58,13 @@ export async function markClipped( ctx, shotPath, auto, fullPage ) {
 		if ( ! c.clip || bot - top < 2 ) {
 			return;
 		}
-		if ( c.client.r >= c.clip.r - 3 ) {
+		// A range input's handles paint past its box, so flush (3px) is enough; any other control paints
+		// inside its box and is cut only when that box crosses the edge (a checkbox touching it is whole).
+		const reach = 'input:range' === c.type ? 3 : -1;
+		if ( c.client.r >= c.clip.r - reach ) {
 			checks.push( { i, side: 'right', x: c.clip.r, top, bot, bg: c.clip.bg } );
 		}
-		if ( c.client.l <= c.clip.l + 3 ) {
+		if ( c.client.l <= c.clip.l + reach ) {
 			checks.push( { i, side: 'left', x: c.clip.l, top, bot, bg: c.clip.bg } );
 		}
 	} );
@@ -102,6 +114,6 @@ export async function markClipped( ctx, shotPath, auto, fullPage ) {
 }
 
 // The automatic differences of one state at one width, as a pseudo-pair "(auto)".
-export function autoPair( d, l, tol ) {
-	return { words: { draft: d?.words.length ?? 0, live: l?.words.length ?? 0 }, diffs: compareAuto( d, l, tol ) };
+export function autoPair( d, l, cfg ) {
+	return { words: { draft: d?.words.length ?? 0, live: l?.words.length ?? 0 }, diffs: compareAuto( d, l, { ...( cfg.autoTolerance || {} ), normalise: cfg.auto?.normalise } ) };
 }

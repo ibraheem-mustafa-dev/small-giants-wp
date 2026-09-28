@@ -8,13 +8,13 @@
 export function collectAuto( [ scope, exclude, maxWords ] ) {
 	const root = scope.root || document.body;
 	const inModal = ( el ) => !! scope.modal && scope.modal.contains( el );
-	const ex = exclude.flatMap( ( sel ) => {
+	const ex = [ ...( scope.excludeEls || [] ), ...exclude.flatMap( ( sel ) => {
 		try {
 			return [ ...document.querySelectorAll( sel ) ];
 		} catch {
 			return [];
 		}
-	} );
+	} ) ];
 	const excluded = ( el ) => ex.some( ( x ) => x.contains( el ) );
 	const ctx = document.createElement( 'canvas' ).getContext( '2d' );
 	const srgb = ( v ) => {
@@ -56,8 +56,18 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 		}
 		return false;
 	};
+	// A closed <details> paints only its summary, yet Chrome still reports boxes for the rest of it.
+	const inClosedDetails = ( el ) => {
+		for ( let d = el.closest( 'details:not([open])' ); d; d = d.parentElement?.closest( 'details:not([open])' ) ) {
+			const summary = d.querySelector( ':scope > summary' );
+			if ( ! summary || ! summary.contains( el ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
 	// A pending scroll reveal holds content at opacity 0 off screen, so opacity only hides what is in view.
-	const hidden = ( el, r ) => inView( r ) && opacity( el ) < 0.05;
+	const hidden = ( el, r ) => inClosedDetails( el ) || ( inView( r ) && opacity( el ) < 0.05 );
 	// The offset of a reveal's start pose (a faded ancestor moved by transform or translate), taken off
 	// every position: the draft poses its cards from load, the framework only near view.
 	const shifts = new Map();
@@ -77,6 +87,30 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 			shifts.set( el, [ up[ 0 ] + own[ 0 ], up[ 1 ] + own[ 1 ] ] );
 		}
 		return shifts.get( el );
+	};
+
+	// The box an element's paint is clipped to: the intersection of every ancestor that clips its overflow.
+	// Text in a collapsed group (height 0, overflow hidden) has boxes of its own and paints nothing.
+	const clips = new Map();
+	const clipOf = ( el ) => {
+		if ( ! el || el === document.body || el === document.documentElement ) {
+			return { l: -Infinity, t: -Infinity, r: Infinity, b: Infinity };
+		}
+		if ( ! clips.has( el ) ) {
+			const up = clipOf( el.parentElement );
+			const cs = getComputedStyle( el.parentElement || el );
+			let c = up;
+			if ( el.parentElement && ( 'visible' !== cs.overflowX || 'visible' !== cs.overflowY ) ) {
+				const r = el.parentElement.getBoundingClientRect();
+				c = { l: Math.max( up.l, r.left ), t: Math.max( up.t, r.top ), r: Math.min( up.r, r.right ), b: Math.min( up.b, r.bottom ) };
+			}
+			clips.set( el, c );
+		}
+		return clips.get( el );
+	};
+	const clippedAway = ( el, r ) => {
+		const c = clipOf( el );
+		return r.right <= c.l || r.left >= c.r || r.bottom <= c.t || r.top >= c.b;
 	};
 
 	const words = [];
@@ -105,7 +139,7 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 			range.setStart( n, m.index );
 			range.setEnd( n, m.index + m[ 0 ].length );
 			const r = range.getClientRects()[ 0 ];
-			if ( ! r || r.width < 1 ) {
+			if ( ! r || r.width < 1 || clippedAway( el, r ) ) {
 				continue;
 			}
 			const t = m[ 0 ].toLowerCase().replace( /[’‘]/g, "'" ).replace( /[“”]/g, '"' );
