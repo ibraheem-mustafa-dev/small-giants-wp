@@ -60,11 +60,17 @@
 	text-decoration: none;
 	color: inherit;
 	transition: transform var(--wp--custom--transition--fast, 0.15s ease),
-	            color var(--wp--custom--transition--fast, 0.15s ease);
+	            color var(--wp--custom--transition--fast, 0.15s ease),
+	            opacity var(--wp--custom--transition--fast, 0.15s ease);
 
+	// --sgs-icon-opacity-hover is emitted by render.php from the block's own
+	// `opacityHover` attribute (a real editor control — never a hardcoded
+	// literal here). Fallback 1 = no visible change when the attribute is
+	// unset (0, the off-sentinel).
 	&:hover {
 		transform: scale(var(--sgs-icon-hover-scale, 1.1));
 		color: var(--sgs-icon-hover-colour, var(--wp--preset--color--accent-text));
+		opacity: var(--sgs-icon-opacity-hover, 1);
 	}
 
 	// WCAG 2.4.7 — focus must always be visible.

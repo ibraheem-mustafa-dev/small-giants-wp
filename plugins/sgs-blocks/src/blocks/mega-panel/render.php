@@ -185,7 +185,8 @@ $group_gap_obj     = is_array( $attributes['groupGap'] ?? null ) ? $attributes['
 // brands-variant eyebrow. A plain
 // scalar attr on THIS block (no InnerBlocks role:content concerns — those
 // only govern templateLock:contentOnly child attrs).
-$brands_eyebrow = isset( $attributes['brandsEyebrow'] ) ? (string) $attributes['brandsEyebrow'] : '';
+$brands_eyebrow         = isset( $attributes['brandsEyebrow'] ) ? (string) $attributes['brandsEyebrow'] : '';
+$brands_eyebrow_padding = is_array( $attributes['brandsEyebrowPadding'] ?? null ) ? $attributes['brandsEyebrowPadding'] : array();
 
 // ---------------------------------------------------------------------------
 // 0b. Block-private motion effect (Spec 38). `fxEffect`
@@ -924,19 +925,35 @@ $css .= '@media (max-width: 1023px){' . $stack_rules . '}';
 // `brandsEyebrow` attribute note in block.json for why
 // (no wrapper block is available in scope to isolate it to the logo-grid
 // column alone).
+//
+// Real controls (Block Customisation Standard): typography via the shared
+// sgs_typography_css_rule() helper under the 'brandsEyebrow' prefix, colour
+// via sgs_colour_value() (falls back to the scheme's own --sgs-mm-muted token
+// when unset), padding (per device) via sgs_emit_responsive_css()'s 'box'
+// mode — same contract as panelPadding above. `display:block` is the one
+// literal that stays hardcoded: it is layout plumbing the eyebrow needs to
+// occupy its own line, not a client-facing style choice.
 // ---------------------------------------------------------------------------
 
-$eyebrow_sel = $root_sel . ' > .sgs-mega-panel__eyebrow';
-$css        .= $eyebrow_sel . '{'
-	. 'display:block;'
-	. 'font-family:var(--wp--preset--font-family--mono, monospace);'
-	. 'font-size:11px;'
-	. 'font-weight:500;'
-	. 'letter-spacing:.14em;'
-	. 'text-transform:uppercase;'
-	. 'color:var(--sgs-mm-muted);'
-	. 'margin:0 0 16px;'
-	. '}';
+$eyebrow_sel      = $root_sel . ' > .sgs-mega-panel__eyebrow';
+$eyebrow_colour   = isset( $attributes['brandsEyebrowColour'] ) ? (string) $attributes['brandsEyebrowColour'] : '';
+$eyebrow_colour_v = '' !== $eyebrow_colour ? sgs_colour_value( $eyebrow_colour ) : 'var(--sgs-mm-muted)';
+
+$css .= $eyebrow_sel . '{display:block;color:' . $eyebrow_colour_v . ';}';
+$css .= sgs_typography_css_rule( $attributes, 'brandsEyebrow', $eyebrow_sel );
+if ( ! empty( $brands_eyebrow_padding ) && function_exists( 'sgs_emit_responsive_css' ) ) {
+	$css .= sgs_emit_responsive_css(
+		$eyebrow_sel,
+		array(
+			array(
+				'value'        => $brands_eyebrow_padding,
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
 
 // ---------------------------------------------------------------------------
 // 7b. Surface tone: the panel's children (group tiles, icons, the aside CTA) can

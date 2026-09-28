@@ -307,6 +307,14 @@ $box_shadow_decls = sgs_shadow_decls(
 $hover_scale         = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : 1.0;
 $hover_scale_target  = isset( $attributes['scaleHoverTarget'] ) ? sanitize_text_field( $attributes['scaleHoverTarget'] ) : 'whole';
 $hover_scale_target  = in_array( $hover_scale_target, array( 'whole', 'face' ), true ) ? $hover_scale_target : 'whole';
+
+// Hover opacity (0-1; 0 = off, the same sentinel every other numeric hover
+// control in the framework uses — see sgs/responsive-logo's opacityHover).
+// Sets the custom property style.css's `.sgs-button:hover,:focus-visible`
+// rule reads; that rule is a compiled-stylesheet consumer, so the touch guard
+// is applied at build time (scripts/hover-guard postbuild transform), not here.
+$hover_opacity = isset( $attributes['opacityHover'] ) ? (float) $attributes['opacityHover'] : 0.0;
+$hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
 $transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_easing   = isset( $attributes['transitionEasing'] ) ? sanitize_text_field( $attributes['transitionEasing'] ) : 'ease';
 
@@ -361,6 +369,9 @@ if ( '' !== $colour_bg_hover_gradient_value ) {
 }
 if ( $colour_border_hover ) {
 	$inline_styles[] = '--sgs-btn-border-hover:' . sgs_colour_value( $colour_border_hover );
+}
+if ( $hover_opacity > 0 ) {
+	$inline_styles[] = '--sgs-btn-opacity-hover:' . number_format( $hover_opacity, 2 );
 }
 
 // Non-responsive base declarations (border-width/style, font weight/style,

@@ -35,7 +35,8 @@
 			],
 			"boxFamilies": {
 				"panelPadding": [ "panelPadding" ],
-				"borderWidth": [ "borderWidth" ]
+				"borderWidth": [ "borderWidth" ],
+				"brandsEyebrowPadding": [ "brandsEyebrowPadding" ]
 			},
 			"elements": {
 				"panel": {
@@ -143,6 +144,21 @@
 						}
 					},
 					"_note": "CROSS-BLOCK REUSE, same shape as the `icon` element above: the actual rendered selector is `.sgs-icon-list__item` (sgs/icon-list's own `<li>`), reused here as markup inside this panel's parent-paints-child model. M-21 (2026-09-23): itemPaddingShiftHover is emitted on `:hover, :focus-within` (the item is an `<li>` containing the focusable `<a class=\"sgs-icon-list__item-link\">`, so `:focus-within` is the correct pairing, matching the `group` element's own lift/border hover rule) across all THREE group styles (columns/cards/minimal), each reading its own existing resting padding literal as the base of the calc()."
+				},
+				"eyebrow": {
+					"label": "Brands eyebrow",
+					"layer": "CONTENT",
+					"order": 1.5,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "brandsEyebrow",
+					"attrMap": {
+						"css:color": "brandsEyebrowColour",
+						"css:padding": "brandsEyebrowPadding"
+					},
+					"_note": "brands-variant only — `.sgs-mega-panel__eyebrow`, rendered by THIS block (see `brandsEyebrow` attribute's own note: no child wrapper block is available to host it). Typography (family/size/weight/letter-spacing/transform/line-height) resolves via the shared `sgs_typography_css_rule( $attributes, 'brandsEyebrow', $eyebrow_sel )` helper under the `brandsEyebrow` prefix declared above, matching the Block Customisation Standard's typography convention — not a per-property attrMap entry (the helper reads the canonical prefixed attribute set directly). No hover state: the eyebrow is a static label above the logo grid, not an interactive element."
 				}
 			},
 			"hideExtensions": [
@@ -355,6 +371,57 @@
 			"type": "string",
 			"default": "",
 			"_note": "brands-variant only — a small mono eyebrow label rendered above the logo grid. Deliberately a scalar panel attribute rather than a child block: the brands variant's content (sgs/card-grid + sgs/mega-aside) has no wrapper block available to host a heading ABOVE just the grid (mega-group is locked to heading+icon-list), so the panel renders this text itself, spanning the full content row rather than just the left column."
+		},
+		"brandsEyebrowFontFamily": {
+			"type": "string",
+			"default": "mono",
+			"description": "Font family for the brands-variant eyebrow, via the shared TypographyControls font-family picker (theme.json typography.fontFamilies). Default 'mono' reproduces the fixed look that existed before this control (a bare theme preset slug, resolved to var(--wp--preset--font-family--mono) by sgs_font_family_sanitise())."
+		},
+		"brandsEyebrowFontSize": {
+			"type": "number",
+			"default": 11
+		},
+		"brandsEyebrowFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"brandsEyebrowFontWeight": {
+			"type": "string",
+			"default": "500"
+		},
+		"brandsEyebrowTextTransform": {
+			"type": "string",
+			"default": "uppercase",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ]
+		},
+		"brandsEyebrowLetterSpacing": {
+			"type": "number",
+			"default": 0.14
+		},
+		"brandsEyebrowLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"brandsEyebrowLineHeight": {
+			"type": "number"
+		},
+		"brandsEyebrowLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"brandsEyebrowColour": {
+			"type": "string",
+			"default": "",
+			"description": "brands-variant eyebrow text colour. Empty = the framework default (var(--sgs-mm-muted), the scheme's own muted token) — unchanged from the fixed look that existed before this control."
+		},
+		"brandsEyebrowPadding": {
+			"type": "object",
+			"_note": "BOX-object shape (top/right/bottom/left per tier), same contract as panelPadding/asidePadding — render.php emits this through sgs_emit_responsive_css() with 'box' => true. Default reproduces the fixed 'margin:0 0 16px' look that existed before this control (bottom spacing only).",
+			"default": {
+				"desktop": {
+					"bottom": "16px"
+				}
+			}
 		},
 		"viewAllPlacement": {
 			"type": "string",

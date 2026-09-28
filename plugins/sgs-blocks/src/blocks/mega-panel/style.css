@@ -167,16 +167,13 @@
 }
 
 /* -- brands eyebrow — a small mono micro-label above the content row;
-   spans the full row (see block.json `brandsEyebrow` note). ------------------------------------------------------------------ */
+   spans the full row (see block.json `brandsEyebrow` note). Typography,
+   colour and padding are fully attribute-driven (render.php's own scoped
+   <style> rule, via brandsEyebrow* attrs) — `display:block` is the one
+   literal left here, layout plumbing the eyebrow needs to occupy its own
+   line, not a client-facing style choice. ------------------------------- */
 .wp-block-sgs-mega-panel .sgs-mega-panel__eyebrow {
 	display: block;
-	font-family: var( --wp--preset--font-family--mono, monospace );
-	font-size: 11px;
-	font-weight: 500;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
-	color: var( --sgs-mm-muted, var( --wp--preset--color--text-muted ) );
-	margin: 0 0 16px;
 }
 
 /* -- cursor spotlight — CONSUMER side of `shared/effects/spotlight.js`'s

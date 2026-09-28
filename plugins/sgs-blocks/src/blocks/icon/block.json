@@ -209,6 +209,11 @@
 			"type": "number",
 			"default": 1.1
 		},
+		"opacityHover": {
+			"type": "number",
+			"default": 0,
+			"description": "Fades the icon (or icon link) to this opacity on hover/focus (0-1; 1 = no visible change). 0 (default) disables the fade entirely, so an untouched icon is unaffected."
+		},
 		"iconAlign": {
 			"type": "string",
 			"default": "left",

@@ -135,6 +135,13 @@ $hover_scale        = (float) ( $attributes['scaleHover'] ?? 1.1 );
 $icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
 $icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
 
+// Hover opacity (0-1; 0 = off, the same sentinel every other numeric hover
+// control in the framework uses — see sgs/responsive-logo's opacityHover).
+// Applies to the icon LINK only (style.scss's `.sgs-icon__link:hover` rule) —
+// a non-linked icon has no interactive hover target for a fade to signal.
+$hover_opacity = isset( $attributes['opacityHover'] ) ? (float) $attributes['opacityHover'] : 0.0;
+$hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
+
 // Validate linkTarget — only allow known safe values.
 if ( ! in_array( $link_target, array( '_self', '_blank' ), true ) ) {
 	$link_target = '_self';
@@ -231,6 +238,9 @@ if ( '' !== $hover_shape_colour ) {
 	$var_decls[] = '--sgs-icon-hover-shape-colour:' . sgs_colour_value( $hover_shape_colour );
 }
 $var_decls[] = '--sgs-icon-hover-scale:' . round( $hover_scale, 3 );
+if ( $hover_opacity > 0 ) {
+	$var_decls[] = '--sgs-icon-opacity-hover:' . number_format( $hover_opacity, 2 );
+}
 
 // ---------------------------------------------------------------------------
 // 4. Scoped CSS assembly — literal declarations (icon colour, shape

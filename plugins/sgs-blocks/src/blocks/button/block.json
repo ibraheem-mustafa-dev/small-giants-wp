@@ -372,6 +372,11 @@
 			"type": "number",
 			"default": 1
 		},
+		"opacityHover": {
+			"type": "number",
+			"default": 0,
+			"description": "Fades the button to this opacity on hover/focus (0-1; 1 = no visible change). 0 (default) disables the fade entirely, so an untouched button is unaffected."
+		},
 		"scaleHoverTarget": {
 			"type": "string",
 			"enum": [ "whole", "face" ],

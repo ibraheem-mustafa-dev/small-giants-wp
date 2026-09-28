@@ -68,7 +68,7 @@
 	text-decoration: none;
 	cursor: pointer;
 	white-space: normal;
-	transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+	transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
 	-webkit-appearance: none;
 	appearance: none;
 
@@ -140,6 +140,12 @@
 	   A per-instance scaleHover attr emits a higher-specificity `.uid.sgs-button:hover` rule
 	   (render.php) that overrides this; reduced-motion forces transform:none !important. */
 	transform: var(--sgs-btn-transform-hover, none);
+	/* Hover opacity (opacityHover attribute, render.php) — a real editor
+	   control, never a hardcoded literal here. Fallback 1 = no visible change
+	   when the attribute is unset (0, the off-sentinel). Touch-guarded at
+	   build time (scripts/hover-guard postbuild transform, same as every
+	   other compiled block stylesheet); source stays unguarded on purpose. */
+	opacity: var(--sgs-btn-opacity-hover, 1);
 }
 
 /*

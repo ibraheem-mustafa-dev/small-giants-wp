@@ -56,6 +56,7 @@ import {
 	SgsLengthControl,
 	ShadowControl,
 	SurfaceGroundControls,
+	TypographyControls,
 	fillRow,
 } from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel';
@@ -192,6 +193,24 @@ function borderWidthShorthand( box ) {
 		.join( ' ' );
 }
 
+/**
+ * Resolve a font-family attribute value for editor preview — mirrors PHP
+ * `sgs_font_family_sanitise()`'s bare-slug branch (helpers-typography.php): a
+ * bare theme preset slug (e.g. 'mono') becomes its CSS custom property, any
+ * other value (a raw font-family list) passes through unchanged.
+ *
+ * @param {string} value Raw brandsEyebrowFontFamily attribute value.
+ * @return {string|undefined} CSS font-family value, or undefined when unset.
+ */
+function eyebrowFontFamilyPreview( value ) {
+	if ( ! value ) {
+		return undefined;
+	}
+	return /^[a-z0-9-]+$/i.test( value )
+		? `var(--wp--preset--font-family--${ value })`
+		: value;
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
@@ -230,6 +249,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		asideWidth,
 		asideSeparator,
 		brandsEyebrow,
+		brandsEyebrowFontFamily,
+		brandsEyebrowFontSize,
+		brandsEyebrowFontSizeUnit,
+		brandsEyebrowFontWeight,
+		brandsEyebrowTextTransform,
+		brandsEyebrowLetterSpacing,
+		brandsEyebrowLetterSpacingUnit,
+		brandsEyebrowLineHeight,
+		brandsEyebrowLineHeightUnit,
+		brandsEyebrowColour,
+		brandsEyebrowPadding,
 		viewAllPlacement,
 		fxEffect,
 		panelCardLift,
@@ -838,6 +868,52 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
 						/>
+						{ brandsEyebrow && (
+							<>
+								<TypographyControls
+									attributes={ attributes }
+									setAttributes={ setAttributes }
+									prefix="brandsEyebrow"
+									showFontFamily
+									showStyle={ false }
+									showTransform
+									showLetterSpacing
+									showResponsive={ false }
+								/>
+								<SgsColourPanel
+									rows={ [
+										{
+											key: 'brandsEyebrow',
+											label: __( 'Eyebrow colour', 'sgs-blocks' ),
+											states: [
+												{
+													key: 'normal',
+													label: __( 'Normal', 'sgs-blocks' ),
+													value: brandsEyebrowColour,
+													onChange: ( value ) =>
+														setAttributes( { brandsEyebrowColour: value ?? '' } ),
+												},
+											],
+										},
+									] }
+								/>
+								<ResponsiveBoxControl
+									label={ __( 'Eyebrow padding', 'sgs-blocks' ) }
+									presets
+									values={ {
+										base: brandsEyebrowPadding?.desktop ?? {},
+										tablet: brandsEyebrowPadding?.tablet ?? {},
+										mobile: brandsEyebrowPadding?.mobile ?? {},
+									} }
+									onChange={ ( tier, next ) => {
+										const key = tier === 'base' ? 'desktop' : tier;
+										setAttributes( {
+											brandsEyebrowPadding: { ...brandsEyebrowPadding, [ key ]: next },
+										} );
+									} }
+								/>
+							</>
+						) }
 					</PanelBody>
 				) }
 
@@ -1147,7 +1223,27 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<div { ...blockProps }>
 				{ 'brands' === resolvedVariant && brandsEyebrow && (
-					<p className="sgs-mega-panel__eyebrow">{ brandsEyebrow }</p>
+					<p
+						className="sgs-mega-panel__eyebrow"
+						style={ {
+							fontFamily: eyebrowFontFamilyPreview( brandsEyebrowFontFamily ),
+							fontSize: brandsEyebrowFontSize
+								? `${ brandsEyebrowFontSize }${ brandsEyebrowFontSizeUnit || 'px' }`
+								: undefined,
+							fontWeight: brandsEyebrowFontWeight || undefined,
+							letterSpacing: brandsEyebrowLetterSpacing
+								? `${ brandsEyebrowLetterSpacing }${ brandsEyebrowLetterSpacingUnit || 'em' }`
+								: undefined,
+							textTransform: brandsEyebrowTextTransform || undefined,
+							lineHeight: brandsEyebrowLineHeight
+								? `${ brandsEyebrowLineHeight }${ brandsEyebrowLineHeightUnit || '' }`
+								: undefined,
+							color: brandsEyebrowColour ? colourVar( brandsEyebrowColour ) : undefined,
+							padding: paddingFromBox( brandsEyebrowPadding?.desktop ),
+						} }
+					>
+						{ brandsEyebrow }
+					</p>
 				) }
 				<div { ...innerBlocksProps } />
 				{ /* viewAllPlacement editor-canvas preview.

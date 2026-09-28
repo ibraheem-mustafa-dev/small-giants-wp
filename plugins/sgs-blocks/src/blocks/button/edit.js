@@ -214,6 +214,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		borderWidth,
 		scaleHover,
 		scaleHoverTarget,
+		opacityHover,
 		transitionDuration,
 		transitionEasing,
 		boxShadow,
@@ -1041,6 +1042,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							{ label: __( 'Inner face only', 'sgs-blocks' ), value: 'face' },
 						] }
 						onChange={ ( val ) => setAttributes( { scaleHoverTarget: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<RangeControl
+						label={ __( 'Hover opacity', 'sgs-blocks' ) }
+						help={ __( 'Fades the button on hover/focus. 1 = no fade. 0 disables the fade entirely.', 'sgs-blocks' ) }
+						value={ opacityHover ?? 0 }
+						onChange={ ( val ) => setAttributes( { opacityHover: val ?? 0 } ) }
+						min={ 0 }
+						max={ 1 }
+						step={ 0.05 }
+						allowReset
+						resetFallbackValue={ 0 }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

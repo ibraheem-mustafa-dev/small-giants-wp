@@ -120,6 +120,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColourHoverGradient,
 		shapeColourHover,
 		scaleHover,
+		opacityHover,
 		iconAlign,
 		textAlign,
 	} = attributes;
@@ -164,6 +165,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-icon-hover-shape-colour':
 			shapeColourHover ? colourVar( shapeColourHover ) : undefined,
 		'--sgs-icon-hover-scale': scaleHover || undefined,
+		'--sgs-icon-opacity-hover': opacityHover || undefined,
 		'--sgs-icon-shape-padding':
 			backgroundShape !== 'none' && backgroundPadding
 				? shapePaddingCssValue( backgroundPadding )
@@ -403,6 +405,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 1 }
 						max={ 1.5 }
 						step={ 0.05 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<RangeControl
+						label={ __( 'Hover opacity', 'sgs-blocks' ) }
+						help={ __( 'Fades the icon link on hover. 1 = no fade. 0 disables the fade entirely.', 'sgs-blocks' ) }
+						value={ opacityHover ?? 0 }
+						onChange={ ( val ) => setAttributes( { opacityHover: val ?? 0 } ) }
+						min={ 0 }
+						max={ 1 }
+						step={ 0.05 }
+						allowReset
+						resetFallbackValue={ 0 }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

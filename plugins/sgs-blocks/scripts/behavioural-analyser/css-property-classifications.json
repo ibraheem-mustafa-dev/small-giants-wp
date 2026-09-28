@@ -1064,6 +1064,14 @@
     },
     {
       "slug": "sgs/button",
+      "attr": "opacityHover",
+      "fields": {
+        "css_property": "opacity",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/button",
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration",
@@ -6589,6 +6597,61 @@
         "css_property": "border-style",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "brandsEyebrowColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "brandsEyebrowFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "CONTENT",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "brandsEyebrowFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "CONTENT",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "brandsEyebrowLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "CONTENT",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "brandsEyebrowLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "CONTENT",
+        "css_element": "eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "brandsEyebrowTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "CONTENT",
+        "css_element": "eyebrow"
       }
     },
     {
@@ -17853,6 +17916,15 @@
         "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "brandsEyebrowPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "eyebrow"
       }
     },
     {
