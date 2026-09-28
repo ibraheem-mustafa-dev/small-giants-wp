@@ -170,17 +170,32 @@ item padding on both menus; caret, scrim fade and item transition timing on the 
 shadow and easing; D-1 `rowsAlign` + the logo line gap; D-3 the drawer renders before the head so its FX resolve; D-4
 the aside's resting colour; the no-destination drawer row toggle. G-8 is parked with the G8 family.
 
-Open, being closed in settings rounds, then the final walker run with review notes and Bean's eye:
-- Walker (committed version, header configs `auto: false`): lamalama 308 open (100 unique), Indus 1010 (254 unique),
-  most of both being structure-only rows under the same-paint rule, which get their dated accepts in the final pass.
-- A per-item ornament opt-out (lamalama's "Careers" has no hover marker) is being built.
-- The framework DB marks `itemPadding`, `chromeRowPadding` and `itemBorderRadius` as not per-device although the blocks
-  and inspectors treat them per device, so `scripts/wp-build-page.js` refuses per-device values for them; the seeder's
-  `is_responsive` evidence for helper-emitted settings needs correcting (`scripts/sgs-update-v2.py`).
+Added since (commits c02be4ce8, ae7660e2b, 8d2e02ebe, c12121288): `ornamentHiddenItemIds` (a hidden marker keeps its
+reserved space); child sizing in flex rows (`sgsChildSizing` fit/fill/fixed per device on nine blocks); editor previews
+sent as POST (a GET carried every attribute in the URL; the host edge dropped the connection above ~11,300 characters,
+which is what made large custom SVGs fail to save); custom SVG in every nav icon (`sgs_nav_shared_icon_markup` swapped it
+for the fallback); a centred notice banner centres its message row; `opacityHover` on sgs/button and sgs/icon; Brands
+eyebrow typography, colour and padding. Geist Mono registered on sandybrown (font family 4695).
+
+Walker (committed version, `auto: false` on header configs), 2026-09-28 09:30: lamalama 295 open (87 unique), Indus 692
+(220 unique). Still open:
+- Framework: the drawer's no-destination row (`<summary>`) does not carry the item typography (About reads 16px/400
+  beside 20px/700 rows); the mega panel's drawer form (I-D11: compact feature card first, links on the drawer blue);
+  sgs/social-icons in the drawer paints no brand circle (no ground, square, 44px).
+- Settings: hover text colour held on the linked row, logo and card containers (Mama's brown still reaches the
+  container); Indus About/Brands panel heights and positions; the drawer CTA row (email and call beside the CTA).
+- lamalama's marker plays three alternate glyph frames on hover before settling (a frame sequence the ornament can't
+  play: it swaps one alternate). Bean to decide: build or accept.
+- The canary's host serves a "Checking your browser" page under load: walker states and console errors (403) come from
+  it. Bean to decide: allow-list the test site or live with retries.
+- Walker timeline noise: the 30ms samples (blur, drawer growth) move by up to 0.2 between runs on the same reference.
+- Structure-only rows get their dated accepts under the same-paint rule in the final pass, which runs without
+  `--no-review` so every state x width screenshot carries a review note.
+- The framework DB marks `itemPadding`, `chromeRowPadding`, `itemBorderRadius`, `itemOrnamentGap` as not per-device
+  although the blocks treat them per device, so `scripts/wp-build-page.js` refuses per-device values
+  (`scripts/sgs-update-v2.py` is_responsive evidence for helper-emitted settings).
 - `sgsHoverIndent` reads a block's resting inline-start padding from its desktop value only.
-- lamalama's self-baseline (`--self draft`) reads 1 to 2 open rows on the page blur's 30ms opacity sample, before and
-  after this session's walker change (sampling jitter in the timeline check; the walker's owner decides).
-- The deploy's full-tier `inspector-scan-run` gate fails on `sgs/quote` and `sgs/wishlist-panel` native
+- The deploy's full-tier `inspector-scan-run` fails on `sgs/quote` and `sgs/wishlist-panel` native
   `supports.typography` (not this work); deploys here used `--skip-gate-full` with the other three full gates passing.
 
 ### Defects to diagnose
