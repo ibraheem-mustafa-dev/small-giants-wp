@@ -241,6 +241,31 @@
 	height: 1.25rem;
 }
 
+/*
+ * Glyph close style (closeStyle:'glyph' attribute, Eye Care size-guide
+ * parity) — a plain "×" text character, no background disc. Same 44px touch
+ * target and accessible name (aria-label) as the icon style above; only the
+ * visual treatment differs. The glyph inherits `color` from `.sgs-modal__close`
+ * (closeColourText paints that same property), so no separate colour wiring
+ * is needed here.
+ */
+.sgs-modal__close--glyph::after {
+	content: none;
+}
+
+.sgs-modal__close--glyph .sgs-modal__close-glyph {
+	font-size: 1.75rem;
+	line-height: 1;
+	font-weight: 400;
+}
+
+/* Without the disc, the icon style's white-on-disc hover colour would be
+   invisible — darken towards primary instead. Two classes beat the icon
+   style's `:where()` hover rule above regardless of source order. */
+.sgs-modal__close--glyph:hover {
+	color: var(--wp--preset--color--primary, #1a1a1a);
+}
+
 /* Content that brings its own Close (a choice flow's header) hides this one. */
 .sgs-modal__close[hidden] {
 	display: none;

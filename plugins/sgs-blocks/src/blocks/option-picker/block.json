@@ -226,6 +226,10 @@
 					},
 					"label": {
 						"type": "string"
+					},
+					"image": {
+						"type": "string",
+						"description": "Optional per-item image URL, forwarded by a caller that resolves its own image per option (e.g. sgs/buybox's pickerVariationSwatch — a per-PRODUCT variation photo, which this block's own _sgs_swatch_image_id term meta cannot carry since term meta is shared by every product using that term). Wins over the term-meta swatch lookup for that item when set; empty (default, every existing caller) leaves the term-meta path unchanged."
 					}
 				}
 			}

@@ -1,5 +1,10 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl, TextControl, RangeControl } from '@wordpress/components';
+import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
+
+const STOCK_LINE_POSITION_OPTIONS = [
+	{ value: 'below', label: __( 'Below the pickers (today)', 'sgs-blocks' ) },
+	{ value: 'above', label: __( 'Above the pickers', 'sgs-blocks' ) },
+];
 
 /**
  * Settings-tab (default InspectorControls group) extra panels for
@@ -23,6 +28,8 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 		rrpSavingPrefix,
 		extrasBeforeCartCount,
 		stockInStockLabel,
+		stockLinePosition,
+		stockLineHairline,
 	} = attributes;
 
 	return (
@@ -121,6 +128,37 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
+				<SelectControl
+					label={ __( 'Stock line position', 'sgs-blocks' ) }
+					value={ stockLinePosition || 'below' }
+					options={ STOCK_LINE_POSITION_OPTIONS }
+					onChange={ ( val ) =>
+						setAttributes( { stockLinePosition: val } )
+					}
+					help={ __(
+						'Above moves the stock line between the price row and the pickers.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+				{ 'above' === ( stockLinePosition || 'below' ) && (
+					<ToggleControl
+						label={ __(
+							'Hairline above the stock line',
+							'sgs-blocks'
+						) }
+						checked={ !! stockLineHairline }
+						onChange={ ( val ) =>
+							setAttributes( { stockLineHairline: val } )
+						}
+						help={ __(
+							'Adds a 1px rule, in the border colour, between the price row and the stock line.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+				) }
 			</PanelBody>
 		</>
 	);

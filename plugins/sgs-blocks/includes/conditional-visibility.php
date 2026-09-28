@@ -24,6 +24,11 @@
  * - sgsConditionProductReviews : 'none' | 'has' | 'none-yet' — WooCommerce
  *   current-product review state (Spec-agnostic: ignored when WooCommerce is
  *   inactive or no product can be resolved for the current request).
+ * - sgsConditionCollectionQueryId : int (0 = off) — hide this block when the
+ *   `woocommerce/product-collection` block with this `queryId` rendered with
+ *   no products. Reads the result recorded by
+ *   includes/product-collection-empty-detection.php. Never hides on an
+ *   unknown result (that collection has not run yet on this request).
  *
  * @package SGS\Blocks
  */
@@ -236,6 +241,22 @@ function check_conditional_visibility( string $block_content, array $block, $ins
 			if ( 'none-yet' === $reviews_rule && $has_reviews ) {
 				return '';
 			}
+		}
+	}
+
+	// ── Condition 9: Related product collection has products ────────────────
+	$collection_query_id = isset( $attrs['sgsConditionCollectionQueryId'] )
+		? absint( $attrs['sgsConditionCollectionQueryId'] )
+		: 0;
+
+	if ( $collection_query_id > 0 ) {
+		$collection_has_results = sgs_collection_has_results( $collection_query_id );
+
+		// false = that collection's query definitely ran with no products —
+		// hide. null (has not run yet on this request) or true (has
+		// products) both fall through and render normally.
+		if ( false === $collection_has_results ) {
+			return '';
 		}
 	}
 

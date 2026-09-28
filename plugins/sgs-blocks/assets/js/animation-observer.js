@@ -170,12 +170,20 @@
 		var rootStyle = globalThis.getComputedStyle( document.documentElement );
 
 		var durationKey = el.dataset.sgsAnimationDuration || 'medium';
-		var durationRaw = rootStyle.getPropertyValue( '--wp--custom--duration--' + durationKey );
-		var duration    = parseDurationMs( durationRaw );
-		if ( null === duration ) {
-			duration = Object.prototype.hasOwnProperty.call( DURATION_FALLBACKS_MS, durationKey )
-				? DURATION_FALLBACKS_MS[ durationKey ]
-				: 300;
+		var duration;
+		if ( /^\d+$/.test( durationKey ) ) {
+			// A custom millisecond count (set in the editor's "Custom" duration
+			// field, already clamped 0-5000 server-side) rather than a token —
+			// used directly, no theme.json lookup.
+			duration = Math.max( 0, Math.min( 5000, parseInt( durationKey, 10 ) ) );
+		} else {
+			var durationRaw = rootStyle.getPropertyValue( '--wp--custom--duration--' + durationKey );
+			duration = parseDurationMs( durationRaw );
+			if ( null === duration ) {
+				duration = Object.prototype.hasOwnProperty.call( DURATION_FALLBACKS_MS, durationKey )
+					? DURATION_FALLBACKS_MS[ durationKey ]
+					: 300;
+			}
 		}
 
 		var easing;
@@ -201,17 +209,23 @@
 	}
 
 	/**
-	 * Resolve data-sgs-animation-distance to a number, allow-listed to the
-	 * four preset steps.
+	 * Resolve data-sgs-animation-distance to a number: one of the four preset
+	 * steps, or a custom pixel count (already clamped 0-400 server-side) set
+	 * via the editor's "Custom" distance field.
 	 *
 	 * @param {Element} el Target element.
 	 * @return {number|undefined} Distance in px, or undefined to use the effect's own default.
 	 */
 	function resolveDistance( el ) {
 		var raw = el.dataset.sgsAnimationDistance;
-		return raw && Object.prototype.hasOwnProperty.call( ALLOWED_DISTANCES, raw )
-			? ALLOWED_DISTANCES[ raw ]
-			: undefined;
+		if ( ! raw ) {
+			return undefined;
+		}
+		if ( Object.prototype.hasOwnProperty.call( ALLOWED_DISTANCES, raw ) ) {
+			return ALLOWED_DISTANCES[ raw ];
+		}
+		var custom = /^\d+$/.test( raw ) ? parseInt( raw, 10 ) : NaN;
+		return Number.isFinite( custom ) ? Math.max( 0, Math.min( 400, custom ) ) : undefined;
 	}
 
 	var createdAnimations = [];

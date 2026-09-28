@@ -120,6 +120,34 @@ $css_vars = array_merge( $css_vars, sgs_custom_property_gradient_decls( 'sgs-pan
 
 $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 
+// ── Tab button padding / min-height / indicator thickness (Eye Care
+// product-page parity, 2026-09-28) — plain CSS-length attrs, each sanitised
+// through sgs_css_length_value() and emitted as an inline CUSTOM-PROPERTY
+// VALUE (allowed under the no-inline contract §A — only real property
+// declarations are forbidden). style.css reads each with its existing
+// literal as the var() fallback, so an unconfigured client renders
+// byte-identical to before.
+$tab_padding_inline = sgs_css_length_value( $attributes['tabPaddingInline'] ?? '' );
+if ( '' !== $tab_padding_inline ) {
+	$css_vars[] = '--sgs-tab-padding-inline:' . $tab_padding_inline;
+}
+$tab_padding_block = sgs_css_length_value( $attributes['tabPaddingBlock'] ?? '' );
+if ( '' !== $tab_padding_block ) {
+	$css_vars[] = '--sgs-tab-padding-block:' . $tab_padding_block;
+}
+$tab_min_height = sgs_css_length_value( $attributes['tabMinHeight'] ?? '' );
+if ( '' !== $tab_min_height ) {
+	$css_vars[] = '--sgs-tab-min-height:' . $tab_min_height;
+}
+// Drives the underline style's box-shadow spread + sliding ::after bar
+// (style.css) — the indicator is drawn with box-shadow, not a real CSS
+// border, so this is NOT the same custom property SGS_Container_Wrapper's
+// own border-width mechanism uses.
+$tab_indicator_thickness = sgs_css_length_value( $attributes['tabIndicatorThickness'] ?? '' );
+if ( '' !== $tab_indicator_thickness ) {
+	$css_vars[] = '--sgs-tab-indicator-thickness:' . $tab_indicator_thickness;
+}
+
 // D636 border-colour gradient rollout — resting/active tab indicator + panel
 // border. tabIndicatorColour/tabActiveIndicatorColour resolve to css:border-
 // color in the DB (the box-shadow underline is this block's visual technique
@@ -196,7 +224,7 @@ if ( ! empty( $tabs_color_args ) ) {
 }
 
 // (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
+// are block-private attrs now, emitted below)
 
 if ( ! empty( $tabs_style_engine_args ) ) {
 	$tabs_scoped_styles = wp_style_engine_get_styles(
@@ -210,13 +238,18 @@ if ( ! empty( $tabs_style_engine_args ) ) {
 
 // D636 border-colour gradient rollout — masked ::before ring per state.
 // Resting/active are distinct static selectors (aria-selected), never a CSS
-// `:hover`, so hover_paint stays null on every call here.
+// `:hover`, so hover_paint stays null on every call here. The ring thickness
+// follows tabIndicatorThickness (Eye Care parity, 2026-09-28) so a client who
+// sets a custom thickness gets it painted for the gradient path too, not just
+// the flat-colour box-shadow path below; '2px' stays the fallback so this is
+// byte-identical to before when unset.
+$tab_indicator_ring_width = '' !== $tab_indicator_thickness ? $tab_indicator_thickness : '2px';
 if ( '' !== $tab_indicator_gradient ) {
 	$tabs_responsive_css .= sgs_border_gradient_css(
 		"{$root_sel} .sgs-tabs__tab:not([aria-selected='true'])",
 		$tab_indicator_gradient,
 		null,
-		'2px'
+		$tab_indicator_ring_width
 	);
 }
 if ( '' !== $tab_active_indicator_gradient ) {
@@ -224,7 +257,7 @@ if ( '' !== $tab_active_indicator_gradient ) {
 		"{$root_sel} .sgs-tabs__tab[aria-selected='true']",
 		$tab_active_indicator_gradient,
 		null,
-		'2px'
+		$tab_indicator_ring_width
 	);
 }
 if ( '' !== $panel_border_gradient ) {
@@ -246,6 +279,14 @@ if ( '' !== $tab_text_decl ) {
 	$tabs_responsive_css .= "{$tab_text_sel}{{$tab_text_decl};}";
 	$tabs_responsive_css .= sgs_text_colour_gradient_fallback_rule( $tab_text_sel, $tab_text_effective );
 }
+
+// Tab button typography (Eye Care product-page parity, 2026-09-28) — shared
+// TypographyControls/sgs_typography_css_rule() mechanism, prefix 'tab'.
+// Every tab button shares one inherited default (no per-tab typography attr
+// exists), same shape as tabTextColour above. Applies to every tab button
+// (resting + active alike) — text-transform/letter-spacing/font-weight/size
+// are not state-dependent in the draft.
+$tabs_responsive_css .= sgs_typography_css_rule( $attributes, 'tab', "{$root_sel} .sgs-tabs__tab" );
 
 // $css_vars (CSS custom-property VALUES only, e.g. --sgs-tab-text:…) stay
 // inline via extra_styles — a `--x: value` VALUE is allowed by the no-inline
@@ -334,10 +375,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt                  = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr                  = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb                  = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl                  = '' !== $border_width_left ? $border_width_left : '0';
 		$tabs_responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -371,7 +412,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(

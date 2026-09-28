@@ -10,6 +10,12 @@
  *   --sgs-panel-bg              Panel background
  *   --sgs-panel-border          Border between nav and panel
  *   --sgs-transition-duration   Transition speed (ms value with unit)
+ *   --sgs-tab-padding-block     Tab button top/bottom padding (tabPaddingBlock)
+ *   --sgs-tab-padding-inline    Tab button left/right padding (tabPaddingInline)
+ *   --sgs-tab-min-height        Tab button minimum height (tabMinHeight)
+ *   --sgs-tab-indicator-thickness  Underline-style indicator thickness
+ *                                  (tabIndicatorThickness) — drives both the
+ *                                  box-shadow spread and the sliding ::after bar
  *
  * @package SGS\Blocks
  */
@@ -74,14 +80,20 @@
 	cursor: pointer;
 	outline: none;
 
-	padding: 12px 20px;
+	/* block(top/bottom)/inline(left/right) — --sgs-tab-padding-block/-inline
+	 * are set inline per instance from tabPaddingBlock/tabPaddingInline
+	 * (Eye Care product-page parity, 2026-09-28); an unconfigured client
+	 * keeps this exact 12px/20px. */
+	padding: var( --sgs-tab-padding-block, 12px ) var( --sgs-tab-padding-inline, 20px );
 	font-size: inherit;
 	font-family: inherit;
 	line-height: 1.4;
 	white-space: nowrap;
 
-	/* WCAG 2.2 AA minimum touch target */
-	min-height: 44px;
+	/* WCAG 2.2 AA minimum touch target. --sgs-tab-min-height overrides the
+	 * height floor from tabMinHeight; min-width stays a fixed 44px (no
+	 * control offers it — an honest gap, not an omission). */
+	min-height: var( --sgs-tab-min-height, 44px );
 	min-width: 44px;
 
 	/* Idle: text-muted per Group J spec */
@@ -118,11 +130,11 @@
  * selector) is more specific and always wins when it applies.
  */
 .sgs-tabs--style-underline .sgs-tabs__tab {
-	box-shadow: inset 0 -2px 0 var( --sgs-tab-indicator, transparent );
+	box-shadow: inset 0 calc( -1 * var( --sgs-tab-indicator-thickness, 2px ) ) 0 var( --sgs-tab-indicator, transparent );
 }
 
 .sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab {
-	box-shadow: inset -2px 0 0 var( --sgs-tab-indicator, transparent );
+	box-shadow: inset calc( -1 * var( --sgs-tab-indicator-thickness, 2px ) ) 0 0 var( --sgs-tab-indicator, transparent );
 }
 
 /* Active: primary colour, remove hover underline */
@@ -138,12 +150,12 @@
 /* Fallback for no-JS: box-shadow on the active tab (hidden when indicator is positioned via JS) */
 .sgs-tabs--style-underline .sgs-tabs__tab[aria-selected="true"],
 .sgs-tabs--style-underline .sgs-tabs__tab--active {
-	box-shadow: inset 0 -2px 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
+	box-shadow: inset 0 calc( -1 * var( --sgs-tab-indicator-thickness, 2px ) ) 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
 }
 
 .sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab[aria-selected="true"],
 .sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab--active {
-	box-shadow: inset -2px 0 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
+	box-shadow: inset calc( -1 * var( --sgs-tab-indicator-thickness, 2px ) ) 0 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
 }
 
 /* Sliding indicator — powered by CSS custom properties set via JS */
@@ -157,7 +169,7 @@
 	bottom: 0;
 	left: var( --sgs-indicator-left, 0px );
 	width: var( --sgs-indicator-width, 0px );
-	height: 2px;
+	height: var( --sgs-tab-indicator-thickness, 2px );
 	background: var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, #0f7e80 ) );
 	/* left+width slide: medium duration, default easing per Group J spec */
 	transition:
@@ -178,7 +190,7 @@
 	left: auto;
 	right: 0;
 	top: var( --sgs-indicator-top, 0px );
-	width: 2px;
+	width: var( --sgs-tab-indicator-thickness, 2px );
 	height: var( --sgs-indicator-height, 0px );
 	transition:
 		top    var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
@@ -309,12 +321,12 @@
 
 	.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab[aria-selected="true"],
 	.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab--active {
-		box-shadow: inset 0 -2px 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
+		box-shadow: inset 0 calc( -1 * var( --sgs-tab-indicator-thickness, 2px ) ) 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
 	}
 
 	/* Resting indicator base also collapses to the horizontal direction here */
 	.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab {
-		box-shadow: inset 0 -2px 0 var( --sgs-tab-indicator, transparent );
+		box-shadow: inset 0 calc( -1 * var( --sgs-tab-indicator-thickness, 2px ) ) 0 var( --sgs-tab-indicator, transparent );
 	}
 
 	/* Vertical indicator collapses to horizontal on small screens */
@@ -324,7 +336,7 @@
 		bottom: 0;
 		left: var( --sgs-indicator-left, 0px );
 		width: var( --sgs-indicator-width, 0px );
-		height: 2px;
+		height: var( --sgs-tab-indicator-thickness, 2px );
 		transition:
 			left  var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
 			width var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );

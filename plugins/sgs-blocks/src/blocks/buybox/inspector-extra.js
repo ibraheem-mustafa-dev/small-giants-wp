@@ -217,5 +217,26 @@ export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 			attributes,
 			setAttributes,
 		} ),
+		textRow( {
+			key: 'picker-label',
+			label: __( 'Picker label', 'sgs-blocks' ),
+			attrs: { base: 'pickerLabelColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'add-to-cart-background',
+			label: __( 'Add to cart background', 'sgs-blocks' ),
+			attrs: { base: 'addToCartBackgroundColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'add-to-cart-border',
+			label: __( 'Add to cart border', 'sgs-blocks' ),
+			attrs: { base: 'addToCartBorderColour' },
+			attributes,
+			setAttributes,
+		} ),
 	];
 }

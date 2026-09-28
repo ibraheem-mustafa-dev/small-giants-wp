@@ -17,6 +17,7 @@ import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, Sg
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel } from '../../components/primitives';
 import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
 import { ModalAnchorNotice, ModalHashLoadToggle, ModalNoOpenerWarning } from './anchor-open-controls';
+import { DialogSizeBorderControls, DialogShadowControl, CloseStyleControl } from './dialog-style-controls';
 
 const MAX_WIDTH_OPTIONS = [
 	{ label: __( 'Small (480px)', 'sgs-blocks' ), value: 'small' },
@@ -459,6 +460,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					{ /* CloseStyleControl (dialog-style-controls.js, Eye Care
+					   size-guide parity, 2026-09-28) — 'icon' (default, the
+					   existing round SVG button) or 'glyph' (a plain "×" text
+					   character, no background disc). */ }
+					<CloseStyleControl attributes={ attributes } setAttributes={ setAttributes } />
 					{ /* ModalHashLoadToggle (anchor-open-controls.js) —
 					   openOnHashLoad, off by default (block.json) so an
 					   existing anchor link to this block keeps its normal
@@ -492,6 +498,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				>
 					<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
 				</ToolsPanel>
+				{ /* Dialog size + border (Eye Care size-guide parity, 2026-09-28)
+				   — block-private Shape B border, same shape as sgs/accordion's
+				   SgsBorderControl mount. 'none' border style (block.json
+				   default) keeps every existing modal's borderless look. */ }
+				<PanelBody title={ __( 'Dialog size & border', 'sgs-blocks' ) } initialOpen={ false }>
+					<DialogSizeBorderControls attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+				{ /* Dialog shadow — the shared layered ShadowControl. Empty shape
+				   (block.json default) keeps the dialog's existing hardcoded
+				   box-shadow (style.css) unchanged. */ }
+				<PanelBody title={ __( 'Dialog shadow', 'sgs-blocks' ) } initialOpen={ false }>
+					<DialogShadowControl attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>

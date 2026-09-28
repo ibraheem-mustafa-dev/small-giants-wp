@@ -6,7 +6,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const SEPARATOR_OPTIONS = [
@@ -178,6 +178,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { separator: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					<SgsLengthControl
+						label={ __( 'Space around the separator', 'sgs-blocks' ) }
+						help={ __( 'The gap on each side of every separator. Empty keeps the theme’s small gap.', 'sgs-blocks' ) }
+						value={ attributes.itemGap || '' }
+						onChange={ ( val ) => setAttributes( { itemGap: val || '' } ) }
+						presets={ false }
 					/>
 					<SelectControl
 						label={ __( 'On product pages, include', 'sgs-blocks' ) }

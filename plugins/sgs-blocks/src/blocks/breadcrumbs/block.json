@@ -155,6 +155,10 @@
 			"type": "string",
 			"default": "/"
 		},
+		"itemGap": {
+			"type": "string",
+			"default": ""
+		},
 		"showHome": {
 			"type": "boolean",
 			"default": true

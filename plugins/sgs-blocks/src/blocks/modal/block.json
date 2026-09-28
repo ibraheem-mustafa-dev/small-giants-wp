@@ -65,7 +65,7 @@
 					"attrMap": {
 						"css:background-color": "modalBackground"
 					},
-					"_note": "This block declares containerMirror:false (does NOT wrap SGS_Container_Wrapper) and disables native color support entirely — every declaration is block-private, scoped via render.php:37-79. maxWidth resolves via the bare-prefix default convention (case-insensitive `MaxWidth` -> `maxWidth`, render.php:21,95); modalBackground is mapped explicitly since the bare prefix + Background/Bg suffixes do not match its 'modal' name segment. NO hover sibling (checked 2026-09-06, colour-conformance closeout, Case C): the dialog panel is a static content container -- view.js's closeOnOverlay click handler treats a click LANDING INSIDE this element's box as normal content interaction (does nothing), so there is no interaction affordance to hang a :hover rule off; already correctly wired via sgs_background_paint_decl() (render.php) for its flat+gradient pair, so no wiring fix was needed either."
+					"_note": "This block declares containerMirror:false (does NOT wrap SGS_Container_Wrapper) and disables native color support entirely — every declaration is block-private, scoped via render.php:37-79. maxWidth resolves via the bare-prefix default convention (case-insensitive `MaxWidth` -> `maxWidth`, render.php:21,95); modalBackground is mapped explicitly since the bare prefix + Background/Bg suffixes do not match its 'modal' name segment. NO hover sibling (checked 2026-09-06, colour-conformance closeout, Case C): the dialog panel is a static content container -- view.js's closeOnOverlay click handler treats a click LANDING INSIDE this element's box as normal content interaction (does nothing), so there is no interaction affordance to hang a :hover rule off; already correctly wired via sgs_background_paint_decl() (render.php) for its flat+gradient pair, so no wiring fix was needed either. dialogWidth/dialogWidthUnit (2026-09-28, Eye Care size-guide parity) override the maxWidth variant's `width` when set — border/shadow colour are deliberately NOT mapped here per block-editor-controls.md's exemption list (border colour lives in SgsBorderControl, shadow colour in ShadowControl, neither has a SgsColourPanel slot)."
 				},
 				"backdrop": {
 					"label": "Backdrop / scrim",
@@ -173,6 +173,61 @@
 				"large",
 				"full"
 			]
+		},
+		"dialogWidth": {
+			"type": "string",
+			"default": "",
+			"description": "A custom CSS length for the dialog's width, overriding the Max width preset above when set. Empty (default) keeps the existing maxWidth-variant behaviour unchanged."
+		},
+		"dialogWidthUnit": {
+			"type": "string",
+			"default": "px",
+			"enum": [ "px", "%", "em", "rem", "vw" ]
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"description": "'none' (default) keeps the dialog's existing borderless look. SgsBorderControl (Shape B, block-private) — same shape as sgs/accordion."
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the dialog's border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
+		},
+		"dialogShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Layered box-shadow shape (ShadowControl, includes/helpers-shadow-layers.php grammar), e.g. '0 30px 70px'. Empty (default) keeps the dialog's existing hardcoded shadow (style.css) unchanged."
+		},
+		"dialogShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow colour/opacity sibling of dialogShadow, e.g. 'site 30%'. Only consulted when dialogShadow is set."
+		},
+		"closeStyle": {
+			"type": "string",
+			"default": "icon",
+			"enum": [ "icon", "glyph" ],
+			"description": "'icon' (default) is the existing round SVG close button. 'glyph' renders a plain × text character with no background disc — both keep the same accessible name and 44px touch target."
 		},
 		"size": {
 			"type": "string",

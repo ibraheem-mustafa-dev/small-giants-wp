@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { TypographyControls } from '../../components';
+import { UnitControl } from '../../components/primitives';
 
 const PICKER_STYLE_OPTIONS = [
 	{ value: '', label: __( "Picker's own default", 'sgs-blocks' ) },
@@ -34,8 +35,12 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 		pickerSwatchStyle,
 		pickerStyle,
 		pickerShowSelectedTick,
+		pickerShowSelectedValue,
 		addToCartStyle,
 		addToCartShowPrice,
+		addToCartMinHeight,
+		addToCartShowIcon,
+		addToCartHoverLift,
 	} = attributes;
 
 	return (
@@ -84,6 +89,54 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 			</PanelBody>
 
 			<PanelBody
+				title={ __( 'Picker label typography', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				{ /* Eye Care F1. Font size/letter-spacing/case/colour forward to
+				     sgs/option-picker's OWN labelFontSize/labelLetterSpacing/
+				     labelTextTransform/labelColour when the toggle below is off
+				     (option-picker renders its usual visible legend). When the
+				     toggle is on, this block replaces that legend with its own
+				     label+value row and applies the SAME four settings to its
+				     own label text — see render.php's "picker-label typography"
+				     comment. showColour intentionally omitted from
+				     TypographyControls (it has no colour field); the colour
+				     row below is a plain SgsColourPanel-style control instead. */ }
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					targets={ [
+						{
+							key: 'pickerLabel',
+							label: __( 'Picker label', 'sgs-blocks' ),
+							prefix: 'pickerLabel',
+							showFontFamily: false,
+							showWeight: false,
+							showStyle: false,
+							showLineHeight: false,
+							showLetterSpacing: true,
+							showTransform: true,
+						},
+					] }
+				/>
+				<ToggleControl
+					label={ __(
+						'Show the chosen value beside the label',
+						'sgs-blocks'
+					) }
+					checked={ !! pickerShowSelectedValue }
+					onChange={ ( val ) =>
+						setAttributes( { pickerShowSelectedValue: val } )
+					}
+					help={ __(
+						'E.g. "COLOUR" on the left, "Ivory" on the right, in the muted text colour — updates live as the shopper picks a different option.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+				/>
+			</PanelBody>
+
+			<PanelBody
 				title={ __( 'Price typography', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
@@ -97,7 +150,7 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 							prefix: 'price',
 							showFontFamily: true,
 							showStyle: false,
-							showLineHeight: false,
+							showLineHeight: true,
 						},
 					] }
 				/>
@@ -132,6 +185,55 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom
+				/>
+				<ToggleControl
+					label={ __( 'Show the cart icon', 'sgs-blocks' ) }
+					checked={ addToCartShowIcon !== false }
+					onChange={ ( val ) =>
+						setAttributes( { addToCartShowIcon: val } )
+					}
+					__nextHasNoMarginBottom
+				/>
+				<ToggleControl
+					label={ __( 'Lift on hover', 'sgs-blocks' ) }
+					checked={ !! addToCartHoverLift }
+					onChange={ ( val ) =>
+						setAttributes( { addToCartHoverLift: val } )
+					}
+					help={ __(
+						'Moves the button up 2px on hover, matching the timing of a beside-it CTA button.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+				/>
+				<UnitControl
+					label={ __( 'Minimum height', 'sgs-blocks' ) }
+					value={ addToCartMinHeight || '' }
+					onChange={ ( val ) =>
+						setAttributes( { addToCartMinHeight: val ?? '' } )
+					}
+					help={ __(
+						"Empty = today's 48px.",
+						'sgs-blocks'
+					) }
+					__unstableInputWidth="100%"
+					__next40pxDefaultSize
+				/>
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					targets={ [
+						{
+							key: 'addToCart',
+							label: __( 'Button label', 'sgs-blocks' ),
+							prefix: 'addToCart',
+							showFontFamily: false,
+							showStyle: false,
+							showLineHeight: false,
+							showLetterSpacing: true,
+							showTransform: true,
+						},
+					] }
 				/>
 			</PanelBody>
 		</>

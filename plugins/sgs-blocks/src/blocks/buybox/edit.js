@@ -9,6 +9,7 @@ import { ResponsiveBoxControl, SgsColourPanel, fillRow, textRow,
 import { BuyboxExtraPanels, getBuyboxExtraColourRows } from './inspector-extra';
 import { BuyboxExtraSettingsPanels2 } from './inspector-extra-2';
 import { BuyboxExtraStylesPanels } from './inspector-extra-3';
+import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel from './GuidedPanel';
 
@@ -318,6 +319,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 				/>
 				<BuyboxExtraSettingsPanels2
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<BuyboxExtraSettingsPanels3
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

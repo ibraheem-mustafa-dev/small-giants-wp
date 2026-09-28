@@ -145,6 +145,12 @@ final class SGS_Blocks {
 		// products sharing the current product's terms in that taxonomy.
 		require_once SGS_BLOCKS_PATH . 'includes/product-collection-same-term.php';
 
+		// Product Collection empty-detection registry -- records whether a
+		// `woocommerce/product-collection` block's frontend query returned any
+		// products, keyed by its `queryId`. Feeds conditional-visibility.php's
+		// condition 9 (hide a block when the collection it names is empty).
+		require_once SGS_BLOCKS_PATH . 'includes/product-collection-empty-detection.php';
+
 		// Pattern slug backward-compat shim (sgs-theme/ → sgs/ aliases, 1-cycle deprecation).
 		require_once SGS_BLOCKS_PATH . 'includes/class-pattern-slug-shim.php';
 		Pattern_Slug_Shim::register();

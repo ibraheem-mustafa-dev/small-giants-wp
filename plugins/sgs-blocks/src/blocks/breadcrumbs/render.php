@@ -166,6 +166,13 @@ $colour_var_decls[] = '--sgs-breadcrumbs-separator-colour:' . sgs_colour_value( 
 $colour_var_decls[] = '--sgs-breadcrumbs-current-colour:' . sgs_colour_value( $current_colour );
 $scoped_css[]       = "{$root_sel}{" . implode( ';', $colour_var_decls ) . ';}';
 
+// --- itemGap: the space either side of each separator (the list's and each
+// item's gap); empty keeps style.css's spacing-10 gap. ---
+$breadcrumbs_item_gap = sgs_css_length_value( $attributes['itemGap'] ?? '' );
+if ( '' !== $breadcrumbs_item_gap ) {
+	$scoped_css[] = "{$root_sel} .sgs-breadcrumbs__list,{$root_sel} .sgs-breadcrumbs__item{gap:{$breadcrumbs_item_gap};}";
+}
+
 // --- Link colour gradient support (FR-?-?). Resolve flat/gradient siblings,
 // emit direct scoped rules alongside the custom properties above. ---
 $link_colour_effective = sgs_resolve_text_colour_or_gradient( $link_colour, $link_colour_gradient );

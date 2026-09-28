@@ -205,15 +205,14 @@ function inject_animation_attributes( string $block_content, array $block ): str
 	}
 
 	$delay    = $attrs['sgsAnimationDelay'] ?? '0';
-	$duration = $attrs['sgsAnimationDuration'] ?? 'medium';
 	$easing   = $attrs['sgsAnimationEasing'] ?? 'default';
 
-	// Allow-listed to the four preset steps; anything else falls back to the
-	// effect's own default distance (an empty attribute, so omitted below).
-	$distance = $attrs['sgsAnimationDistance'] ?? '';
-	if ( ! in_array( $distance, array( '', '15', '30', '50', '100' ), true ) ) {
-		$distance = '';
-	}
+	// Each accepts its theme.json tokens/presets unchanged, or a custom
+	// numeric value clamped to a safe range; a non-numeric custom value
+	// falls back to the default rather than reaching the markup raw
+	// (includes/animation-timing-clamp.php).
+	$duration = sgs_clamp_animation_duration( (string) ( $attrs['sgsAnimationDuration'] ?? 'medium' ) );
+	$distance = sgs_clamp_animation_distance( (string) ( $attrs['sgsAnimationDistance'] ?? '' ) );
 
 	// --- Locate the block's actual ROOT element. ---
 	// The no-inline styling contract (Spec 32, D293-D296) has every composite

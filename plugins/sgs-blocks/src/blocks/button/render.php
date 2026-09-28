@@ -608,7 +608,8 @@ $scoped_css_parts[] = implode( '', $min_height_decls );
 
 // Width — base + tablet + mobile on the SAME selector (Pattern A). Each tier's
 // width derives from its own widthType enum: full → 100%, custom → value+unit,
-// fit → auto, '' (tier only) → no override. Emitted via the scoped <style>
+// fit → fit-content (the button is a flex item that a flex-column parent would
+// otherwise stretch to its full width), '' (tier only) → no override. Emitted via the scoped <style>
 // (not inline) so a tier override reliably beats the base regardless of
 // viewport; the base rule is declared before the @media tiers so normal
 // source-order cascade lets a matched tier win. Full-width also relies on the
@@ -622,14 +623,14 @@ $width_css_value = static function ( $type, $val, $unit ) {
 		case 'custom':
 			return null !== $val ? $val . $unit : null;
 		case 'fit':
-			return 'auto';
+			return 'fit-content';
 		default:
 			return null; // '' = inherit desktop / unknown = no override.
 	}
 };
 
 $has_width_tier = ( '' !== $width_type_tab ) || ( '' !== $width_type_mob );
-if ( $has_width_tier || 'custom' === $width_type || 'full' === $width_type ) {
+if ( $has_width_tier || in_array( $width_type, array( 'custom', 'full', 'fit' ), true ) ) {
 	$width_decls = array();
 
 	$base_width = $width_css_value( $width_type, $custom_width, $custom_width_unit );

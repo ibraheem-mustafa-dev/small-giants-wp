@@ -357,6 +357,16 @@
 			],
 			"description": "Where the gallery and configurator sit side by side: 'mobile' = from 768px up (stacked on phones), 'tablet' = from 1024px up (stacked on phones and tablets)."
 		},
+		"galleryColumnRatio": {
+			"type": "number",
+			"default": 0,
+			"description": "The gallery column's share of the grid against the configurator column's fixed 1fr (e.g. 1.353 for a gallery ~1.35x the configurator's width). 0 (default/empty) keeps today's 1.15. Applies only at the width where the two columns actually sit side by side for this instance's own stackBelow setting (768px for 'mobile', 1024px for 'tablet')."
+		},
+		"galleryColumnGap": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length for the gap between the gallery and configurator columns (e.g. \"60px\"). Empty (default) keeps today's clamp(1.5rem, 4vw, 3rem). Same breakpoint rule as galleryColumnRatio."
+		},
 		"rrpMetaKey": {
 			"type": "string",
 			"default": "",
@@ -457,6 +467,94 @@
 			"type": "string",
 			"default": ""
 		},
+		"priceLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Line height for the current-price element (Eye Care F8 — the draft's price is 38px font on a 38px line; live had no line-height set, so it fell back to the UA default). Unitless ratio, same shape as every other TypographyControls-driven prefix."
+		},
+		"priceLineHeightUnit": {
+			"type": "string",
+			"default": "",
+			"description": "Companion unit for priceLineHeight. Empty = unitless (the TypographyControls convention — a unitless ratio recomputes correctly against nested text, unlike a fixed em/px line-height)."
+		},
+		"pickerLabelFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size for each axis picker's label (e.g. \"Colour\"). Forwarded to sgs/option-picker's own labelFontSize when the picker renders its native legend (pickerShowSelectedValue off); applied directly to this block's own label element when pickerShowSelectedValue replaces the legend with a label+value row. Empty = that picker's own default."
+		},
+		"pickerLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerLabelLetterSpacing": {
+			"type": "object",
+			"default": {},
+			"description": "Letter spacing for each axis picker's label. Same forward-or-own-render split as pickerLabelFontSize."
+		},
+		"pickerLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerLabelTextTransform": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"description": "Letter case for each axis picker's label (e.g. \"COLOUR\"). Same forward-or-own-render split as pickerLabelFontSize."
+		},
+		"pickerLabelColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour for each axis picker's label. Same forward-or-own-render split as pickerLabelFontSize."
+		},
+		"pickerShowSelectedValue": {
+			"type": "boolean",
+			"default": false,
+			"description": "Shows the chosen value (e.g. \"Ivory\") at the right of the axis label, in the muted text colour — updates live when the shopper picks a different option. Off (default) keeps today's plain label. On replaces sgs/option-picker's own visible legend with this block's own label+value row (option-picker has no equivalent control to forward to)."
+		},
+		"pickerAlwaysShowAxes": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string"
+			},
+			"description": "Axis taxonomy slugs (e.g. \"pa_frame-size\") that always show their picker, even with only one choice. Empty (default) keeps today's single-variant suppression — every axis with fewer than 2 terms is skipped."
+		},
+		"pickerBandAxis": {
+			"type": "string",
+			"default": "",
+			"description": "Which axis's picker shows a band letter instead of its terms' raw names (Eye Care F1 — the shop's universal Small/Medium/Large lens-width bands). The taxonomy slug (e.g. \"pa_frame-size\"). Empty (default) = off, every picker shows its terms' own labels unchanged."
+		},
+		"pickerBandScale": {
+			"type": "string",
+			"default": "",
+			"description": "Ordered band scale for pickerBandAxis, as comma-separated \"Label:max\" pairs (e.g. \"S:52,M:57,L\" — the last entry may omit \":max\" for an open-ended top band). Each of the axis's OWN numeric term names is matched against these bands in order; two of a product's own sizes landing in the same band each get the letter plus their own number (\"M 53\", \"M 56\") so the tiles stay distinct. Empty (default) = off."
+		},
+		"pickerLabelLinkAxis": {
+			"type": "string",
+			"default": "",
+			"description": "Which axis's picker label gets a text link at its right (Eye Care F2 — \"Which size am I?\" beside Size). The taxonomy slug (e.g. \"pa_frame-size\"). Empty (default) = off. Mutually exclusive with pickerShowSelectedValue on the SAME axis — the link wins for that one axis; every other axis is unaffected."
+		},
+		"pickerLabelLinkText": {
+			"type": "string",
+			"default": "",
+			"description": "The link's wording (e.g. \"Which size am I?\"). Empty = no link, even when pickerLabelLinkAxis is set."
+		},
+		"pickerLabelLinkUrl": {
+			"type": "string",
+			"default": "",
+			"description": "The link's destination (e.g. \"#size-guide\"). Empty = no link, even when pickerLabelLinkAxis is set."
+		},
+		"pickerVariationSwatch": {
+			"type": "boolean",
+			"default": false,
+			"description": "A colour/swatch axis tile shows the matching variation's OWN photo when it genuinely differs from the product's main image (Eye Care F9); otherwise today's term-meta swatch tile (colour chip or the term's own shared image). Off (default) — every tile stays as it is today, byte-identical."
+		},
 		"rrpShowPrice": {
 			"type": "boolean",
 			"default": false,
@@ -466,6 +564,27 @@
 			"type": "string",
 			"default": "Save",
 			"description": "The words before the amount in the RRP saving pill, e.g. \"You save\" gives \"You save £32\". Also used with the percentage format (\"You save 19%\")."
+		},
+		"gallerySavingBadge": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a saving badge on the gallery's main photo (Eye Care F6), using the SAME rrpMetaKey saving as the price row's pill. Hidden automatically when there is no genuine saving. Off (default) — no badge, byte-identical to today."
+		},
+		"gallerySavingBadgeFormat": {
+			"type": "string",
+			"default": "Save {amount} off RRP",
+			"description": "The badge's wording. {amount} is replaced with the formatted saving (e.g. \"£51\"). Empty or missing the {amount} token falls back to the default wording."
+		},
+		"gallerySavingBadgePosition": {
+			"type": "string",
+			"default": "top-right",
+			"enum": [
+				"top-right",
+				"top-left",
+				"bottom-right",
+				"bottom-left"
+			],
+			"description": "Where the badge sits on the main photo."
 		},
 		"addToCartStyle": {
 			"type": "string",
@@ -483,10 +602,84 @@
 			"default": false,
 			"description": "Show the current price at the right end of the add-to-cart button (label on the left, price on the right)."
 		},
+		"addToCartTextTransform": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"description": "Letter case for the add-to-cart button's label (Eye Care F4). Empty = today's look."
+		},
+		"addToCartLetterSpacing": {
+			"type": "object",
+			"default": {},
+			"description": "Letter spacing for the add-to-cart button's label."
+		},
+		"addToCartLetterSpacingUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"addToCartFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight for the add-to-cart button's label. Empty = today's 700 (style.css default)."
+		},
+		"addToCartFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size for the add-to-cart button's label."
+		},
+		"addToCartFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"addToCartBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour for the add-to-cart button (a palette slug or raw CSS colour, resolved via sgs_colour_value()). Empty = the active addToCartStyle preset's own border (today's look). Eye Care's outline preset carries a translucent border correctly extracted from a light-on-dark hero button; this override lets a different add-to-cart instance (e.g. a white-fill button beside it) paint a solid border instead, without changing the shared preset for every other outline button on the site."
+		},
+		"addToCartBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour for the add-to-cart button (a palette slug or raw CSS colour, resolved via sgs_colour_value()). Empty = the active addToCartStyle preset's own background (today's look)."
+		},
+		"addToCartMinHeight": {
+			"type": "string",
+			"default": "",
+			"description": "Minimum height for the add-to-cart button, as a CSS length (e.g. \"56px\"). Empty = today's 48px (style.css default)."
+		},
+		"addToCartShowIcon": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the cart icon inside the add-to-cart button. Off hides the icon, keeping the label (and price, when addToCartShowPrice is on)."
+		},
+		"addToCartHoverLift": {
+			"type": "boolean",
+			"default": false,
+			"description": "Lifts the add-to-cart button 2px on hover (matches the timing of a beside-it sgs/button CTA's own hover-transform, button/style.css). Off = today's brightness-only hover."
+		},
 		"stockInStockLabel": {
 			"type": "string",
 			"default": "",
 			"description": "Replaces the in-stock label text only (e.g. \"In stock — dispatched next working day\"). Empty = WooCommerce's own availability text. Low-stock and out-of-stock wording are unchanged."
+		},
+		"stockLinePosition": {
+			"type": "string",
+			"default": "below",
+			"enum": [
+				"below",
+				"above"
+			],
+			"description": "Where the stock line renders relative to the axis pickers (Eye Care F5). 'below' (default, today's position) — after the pickers. 'above' — between the price row and the pickers, matching the draft's price / hairline / stock / colour order."
+		},
+		"stockLineHairline": {
+			"type": "boolean",
+			"default": false,
+			"description": "Only applies when stockLinePosition is 'above'. Adds a 1px hairline rule (in the border colour) between the price row and the stock line."
 		}
 	},
 	"editorScript": "file:./index.js",
@@ -494,6 +687,7 @@
 	"render": "file:./render.php",
 	"viewScriptModule": [
 		"file:./notify-view.js",
-		"file:./guided.js"
+		"file:./guided.js",
+		"file:./picker-label-view.js"
 	]
 }

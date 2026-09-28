@@ -740,7 +740,21 @@ foreach ( $valid_items as $item ) {
 	$swatch_chip_html  = '';
 	$pill_extra_class  = '';
 
-	if ( null !== $swatch ) {
+	// Eye Care F9 (sgs/buybox pickerVariationSwatch): a caller-supplied
+	// per-item image URL wins over the term-meta swatch lookup below — see
+	// block.json's optionItems.items.image docblock for why a raw URL is
+	// needed here (term meta is shared by every product using that term, so
+	// it cannot carry a per-PRODUCT variation photo). Every other caller
+	// leaves 'image' unset, so this branch is dormant everywhere else.
+	$item_image_url = (string) ( $item['image'] ?? '' );
+	if ( '' !== $item_image_url ) {
+		$swatch_image_html = sprintf(
+			'<img src="%s" alt="" class="%s" loading="lazy" decoding="async" aria-hidden="true" />',
+			esc_url( $item_image_url ),
+			esc_attr( $sgs_op_swatch_img_class )
+		);
+		$pill_extra_class  = ' sgs-option-picker__pill--has-image';
+	} elseif ( null !== $swatch ) {
 		$image_id = $swatch['image_id'];
 		$color    = $swatch['color'];
 

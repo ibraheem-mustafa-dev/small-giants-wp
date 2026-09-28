@@ -384,6 +384,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// migration, 2026-08-11) — the editor preview always shows the DESKTOP tier.
 	if ( widthType?.desktop === 'custom' && customWidth?.desktop ) {
 		previewStyle.width = `${ customWidth.desktop }${ customWidthUnit?.desktop || 'px' }`;
+	} else if ( ( widthType?.desktop || 'fit' ) === 'fit' ) {
+		// As the frontend: a flex-column parent would otherwise stretch the button.
+		previewStyle.width = 'fit-content';
 	}
 	if ( attributes.minHeight?.desktop ) {
 		previewStyle.minHeight = `${ attributes.minHeight.desktop }${ minHeightUnit || 'px' }`;

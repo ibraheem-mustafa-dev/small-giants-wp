@@ -259,6 +259,72 @@
 	white-space: nowrap;
 }
 
+/* ── Add-to-cart hover lift (Eye Care F4, addToCartHoverLift) ─────────────
+   0.18s ease matches button/style.css's own `--sgs-btn-transform-hover`
+   transition timing (that file's `transition:` declaration, ~line 71) — the
+   beside-it "Add my prescription" CTA is an sgs/button instance reading that
+   same timing, so the two lift in step. Reduced-motion honoured by the
+   existing .buybox__add-to-cart media query below (sets transition: none;
+   the end state itself still applies, matching every other hover state on
+   this button — filter/background/border/colour are not motion-gated). */
+.sgs-buybox .buybox__add-to-cart--hover-lift {
+	transition: filter 200ms ease, transform 0.18s ease;
+}
+
+.sgs-buybox .buybox__add-to-cart--hover-lift:hover:not([disabled]) {
+	transform: translateY(-2px);
+}
+
+/* ── Picker label row: "show selected value" (F1) or a label link (F2) ────
+   Rendered only when pickerShowSelectedValue OR pickerLabelLinkAxis (for that
+   one axis) is on — replaces sgs/option-picker's own (now sr-only) legend, so
+   no double label. Font size/letter-spacing/transform/colour for
+   '.sgs-buybox__picker-label-text' are emitted by render.php's own scoped
+   <style> (pickerLabel* attributes); this file only lays the row out and
+   styles the value/link, which are NOT client-configurable (no typography
+   attributes were asked for either — the muted value colour and the link's
+   look both read the theme's own tokens). */
+.sgs-buybox .sgs-buybox__picker-label-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 6px;
+}
+
+.sgs-buybox .sgs-buybox__picker-selected-value {
+	color: var(--wp--preset--color--text-muted, currentColor);
+}
+
+/* Measured on the Eye Care draft's "Which size am I?" link (2026-09-28,
+   1440px): 13px, a secondary/muted text colour, a 1px bottom border (NOT a
+   text-decoration underline) in a light neutral border colour, with a 1px
+   gap from the text via padding-bottom. Reproduced with theme tokens rather
+   than the draft's exact bespoke hex (DEFAULT-vs-HARDCODE test, Spec 32
+   §6.1). */
+.sgs-buybox .sgs-buybox__picker-label-link {
+	font-size: 13px;
+	color: var(--wp--preset--color--text-muted, currentColor);
+	border-bottom: 1px solid var(--wp--preset--color--border, currentColor);
+	padding-bottom: 1px;
+	text-decoration: none;
+}
+
+.sgs-buybox .sgs-buybox__picker-label-link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--text, currentColor);
+	outline-offset: 2px;
+}
+
+/* ── Stock-line hairline (Eye Care F5, stockLineHairline) ─────────────────
+   Resets the <hr> UA default (border/height) to nothing so ONLY the scoped
+   border-top declaration render.php emits (in the theme's border-colour
+   token) paints the line — an unstyled <hr> would otherwise double it with
+   the browser's own inset border. */
+.sgs-buybox .sgs-buybox__stock-hairline {
+	border: 0;
+	height: 0;
+}
+
 /* ── Cart-status error region (dismissible, ARIA-live) ────────────────── */
 
 /* Hidden by default; data-wp-class adds the --visible modifier when
@@ -667,8 +733,49 @@
 /* ── Gallery column ────────────────────────────────────────────────────── */
 
 .sgs-buybox__gallery-col {
-	/* Mobile: full width, natural flow. */
+	/* Mobile: full width, natural flow. position:relative unconditionally
+	   (not just the >=1024px sticky tier below) so the F6 saving badge below
+	   always positions against THIS column, never escaping to the page. */
+	position: relative;
 	min-width: 0;
+}
+
+/* ── Gallery saving badge (Eye Care F6, gallerySavingBadge) ────────────────
+   Measured on the Eye Care draft's main-photo badge (2026-09-28, 1440px):
+   dark (text-colour) fill, 8px/12px padding, cream/inverse text, 12px
+   uppercase capitals at 0.1em tracking, 18px inset from the photo's corner.
+   Reproduced with theme tokens (DEFAULT-vs-HARDCODE test). */
+.sgs-buybox .sgs-buybox__saving-badge {
+	position: absolute;
+	z-index: 1;
+	background: var(--wp--preset--color--text, #141414);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	font-size: 12px;
+	font-weight: 400;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	padding: 8px 12px;
+	white-space: nowrap;
+}
+
+.sgs-buybox .sgs-buybox__saving-badge--top-right {
+	top: 18px;
+	right: 18px;
+}
+
+.sgs-buybox .sgs-buybox__saving-badge--top-left {
+	top: 18px;
+	left: 18px;
+}
+
+.sgs-buybox .sgs-buybox__saving-badge--bottom-right {
+	bottom: 18px;
+	right: 18px;
+}
+
+.sgs-buybox .sgs-buybox__saving-badge--bottom-left {
+	bottom: 18px;
+	left: 18px;
 }
 
 @media (min-width: 1024px) {

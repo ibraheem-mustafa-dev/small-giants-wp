@@ -55,6 +55,10 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import CollapseVisibilityControl from './CollapseVisibilityControl';
+import CollectionEmptyConditionControl, {
+	isCollectionEmptyConditionActive,
+	collectionEmptyConditionSummary,
+} from './CollectionEmptyConditionControl';
 
 /**
  * Guard against double registration.
@@ -241,6 +245,10 @@ function buildConditionSummary( attributes ) {
 		parts.push( __( 'product has no reviews yet', 'sgs-blocks' ) );
 	}
 
+	if ( isCollectionEmptyConditionActive( attributes ) ) {
+		parts.push( collectionEmptyConditionSummary( attributes ) );
+	}
+
 	return parts.join( ' · ' );
 }
 
@@ -259,7 +267,8 @@ function hasActiveCondition( attributes ) {
 		( attributes.sgsConditionDays && attributes.sgsConditionDays.length > 0 ) ||
 		!! attributes.sgsConditionUrlParam ||
 		!! attributes.sgsConditionReferrer ||
-		'none' !== attributes.sgsConditionProductReviews
+		'none' !== attributes.sgsConditionProductReviews ||
+		isCollectionEmptyConditionActive( attributes )
 	);
 }
 
@@ -628,6 +637,12 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 									/>
 								</div>
 							) }
+
+							{ /* ─── Related product collection is empty ─── */ }
+							<CollectionEmptyConditionControl
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+							/>
 						</PanelBody>
 					</InspectorControls>
 				</>

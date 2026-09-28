@@ -19,6 +19,8 @@ import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import { SgsColourPanel,
 	SgsBorderControl,
+	SgsLengthControl,
+	TypographyControls,
 	resolveColourToken,
 } from '../../components';
 import { colourVar, textPaintPreview, borderPaintPreview } from '../../utils';
@@ -73,6 +75,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		transitionDuration,
 		hideEmptyTabs,
 		mobileLayout,
+		tabPaddingInline,
+		tabPaddingBlock,
+		tabMinHeight,
+		tabIndicatorThickness,
 	} = attributes;
 
 	const [ activeEditorTab, setActiveEditorTab ] = useState( 0 );
@@ -463,6 +469,54 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
+				{ /* Tab button typography — Eye Care product-page parity
+				   (2026-09-28). Shared TypographyControls component + the
+				   sgs_typography_css_rule() render.php helper, prefix "tab" so
+				   it drives tabFontSize/tabFontWeight/tabTextTransform/
+				   tabLetterSpacing (one inherited default across every tab
+				   button — mirrors breadcrumbs' root-prefix call). Weight,
+				   style, line-height and responsive size stay off/on per the
+				   settings actually requested: size + its responsive tiers,
+				   weight and letter-spacing are shown; style and line-height
+				   are not (this block has no line-height/font-style control —
+				   an honest gap, not an omission). */ }
+				<PanelBody title={ __( 'Tab typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls showTransform showLetterSpacing
+						showStyle={ false }
+						showLineHeight={ false }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="tab"
+					/>
+					<SgsLengthControl
+						label={ __( 'Tab padding (horizontal)', 'sgs-blocks' ) }
+						help={ __( 'Left/right padding inside each tab button. Empty keeps the current 20px.', 'sgs-blocks' ) }
+						value={ tabPaddingInline || '' }
+						onChange={ ( val ) => setAttributes( { tabPaddingInline: val || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Tab padding (vertical)', 'sgs-blocks' ) }
+						help={ __( 'Top/bottom padding inside each tab button. Empty keeps the current 12px.', 'sgs-blocks' ) }
+						value={ tabPaddingBlock || '' }
+						onChange={ ( val ) => setAttributes( { tabPaddingBlock: val || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Tab minimum height', 'sgs-blocks' ) }
+						help={ __( 'Floor height of each tab button. Empty keeps the WCAG 2.2 AA minimum (44px).', 'sgs-blocks' ) }
+						value={ tabMinHeight || '' }
+						onChange={ ( val ) => setAttributes( { tabMinHeight: val || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Indicator thickness', 'sgs-blocks' ) }
+						help={ __( "Thickness of the underline-style active/resting indicator. Empty keeps the current 2px. Has no effect on the boxed or pills tab styles.", 'sgs-blocks' ) }
+						value={ tabIndicatorThickness || '' }
+						onChange={ ( val ) => setAttributes( { tabIndicatorThickness: val || '' } ) }
+						presets={ false }
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }

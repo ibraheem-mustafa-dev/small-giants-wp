@@ -276,6 +276,7 @@ require_once SGS_BLOCKS_PATH . 'includes/class-llms-txt.php';
 Llms_Txt::register();
 
 // Animation attributes — server-side data-attribute injection for scroll reveals.
+require_once SGS_BLOCKS_PATH . 'includes/animation-timing-clamp.php';
 require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
 
 // Custom CSS per block — server-side scoped <style> output.

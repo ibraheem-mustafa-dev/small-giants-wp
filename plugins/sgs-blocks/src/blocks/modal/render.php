@@ -35,6 +35,48 @@ $open_on_hash_load         = ! empty( $attributes['openOnHashLoad'] );
 $modal_background          = $attributes['modalBackground'] ?? 'white';
 $modal_background_gradient = sgs_css_gradient_value( $attributes['modalBackgroundGradient'] ?? '' );
 
+// Close button style — 'icon' (default) is the existing round SVG button;
+// 'glyph' renders a plain "×" text character with no background disc
+// (style.css's `.sgs-modal__close--glyph` modifier hides the ::after disc).
+// Both keep the same aria-label and 44px touch target (style.css is
+// unchanged for sizing either way).
+$close_style        = in_array( $attributes['closeStyle'] ?? 'icon', array( 'icon', 'glyph' ), true ) ? $attributes['closeStyle'] : 'icon';
+$close_button_class = 'glyph' === $close_style ? 'sgs-modal__close sgs-modal__close--glyph' : 'sgs-modal__close';
+
+// Dialog custom width (Eye Care size-guide parity, 2026-09-28) — overrides
+// the maxWidth variant class's `width` when set; empty keeps every existing
+// modal's maxWidth-driven width unchanged. sgs_css_length_value() would
+// treat a bare number as a spacing-preset lookup, which is wrong for a
+// dialog width, so the number+unit pair is validated and concatenated here
+// instead (mirrors sgs/heading's customWidth/customWidthUnit split-scalar
+// shape).
+$dialog_width_raw  = isset( $attributes['dialogWidth'] ) && is_string( $attributes['dialogWidth'] ) ? trim( $attributes['dialogWidth'] ) : '';
+$dialog_width_unit = in_array( $attributes['dialogWidthUnit'] ?? 'px', array( 'px', '%', 'em', 'rem', 'vw' ), true ) ? $attributes['dialogWidthUnit'] : 'px';
+$dialog_width      = ( '' !== $dialog_width_raw && preg_match( '/^\d+(?:\.\d+)?$/', $dialog_width_raw ) ) ? $dialog_width_raw . $dialog_width_unit : '';
+
+// Dialog border — Shape B, block-private (same shape as sgs/accordion):
+// borderWidth {top,right,bottom,left} box object, borderStyle enum,
+// borderColour(+Gradient). 'none' style (the default) keeps the dialog's
+// existing borderless look; width/style paint on the same selector as the
+// background below, colour is handled separately via sgs_border_states_css()
+// (Colour EMISSION helpers table — no hover needed on this element, mirrors
+// modalBackground's own no-hover reasoning above).
+$border_width_obj      = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top      = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right    = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom   = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left     = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width      = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+// Dialog shadow — ShadowControl's layered shape+colour text pair
+// (sgs_shadow_box_decls(), includes/helpers-shadow-layers.php, loaded
+// transitively via helpers-tokens.php -> render-helpers.php). Empty shape
+// keeps the dialog's existing hardcoded box-shadow (style.css) unchanged.
+$dialog_shadow_raw = isset( $attributes['dialogShadow'] ) && is_string( $attributes['dialogShadow'] ) ? trim( $attributes['dialogShadow'] ) : '';
+
 // modalRef (Task 1, 2026-09-14) — when set, this instance's dialog content is
 // the REFERENCED `sgs_modal` post's own content, not this instance's own
 // InnerBlocks. Resolution is fail-closed by construction, same shape as
@@ -119,6 +161,25 @@ $dialog_rules = array();
 if ( $modal_background ) {
 	$dialog_rules[] = sgs_background_paint_decl( $modal_background, $modal_background_gradient );
 }
+// Dialog custom width — overrides the maxWidth variant class's `width` by
+// source-order-independent specificity (this scoped rule is two classes,
+// `.sgs-modal__dialog--{variant}` is one). `max-width` keeps the same
+// viewport-safety clamp the variant classes already carry.
+if ( '' !== $dialog_width ) {
+	$dialog_rules[] = 'width:' . $dialog_width;
+	$dialog_rules[] = 'max-width:calc(100vw - 2rem)';
+}
+// Dialog border width/style — same selector as the background above; 'none'
+// (default) emits nothing, leaving style.css's `border: none` default look
+// unchanged. Colour is a separate rule (below), via sgs_border_states_css().
+if ( 'none' !== $border_style && $has_border_width ) {
+	$bwt            = '' !== $border_width_top ? $border_width_top : '0';
+	$bwr            = '' !== $border_width_right ? $border_width_right : '0';
+	$bwb            = '' !== $border_width_bottom ? $border_width_bottom : '0';
+	$bwl            = '' !== $border_width_left ? $border_width_left : '0';
+	$dialog_rules[] = 'border-style:' . $border_style;
+	$dialog_rules[] = 'border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}";
+}
 
 // Backdrop — the shared viewport scrim (U-2 Addendum A, modal migration,
 // 2026-09-24). The block no longer paints its own `::backdrop`; instead it
@@ -164,9 +225,15 @@ $trigger_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $trigger_
 if ( '' !== $trigger_colour_effective_hover ) {
 	$trigger_colour_effective_hover_decl = sgs_text_colour_decl( $trigger_colour_effective_hover );
 	if ( '' !== $trigger_colour_effective_hover_decl ) {
-		$scoped_css[] = sgs_hover_state_rules( $root_sel . ' .sgs-modal__trigger', $trigger_colour_effective_hover_decl );
+		// ⚠ Pre-existing bug fixed in passing (found while wiring the border/
+		// shadow rules below): this pushed onto `$scoped_css` (an undefined
+		// variable, auto-vivified as its own array by `[]=`), which line
+		// ~270's `$scoped_css = implode(...)` then silently OVERWROTE —
+		// triggerColourHover/-GradientHover never reached the page. Target
+		// the actual accumulator array instead.
+		$scoped_css_rules[] = sgs_hover_state_rules( $root_sel . ' .sgs-modal__trigger', $trigger_colour_effective_hover_decl );
 	}
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-modal__trigger:hover', $trigger_colour_effective_hover );
+	$scoped_css_rules[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-modal__trigger:hover', $trigger_colour_effective_hover );
 }
 
 if ( $trigger_bg_css ) {
@@ -174,6 +241,31 @@ if ( $trigger_bg_css ) {
 }
 if ( $dialog_rules ) {
 	$scoped_css_rules[] = $root_sel . ' .sgs-modal__dialog{' . implode( ';', $dialog_rules ) . '}';
+}
+// Dialog border colour — own rule (decision table: "One selector,
+// background/border only, no text" -> sgs_border_states_css() directly). A
+// flat colour resolves straight to `border-color`; a gradient gets the
+// masked ::before ring automatically — no hover sibling (this element has no
+// hover-shaped interaction, same reasoning as modalBackground above).
+$border_colour_css = sgs_border_states_css(
+	$root_sel . ' .sgs-modal__dialog',
+	$attributes,
+	array(
+		'base'     => 'borderColour',
+		'gradient' => 'borderColourGradient',
+	)
+);
+if ( $border_colour_css ) {
+	$scoped_css_rules[] = $border_colour_css;
+}
+// Dialog shadow — only when the operator has set one; empty leaves
+// style.css's hardcoded box-shadow untouched (Eye Care size-guide parity:
+// dialogShadow="0 30px 70px", dialogShadowColour="site 30%").
+if ( '' !== $dialog_shadow_raw ) {
+	$dialog_shadow_decls = sgs_shadow_box_decls( $dialog_shadow_raw, isset( $attributes['dialogShadowColour'] ) ? (string) $attributes['dialogShadowColour'] : '' );
+	if ( ! empty( $dialog_shadow_decls ) ) {
+		$scoped_css_rules[] = $root_sel . ' .sgs-modal__dialog{' . implode( ';', $dialog_shadow_decls ) . ';}';
+	}
 }
 // Close button — button-shaped (background + text colour), so it shares the
 // button-element style emitter with every other built-in CTA (helpers-button-style.php)
@@ -229,13 +321,17 @@ $scoped_css = implode( '', $scoped_css_rules );
 	>
 		<button
 			type="button"
-			class="sgs-modal__close"
+			class="<?php echo esc_attr( $close_button_class ); ?>"
 			aria-label="<?php echo esc_attr__( 'Close modal', 'sgs-blocks' ); ?>"
 		>
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-				<line x1="18" y1="6" x2="6" y2="18"></line>
-				<line x1="6" y1="6" x2="18" y2="18"></line>
-			</svg>
+			<?php if ( 'glyph' === $close_style ) : ?>
+				<span class="sgs-modal__close-glyph" aria-hidden="true">&times;</span>
+			<?php else : ?>
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<line x1="18" y1="6" x2="6" y2="18"></line>
+					<line x1="6" y1="6" x2="18" y2="18"></line>
+				</svg>
+			<?php endif; ?>
 		</button>
 
 		<div class="sgs-modal__inner">
