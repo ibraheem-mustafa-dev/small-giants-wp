@@ -5,7 +5,7 @@
 // elements (a swatch button against a label and input), so their presence, size and place are left to
 // the words around them, the named pairs and the screenshot review.
 import { sameValue } from './compare.mjs';
-import { lcsPairs } from './auto-align.mjs';
+import { lcsPairs, repairRepeats } from './auto-align.mjs';
 
 // Consecutive indices grouped into runs: [[3,4,5],[9]].
 const runsOf = ( idx ) => idx.reduce( ( out, i ) => {
@@ -77,7 +77,7 @@ function matchWords( dw, lw ) {
 			liveRuns[ k ] = null;
 		}
 	}
-	return [ ...first, ...kept, ...crossed ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] );
+	return repairRepeats( dw, lw, [ ...first, ...kept, ...crossed ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] ) );
 }
 
 const STYLE_KEYS = [ 'fs', 'fw', 'ff', 'fst', 'tt', 'ls', 'c' ];

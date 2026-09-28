@@ -95,7 +95,7 @@ async function walkSide( browser, side, width ) {
 	const page = await ctx.newPage();
 	const errors = [];
 	page.on( 'pageerror', ( e ) => errors.push( String( e ) ) );
-	page.on( 'console', ( m ) => m.type() === 'error' && errors.push( m.text() ) );
+	page.on( 'console', ( m ) => m.type() === 'error' && errors.push( m.location()?.url ? `${ m.text() } (${ m.location().url })` : m.text() ) );
 	let tracked = [];
 	const onAction = header ? async () => {
 		const t = await sampleTimeline( page, tracked, side, RESOLVE );

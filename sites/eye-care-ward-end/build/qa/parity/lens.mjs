@@ -165,13 +165,13 @@ export default {
 		'q3-finish@1440': 'Stage with Frame, Distance lenses, Thin 1.6 and the total, What finish? with four photo cards, prices on the right of each title, Back and Continue in the footer.',
 		'q3-finish@768': 'Stage, question and intro, the four finish cards two across with their photos and prices, the WhatsApp help card under the total, Back and Continue in one footer row.',
 		'q3-finish@375': 'Stage row scrolled under the header on both (live 28px further, accepted), Question 3 of 3, the Tinted card full width, Back and Continue in one footer row.',
-		'q4-prescription@1440': 'Last question: three text cards (Send it later chosen, Easiest badge beside title and text), the WhatsApp note panel under them, stage Prescription Sending it later, Add to bag £418 in the footer.',
-		'q4-prescription@768': 'Three narrow text cards, Send it later’s text wrapping under its Easiest badge inside the card on both, the note panel under the options, Add to bag with the total in the footer beside Back.',
+		'q4-prescription@1440': 'Last question: three text cards of one height (2026-09-28, as the draft), Send it later chosen with the Easiest badge beside title and text, the WhatsApp note panel under them, stage Prescription Sending it later, Add to bag £418 in the footer.',
+		'q4-prescription@768': 'Three narrow text cards of one height on both, Send it later’s text wrapping under its Easiest badge (the draft’s badge crosses the card’s right border; live keeps it inside, with Bean), the note panel under the options, Add to bag with the total in the footer beside Back.',
 		'q4-prescription@375': 'Stage row with total, the three text cards full width with the Easiest badge on Send it later, Back and Add to bag in one footer row with the button at its own width; the note panel sits below the fold on both.',
 		'q4-upload@1440': 'Upload a photo chosen: the dashed panel under the options with the prompt, the help line and CHOOSE FILE on both; stage Prescription Photo uploaded; Add to bag in the footer.',
 		'q4-upload@768': 'The upload panel under the three cards (help line over two lines, CHOOSE FILE centred), stage line Photo uploaded, Add to bag £418 beside Back.',
 		'q4-upload@375': 'Upload a photo chosen, the dashed panel starting below the options at the fold on both, Back and Add to bag in one footer row.',
-		'q4-type@1440': 'Type it in chosen: the table panel with SPH, CYL and AXIS headings, R and L rows and example values, the note under it; live’s boxes use the site’s off-white input fill where the draft’s are white. Add to bag in the footer.',
+		'q4-type@1440': 'Type it in chosen: the table panel matches the draft (2026-09-28): SPH, CYL and AXIS headings, R and L in the 56px column, boxes 8px apart, the note 14px under them; live’s boxes use the site’s off-white input fill where the draft’s are white. Add to bag in the footer.',
 		'q4-type@768': 'The prescription table under the options, three boxes across in two rows with R and L in the gutter and the note under the whole table, stage Prescription Entered online, Add to bag beside Back.',
 		'q4-type@375': 'Type it in chosen, the table panel starting at the fold with its SPH, CYL and AXIS headings on both (full panel checked on its own shot: three boxes across, example values whole), Back and Add to bag in one row.',
 	},
@@ -223,6 +223,14 @@ export default {
 		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-28, as the help toggle 2026-09-27): badge text is the palette’s text-inverse #FAF8F5, the draft’s pure white', when: ( d ) => ( ( d ) => /^style:color "most people pick this"$/.test( d.key ) && 'rgb(255,255,255)' === d.draft )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		...[ 'q4-prescription', 'q4-upload', 'q4-type' ].map( ( state ) => ( { pair: 'option-card', state, kind: 'box', reason: 'Measured, not painted: live’s first text in DOM order is the EASIEST badge at the card’s right; the titles start 24px in on both (the automatic check compares every word’s place)', when: ( d ) => /^text-inset-/.test( d.key ) } ) ),
 		...[ 'q4-prescription', 'q4-upload', 'q4-type' ].map( ( state ) => ( { pair: 'stage', state, width: 375, kind: 'box', reason: 'Accepted (Bean 2026-09-27): the draft’s first text is the thumbnail’s clipped POLARIS label, which live leaves off', when: ( d ) => /^text-inset-/.test( d.key ) } ) ),
+		// Measured 2026-09-28 at 768 (208px card, 168px for the title line): the draft fits "Extra thin · 1.67" (118px),
+		// its 10px gap and "+£60" (33px); "+£60.00" is 55px, so the title breaks onto a second line and the
+		// description follows it down. The same for "No prescription" with "£0.00", "Ultra thin · 1.74" with
+		// "+£100.00" and "Light-reactive" (breaking at its hyphen) with "+£70.00".
+		{ pair: '(auto)', width: 768, reason: 'Pennies on every price (Bean 2026-09-25): at 768 the wider price leaves the title no room on one line in the two-across card, so it wraps and the description moves down a line', when: ( d ) => /^moved "(no → prescription £0|prescription → £0 |£0 → keep|· → 1\.(67|74) \+£|1\.(67|74) → \+£|\+£(60|70|100) → )/.test( d.key ) },
+		// "Standard · 1.5" is pre-selected (Spec 43 D1), so the stage lists it as soon as question 2 opens: one more
+		// stage line pushes the total and the WhatsApp card down (its last words below the fold at 768).
+		{ pair: '(auto)', state: 'q2-thickness', reason: 'A pre-selected default shows on the stage once its question is reached (Bean 2026-09-26): the extra "Standard · 1.5 included" line moves the total and help card down a line', when: ( d ) => /^text-extra "standard · 1\.5 included"$|^text-missing "(me and we'll choose|through — message me and we'll choose)"$|^moved "£59 → (question 2 of 3|total £348)/.test( d.key.replace( / #\d+$/, '' ) ) },
 		{ pair: '(auto)', reason: 'The footer’s Add to bag is the site’s primary button preset and carries the pennies (Bean 2026-09-25), so it starts further left beside Back', when: ( d ) => ( ( d ) => /^moved "back → add to bag/.test( d.key ) && d.draft.split( ',' )[ 1 ] === d.live.split( ',' )[ 1 ] && Math.abs( Number( d.draft.split( ',' )[ 0 ] ) - Number( d.live.split( ',' )[ 0 ] ) ) <= 40 )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 	],
 };
