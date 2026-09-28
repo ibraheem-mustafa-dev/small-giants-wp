@@ -159,6 +159,30 @@ Many "hover colour" rows are the canary's Mama's Munches snapshot leaking into a
   have no import map (scramble fails: `@sgs/gsap-scramble` unresolved); D-4 `sgs/mega-aside::asideBg` saves but
   never paints; D-5 `itemTextIndent` on drawer rows is a paragraph indent and cannot move a menu row.
 
+### Build status (2026-09-28)
+
+Built and live on sandybrown (commits b769e818b, 5b2f95934, e0d16606d; controls documented in Spec 36, 37 and 02):
+G-1 `fluidScale`, G-2 trigger-surface pass-through, G-3 `grow-from-anchor`, G-4 `itemStaggerAxis`/`itemStaggerReveal`,
+G-5 `submenuItemStaggerScope`, G-6 `itemOrnamentRevealMode`/`itemOrnamentReserveSpace`, G-7 `itemTrailingIcons` + custom
+SVG in the IconPicker and `sgs/icon`, G-9 container `blockLink`/`hover`, G-10 `sgsHoverOpacity` and logo `opacityHover`,
+G-11 `itemColourOpen`, G-12 the chrome row (Spec 36) with close border, G-13 `itemHoverScope`, G-14 `scaleHoverTarget`;
+item padding on both menus; caret, scrim fade and item transition timing on the bar; `sgsHoverIndent` and a custom hover
+shadow and easing; D-1 `rowsAlign` + the logo line gap; D-3 the drawer renders before the head so its FX resolve; D-4
+the aside's resting colour; the no-destination drawer row toggle. G-8 is parked with the G8 family.
+
+Open, being closed in settings rounds, then the final walker run with review notes and Bean's eye:
+- Walker (committed version, header configs `auto: false`): lamalama 308 open (100 unique), Indus 1010 (254 unique),
+  most of both being structure-only rows under the same-paint rule, which get their dated accepts in the final pass.
+- A per-item ornament opt-out (lamalama's "Careers" has no hover marker) is being built.
+- The framework DB marks `itemPadding`, `chromeRowPadding` and `itemBorderRadius` as not per-device although the blocks
+  and inspectors treat them per device, so `scripts/wp-build-page.js` refuses per-device values for them; the seeder's
+  `is_responsive` evidence for helper-emitted settings needs correcting (`scripts/sgs-update-v2.py`).
+- `sgsHoverIndent` reads a block's resting inline-start padding from its desktop value only.
+- lamalama's self-baseline (`--self draft`) reads 1 to 2 open rows on the page blur's 30ms opacity sample, before and
+  after this session's walker change (sampling jitter in the timeline check; the walker's owner decides).
+- The deploy's full-tier `inspector-scan-run` gate fails on `sgs/quote` and `sgs/wishlist-panel` native
+  `supports.typography` (not this work); deploys here used `--skip-gate-full` with the other three full gates passing.
+
 ### Defects to diagnose
 
 - **D-1** L-C3/L-C4: logo and burger sit 7px and 3px high in the pill.

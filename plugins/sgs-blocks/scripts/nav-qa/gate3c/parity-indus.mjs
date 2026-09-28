@@ -59,8 +59,10 @@ const drawer = ( then ) => ( {
 	},
 } );
 const DACC = inRoot( DDRAWER, '^about$', 'button' );
-const LACC = { js: `() => document.querySelector('dialog[open] summary[aria-label="Show submenu for About"]')` };
-const LLABEL = inRoot( LDRAWER, '^about$', 'a' );
+// A row with no page of its own (About points only at its mega panel) is one toggle: the whole row is the
+// <summary>, as the draft's whole row is one button, so the label and the control are the same element.
+const LACC = { js: `() => [...document.querySelectorAll('dialog[open] summary')].find((s) => s.getClientRects().length && /^about$/i.test(s.innerText.trim()))` };
+const LLABEL = LACC;
 
 export default {
 	name: 'indus',
@@ -84,7 +86,7 @@ export default {
 	pairs: [
 		// Bar
 		{ name: 'bar', draft: DBAR, live: LBAR, text: false, inventory: true, props: [ 'background-color', 'border-bottom-width', 'border-bottom-color' ] },
-		{ name: 'logo', draft: 'header a', live: `${ LBAR } .sgs-responsive-logo__link`, hover: true, text: false, anchor: 'bar', anchorLeft: true },
+		{ name: 'logo', draft: 'header a', live: { js: `() => { const o = document.querySelector('${ LBAR } .sgs-block-link-overlay'); return o && o.parentElement; }` }, hover: true, text: false, anchor: 'bar', anchorLeft: true },
 		{ name: 'nav-home', draft: item( 'header', 'home', 'button' ), live: item( LBAR, 'home', 'a' ), hover: true, anchor: 'bar', anchorLeft: true },
 		{ name: 'nav-about', draft: item( 'header', 'about', 'button' ), live: item( LBAR, 'about', 'button' ), hover: true, hoverAt: [ 0.2, 0.5 ], anchor: 'bar', anchorLeft: true },
 		{ name: 'nav-about-caret', draft: caret( 'header nav', 'about', 'button' ), live: caret( LBAR, 'about', 'button' ), text: false, props: [ 'opacity', 'transform' ] },
