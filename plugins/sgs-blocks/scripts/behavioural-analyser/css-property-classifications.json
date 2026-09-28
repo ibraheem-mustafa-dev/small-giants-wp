@@ -1090,28 +1090,33 @@
       "slug": "sgs/buybox",
       "attr": "addToCartBorderColour",
       "fields": {
-        "css_property": "border-color"
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "add-to-cart"
       }
     },
     {
       "slug": "sgs/buybox",
       "attr": "addToCartFontSize",
       "fields": {
-        "css_property": "font-size"
+        "css_property": "font-size",
+        "css_element": "add-to-cart"
       }
     },
     {
       "slug": "sgs/buybox",
       "attr": "addToCartFontWeight",
       "fields": {
-        "css_property": "font-weight"
+        "css_property": "font-weight",
+        "css_element": "add-to-cart"
       }
     },
     {
       "slug": "sgs/buybox",
       "attr": "addToCartLetterSpacing",
       "fields": {
-        "css_property": "letter-spacing"
+        "css_property": "letter-spacing",
+        "css_element": "add-to-cart"
       }
     },
     {
@@ -1119,14 +1124,15 @@
       "attr": "addToCartMinHeight",
       "fields": {
         "css_property": "min-height",
-        "css_layer": "OUTER"
+        "css_element": "add-to-cart"
       }
     },
     {
       "slug": "sgs/buybox",
       "attr": "addToCartTextTransform",
       "fields": {
-        "css_property": "text-transform"
+        "css_property": "text-transform",
+        "css_element": "add-to-cart"
       }
     },
     {
@@ -11361,8 +11367,8 @@
       "slug": "sgs/tabs",
       "attr": "tabIndicatorThickness",
       "fields": {
-        "css_property": "box-shadow,height,width",
-        "css_element": "nav"
+        "css_property": "border-width",
+        "css_element": "tab"
       }
     },
     {
@@ -11378,22 +11384,6 @@
       "attr": "tabMinHeight",
       "fields": {
         "css_property": "min-height",
-        "css_element": "tab"
-      }
-    },
-    {
-      "slug": "sgs/tabs",
-      "attr": "tabPaddingBlock",
-      "fields": {
-        "css_property": "padding-block",
-        "css_element": "tab"
-      }
-    },
-    {
-      "slug": "sgs/tabs",
-      "attr": "tabPaddingInline",
-      "fields": {
-        "css_property": "padding-inline",
         "css_element": "tab"
       }
     },
@@ -14953,6 +14943,15 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "add-to-cart"
       }
     },
     {
@@ -23702,6 +23701,14 @@
       "attr": "tabIndicatorColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
+        "css_element": "tab"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "tabPadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "tab"
       }
     },
