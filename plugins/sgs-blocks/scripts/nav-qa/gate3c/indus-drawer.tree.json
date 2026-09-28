@@ -52,7 +52,21 @@
       },
       "scrimFadeDuration": 300,
       "chromeLogoAlt": "Indus Foods home",
-      "chromeSlotFontSizeUnit": "px"
+      "chromeSlotFontSizeUnit": "px",
+      "closeStyle": {
+        "desktop": "text-swap"
+      },
+      "closeLabel": "×",
+      "entryAnimation": {
+        "desktop": "none",
+        "tablet": "none",
+        "mobile": "none"
+      },
+      "scrimOpacity": {
+        "desktop": 0.55,
+        "tablet": 0.55,
+        "mobile": 0.55
+      }
     },
     "innerBlocks": [
       {
@@ -117,7 +131,9 @@
                   "bottomRight": "26px",
                   "bottomLeft": "26px"
                 }
-              }
+              },
+              "colourTextHover": "#1E2A3C",
+              "colourBackgroundHover": "#D8CA50"
             }
           },
           {

@@ -71,7 +71,13 @@
               "sgsHoverIndent": "6px",
               "sgsHoverDurationMs": 220,
               "sgsHoverEasing": "custom",
-              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)"
+              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)",
+              "contentWidth": {
+                "desktop": "270px"
+              },
+              "minHeight": {
+                "desktop": "76px"
+              }
             },
             "innerBlocks": [
               {
@@ -83,7 +89,8 @@
                     "desktop": "12px"
                   },
                   "fontWeight": "700",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "textColourHover": "#0A7EA8"
                 }
               },
               {
@@ -113,7 +120,8 @@
                       "lineHeight": {
                         "desktop": "22.5px"
                       },
-                      "lineHeightUnit": "px"
+                      "lineHeightUnit": "px",
+                      "textColourHover": "#1E2A3C"
                     }
                   },
                   {
@@ -133,7 +141,8 @@
                         "desktop": {
                           "top": "2px"
                         }
-                      }
+                      },
+                      "textColourHover": "#68727C"
                     }
                   }
                 ]
@@ -171,7 +180,13 @@
               "sgsHoverIndent": "6px",
               "sgsHoverDurationMs": 220,
               "sgsHoverEasing": "custom",
-              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)"
+              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)",
+              "contentWidth": {
+                "desktop": "270px"
+              },
+              "minHeight": {
+                "desktop": "76px"
+              }
             },
             "innerBlocks": [
               {
@@ -183,7 +198,8 @@
                     "desktop": "12px"
                   },
                   "fontWeight": "700",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "textColourHover": "#0A7EA8"
                 }
               },
               {
@@ -213,7 +229,8 @@
                       "lineHeight": {
                         "desktop": "22.5px"
                       },
-                      "lineHeightUnit": "px"
+                      "lineHeightUnit": "px",
+                      "textColourHover": "#1E2A3C"
                     }
                   },
                   {
@@ -233,7 +250,8 @@
                         "desktop": {
                           "top": "2px"
                         }
-                      }
+                      },
+                      "textColourHover": "#68727C"
                     }
                   }
                 ]
@@ -271,7 +289,13 @@
               "sgsHoverIndent": "6px",
               "sgsHoverDurationMs": 220,
               "sgsHoverEasing": "custom",
-              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)"
+              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)",
+              "contentWidth": {
+                "desktop": "270px"
+              },
+              "minHeight": {
+                "desktop": "76px"
+              }
             },
             "innerBlocks": [
               {
@@ -283,7 +307,8 @@
                     "desktop": "12px"
                   },
                   "fontWeight": "700",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "textColourHover": "#0A7EA8"
                 }
               },
               {
@@ -313,7 +338,8 @@
                       "lineHeight": {
                         "desktop": "22.5px"
                       },
-                      "lineHeightUnit": "px"
+                      "lineHeightUnit": "px",
+                      "textColourHover": "#1E2A3C"
                     }
                   },
                   {
@@ -333,7 +359,8 @@
                         "desktop": {
                           "top": "2px"
                         }
-                      }
+                      },
+                      "textColourHover": "#68727C"
                     }
                   }
                 ]
@@ -371,7 +398,13 @@
               "sgsHoverIndent": "6px",
               "sgsHoverDurationMs": 220,
               "sgsHoverEasing": "custom",
-              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)"
+              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)",
+              "contentWidth": {
+                "desktop": "270px"
+              },
+              "minHeight": {
+                "desktop": "76px"
+              }
             },
             "innerBlocks": [
               {
@@ -383,7 +416,8 @@
                     "desktop": "12px"
                   },
                   "fontWeight": "700",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "textColourHover": "#0A7EA8"
                 }
               },
               {
@@ -413,7 +447,8 @@
                       "lineHeight": {
                         "desktop": "22.5px"
                       },
-                      "lineHeightUnit": "px"
+                      "lineHeightUnit": "px",
+                      "textColourHover": "#1E2A3C"
                     }
                   },
                   {
@@ -433,7 +468,8 @@
                         "desktop": {
                           "top": "2px"
                         }
-                      }
+                      },
+                      "textColourHover": "#68727C"
                     }
                   }
                 ]
@@ -471,7 +507,13 @@
               "sgsHoverIndent": "6px",
               "sgsHoverDurationMs": 220,
               "sgsHoverEasing": "custom",
-              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)"
+              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)",
+              "contentWidth": {
+                "desktop": "270px"
+              },
+              "minHeight": {
+                "desktop": "76px"
+              }
             },
             "innerBlocks": [
               {
@@ -483,7 +525,8 @@
                     "desktop": "12px"
                   },
                   "fontWeight": "700",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "textColourHover": "#0A7EA8"
                 }
               },
               {
@@ -513,7 +556,8 @@
                       "lineHeight": {
                         "desktop": "22.5px"
                       },
-                      "lineHeightUnit": "px"
+                      "lineHeightUnit": "px",
+                      "textColourHover": "#1E2A3C"
                     }
                   },
                   {
@@ -533,7 +577,8 @@
                         "desktop": {
                           "top": "2px"
                         }
-                      }
+                      },
+                      "textColourHover": "#68727C"
                     }
                   }
                 ]

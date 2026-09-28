@@ -88,31 +88,7 @@
                 }
               }
             },
-            "innerBlocks": [
-              {
-                "name": "sgs/icon",
-                "attributes": {
-                  "iconSource": "lucide",
-                  "iconName": "image",
-                  "iconSize": 16,
-                  "iconColour": "rgba(30,42,60,0.45)",
-                  "backgroundColour": "",
-                  "backgroundShape": "none"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "Sanam",
-                  "textColour": "rgba(30,42,60,0.75)",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "fontWeight": "500",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-                }
-              }
-            ]
+            "innerBlocks": []
           },
           {
             "name": "sgs/container",
@@ -145,31 +121,7 @@
                 }
               }
             },
-            "innerBlocks": [
-              {
-                "name": "sgs/icon",
-                "attributes": {
-                  "iconSource": "lucide",
-                  "iconName": "image",
-                  "iconSize": 16,
-                  "iconColour": "rgba(30,42,60,0.45)",
-                  "backgroundColour": "",
-                  "backgroundShape": "none"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "The Lemon Tree",
-                  "textColour": "rgba(30,42,60,0.75)",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "fontWeight": "500",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-                }
-              }
-            ]
+            "innerBlocks": []
           },
           {
             "name": "sgs/container",
@@ -202,31 +154,7 @@
                 }
               }
             },
-            "innerBlocks": [
-              {
-                "name": "sgs/icon",
-                "attributes": {
-                  "iconSource": "lucide",
-                  "iconName": "image",
-                  "iconSize": 16,
-                  "iconColour": "rgba(30,42,60,0.45)",
-                  "backgroundColour": "",
-                  "backgroundShape": "none"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "Green Leaf",
-                  "textColour": "rgba(30,42,60,0.75)",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "fontWeight": "500",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-                }
-              }
-            ]
+            "innerBlocks": []
           },
           {
             "name": "sgs/container",
@@ -259,31 +187,7 @@
                 }
               }
             },
-            "innerBlocks": [
-              {
-                "name": "sgs/icon",
-                "attributes": {
-                  "iconSource": "lucide",
-                  "iconName": "image",
-                  "iconSize": 16,
-                  "iconColour": "rgba(30,42,60,0.45)",
-                  "backgroundColour": "",
-                  "backgroundShape": "none"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "Shan",
-                  "textColour": "rgba(30,42,60,0.75)",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "fontWeight": "500",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-                }
-              }
-            ]
+            "innerBlocks": []
           },
           {
             "name": "sgs/container",
@@ -316,31 +220,7 @@
                 }
               }
             },
-            "innerBlocks": [
-              {
-                "name": "sgs/icon",
-                "attributes": {
-                  "iconSource": "lucide",
-                  "iconName": "image",
-                  "iconSize": 16,
-                  "iconColour": "rgba(30,42,60,0.45)",
-                  "backgroundColour": "",
-                  "backgroundShape": "none"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "Indus Foods",
-                  "textColour": "rgba(30,42,60,0.75)",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "fontWeight": "500",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-                }
-              }
-            ]
+            "innerBlocks": []
           },
           {
             "name": "sgs/container",
@@ -373,31 +253,7 @@
                 }
               }
             },
-            "innerBlocks": [
-              {
-                "name": "sgs/icon",
-                "attributes": {
-                  "iconSource": "lucide",
-                  "iconName": "image",
-                  "iconSize": 16,
-                  "iconColour": "rgba(30,42,60,0.45)",
-                  "backgroundColour": "",
-                  "backgroundShape": "none"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "logo ipsum",
-                  "textColour": "rgba(30,42,60,0.75)",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "fontWeight": "500",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-                }
-              }
-            ]
+            "innerBlocks": []
           },
           {
             "name": "sgs/container",
@@ -430,31 +286,7 @@
                 }
               }
             },
-            "innerBlocks": [
-              {
-                "name": "sgs/icon",
-                "attributes": {
-                  "iconSource": "lucide",
-                  "iconName": "image",
-                  "iconSize": 16,
-                  "iconColour": "rgba(30,42,60,0.45)",
-                  "backgroundColour": "",
-                  "backgroundShape": "none"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "logo ipsum",
-                  "textColour": "rgba(30,42,60,0.75)",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "fontWeight": "500",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-                }
-              }
-            ]
+            "innerBlocks": []
           },
           {
             "name": "sgs/container",
@@ -487,31 +319,7 @@
                 }
               }
             },
-            "innerBlocks": [
-              {
-                "name": "sgs/icon",
-                "attributes": {
-                  "iconSource": "lucide",
-                  "iconName": "image",
-                  "iconSize": 16,
-                  "iconColour": "rgba(30,42,60,0.45)",
-                  "backgroundColour": "",
-                  "backgroundShape": "none"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "logo ipsum",
-                  "textColour": "rgba(30,42,60,0.75)",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "fontWeight": "500",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-                }
-              }
-            ]
+            "innerBlocks": []
           },
           {
             "name": "sgs/container",
@@ -544,31 +352,7 @@
                 }
               }
             },
-            "innerBlocks": [
-              {
-                "name": "sgs/icon",
-                "attributes": {
-                  "iconSource": "lucide",
-                  "iconName": "image",
-                  "iconSize": 16,
-                  "iconColour": "rgba(30,42,60,0.45)",
-                  "backgroundColour": "",
-                  "backgroundShape": "none"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "logo ipsum",
-                  "textColour": "rgba(30,42,60,0.75)",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "fontWeight": "500",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-                }
-              }
-            ]
+            "innerBlocks": []
           },
           {
             "name": "sgs/container",
@@ -601,31 +385,7 @@
                 }
               }
             },
-            "innerBlocks": [
-              {
-                "name": "sgs/icon",
-                "attributes": {
-                  "iconSource": "lucide",
-                  "iconName": "image",
-                  "iconSize": 16,
-                  "iconColour": "rgba(30,42,60,0.45)",
-                  "backgroundColour": "",
-                  "backgroundShape": "none"
-                }
-              },
-              {
-                "name": "sgs/text",
-                "attributes": {
-                  "text": "logo ipsum",
-                  "textColour": "rgba(30,42,60,0.75)",
-                  "fontSize": {
-                    "desktop": "13px"
-                  },
-                  "fontWeight": "500",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
-                }
-              }
-            ]
+            "innerBlocks": []
           }
         ]
       },
@@ -788,7 +548,16 @@
                   "lineHeight": {
                     "desktop": "21px"
                   },
-                  "lineHeightUnit": "px"
+                  "lineHeightUnit": "px",
+                  "widthType": {
+                    "desktop": "custom"
+                  },
+                  "customWidth": {
+                    "desktop": 245
+                  },
+                  "customWidthUnit": {
+                    "desktop": "px"
+                  }
                 }
               }
             ]

@@ -87,7 +87,8 @@
                   "lineHeight": {
                     "desktop": 28.5
                   },
-                  "lineHeightUnit": "px"
+                  "lineHeightUnit": "px",
+                  "textColourHover": "#1E2A3C"
                 }
               }
             ]
@@ -99,8 +100,12 @@
               "navLabel": "QA copy Indus",
               "collapsePoint": 1024,
               "scrimColour": "#141923",
-              "scrimOpacity": { "desktop": 0.25 },
-              "scrimBlur": { "desktop": "2px" },
+              "scrimOpacity": {
+                "desktop": 0.25
+              },
+              "scrimBlur": {
+                "desktop": "2px"
+              },
               "gap": {
                 "desktop": "4px"
               },
@@ -204,7 +209,7 @@
       {
         "name": "sgs/heading",
         "attributes": {
-          "content": "Indus Foods \u2014 Gate 3C QA copy"
+          "content": "Indus Foods — Gate 3C QA copy"
         }
       },
       {

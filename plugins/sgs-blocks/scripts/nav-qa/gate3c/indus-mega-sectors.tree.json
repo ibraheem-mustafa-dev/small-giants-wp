@@ -113,13 +113,13 @@
                         "desktop": "110px"
                       },
                       "backgroundColour": "rgba(30,42,60,0.08)",
-                      "borderStyle": "dashed",
+                      "borderStyle": "none",
                       "borderColour": "rgba(30,42,60,0.35)",
                       "borderWidth": {
-                        "top": "1.5px",
-                        "right": "1.5px",
-                        "bottom": "1.5px",
-                        "left": "1.5px"
+                        "top": "0px",
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px"
                       },
                       "borderRadius": {
                         "desktop": {
@@ -130,35 +130,7 @@
                         }
                       }
                     },
-                    "innerBlocks": [
-                      {
-                        "name": "sgs/icon",
-                        "attributes": {
-                          "iconSource": "lucide",
-                          "iconName": "image",
-                          "iconSize": 22,
-                          "iconColour": "rgba(30,42,60,0.45)",
-                          "backgroundColour": "",
-                          "backgroundShape": "none"
-                        }
-                      },
-                      {
-                        "name": "sgs/text",
-                        "attributes": {
-                          "text": "food service",
-                          "textColour": "rgba(30,42,60,0.75)",
-                          "fontSize": {
-                            "desktop": "11px"
-                          },
-                          "fontWeight": "500",
-                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                          "letterSpacing": {
-                            "desktop": 0.01
-                          },
-                          "letterSpacingUnit": "em"
-                        }
-                      }
-                    ]
+                    "innerBlocks": []
                   },
                   {
                     "name": "sgs/heading",
@@ -183,7 +155,8 @@
                       "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
                       "lineHeight": {
                         "desktop": 1.5
-                      }
+                      },
+                      "textColourHover": "#1E2A3C"
                     }
                   },
                   {
@@ -203,7 +176,8 @@
                         "desktop": {
                           "top": "8px"
                         }
-                      }
+                      },
+                      "textColourHover": "rgba(30,42,60,0.72)"
                     }
                   }
                 ]
@@ -321,13 +295,13 @@
                         "desktop": "110px"
                       },
                       "backgroundColour": "rgba(255,255,255,0.14)",
-                      "borderStyle": "dashed",
+                      "borderStyle": "none",
                       "borderColour": "rgba(255,255,255,0.35)",
                       "borderWidth": {
-                        "top": "1.5px",
-                        "right": "1.5px",
-                        "bottom": "1.5px",
-                        "left": "1.5px"
+                        "top": "0px",
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px"
                       },
                       "borderRadius": {
                         "desktop": {
@@ -338,35 +312,7 @@
                         }
                       }
                     },
-                    "innerBlocks": [
-                      {
-                        "name": "sgs/icon",
-                        "attributes": {
-                          "iconSource": "lucide",
-                          "iconName": "image",
-                          "iconSize": 22,
-                          "iconColour": "rgba(255,255,255,0.45)",
-                          "backgroundColour": "",
-                          "backgroundShape": "none"
-                        }
-                      },
-                      {
-                        "name": "sgs/text",
-                        "attributes": {
-                          "text": "manufacturing",
-                          "textColour": "rgba(255,255,255,0.75)",
-                          "fontSize": {
-                            "desktop": "11px"
-                          },
-                          "fontWeight": "500",
-                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                          "letterSpacing": {
-                            "desktop": 0.01
-                          },
-                          "letterSpacingUnit": "em"
-                        }
-                      }
-                    ]
+                    "innerBlocks": []
                   },
                   {
                     "name": "sgs/heading",
@@ -391,7 +337,8 @@
                       "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
                       "lineHeight": {
                         "desktop": 1.5
-                      }
+                      },
+                      "textColourHover": "#FFFFFF"
                     }
                   },
                   {
@@ -411,7 +358,8 @@
                         "desktop": {
                           "top": "8px"
                         }
-                      }
+                      },
+                      "textColourHover": "rgba(255,255,255,0.82)"
                     }
                   }
                 ]
@@ -529,13 +477,13 @@
                         "desktop": "110px"
                       },
                       "backgroundColour": "rgba(255,255,255,0.14)",
-                      "borderStyle": "dashed",
+                      "borderStyle": "none",
                       "borderColour": "rgba(255,255,255,0.35)",
                       "borderWidth": {
-                        "top": "1.5px",
-                        "right": "1.5px",
-                        "bottom": "1.5px",
-                        "left": "1.5px"
+                        "top": "0px",
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px"
                       },
                       "borderRadius": {
                         "desktop": {
@@ -546,35 +494,7 @@
                         }
                       }
                     },
-                    "innerBlocks": [
-                      {
-                        "name": "sgs/icon",
-                        "attributes": {
-                          "iconSource": "lucide",
-                          "iconName": "image",
-                          "iconSize": 22,
-                          "iconColour": "rgba(255,255,255,0.45)",
-                          "backgroundColour": "",
-                          "backgroundShape": "none"
-                        }
-                      },
-                      {
-                        "name": "sgs/text",
-                        "attributes": {
-                          "text": "retail",
-                          "textColour": "rgba(255,255,255,0.75)",
-                          "fontSize": {
-                            "desktop": "11px"
-                          },
-                          "fontWeight": "500",
-                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                          "letterSpacing": {
-                            "desktop": 0.01
-                          },
-                          "letterSpacingUnit": "em"
-                        }
-                      }
-                    ]
+                    "innerBlocks": []
                   },
                   {
                     "name": "sgs/heading",
@@ -599,7 +519,8 @@
                       "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
                       "lineHeight": {
                         "desktop": 1.5
-                      }
+                      },
+                      "textColourHover": "#FFFFFF"
                     }
                   },
                   {
@@ -619,7 +540,8 @@
                         "desktop": {
                           "top": "8px"
                         }
-                      }
+                      },
+                      "textColourHover": "rgba(255,255,255,0.82)"
                     }
                   }
                 ]
@@ -737,13 +659,13 @@
                         "desktop": "110px"
                       },
                       "backgroundColour": "rgba(10,126,168,0.08)",
-                      "borderStyle": "dashed",
+                      "borderStyle": "none",
                       "borderColour": "rgba(7,94,128,0.35)",
                       "borderWidth": {
-                        "top": "1.5px",
-                        "right": "1.5px",
-                        "bottom": "1.5px",
-                        "left": "1.5px"
+                        "top": "0px",
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px"
                       },
                       "borderRadius": {
                         "desktop": {
@@ -754,35 +676,7 @@
                         }
                       }
                     },
-                    "innerBlocks": [
-                      {
-                        "name": "sgs/icon",
-                        "attributes": {
-                          "iconSource": "lucide",
-                          "iconName": "image",
-                          "iconSize": 22,
-                          "iconColour": "rgba(7,94,128,0.45)",
-                          "backgroundColour": "",
-                          "backgroundShape": "none"
-                        }
-                      },
-                      {
-                        "name": "sgs/text",
-                        "attributes": {
-                          "text": "wholesale",
-                          "textColour": "rgba(7,94,128,0.75)",
-                          "fontSize": {
-                            "desktop": "11px"
-                          },
-                          "fontWeight": "500",
-                          "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                          "letterSpacing": {
-                            "desktop": 0.01
-                          },
-                          "letterSpacingUnit": "em"
-                        }
-                      }
-                    ]
+                    "innerBlocks": []
                   },
                   {
                     "name": "sgs/heading",
@@ -807,7 +701,8 @@
                       "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
                       "lineHeight": {
                         "desktop": 1.5
-                      }
+                      },
+                      "textColourHover": "#075E80"
                     }
                   },
                   {
@@ -827,7 +722,8 @@
                         "desktop": {
                           "top": "8px"
                         }
-                      }
+                      },
+                      "textColourHover": "rgba(7,94,128,0.68)"
                     }
                   }
                 ]

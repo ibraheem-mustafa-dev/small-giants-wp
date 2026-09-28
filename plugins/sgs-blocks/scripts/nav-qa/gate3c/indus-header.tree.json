@@ -87,7 +87,8 @@
                   "lineHeight": {
                     "desktop": 28.5
                   },
-                  "lineHeightUnit": "px"
+                  "lineHeightUnit": "px",
+                  "textColourHover": "#1E2A3C"
                 }
               }
             ]
