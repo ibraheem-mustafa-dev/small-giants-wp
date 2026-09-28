@@ -211,8 +211,11 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   from its top-level item; `itemPaddingShiftHover` grows an item's inline-start padding on hover/focus by a
   length, applied to both the top-level item link and the submenu link, each adding to its own resting padding
   (the top-level link's is `itemPadding`'s left side where set, else 12px; the submenu link's is 16px).
-  `itemPadding` (`sgs/nav-bar-menu` only) is the top-level link's padding, a per-device box of top, right, bottom
-  and left ("Link padding" in the List layout panel); unset sides keep the default 8px 12px. All four are touch-guarded via `sgs_hover_state_rules()`.
+  `itemPadding` is the top-level link's padding and `submenuLinkPadding` the submenu link's (dropdown, mega
+  fallback list, drawer accordion), each a per-device box of top, right, bottom and left, on BOTH
+  `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` (the two blocks were one menu block; every item-level control
+  exists on both unless it is meaningless in one form). Unset sides keep the defaults (top-level 8px 12px,
+  submenu 16px inline-start). All four hover pairs are touch-guarded via `sgs_hover_state_rules()`.
 - **Item type scale (U-4).** A menu item's font size (`itemFontSize`/`itemFontSizeUnit`, `submenuFontSize`/
   `submenuFontSizeUnit` on both menu blocks) and `sgs/business-info`'s own text sizes take `vw`/`vh` alongside
   `px`/`em`/`rem`, through the shared unit list (`plugins/sgs-blocks/src/components/TypographyControls.js::FONT_SIZE_UNIT_SLUGS`),

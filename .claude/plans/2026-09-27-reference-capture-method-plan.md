@@ -139,6 +139,26 @@ Many "hover colour" rows are the canary's Mama's Munches snapshot leaking into a
 | L-O10 ground and rule | `itemBgHover` 10% white, `itemBorderColourHover` transparent, `itemMotionDuration` 120 |
 | L-O11 | button `colourBackgroundHover`/`colourTextHover` per button; scramble by `fx: scramble` on hover (FX attributes exist on `sgs/button`); proved in the drawer, G-14 for the inner scale |
 
+### Decisions (Bean, 2026-09-28)
+
+- Every gap is built as a real, per-device inspector control to Spec 36's control design; nothing is faked in a
+  tree and nothing is accepted for cost. Spec 36 was short on item padding: the bar and drawer menus were one block,
+  so every item-level control belongs on both (`itemPadding`, `submenuLinkPadding`; Spec 36 "Item hover paint").
+- The drawer chrome row (Spec 36, NOT BUILT: logo, close, free slot, row controls) is built here: it carries the
+  Indus logo row and boxed close (I-D2, I-D3, G-12).
+- A menu item with no destination of its own (Indus About points only at its mega panel, whose post type is not
+  publicly queryable, so the label linked to a 404) opens its section from the whole row; an item that is a real
+  page keeps label = visit, arrow = open (I-D9).
+- lamalama's pill message: one message per visit (`messageMode: random`), so nothing moves and no pause button is
+  needed (the rotating form added a 44px WCAG 2.2.2 pause button, pill 60px).
+- G-8 ("This is Us" button) is parked with the G8 screen-pinned family (`2026-09-27-g8-screen-corner-pin-plan.md`).
+- Accepted rule: a row where structure differs but the paint is the same and nothing is hardcoded (an outline
+  drawn on an inner layer, a border style on a 0px border, a transition on a property that never changes) is
+  accepted with a dated reason; the walker's position, text-inset, painted-ground and hover checks still guard the look.
+- Found by the walker after the settings pass: D-3 effects inside a late-rendered surface (drawer, mega panel)
+  have no import map (scramble fails: `@sgs/gsap-scramble` unresolved); D-4 `sgs/mega-aside::asideBg` saves but
+  never paints; D-5 `itemTextIndent` on drawer rows is a paragraph indent and cannot move a menu row.
+
 ### Defects to diagnose
 
 - **D-1** L-C3/L-C4: logo and burger sit 7px and 3px high in the pill.
