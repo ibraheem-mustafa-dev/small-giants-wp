@@ -218,6 +218,7 @@ export default {
 			const [ lx, ly ] = String( d.live ).split( ',' ).map( Number );
 			return /^moved "[^"]*£\d/.test( d.key ) && Math.abs( dy - ly ) <= 2 && Math.abs( dx - lx ) <= 60;
 		} },
+		{ pair: '(auto)', width: 375, reason: 'Accepted (Bean 2026-09-27): the draft’s 72px stage thumbnail shows a clipped "POLARIS" label; live keeps the thumbnail clean', when: ( d ) => /^text-missing "polarised"/.test( d.key ) },
 		{ pair: '(auto)', reason: 'Spec 43 Continue model (shipped 2026-09-26): choosing an option selects it and a muted Continue advances, where the draft advances on the card click', when: ( d ) => ( ( d ) => /^text-extra "continue"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-28, as the help toggle 2026-09-27): badge text is the palette’s text-inverse #FAF8F5, the draft’s pure white', when: ( d ) => ( ( d ) => /^style:color "most people pick this"$/.test( d.key ) && 'rgb(255,255,255)' === d.draft )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		...[ 'q4-prescription', 'q4-upload', 'q4-type' ].map( ( state ) => ( { pair: 'option-card', state, kind: 'box', reason: 'Measured, not painted: live’s first text in DOM order is the EASIEST badge at the card’s right; the titles start 24px in on both (the automatic check compares every word’s place)', when: ( d ) => /^text-inset-/.test( d.key ) } ) ),

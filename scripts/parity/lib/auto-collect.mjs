@@ -108,9 +108,15 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 		}
 		return clips.get( el );
 	};
+	// The element's own overflow counts too: text cut off by its own box ("GUCCI OVERSIZED CA…").
 	const clippedAway = ( el, r ) => {
-		const c = clipOf( el );
-		return r.right <= c.l || r.left >= c.r || r.bottom <= c.t || r.top >= c.b;
+		let c = clipOf( el );
+		const own = getComputedStyle( el );
+		if ( 'visible' !== own.overflowX || 'visible' !== own.overflowY ) {
+			const b = el.getBoundingClientRect();
+			c = { l: Math.max( c.l, b.left ), t: Math.max( c.t, b.top ), r: Math.min( c.r, b.right ), b: Math.min( c.b, b.bottom ) };
+		}
+		return r.right <= c.l + 1 || r.left >= c.r - 1 || r.bottom <= c.t || r.top >= c.b;
 	};
 
 	const words = [];

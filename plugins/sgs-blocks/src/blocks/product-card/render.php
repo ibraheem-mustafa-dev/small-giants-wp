@@ -244,7 +244,8 @@ if ( '' !== $sgs_no_image_label_colour ) {
 }
 $sgs_price_row_space = trim( (string) ( $attributes['priceRowSpaceAbove'] ?? '' ) );
 if ( preg_match( '/^\d+(\.\d+)?(px|em|rem)$/', $sgs_price_row_space ) ) {
-	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .price-row,.' . $sgs_card_uid . ' .sgs-product-card__price-row{margin-top:' . $sgs_price_row_space . ';}';
+	// Padding, so a shop layout's margin-top:auto (prices level at the card's foot) still applies.
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .price-row,.' . $sgs_card_uid . ' .sgs-product-card__price-row{padding-top:' . $sgs_price_row_space . ';}';
 }
 
 // ── Frame Card component colours: rating stars/text, brand overlay ───────

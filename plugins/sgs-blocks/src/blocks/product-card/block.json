@@ -361,9 +361,9 @@
 						"layout"
 					],
 					"attrMap": {
-						"css:margin-top": "priceRowSpaceAbove"
+						"css:padding-top": "priceRowSpaceAbove"
 					},
-					"_note": "priceRowSpaceAbove: extra space above the price row, over the card body's own gap between rows (includes/product-card-no-photo.php::sgs_product_card_no_photo_css)."
+					"_note": "priceRowSpaceAbove: extra space above the price row (padding, so a shop layout's margin-top:auto still levels prices), over the card body's own gap between rows (includes/product-card-no-photo.php::sgs_product_card_no_photo_css)."
 				},
 				"cta": {
 					"label": "Call to action",
