@@ -124,7 +124,8 @@
                   "text": "Free over £75, otherwise £3.95 tracked. Frames in stock go out within one working day; prescription orders take 7–10 working days to make.",
                   "fontSize": {
                     "desktop": 15
-                  }
+                  },
+                  "textColour": "text-soft"
                 }
               }
             ]
@@ -167,7 +168,8 @@
                   "text": "Free. Pick it at checkout and I'll message when it's ready. I'll adjust them to fit while you wait.",
                   "fontSize": {
                     "desktop": 15
-                  }
+                  },
+                  "textColour": "text-soft"
                 }
               }
             ]
@@ -210,7 +212,8 @@
                   "text": "30 days on unworn frames with case and tags, refunded in full. Lenses made to your prescription can't be resold, so they're only refundable if I got them wrong.",
                   "fontSize": {
                     "desktop": 15
-                  }
+                  },
+                  "textColour": "text-soft"
                 }
               }
             ]
@@ -241,13 +244,17 @@
               "content": "Questions",
               "fontSize": {
                 "desktop": 30
-              }
+              },
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "lineHeightUnit": "unitless"
             }
           },
           {
             "name": "sgs/text",
             "attributes": {
-              "text": "<a href=\"#modal-size-guide\">Size guide</a> &nbsp; <a href=\"/contact/\">Contact me</a>",
+              "text": "<a href=\"#size-guide\">Size guide</a> &nbsp; <a href=\"/contact/\">Contact me</a>",
               "textTransform": "uppercase",
               "fontSize": {
                 "desktop": 13
@@ -277,7 +284,14 @@
             }
           },
           "headerFontWeight": "400",
-          "headerFontWeightOpen": "400"
+          "headerFontWeightOpen": "400",
+          "fontSize": {
+            "desktop": 17
+          },
+          "fontSizeUnit": "px",
+          "gap": {
+            "desktop": "20px"
+          }
         },
         "innerBlocks": [
           {
@@ -502,7 +516,8 @@
                         "desktop": "15px"
                       },
                       "textBefore": "Call the clinic on ",
-                      "textAfter": ", or send me a message and I'll get back to you."
+                      "textAfter": ", or send me a message and I'll get back to you.",
+                      "textColour": "text-soft"
                     }
                   }
                 ]

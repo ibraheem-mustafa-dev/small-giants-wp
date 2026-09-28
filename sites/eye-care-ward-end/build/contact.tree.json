@@ -104,6 +104,9 @@
                 "tablet": 2,
                 "mobile": 1
               },
+              "gridTemplateColumns": {
+                "desktop": "repeat(2, minmax(0, 1fr))"
+              },
               "gap": {
                 "desktop": "24px"
               },
@@ -111,6 +114,9 @@
                 "desktop": {
                   "top": "36px"
                 }
+              },
+              "contentWidth": {
+                "desktop": "full"
               }
             },
             "innerBlocks": [
@@ -299,6 +305,9 @@
                 "desktop": {
                   "top": "40px"
                 }
+              },
+              "contentWidth": {
+                "desktop": "full"
               }
             },
             "innerBlocks": [

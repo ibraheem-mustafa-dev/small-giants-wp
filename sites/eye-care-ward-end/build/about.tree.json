@@ -65,14 +65,31 @@
               "letterSpacingUnit": "em",
               "fontSize": {
                 "desktop": "12px"
-              }
+              },
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDuration": "500",
+              "sgsAnimationDistance": "18",
+              "sgsAnimationEasing": "ease"
             }
           },
           {
             "name": "sgs/heading",
             "attributes": {
               "content": "Fatima Nawaz",
-              "level": "h1"
+              "level": "h1",
+              "fontSize": {
+                "desktop": 48,
+                "mobile": 34
+              },
+              "fontSizeUnit": "px",
+              "lineHeight": {
+                "desktop": 1.02
+              },
+              "lineHeightUnit": "unitless",
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDuration": "600",
+              "sgsAnimationDistance": "18",
+              "sgsAnimationEasing": "ease"
             }
           },
           {
@@ -86,7 +103,11 @@
               "letterSpacing": {
                 "desktop": 0.04
               },
-              "letterSpacingUnit": "em"
+              "letterSpacingUnit": "em",
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDuration": "700",
+              "sgsAnimationDistance": "18",
+              "sgsAnimationEasing": "ease"
             }
           },
           {
@@ -100,7 +121,11 @@
                 "desktop": {
                   "bottom": "18px"
                 }
-              }
+              },
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDuration": "800",
+              "sgsAnimationDistance": "18",
+              "sgsAnimationEasing": "ease"
             }
           },
           {
@@ -115,7 +140,11 @@
                 "desktop": {
                   "bottom": "18px"
                 }
-              }
+              },
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDuration": "850",
+              "sgsAnimationDistance": "18",
+              "sgsAnimationEasing": "ease"
             }
           },
           {
@@ -130,7 +159,11 @@
                 "desktop": {
                   "bottom": "18px"
                 }
-              }
+              },
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDuration": "900",
+              "sgsAnimationDistance": "18",
+              "sgsAnimationEasing": "ease"
             }
           },
           {
@@ -155,14 +188,17 @@
                   "variant": "inline",
                   "message": "Hi, I'd like to know more about your services.",
                   "label": "Message me",
-                  "backgroundColour": "whatsapp"
+                  "backgroundColour": "whatsapp",
+                  "labelColour": "#0B2B17",
+                  "backgroundColourHover": "whatsapp-hover",
+                  "labelFontWeight": "500"
                 }
               },
               {
                 "name": "sgs/button",
                 "attributes": {
                   "label": "Shop the range",
-                  "url": "/sunglasses/",
+                  "url": "/shop/",
                   "inheritStyle": "outline",
                   "colourText": "text",
                   "borderColour": "text",
@@ -190,6 +226,12 @@
                   "letterSpacingUnit": "em",
                   "fontSize": {
                     "desktop": "13px"
+                  },
+                  "padding": {
+                    "desktop": {
+                      "left": "24px",
+                      "right": "24px"
+                    }
                   }
                 }
               }
@@ -216,7 +258,12 @@
             "bottom": "1px",
             "left": "1px"
           },
-          "borderColour": "border"
+          "borderColour": "border",
+          "borderStyle": "solid",
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDuration": "800",
+          "sgsAnimationDistance": "18",
+          "sgsAnimationEasing": "ease"
         },
         "innerBlocks": [
           {

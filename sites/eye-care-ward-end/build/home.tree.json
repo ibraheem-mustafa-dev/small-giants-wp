@@ -45,6 +45,11 @@
         "name": "sgs/label",
         "attributes": {
           "text": "40 designer brands · Birmingham",
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "18",
+          "sgsAnimationDuration": "800",
+          "sgsAnimationEasing": "ease",
+          "sgsAnimationDelay": "150",
           "textColour": "#F0EBE3",
           "fontSize": {
             "desktop": 12.5
@@ -61,6 +66,11 @@
         "attributes": {
           "level": "h1",
           "content": "The same designer shades. A good deal less.",
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "18",
+          "sgsAnimationDuration": "900",
+          "sgsAnimationEasing": "ease",
+          "sgsAnimationDelay": "280",
           "fontFamily": "'Playfair Display',serif",
           "fontWeight": "500",
           "fontSize": {
@@ -87,6 +97,11 @@
         "name": "sgs/text",
         "attributes": {
           "text": "I'm an optician in Birmingham, buying from the same suppliers as the high street and pricing it more sensibly. If you need your prescription in them, I glaze and fit the lenses myself.",
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "18",
+          "sgsAnimationDuration": "900",
+          "sgsAnimationEasing": "ease",
+          "sgsAnimationDelay": "420",
           "fontSize": {
             "desktop": 18,
             "mobile": 15.5
@@ -136,6 +151,7 @@
                 "desktop": 13
               },
               "fontSizeUnit": "px",
+              "fontWeight": "400",
               "letterSpacing": {
                 "desktop": 0.1
               },
@@ -143,6 +159,8 @@
               "textTransform": "uppercase",
               "padding": {
                 "desktop": {
+                  "top": "0",
+                  "bottom": "0",
                   "left": "28px",
                   "right": "28px"
                 }
@@ -174,6 +192,7 @@
                 "desktop": 13
               },
               "fontSizeUnit": "px",
+              "fontWeight": "400",
               "letterSpacing": {
                 "desktop": 0.1
               },
@@ -181,6 +200,8 @@
               "textTransform": "uppercase",
               "padding": {
                 "desktop": {
+                  "top": "0",
+                  "bottom": "0",
                   "left": "28px",
                   "right": "28px"
                 }
@@ -257,6 +278,11 @@
       {
         "name": "sgs/container",
         "attributes": {
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "26",
+          "sgsAnimationDuration": "460",
+          "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+          "sgsAnimationDelay": "0",
           "alignItems": "flex-end",
           "flexWrap": "wrap",
           "gap": {
@@ -327,11 +353,19 @@
               "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/",
               "colourBackground": "transparent",
               "colourText": "text",
-              "borderColour": "",
+              "borderColour": "text",
+              "borderWidth": {
+                "bottom": "1px"
+              },
               "fontSize": {
                 "desktop": 13
               },
               "fontSizeUnit": "px",
+              "fontWeight": "400",
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "lineHeightUnit": "",
               "letterSpacing": {
                 "desktop": 0.1
               },
@@ -339,6 +373,7 @@
               "textTransform": "uppercase",
               "padding": {
                 "desktop": {
+                  "top": "0",
                   "left": "0",
                   "right": "0",
                   "bottom": "3px"
@@ -369,7 +404,24 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 71,
-              "showAttributeTag": false,
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "0",
+              "priceRowSpaceAbove": "6px",
+              "noImageLabel": "Photo to come",
+              "noImageLabelFontSize": {
+                "desktop": 10.5
+              },
+              "noImageLabelFontSizeUnit": "px",
+              "noImageLabelFontWeight": "400",
+              "noImageLabelLetterSpacing": {
+                "desktop": 0.16
+              },
+              "noImageLabelLetterSpacingUnit": "em",
+              "noImageLabelTextTransform": "uppercase",
+              "showAttributeTag": true,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
@@ -419,7 +471,34 @@
                 "desktop": 18
               },
               "priceFontSizeUnit": "px",
-              "priceFontWeight": "500"
+              "priceFontWeight": "500",
+              "titleTextWrap": "wrap",
+              "attributeTagSource": "tag",
+              "attributeTagTerm": "polarised",
+              "attributeTagText": "Polarised",
+              "attributeTagFontWeight": "400",
+              "attributeTagBorderColour": "border-strong",
+              "sgsHoverLift": 4,
+              "sgsHoverDurationMs": 400,
+              "sgsHoverShadow": "diffuse",
+              "sgsHoverImageZoom": true,
+              "sgsHoverZoom": 106,
+              "sgsHoverZoomDuration": 900,
+              "borderColourHover": "border-hover",
+              "priceLineHeight": 27,
+              "priceLineHeightUnit": "px",
+              "rrpColour": "text-label",
+              "swatchSize": 17,
+              "swatchHoverGrow": 125,
+              "mediaBackgroundColour": "surface-stage",
+              "swatchBorderColour": "border-strong",
+              "wishlistBorderColour": "#E0DAD1",
+              "brandPadding": {
+                "top": "12px",
+                "right": "14px",
+                "bottom": "12px",
+                "left": "14px"
+              }
             }
           },
           {
@@ -427,7 +506,24 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 76,
-              "showAttributeTag": false,
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "70",
+              "priceRowSpaceAbove": "6px",
+              "noImageLabel": "Photo to come",
+              "noImageLabelFontSize": {
+                "desktop": 10.5
+              },
+              "noImageLabelFontSizeUnit": "px",
+              "noImageLabelFontWeight": "400",
+              "noImageLabelLetterSpacing": {
+                "desktop": 0.16
+              },
+              "noImageLabelLetterSpacingUnit": "em",
+              "noImageLabelTextTransform": "uppercase",
+              "showAttributeTag": true,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
@@ -477,7 +573,34 @@
                 "desktop": 18
               },
               "priceFontSizeUnit": "px",
-              "priceFontWeight": "500"
+              "priceFontWeight": "500",
+              "titleTextWrap": "wrap",
+              "attributeTagSource": "tag",
+              "attributeTagTerm": "polarised",
+              "attributeTagText": "Polarised",
+              "attributeTagFontWeight": "400",
+              "attributeTagBorderColour": "border-strong",
+              "sgsHoverLift": 4,
+              "sgsHoverDurationMs": 400,
+              "sgsHoverShadow": "diffuse",
+              "sgsHoverImageZoom": true,
+              "sgsHoverZoom": 106,
+              "sgsHoverZoomDuration": 900,
+              "borderColourHover": "border-hover",
+              "priceLineHeight": 27,
+              "priceLineHeightUnit": "px",
+              "rrpColour": "text-label",
+              "swatchSize": 17,
+              "swatchHoverGrow": 125,
+              "mediaBackgroundColour": "surface-stage",
+              "swatchBorderColour": "border-strong",
+              "wishlistBorderColour": "#E0DAD1",
+              "brandPadding": {
+                "top": "12px",
+                "right": "14px",
+                "bottom": "12px",
+                "left": "14px"
+              }
             }
           },
           {
@@ -485,6 +608,23 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 81,
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "140",
+              "priceRowSpaceAbove": "6px",
+              "noImageLabel": "Photo to come",
+              "noImageLabelFontSize": {
+                "desktop": 10.5
+              },
+              "noImageLabelFontSizeUnit": "px",
+              "noImageLabelFontWeight": "400",
+              "noImageLabelLetterSpacing": {
+                "desktop": 0.16
+              },
+              "noImageLabelLetterSpacingUnit": "em",
+              "noImageLabelTextTransform": "uppercase",
               "showAttributeTag": true,
               "attributeTagSource": "tag",
               "attributeTagTerm": "polarised",
@@ -538,7 +678,31 @@
                 "desktop": 18
               },
               "priceFontSizeUnit": "px",
-              "priceFontWeight": "500"
+              "priceFontWeight": "500",
+              "titleTextWrap": "wrap",
+              "attributeTagFontWeight": "400",
+              "attributeTagBorderColour": "border-strong",
+              "sgsHoverLift": 4,
+              "sgsHoverDurationMs": 400,
+              "sgsHoverShadow": "diffuse",
+              "sgsHoverImageZoom": true,
+              "sgsHoverZoom": 106,
+              "sgsHoverZoomDuration": 900,
+              "borderColourHover": "border-hover",
+              "priceLineHeight": 27,
+              "priceLineHeightUnit": "px",
+              "rrpColour": "text-label",
+              "swatchSize": 17,
+              "swatchHoverGrow": 125,
+              "mediaBackgroundColour": "surface-stage",
+              "swatchBorderColour": "border-strong",
+              "wishlistBorderColour": "#E0DAD1",
+              "brandPadding": {
+                "top": "12px",
+                "right": "14px",
+                "bottom": "12px",
+                "left": "14px"
+              }
             }
           },
           {
@@ -546,7 +710,24 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 86,
-              "showAttributeTag": false,
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "210",
+              "priceRowSpaceAbove": "6px",
+              "noImageLabel": "Photo to come",
+              "noImageLabelFontSize": {
+                "desktop": 10.5
+              },
+              "noImageLabelFontSizeUnit": "px",
+              "noImageLabelFontWeight": "400",
+              "noImageLabelLetterSpacing": {
+                "desktop": 0.16
+              },
+              "noImageLabelLetterSpacingUnit": "em",
+              "noImageLabelTextTransform": "uppercase",
+              "showAttributeTag": true,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
@@ -596,7 +777,34 @@
                 "desktop": 18
               },
               "priceFontSizeUnit": "px",
-              "priceFontWeight": "500"
+              "priceFontWeight": "500",
+              "titleTextWrap": "wrap",
+              "attributeTagSource": "tag",
+              "attributeTagTerm": "polarised",
+              "attributeTagText": "Polarised",
+              "attributeTagFontWeight": "400",
+              "attributeTagBorderColour": "border-strong",
+              "sgsHoverLift": 4,
+              "sgsHoverDurationMs": 400,
+              "sgsHoverShadow": "diffuse",
+              "sgsHoverImageZoom": true,
+              "sgsHoverZoom": 106,
+              "sgsHoverZoomDuration": 900,
+              "borderColourHover": "border-hover",
+              "priceLineHeight": 27,
+              "priceLineHeightUnit": "px",
+              "rrpColour": "text-label",
+              "swatchSize": 17,
+              "swatchHoverGrow": 125,
+              "mediaBackgroundColour": "surface-stage",
+              "swatchBorderColour": "border-strong",
+              "wishlistBorderColour": "#E0DAD1",
+              "brandPadding": {
+                "top": "12px",
+                "right": "14px",
+                "bottom": "12px",
+                "left": "14px"
+              }
             }
           },
           {
@@ -604,7 +812,24 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 90,
-              "showAttributeTag": false,
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "280",
+              "priceRowSpaceAbove": "6px",
+              "noImageLabel": "Photo to come",
+              "noImageLabelFontSize": {
+                "desktop": 10.5
+              },
+              "noImageLabelFontSizeUnit": "px",
+              "noImageLabelFontWeight": "400",
+              "noImageLabelLetterSpacing": {
+                "desktop": 0.16
+              },
+              "noImageLabelLetterSpacingUnit": "em",
+              "noImageLabelTextTransform": "uppercase",
+              "showAttributeTag": true,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
@@ -654,7 +879,34 @@
                 "desktop": 18
               },
               "priceFontSizeUnit": "px",
-              "priceFontWeight": "500"
+              "priceFontWeight": "500",
+              "titleTextWrap": "wrap",
+              "attributeTagSource": "tag",
+              "attributeTagTerm": "polarised",
+              "attributeTagText": "Polarised",
+              "attributeTagFontWeight": "400",
+              "attributeTagBorderColour": "border-strong",
+              "sgsHoverLift": 4,
+              "sgsHoverDurationMs": 400,
+              "sgsHoverShadow": "diffuse",
+              "sgsHoverImageZoom": true,
+              "sgsHoverZoom": 106,
+              "sgsHoverZoomDuration": 900,
+              "borderColourHover": "border-hover",
+              "priceLineHeight": 27,
+              "priceLineHeightUnit": "px",
+              "rrpColour": "text-label",
+              "swatchSize": 17,
+              "swatchHoverGrow": 125,
+              "mediaBackgroundColour": "surface-stage",
+              "swatchBorderColour": "border-strong",
+              "wishlistBorderColour": "#E0DAD1",
+              "brandPadding": {
+                "top": "12px",
+                "right": "14px",
+                "bottom": "12px",
+                "left": "14px"
+              }
             }
           },
           {
@@ -662,7 +914,24 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 98,
-              "showAttributeTag": false,
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "350",
+              "priceRowSpaceAbove": "6px",
+              "noImageLabel": "Photo to come",
+              "noImageLabelFontSize": {
+                "desktop": 10.5
+              },
+              "noImageLabelFontSizeUnit": "px",
+              "noImageLabelFontWeight": "400",
+              "noImageLabelLetterSpacing": {
+                "desktop": 0.16
+              },
+              "noImageLabelLetterSpacingUnit": "em",
+              "noImageLabelTextTransform": "uppercase",
+              "showAttributeTag": true,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
@@ -712,7 +981,34 @@
                 "desktop": 18
               },
               "priceFontSizeUnit": "px",
-              "priceFontWeight": "500"
+              "priceFontWeight": "500",
+              "titleTextWrap": "wrap",
+              "attributeTagSource": "tag",
+              "attributeTagTerm": "polarised",
+              "attributeTagText": "Polarised",
+              "attributeTagFontWeight": "400",
+              "attributeTagBorderColour": "border-strong",
+              "sgsHoverLift": 4,
+              "sgsHoverDurationMs": 400,
+              "sgsHoverShadow": "diffuse",
+              "sgsHoverImageZoom": true,
+              "sgsHoverZoom": 106,
+              "sgsHoverZoomDuration": 900,
+              "borderColourHover": "border-hover",
+              "priceLineHeight": 27,
+              "priceLineHeightUnit": "px",
+              "rrpColour": "text-label",
+              "swatchSize": 17,
+              "swatchHoverGrow": 125,
+              "mediaBackgroundColour": "surface-stage",
+              "swatchBorderColour": "border-strong",
+              "wishlistBorderColour": "#E0DAD1",
+              "brandPadding": {
+                "top": "12px",
+                "right": "14px",
+                "bottom": "12px",
+                "left": "14px"
+              }
             }
           },
           {
@@ -720,7 +1016,24 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 103,
-              "showAttributeTag": false,
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "420",
+              "priceRowSpaceAbove": "6px",
+              "noImageLabel": "Photo to come",
+              "noImageLabelFontSize": {
+                "desktop": 10.5
+              },
+              "noImageLabelFontSizeUnit": "px",
+              "noImageLabelFontWeight": "400",
+              "noImageLabelLetterSpacing": {
+                "desktop": 0.16
+              },
+              "noImageLabelLetterSpacingUnit": "em",
+              "noImageLabelTextTransform": "uppercase",
+              "showAttributeTag": true,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
@@ -770,7 +1083,34 @@
                 "desktop": 18
               },
               "priceFontSizeUnit": "px",
-              "priceFontWeight": "500"
+              "priceFontWeight": "500",
+              "titleTextWrap": "wrap",
+              "attributeTagSource": "tag",
+              "attributeTagTerm": "polarised",
+              "attributeTagText": "Polarised",
+              "attributeTagFontWeight": "400",
+              "attributeTagBorderColour": "border-strong",
+              "sgsHoverLift": 4,
+              "sgsHoverDurationMs": 400,
+              "sgsHoverShadow": "diffuse",
+              "sgsHoverImageZoom": true,
+              "sgsHoverZoom": 106,
+              "sgsHoverZoomDuration": 900,
+              "borderColourHover": "border-hover",
+              "priceLineHeight": 27,
+              "priceLineHeightUnit": "px",
+              "rrpColour": "text-label",
+              "swatchSize": 17,
+              "swatchHoverGrow": 125,
+              "mediaBackgroundColour": "surface-stage",
+              "swatchBorderColour": "border-strong",
+              "wishlistBorderColour": "#E0DAD1",
+              "brandPadding": {
+                "top": "12px",
+                "right": "14px",
+                "bottom": "12px",
+                "left": "14px"
+              }
             }
           },
           {
@@ -778,6 +1118,23 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 107,
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "490",
+              "priceRowSpaceAbove": "6px",
+              "noImageLabel": "Photo to come",
+              "noImageLabelFontSize": {
+                "desktop": 10.5
+              },
+              "noImageLabelFontSizeUnit": "px",
+              "noImageLabelFontWeight": "400",
+              "noImageLabelLetterSpacing": {
+                "desktop": 0.16
+              },
+              "noImageLabelLetterSpacingUnit": "em",
+              "noImageLabelTextTransform": "uppercase",
               "showAttributeTag": true,
               "attributeTagSource": "tag",
               "attributeTagTerm": "polarised",
@@ -831,7 +1188,31 @@
                 "desktop": 18
               },
               "priceFontSizeUnit": "px",
-              "priceFontWeight": "500"
+              "priceFontWeight": "500",
+              "titleTextWrap": "wrap",
+              "attributeTagFontWeight": "400",
+              "attributeTagBorderColour": "border-strong",
+              "sgsHoverLift": 4,
+              "sgsHoverDurationMs": 400,
+              "sgsHoverShadow": "diffuse",
+              "sgsHoverImageZoom": true,
+              "sgsHoverZoom": 106,
+              "sgsHoverZoomDuration": 900,
+              "borderColourHover": "border-hover",
+              "priceLineHeight": 27,
+              "priceLineHeightUnit": "px",
+              "rrpColour": "text-label",
+              "swatchSize": 17,
+              "swatchHoverGrow": 125,
+              "mediaBackgroundColour": "surface-stage",
+              "swatchBorderColour": "border-strong",
+              "wishlistBorderColour": "#E0DAD1",
+              "brandPadding": {
+                "top": "12px",
+                "right": "14px",
+                "bottom": "12px",
+                "left": "14px"
+              }
             }
           }
         ]
@@ -867,6 +1248,11 @@
       {
         "name": "sgs/container",
         "attributes": {
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "26",
+          "sgsAnimationDuration": "460",
+          "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+          "sgsAnimationDelay": "0",
           "gap": {
             "desktop": "40px"
           },
@@ -970,6 +1356,11 @@
           {
             "name": "sgs/container",
             "attributes": {
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "0",
               "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
@@ -1009,6 +1400,7 @@
                 "name": "sgs/heading",
                 "attributes": {
                   "content": "Below RRP, and I show you by how much",
+                  "fontFamily": "body",
                   "fontSize": {
                     "desktop": 20
                   },
@@ -1041,6 +1433,11 @@
           {
             "name": "sgs/container",
             "attributes": {
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "70",
               "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
@@ -1080,6 +1477,7 @@
                 "name": "sgs/heading",
                 "attributes": {
                   "content": "I glaze the lenses myself",
+                  "fontFamily": "body",
                   "fontSize": {
                     "desktop": 20
                   },
@@ -1112,6 +1510,11 @@
           {
             "name": "sgs/container",
             "attributes": {
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "140",
               "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
@@ -1151,6 +1554,7 @@
                 "name": "sgs/heading",
                 "attributes": {
                   "content": "You can just message me",
+                  "fontFamily": "body",
                   "fontSize": {
                     "desktop": 20
                   },
@@ -1183,6 +1587,11 @@
           {
             "name": "sgs/container",
             "attributes": {
+              "sgsAnimation": "fade-up",
+              "sgsAnimationDistance": "26",
+              "sgsAnimationDuration": "460",
+              "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+              "sgsAnimationDelay": "210",
               "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
@@ -1222,6 +1631,7 @@
                 "name": "sgs/heading",
                 "attributes": {
                   "content": "Collect in Birmingham, or posted tracked",
+                  "fontFamily": "body",
                   "fontSize": {
                     "desktop": 20
                   },
@@ -1282,6 +1692,11 @@
       {
         "name": "sgs/container",
         "attributes": {
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "26",
+          "sgsAnimationDuration": "460",
+          "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+          "sgsAnimationDelay": "0",
           "alignItems": "flex-end",
           "flexWrap": "wrap",
           "gap": {
@@ -1352,10 +1767,19 @@
               "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/",
               "colourBackground": "transparent",
               "colourText": "text",
+              "borderColour": "text",
+              "borderWidth": {
+                "bottom": "1px"
+              },
               "fontSize": {
                 "desktop": 13
               },
               "fontSizeUnit": "px",
+              "fontWeight": "400",
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "lineHeightUnit": "",
               "letterSpacing": {
                 "desktop": 0.1
               },
@@ -1363,6 +1787,7 @@
               "textTransform": "uppercase",
               "padding": {
                 "desktop": {
+                  "top": "0",
                   "left": "0",
                   "right": "0",
                   "bottom": "3px"
@@ -1528,6 +1953,11 @@
       {
         "name": "sgs/container",
         "attributes": {
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "26",
+          "sgsAnimationDuration": "460",
+          "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+          "sgsAnimationDelay": "0",
           "contentBandMargin": {
             "desktop": {
               "bottom": "28px"
@@ -1579,6 +2009,11 @@
       {
         "name": "sgs/google-reviews",
         "attributes": {
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "26",
+          "sgsAnimationDuration": "460",
+          "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+          "sgsAnimationDelay": "70",
           "arrowBorderRadius": {
             "desktop": {
               "bottomLeft": "50%",
@@ -2011,6 +2446,11 @@
       {
         "name": "sgs/container",
         "attributes": {
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "26",
+          "sgsAnimationDuration": "460",
+          "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+          "sgsAnimationDelay": "0",
           "backgroundColour": "primary",
           "minHeight": {
             "desktop": "430px"
@@ -2028,6 +2468,11 @@
       {
         "name": "sgs/container",
         "attributes": {
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "26",
+          "sgsAnimationDuration": "460",
+          "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+          "sgsAnimationDelay": "70",
           "backgroundColour": "surface",
           "contentBandPadding": {
             "desktop": {
@@ -2156,6 +2601,7 @@
                 "desktop": 13
               },
               "fontSizeUnit": "px",
+              "fontWeight": "400",
               "letterSpacing": {
                 "desktop": 0.1
               },
@@ -2166,6 +2612,8 @@
               },
               "padding": {
                 "desktop": {
+                  "top": "0",
+                  "bottom": "0",
                   "left": "28px",
                   "right": "28px"
                 }
@@ -2214,8 +2662,13 @@
     },
     "innerBlocks": [
       {
-        "name": "sgs/text",
+        "name": "sgs/container",
         "attributes": {
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "26",
+          "sgsAnimationDuration": "460",
+          "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+          "sgsAnimationDelay": "0",
           "backgroundColour": "#DFD8CC",
           "borderColour": "#D0C8BA",
           "borderStyle": "solid",
@@ -2233,15 +2686,61 @@
               "top": "24px"
             }
           },
-          "text": "<span>Photo of the clinic</span>\n<span>The reception or the consulting room — whichever you'd rather show. No portrait needed.</span>",
+          "layout": "flex",
+          "flexDirection": "column",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "gap": {
+            "desktop": "10px"
+          },
           "textAlign": "center",
-          "textColour": "#6B655E",
           "textWrap": "wrap"
-        }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Photo of the clinic",
+              "fontSize": {
+                "desktop": 12
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.16
+              },
+              "letterSpacingUnit": "em",
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "lineHeightUnit": "",
+              "textTransform": "uppercase",
+              "textColour": "#6B655E"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "The reception or the consulting room — whichever you'd rather show. No portrait needed.",
+              "fontSize": {
+                "desktop": 13.5
+              },
+              "fontSizeUnit": "px",
+              "maxWidth": 26,
+              "maxWidthUnit": "ch",
+              "textColour": "#6B655E",
+              "textWrap": "pretty"
+            }
+          }
+        ]
       },
       {
         "name": "sgs/container",
         "attributes": {
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDistance": "26",
+          "sgsAnimationDuration": "460",
+          "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+          "sgsAnimationDelay": "70",
           "textWrap": "wrap"
         },
         "innerBlocks": [
@@ -2352,8 +2851,18 @@
                     "desktop": 0.04
                   },
                   "labelLetterSpacingUnit": "em",
+                  "labelLineHeight": {
+                    "desktop": 1.5
+                  },
+                  "labelLineHeightUnit": "",
                   "borderRadius": {
                     "desktop": {}
+                  },
+                  "padding": {
+                    "desktop": {
+                      "top": "0",
+                      "bottom": "0"
+                    }
                   }
                 }
               },
@@ -2376,6 +2885,7 @@
                     "desktop": 13
                   },
                   "fontSizeUnit": "px",
+                  "fontWeight": "400",
                   "letterSpacing": {
                     "desktop": 0.1
                   },
@@ -2386,6 +2896,8 @@
                   },
                   "padding": {
                     "desktop": {
+                      "top": "0",
+                      "bottom": "0",
                       "left": "24px",
                       "right": "24px"
                     }

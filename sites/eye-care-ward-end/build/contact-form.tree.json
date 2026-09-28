@@ -18,7 +18,8 @@
         "bottom": "0px",
         "left": "28px"
       },
-      "submitMinHeight": 52
+      "submitMinHeight": 52,
+      "fieldColumnsFrom": "480"
     },
     "innerBlocks": [
       {

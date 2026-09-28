@@ -70,18 +70,53 @@ def collection(taxonomy, query_id):
         [B("woocommerce/product-template", {}, [B("sgs/product-card", dict(CARD))])])
 
 
-DETAILS = [("Lens width", "meta._sgs_frame_eye", " mm"), ("Bridge", "meta._sgs_frame_bridge", " mm"),
-           ("Temple length", "meta._sgs_frame_temple", " mm"), ("Style", "attribute.pa_shape", ""),
-           ("Frame type", "attribute.pa_frame-type", ""), ("Material", "attribute.pa_material", ""),
-           ("Hinge", "attribute.pa_hinge", ""), ("Nose pads", "attribute.pa_nose-pad", "")]
+# The draft's 17-row Details grid, matched against real product data (2026-09-28 parity fixes, plan
+# 2026-09-28-eye-care-product-page-parity.md, Content C1). Each row is either "bind" (a real
+# `sgs-product/field` key: brand, short_description, stock_status, attribute.<taxonomy> or meta.<key>) or
+# "text" (the draft's fixed copy, true of every frame in the shop). The model code is the short description,
+# as the buybox's code line ("GG1566S · 001"); "Lenses as supplied" is seeded from the draft's catalogue
+# (woo-seed/seed-facets.php, _sgs_lens_supplied).
+DETAILS = [
+    ("Brand", "bind", "brand", ""),
+    ("Model code", "bind", "short_description", ""),
+    ("Lens width", "bind", "meta._sgs_frame_eye", " mm"),
+    ("Bridge", "bind", "meta._sgs_frame_bridge", " mm"),
+    ("Temple length", "bind", "meta._sgs_frame_temple", " mm"),
+    ("Style", "bind", "attribute.pa_shape", ""),
+    ("Frame type", "bind", "attribute.pa_frame-type", ""),
+    ("Material", "bind", "attribute.pa_material", ""),
+    ("Hinge", "bind", "attribute.pa_hinge", ""),
+    ("Nose pads", "bind", "attribute.pa_nose-pad", ""),
+    ("Lenses as supplied", "bind", "meta._sgs_lens_supplied", ""),
+    ("UV protection", "text", "100% UV400", ""),
+    # "Prescription": the universal answer to "Will prescription lenses work in these?" (Good to know,
+    # first FAQ, this same tree, every product) — true of the whole shop, not invented for this row.
+    ("Prescription", "text", "Single vision & varifocal", ""),
+    ("Gender", "bind", "attribute.pa_gender", ""),
+    ("Availability", "bind", "stock_status", ""),
+    # "Warranty": matches the icon-list tick "two-year guarantee" a few rows above (this same tree).
+    ("Warranty", "text", "2 years, manufacturer", ""),
+    # "Dispatch": matches sgs/buybox's stockInStockLabel ("In stock — dispatched next working day", below).
+    ("Dispatch", "text", "1 working day", ""),
+    # "With lenses": matches the header trust bar ("Prescription lenses glazed here in 7–10 days", site-wide).
+    ("With lenses", "text", "7–10 working days", ""),
+]
+
+
+def detail_field(mode, value, after):
+    if "bind" == mode:
+        return btxt(value, {"after": after} if after else None, fontSize={"desktop": 16}, fontSizeUnit="px",
+                    margin={"desktop": {"top": "6px"}})
+    return txt(value + after, fontSize={"desktop": 16}, fontSizeUnit="px", margin={"desktop": {"top": "6px"}})
+
+
 details_grid = B("sgs/container", dict(
     layout="grid", gridTemplateColumns={"desktop": "repeat(auto-fit,minmax(min(100%,170px),1fr))"},
     gap={"desktop": "1px"}, backgroundColour="border", borderWidth=BOX, borderColour="border"), [
     B("sgs/container", dict(backgroundColour="surface-alt",
                             padding={"desktop": {"top": "18px", "right": "20px", "bottom": "18px", "left": "20px"}}),
-      [txt(k, **LABEL), btxt(key, {"after": after} if after else None, fontSize={"desktop": 16}, fontSizeUnit="px",
-                             margin={"desktop": {"top": "6px"}})])
-    for k, key, after in DETAILS])
+      [txt(label, **LABEL), detail_field(mode, value, after)])
+    for label, mode, value, after in DETAILS])
 
 MEASURES = [("Lens width", "meta._sgs_frame_eye", "Across one lens at its widest, rim to rim."),
             ("Bridge", "meta._sgs_frame_bridge", "The gap between the lenses, where the frame sits on your nose."),
@@ -111,8 +146,6 @@ FAQS = [
     ("Adjustments and repairs", "Bring them in any time and I'll straighten, tighten or re-fit them for nothing, whether you bought them here last week or last year."),
 ]
 
-# The size guide's sgs_modal post on eye-care-test (gen_size_guide.py, built with wp-build-page.js --create sgs_modal).
-SIZE_GUIDE_MODAL = 461
 
 HOME = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'home.tree.json')
 
@@ -162,7 +195,10 @@ tree = [
             maxWidth={"desktop": "1440px"},
             padding={"desktop": {"top": "48px", "right": "52px", "bottom": "90px", "left": "52px"},
                      "mobile": {"top": "28px", "right": "20px", "bottom": "60px", "left": "20px"}}), [
+            # Measured on the draft at 1440 (2026-09-28): "/" with 10px either side, and no bold on the current crumb
+            # (fontWeight is one shared value across link, separator and current).
             B("sgs/breadcrumbs", dict(productPageCrumbs="both", showArchiveCrumb=False, showCurrentCrumb=False, fontSize={"desktop": 12.5}, fontSizeUnit="px",
+                                      fontWeight="400", itemGap="10px",
                                       letterSpacing={"desktop": 0.04}, letterSpacingUnit="em", linkColour="text-muted",
                                       currentColour="text-muted", margin={"desktop": {"bottom": "22px"}})),
             B("sgs/buybox", dict(
@@ -173,7 +209,24 @@ tree = [
                 priceFontFamily="heading", priceFontSize={"desktop": 38}, priceFontSizeUnit="px", priceFontWeight="500",
                 pickerSwatchStyle="tile", pickerStyle="outlined", pickerSubLabelMetaKey="_sgs_size_measure",
                 pickerShowSelectedTick=False, addToCartLabel="Add to bag as they are", addToCartStyle="outline",
-                addToCartShowPrice=True, extrasBeforeCount=3, extrasBeforeCartCount=1, stackBelow="tablet"), [
+                addToCartShowPrice=True,
+                # Measured on the draft at 1440 (2026-09-28): price 38px on a 38px line; stock line above the pickers
+                # under a hairline; picker labels 13px capitals 0.14em with the chosen value at the right; "Add to bag"
+                # 13px capitals 0.12em, weight 400, 56px, a solid 1px text-colour border on white, no icon, 2px lift.
+                priceLineHeight={"desktop": 1}, stockLinePosition="above", stockLineHairline=True,
+                pickerLabelFontSize={"desktop": 13}, pickerLabelFontSizeUnit="px", pickerLabelLetterSpacing={"desktop": 0.14},
+                pickerLabelLetterSpacingUnit="em", pickerLabelTextTransform="uppercase", pickerLabelColour="text",
+                pickerShowSelectedValue=True,
+                addToCartTextTransform="uppercase", addToCartLetterSpacing={"desktop": 0.12}, addToCartLetterSpacingUnit="em",
+                addToCartFontWeight="400", addToCartFontSize={"desktop": 13}, addToCartFontSizeUnit="px",
+                addToCartMinHeight="56px", addToCartShowIcon=False, addToCartHoverLift=True,
+                addToCartBorderColour="text", addToCartBackgroundColour="surface-alt",
+                # Bean 2026-09-28: sizes shown by universal band (S up to 52mm, M up to 57mm, L), only this frame's own,
+                # a one-size frame included; "Which size am I?" at the right of the Size label; the draft's "Save £51
+                # off RRP" tag on the photo; the draft's gallery split (725 : 536, measured) and 60px gap.
+                pickerAlwaysShowAxes=["pa_frame-size"], pickerBandAxis="pa_frame-size", pickerBandScale="S:52,M:57,L",
+                pickerLabelLinkAxis="pa_frame-size", pickerLabelLinkText="Which size am I?", pickerLabelLinkUrl="#size-guide",
+                gallerySavingBadge=True, galleryColumnRatio=1.353, galleryColumnGap="60px", extrasBeforeCount=3, extrasBeforeCartCount=1, stackBelow="tablet"), [
                 btxt("brand", fontFamily="heading", fontWeight="500", fontSize={"desktop": 20}, fontSizeUnit="px",
                      letterSpacing={"desktop": 0.3}, letterSpacingUnit="em", textTransform="uppercase"),
                 B("sgs/heading", dict(level="h1", content="", fontFamily="heading", fontWeight="500",
@@ -206,9 +259,15 @@ tree = [
                 gridTemplateColumns={"desktop": "minmax(0,1.35fr) minmax(0,1fr)", "tablet": "minmax(0,1fr)",
                                      "mobile": "minmax(0,1fr)"},
                 gap={"desktop": "18px", "mobile": "10px"}, margin=SECTION_GAP), [
-                B("sgs/tabs", dict(hideEmptyTabs=True, mobileLayout="row"), [
+                B("sgs/tabs", dict(hideEmptyTabs=True, mobileLayout="row",
+                    # The draft's tab buttons (measured 2026-09-28): 12.5px capitals, 1.75px tracking, 0 18px, 52px tall,
+                    # the active one underlined 2px in the text colour.
+                    tabFontSize={"desktop": 12.5}, tabFontSizeUnit="px", tabTextTransform="uppercase",
+                    tabLetterSpacing={"desktop": 1.75}, tabLetterSpacingUnit="px",
+                    tabPadding={"top": "0", "right": "18px", "bottom": "0", "left": "18px"}, tabMinHeight="52px", tabIndicatorThickness="2px",
+                    tabActiveIndicatorColour="text"), [
                     B("sgs/tab", {"label": "Description"},
-                      [B("core/post-content", {"textColor": "text-muted",
+                      [B("core/post-content", {"textColor": "text-muted", "className": "is-style-sgs-plain-lists",
                                                "style": {"typography": {"fontSize": "16px", "lineHeight": "1.6"}}})]),
                     B("sgs/tab", {"label": "Details"}, [details_grid]),
                     B("sgs/tab", {"label": "Sizing"}, sizing),
@@ -223,24 +282,23 @@ tree = [
                 ]),
             ]),
             NO_REVIEWS,
-            B("sgs/container", dict(layout="stack", margin=SECTION_GAP), [
+            # Each related section hides, heading and all, when its list has no products (condition 9).
+            B("sgs/container", dict(layout="stack", margin=SECTION_GAP, sgsConditionCollectionQueryId=11), [
                 B("sgs/heading", dict(content="", metadata=bind("content", "brand", before="More from "),
                                       margin={"desktop": {"bottom": "24px"}}, **H2)),
                 collection("product_brand", 11)]),
-            B("sgs/container", dict(layout="stack", margin=SECTION_GAP), [
+            B("sgs/container", dict(layout="stack", margin=SECTION_GAP, sgsConditionCollectionQueryId=12), [
                 B("sgs/heading", dict(content="Similar shapes", margin={"desktop": {"bottom": "24px"}}, **H2)),
                 collection("pa_shape", 12)]),
         ]),
     ]),
     # Opened by links, never by a button of their own (triggerStyle none): "Add my prescription" links
-    # #lens-configurator, "Which size am I?" links #size-guide. The lens flow is the saved Choice Flow
+    # #lens-configurator, "Which size am I?" links #size-guide, the site-wide size guide in the footer (footer.tree.json). The lens flow is the saved Choice Flow
     # lens-configurator (gen_lens_configurator.py), shown by a linked sgs/choice-flow (Spec 43 FR-43-6).
     B("sgs/modal", dict(anchor="lens-configurator", triggerStyle="none", triggerText="Add prescription lenses",
                         size="fullscreen", modalBackground="surface"), [
         B("sgs/choice-flow", dict(flowId="lens-configurator", flowIsLinked=True)),
     ]),
-    B("sgs/modal", dict(anchor="size-guide", triggerStyle="none", triggerText="Which size am I?", maxWidth="large",
-                        modalBackground="surface", modalRef=SIZE_GUIDE_MODAL)),
     B("core/template-part", {"slug": "footer", "tagName": "footer"}),
 ]
 

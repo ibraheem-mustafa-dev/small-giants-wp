@@ -48,6 +48,8 @@
                 "desktop": 12.5
               },
               "fontSizeUnit": "px",
+              "fontWeight": "400",
+              "itemGap": "10px",
               "letterSpacing": {
                 "desktop": 0.04
               },
@@ -89,6 +91,48 @@
               "addToCartLabel": "Add to bag as they are",
               "addToCartStyle": "outline",
               "addToCartShowPrice": true,
+              "priceLineHeight": {
+                "desktop": 1
+              },
+              "stockLinePosition": "above",
+              "stockLineHairline": true,
+              "pickerLabelFontSize": {
+                "desktop": 13
+              },
+              "pickerLabelFontSizeUnit": "px",
+              "pickerLabelLetterSpacing": {
+                "desktop": 0.14
+              },
+              "pickerLabelLetterSpacingUnit": "em",
+              "pickerLabelTextTransform": "uppercase",
+              "pickerLabelColour": "text",
+              "pickerShowSelectedValue": true,
+              "addToCartTextTransform": "uppercase",
+              "addToCartLetterSpacing": {
+                "desktop": 0.12
+              },
+              "addToCartLetterSpacingUnit": "em",
+              "addToCartFontWeight": "400",
+              "addToCartFontSize": {
+                "desktop": 13
+              },
+              "addToCartFontSizeUnit": "px",
+              "addToCartMinHeight": "56px",
+              "addToCartShowIcon": false,
+              "addToCartHoverLift": true,
+              "addToCartBorderColour": "text",
+              "addToCartBackgroundColour": "surface-alt",
+              "pickerAlwaysShowAxes": [
+                "pa_frame-size"
+              ],
+              "pickerBandAxis": "pa_frame-size",
+              "pickerBandScale": "S:52,M:57,L",
+              "pickerLabelLinkAxis": "pa_frame-size",
+              "pickerLabelLinkText": "Which size am I?",
+              "pickerLabelLinkUrl": "#size-guide",
+              "gallerySavingBadge": true,
+              "galleryColumnRatio": 1.353,
+              "galleryColumnGap": "60px",
               "extrasBeforeCount": 3,
               "extrasBeforeCartCount": 1,
               "stackBelow": "tablet"
@@ -284,7 +328,25 @@
                 "name": "sgs/tabs",
                 "attributes": {
                   "hideEmptyTabs": true,
-                  "mobileLayout": "row"
+                  "mobileLayout": "row",
+                  "tabFontSize": {
+                    "desktop": 12.5
+                  },
+                  "tabFontSizeUnit": "px",
+                  "tabTextTransform": "uppercase",
+                  "tabLetterSpacing": {
+                    "desktop": 1.75
+                  },
+                  "tabLetterSpacingUnit": "px",
+                  "tabPadding": {
+                    "top": "0",
+                    "right": "18px",
+                    "bottom": "0",
+                    "left": "18px"
+                  },
+                  "tabMinHeight": "52px",
+                  "tabIndicatorThickness": "2px",
+                  "tabActiveIndicatorColour": "text"
                 },
                 "innerBlocks": [
                   {
@@ -297,6 +359,7 @@
                         "name": "core/post-content",
                         "attributes": {
                           "textColor": "text-muted",
+                          "className": "is-style-sgs-plain-lists",
                           "style": {
                             "typography": {
                               "fontSize": "16px",
@@ -333,6 +396,120 @@
                           "borderColour": "border"
                         },
                         "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px",
+                                  "right": "20px",
+                                  "bottom": "18px",
+                                  "left": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Brand",
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.16
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-label"
+                                }
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "6px"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "bindings": {
+                                      "text": {
+                                        "source": "sgs-product/field",
+                                        "args": {
+                                          "key": "brand"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px",
+                                  "right": "20px",
+                                  "bottom": "18px",
+                                  "left": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Model code",
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.16
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-label"
+                                }
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "6px"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "bindings": {
+                                      "text": {
+                                        "source": "sgs-product/field",
+                                        "args": {
+                                          "key": "short_description"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
                           {
                             "name": "sgs/container",
                             "attributes": {
@@ -786,6 +963,412 @@
                                           "key": "attribute.pa_nose-pad"
                                         }
                                       }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px",
+                                  "right": "20px",
+                                  "bottom": "18px",
+                                  "left": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Lenses as supplied",
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.16
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-label"
+                                }
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "6px"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "bindings": {
+                                      "text": {
+                                        "source": "sgs-product/field",
+                                        "args": {
+                                          "key": "meta._sgs_lens_supplied"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px",
+                                  "right": "20px",
+                                  "bottom": "18px",
+                                  "left": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "UV protection",
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.16
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-label"
+                                }
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "100% UV400",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "6px"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px",
+                                  "right": "20px",
+                                  "bottom": "18px",
+                                  "left": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Prescription",
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.16
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-label"
+                                }
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Single vision & varifocal",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "6px"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px",
+                                  "right": "20px",
+                                  "bottom": "18px",
+                                  "left": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Gender",
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.16
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-label"
+                                }
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "6px"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "bindings": {
+                                      "text": {
+                                        "source": "sgs-product/field",
+                                        "args": {
+                                          "key": "attribute.pa_gender"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px",
+                                  "right": "20px",
+                                  "bottom": "18px",
+                                  "left": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Availability",
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.16
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-label"
+                                }
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "6px"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "bindings": {
+                                      "text": {
+                                        "source": "sgs-product/field",
+                                        "args": {
+                                          "key": "stock_status"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px",
+                                  "right": "20px",
+                                  "bottom": "18px",
+                                  "left": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Warranty",
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.16
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-label"
+                                }
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "2 years, manufacturer",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "6px"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px",
+                                  "right": "20px",
+                                  "bottom": "18px",
+                                  "left": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Dispatch",
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.16
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-label"
+                                }
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "1 working day",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "6px"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px",
+                                  "right": "20px",
+                                  "bottom": "18px",
+                                  "left": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "With lenses",
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.16
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-label"
+                                }
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "7–10 working days",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "6px"
                                     }
                                   }
                                 }
@@ -1694,7 +2277,8 @@
                 "mobile": {
                   "top": "56px"
                 }
-              }
+              },
+              "sgsConditionCollectionQueryId": 11
             },
             "innerBlocks": [
               {
@@ -1861,7 +2445,8 @@
                 "mobile": {
                   "top": "56px"
                 }
-              }
+              },
+              "sgsConditionCollectionQueryId": 12
             },
             "innerBlocks": [
               {
@@ -2028,17 +2613,6 @@
         }
       }
     ]
-  },
-  {
-    "name": "sgs/modal",
-    "attributes": {
-      "anchor": "size-guide",
-      "triggerStyle": "none",
-      "triggerText": "Which size am I?",
-      "maxWidth": "large",
-      "modalBackground": "surface",
-      "modalRef": 461
-    }
   },
   {
     "name": "core/template-part",

@@ -39,7 +39,11 @@
             "desktop": {
               "bottom": "10px"
             }
-          }
+          },
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDuration": "500",
+          "sgsAnimationDistance": "18",
+          "sgsAnimationEasing": "ease"
         }
       },
       {
@@ -58,7 +62,11 @@
             }
           },
           "maxWidth": 18,
-          "maxWidthUnit": "ch"
+          "maxWidthUnit": "ch",
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDuration": "600",
+          "sgsAnimationDistance": "18",
+          "sgsAnimationEasing": "ease"
         }
       },
       {
@@ -69,13 +77,17 @@
             "desktop": 17
           },
           "textColour": "text-muted",
-          "maxWidth": 620,
-          "maxWidthUnit": "px",
+          "maxWidth": 62,
+          "maxWidthUnit": "ch",
           "margin": {
             "desktop": {
               "bottom": "48px"
             }
-          }
+          },
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDuration": "700",
+          "sgsAnimationDistance": "18",
+          "sgsAnimationEasing": "ease"
         }
       },
       {
@@ -362,7 +374,11 @@
                     "desktop": {
                       "bottom": "16px"
                     }
-                  }
+                  },
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless"
                 }
               },
               {
@@ -420,7 +436,11 @@
                     "desktop": {
                       "bottom": "16px"
                     }
-                  }
+                  },
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless"
                 }
               },
               {
@@ -449,14 +469,21 @@
                       "description": ""
                     }
                   ],
-                  "layout": "list"
+                  "layout": "list",
+                  "numberFontFamily": "heading",
+                  "titleFontFamily": "body",
+                  "titleFontSize": {
+                    "desktop": 15.5
+                  },
+                  "titleFontSizeUnit": "px",
+                  "titleFontWeight": "400"
                 }
               },
               {
                 "name": "sgs/button",
                 "attributes": {
                   "label": "Choose a frame",
-                  "url": "#lens-configurator",
+                  "url": "/shop/",
                   "inheritStyle": "custom",
                   "colourBackground": "primary",
                   "colourBackgroundHover": "primary-hover",

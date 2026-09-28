@@ -80,7 +80,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Ray-Ban\">RAY-BAN</a>",
+                      "text": "<a href=\"/shop/?brands=ray-ban\">RAY-BAN</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -129,7 +129,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Gucci\">GUCCI</a>",
+                      "text": "<a href=\"/shop/?brands=gucci\">GUCCI</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -178,7 +178,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Oakley\">OAKLEY</a>",
+                      "text": "<a href=\"/shop/?brands=oakley\">OAKLEY</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -227,7 +227,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Michael+Kors\">MICHAEL KORS</a>",
+                      "text": "<a href=\"/shop/?brands=michael-kors\">MICHAEL KORS</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -276,7 +276,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Prada\">PRADA</a>",
+                      "text": "<a href=\"/shop/?brands=prada\">PRADA</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -325,7 +325,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Polaroid\">POLAROID</a>",
+                      "text": "<a href=\"/shop/?brands=polaroid\">POLAROID</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -374,7 +374,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Versace\">VERSACE</a>",
+                      "text": "<a href=\"/shop/?brands=versace\">VERSACE</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -423,7 +423,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Police\">POLICE</a>",
+                      "text": "<a href=\"/shop/?brands=police\">POLICE</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -472,7 +472,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Carrera\">CARRERA</a>",
+                      "text": "<a href=\"/shop/?brands=carrera\">CARRERA</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -521,7 +521,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Dolce+%26+Gabbana\">DOLCE & GABBANA</a>",
+                      "text": "<a href=\"/shop/?brands=dolce-gabbana\">DOLCE & GABBANA</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -570,7 +570,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Balenciaga\">BALENCIAGA</a>",
+                      "text": "<a href=\"/shop/?brands=balenciaga\">BALENCIAGA</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -619,7 +619,7 @@
                   {
                     "name": "sgs/text",
                     "attributes": {
-                      "text": "<a href=\"/sunglasses?brand=Ferrari+Scuderia\">FERRARI SCUDERIA</a>",
+                      "text": "<a href=\"/shop/?brands=ferrari-scuderia\">FERRARI SCUDERIA</a>",
                       "fontFamily": "heading",
                       "fontWeight": "500",
                       "fontSize": {
@@ -663,241 +663,241 @@
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Ray-Ban",
-                  "url": "/sunglasses?brand=Ray-Ban"
+                  "url": "/shop/?brands=ray-ban"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Gucci",
-                  "url": "/sunglasses?brand=Gucci"
+                  "url": "/shop/?brands=gucci"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Oakley",
-                  "url": "/sunglasses?brand=Oakley"
+                  "url": "/shop/?brands=oakley"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Prada",
-                  "url": "/sunglasses?brand=Prada"
+                  "url": "/shop/?brands=prada"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Versace",
-                  "url": "/sunglasses?brand=Versace"
+                  "url": "/shop/?brands=versace"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Dolce & Gabbana",
-                  "url": "/sunglasses?brand=Dolce+%26+Gabbana"
+                  "url": "/shop/?brands=dolce-gabbana"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Balenciaga",
-                  "url": "/sunglasses?brand=Balenciaga"
+                  "url": "/shop/?brands=balenciaga"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Michael Kors",
-                  "url": "/sunglasses?brand=Michael+Kors"
+                  "url": "/shop/?brands=michael-kors"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Polaroid",
-                  "url": "/sunglasses?brand=Polaroid"
+                  "url": "/shop/?brands=polaroid"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Police",
-                  "url": "/sunglasses?brand=Police"
+                  "url": "/shop/?brands=police"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Carrera",
-                  "url": "/sunglasses?brand=Carrera"
+                  "url": "/shop/?brands=carrera"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Ferrari Scuderia",
-                  "url": "/sunglasses?brand=Ferrari+Scuderia"
+                  "url": "/shop/?brands=ferrari-scuderia"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Emporio Armani",
-                  "url": "/sunglasses?brand=Emporio+Armani"
+                  "url": "/shop/?brands=emporio-armani"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Coach",
-                  "url": "/sunglasses?brand=Coach"
+                  "url": "/shop/?brands=coach"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Ralph Lauren",
-                  "url": "/sunglasses?brand=Ralph+Lauren"
+                  "url": "/shop/?brands=ralph-lauren"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Diesel",
-                  "url": "/sunglasses?brand=Diesel"
+                  "url": "/shop/?brands=diesel"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Adidas Originals",
-                  "url": "/sunglasses?brand=Adidas+Originals"
+                  "url": "/shop/?brands=adidas-originals"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Barbour",
-                  "url": "/sunglasses?brand=Barbour"
+                  "url": "/shop/?brands=barbour"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Calvin Klein",
-                  "url": "/sunglasses?brand=Calvin+Klein"
+                  "url": "/shop/?brands=calvin-klein"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Chlo\u00c3\u00a9",
-                  "url": "/sunglasses?brand=Chlo%C3%A9"
+                  "url": "/shop/?brands=chloe"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "David Beckham",
-                  "url": "/sunglasses?brand=David+Beckham"
+                  "url": "/shop/?brands=david-beckham"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "DKNY",
-                  "url": "/sunglasses?brand=DKNY"
+                  "url": "/shop/?brands=dkny"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Dsquared2",
-                  "url": "/sunglasses?brand=Dsquared2"
+                  "url": "/shop/?brands=dsquared2"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Farah",
-                  "url": "/sunglasses?brand=Farah"
+                  "url": "/shop/?brands=farah"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Fila",
-                  "url": "/sunglasses?brand=Fila"
+                  "url": "/shop/?brands=fila"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Giorgio Armani",
-                  "url": "/sunglasses?brand=Giorgio+Armani"
+                  "url": "/shop/?brands=giorgio-armani"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Hugo Boss",
-                  "url": "/sunglasses?brand=Hugo+Boss"
+                  "url": "/shop/?brands=hugo-boss"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Lipsy",
-                  "url": "/sunglasses?brand=Lipsy"
+                  "url": "/shop/?brands=lipsy"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Marc Jacobs",
-                  "url": "/sunglasses?brand=Marc+Jacobs"
+                  "url": "/shop/?brands=marc-jacobs"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "MaxMara",
-                  "url": "/sunglasses?brand=MaxMara"
+                  "url": "/shop/?brands=maxmara"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Montblanc",
-                  "url": "/sunglasses?brand=Montblanc"
+                  "url": "/shop/?brands=montblanc"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Mulberry",
-                  "url": "/sunglasses?brand=Mulberry"
+                  "url": "/shop/?brands=mulberry"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Nike",
-                  "url": "/sunglasses?brand=Nike"
+                  "url": "/shop/?brands=nike"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "O'Neill",
-                  "url": "/sunglasses?brand=O%27Neill"
+                  "url": "/shop/?brands=oneill"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Radley",
-                  "url": "/sunglasses?brand=Radley"
+                  "url": "/shop/?brands=radley"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Superdry",
-                  "url": "/sunglasses?brand=Superdry"
+                  "url": "/shop/?brands=superdry"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Swarovski",
-                  "url": "/sunglasses?brand=Swarovski"
+                  "url": "/shop/?brands=swarovski"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Tiffany",
-                  "url": "/sunglasses?brand=Tiffany"
+                  "url": "/shop/?brands=tiffany"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Tommy Hilfiger",
-                  "url": "/sunglasses?brand=Tommy+Hilfiger"
+                  "url": "/shop/?brands=tommy-hilfiger"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Vogue",
-                  "url": "/sunglasses?brand=Vogue"
+                  "url": "/shop/?brands=vogue"
                 }
               ],
               "itemTextDecoration": "none"

@@ -35,73 +35,73 @@
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Pilot",
-                  "url": "/sunglasses?shape=Pilot"
+                  "url": "/shop/?filter_shape=pilot&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Wayfarer",
-                  "url": "/sunglasses?shape=Wayfarer"
+                  "url": "/shop/?filter_shape=wayfarer&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Square",
-                  "url": "/sunglasses?shape=Square"
+                  "url": "/shop/?filter_shape=square&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Rectangle",
-                  "url": "/sunglasses?shape=Rectangle"
+                  "url": "/shop/?filter_shape=rectangle&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Round",
-                  "url": "/sunglasses?shape=Round"
+                  "url": "/shop/?filter_shape=round&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Oval",
-                  "url": "/sunglasses?shape=Oval"
+                  "url": "/shop/?filter_shape=oval&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Cat-eye",
-                  "url": "/sunglasses?shape=Cat-eye"
+                  "url": "/shop/?filter_shape=cat-eye&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Butterfly",
-                  "url": "/sunglasses?shape=Butterfly"
+                  "url": "/shop/?filter_shape=butterfly&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Browline",
-                  "url": "/sunglasses?shape=Browline"
+                  "url": "/shop/?filter_shape=browline&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Geometric",
-                  "url": "/sunglasses?shape=Geometric"
+                  "url": "/shop/?filter_shape=geometric&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Shield",
-                  "url": "/sunglasses?shape=Shield"
+                  "url": "/shop/?filter_shape=shield&query_type_shape=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Oversized",
-                  "url": "/sunglasses?shape=Oversized"
+                  "url": "/shop/?filter_shape=oversized&query_type_shape=or"
                 }
               ],
               "itemTextDecoration": "none"
@@ -130,37 +130,37 @@
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Best sellers",
-                  "url": "/sunglasses?sort=featured"
+                  "url": "/shop/"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Biggest savings",
-                  "url": "/sunglasses?sort=save"
+                  "url": "/shop/?orderby=sgs_biggest_saving"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Polarised",
-                  "url": "/sunglasses?pol=true"
+                  "url": "/shop/?tags=polarised"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Under \u00c2\u00a3100",
-                  "url": "/sunglasses?price=100"
+                  "url": "/shop/?max_price=100"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Women's",
-                  "url": "/sunglasses?gender=Women"
+                  "url": "/shop/?filter_gender=women&query_type_gender=or"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Men's",
-                  "url": "/sunglasses?gender=Men"
+                  "url": "/shop/?filter_gender=men&query_type_gender=or"
                 }
               ],
               "itemTextDecoration": "none"

@@ -9,6 +9,8 @@
  *   orders (Black, Havana, Gold, ...; Pilot, Wayfarer, Square, ...), each attribute
  *   sorted by that custom order.
  * Both attributes are filters only: not variations, not shown on the product page.
+ * - _sgs_lens_supplied meta: the lenses a frame comes with, as the draft's Details tab
+ *   reads it ("Tinted, category 2", "Polarised, category 3"), from its pol and lensCat.
  *
  * Run: wp eval-file seed-facets.php data.json --user=Claude
  *
@@ -152,6 +154,7 @@ foreach ( $data['PRODUCTS'] as $index => $p ) {
 		wp_set_object_terms( $product_id, $ids, $facet_taxonomy );
 	}
 	$product->set_attributes( $attributes );
+	$product->update_meta_data( '_sgs_lens_supplied', sprintf( '%s, category %d', empty( $p['pol'] ) ? 'Tinted' : 'Polarised', (int) $p['lensCat'] ) );
 	$product->set_menu_order( (int) $index );
 	$product->save();
 	WP_CLI::log( sprintf( '%s: %s, %s, order %d', $product->get_name(), implode( '+', $genders ), $band, $index ) );

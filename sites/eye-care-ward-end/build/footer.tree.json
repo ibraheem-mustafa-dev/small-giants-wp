@@ -147,13 +147,13 @@
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "<a href=\"/sunglasses/\">Sunglasses</a>"
+                      "content": "<a href=\"/shop/\">Sunglasses</a>"
                     }
                   },
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "<a href=\"/sunglasses/\">All brands</a>"
+                      "content": "<a href=\"/shop/\">All brands</a>"
                     }
                   },
                   {
@@ -219,7 +219,7 @@
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "<a href=\"/help/\">Size guide</a>"
+                      "content": "<a href=\"#size-guide\">Size guide</a>"
                     }
                   },
                   {
@@ -377,5 +377,30 @@
       "floatingHideLabelBelow": 768,
       "backgroundColour": "whatsapp"
     }
+  },
+  {
+    "name": "sgs/modal",
+    "attributes": {
+      "anchor": "size-guide",
+      "triggerStyle": "none",
+      "triggerText": "Which size am I?",
+      "maxWidth": "large",
+      "modalBackground": "surface",
+      "modalRef": 461,
+      "dialogWidth": "720",
+      "dialogWidthUnit": "px",
+      "borderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      },
+      "borderStyle": "solid",
+      "borderColour": "border",
+      "dialogShadow": "0 30px 70px",
+      "dialogShadowColour": "site 30%",
+      "closeStyle": "glyph"
+    },
+    "innerBlocks": []
   }
 ]
