@@ -9347,7 +9347,7 @@
       "slug": "sgs/product-card",
       "attr": "priceRowSpaceAbove",
       "fields": {
-        "css_property": "margin-top",
+        "css_property": "padding-top",
         "css_element": "priceRow"
       }
     },
