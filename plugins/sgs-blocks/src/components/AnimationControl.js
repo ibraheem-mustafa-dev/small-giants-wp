@@ -7,7 +7,8 @@
  * attributes and plays the entrance as a Web Animations API keyframe
  * animation, not a CSS transition.
  */
-import { SelectControl, Notice, NumberControl } from '@wordpress/components';
+import { SelectControl, Notice } from '@wordpress/components';
+import { NumberControl } from './primitives';
 import { __ } from '@wordpress/i18n';
 
 /** Clamp a custom duration to a safe range in milliseconds (mirrors includes/animation-timing-clamp.php). */

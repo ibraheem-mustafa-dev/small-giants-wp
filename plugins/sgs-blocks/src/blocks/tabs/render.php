@@ -121,21 +121,21 @@ $css_vars = array_merge( $css_vars, sgs_custom_property_gradient_decls( 'sgs-pan
 $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 
 // ── Tab button padding / min-height / indicator thickness (Eye Care
-// product-page parity, 2026-09-28) — plain CSS-length attrs, each sanitised
-// through sgs_css_length_value() and emitted as an inline CUSTOM-PROPERTY
-// VALUE (allowed under the no-inline contract §A — only real property
-// declarations are forbidden). style.css reads each with its existing
-// literal as the var() fallback, so an unconfigured client renders
+// product-page parity, 2026-09-28). tabPadding is a flat box {top,right,
+// bottom,left} — mirrors sgs/form's submitPadding exactly, resolved to a CSS
+// shorthand via the shared sgs_box_object_shorthand() helper and emitted as a
+// real scoped declaration below (element-manifest conformance requires
+// css:padding to reach a real `padding` property, not a custom-property
+// proxy — unlike min-height/indicator-thickness, which style.css already
+// reads via var()). tabMinHeight/tabIndicatorThickness stay CSS-length attrs
+// sanitised through sgs_css_length_value() and emitted as inline CUSTOM-
+// PROPERTY VALUES (allowed under the no-inline contract §A — only real
+// property declarations are forbidden); style.css reads each with its
+// existing literal as the var() fallback, so an unconfigured client renders
 // byte-identical to before.
-$tab_padding_inline = sgs_css_length_value( $attributes['tabPaddingInline'] ?? '' );
-if ( '' !== $tab_padding_inline ) {
-	$css_vars[] = '--sgs-tab-padding-inline:' . $tab_padding_inline;
-}
-$tab_padding_block = sgs_css_length_value( $attributes['tabPaddingBlock'] ?? '' );
-if ( '' !== $tab_padding_block ) {
-	$css_vars[] = '--sgs-tab-padding-block:' . $tab_padding_block;
-}
-$tab_min_height = sgs_css_length_value( $attributes['tabMinHeight'] ?? '' );
+$tab_padding_box = is_array( $attributes['tabPadding'] ?? null ) ? $attributes['tabPadding'] : array();
+$tab_padding     = function_exists( 'sgs_box_object_shorthand' ) ? sgs_box_object_shorthand( $tab_padding_box ) : null;
+$tab_min_height  = sgs_css_length_value( $attributes['tabMinHeight'] ?? '' );
 if ( '' !== $tab_min_height ) {
 	$css_vars[] = '--sgs-tab-min-height:' . $tab_min_height;
 }
@@ -287,6 +287,15 @@ if ( '' !== $tab_text_decl ) {
 // (resting + active alike) — text-transform/letter-spacing/font-weight/size
 // are not state-dependent in the draft.
 $tabs_responsive_css .= sgs_typography_css_rule( $attributes, 'tab', "{$root_sel} .sgs-tabs__tab" );
+
+// Tab button padding (Eye Care product-page parity, 2026-09-28) — a real
+// `padding` declaration (mirrors sgs/form's submitPadding mechanism exactly),
+// scoped to $root_sel so it beats style.css's `.sgs-tabs__tab{padding:12px
+// 20px}` default by specificity ((0,3,0) vs (0,1,0)) regardless of source
+// order. Unset (every side empty) leaves style.css's literal untouched.
+if ( null !== $tab_padding ) {
+	$tabs_responsive_css .= "{$root_sel} .sgs-tabs__tab{padding:{$tab_padding};}";
+}
 
 // $css_vars (CSS custom-property VALUES only, e.g. --sgs-tab-text:…) stay
 // inline via extra_styles — a `--x: value` VALUE is allowed by the no-inline

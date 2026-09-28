@@ -129,6 +129,25 @@
 						"css:color": "stockOutOfStockColour"
 					},
 					"_note": "FR-Wave-B. See stock-in-stock note — same mechanism, the out-of-stock state."
+				},
+				"add-to-cart": {
+					"label": "Add to bag button",
+					"order": 6,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "addToCartBackgroundColour",
+						"css:border-color": "addToCartBorderColour",
+						"css:font-size": "addToCartFontSize",
+						"css:font-weight": "addToCartFontWeight",
+						"css:text-transform": "addToCartTextTransform",
+						"css:letter-spacing": "addToCartLetterSpacing",
+						"css:min-height": "addToCartMinHeight"
+					},
+					"_note": "The add-to-cart button (.buybox__add-to-cart): its own look, distinct from the wrapper's border and the price's typography (Eye Care product page, 2026-09-28)."
 				}
 			},
 			"fx": {

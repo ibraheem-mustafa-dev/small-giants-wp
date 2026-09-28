@@ -19,8 +19,10 @@ import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import { SgsColourPanel,
 	SgsBorderControl,
+	SgsBoxControl,
 	SgsLengthControl,
 	TypographyControls,
+	BOX_UNITS,
 	resolveColourToken,
 } from '../../components';
 import { colourVar, textPaintPreview, borderPaintPreview } from '../../utils';
@@ -75,10 +77,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		transitionDuration,
 		hideEmptyTabs,
 		mobileLayout,
-		tabPaddingInline,
-		tabPaddingBlock,
+		tabPadding,
 		tabMinHeight,
 		tabIndicatorThickness,
+		tabFontSize,
+		tabFontSizeUnit,
+		tabFontWeight,
+		tabTextTransform,
+		tabLetterSpacing,
+		tabLetterSpacingUnit,
 	} = attributes;
 
 	const [ activeEditorTab, setActiveEditorTab ] = useState( 0 );
@@ -169,6 +176,61 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	if ( transitionDuration ) {
 		cssVars[ '--sgs-transition-duration' ] = `${ transitionDuration }ms`;
 	}
+	// tabMinHeight/tabIndicatorThickness canvas mirror (CHECK A, 2026-09-28) —
+	// style.css's `.sgs-tabs__tab` min-height + every underline box-shadow/
+	// ::after rule already read `--sgs-tab-min-height`/`--sgs-tab-indicator-
+	// thickness` (the same custom properties render.php emits inline via
+	// $css_vars). style.css is loaded into the editor canvas by block.json's
+	// `style` field, so setting these two vars here is the whole fix — same
+	// mechanism as every other var() on this wrapper, zero new CSS.
+	if ( tabMinHeight ) {
+		cssVars[ '--sgs-tab-min-height' ] = tabMinHeight;
+	}
+	if ( tabIndicatorThickness ) {
+		cssVars[ '--sgs-tab-indicator-thickness' ] = tabIndicatorThickness;
+	}
+
+	// tabPadding/typography canvas mirror (CHECK A, 2026-09-28) — these render
+	// as a literal scoped CSS declaration on `.sgs-tabs__tab` (render.php's
+	// sgs_typography_css_rule() + sgs_box_object_shorthand() calls), not a
+	// custom property style.css already reads, so there is no shared-stylesheet
+	// shortcut here: the tab Button elements below apply the same computed
+	// values directly as an inline style (mirrors the existing `textPreview`
+	// mechanism just below). tabFontSize/tabLetterSpacing may be the tiered
+	// {desktop,tablet,mobile} object TypographyControls writes — the canvas has
+	// no responsive-preview mode, so only the desktop tier is mirrored, same
+	// simplification the rest of this file's colour previews make.
+	const tabFontSizeDesktop =
+		tabFontSize && typeof tabFontSize === 'object'
+			? tabFontSize.desktop
+			: tabFontSize;
+	const tabLetterSpacingDesktop =
+		tabLetterSpacing && typeof tabLetterSpacing === 'object'
+			? tabLetterSpacing.desktop
+			: tabLetterSpacing;
+	const tabPaddingShorthand =
+		tabPadding && Object.values( tabPadding ).some( Boolean )
+			? [ 'top', 'right', 'bottom', 'left' ]
+					.map( ( side ) => tabPadding[ side ] || '0' )
+					.join( ' ' )
+			: undefined;
+	const tabButtonPreviewStyle = {
+		fontSize:
+			tabFontSizeDesktop !== undefined &&
+			tabFontSizeDesktop !== null &&
+			'' !== tabFontSizeDesktop
+				? `${ tabFontSizeDesktop }${ tabFontSizeUnit || 'px' }`
+				: undefined,
+		fontWeight: tabFontWeight || undefined,
+		textTransform: tabTextTransform || undefined,
+		letterSpacing:
+			tabLetterSpacingDesktop !== undefined &&
+			tabLetterSpacingDesktop !== null &&
+			'' !== tabLetterSpacingDesktop
+				? `${ tabLetterSpacingDesktop }${ tabLetterSpacingUnit || 'px' }`
+				: undefined,
+		padding: tabPaddingShorthand,
+	};
 
 	const blockProps = useBlockProps( {
 		className: wrapperClassName,
@@ -488,19 +550,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes={ setAttributes }
 						prefix="tab"
 					/>
-					<SgsLengthControl
-						label={ __( 'Tab padding (horizontal)', 'sgs-blocks' ) }
-						help={ __( 'Left/right padding inside each tab button. Empty keeps the current 20px.', 'sgs-blocks' ) }
-						value={ tabPaddingInline || '' }
-						onChange={ ( val ) => setAttributes( { tabPaddingInline: val || '' } ) }
-						presets={ false }
-					/>
-					<SgsLengthControl
-						label={ __( 'Tab padding (vertical)', 'sgs-blocks' ) }
-						help={ __( 'Top/bottom padding inside each tab button. Empty keeps the current 12px.', 'sgs-blocks' ) }
-						value={ tabPaddingBlock || '' }
-						onChange={ ( val ) => setAttributes( { tabPaddingBlock: val || '' } ) }
-						presets={ false }
+					{ /* tabPadding — flat box {top,right,bottom,left}, mirrors sgs/form's
+					   submitPadding exactly (same SgsBoxControl, no ResponsiveOverride/
+					   tiers — a single client-wide default, not per-device). */ }
+					<SgsBoxControl
+						label={ __( 'Tab padding', 'sgs-blocks' ) }
+						values={ tabPadding && typeof tabPadding === 'object' ? tabPadding : {} }
+						units={ BOX_UNITS }
+						onChange={ ( next ) => setAttributes( { tabPadding: next || {} } ) }
 					/>
 					<SgsLengthControl
 						label={ __( 'Tab minimum height', 'sgs-blocks' ) }
@@ -581,7 +638,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										? __( 'Empty: hidden on the site until it has content', 'sgs-blocks' )
 										: undefined
 								}
-								style={ textPreview }
+								style={ { ...tabButtonPreviewStyle, ...textPreview } }
 								aria-selected={ isActive }
 								onClick={ () => setActiveEditorTab( index ) }
 							>

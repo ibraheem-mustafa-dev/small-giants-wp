@@ -156,7 +156,7 @@
 	min-width: 44px;
 	padding: 12px 24px;
 	font-size: var(--sgs-buybox-cta-size, 1.05rem);
-	font-weight: 700;
+	font-weight: var(--sgs-buybox-cta-weight, 700);
 	border: 0;
 	border-radius: var(--sgs-buybox-cta-radius, 8px);
 	background: var(--sgs-buybox-cta-bg, var(--wp--preset--color--accent, var(--wp--preset--color--primary, #1e1e1e)));

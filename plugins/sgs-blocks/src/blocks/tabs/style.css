@@ -10,12 +10,15 @@
  *   --sgs-panel-bg              Panel background
  *   --sgs-panel-border          Border between nav and panel
  *   --sgs-transition-duration   Transition speed (ms value with unit)
- *   --sgs-tab-padding-block     Tab button top/bottom padding (tabPaddingBlock)
- *   --sgs-tab-padding-inline    Tab button left/right padding (tabPaddingInline)
  *   --sgs-tab-min-height        Tab button minimum height (tabMinHeight)
  *   --sgs-tab-indicator-thickness  Underline-style indicator thickness
  *                                  (tabIndicatorThickness) — drives both the
  *                                  box-shadow spread and the sliding ::after bar
+ *
+ * tabPadding (a box {top,right,bottom,left}) is NOT a custom property here —
+ * render.php emits it as a real `padding` declaration in the block's own
+ * scoped <style>, which beats this file's `12px 20px` default by selector
+ * specificity. See render.php's tabPadding/$tab_padding comments.
  *
  * @package SGS\Blocks
  */
@@ -80,11 +83,7 @@
 	cursor: pointer;
 	outline: none;
 
-	/* block(top/bottom)/inline(left/right) — --sgs-tab-padding-block/-inline
-	 * are set inline per instance from tabPaddingBlock/tabPaddingInline
-	 * (Eye Care product-page parity, 2026-09-28); an unconfigured client
-	 * keeps this exact 12px/20px. */
-	padding: var( --sgs-tab-padding-block, 12px ) var( --sgs-tab-padding-inline, 20px );
+	padding: 12px 20px;
 	font-size: inherit;
 	font-family: inherit;
 	line-height: 1.4;
