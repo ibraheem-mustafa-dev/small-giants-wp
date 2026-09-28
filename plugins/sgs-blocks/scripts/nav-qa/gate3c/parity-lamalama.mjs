@@ -37,6 +37,10 @@ const state = ( name, act ) => ( { name, ...Object.fromEntries( [ 'draft', 'live
 
 export default {
 	name: 'lamalama',
+	// The automatic check (GAP-CHECKLIST section 12) excludes header, footer and banner landmarks by
+	// design, so on a header-only copy it compares only the page bodies, which here are QA scaffolding and
+	// not the reference's page. The header is covered by the section 11 header checks below.
+	auto: false,
 	widths: [ 1920, 1440, 768, 375 ],
 	draft: { url: REF, open: ( h ) => h.wait( 5000 ) },
 	live: { url: LIVE },

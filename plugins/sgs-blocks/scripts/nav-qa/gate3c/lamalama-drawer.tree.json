@@ -2,27 +2,62 @@
   {
     "name": "sgs/nav-drawer",
     "attributes": {
-      "anchor": { "desktop": "header-box", "tablet": "header-box", "mobile": "header-box" },
+      "anchor": {
+        "desktop": "header-box",
+        "tablet": "header-box",
+        "mobile": "header-box"
+      },
       "drawerAlign": "stretch",
       "modality": "non-modal",
       "surfaceBlur": "4px",
       "drawerBg": "#000000",
       "surfaceOpacity": 0.6,
       "borderRadius": {
-        "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
+        "desktop": {
+          "topLeft": "4px",
+          "topRight": "4px",
+          "bottomLeft": "4px",
+          "bottomRight": "4px"
+        }
       },
-      "closeStyle": { "desktop": "trigger" },
+      "closeStyle": {
+        "desktop": "trigger"
+      },
       "scrimColour": "#000000",
-      "scrimOpacity": { "desktop": 0.4 },
-      "scrimBlur": { "desktop": "16px" },
-      "drawerTextColour": "#f9f4eb",
-      "entryDuration": 450,
-      "exitDuration": 350,
-      "entryEasing": "ease-out-css",
-      "drawerPadding": {
-        "desktop": { "top": "0px", "right": "0px", "bottom": "13px", "left": "0px" }
+      "scrimOpacity": {
+        "desktop": 0.4
       },
-      "drawerGap": { "desktop": "0px" },
+      "scrimBlur": {
+        "desktop": "16px"
+      },
+      "drawerTextColour": "#f9f4eb",
+      "entryAnimation": {
+        "desktop": "grow-from-anchor",
+        "tablet": "grow-from-anchor",
+        "mobile": "grow-from-anchor"
+      },
+      "entryDuration": 280,
+      "exitDuration": 250,
+      "entryEasing": "custom",
+      "entryEasingCustom": "cubic-bezier(0.16, 1, 0.3, 1)",
+      "entryFade": false,
+      "itemStagger": 30,
+      "itemStaggerDuration": 300,
+      "itemStaggerDistance": {
+        "desktop": 18
+      },
+      "itemStaggerReveal": "clip",
+      "drawerPadding": {
+        "desktop": {
+          "top": "0px",
+          "right": "0px",
+          "bottom": "13px",
+          "left": "0px"
+        }
+      },
+      "drawerGap": {
+        "desktop": "0px"
+      },
       "accordionExclusive": true,
       "ariaLabel": "Lama Lama menu"
     },
@@ -32,80 +67,189 @@
         "attributes": {
           "ref": 131,
           "navLabel": "Lama Lama drawer menu",
-          "gap": { "desktop": "0px" },
-          "itemBorderWidth": { "bottom": "1px" },
+          "gap": {
+            "desktop": "0px"
+          },
+          "itemBorderWidth": {
+            "bottom": "1px"
+          },
           "itemBorderColour": "rgba(249,244,235,0.1)",
-          "itemBorderColourHover": "rgba(249,244,235,0.1)",
+          "itemBorderColourHover": "transparent",
           "itemBorderColourCurrent": "rgba(249,244,235,0.1)",
           "itemColour": "#f9f4eb",
           "itemColourHover": "#f9f4eb",
           "itemFontFamily": "SuisseBPIntl",
           "itemLineHeight": 22.4,
           "itemLineHeightUnit": "px",
-          "itemLetterSpacing": { "desktop": -0.32 },
+          "itemLetterSpacing": {
+            "desktop": -0.32
+          },
           "itemLetterSpacingUnit": "px",
           "itemBgHover": "rgba(249,244,235,0.1)",
-          "itemBorderColourHover": "transparent",
           "itemMotionDuration": 120,
+          "itemPadding": {
+            "top": "13.3px",
+            "right": "12px",
+            "bottom": "13.3px",
+            "left": "32px"
+          },
+          "itemBorderRadius": {
+            "topLeft": "0",
+            "topRight": "0",
+            "bottomLeft": "0",
+            "bottomRight": "0"
+          },
+          "itemOrnament": {
+            "desktop": "icon",
+            "tablet": "icon",
+            "mobile": "icon"
+          },
+          "itemOrnamentIcon": {
+            "source": "custom",
+            "svg": "<svg viewBox=\"0 0 10 10\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M2 8H0V10H2V8Z\" fill=\"currentColor\"/><path d=\"M4 6H2V8H4V6Z\" fill=\"currentColor\"/><path d=\"M6 8H4V10H6V8Z\" fill=\"currentColor\"/><path d=\"M10 8H8V10H10V8Z\" fill=\"currentColor\"/><path d=\"M8 6H6V8H8V6Z\" fill=\"currentColor\"/><path d=\"M6 4H4V6H6V4Z\" fill=\"currentColor\"/><path d=\"M10 4H8V6H10V4Z\" fill=\"currentColor\"/><path d=\"M2 4H0V6H2V4Z\" fill=\"currentColor\"/><path d=\"M8 2H6V4H8V2Z\" fill=\"currentColor\"/><path d=\"M4 2H2V4H4V2Z\" fill=\"currentColor\"/><path d=\"M6 0H4V2H6V0Z\" fill=\"currentColor\"/><path d=\"M2 0H0V2H2V0Z\" fill=\"currentColor\"/><path d=\"M10 0H8V2H10V0Z\" fill=\"currentColor\"/></svg>"
+          },
+          "itemOrnamentRevealMode": {
+            "desktop": "hover-draw",
+            "tablet": "hover-draw",
+            "mobile": "hover-draw"
+          },
+          "itemOrnamentReserveSpace": true,
+          "itemTrailingIconColour": "#f9f4eb",
+          "itemTrailingIconSize": {
+            "desktop": "10px"
+          },
+          "itemTrailingIcons": {
+            "id:4423": {
+              "source": "custom",
+              "svg": "<svg viewBox=\"0 0 10 10\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M2 8H0V10H2V8Z\" fill=\"currentColor\"/><path d=\"M6 0H4V2H6V0Z\" fill=\"currentColor\"/><path d=\"M10 0H8V2H10V0Z\" fill=\"currentColor\"/><path d=\"M10 4H8V6H10V4Z\" fill=\"currentColor\"/></svg>"
+            }
+          },
           "submenuColour": "#f9f4eb",
           "submenuLinkBg": "transparent",
           "submenuLinkBgHover": "transparent",
-          "itemExpanderIcon": { "source": "lucide", "name": "grip-horizontal" }
+          "itemExpanderIcon": {
+            "source": "custom",
+            "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 10 10\" fill=\"currentColor\"><rect x=\"4\" y=\"0\" width=\"2\" height=\"2\"/><rect x=\"4\" y=\"8\" width=\"2\" height=\"2\"/><rect x=\"0\" y=\"4\" width=\"2\" height=\"2\"/><rect x=\"8\" y=\"4\" width=\"2\" height=\"2\"/><rect x=\"4\" y=\"4\" width=\"2\" height=\"2\"/></svg>"
+          }
         }
       },
       {
         "name": "sgs/container",
         "attributes": {
-          "contentWidth": { "desktop": "full" },
-          "padding": { "desktop": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" } },
-          "margin": { "desktop": { "top": "13px", "right": "13px", "left": "13px" } }
+          "contentWidth": {
+            "desktop": "full"
+          },
+          "padding": {
+            "desktop": {
+              "top": "0px",
+              "right": "0px",
+              "bottom": "0px",
+              "left": "0px"
+            }
+          },
+          "margin": {
+            "desktop": {
+              "top": "13px",
+              "right": "13px",
+              "left": "13px"
+            }
+          }
         },
         "innerBlocks": [
           {
-        "name": "sgs/button",
-        "attributes": {
-          "label": "Our pitchdeck",
-          "url": "https://lamalama.com/pitchdeck/",
-          "inheritStyle": "outline",
-          "widthType": { "desktop": "full" },
-          "margin": { "desktop": { "top": "0px", "right": "0px", "left": "0px" } },
-          "minHeight": { "desktop": "50px" },
-          "minHeightUnit": "px",
-          "fontFamily": "'Sometype Mono', monospace",
-          "fontSize": { "desktop": 10 },
-          "fontSizeUnit": "px",
-          "fontWeight": "500",
-          "lineHeight": { "desktop": 18 },
-          "lineHeightUnit": "px",
-          "letterSpacing": { "desktop": -0.2 },
-          "letterSpacingUnit": "px",
-          "textTransform": "uppercase",
-          "colourText": "#f9f4eb",
-          "colourBackground": "transparent",
-          "colourTextHover": "#000000",
-          "colourBackgroundHover": "#f9f4eb",
-          "borderColourHover": "#f9f4eb",
-          "borderWidth": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" },
-          "borderColour": "rgba(249,244,235,0.2)",
-          "borderRadius": {
-            "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
-          },
-          "fx": "scramble",
-          "fxTrigger": "hover"
-        }
-      }
+            "name": "sgs/button",
+            "attributes": {
+              "label": "Our pitchdeck",
+              "url": "https://lamalama.com/pitchdeck/",
+              "inheritStyle": "outline",
+              "widthType": {
+                "desktop": "full"
+              },
+              "margin": {
+                "desktop": {
+                  "top": "0px",
+                  "right": "0px",
+                  "left": "0px"
+                }
+              },
+              "minHeight": {
+                "desktop": "50px"
+              },
+              "minHeightUnit": "px",
+              "fontFamily": "'Sometype Mono', monospace",
+              "fontSize": {
+                "desktop": 10
+              },
+              "fontSizeUnit": "px",
+              "fontWeight": "500",
+              "lineHeight": {
+                "desktop": 18
+              },
+              "lineHeightUnit": "px",
+              "letterSpacing": {
+                "desktop": -0.2
+              },
+              "letterSpacingUnit": "px",
+              "textTransform": "uppercase",
+              "colourText": "#f9f4eb",
+              "colourBackground": "transparent",
+              "colourTextHover": "#000000",
+              "colourBackgroundHover": "#f9f4eb",
+              "borderColourHover": "#f9f4eb",
+              "borderWidth": {
+                "top": "1px",
+                "right": "1px",
+                "bottom": "1px",
+                "left": "1px"
+              },
+              "borderColour": "rgba(249,244,235,0.2)",
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "4px",
+                  "topRight": "4px",
+                  "bottomLeft": "4px",
+                  "bottomRight": "4px"
+                }
+              },
+              "scaleHover": 0.98,
+              "scaleHoverTarget": "face",
+              "fx": "scramble",
+              "fxTrigger": "hover"
+            }
+          }
         ]
       },
       {
         "name": "sgs/container",
         "attributes": {
           "layout": "grid",
-          "contentWidth": { "desktop": "full" },
-          "padding": { "desktop": { "top": "0", "right": "0", "bottom": "0", "left": "0" } },
-          "columns": { "desktop": 2 },
-          "gridTemplateColumns": { "desktop": "1fr 1fr" },
-          "gap": { "desktop": "4px" },
-          "margin": { "desktop": { "top": "10px", "right": "13px", "left": "13px" } }
+          "contentWidth": {
+            "desktop": "full"
+          },
+          "padding": {
+            "desktop": {
+              "top": "0",
+              "right": "0",
+              "bottom": "0",
+              "left": "0"
+            }
+          },
+          "columns": {
+            "desktop": 2
+          },
+          "gridTemplateColumns": {
+            "desktop": "1fr 1fr"
+          },
+          "gap": {
+            "desktop": "4px"
+          },
+          "margin": {
+            "desktop": {
+              "top": "10px",
+              "right": "13px",
+              "left": "13px"
+            }
+          }
         },
         "innerBlocks": [
           {
@@ -114,26 +258,48 @@
               "label": "Schedule a call",
               "url": "https://lamalama.com/contact/",
               "inheritStyle": "primary",
-              "widthType": { "desktop": "full" },
-              "minHeight": { "desktop": "50px" },
+              "widthType": {
+                "desktop": "full"
+              },
+              "minHeight": {
+                "desktop": "50px"
+              },
               "minHeightUnit": "px",
               "fontFamily": "'Sometype Mono', monospace",
-              "fontSize": { "desktop": 10 },
+              "fontSize": {
+                "desktop": 10
+              },
               "fontSizeUnit": "px",
               "fontWeight": "500",
-              "lineHeight": { "desktop": 18 },
+              "lineHeight": {
+                "desktop": 18
+              },
               "lineHeightUnit": "px",
-              "letterSpacing": { "desktop": -0.2 },
+              "letterSpacing": {
+                "desktop": -0.2
+              },
               "letterSpacingUnit": "px",
               "textTransform": "uppercase",
               "colourText": "#000000",
               "colourBackground": "#f9f4eb",
               "colourTextHover": "#f9f4eb",
               "colourBackgroundHover": "#000000",
-              "borderWidth": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" },
-              "borderRadius": {
-                "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
               },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "4px",
+                  "topRight": "4px",
+                  "bottomLeft": "4px",
+                  "bottomRight": "4px"
+                }
+              },
+              "scaleHover": 0.98,
+              "scaleHoverTarget": "face",
               "fx": "scramble",
               "fxTrigger": "hover"
             }
@@ -144,26 +310,48 @@
               "label": "Start a project",
               "url": "https://lamalama.com/contact/",
               "inheritStyle": "secondary",
-              "widthType": { "desktop": "full" },
-              "minHeight": { "desktop": "50px" },
+              "widthType": {
+                "desktop": "full"
+              },
+              "minHeight": {
+                "desktop": "50px"
+              },
               "minHeightUnit": "px",
               "fontFamily": "'Sometype Mono', monospace",
-              "fontSize": { "desktop": 10 },
+              "fontSize": {
+                "desktop": 10
+              },
               "fontSizeUnit": "px",
               "fontWeight": "500",
-              "lineHeight": { "desktop": 18 },
+              "lineHeight": {
+                "desktop": 18
+              },
               "lineHeightUnit": "px",
-              "letterSpacing": { "desktop": -0.2 },
+              "letterSpacing": {
+                "desktop": -0.2
+              },
               "letterSpacingUnit": "px",
               "textTransform": "uppercase",
               "colourText": "#000000",
               "colourBackground": "#f9f4eb",
               "colourTextHover": "#f9f4eb",
               "colourBackgroundHover": "#000000",
-              "borderWidth": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" },
-              "borderRadius": {
-                "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
               },
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "4px",
+                  "topRight": "4px",
+                  "bottomLeft": "4px",
+                  "bottomRight": "4px"
+                }
+              },
+              "scaleHover": 0.98,
+              "scaleHoverTarget": "face",
               "fx": "scramble",
               "fxTrigger": "hover"
             }

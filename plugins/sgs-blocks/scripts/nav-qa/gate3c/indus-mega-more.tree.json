@@ -95,7 +95,11 @@
                         "desktop": -0.15
                       },
                       "letterSpacingUnit": "px",
-                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": "22.5px"
+                      },
+                      "lineHeightUnit": "px"
                     }
                   },
                   {
@@ -184,7 +188,11 @@
                         "desktop": -0.15
                       },
                       "letterSpacingUnit": "px",
-                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": "22.5px"
+                      },
+                      "lineHeightUnit": "px"
                     }
                   },
                   {

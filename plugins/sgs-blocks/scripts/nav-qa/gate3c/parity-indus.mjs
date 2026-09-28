@@ -64,6 +64,10 @@ const LLABEL = inRoot( LDRAWER, '^about$', 'a' );
 
 export default {
 	name: 'indus',
+	// The automatic check (GAP-CHECKLIST section 12) excludes header, footer and banner landmarks by
+	// design, so on a header-only copy it compares only the page bodies, which here are QA scaffolding and
+	// not the reference's page. The header is covered by the section 11 header checks below.
+	auto: false,
 	draft: { url: DRAFT, open: ( h ) => h.wait( 1500 ) },
 	live: { url: LIVE },
 	states: [

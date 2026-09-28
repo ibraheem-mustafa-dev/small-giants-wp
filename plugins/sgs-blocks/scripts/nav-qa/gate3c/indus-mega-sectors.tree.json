@@ -77,8 +77,14 @@
                   "left": "18px"
                 }
               },
-              "shadowLiftOnHover": true,
-              "shadow": "soft"
+              "shadow": "none",
+              "sgsHoverLift": 6,
+              "sgsHoverOpacity": 0.75,
+              "sgsHoverShadow": "custom",
+              "sgsHoverShadowCustom": "0 20px 40px -18px rgba(0,0,0,.4)",
+              "sgsHoverDurationMs": 250,
+              "sgsHoverEasing": "custom",
+              "sgsHoverEasingCustom": "cubic-bezier(.16,.84,.32,1)"
             },
             "innerBlocks": [
               {
@@ -279,8 +285,14 @@
                   "left": "18px"
                 }
               },
-              "shadowLiftOnHover": true,
-              "shadow": "soft"
+              "shadow": "none",
+              "sgsHoverLift": 6,
+              "sgsHoverOpacity": 0.75,
+              "sgsHoverShadow": "custom",
+              "sgsHoverShadowCustom": "0 20px 40px -18px rgba(0,0,0,.4)",
+              "sgsHoverDurationMs": 250,
+              "sgsHoverEasing": "custom",
+              "sgsHoverEasingCustom": "cubic-bezier(.16,.84,.32,1)"
             },
             "innerBlocks": [
               {
@@ -481,8 +493,14 @@
                   "left": "18px"
                 }
               },
-              "shadowLiftOnHover": true,
-              "shadow": "soft"
+              "shadow": "none",
+              "sgsHoverLift": 6,
+              "sgsHoverOpacity": 0.75,
+              "sgsHoverShadow": "custom",
+              "sgsHoverShadowCustom": "0 20px 40px -18px rgba(0,0,0,.4)",
+              "sgsHoverDurationMs": 250,
+              "sgsHoverEasing": "custom",
+              "sgsHoverEasingCustom": "cubic-bezier(.16,.84,.32,1)"
             },
             "innerBlocks": [
               {
@@ -683,8 +701,14 @@
                   "left": "18px"
                 }
               },
-              "shadowLiftOnHover": true,
-              "shadow": "soft"
+              "shadow": "none",
+              "sgsHoverLift": 6,
+              "sgsHoverOpacity": 0.75,
+              "sgsHoverShadow": "custom",
+              "sgsHoverShadowCustom": "0 20px 40px -18px rgba(0,0,0,.4)",
+              "sgsHoverDurationMs": 250,
+              "sgsHoverEasing": "custom",
+              "sgsHoverEasingCustom": "cubic-bezier(.16,.84,.32,1)"
             },
             "innerBlocks": [
               {

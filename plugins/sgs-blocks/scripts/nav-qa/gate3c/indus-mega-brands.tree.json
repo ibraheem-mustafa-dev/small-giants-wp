@@ -690,7 +690,9 @@
                   "borderRadius": 20,
                   "textTransform": "none",
                   "fullWidth": false,
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "lineHeight": 16.5,
+                  "lineHeightUnit": "px"
                 }
               }
             ]
@@ -777,7 +779,11 @@
                   "fontWeight": "700",
                   "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
                   "icon": "arrow-right",
-                  "iconPosition": "after"
+                  "iconPosition": "after",
+                  "lineHeight": {
+                    "desktop": "21px"
+                  },
+                  "lineHeightUnit": "px"
                 }
               }
             ]

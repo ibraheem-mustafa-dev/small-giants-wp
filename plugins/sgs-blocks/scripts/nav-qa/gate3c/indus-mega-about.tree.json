@@ -61,7 +61,14 @@
                 "left": "0px"
               },
               "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.09)"
+              "borderColour": "rgba(30,42,60,0.09)",
+              "sgsBlockLink": "#",
+              "sgsBlockLinkLabel": "Our Story",
+              "sgsHoverOpacity": 0.75,
+              "sgsHoverIndent": "6px",
+              "sgsHoverDurationMs": 220,
+              "sgsHoverEasing": "custom",
+              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)"
             },
             "innerBlocks": [
               {
@@ -99,7 +106,11 @@
                         "desktop": -0.15
                       },
                       "letterSpacingUnit": "px",
-                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": "22.5px"
+                      },
+                      "lineHeightUnit": "px"
                     }
                   },
                   {
@@ -150,7 +161,14 @@
                 "left": "0px"
               },
               "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.09)"
+              "borderColour": "rgba(30,42,60,0.09)",
+              "sgsBlockLink": "#",
+              "sgsBlockLinkLabel": "Certifications",
+              "sgsHoverOpacity": 0.75,
+              "sgsHoverIndent": "6px",
+              "sgsHoverDurationMs": 220,
+              "sgsHoverEasing": "custom",
+              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)"
             },
             "innerBlocks": [
               {
@@ -188,7 +206,11 @@
                         "desktop": -0.15
                       },
                       "letterSpacingUnit": "px",
-                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": "22.5px"
+                      },
+                      "lineHeightUnit": "px"
                     }
                   },
                   {
@@ -239,7 +261,14 @@
                 "left": "0px"
               },
               "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.09)"
+              "borderColour": "rgba(30,42,60,0.09)",
+              "sgsBlockLink": "#",
+              "sgsBlockLinkLabel": "Community & Charity",
+              "sgsHoverOpacity": 0.75,
+              "sgsHoverIndent": "6px",
+              "sgsHoverDurationMs": 220,
+              "sgsHoverEasing": "custom",
+              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)"
             },
             "innerBlocks": [
               {
@@ -277,7 +306,11 @@
                         "desktop": -0.15
                       },
                       "letterSpacingUnit": "px",
-                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": "22.5px"
+                      },
+                      "lineHeightUnit": "px"
                     }
                   },
                   {
@@ -328,7 +361,14 @@
                 "left": "0px"
               },
               "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.09)"
+              "borderColour": "rgba(30,42,60,0.09)",
+              "sgsBlockLink": "#",
+              "sgsBlockLinkLabel": "Sustainability",
+              "sgsHoverOpacity": 0.75,
+              "sgsHoverIndent": "6px",
+              "sgsHoverDurationMs": 220,
+              "sgsHoverEasing": "custom",
+              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)"
             },
             "innerBlocks": [
               {
@@ -366,7 +406,11 @@
                         "desktop": -0.15
                       },
                       "letterSpacingUnit": "px",
-                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": "22.5px"
+                      },
+                      "lineHeightUnit": "px"
                     }
                   },
                   {
@@ -417,7 +461,14 @@
                 "left": "0px"
               },
               "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.09)"
+              "borderColour": "rgba(30,42,60,0.09)",
+              "sgsBlockLink": "#",
+              "sgsBlockLinkLabel": "Careers",
+              "sgsHoverOpacity": 0.75,
+              "sgsHoverIndent": "6px",
+              "sgsHoverDurationMs": 220,
+              "sgsHoverEasing": "custom",
+              "sgsHoverEasingCustom": "cubic-bezier(0,0,.58,1)"
             },
             "innerBlocks": [
               {
@@ -455,7 +506,11 @@
                         "desktop": -0.15
                       },
                       "letterSpacingUnit": "px",
-                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "lineHeight": {
+                        "desktop": "22.5px"
+                      },
+                      "lineHeightUnit": "px"
                     }
                   },
                   {
@@ -561,7 +616,9 @@
                   },
                   "borderRadius": 3,
                   "fullWidth": false,
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif"
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "lineHeight": 16.5,
+                  "lineHeightUnit": "px"
                 }
               }
             ]
@@ -672,7 +729,11 @@
                   "iconPosition": "after",
                   "widthType": {
                     "desktop": "fit"
-                  }
+                  },
+                  "lineHeight": {
+                    "desktop": "21px"
+                  },
+                  "lineHeightUnit": "px"
                 }
               }
             ]

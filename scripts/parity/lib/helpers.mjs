@@ -85,7 +85,14 @@ export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 		// A real mouse click at the element's centre: whatever paints on top there takes it (an
 		// overlay, a label that is a link). Logs what the click did, for the drive check.
 		tap: async ( finder, opts = {} ) => {
-			const point = await at( finder );
+			let point = await at( finder ).catch( () => null );
+			// A required target gets the same 6s a required click gets: the canary's host can serve its
+			// "Checking your browser" page on a load and swap in the real page a few seconds later.
+			for ( let t = 0; ! point && ! opts.optional && t < 20; t++ ) {
+				await page.waitForTimeout( 300 );
+				await page.waitForLoadState( 'domcontentloaded' ).catch( () => {} );
+				point = await at( finder ).catch( () => null );
+			}
 			const name = opts.name || ( typeof finder === 'string' ? finder : JSON.stringify( finder ) );
 			if ( ! point ) {
 				h.log.push( { type: 'click', target: name, hit: false, optional: !! opts.optional, tap: true, outcome: 'no target' } );

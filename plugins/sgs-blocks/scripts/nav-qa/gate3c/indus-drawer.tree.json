@@ -7,25 +7,54 @@
       "closeRadius": {
         "desktop": "8px"
       },
+      "closeBorderWidth": {
+        "top": "1.5px",
+        "right": "1.5px",
+        "bottom": "1.5px",
+        "left": "1.5px"
+      },
+      "closeBorderStyle": "solid",
+      "closeBorderColour": "rgba(255,255,255,.6)",
+      "closeIconSize": {
+        "desktop": "20px"
+      },
       "toggleCloseColour": "#FFFFFF",
+      "chromeLogoId": 4609,
+      "chromeLogoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-diamond-accent.png",
+      "chromeLogoWidth": {
+        "desktop": "28.28px"
+      },
+      "chromeSlotType": "label",
+      "chromeSlotText": "Indus Foods",
+      "chromeSlotColour": "#FFFFFF",
+      "chromeSlotFontSize": 17,
+      "chromeSlotFontWeight": "700",
+      "chromeSlotFontFamily": "'Plus Jakarta Sans', sans-serif",
+      "chromeRowHeight": {
+        "desktop": "64px"
+      },
+      "chromeRowGap": {
+        "desktop": "5.86px"
+      },
+      "chromeRowPadding": {
+        "top": "0px",
+        "right": "20px",
+        "bottom": "0px",
+        "left": "15.86px"
+      },
       "itemStagger": 55,
       "itemStaggerDuration": 420,
       "itemStaggerDistance": {
         "desktop": 24
       },
-      "scrimFadeDuration": 300
+      "itemStaggerAxis": {
+        "desktop": "end"
+      },
+      "scrimFadeDuration": 300,
+      "chromeLogoAlt": "Indus Foods home",
+      "chromeSlotFontSizeUnit": "px"
     },
     "innerBlocks": [
-      {
-        "name": "sgs/responsive-logo",
-        "attributes": {
-          "width": 120,
-          "linkToHome": true,
-          "logoId": 4509,
-          "logoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-foods-logo-qa-copy.png",
-          "alt": "Indus Foods"
-        }
-      },
       {
         "name": "sgs/container",
         "attributes": {
@@ -63,6 +92,16 @@
                 "desktop": "15px"
               },
               "fontWeight": "700",
+              "lineHeight": {
+                "desktop": "22.5px"
+              },
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
+              },
+              "borderStyle": "none",
               "padding": {
                 "desktop": {
                   "top": "14px",
@@ -116,6 +155,8 @@
           "navLabel": "QA copy Indus mobile",
           "navColour": "#FFFFFF",
           "itemColour": "#FFFFFF",
+          "itemColourHover": "#FFFFFF",
+          "itemColourOpen": "#D8CA50",
           "itemFontFamily": "'Plus Jakarta Sans', sans-serif",
           "itemFontSize": {
             "desktop": "20px"
@@ -128,6 +169,18 @@
           "itemBorderColour": "#D8CA50",
           "itemBorderWidth": {
             "bottom": "1px"
+          },
+          "itemPadding": {
+            "top": "17px",
+            "right": "4px",
+            "bottom": "17px",
+            "left": "4px"
+          },
+          "submenuLinkPadding": {
+            "top": "13px",
+            "right": "16px",
+            "bottom": "13px",
+            "left": "16px"
           },
           "itemMotionDuration": 250,
           "itemExpanderRotate": 45
@@ -147,10 +200,26 @@
             }
           },
           "icons": [
-            { "platform": "linkedin", "url": "#", "label": "LinkedIn" },
-            { "platform": "facebook", "url": "#", "label": "Facebook" },
-            { "platform": "google", "url": "#", "label": "Google" },
-            { "platform": "instagram", "url": "#", "label": "Instagram" }
+            {
+              "platform": "linkedin",
+              "url": "#",
+              "label": "LinkedIn"
+            },
+            {
+              "platform": "facebook",
+              "url": "#",
+              "label": "Facebook"
+            },
+            {
+              "platform": "google",
+              "url": "#",
+              "label": "Google"
+            },
+            {
+              "platform": "instagram",
+              "url": "#",
+              "label": "Instagram"
+            }
           ]
         }
       }
