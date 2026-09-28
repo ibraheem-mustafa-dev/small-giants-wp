@@ -49,16 +49,17 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-09-27; eye-care-test runs the plugin at a38652b95 and the theme at ef2de1573, `main` at the handoff
+**Now (2026-09-28; eye-care-test runs the plugin at 23e9df009 and the theme at e8ecda854; `main` at the handoff
 commit).** Parity re-review: every page compared to the draft by `scripts/parity/draft-live-walk.mjs`
-(one config per page in `sites/eye-care-ward-end/build/qa/parity/`) under the standard method in
-`scripts/parity/GAP-CHECKLIST.md`: a page passes only when the walker exits 0 (config lint, 0 open, every state x width
-screenshot reviewed with a note, 0 console errors). Shop and lens both REOPENED on Bean's review: shop plan
-"Remaining" 8 (card ".00", Polarised tag place, floating Filter button, drawer slider handle clipped); lens Q4 has
-three unmeasured gaps (main plan Status). Product page, bag, checkout, confirmation, home, lenses, about, help, contact to follow.
-Payments decided (Stripe + Klarna + wallets, PayPal). No blockers.
+(one config per page in `sites/eye-care-ward-end/build/qa/parity/`) under the method in
+`scripts/parity/GAP-CHECKLIST.md` (a page passes when the walker exits 0: config lint, 0 open, every state x width shot
+reviewed with a note, 0 console errors). Shop (`shop.mjs`) and lens pop-up (`lens.mjs`) passed 2026-09-28; another
+session is making the walker's stricter header-mode checks the default for every page, which may reopen both. Product
+page, bag, checkout, confirmation, home, lenses, about, help, contact to do. Open gap in the method: its catch rate is
+unmeasured (Bean found six gaps by eye on shop and lens that the walker had passed). No blockers.
 
-**Resume from:** the shop plan's "Remaining" 8, then the lens Q4 gaps (main plan Status), then the remaining pages.
+**Resume from:** main plan Status, "Parity re-review owed before Wave D": measure and raise the walker's catch rate,
+then the remaining pages in Sonnet waves with Opus QC.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.

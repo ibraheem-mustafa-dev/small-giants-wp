@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.11.0
+spec_version: 1.12.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -422,6 +422,17 @@ to edge (the modal's own padding drops, and a full-screen modal fades in rather 
 - Every colour, font, radius and spacing comes from the client's theme tokens or a setting above, so any client's
   flow gets the same structure.
 
+**FR-43-26 (v1.12.0) — a question can open the chosen option's next step underneath** (Bean, 2026-09-28).
+`sgs/choice-flow-question` `showNextStepInline` ("Open the chosen option's next step underneath"). In `continue`
+advance mode the step an option leads to (`nextStepId`) shows under the question on the same screen, replacing any
+step another option opened; the default option opens its step on arrival. The footer follows the opened step: an
+add-to-bag result there shows Add to bag with the running total and hides Continue; Add to bag validates and sends
+that step's fields as when it is shown on its own. It fades in over 0.3s (none under reduced motion). In the
+showcase layout an opened step holding fields is one bordered panel whose boxes take the panel's colour, and a file
+drop zone stands alone. `src/blocks/choice-flow/flow-inline.js::openInlineStep` (every step change goes through
+`::showStep`). The Eye Care lens draft's last question is the reference: Send it later, Upload a photo and Type it
+in each open their panel under the options.
+
 **FR-43-25 (v1.8.0) — architecture: one saved flow, its placements, and the product link** (Bean, 2026-09-26).
 - **The saved flow (`sgs_choice_flow`) is the single source.** It holds questions, options, images, pricing sources,
   endings, behaviour and the whole look, including its layout (compact or showcase), header, footer, progress bar
@@ -625,3 +636,4 @@ CPT-creation gap) and FR-42-13 (analytics).
 | FR-43-24 | Showcase layout (`flowLayout`): full-screen flows use a stage (the finished product, running lines, total) beside large image-led option cards, as in the Eye Care lens draft |
 | FR-43-23 | Guided buybox: one option group at a time on the product page, a meter that doubles as the summary, a finish-choosing guard |
 | FR-43-22 | The buybox button can open a popup (`addToCartAction: modal`) so a flow finishes a purchase started on the product page |
+| FR-43-26 | A question can open the chosen option's next step underneath, on the same screen, with that step's Add to bag in the footer |

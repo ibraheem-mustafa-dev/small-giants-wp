@@ -101,7 +101,8 @@ All field blocks share these attributes:
 | `placeholder` | string | Placeholder text |
 | `helpText` | string | Hint text below field |
 | `required` | boolean | Is this field required? |
-| `width` | string | full | half | third (responsive: always full on mobile) |
+| `width` | string | full | half | third (full below a 560px-wide form; a third-width number box stays three across from 300px) |
+| `labelStyle` | string | visible | hidden: shown above the field or read by screen readers only (number and file fields; a hidden label leaves no floating-label room and shows the placeholder) |
 | `conditionalField` | string | Field name to watch for conditional display |
 | `conditionalOperator` | string | equals | not_equals | contains | greater_than | is_empty |
 | `conditionalValue` | string | Value to compare against |
@@ -135,8 +136,17 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 - `maxSize` — max file size in MB (default: 10)
 - `maxFiles` — max number of files (default: 1)
 - `uploadText` — drag-and-drop area label
+- `zoneStyle` — dashed (default) | panel: a 1px dashed panel holding the prompt, the help line and a Choose file cue, the size limit kept for screen readers
+- `buttonLabel` — the panel look's button text (empty reads "Choose file")
 
 **Processing:** Files uploaded via REST endpoint (`POST /sgs-forms/v1/upload`) to WordPress media library (or configurable private directory). Returns attachment IDs stored with the submission.
+
+### Number (`sgs/form-field-number`)
+
+**Additional attributes:** `min`, `max`, `step`, and for boxes laid out as a small table (a prescription's SPH / CYL /
+AXIS): `columnHeading` (a short heading above the box, set on the first row) and `rowHeading` (a short heading in a
+32px gutter to the left, set on the first box of each row). Both are visual only; the label stays the accessible name.
+Row-headed boxes sit 8px apart with no spinner arrows (`includes/forms/field-render-helpers.php::field_headings`).
 
 ### Address with Postcode Lookup (`sgs/form-field-address`)
 

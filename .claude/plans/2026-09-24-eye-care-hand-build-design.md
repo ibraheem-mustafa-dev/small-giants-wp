@@ -17,10 +17,19 @@ key), with the owed Wave C polish alongside.
   or listed as accepted by Bean. Tool: `scripts/parity/draft-live-walk.mjs` with a config per page in
   `sites/eye-care-ward-end/build/qa/parity/`, run to the method in `scripts/parity/GAP-CHECKLIST.md` (a page
   passes only when the walker exits 0: config lint, 0 open, every state x width shot reviewed with a note, 0 console
-  errors). Progress: shop archive DONE 2026-09-27 (`shop.mjs` exits 0 after Bean's four review items;
-`plans/2026-09-26-eye-care-shop-parity.md` Remaining 8); lens pop-up DONE 2026-09-28 (`lens.mjs` exits 0 with Q4's three ways as states; plan `plans/2026-09-27-choice-flow-inline-next-step.md`). Bean accepted the help toggle's timing and glyph colour and live's clean 375 thumbnail (the
-  draft's shows a clipped "POLARIS" label). Product page, bag drawer, checkout, order confirmation, home, lenses, about, help,
-  contact to do.
+  errors). Progress: shop archive DONE 2026-09-28 (`plans/archive/2026-09-26-eye-care-shop-parity.md`); lens pop-up DONE 2026-09-28
+  (`plans/archive/2026-09-27-choice-flow-inline-next-step.md`: the last question opens the chosen way under the options,
+  as the draft). Both may reopen: another session is making the walker's header-mode checks the default for every
+  page. Product page, bag drawer, checkout, order confirmation, home, lenses, about, help, contact to do.
+- **Before the remaining pages: measure the walker's catch rate (Bean 2026-09-28).** Bean wants the remaining pages
+  cloned by Sonnet subagents in waves with Opus QC, which needs a method that catches at least 95% of draft-vs-live
+  differences. Today's walker compares only the pairs a config names, plus a screenshot review; its catch rate is
+  unmeasured. Benchmark: the six gaps the walker passed and Bean found by eye (the shop's Polarised tag place, the
+  floating Filter button after scrolling, the clipped slider handle, card prices with ".00"; the lens Q4 one-screen
+  layout, the 375 footer stacking Back above the action). Build what closes the difference (candidates: pairing
+  every visible text leaf and control automatically by normalised text; a per-region pixel diff of the paired
+  screenshots; a list of screen regions no pair covers), rerun it on the pre-fix states (git shows each fix's
+  commit) and report caught / 6 plus any false-alarm rate, before running the page waves.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,
@@ -51,10 +60,11 @@ key), with the owed Wave C polish alongside.
      now reads every preset role, including geometry (border-width, radius, font-size, weight, padding, min-height), which
      it ignored before; `fontWeight` defaults to unset so the preset's weight applies. Palette gains `primary-hover`
      #2A2A2A and `whatsapp-hover` #1EBE5A (the draft's hovers).
-  4. Shop setting "Hide .00 on whole-pound savings" (Customizer > Shop Filters, theme mod `sgs_shop_hide_zero_decimals`),
-     on for Eye Care: "Save £32", not "Save £32.00". Prices, the RRP, cart and checkout always show pennies (Bean,
-     2026-09-25: orders are not always whole pounds, so the site standardises on full amounts); the setting feeds the
-     plugin's `sgs_saving_trim_zeros` filter (`includes/product-rrp.php::sgs_product_rrp_saving`).
+  4. Shop setting "Hide .00 on whole-pound savings and product-card prices" (Customizer > Shop Filters, theme mod
+     `sgs_shop_hide_zero_decimals`), on for Eye Care: "Save £32" and card prices "£139" (Bean 2026-09-27); £59.50 keeps
+     its pennies, and the product page, lens pop-up, cart and checkout always show them (Bean 2026-09-25). It feeds the
+     plugin's `sgs_saving_trim_zeros` (`includes/product-rrp.php`) and `sgs_card_price_trim_zeros`
+     (`includes/product-card-price-trim.php`) filters.
   5. `sgs/accordion` `headerFontWeight` / `headerFontWeightOpen` (defaults 600/700) and open-state colours
      (`headerColourOpen`, `headerBackgroundOpen`); Help uses 400.
   6. Contact form on the form CPT: `sgs_form` post 285 (slug `contact`), linked from page 190's `sgs/form`
@@ -120,7 +130,7 @@ key), with the owed Wave C polish alongside.
   by `sgs-shop-filters.js` (WordPress 7.1 saves editor-made Custom HTML empty). Brand filter PROVEN: WooCommerce 11's
   parameter is `?brands=ray-ban` (not `filter_product_brand`), 3 Ray-Bans, survives reload. The shop's parity with
   the draft (toolbar, swatches, Gender and Size, brand search, open groups, Featured order, and the theme debt) is
-  `plans/2026-09-26-eye-care-shop-parity.md`.
+  `plans/archive/2026-09-26-eye-care-shop-parity.md`.
 - **Wave C task 4 (lens configurator) DONE and live (2026-09-25):** Spec 43 v1.5.0. The add-on price list
   (`includes/addon-price-list/`, WooCommerce > Add-on prices, seeded on eye-care-test with `wp sgs addon-prices
   seed`: lens-use, lens-thickness, lens-finish) is the only price authority. The flow is the Choice Flow
