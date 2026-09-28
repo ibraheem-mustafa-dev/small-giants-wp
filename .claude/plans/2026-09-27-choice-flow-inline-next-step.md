@@ -1,6 +1,6 @@
 # Choice flow: a question whose chosen option opens its next step underneath
 
-**Status:** PLANNED 2026-09-27. Governing spec: `.claude/specs/43-*.md` (sgs/choice-flow). Closes the lens pop-up's
+**Status:** DONE 2026-09-28 (`lens.mjs` exits 0: 0 open, 18 of 18 shots reviewed; the purchase check lands one £268 line for each of later, type and upload). Governing spec: `.claude/specs/43-*.md` (sgs/choice-flow). Closes the lens pop-up's
 Q4 gaps in `plans/2026-09-24-eye-care-hand-build-design.md` (Status, parity re-review).
 **Verify with:** `node ../../scripts/parity/draft-live-walk.mjs ../../sites/eye-care-ward-end/build/qa/parity/lens.mjs`
 from `plugins/sgs-blocks` (exit 0), and `node ../../sites/eye-care-ward-end/build/qa/lens-purchase-268.mjs` still
@@ -27,7 +27,7 @@ flow's `continue` advance mode:
 3. Back returns to the previous question as today; progress and the step count stay on the question.
 4. Add to bag validates and submits the opened step's fields (the typed prescription's required SPH boxes, the
    upload), exactly as when that step was shown on its own.
-5. A saved flow (`flow-persistence.js`) restores the question with its opened step.
+5. Not needed: a flow ending in add to bag never restores a saved position (it always starts at step 1).
 
 The opened step keeps its own look: the result's heading and body read as the draft's bordered note panel
 (`.sgs-choice-flow__step--inline`, a class the script adds, styled in `choice-flow/style.css`).
@@ -49,3 +49,15 @@ The opened step keeps its own look: the result's heading and body read as the dr
 `lens.mjs` exits 0 with notes for every shot, the purchase check passes, and a typed-prescription add to bag and an
 upload add to bag each land one bag line carrying their answers (checked by hand on eye-care-test, then the test
 lines removed).
+
+## What else it took (all framework, all live)
+
+- Fields in a flow step honour half and third widths (the showcase pane had dropped the `sgs-form` container name).
+- Form fields: `labelStyle` (label shown or screen readers only; a hidden label leaves no floating-label room and
+  shows the placeholder), `columnHeading` / `rowHeading` (a small table of boxes: 8px apart, R/L gutter, no
+  spinners), and the upload field's `zoneStyle` panel with a Choose file cue. Bean 2026-09-28: "build both looks".
+- Choice flow: an unpriced answer's stage line follows the pick; footer buttons hover with the client's button
+  preset; on phones the showcase footer keeps Back and the action in one row; the opened step fades in over 0.3s.
+- Number boxes set to third width stay three across in a form 300 to 559px wide.
+- Noted, not changed: the prescription boxes use the site's off-white input fill (#FAF8F5) where the draft's are
+  white (every form field on the site shares it).
