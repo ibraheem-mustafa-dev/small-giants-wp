@@ -59,6 +59,9 @@ import FeaturedPanel from '../../shared/nav-menu-panels/FeaturedPanel';
 import MegaDrawerPanel from '../../shared/nav-menu-panels/MegaDrawerPanel';
 import ItemEffectsPanel from '../../shared/nav-menu-panels/ItemEffectsPanel';
 import RowExtrasPanel from './RowExtrasPanel';
+import DisabledItemsPanel from './DisabledItemsPanel';
+import SubmenuLinkPaddingPanel from './SubmenuLinkPaddingPanel';
+import TrailingIconPanel from './TrailingIconPanel';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
 // rather than inside the shared ColourRowExtras/ColourTreatment modules,
 // which do not statically import either block's manifest (see
@@ -126,10 +129,22 @@ export default function Edit( { attributes, setAttributes } ) {
 		itemOrnament,
 		splitAfterItemId,
 		splitSide,
+		disabledItemIds,
 	} = attributes;
 
 	const { menuOptions, isResolving, resolvedItems, toggleFeatured } =
 		useNavMenuSource( { ref, featuredItemIds, setAttributes } );
+
+	// Parity with sgs/nav-bar-menu's own identical local toggler (Wave B) —
+	// not moved to a shared hook, matching that block's own note that this
+	// pass keeps disabled-items block-scoped rather than promoting it to
+	// src/shared/nav-menu-panels/.
+	const toggleDisabled = ( identifier, checked ) => {
+		const next = checked
+			? [ ...( disabledItemIds || [] ), identifier ]
+			: ( disabledItemIds || [] ).filter( ( id ) => id !== identifier );
+		setAttributes( { disabledItemIds: next } );
+	};
 
 	// Reference element for resolving `var(--wp--preset--color--x)` stops via
 	// getComputedStyle, mirroring GradientCapableColourControl's own probe
@@ -481,6 +496,57 @@ export default function Edit( { attributes, setAttributes } ) {
 			attributes,
 			setAttributes,
 		} ),
+		/* G-11 (2026-09-28) — the label colour while an item's OWN accordion
+		   section is open. A single "Normal" state, same shape as the
+		   disabled-item row below: 'open' is not in golden-controls.json's
+		   stateVocabulary, so it is its own row rather than a fourth state
+		   on 'item-text'. */
+		textRow( {
+			key: 'item-open-text',
+			heading: __( 'Item text (open)', 'sgs-blocks' ),
+			label: __( 'Open colour', 'sgs-blocks' ),
+			attrs: { base: 'itemColourOpen' },
+			attributes,
+			setAttributes,
+		} ),
+		/* Parity with sgs/nav-bar-menu (2026-09-28) — per-item badge chip
+		   colour (block-level; the badge's own copy is per-item). */
+		textRow( {
+			key: 'item-badge-text',
+			heading: __( 'Item badge', 'sgs-blocks' ),
+			label: __( 'Badge text colour', 'sgs-blocks' ),
+			attrs: { base: 'itemBadgeTextColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'item-badge-bg',
+			label: __( 'Badge background', 'sgs-blocks' ),
+			attrs: { base: 'itemBadgeColour' },
+			attributes,
+			setAttributes,
+		} ),
+		/* Parity with sgs/nav-bar-menu (2026-09-28) — disabled item/sublink
+		   text colour (the items chosen in the Settings tab's "Disabled
+		   items" panel). No hover state: a disabled item is not interactive. */
+		textRow( {
+			key: 'item-disabled-text',
+			heading: __( 'Disabled item', 'sgs-blocks' ),
+			label: __( 'Text colour', 'sgs-blocks' ),
+			attrs: { base: 'itemDisabledColour' },
+			attributes,
+			setAttributes,
+		} ),
+		/* G-7 (2026-09-28) — one colour for every row's trailing icon; the
+		   icon CHOICE itself is per-item (TrailingIconPanel, Styles tab). */
+		textRow( {
+			key: 'item-trailing-icon',
+			heading: __( 'Trailing icon', 'sgs-blocks' ),
+			label: __( 'Icon colour', 'sgs-blocks' ),
+			attrs: { base: 'itemTrailingIconColour' },
+			attributes,
+			setAttributes,
+		} ),
 	];
 
 	return (
@@ -511,6 +577,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					resolvedItems={ resolvedItems }
 					setAttributes={ setAttributes }
 				/>
+
+				{ /* Parity with sgs/nav-bar-menu (2026-09-28) — a pure data-source
+				   pick (which items render as non-interactive text), so it lives
+				   here in Settings, never in Styles (Spec 35 Part O placement
+				   rule). Colour is the Styles-tab "Disabled item" row above. */ }
+				<DisabledItemsPanel
+					menuRef={ ref }
+					resolvedItems={ resolvedItems }
+					toggleDisabled={ toggleDisabled }
+					disabledItemIds={ disabledItemIds }
+				/>
 			</InspectorControls>
 
 			{ /* ── Styles tab. ⛔ Every panel mounted HERE directly, not behind a
@@ -522,6 +599,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					showColumnsControl
 					listColumns={ listColumns }
 					padding={ attributes.padding }
+					showItemPadding
+					itemPadding={ attributes.itemPadding }
+					setAttributes={ setAttributes }
+				/>
+
+				<SubmenuLinkPaddingPanel
+					submenuLinkPadding={ attributes.submenuLinkPadding }
 					setAttributes={ setAttributes }
 				/>
 
@@ -616,6 +700,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					featuredRadiusHover={ featuredRadiusHover }
 					featuredFontWeight={ featuredFontWeight }
 					featuredFontWeightHover={ featuredFontWeightHover }
+				/>
+
+				<TrailingIconPanel
+					resolvedItems={ resolvedItems }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
 				/>
 
 				<MegaDrawerPanel

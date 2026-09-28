@@ -39,6 +39,13 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  *                                             "Link padding" (`itemPadding`).
  * @param {Object}   [root0.itemPadding]       The bar's `itemPadding` attribute, a tier
  *                                             object of {top,right,bottom,left} boxes.
+ * @param {boolean}  [root0.showSubmenuLinkPadding] Shows "Dropdown link padding"
+ *                                             (`submenuLinkPadding`) — Spec 36 "Item hover
+ *                                             paint": the same per-device box control as
+ *                                             `itemPadding`, for the submenu/dropdown/mega/
+ *                                             accordion link instead of the top-level one.
+ * @param {Object}   [root0.submenuLinkPadding] The block's `submenuLinkPadding` attribute, a
+ *                                             tier object of {top,right,bottom,left} boxes.
  * @param {Function} root0.setAttributes       The block's attribute setter.
  */
 export default function ListLayoutPanel( {
@@ -48,6 +55,8 @@ export default function ListLayoutPanel( {
 	padding,
 	showItemPadding = false,
 	itemPadding,
+	showSubmenuLinkPadding = false,
+	submenuLinkPadding,
 	setAttributes,
 } ) {
 	return (
@@ -58,6 +67,7 @@ export default function ListLayoutPanel( {
 					gap: { desktop: '8px' },
 					padding: {},
 					...( showItemPadding ? { itemPadding: {} } : {} ),
+					...( showSubmenuLinkPadding ? { submenuLinkPadding: {} } : {} ),
 				} )
 			}
 		>
@@ -170,6 +180,30 @@ export default function ListLayoutPanel( {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Link padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</ToolsPanelItem>
+			) }
+
+			{ showSubmenuLinkPadding && (
+				<ToolsPanelItem
+					hasValue={ () => Object.keys( submenuLinkPadding ?? {} ).length > 0 }
+					label={ __( 'Dropdown link padding', 'sgs-blocks' ) }
+					onDeselect={ () => setAttributes( { submenuLinkPadding: {} } ) }
+					isShownByDefault
+				>
+					<ResponsiveOverride
+						value={ submenuLinkPadding }
+						onChange={ ( obj ) => setAttributes( { submenuLinkPadding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Dropdown link padding', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
 								presets

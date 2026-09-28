@@ -50,7 +50,7 @@
 import { __ } from '@wordpress/i18n';
 import { useRef } from 'react';
 import { useBlockProps, useSettings, InspectorControls } from '@wordpress/block-editor';
-import { Notice } from '@wordpress/components';
+import { Notice, RangeControl } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
 	SgsColourPanel,
@@ -61,7 +61,7 @@ import {
 	ScrimControls,
 	scrimColourRow,
 } from '../../components';
-import { ToolsPanel } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils';
 import {
 	ItemTextTreatment,
@@ -177,9 +177,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submenuAlign,
 		megaAlign,
 		submenuCaret,
+		submenuCaretSize,
+		submenuCaretOpacity,
+		submenuCaretOpacityHover,
+		submenuCaretGap,
+		submenuCaretTurnDuration,
+		submenuCaretTurnEasing,
+		submenuCaretTurnEasingCustom,
 		submenuCloseGrace,
 		submenuIntentDelay,
 		submenuOpenOn,
+		itemHoverScope,
+		scrimFadeDuration,
 		submenuAnimation,
 		submenuTopOffset,
 		submenuMinWidth,
@@ -743,9 +752,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					submenuAlign={ submenuAlign }
 					megaAlign={ megaAlign }
 					submenuCaret={ submenuCaret }
+					submenuCaretSize={ submenuCaretSize }
+					submenuCaretOpacity={ submenuCaretOpacity }
+					submenuCaretOpacityHover={ submenuCaretOpacityHover }
+					submenuCaretGap={ submenuCaretGap }
+					submenuCaretTurnDuration={ submenuCaretTurnDuration }
+					submenuCaretTurnEasing={ submenuCaretTurnEasing }
+					submenuCaretTurnEasingCustom={ submenuCaretTurnEasingCustom }
 					submenuCloseGrace={ submenuCloseGrace }
 					submenuIntentDelay={ submenuIntentDelay }
 					submenuOpenOn={ submenuOpenOn }
+					itemHoverScope={ itemHoverScope }
 				/>
 
 				<SplitPanel
@@ -768,6 +785,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					padding={ attributes.padding }
 					showItemPadding
 					itemPadding={ attributes.itemPadding }
+					showSubmenuLinkPadding
+					submenuLinkPadding={ attributes.submenuLinkPadding }
 					setAttributes={ setAttributes }
 				/>
 
@@ -877,6 +896,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes( {
 							scrimOpacity: {},
 							scrimBlur: {},
+							scrimFadeDuration: 0,
 						} )
 					}
 				>
@@ -884,6 +904,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+					{ /* I-M4 (U-18) — mirrors sgs/nav-drawer's own scrimFadeDuration. */ }
+					<ToolsPanelItem
+						label={ __( 'Backdrop fade time', 'sgs-blocks' ) }
+						hasValue={ () => !! scrimFadeDuration }
+						onDeselect={ () =>
+							setAttributes( { scrimFadeDuration: 0 } )
+						}
+					>
+						<RangeControl
+							label={ __( 'Backdrop fade time (ms)', 'sgs-blocks' ) }
+							help={ __(
+								'0 fades the backdrop WITH the dropdown/mega panel.',
+								'sgs-blocks'
+							) }
+							value={ scrimFadeDuration ?? 0 }
+							onChange={ ( value ) =>
+								setAttributes( {
+									scrimFadeDuration: value ?? 0,
+								} )
+							}
+							min={ 0 }
+							max={ 3000 }
+							step={ 10 }
+							allowReset
+							resetFallbackValue={ 0 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
 				</ToolsPanel>
 
 				{ /* Wave 3C U-10 (§4.8) — `itemMagnetStrength`. Spec 35 audit item

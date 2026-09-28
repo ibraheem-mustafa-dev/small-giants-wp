@@ -145,8 +145,16 @@
 	min-height: 44px;
 	padding: 8px 12px;
 	text-decoration: none;
-	transition: background-color var(--wp--custom--transition--fast, 150ms ease),
-		color var(--wp--custom--transition--fast, 150ms ease);
+	/*
+	 * `--sgs-nav-item-motion` — published by
+	 * includes/nav-menu-item-transition-css.php ONLY when `itemMotionDuration`
+	 * is set (U-18 nav audit §5: itemMotionDuration/itemMotionEasing were
+	 * wired to the label-roll crossfade only, never to this rule). Unset
+	 * falls through to today's `--wp--custom--transition--fast, 150ms ease)`
+	 * fallback unchanged.
+	 */
+	transition: background-color var(--sgs-nav-item-motion, var(--wp--custom--transition--fast, 150ms ease)),
+		color var(--sgs-nav-item-motion, var(--wp--custom--transition--fast, 150ms ease));
 	white-space: nowrap;
 }
 
@@ -657,6 +665,78 @@
 	from {
 		opacity: 0;
 		translate: 0 var(--sgs-nbm-stagger-dist, 8px);
+	}
+}
+
+/*
+ * G-5 (U-18): `submenuItemStaggerScope: 'rows'`. When the operator picks
+ * "rows", the outer column-level stagger above stops animating (see the
+ * `animation: none` override at the bottom of this block) and each column's
+ * OWN direct children (a `sgs/mega-group`'s link rows/cards) stagger
+ * instead — the SAME `--sgs-i` mechanism, one level deeper. The bar adds
+ * `.sgs-nav-bar-menu--panel-stagger-rows` alongside the existing
+ * `--panel-stagger` class (render.php).
+ */
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(1) {
+	--sgs-i: 0;
+}
+
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(2) {
+	--sgs-i: 1;
+}
+
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(3) {
+	--sgs-i: 2;
+}
+
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(4) {
+	--sgs-i: 3;
+}
+
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(5) {
+	--sgs-i: 4;
+}
+
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(6) {
+	--sgs-i: 5;
+}
+
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(7) {
+	--sgs-i: 6;
+}
+
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(8) {
+	--sgs-i: 7;
+}
+
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(9) {
+	--sgs-i: 8;
+}
+
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(10) {
+	--sgs-i: 9;
+}
+
+.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > :nth-child(n + 11) {
+	--sgs-i: 10;
+}
+
+@supports (transition-delay: calc(sibling-index() * 1ms)) {
+	.sgs-nav-bar-menu--panel-stagger-rows .sgs-mega-group > * {
+		--sgs-i: calc(sibling-index() - 1);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-nav-bar-menu--panel-stagger-rows [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion .sgs-mega-group > * {
+		animation: sgs-nav-bar-menu-panel-item-in var(--sgs-nbm-stagger-dur, 180ms) var(--sgs-nbm-panel-ease, ease-out) both;
+		animation-delay: min(calc(var(--sgs-i, 0) * var(--sgs-nbm-stagger-step, 0ms)), var(--sgs-nbm-stagger-max, 100000ms));
+	}
+
+	/* Only one granularity animates at a time: suppress the column-level
+	   (outer) stagger once "rows" scope is active. */
+	.sgs-nav-bar-menu--panel-stagger-rows [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion .sgs-mega-panel__content > * {
+		animation: none;
 	}
 }
 

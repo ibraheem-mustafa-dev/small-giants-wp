@@ -493,6 +493,19 @@
 			"type": "object",
 			"default": {}
 		},
+		"rowsAlign": {
+			"type": "object",
+			"default": {},
+			"description": "D-1: where the header's rows sit vertically when the header is taller than their own combined height (e.g. a Min height set above the tallest row) — tri-state-shaped per-device object {desktop,tablet,mobile}, each 'start'|'center'|'end'|'stretch'|'inherit'. Empty/inherited resolves to 'center' at every tier (the framework default: what a flex/grid layout tool defaults to), so a header with this untouched already paints centred rows. 'stretch' grows the rows themselves to fill the extra height instead of leaving a gap. Emitted by render.php directly (display:flex;flex-direction:column + justify-content, plus a child flex rule for stretch) — the header has no content band in the common case, so this does not route through SGS_Container_Wrapper's own min-height-flex-fill mechanism."
+		},
+		"fluidScale": {
+			"type": "object",
+			"default": {
+				"enabled": false,
+				"breakpoint": 1440
+			},
+			"description": "G-1: 'scale with the viewport above a width' — off by default. {enabled, breakpoint}, same one-toggle-plus-one-number shape as headerFloatCollapse. When on, render.php publishes a unitless factor as --sgs-header-fluid-scale on :root (max(1, tan(atan2(100vw, breakpoint px)))), reads it back as this header's own `zoom` (scales every rem/px size inside — padding, radius, font sizes, contentBandPadding), and re-scales the floating pill's inset custom properties by the same factor. A sibling sgs/nav-drawer anchored to the header box reads the same custom property to stay in proportion. See includes/sgs-header-fluid-scale.php."
+		},
 		"overlayGradient": {
 			"type": "string",
 			"default": ""

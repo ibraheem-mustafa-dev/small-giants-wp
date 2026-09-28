@@ -14,6 +14,7 @@
  * @package SGS\Blocks
  */
 
+import { __ } from '@wordpress/i18n';
 import { mergeSgsIcons } from './sgs-group';
 
 const ASSETS =
@@ -109,6 +110,12 @@ export const ICON_SOURCES = [
 	{ key: 'emoji', label: 'Emoji' },
 	{ key: 'wp-icon', label: 'WordPress' },
 	{ key: 'dashicon', label: 'Dashicons' },
+	// A client-supplied inline SVG (2026-09-28, framework-wide) — not a
+	// browsable grid like the four sources above, so IconPicker.js renders a
+	// distinct paste-and-sanitise UI for this one key rather than feeding it
+	// through allItems/useWindowed. Stored value shape differs too:
+	// { source: 'custom', svg } rather than { source, name }.
+	{ key: 'custom', label: __( 'Custom SVG', 'sgs-blocks' ) },
 ];
 
 /**

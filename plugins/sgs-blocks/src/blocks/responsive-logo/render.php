@@ -100,6 +100,13 @@ $bg_colour_gradient       = isset( $attributes['backgroundColourGradient'] ) ? (
 $bg_colour_hover          = isset( $attributes['backgroundColourHover'] ) ? (string) $attributes['backgroundColourHover'] : '';
 $bg_colour_hover_gradient = isset( $attributes['backgroundColourHoverGradient'] ) ? (string) $attributes['backgroundColourHoverGradient'] : '';
 
+// Hover opacity on the home link (0-1; 0 = off, the same sentinel every other
+// numeric hover control in the framework uses). Replaces the hardcoded
+// `&__link:hover{opacity:0.85}` that used to live in style.scss with a real
+// editor control — see block.json's `hoverOpacity` attribute.
+$hover_opacity = isset( $attributes['hoverOpacity'] ) ? (float) $attributes['hoverOpacity'] : 0.0;
+$hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
+
 // Validate animationStyle against allowed values.
 $allowed_animation_styles = array( 'none', 'draw-on-load', 'hover-redraw', 'scroll-trigger' );
 if ( ! in_array( $animation_style, $allowed_animation_styles, true ) ) {
@@ -353,6 +360,15 @@ if ( '' !== $bg_decl ) {
 $bg_hover_decl = sgs_background_paint_decl( $bg_colour_hover, $bg_colour_hover_gradient );
 if ( '' !== $bg_hover_decl ) {
 	$scoped_css[] = sgs_hover_state_rules( $sel, $bg_hover_decl, ':focus-within' );
+}
+
+// --- Hover opacity — sets the custom property the compiled stylesheet's
+// &__link:hover/:focus-visible rule reads (style.scss); the :hover half of
+// that rule is touch-guarded at build time (scripts/hover-guard postbuild
+// transform), so no guard is needed here — this is a plain value, not a
+// :hover rule of its own. ---
+if ( $hover_opacity > 0 ) {
+	$scoped_css[] = "{$sel} .sgs-responsive-logo__link{--sgs-logo-hover-opacity:" . number_format( $hover_opacity, 2 ) . ';}';
 }
 
 // --- Colour treatment — forces the IMAGE (not the wrapper background above)

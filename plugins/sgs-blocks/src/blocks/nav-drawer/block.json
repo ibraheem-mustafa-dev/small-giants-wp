@@ -5,7 +5,7 @@
 	"version": "0.1.0",
 	"title": "SGS Nav Drawer",
 	"category": "sgs-interactive",
-	"description": "The menu panel the burger opens — on any device (phones, tablets, and desktops when the nav's Burger Menu is set to Always). A full-screen native <dialog> modal (top layer — survives a transformed header ancestor). Its content is editable InnerBlocks (menu, logo, CTA); the × close button is fixed chrome the block always renders. Open/close/focus/scroll-lock/ESC are owned by the shared sgs/nav Interactivity store.",
+	"description": "The menu panel the burger opens — on any device (phones, tablets, and desktops when the nav's Burger Menu is set to Always). A full-screen native <dialog> modal (top layer — survives a transformed header ancestor). Its body is editable InnerBlocks (the menu, then any blocks); the top row (the × close, an optional per-device logo and one optional heading, label, text or button) is fixed chrome the block renders from its settings. Open/close/focus/scroll-lock/ESC are owned by the shared sgs/nav Interactivity store.",
 	"keywords": [
 		"nav",
 		"drawer",
@@ -28,6 +28,18 @@
 				"curtainColour": {
 					"rule": "states",
 					"reason": "The curtain is the colour layer that sweeps across the drawer only while its curtain entry or exit animation runs (the dialog ::before, includes/helpers-nav-drawer-motion.php); it takes no pointer events and is gone once the drawer is open, so there is no hover or current state to paint. The gradient sibling (curtainColourGradient) is wired."
+				},
+				"chromeRowBg": {
+					"rule": "states",
+					"reason": "The chrome row is the drawer's top band (logo, free slot, close), a static surface with no hover or current state of its own; only the controls inside it react. The gradient sibling (chromeRowBgGradient) is wired."
+				},
+				"chromeSlotColour": {
+					"rule": "states",
+					"reason": "The free slot's colour applies to its heading, label or text types, which are static text with no hover state. The button type carries its own full base-and-hover set (chromeButtonColour*). The gradient sibling (chromeSlotColourGradient) is wired."
+				},
+				"closeBorderColour": {
+					"rule": "states",
+					"reason": "The close box border keeps one colour; the close button's hover and focus feedback is its existing opacity fade and focus ring (style.css), so there is no second border state to paint."
 				}
 			},
 			"containerKind": "content",
@@ -146,7 +158,10 @@
 						"css:text-transform": "closeTextTransform",
 						"css:letter-spacing": "closeLetterSpacing",
 						"css:border-radius": "closeRadius",
-						"css:transform": "closeOffset"
+						"css:transform": "closeOffset",
+						"css:border-width": "closeBorderWidth",
+						"css:border-style": "closeBorderStyle",
+						"css:border-color": "closeBorderColour"
 					},
 					"states": {
 						"hover": {
@@ -156,7 +171,95 @@
 							}
 						}
 					},
-					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColourHover is wired in render.php via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routes both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) is uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor), following the site-wide focus token, which is correct behaviour, just not this element's colour attrs. closeSize (mirrors sgs/nav-bar-menu's burgerSize, css:width+css:height) and the close-LABEL typography quintet (closeFontSize/closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing, mirrors sgs/nav-bar-menu's burgerFontSize/burgerFontFamily/burgerFontWeight/burgerTextTransform/burgerLetterSpacing) use the same mechanism (sgs_typography_css_rule()) -- see render.php's close-typography block for the closeStyle-dependent text-transform resolution, and closeSize for the icon-vs-text width branch mirroring burgerSize's own triggerMode branch. toggleCloseColourHoverGradient is the Hover gradient sibling of toggleCloseColourGradient; no smart-contrast swap applies to the close button (unlike the bar's itemColourHover). Spec 35 §12 audit item 5 (2026-09-24) added closeRadius (css:border-radius, already a `layout`-cluster member this element declares) and closeOffset (css:transform, a translate() nudge -- also a `layout`-cluster member). closePlacement is DELIBERATELY UNMAPPED: it is an enum POSITION MODE (top-row-end | top-row-start | same-slot), not a routable CSS length/colour/timing value -- the converter's attrMap contract routes a cluster member to a CSS-VALUE-bearing attribute, and closePlacement instead selects which static position rule (top/left/inset-inline-*) applies, which the css:transform/closeOffset entry above already carries the moving part of. Ruling: closePlacement stays out of attrMap by design, not as an oversight."
+					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColourHover is wired in render.php via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routes both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) is uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor), following the site-wide focus token, which is correct behaviour, just not this element's colour attrs. closeSize (mirrors sgs/nav-bar-menu's burgerSize, css:width+css:height) and the close-LABEL typography quintet (closeFontSize/closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing, mirrors sgs/nav-bar-menu's burgerFontSize/burgerFontFamily/burgerFontWeight/burgerTextTransform/burgerLetterSpacing) use the same mechanism (sgs_typography_css_rule()) -- see render.php's close-typography block for the closeStyle-dependent text-transform resolution, and closeSize for the icon-vs-text width branch mirroring burgerSize's own triggerMode branch. toggleCloseColourHoverGradient is the Hover gradient sibling of toggleCloseColourGradient; no smart-contrast swap applies to the close button (unlike the bar's itemColourHover). Spec 35 §12 audit item 5 (2026-09-24) added closeRadius (css:border-radius, already a `layout`-cluster member this element declares) and closeOffset (css:transform, a translate() nudge -- also a `layout`-cluster member). closePlacement is DELIBERATELY UNMAPPED: it is an enum POSITION MODE (top-row-end | top-row-start | same-slot), not a routable CSS length/colour/timing value -- the converter's attrMap contract routes a cluster member to a CSS-VALUE-bearing attribute, and closePlacement instead selects which static position rule (top/left/inset-inline-*) applies, which the css:transform/closeOffset entry above already carries the moving part of. Ruling: closePlacement stays out of attrMap by design, not as an oversight. The close box border (closeBorderWidth box object, closeBorderStyle, closeBorderColour) is emitted by includes/nav-drawer-chrome-css.php, with the style written only alongside a real width. The close glyph size (closeIconSize) is its own `closeIcon` element because css:width here already routes to closeSize."
+				},
+				"closeIcon": {
+					"label": "Close icon",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "closeIcon",
+					"attrMap": {
+						"css:width": "closeIconSize",
+						"css:height": "closeIconSize"
+					},
+					"_note": "The glyph inside the close button (`.sgs-nav-drawer__close svg`), a per-device length that sets both sides. Emitted by includes/nav-drawer-chrome-css.php."
+				},
+				"chrome": {
+					"label": "Top row",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "chromeRow",
+					"attrMap": {
+						"css:background-color": "chromeRowBg",
+						"css:background-image": "chromeRowBgGradient",
+						"css:min-height": "chromeRowHeight",
+						"css:gap": "chromeRowGap",
+						"css:padding": "chromeRowPadding"
+					},
+					"_note": "The chrome row (Spec 36 FR-36-6): `.sgs-nav-drawer__chrome`, the band at the top of the dialog that holds the close button, the optional logo and the one optional free slot. Rendered by includes/nav-drawer-chrome.php as fixed chrome, never InnerBlocks, and it replaces the 64px top padding the body used to reserve for the close button. A row holding only the close button carries `--close-only` and is dropped with the button under the FR-36-6 `trigger` predicate, so it costs no space."
+				},
+				"chromeLogo": {
+					"label": "Top row logo",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "chromeLogo",
+					"attrMap": {
+						"css:width": "chromeLogoWidth",
+						"css:display": "chromeLogoShow"
+					},
+					"_note": "The optional logo in the chrome row: a `<picture>` art-directed per device from chromeLogoId/chromeLogoUrl and their Tablet/Mobile siblings (the sgs/responsive-logo pattern). It opts out of the generic imageControls path on purpose, per Spec 36 FR-36-6: a logo is a different image per device, not one image with fit and focal controls. chromeLogoShow hides it per device; chromeLogoLink links it home."
+				},
+				"chromeSlot": {
+					"label": "Top row slot",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"prefix": "chromeSlot",
+					"attrMap": {
+						"css:color": "chromeSlotColour",
+						"css:color-gradient": "chromeSlotColourGradient",
+						"tag": "chromeSlotHeadingLevel",
+						"css:display": "chromeSlotShow"
+					},
+					"_note": "The one optional free slot in the chrome row (chromeSlotType heading, label, text or button; chromeSlotText is its words). The typography set uses the `chromeSlot` prefix through sgs_typography_css_rule(); chromeSlotHeadingLevel sets the tag for the heading type (the product-card headingLevel precedent). The button type's look is the separate `chromeButton` element."
+				},
+				"chromeButton": {
+					"label": "Top row button",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"text",
+						"layout"
+					],
+					"prefix": "chromeButton",
+					"attrMap": {
+						"css:background-color": "chromeButtonColourBackground",
+						"css:background-image": "chromeButtonColourBackgroundGradient",
+						"css:color": "chromeButtonColourText",
+						"css:border-color": "chromeButtonColourBorder",
+						"css:border-width": "chromeButtonBorderWidth",
+						"css:border-style": "chromeButtonBorderStyle",
+						"css:border-radius": "chromeButtonBorderRadius",
+						"css:padding": "chromeButtonPadding"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "chromeButtonColourBackgroundHover",
+								"css:color": "chromeButtonColourTextHover",
+								"css:border-color": "chromeButtonColourBorderHover"
+							}
+						}
+					},
+					"_note": "The free slot when chromeSlotType is `button`: a link styled by the shared built-in button emitter, sgs_button_element_style_css() with the `chromeButton` prefix (the sgs/modal and sgs/product-card precedent). Its words and typography are the chromeSlot set."
 				},
 				"decorative": {
 					"label": "Decorative background",
@@ -249,6 +352,33 @@
 			"type": "object",
 			"default": {}
 		},
+		"closeBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Close box border width, a {top,right,bottom,left} box of CSS lengths (1.5px is fine), one value for every device like every SgsBorderControl width. Unset draws no border. Emitted by includes/nav-drawer-chrome-css.php."
+		},
+		"closeBorderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": [
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"none"
+			],
+			"description": "Close box border style, written only where closeBorderWidth is set."
+		},
+		"closeBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Close box border colour: a palette slug or any colour. Unset follows the close button's text colour."
+		},
+		"closeIconSize": {
+			"type": "object",
+			"default": {},
+			"description": "Close glyph size per device, a CSS length for both sides of the icon. Unset keeps the stylesheet's 28px (20px beside a word)."
+		},
 		"_comment_accordionExclusive": "ENG-02 (§4.7) -- default true (today's exclusive `<details name>` accordion). Published as context `sgs/navDrawerAccordionExclusive` (providesContext, above); nav-drawer-menu's sgs_nav_drawer_menu_render_items() omits `name=` when false, letting more than one panel stay open (away's reference).",
 		"accordionExclusive": {
 			"type": "boolean",
@@ -266,10 +396,249 @@
 				"name": "x"
 			}
 		},
+		"chromeRowHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Top row minimum height per device, a CSS length. Unset is 64px."
+		},
+		"chromeRowGap": {
+			"type": "object",
+			"default": {},
+			"description": "Space between the logo, the free slot and the close button, per device. Unset is 12px."
+		},
+		"chromeRowPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Top row padding per device, a {top,right,bottom,left} box. Unset is 0 top and bottom, 12px either side."
+		},
+		"chromeRowBg": {
+			"type": "string",
+			"default": "",
+			"description": "Top row fill: a palette slug or any colour. Unset shows the drawer's own background."
+		},
+		"chromeRowBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Top row gradient fill; non-empty wins over chromeRowBg."
+		},
+		"chromeLogoId": {
+			"type": "number",
+			"description": "Top row logo, desktop: media library attachment ID. Wins over chromeLogoUrl."
+		},
+		"chromeLogoUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Top row logo URL, desktop, stored alongside the ID."
+		},
+		"chromeLogoIdTablet": {
+			"type": "number",
+			"description": "Tablet logo attachment ID; unset uses the desktop logo."
+		},
+		"chromeLogoUrlTablet": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"chromeLogoIdMobile": {
+			"type": "number",
+			"description": "Mobile logo attachment ID; unset uses the tablet logo."
+		},
+		"chromeLogoUrlMobile": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"chromeLogoAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Logo alt text. Unset uses the image's own alt text; a linked logo with none is named after the site (\"<site name> home\")."
+		},
+		"chromeLogoLink": {
+			"type": "boolean",
+			"default": true,
+			"description": "The logo links to the home page."
+		},
+		"chromeLogoWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Logo width per device, a CSS length; the height follows the image. Unset is 32px tall."
+		},
+		"chromeLogoShow": {
+			"type": "object",
+			"default": {},
+			"description": "Show the logo, per device (true or false). Unset shows it wherever a logo is set."
+		},
+		"chromeSlotType": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"heading",
+				"label",
+				"text",
+				"button"
+			],
+			"description": "The top row's one free slot: none, a heading, a label, a line of text or a button."
+		},
+		"chromeSlotText": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "The slot's words (the button's label for the button type)."
+		},
+		"chromeSlotHeadingLevel": {
+			"type": "string",
+			"default": "h2",
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"p"
+			],
+			"description": "The tag for the heading type."
+		},
+		"chromeSlotUrl": {
+			"type": "string",
+			"default": "",
+			"description": "Where the button goes. A button with no link is not rendered."
+		},
+		"chromeSlotNewTab": {
+			"type": "boolean",
+			"default": false,
+			"description": "The button opens in a new tab."
+		},
+		"chromeSlotPlacement": {
+			"type": "string",
+			"default": "after-logo",
+			"enum": [
+				"after-logo",
+				"centre",
+				"end"
+			],
+			"description": "Where the slot sits in the row: straight after the logo, centred in the row, or at the end beside the close button."
+		},
+		"chromeSlotShow": {
+			"type": "object",
+			"default": {},
+			"description": "Show the slot, per device (true or false). Unset shows it."
+		},
+		"chromeSlotColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the heading, label or text slot. Unset follows the drawer's text colour."
+		},
+		"chromeSlotColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Text gradient for the heading, label or text slot; non-empty wins over chromeSlotColour."
+		},
+		"chromeSlotFontSize": {
+			"type": "number"
+		},
+		"chromeSlotFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"chromeSlotFontSizeTablet": {
+			"type": "number"
+		},
+		"chromeSlotFontSizeMobile": {
+			"type": "number"
+		},
+		"chromeSlotFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeSlotFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeSlotFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeSlotLineHeight": {
+			"type": "number"
+		},
+		"chromeSlotLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeSlotTextTransform": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"chromeSlotLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"chromeSlotLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"chromeButtonColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeButtonColourBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeButtonColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeButtonColourText": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeButtonColourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeButtonColourBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeButtonColourBorderHover": {
+			"type": "string",
+			"default": ""
+		},
+		"chromeButtonBorderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": [
+				"solid",
+				"dashed",
+				"dotted",
+				"none"
+			]
+		},
+		"chromeButtonBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"chromeButtonBorderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"chromeButtonPadding": {
+			"type": "object",
+			"default": {}
+		},
 		"entryAnimation": {
 			"type": "object",
 			"default": {},
-			"description": "How the drawer arrives and leaves, per device: auto (follows the anchor), none, fade, slide-start, slide-end, slide-up, slide-down, wipe-down, wipe-down-skew, reveal-from-bar, curtain or scale. The exit is the reverse. Allow-list: includes/helpers-nav-drawer-motion.php::sgs_nav_drawer_motion_shapes."
+			"description": "How the drawer arrives and leaves, per device: auto (follows the anchor), none, fade, slide-start, slide-end, slide-up, slide-down, wipe-down, wipe-down-skew, reveal-from-bar, curtain, scale or grow-from-anchor (the box's real height grows from its anchor's height, top fixed). The exit is the reverse. Allow-list: includes/helpers-nav-drawer-motion.php::sgs_nav_drawer_motion_shapes."
 		},
 		"entryDuration": {
 			"type": "number",
@@ -344,6 +713,20 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Items leave one after another, last first, when the drawer closes."
+		},
+		"itemStaggerAxis": {
+			"type": "object",
+			"default": {},
+			"description": "Which way each staggered item travels, per device: vertical (default; the sign of itemStaggerDistance picks up or down), start (in from the inline-start edge) or end (in from the inline-end edge). Start and end mirror in right-to-left languages. includes/helpers-nav-drawer-stagger-shape.php."
+		},
+		"itemStaggerReveal": {
+			"type": "string",
+			"default": "translate",
+			"enum": [
+				"translate",
+				"clip"
+			],
+			"description": "How each staggered item appears: translate (travel and fade) or clip (travel while a clip uncovers it top to bottom, no fade)."
 		},
 		"scrimFadeDuration": {
 			"type": "number",

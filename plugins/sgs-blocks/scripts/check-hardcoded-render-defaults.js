@@ -309,6 +309,26 @@ function extractBemElements( selector ) {
 }
 
 /**
+ * E1 hand-authored override table — for an attr whose name coincidentally
+ * CONTAINS the word for an unrelated sibling BEM element, so the substring
+ * heuristic below would wrongly treat it as owning that element too. Keyed by
+ * attr name; the value REPLACES the substring scan for that attr (does not
+ * add to it) — only these exact token(s) count as a match.
+ *
+ * `submenuLinkPadding` (Spec 36 "Item hover paint" M-21, 2026-09-28, added to
+ * both sgs/nav-bar-menu and sgs/nav-drawer-menu) contains the word "link" as
+ * part of its own "submenuLink" compound, which the plain substring scan also
+ * matches against a BARE `.__link` selector — that block's TOP-LEVEL item
+ * link, an unrelated sibling of the submenu's `.__sublink` this attr actually
+ * governs. Discovered as a net-new false positive the moment both blocks
+ * declared the attribute; general-heuristic collisions of this shape are rare
+ * enough that a small override table is proportionate over redesigning E1.
+ */
+const ATTR_ELEMENT_OVERRIDES = {
+	submenuLinkPadding: [ 'sublink' ],
+};
+
+/**
  * E1: For a sub-element selector, check whether the attr name semantically
  * maps to that element. Returns true (EXEMPT) when the attr does NOT map to
  * the sub-element — i.e. it is a root-level concern being incorrectly applied
@@ -317,6 +337,8 @@ function extractBemElements( selector ) {
  * Semantic match rule: the lowercased attr name must CONTAIN at least one of
  * the element tokens. If none match, the attr "owns" a different element and
  * the declaration on this sub-element selector is NOT a real F3 violation.
+ * An attr listed in ATTR_ELEMENT_OVERRIDES uses ONLY its declared token(s)
+ * instead of the substring scan (see that table's own docblock for why).
  *
  * Example:
  *   attrName = "gap"         selector tokens = ["header"] → no match → EXEMPT
@@ -327,6 +349,10 @@ function extractBemElements( selector ) {
 function isBemSubElementMismatch( attrName, bemElements ) {
 	if ( bemElements === null ) {
 		return false; // root selector — apply full checking
+	}
+	const override = ATTR_ELEMENT_OVERRIDES[ attrName ];
+	if ( override ) {
+		return ! override.some( ( token ) => bemElements.has( token ) );
 	}
 	const lowerAttr = attrName.toLowerCase();
 	for ( const token of bemElements ) {

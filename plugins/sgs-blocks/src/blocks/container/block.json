@@ -31,7 +31,9 @@
 				"layout",
 				"background",
 				"shapeDividers",
-				"gridItems"
+				"gridItems",
+				"hover",
+				"blockLink"
 			],
 			"boxFamilies": {
 				"padding": [

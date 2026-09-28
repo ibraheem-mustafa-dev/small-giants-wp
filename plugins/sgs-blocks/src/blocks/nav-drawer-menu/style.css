@@ -292,9 +292,91 @@
 	}
 }
 
+/*
+ * Known limitation (2026-09-28): includes/nav-drawer-menu-ornament-reveal-
+ * css.php gates the stroke-draw rule below on "hover-draw used at ANY tier"
+ * (one instance, one CSS emission), so a MIXED config — 'static' on one
+ * device, 'hover-draw' on another — would also dash the 'static' tier's
+ * glyph. Every reference seen so far sets one reveal mode across all tiers;
+ * revisit with a tier-scoped class if a mixed config is ever needed.
+ */
+
 .sgs-nav-drawer-menu__accordion-summary:focus-visible {
 	outline: 2px solid var(--sgs-focus-color, currentColor);
 	outline-offset: -2px;
+}
+
+/*
+ * G-6 (2026-09-28) — the ornament's hover-draw reveal. Structural only;
+ * includes/nav-drawer-menu-ornament-reveal-css.php emits the per-instance,
+ * per-tier custom properties. `--sgs-ndm-orn-rest-opacity` defaults to 1
+ * (today's always-visible behaviour, itemOrnamentRevealMode 'static');
+ * `--sgs-ndm-orn-collapse` only carries a value when hover-draw is active
+ * AND itemOrnamentReserveSpace is off, collapsing the ornament's own box at
+ * rest so the label keeps its resting indent unless reserved space was
+ * explicitly asked for.
+ */
+.sgs-nav-drawer-menu__ornament {
+	max-width: calc((1 - var(--sgs-ndm-orn-collapse, 0)) * (var(--sgs-ndm-orn-size, 0.75em) + var(--sgs-ndm-orn-gap, 0.5em)));
+	overflow: hidden;
+	transition: max-width var(--sgs-ndm-motion, 200ms ease);
+}
+
+.sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament,
+.sgs-nav-drawer-menu__link:focus-visible .sgs-nav-drawer-menu__ornament {
+	max-width: calc(var(--sgs-ndm-orn-size, 0.75em) + var(--sgs-ndm-orn-gap, 0.5em));
+}
+
+.sgs-nav-drawer-menu__ornament-glyph {
+	opacity: var(--sgs-ndm-orn-rest-opacity, 1);
+}
+
+.sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament-glyph,
+.sgs-nav-drawer-menu__link:focus-visible .sgs-nav-drawer-menu__ornament-glyph {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-nav-drawer-menu__ornament {
+		transition: none;
+	}
+}
+
+/*
+ * I-D9 (2026-09-28) — when the item has no real destination of its own, the
+ * whole row is the accordion toggle: the label lives inside the <summary>,
+ * which is laid out as a full-width flex row instead of the caret-only
+ * absolutely-positioned touch target above.
+ */
+.sgs-nav-drawer-menu__accordion-summary--row {
+	align-items: center;
+	inset-inline-end: auto;
+	justify-content: space-between;
+	min-height: 44px;
+	position: static;
+	top: auto;
+	width: 100%;
+}
+
+/*
+ * G-7 (2026-09-28) — the per-item trailing icon, after ANY row's label
+ * (independent of the accordion expander). includes/nav-drawer-menu-parity-
+ * css.php emits the per-instance colour/size.
+ */
+.sgs-nav-drawer-menu__trailing-icon {
+	color: inherit;
+	display: inline-flex;
+	flex: none;
+	font-size: var(--sgs-ndm-trail-size, 10px);
+	height: 1em;
+	margin-inline-start: 0.4em;
+	width: 1em;
+}
+
+.sgs-nav-drawer-menu__trailing-icon svg {
+	display: block;
+	height: 100%;
+	width: 100%;
 }
 
 /* Accordion mode (default): the submenu <ul> simply flows open/closed with

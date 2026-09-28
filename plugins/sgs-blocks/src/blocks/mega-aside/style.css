@@ -36,11 +36,27 @@
 	border-radius: 12px;
 }
 
+/* Aside background — RESTING state. render.php emits --sgs-mega-aside-bg (+
+   -gradient) onto this instance's own `.{uid}` class whenever the operator
+   sets `asideBg`, but until this rule existed nothing on the frontend ever
+   READ that custom property at rest — only the :hover/:focus-within rule
+   below consumed it, so an operator's asideBg silently never painted and the
+   element fell through to the parent sgs/mega-panel's own `:where(.sgs-mega-
+   aside){background-color:var(--sgs-mm-card)}` rule (mega-panel/render.php),
+   a 0-specificity fallback that always wins by default when nothing else
+   sets the property. Reading --sgs-mega-aside-bg here (specificity 0,1,0)
+   fixes that while keeping the exact same panel-derived default the moment
+   asideBg is unset, via the nested var() fallback chain. */
+.sgs-mega-aside {
+	background-color: var( --sgs-mega-aside-bg, var( --sgs-mm-card, transparent ) );
+	background-image: var( --sgs-mega-aside-bg-gradient, none );
+}
+
 /* Aside background hover/focus — fallback chain:
-   hover var → resting var → CSS default. */
+   hover var → resting var → panel-derived default → CSS default. */
 .sgs-mega-aside:hover,
 .sgs-mega-aside:focus-within {
-	background-color: var( --sgs-mega-aside-bg-hover, var( --sgs-mega-aside-bg, transparent ) );
+	background-color: var( --sgs-mega-aside-bg-hover, var( --sgs-mega-aside-bg, var( --sgs-mm-card, transparent ) ) );
 	background-image: var( --sgs-mega-aside-bg-hover-gradient, var( --sgs-mega-aside-bg-gradient, none ) );
 }
 

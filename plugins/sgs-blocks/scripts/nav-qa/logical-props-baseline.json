@@ -5,6 +5,7 @@
     "src/blocks/nav-bar-menu/style.css|left|left: var(--sgs-mm-fixed-left, 0px);": 1,
     "src/blocks/nav-bar-menu/style.css|right|right: auto;": 1,
     "src/blocks/nav-drawer-menu/style.css|left|left: 0;": 1,
-    "src/blocks/nav-drawer/style.css|left|left: 0;": 1
+    "src/blocks/nav-drawer/style.css|left|left: 0;": 1,
+    "src/blocks/nav-drawer/style.css|left|left: 50%;": 1
   }
 }

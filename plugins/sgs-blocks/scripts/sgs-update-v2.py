@@ -574,6 +574,45 @@ _CONTAINER_WRAPPER_PHP_PATH = (
 # Loaded once per process — the shared wrapper file does not change per-block.
 _WRAPPER_TIER_OBJECT_ATTRS = _tier_object_attrs_from_php(_CONTAINER_WRAPPER_PHP_PATH)
 
+# Per-block includes/*.php evidence (2026-09-28) — ADDITIVE to the wrapper
+# mechanism above, same doctrine (D968: evidence only ever turns a
+# name-doctrine-0 into a correct 1, never suppresses). `_render_tier_attrs`
+# below has always scanned ONLY a block's own render.php for Shape 2/3
+# tier-object evidence, but the project's own 300-line PHP rule
+# (plugins/sgs-blocks/CLAUDE.md) pushes new render logic into a NEW helper
+# file the moment render.php crosses that limit — the box/tier emission for
+# an attribute can then live entirely in includes/*.php, invisible to a
+# render.php-only scan. Proven case: sgs/nav-bar-menu's `itemPadding` and
+# `submenuLinkPadding` are genuinely per-device box families (rendered via
+# includes/nav-menu-item-padding-css.php's sgs_emit_responsive_css(...,
+# 'box'=>true) call) but were seeded is_responsive=0 — box-by-elimination —
+# because render.php itself never mentions `$attributes['itemPadding']`
+# directly, only via a require_once'd helper. wp-build-page.js then refused a
+# tier-wrapped value for it (its own per-device shape check reads this same
+# DB column). Fixed by also scanning every includes/*.php file the block's
+# render.php require_once's, not by hand-editing the DB row.
+_INCLUDES_DIR = Path(__file__).resolve().parent.parent / "includes"
+_REQUIRE_INCLUDES_RE = re.compile(
+    r"require(?:_once)?\s*\(?[^;]*?['\"]/includes/([A-Za-z0-9_-]+\.php)['\"]"
+)
+
+
+def _render_tier_attrs_for_block(render_path: Path) -> set:
+    """Tier-object evidence for one block: its own render.php PLUS every
+    includes/*.php file that render.php require_once's. See the module-level
+    comment above `_INCLUDES_DIR` for why render.php alone under-detects.
+    """
+    found = set(_tier_object_attrs_from_php(render_path))
+    if not render_path.is_file():
+        return found
+    try:
+        text = render_path.read_text(encoding="utf-8")
+    except OSError:
+        return found
+    for m in _REQUIRE_INCLUDES_RE.finditer(text):
+        found |= _tier_object_attrs_from_php(_INCLUDES_DIR / m.group(1))
+    return found
+
 # MINOR (task-review 2nd pass): both `raise RuntimeError` calls below fire at
 # MODULE IMPORT TIME, not inside a stage function — a missing/broken wrapper
 # file breaks every stage this module is imported for (not just is_responsive
@@ -1080,7 +1119,7 @@ def _index_sgs_block_files(
         # — see the module-level comment above `_compute_is_responsive`. Read
         # once per block; empty set when there is no render.php.
         _render_tier_attrs = (
-            _tier_object_attrs_from_php(block_dir / "render.php") if has_render else set()
+            _render_tier_attrs_for_block(block_dir / "render.php") if has_render else set()
         )
         has_view = any(
             (block_dir / fn).exists()

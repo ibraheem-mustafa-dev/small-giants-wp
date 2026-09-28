@@ -9,7 +9,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, RangeControl } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
 import { MotionEasingControl } from '../../components';
 
 /**
@@ -28,6 +28,7 @@ export default function PanelMotionPanel( { attributes, setAttributes } ) {
 		submenuItemStaggerDuration,
 		submenuItemStaggerMax,
 		submenuItemStaggerDistance,
+		submenuItemStaggerScope,
 	} = attributes;
 
 	const range = ( label, key, value, fallback, min, max, step, help ) => (
@@ -109,6 +110,34 @@ export default function PanelMotionPanel( { attributes, setAttributes } ) {
 						1,
 						__( 'Negative values drop items in from above.', 'sgs-blocks' )
 					) }
+					<SelectControl
+						label={ __( 'Stagger applies to', 'sgs-blocks' ) }
+						value={ submenuItemStaggerScope || 'columns' }
+						options={ [
+							{
+								label: __( 'Mega panel columns', 'sgs-blocks' ),
+								value: 'columns',
+							},
+							{
+								label: __(
+									'Link rows and cards inside each column',
+									'sgs-blocks'
+								),
+								value: 'rows',
+							},
+						] }
+						onChange={ ( value ) =>
+							setAttributes( {
+								submenuItemStaggerScope: value || 'columns',
+							} )
+						}
+						help={ __(
+							'A dropdown (non-mega) panel is unaffected either way. "Rows" cascades link-by-link down each mega column instead of moving whole columns.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</>
 			) }
 		</PanelBody>

@@ -21,6 +21,17 @@
 
 .sgs-responsive-logo {
 	display: inline-block;
+	// inline-block establishes a text/line context for its inline children
+	// (&__link, &__picture) — the page's normal line-height (~24px for a
+	// 16px/1.5 body) reserves descender space below the baseline, sitting a
+	// 36px image in a 43px box (measured live, 7px gap). line-height:0
+	// collapses that reserved space; vertical-align:middle stops the ROOT
+	// itself picking up the same baseline gap against ITS OWN surrounding
+	// line box (e.g. a text-flow header, not a flex row). A flex/grid parent
+	// blockifies this element and ignores both properties outright, so
+	// nothing shifts there; a text-flow parent now sits the logo flush.
+	line-height: 0;
+	vertical-align: middle;
 	// Anchors the Lottie substrate's WCAG 2.2.2 pause control (U-17), which
 	// prints as a sibling of &__link/&__picture, not nested inside either.
 	position: relative;
@@ -39,9 +50,17 @@
 		text-decoration: none;
 		transition: opacity 150ms ease;
 
+		// --sgs-logo-hover-opacity is emitted by render.php from the block's
+		// own `hoverOpacity` attribute (a real editor control — Bean's
+		// framework has no inline style="" contract, Spec 32) — never a
+		// hardcoded literal here. The :hover rule below is guarded against
+		// sticky touch-hover at build time (scripts/hover-guard postbuild
+		// transform, same as every other compiled block stylesheet); source
+		// stays unguarded on purpose. Fallback 1 = no visible change when the
+		// attribute is unset (0, the off-sentinel).
 		&:hover,
 		&:focus-visible {
-			opacity: 0.85;
+			opacity: var( --sgs-logo-hover-opacity, 1 );
 		}
 
 		// Sufficient focus ring for WCAG 2.4.11

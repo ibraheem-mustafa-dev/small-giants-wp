@@ -221,6 +221,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		maxWidthUnit,
 		maxHeightUnit,
 		linkToHome,
+		hoverOpacity,
 		alt,
 		logoDecorative,
 		borderColour,
@@ -635,6 +636,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { linkToHome: val } ) }
 						__nextHasNoMarginBottom
 					/>
+
+					{ linkToHome && (
+						<RangeControl
+							label={ __( 'Hover opacity', 'sgs-blocks' ) }
+							help={ __( 'Fades the logo link on hover/focus. 1 = no fade. Default 0.85 signals it is clickable.', 'sgs-blocks' ) }
+							value={ hoverOpacity ?? 0.85 }
+							onChange={ ( val ) => setAttributes( { hoverOpacity: val ?? 0 } ) }
+							min={ 0 }
+							max={ 1 }
+							step={ 0.05 }
+							allowReset
+							resetFallbackValue={ 0.85 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 
 					<ToggleControl
 						label={ __( 'Decorative logo (hide from screen readers)', 'sgs-blocks' ) }

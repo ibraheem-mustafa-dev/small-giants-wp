@@ -20,6 +20,7 @@ require_once __DIR__ . '/helpers-responsive.php';
 require_once __DIR__ . '/helpers-motion-easing.php';
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/class-sgs-breakpoints.php';
+require_once __DIR__ . '/helpers-nav-drawer-stagger-shape.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_motion_shapes' ) ) {
 	/**
@@ -28,7 +29,7 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_shapes' ) ) {
 	 * @return array<int,string>
 	 */
 	function sgs_nav_drawer_motion_shapes(): array {
-		return array( 'auto', 'none', 'fade', 'slide-start', 'slide-end', 'slide-up', 'slide-down', 'wipe-down', 'wipe-down-skew', 'reveal-from-bar', 'curtain', 'scale' );
+		return array( 'auto', 'none', 'fade', 'slide-start', 'slide-end', 'slide-up', 'slide-down', 'wipe-down', 'wipe-down-skew', 'reveal-from-bar', 'curtain', 'scale', 'grow-from-anchor' );
 	}
 }
 
@@ -58,21 +59,24 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_keyframes' ) ) {
 			$shape = $auto[ $anchor ] ?? 'nudge';
 		}
 		$map = array(
-			'nudge'           => array( 'sgs-nav-drawer-in', 'sgs-nav-drawer-out', 'center' ),
-			'expand-down'     => array( 'sgs-nav-drawer-expand-down-in', 'sgs-nav-drawer-expand-down-out', 'top center' ),
-			'corner-scale'    => array( 'sgs-nav-drawer-corner-scale-in', 'sgs-nav-drawer-corner-scale-out', 'top right' ),
-			'modal-scale'     => array( 'sgs-nav-drawer-modal-scale-in', 'sgs-nav-drawer-modal-scale-out', 'center' ),
-			'scale'           => array( 'sgs-nav-drawer-modal-scale-in', 'sgs-nav-drawer-modal-scale-out', 'center' ),
-			'none'            => array( 'none', 'none', 'center' ),
-			'fade'            => array( 'sgs-nav-drawer-fade-in', 'sgs-nav-drawer-fade-out', 'center' ),
-			'slide-start'     => array( 'sgs-nav-drawer-slide-start-in', 'sgs-nav-drawer-slide-start-out', 'center' ),
-			'slide-end'       => array( 'sgs-nav-drawer-slide-end-in', 'sgs-nav-drawer-slide-end-out', 'center' ),
-			'slide-up'        => array( 'sgs-nav-drawer-slide-up-in', 'sgs-nav-drawer-slide-up-out', 'center' ),
-			'slide-down'      => array( 'sgs-nav-drawer-slide-down-in', 'sgs-nav-drawer-slide-down-out', 'center' ),
-			'wipe-down'       => array( 'sgs-nav-drawer-wipe-down-in', 'sgs-nav-drawer-wipe-down-out', 'center' ),
-			'wipe-down-skew'  => array( 'sgs-nav-drawer-wipe-skew-in', 'sgs-nav-drawer-wipe-skew-out', 'center' ),
-			'reveal-from-bar' => array( 'sgs-nav-drawer-reveal-bar-in', 'sgs-nav-drawer-reveal-bar-out', 'center' ),
-			'curtain'         => array( 'sgs-nav-drawer-curtain-host', 'sgs-nav-drawer-curtain-host', 'center' ),
+			'nudge'            => array( 'sgs-nav-drawer-in', 'sgs-nav-drawer-out', 'center' ),
+			'expand-down'      => array( 'sgs-nav-drawer-expand-down-in', 'sgs-nav-drawer-expand-down-out', 'top center' ),
+			'corner-scale'     => array( 'sgs-nav-drawer-corner-scale-in', 'sgs-nav-drawer-corner-scale-out', 'top right' ),
+			'modal-scale'      => array( 'sgs-nav-drawer-modal-scale-in', 'sgs-nav-drawer-modal-scale-out', 'center' ),
+			'scale'            => array( 'sgs-nav-drawer-modal-scale-in', 'sgs-nav-drawer-modal-scale-out', 'center' ),
+			'none'             => array( 'none', 'none', 'center' ),
+			'fade'             => array( 'sgs-nav-drawer-fade-in', 'sgs-nav-drawer-fade-out', 'center' ),
+			'slide-start'      => array( 'sgs-nav-drawer-slide-start-in', 'sgs-nav-drawer-slide-start-out', 'center' ),
+			'slide-end'        => array( 'sgs-nav-drawer-slide-end-in', 'sgs-nav-drawer-slide-end-out', 'center' ),
+			'slide-up'         => array( 'sgs-nav-drawer-slide-up-in', 'sgs-nav-drawer-slide-up-out', 'center' ),
+			'slide-down'       => array( 'sgs-nav-drawer-slide-down-in', 'sgs-nav-drawer-slide-down-out', 'center' ),
+			'wipe-down'        => array( 'sgs-nav-drawer-wipe-down-in', 'sgs-nav-drawer-wipe-down-out', 'center' ),
+			'wipe-down-skew'   => array( 'sgs-nav-drawer-wipe-skew-in', 'sgs-nav-drawer-wipe-skew-out', 'center' ),
+			'reveal-from-bar'  => array( 'sgs-nav-drawer-reveal-bar-in', 'sgs-nav-drawer-reveal-bar-out', 'center' ),
+			'curtain'          => array( 'sgs-nav-drawer-curtain-host', 'sgs-nav-drawer-curtain-host', 'center' ),
+			// The box's real height grows from its anchor's height, top fixed
+			// (`nav-drawer/grow-from-anchor.js` measures both ends).
+			'grow-from-anchor' => array( 'sgs-nav-drawer-grow-in', 'sgs-nav-drawer-grow-out', 'top center' ),
 		);
 		$row = $map[ $shape ] ?? $map['nudge'];
 		return array(
@@ -87,11 +91,15 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_tier_decls' ) ) {
 	/**
 	 * The custom-property declarations for one tier's shape.
 	 *
-	 * @param string $shape  Resolved shape at this tier.
-	 * @param string $anchor Resolved anchor at this tier.
+	 * `--sgs-nd-grow` (1 or 0) tells `grow-from-anchor.js` whether this tier
+	 * grows; it is written only when some tier uses `grow-from-anchor`.
+	 *
+	 * @param string $shape    Resolved shape at this tier.
+	 * @param string $anchor   Resolved anchor at this tier.
+	 * @param bool   $grow_any Whether any tier uses `grow-from-anchor`.
 	 * @return string Declarations, no selector.
 	 */
-	function sgs_nav_drawer_motion_tier_decls( string $shape, string $anchor ): string {
+	function sgs_nav_drawer_motion_tier_decls( string $shape, string $anchor, bool $grow_any = false ): string {
 		$frames  = sgs_nav_drawer_motion_keyframes( $shape, $anchor );
 		$curtain = 'curtain' === $shape;
 		return '--sgs-nd-anim-in:' . $frames['in'] . ';'
@@ -100,7 +108,8 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_tier_decls' ) ) {
 			. '--sgs-nd-curtain-in:' . ( $curtain ? 'sgs-nav-drawer-curtain-sweep-in' : 'none' ) . ';'
 			. '--sgs-nd-curtain-out:' . ( $curtain ? 'sgs-nav-drawer-curtain-sweep-out' : 'none' ) . ';'
 			. '--sgs-nd-body-in:' . ( $curtain ? 'sgs-nav-drawer-fade-in' : 'none' ) . ';'
-			. '--sgs-nd-body-out:' . ( $curtain ? 'sgs-nav-drawer-fade-out' : 'none' ) . ';';
+			. '--sgs-nd-body-out:' . ( $curtain ? 'sgs-nav-drawer-fade-out' : 'none' ) . ';'
+			. ( $grow_any ? '--sgs-nd-grow:' . ( 'grow-from-anchor' === $shape ? '1' : '0' ) . ';' : '' );
 	}
 }
 
@@ -118,8 +127,9 @@ if ( ! function_exists( 'sgs_nav_drawer_motion' ) ) {
 		$shapes = sgs_nav_drawer_motion_shapes();
 		$raw    = is_array( $attributes['entryAnimation'] ?? null ) ? $attributes['entryAnimation'] : array();
 
-		$decls = array();
-		$used  = array();
+		$decls   = array();
+		$used    = array();
+		$resolve = array();
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 			$shape = (string) sgs_resolve_tier( $raw, $tier, 'auto' )['value'];
 			$shape = in_array( $shape, $shapes, true ) ? $shape : 'auto';
@@ -127,8 +137,12 @@ if ( ! function_exists( 'sgs_nav_drawer_motion' ) ) {
 			$anchor = (string) sgs_resolve_tier( is_array( $anchor_raw ) ? $anchor_raw : array(), $tier, 'full-screen' )['value'];
 			$anchor = in_array( $anchor, $allowed_anchors, true ) ? $anchor : 'full-screen';
 
-			$decls[ $tier ] = sgs_nav_drawer_motion_tier_decls( $shape, $anchor );
-			$used[ $shape ] = true;
+			$resolve[ $tier ] = array( $shape, $anchor );
+			$used[ $shape ]   = true;
+		}
+		$grow_any = isset( $used['grow-from-anchor'] );
+		foreach ( $resolve as $tier => $pair ) {
+			$decls[ $tier ] = sgs_nav_drawer_motion_tier_decls( $pair[0], $pair[1], $grow_any );
 		}
 
 		$enter_ms = sgs_motion_ms( $attributes['entryDuration'] ?? 250, 250 );
@@ -169,6 +183,9 @@ if ( ! function_exists( 'sgs_nav_drawer_motion' ) ) {
 		if ( isset( $used['curtain'] ) ) {
 			$classes[] = 'sgs-nav-drawer--curtain';
 		}
+		if ( $grow_any ) {
+			$classes[] = 'sgs-nav-drawer--grow';
+		}
 		if ( $enter_ms > 500 ) {
 			$data['sgs-nd-focus-after-entry'] = '';
 		}
@@ -183,7 +200,7 @@ if ( ! function_exists( 'sgs_nav_drawer_motion' ) ) {
 
 		// The item travel distance is a tier object (studionamma: 168px on a phone, 387px on desktop).
 		if ( $step > 0 ) {
-			$css .= sgs_emit_responsive_css(
+			$css    .= sgs_emit_responsive_css(
 				$root_sel,
 				array(
 					array(
@@ -193,6 +210,9 @@ if ( ! function_exists( 'sgs_nav_drawer_motion' ) ) {
 					),
 				)
 			);
+			$shaped  = sgs_nav_drawer_stagger_shape( $attributes, $root_sel );
+			$css    .= $shaped['css'];
+			$classes = array_merge( $classes, $shaped['classes'] );
 		}
 
 		return array(

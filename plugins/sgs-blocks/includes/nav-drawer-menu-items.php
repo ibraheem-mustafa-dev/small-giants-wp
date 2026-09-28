@@ -20,6 +20,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/helpers-item-effects.php';
 require_once __DIR__ . '/nav-menu-treatments.php';
 require_once __DIR__ . '/nav-drawer-menu-extras-css.php';
+require_once __DIR__ . '/nav-drawer-menu-row-extras.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 	/**
@@ -63,6 +64,15 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 			) : '',
 			'media'               => 'featured-image' === ( $attributes['itemMedia'] ?? '' ),
 			'media_size'          => sgs_nav_drawer_menu_media_size( $media_width ),
+			// G-7 — per-item trailing icon map (item identifier => {source,name}
+			// or {source:'custom', svg}), resolved lazily per row in
+			// sgs_nav_drawer_menu_trailing_icon_html() so an unused entry never
+			// costs a sanitise/lookup.
+			'trailing_icons'      => is_array( $attributes['itemTrailingIcons'] ?? null ) ? $attributes['itemTrailingIcons'] : array(),
+			// Parity with sgs/nav-bar-menu (2026-09-28) — read by
+			// sgs_nav_drawer_menu_accordion_html() for the accordion-parent
+			// row's disabled treatment.
+			'disabled_ids'        => is_array( $attributes['disabledItemIds'] ?? null ) ? $attributes['disabledItemIds'] : array(),
 		);
 	}
 }
@@ -163,7 +173,8 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_label_inner' ) ) {
 		}
 		return $ornament
 			. '<span class="sgs-nav-drawer-menu__link-text">' . sgs_label_roll_markup( (string) ( $item['label'] ?? '' ), (string) ( $options['roll'] ?? '' ) ) . '</span>'
-			. sgs_nav_drawer_menu_media_html( $item, $options );
+			. sgs_nav_drawer_menu_media_html( $item, $options )
+			. sgs_nav_drawer_menu_trailing_icon_html( $item, $options );
 	}
 }
 
@@ -175,6 +186,14 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_accordion_html' ) ) {
 	 * links) and a mega item (its panel in one `li.__mega-body`); both keep
 	 * `ul.sgs-nav-drawer-menu__submenu`, which nav-drilldown.js requires.
 	 *
+	 * I-D9 (2026-09-28): when the item has NO real destination of its own
+	 * (`$item['has_url']` false — see sgs_nav_drawer_menu_has_real_destination()),
+	 * the label moves INSIDE the `<summary>` alongside the caret, so the whole
+	 * row is one toggle — not a dead link sitting beside a small caret-only
+	 * touch target. A `<summary>` already exposes the correct implicit
+	 * role/expanded state to assistive tech from the `<details>` `open`
+	 * attribute; no extra `aria-expanded` bookkeeping is needed.
+	 *
 	 * @param array  $item      A flattened menu item.
 	 * @param string $li_class  The row's classes.
 	 * @param string $uid       Instance uid (accordion name and ids).
@@ -185,29 +204,56 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_accordion_html' ) ) {
 	 * @return string HTML.
 	 */
 	function sgs_nav_drawer_menu_accordion_html( array $item, string $li_class, string $uid, bool $exclusive, string $body_html, array $options, string $modifier = '' ): string {
-		$inner = sgs_nav_drawer_menu_label_inner( $item, $options );
-		if ( ! empty( $item['has_url'] ) ) {
+		$inner = sgs_nav_drawer_menu_label_inner( $item, $options )
+			. sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-drawer-menu' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
+
+		$disabled_ids = is_array( $options['disabled_ids'] ?? null ) ? $options['disabled_ids'] : array();
+		$is_disabled  = in_array( (string) ( $item['identifier'] ?? '' ), $disabled_ids, true );
+		$has_url      = ! empty( $item['has_url'] );
+		$row_toggle   = ! $has_url; // I-D9 — no real destination, whole row is the toggle.
+
+		$label_html    = '';
+		$summary_label = '';
+		if ( $row_toggle ) {
+			$summary_label = $inner;
+		} elseif ( $is_disabled ) {
+			// `aria-disabled` names what this span is: link-styled, no href.
+			$label_html = '<span class="sgs-nav-drawer-menu__link sgs-nav-drawer-menu__link--label" aria-disabled="true">' . $inner . '</span>';
+		} else {
 			$label_html = sprintf(
 				'<a class="sgs-nav-drawer-menu__link" href="%1$s" data-sgs-nav-path="%2$s">%3$s</a>',
 				esc_url( $item['url'] ),
 				esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
 				$inner
 			);
-		} else {
-			// `aria-disabled` names what this span is: link-styled, no href.
-			$label_html = '<span class="sgs-nav-drawer-menu__link sgs-nav-drawer-menu__link--label" aria-disabled="true">' . $inner . '</span>';
 		}
 
-		$details_id = $uid . '-drill-' . substr( md5( (string) $item['identifier'] ), 0, 8 );
-		$name_attr  = $exclusive ? ' name="sgs-nav-drawer-menu-accordion-' . esc_attr( $uid ) . '"' : '';
-		$label      = (string) ( $item['label'] ?? '' );
+		$details_id    = $uid . '-drill-' . substr( md5( (string) $item['identifier'] ), 0, 8 );
+		$name_attr     = $exclusive ? ' name="sgs-nav-drawer-menu-accordion-' . esc_attr( $uid ) . '"' : '';
+		$label         = (string) ( $item['label'] ?? '' );
+		$summary_class = 'sgs-nav-drawer-menu__accordion-summary' . ( $row_toggle ? ' sgs-nav-drawer-menu__accordion-summary--row' : '' );
+		$expander      = (string) $options['expander_html'];
+		$caret_html    = '<span class="sgs-nav-drawer-menu__caret" aria-hidden="true">' . $expander . '</span>';
+
+		// Built by concatenation, never folded into the outer sprintf()'s
+		// FORMAT string below: $summary_label carries operator label text and
+		// icon markup that may itself contain a literal '%' — passed as a
+		// sprintf ARGUMENT (%7$s) it is inert; concatenated into the format
+		// string it would be re-parsed for placeholders.
+		if ( $row_toggle ) {
+			$summary_html = '<summary class="' . esc_attr( $summary_class ) . '">' . $summary_label . $caret_html . '</summary>';
+		} else {
+			/* translators: %s is the parent menu item's label. */
+			$aria_label   = esc_attr( sprintf( __( 'Show submenu for %s', 'sgs-blocks' ), $label ) );
+			$summary_html = '<summary class="' . esc_attr( $summary_class ) . '" aria-label="' . $aria_label . '">' . $caret_html . '</summary>';
+		}
 
 		return sprintf(
-			'<li class="%1$s sgs-nav-drawer-menu__item--has-submenu%10$s">'
+			'<li class="%1$s sgs-nav-drawer-menu__item--has-submenu%9$s">'
 			. '<div class="sgs-nav-drawer-menu__accordion-row">%2$s'
 			. '<details class="sgs-nav-drawer-menu__accordion"%3$s id="%4$s" data-sgs-nav-parent-label="%5$s" data-sgs-nav-back-label="%6$s">'
-			. '<summary class="sgs-nav-drawer-menu__accordion-summary" aria-label="%7$s"><span class="sgs-nav-drawer-menu__caret" aria-hidden="true">%8$s</span></summary>'
-			. '<ul class="sgs-nav-drawer-menu__submenu" data-sgs-drill-panel>%9$s</ul>'
+			. '%7$s'
+			. '<ul class="sgs-nav-drawer-menu__submenu" data-sgs-drill-panel>%8$s</ul>'
 			. '</details></div></li>',
 			esc_attr( $li_class ),
 			$label_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url/esc_attr/esc_html parts and trusted icon markup.
@@ -216,9 +262,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_accordion_html' ) ) {
 			esc_attr( $label ),
 			/* translators: %s is the parent menu item's label — the drill-down mode's Back button text. */
 			esc_attr( sprintf( __( 'Back to %s', 'sgs-blocks' ), $label ) ),
-			/* translators: %s is the parent menu item's label. */
-			esc_attr( sprintf( __( 'Show submenu for %s', 'sgs-blocks' ), $label ) ),
-			(string) $options['expander_html'], // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted icon markup from sgs_nav_shared_icon_markup().
+			$summary_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr parts + trusted icon/label markup above.
 			$body_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the caller's already-safe list items.
 			esc_attr( $modifier )
 		);

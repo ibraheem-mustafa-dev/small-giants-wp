@@ -55,6 +55,10 @@ const MOTION_PROPERTIES = new Set( [
 	// extends to any padding-* longhand a future hover-paint control shifts;
 	// widen this set on demand rather than pre-declaring every side unused.
 	'padding-inline-start',
+	// Opens the space a hover-revealed leading marker occupies (nav-drawer-menu
+	// `itemOrnamentRevealMode: hover-draw` without reserved space): a stuck
+	// hover would leave the row indented, the same failure as the padding shift.
+	'max-width',
 ] );
 
 /** Properties that count as "colour family" — never auto-guarded here. */

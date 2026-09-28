@@ -37,4 +37,5 @@ export const EASING_OPTIONS = [
 	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
 	{ label: __( 'Spring', 'sgs-blocks' ), value: 'spring' },
 	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+	{ label: __( 'Custom curve…', 'sgs-blocks' ), value: 'custom' },
 ];

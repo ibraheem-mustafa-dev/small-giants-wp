@@ -85,6 +85,7 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$hover_dur_slug        = $attrs['sgsHoverDuration'] ?? 'medium';
 	$hover_dur_ms          = min( 2000, absint( $attrs['sgsHoverDurationMs'] ?? 0 ) );
 	$hover_easing_slug     = $attrs['sgsHoverEasing'] ?? 'default';
+	$hover_easing_custom   = (string) ( $attrs['sgsHoverEasingCustom'] ?? '' );
 	$hover_img_zoom        = in_array( 'imageZoom', $excluded_controls, true )
 		? false
 		: (bool) ( $attrs['sgsHoverImageZoom'] ?? $defaults['image_zoom'] );
@@ -101,10 +102,11 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$click_effect          = $attrs['sgsClickEffect'] ?? 'none';
 	$click_ripple_colour   = $attrs['sgsClickRippleColour'] ?? '';
 	$click_ripple_duration = absint( $attrs['sgsClickRippleDuration'] ?? 600 );
+	$hover_opacity         = min( 1.0, max( 0.0, (float) ( $attrs['sgsHoverOpacity'] ?? 0 ) ) );
 
 	$has_ripple      = 'ripple' === $click_effect;
 	$has_scale_hover = $hover_scale || $hover_scale_preset;
-	$has_hover       = $has_scale_hover || $hover_shadow || $hover_lift;
+	$has_hover       = $has_scale_hover || $hover_shadow || $hover_lift || $hover_opacity > 0;
 
 	// Bail early if nothing is active (respects per-block defaults above).
 	if (
@@ -164,7 +166,9 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$stagger_delay,
 		$has_ripple,
 		$click_ripple_colour,
-		$click_ripple_duration
+		$click_ripple_duration,
+		$hover_opacity,
+		$hover_easing_custom
 	);
 
 	// --- Resolve the scoping class for the scoped <style> rule below (Spec 32
@@ -191,7 +195,8 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$stagger_delay,
 		$focus_ring,
 		$block_link,
-		$has_ripple
+		$has_ripple,
+		$hover_opacity
 	);
 
 	// --- Inject classes into the ROOT tag (never the leading <style>/<script>). ---

@@ -2,7 +2,9 @@
  * SGS Nav Drawer — block editor UI.
  *
  * The drawer is shown as an OPEN, styled preview shell so its InnerBlocks
- * content (menu / logo / CTA) stays editable in place. A native `<dialog>`
+ * content (the menu and any blocks after it) stays editable in place; the top
+ * row (× close, optional logo and free slot) is chrome previewed by
+ * ChromePreview.js and set in ChromePanel.js. A native `<dialog>`
  * cannot host an editable InnerBlocks region while closed, and ServerSideRender
  * cannot host editable InnerBlocks at all, so the canvas uses a styled shell
  * (the standard InnerBlocks-container pattern — core/group, core/cover). The
@@ -38,6 +40,8 @@ import {
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import MotionPanel from './MotionPanel';
+import ChromePanel from './ChromePanel';
+import ChromePreview from './ChromePreview';
 import { useSelect } from '@wordpress/data';
 
 /** backgroundSize control options — mirrors sgs/container's BackgroundPanel. */
@@ -81,7 +85,10 @@ import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelIte
 import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting } from '../../utils';
 
 /**
- * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
+ * Content template: the menu ONLY. templateLock:false. The logo and the one
+ * extra item (heading, label, text or button) are the chrome row's, set in the
+ * Top row panel and printed by render.php, never blocks (Spec 36 FR-36-6), so a
+ * drawer never shows two logos or two calls to action.
  * The nav-drawer-menu seeded here is a SEPARATE block instance from the
  * sgs/nav-bar-menu in the header — its own uid, its own scoped styles, its own
  * inspector — so a client can style the drawer's menu completely independently
@@ -94,8 +101,6 @@ import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPre
  */
 const TEMPLATE = [
 	[ 'sgs/nav-drawer-menu', { gap: { desktop: '4px' } } ],
-	[ 'sgs/responsive-logo' ],
-	[ 'sgs/button' ],
 ];
 
 /** drawerAlign → align-items (mirrors render.php). */
@@ -469,6 +474,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		const y = closeOffsetActive?.y ?? 0;
 		if ( 'same-slot' === closePlacementActive ) {
 			return {
+				position: 'absolute',
 				top: `${ sameSlotFallbackCentre }px`,
 				left: `calc(100% - ${ sameSlotFallbackCentre }px)`,
 				right: 'auto',
@@ -476,16 +482,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				transform: `translate(calc(-50% + ${ x }px), calc(-50% + ${ y }px))`,
 			};
 		}
+		// The × is a flex item of the chrome row (render.php): `order` puts it
+		// first or last.
 		if ( 'top-row-start' === closePlacementActive ) {
 			return {
-				insetInlineEnd: 'auto',
-				insetInlineStart: '12px',
-				top: '12px',
+				order: -1,
+				marginInlineStart: 0,
 				transform: `translate(${ x }px, ${ y }px)`,
 			};
 		}
 		// top-row-end (default).
 		return {
+			order: 1,
+			marginInlineStart: 'auto',
 			transform: `translate(${ x }px, ${ y }px)`,
 		};
 	} )();
@@ -838,6 +847,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ToolsPanelItem>
 				</ToolsPanel>
 
+				<ChromePanel attributes={ attributes } setAttributes={ setAttributes } />
 				<MotionPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
@@ -1376,7 +1386,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<PanelBody title={ __( 'Content', 'sgs-blocks' ) } initialOpen={ false }>
 					<p style={ { fontSize: '12px', color: '#757575', margin: 0 } }>
 						{ __(
-							'Edit the drawer’s menu, logo and call-to-action directly on the canvas. Each is an optional block you can remove or reorder.',
+							'Edit the drawer’s menu and anything below it directly on the canvas. The logo and the top row’s extra item are set in the Top row panel.',
 							'sgs-blocks'
 						) }
 					</p>
@@ -1384,73 +1394,75 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ /* closeStyle preview -- mirrors render.php's three real, visually
-					distinct close-button markups, so the "Close button style"
-					control has a visible editor-canvas effect. */ }
-				<span
-					className="sgs-nav-drawer__close-preview sgs-nav-drawer__close"
-					aria-hidden="true"
-					style={ {
-						...resolveTextColourPreviewStyle( toggleCloseColour, toggleCloseColourGradient, ( v ) => resolveColourToken( v, palette ) ),
-						/* closeSize editor-canvas mirror — this preview span
-						   is hand-authored JSX, not a render.php-rendered node (the drawer
-						   cannot use ServerSideRender while it hosts editable InnerBlocks —
-						   see the module docstring), so render.php's scoped closeSize <style>
-						   never reaches it. Width is only forced when the style shows text
-						   (matches render.php's own text-bearing width:auto branch). Keyed
-						   to the ACTIVE EDITOR DEVICE's resolved style (§4.9). */
-						width: ( 'text-swap' === closeStyleRenderActive || 'icon-and-text' === closeStyleRenderActive ) ? 'auto' : ( closeSize || '44px' ),
-						height: closeSize || '44px',
-						minWidth: closeSize || '44px',
-						minHeight: closeSize || '44px',
-						/* closeRadius editor-canvas mirror (§4.10) — same reasoning
-						   as the closeSize width/height above: this preview span is
-						   hand-authored JSX, so render.php's scoped closeRadius
-						   <style> never reaches it. Keyed to the ACTIVE EDITOR
-						   DEVICE's resolved value, falling back to the un-migrated
-						   4px default (style.css::.sgs-nav-drawer__close). */
-						borderRadius: closeRadiusActive,
-						// closePlacement/closeOffset editor-canvas mirror (SHOULD 10).
-						...closePlacementPreviewStyle,
-					} }
-				>
-					{ closeStyleRenderActive === 'text-swap' && (
-						<span className="sgs-nav-drawer__close-text" style={ closeLabelStyle }>
-							{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
-						</span>
-					) }
-					{ closeStyleRenderActive === 'burger-morph' && (
-						<span className="sgs-nav-drawer__close-bars">
-							<span></span>
-							<span></span>
-						</span>
-					) }
-					{ closeStyleRenderActive === 'icon-and-text' && (
-						<>
-							<span className="sgs-nav-drawer__close-glyph">
-								{ /* closeIcon editor-canvas mirror — same shared IconPreview
-								   sgs/icon's canvas uses (src/components/IconPicker/
-								   IconPreview.js), so a glyph choice other than the
-								   declared default { lucide, x } actually shows here,
-								   mirroring render.php's sgs_nav_shared_icon_markup()
-								   resolver. */ }
-								<IconPreview
-									source={ closeIcon?.source || 'lucide' }
-									name={ closeIcon?.name || 'x' }
-								/>
-							</span>
+				<ChromePreview attributes={ attributes } deviceTier={ activeDeviceTier }>
+					{ /* closeStyle preview -- mirrors render.php's three real, visually
+						distinct close-button markups, so the "Close button style"
+						control has a visible editor-canvas effect. */ }
+					<span
+						className="sgs-nav-drawer__close-preview sgs-nav-drawer__close"
+						aria-hidden="true"
+						style={ {
+							...resolveTextColourPreviewStyle( toggleCloseColour, toggleCloseColourGradient, ( v ) => resolveColourToken( v, palette ) ),
+							/* closeSize editor-canvas mirror — this preview span
+							   is hand-authored JSX, not a render.php-rendered node (the drawer
+							   cannot use ServerSideRender while it hosts editable InnerBlocks —
+							   see the module docstring), so render.php's scoped closeSize <style>
+							   never reaches it. Width is only forced when the style shows text
+							   (matches render.php's own text-bearing width:auto branch). Keyed
+							   to the ACTIVE EDITOR DEVICE's resolved style (§4.9). */
+							width: ( 'text-swap' === closeStyleRenderActive || 'icon-and-text' === closeStyleRenderActive ) ? 'auto' : ( closeSize || '44px' ),
+							height: closeSize || '44px',
+							minWidth: closeSize || '44px',
+							minHeight: closeSize || '44px',
+							/* closeRadius editor-canvas mirror (§4.10) — same reasoning
+							   as the closeSize width/height above: this preview span is
+							   hand-authored JSX, so render.php's scoped closeRadius
+							   <style> never reaches it. Keyed to the ACTIVE EDITOR
+							   DEVICE's resolved value, falling back to the un-migrated
+							   4px default (style.css::.sgs-nav-drawer__close). */
+							borderRadius: closeRadiusActive,
+							// closePlacement/closeOffset editor-canvas mirror (SHOULD 10).
+							...closePlacementPreviewStyle,
+						} }
+					>
+						{ closeStyleRenderActive === 'text-swap' && (
 							<span className="sgs-nav-drawer__close-text" style={ closeLabelStyle }>
 								{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
 							</span>
-						</>
-					) }
-					{ ( ! closeStyleRenderActive || closeStyleRenderActive === 'separate-x' ) && (
-						<IconPreview
-							source={ closeIcon?.source || 'lucide' }
-							name={ closeIcon?.name || 'x' }
-						/>
-					) }
-				</span>
+						) }
+						{ closeStyleRenderActive === 'burger-morph' && (
+							<span className="sgs-nav-drawer__close-bars">
+								<span></span>
+								<span></span>
+							</span>
+						) }
+						{ closeStyleRenderActive === 'icon-and-text' && (
+							<>
+								<span className="sgs-nav-drawer__close-glyph">
+									{ /* closeIcon editor-canvas mirror — same shared IconPreview
+									   sgs/icon's canvas uses (src/components/IconPicker/
+									   IconPreview.js), so a glyph choice other than the
+									   declared default { lucide, x } actually shows here,
+									   mirroring render.php's sgs_nav_shared_icon_markup()
+									   resolver. */ }
+									<IconPreview
+										source={ closeIcon?.source || 'lucide' }
+										name={ closeIcon?.name || 'x' }
+									/>
+								</span>
+								<span className="sgs-nav-drawer__close-text" style={ closeLabelStyle }>
+									{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
+								</span>
+							</>
+						) }
+						{ ( ! closeStyleRenderActive || closeStyleRenderActive === 'separate-x' ) && (
+							<IconPreview
+								source={ closeIcon?.source || 'lucide' }
+								name={ closeIcon?.name || 'x' }
+							/>
+						) }
+					</span>
+				</ChromePreview>
 				<div { ...innerBlocksProps } />
 			</div>
 		</>

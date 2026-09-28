@@ -12,8 +12,19 @@
  * The row is the containing block; every positioned box between the row and
  * the button is made static, and a magnet's transform (which would make the
  * button itself the containing block) moves to the button's children, whose
- * custom properties the magnet runtime already writes. Other blocks in the row
- * are lifted above the overlay, so they keep their own clicks.
+ * custom properties the magnet runtime already writes.
+ *
+ * G-2 (U-18): PASS-THROUGH for plain content. Only a genuinely INTERACTIVE
+ * descendant of another row block (`a[href]`, `button`, `input`, `select`,
+ * `textarea`, `[tabindex]` other than `-1`) is raised above the overlay —
+ * never the whole containing block. The burger's `::after` has no z-index of
+ * its own and paints above ordinary in-flow content by default (an
+ * absolutely-positioned box over static siblings), so anything NOT raised
+ * stays reachable through the overlay: a tap anywhere on a plain-text block
+ * (lamalama's pill message, a notice-banner with no link) opens the menu, the
+ * same as a tap on empty row space, while a link or button inside that same
+ * block keeps its own click. Raising the WHOLE block (the pre-G-2 shape)
+ * meant a tap on bare text never reached the trigger at all.
  *
  * @package SGS\Blocks
  */
@@ -40,9 +51,13 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_surface_css' ) ) {
 		$row    = '.sgs-site-header-row:has(' . $uid_sel . ')';
 		$burger = $uid_sel . ' .sgs-nav-bar-menu__burger';
 		$magnet = $burger . '[data-sgs-fx="magnet"]';
-		// Direct children of the row or of an inner band, other than the menu,
-		// another band, or a wrapper that holds the menu.
-		$others = $row . ' :is(.sgs-site-header-row,.sgs-container__inner)>:not(.sgs-nav-bar-menu,.sgs-container__inner,:has(' . $uid_sel . '))';
+		// G-2: only a genuinely interactive element inside another row block —
+		// never the whole block — escapes the overlay, so plain content
+		// (text, a notice-banner with no link) passes its tap through to the
+		// trigger while a real link/button/input keeps its own click.
+		$interactive_kinds = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
+		$others            = $row . ' :is(.sgs-site-header-row,.sgs-container__inner)'
+			. ' :is(' . $interactive_kinds . '):not(.sgs-nav-bar-menu,.sgs-nav-bar-menu *,:has(' . $uid_sel . '))';
 
 		$rules  = $row . '{position:relative;}';
 		$rules .= $row . ' :has(' . $uid_sel . '),' . $uid_sel . ',' . $uid_sel . ' .sgs-nav-bar-menu__toggle-wrap,' . $burger . '{position:static;}';

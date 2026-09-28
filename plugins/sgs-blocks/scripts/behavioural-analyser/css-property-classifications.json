@@ -7103,8 +7103,7 @@
       "slug": "sgs/nav-bar-menu",
       "attr": "submenuItemStaggerDuration",
       "fields": {
-        "css_property": "animation",
-        "css_element": "submenu"
+        "css_property": "animation"
       }
     },
     {
@@ -9668,6 +9667,14 @@
       "fields": {
         "css_property": "border-style",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "hoverOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "link"
       }
     },
     {
@@ -18733,6 +18740,14 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "scrimFadeDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "scrimOpacity",
       "fields": {
         "css_property": "opacity",
@@ -19118,10 +19133,231 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "chromeButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "chromeButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "chromeButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeLogoShow",
+      "fields": {
+        "css_property": "display",
+        "css_element": "chromeLogo"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeLogoWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "chromeLogo"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeRowBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "chrome"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeRowBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "chrome"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeRowGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "chrome"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeRowHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "chrome"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeRowPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "chrome"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeSlotColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "chromeSlot"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeSlotColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "chromeSlot"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeSlotHeadingLevel",
+      "fields": {
+        "css_property": "tag",
+        "css_element": "chromeSlot"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeSlotShow",
+      "fields": {
+        "css_property": "display",
+        "css_element": "chromeSlot"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "closeFontFamily",
       "fields": {
         "css_property": "font-family",
         "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeIconSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "closeIcon"
       }
     },
     {
@@ -19355,6 +19591,24 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "itemBadgeColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemBadgeTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBg",
       "fields": {
         "css_property": "background-color",
@@ -19505,6 +19759,24 @@
         "css_property": "color-gradient",
         "css_element": "item",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemColourOpen",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item-open"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemDisabledColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "disabled-item"
       }
     },
     {
@@ -19676,6 +19948,14 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "itemPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemPaddingShiftHover",
       "fields": {
         "css_property": "padding-inline-start",
@@ -19715,6 +19995,23 @@
         "css_property": "text-transform",
         "css_element": "item",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemTrailingIconColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "trailing-icon"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemTrailingIconSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "trailing-icon"
       }
     },
     {
@@ -20059,6 +20356,14 @@
       "attr": "submenuLinkBorderWidth",
       "fields": {
         "css_property": "border-width",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuLinkPadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "sublink"
       }
     },

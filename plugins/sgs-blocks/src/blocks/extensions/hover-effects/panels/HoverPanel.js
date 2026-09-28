@@ -11,10 +11,15 @@ import {
 	PanelBody,
 	RangeControl,
 	SelectControl,
+	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { SCALE_PRESET_OPTIONS, DURATION_OPTIONS, EASING_OPTIONS } from '../constants';
+// Reuses the nav motion controls' own curve validator (Wave 3C U-5) — the
+// same function includes/helpers-motion-easing.php::sgs_motion_valid_cubic_bezier()
+// mirrors server-side, so a value this panel accepts is never refused at render.
+import { isValidCubicBezier } from '../../../../components/MotionEasingControl';
 
 /**
  * @param {Object}   props
@@ -34,8 +39,10 @@ import { SCALE_PRESET_OPTIONS, DURATION_OPTIONS, EASING_OPTIONS } from '../const
  * @param {string}   props.sgsHoverDuration
  * @param {number}   props.sgsHoverDurationMs
  * @param {string}   props.sgsHoverEasing
+ * @param {string}   props.sgsHoverEasingCustom
  * @param {number}   props.sgsStaggerDelay
  * @param {boolean}  props.sgsFocusRing
+ * @param {number}   props.sgsHoverOpacity
  * @param {Function} props.setAttributes
  */
 export default function HoverPanel( {
@@ -55,10 +62,16 @@ export default function HoverPanel( {
 	sgsHoverDuration,
 	sgsHoverDurationMs,
 	sgsHoverEasing,
+	sgsHoverEasingCustom,
 	sgsStaggerDelay,
 	sgsFocusRing,
+	sgsHoverOpacity,
 	setAttributes,
 } ) {
+	const customEasingInvalid =
+		'custom' === sgsHoverEasing &&
+		'' !== ( sgsHoverEasingCustom || '' ) &&
+		! isValidCubicBezier( sgsHoverEasingCustom );
 	return (
 		<PanelBody
 			title={ __( 'Hover Effects', 'sgs-blocks' ) }
@@ -194,6 +207,31 @@ export default function HoverPanel( {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			{ 'custom' === sgsHoverEasing && (
+				<TextControl
+					label={ __( 'Custom curve', 'sgs-blocks' ) }
+					value={ sgsHoverEasingCustom || '' }
+					onChange={ ( val ) => setAttributes( { sgsHoverEasingCustom: val } ) }
+					placeholder="cubic-bezier(0.16, 0.84, 0.32, 1)"
+					help={
+						customEasingInvalid
+							? sprintf(
+									/* translators: %s: the fallback easing name. */
+									__(
+										'Not a valid curve. Use cubic-bezier(x1, y1, x2, y2) with x1 and x2 between 0 and 1. Using %s until this is fixed.',
+										'sgs-blocks'
+									),
+									__( 'Default (Material)', 'sgs-blocks' )
+							  )
+							: __(
+									'cubic-bezier(x1, y1, x2, y2). x1 and x2 must be between 0 and 1.',
+									'sgs-blocks'
+							  )
+					}
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
 			<RangeControl
 				label={ __( 'Child stagger delay (ms)', 'sgs-blocks' ) }
 				help={ __( 'Each direct child is delayed by a multiple of this value.', 'sgs-blocks' ) }
@@ -210,6 +248,19 @@ export default function HoverPanel( {
 				help={ __( 'Adds a visible focus ring (3px primary glow at 0.4 alpha) when keyboard-tabbed to. Recommended on for any clickable block.', 'sgs-blocks' ) }
 				checked={ sgsFocusRing }
 				onChange={ ( val ) => setAttributes( { sgsFocusRing: val } ) }
+			/>
+			<RangeControl
+				label={ __( 'Hover opacity', 'sgs-blocks' ) }
+				help={ __( 'Fades the block on hover. 0 = no fade, 1 = fully opaque (no visible change).', 'sgs-blocks' ) }
+				value={ sgsHoverOpacity }
+				onChange={ ( val ) => setAttributes( { sgsHoverOpacity: val ?? 0 } ) }
+				min={ 0 }
+				max={ 1 }
+				step={ 0.05 }
+				allowReset
+				resetFallbackValue={ 0 }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 		</PanelBody>
 	);

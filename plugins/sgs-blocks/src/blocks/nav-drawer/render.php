@@ -45,6 +45,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-chrome.php';
 // ⚠ The source-aware icon resolver sgs/icon and sgs/nav-bar-menu's trigger both use.
 // It lives in includes/nav-menu-treatments.php, which is require_once'd PER-INSTANCE
 // from sgs/nav-bar-menu's own render.php rather than at plugin bootstrap -- so its
@@ -180,7 +181,10 @@ $sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size, $modality_v
 			$gap = '' !== $offset ? $offset : '8px';
 			return 'position:fixed;top:calc(var(--sgs-drawer-trigger-top, 8px) + ' . $gap . ');right:var(--sgs-drawer-trigger-right, 16px);bottom:auto;left:auto;margin:0;width:min(' . $cap . ', calc(100vw - 32px));height:auto;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);' . $sgs_nd_z_popover;
 		case 'header-box':
-			return 'position:fixed;top:var(--sgs-drawer-hb-top, 0px);right:auto;bottom:auto;left:var(--sgs-drawer-hb-left, 0px);margin:0;width:var(--sgs-drawer-hb-width, 100vw);height:auto;max-width:100vw;max-height:calc(100dvh - var(--sgs-drawer-hb-top, 0px) - 16px);--sgs-nd-hb-row:var(--sgs-drawer-hb-row-h, 0px);--sgs-nd-grows:1;' . $sgs_nd_z_under_header;
+			// The header's fluid scale (`--sgs-header-fluid-scale`, published by
+			// sgs/site-header) zooms the panel with it; the measured box is in
+			// screen pixels, so every measured length is divided back by the zoom.
+			return 'position:fixed;--sgs-nd-zoom:var(--sgs-header-fluid-scale, 1);zoom:var(--sgs-nd-zoom);top:calc(var(--sgs-drawer-hb-top, 0px) / var(--sgs-nd-zoom));right:auto;bottom:auto;left:calc(var(--sgs-drawer-hb-left, 0px) / var(--sgs-nd-zoom));margin:0;width:calc(var(--sgs-drawer-hb-width, 100vw) / var(--sgs-nd-zoom));height:auto;max-width:calc(100vw / var(--sgs-nd-zoom));max-height:calc((100dvh - var(--sgs-drawer-hb-top, 0px) - 16px) / var(--sgs-nd-zoom));--sgs-nd-hb-row:calc(var(--sgs-drawer-hb-row-h, 0px) / var(--sgs-nd-zoom));--sgs-nd-grows:1;' . $sgs_nd_z_under_header;
 		case 'centred':
 			$cap = '' !== $panel_size ? $panel_size : '480px';
 			return 'position:fixed;inset:0;margin:auto;width:min(' . $cap . ', calc(100vw - 32px));height:fit-content;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);' . $sgs_nd_z_popover;
@@ -533,7 +537,7 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set || $sgs_nd_offset_is_set || '
 	$sgs_nd_geom_mobile  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_mobile, $sgs_nd_panel_mobile, $modality, $sgs_nd_offset_mobile );
 	// When any tier grows from the header, the other tiers switch it back off.
 	if ( in_array( 'header-box', array( $sgs_nd_anchor_desktop, $sgs_nd_anchor_tablet, $sgs_nd_anchor_mobile ), true ) ) {
-		$sgs_nd_grown_off     = '--sgs-nd-grows:0;--sgs-nd-hb-row:0px;';
+		$sgs_nd_grown_off     = '--sgs-nd-grows:0;--sgs-nd-hb-row:0px;--sgs-nd-zoom:1;zoom:1;';
 		$sgs_nd_geom_desktop .= 'header-box' === $sgs_nd_anchor_desktop ? '' : $sgs_nd_grown_off;
 		$sgs_nd_geom_tablet  .= 'header-box' === $sgs_nd_anchor_tablet ? '' : $sgs_nd_grown_off;
 		$sgs_nd_geom_mobile  .= 'header-box' === $sgs_nd_anchor_mobile ? '' : $sgs_nd_grown_off;
@@ -985,8 +989,11 @@ foreach ( array(
 	// The × hidden also hands its reserved top row back to the content
 	// (style.css reads --sgs-nd-close-room for the body's padding-top), so no
 	// empty band is left where the × would have been (Bean, 2026-09-24).
+	// A row holding nothing but the × goes with it (an empty chrome row costs
+	// no space); a row with a logo or slot stays.
 	$sgs_nd_predicate_rule = $sgs_nd_opener_live_close_sel . '{display:none;}'
-		. '.' . $uid . '[data-sgs-nav-opener-live]{--sgs-nd-close-room:clamp(16px, 6vw, 32px);}';
+		. '.' . $uid . '[data-sgs-nav-opener-live] .sgs-nav-drawer__chrome--close-only{display:none;}'
+		. '.' . $uid . '[data-sgs-nav-opener-live]:has(> .sgs-nav-drawer__chrome--close-only){--sgs-nd-close-room:clamp(16px, 6vw, 32px);}';
 	$css                  .= null === $sgs_nd_predicate_bp
 		? $sgs_nd_predicate_rule
 		: '@media (max-width:' . $sgs_nd_predicate_bp . 'px){' . $sgs_nd_predicate_rule . '}';
@@ -1060,7 +1067,7 @@ $sgs_nd_same_slot_fallback_centre = $sgs_nd_close_edge_inset + ( $sgs_nd_close_s
  * @param array  $offset    Resolved {x,y} in px.
  * @return string CSS declarations (no selector/braces).
  */
-$sgs_nd_placement_decls_for = function ( $placement, $offset ) use ( $sgs_nd_close_edge_inset, $sgs_nd_same_slot_fallback_centre ) {
+$sgs_nd_placement_decls_for = function ( $placement, $offset ) use ( $sgs_nd_same_slot_fallback_centre ) {
 	$x = $offset['x'];
 	$y = $offset['y'];
 	if ( 'same-slot' === $placement ) {
@@ -1069,15 +1076,18 @@ $sgs_nd_placement_decls_for = function ( $placement, $offset ) use ( $sgs_nd_clo
 		// top-row-end position when JS has not measured yet. The variables are a CENTRE
 		// (the translate(-50%) below), so the fallback centre is the edge inset plus
 		// half the RESOLVED close size; a bare edge inset would hang the × off the panel.
-		return 'top:var(--sgs-nav-close-y, ' . $sgs_nd_same_slot_fallback_centre . 'px);left:var(--sgs-nav-close-x, calc(100% - ' . $sgs_nd_same_slot_fallback_centre . 'px));right:auto;inset-inline-end:auto;'
+		// The chrome row is the containing block and sits at the dialog's
+		// own top-left, so the store's dialog-relative centre still holds.
+		return 'position:absolute;margin:0;order:1;top:var(--sgs-nav-close-y, ' . $sgs_nd_same_slot_fallback_centre . 'px);left:var(--sgs-nav-close-x, calc(100% - ' . $sgs_nd_same_slot_fallback_centre . 'px));right:auto;inset-inline-end:auto;'
 			. 'transform:translate(calc(-50% + ' . $x . 'px),calc(-50% + ' . $y . 'px));';
 	}
+	// The × is a flex item of the chrome row: `order` puts it first or last.
 	if ( 'top-row-start' === $placement ) {
-		return 'inset-inline-end:auto;inset-inline-start:' . $sgs_nd_close_edge_inset . 'px;top:' . $sgs_nd_close_edge_inset . 'px;'
+		return 'position:relative;top:auto;left:auto;order:-1;margin-inline-start:0;'
 			. 'transform:translate(' . $x . 'px,' . $y . 'px);';
 	}
 	// top-row-end (default).
-	return 'transform:translate(' . $x . 'px,' . $y . 'px);';
+	return 'position:relative;top:auto;left:auto;order:1;margin-inline-start:auto;transform:translate(' . $x . 'px,' . $y . 'px);';
 };
 
 $sgs_nd_placement_default = ( 'top-row-end' === $sgs_nd_placement_desktop && 0.0 === $sgs_nd_offset_desktop['x'] && 0.0 === $sgs_nd_offset_desktop['y'] );
@@ -1324,6 +1334,9 @@ if ( $bg_image_needs_note ) {
 		esc_html( $bg_image_alt )
 	);
 }
+
+// The chrome row (FR-36-6): the × plus the optional logo and free slot.
+$close_html = sgs_nav_drawer_chrome( $attributes, $root_sel, $close_html, $css );
 
 // ── The scrim itself is now queued by sgs_scrim_render() above (printed at
 // wp_footer as a direct child of <body> — includes/helpers-scrim.php) and no

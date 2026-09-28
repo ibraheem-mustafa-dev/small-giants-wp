@@ -128,7 +128,8 @@
 						"css:line-height": "itemLineHeight",
 						"css:text-decoration": "itemTextDecoration",
 						"css:text-transform": "itemTextTransform",
-						"css:opacity": "itemOpacity"
+						"css:opacity": "itemOpacity",
+						"css:padding": "itemPadding"
 					},
 					"states": {
 						"hover": {
@@ -224,7 +225,8 @@
 						"css:border-color": "submenuLinkBorderColour",
 						"css:border-width": "submenuLinkBorderWidth",
 						"css:border-style": "submenuLinkBorderStyle",
-						"css:opacity": "submenuOpacity"
+						"css:opacity": "submenuOpacity",
+						"css:padding": "submenuLinkPadding"
 					},
 					"states": {
 						"hover": {
@@ -338,6 +340,57 @@
 						"css:border-radius": "itemMediaRadius"
 					},
 					"_note": "Wave 3C U-7, M-15/M-22: the per-item featured-image thumbnail (.sgs-nav-drawer-menu__media). itemMediaReveal is per tier: none / always / hover (grows from width 0)."
+				},
+				"item-open": {
+					"label": "Item text (open)",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "itemColourOpen"
+					},
+					"_note": "G-11, 2026-09-28: the label colour of a top-level accordion item while its own <details> is open. Declared as its own element, NOT as a state on `item` (same reasoning as the `disabled-item` element below): `open` is not in golden-controls.json's `_meta.stateVocabulary` (hover/current/scrolled), and it is not the same concept as `current` (page identity vs disclosure state) — conflating them would apply the wrong colour to a currently-open, not-current-page section. Painted via a `:has()` sibling-state rule keyed to the accordion's own `[open]` attribute (includes/nav-drawer-menu-extras-css.php); no JS."
+				},
+				"badge": {
+					"label": "Item badge",
+					"order": 6.5,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"prefix": "itemBadge",
+					"attrMap": {
+						"css:color": "itemBadgeTextColour",
+						"css:background-color": "itemBadgeColour"
+					},
+					"_note": "Parity with sgs/nav-bar-menu, 2026-09-28. The optional per-item marker chip (\"SOON\", \"NEW\") rendered after an item's label via the SHARED includes/nav-menu-markup.php::sgs_nav_shared_badge_html() call already present in sgs_nav_drawer_menu_render_items(); this block previously declared no colour attributes for it. Badge COPY is per-item (the operator's classic-menu-item Description field); badge COLOUR is block-level, one Colour-panel row applying to every badge this drawer renders. No hover state — a badge is never itself interactive."
+				},
+				"disabled-item": {
+					"label": "Disabled item",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "itemDisabledColour"
+					},
+					"_note": "Parity with sgs/nav-bar-menu, 2026-09-28. A disabled menu item renders as non-link text with aria-disabled=\"true\". Declared as its own element, not a state on `item`, for the same stateVocabulary reason as the bar's identical row. Wired for accordion-parent rows only this pass (sgs_nav_drawer_menu_accordion_html()) — leaf/sub-item rows render through the shared nav-menu-markup.php item-list builder, out of this block's file-ownership scope for this pass; the CSS rule below targets both `__link` and `__sublink` `[aria-disabled=\"true\"]` so it is ready the moment that render path is wired."
+				},
+				"trailing-icon": {
+					"label": "Trailing icon",
+					"order": 13.5,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "itemTrailingIconColour",
+						"css:font-size": "itemTrailingIconSize"
+					},
+					"_note": "G-7, 2026-09-28: a per-item trailing glyph (.sgs-nav-drawer-menu__trailing-icon) after ANY row's label, independent of the accordion expander. The glyph CHOICE is per-item (itemTrailingIcons, a map keyed by item identifier); colour and size are block-level, matching the badge/ornament split. Unset colour inherits currentColor."
 				}
 			},
 			"boxFamilies": {
@@ -346,6 +399,12 @@
 				],
 				"submenuPadding": [
 					"submenuPadding"
+				],
+				"itemPadding": [
+					"itemPadding"
+				],
+				"submenuLinkPadding": [
+					"submenuLinkPadding"
 				]
 			},
 			"_note_sweep_eligibility": "The ONE declarative source for the Sweep-treatment eligibility predicate, read by BOTH surfaces — edit.js decides whether to offer the Sweep segment, render.php decides whether to emit Sweep CSS — with neither re-deriving the rule (Spec 41 FR-41-26). It is NOT an `elements` entry and routes no CSS property; it sits beside colourExemptions / hideExtensions / boxFamilies. Three keys per row: `blockingBackgroundAttrs` (Sweep is withdrawn when ANY named attribute is non-empty, because background-clip:text clips the element's whole background-painting area to the glyph shapes — every state's background counts, not just the resting one), `blockingGradientAttrs` (the row's own text gradient writes background-image on the identical selector, so whichever loses is invisible) and `glyphGuard` (background-clip:text needs glyphs to grip; null means the element always has them). Every attribute named below must exist in `attributes` — a typo reads as permanently empty, so the predicate would always pass and the rule would silently cease to exist.",
@@ -1118,6 +1177,69 @@
 		"sublinkMarkerColourCurrentGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"itemPadding": {
+			"type": "object",
+			"default": {},
+			"description": "4-side box-object family (box_family 'itemPadding'), a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Padding inside each top-level menu link. Empty keeps the default 8px 12px; the left side is also what itemPaddingShiftHover adds to. Same attribute name as sgs/nav-bar-menu's own itemPadding (2026-09-28 — the bar and drawer menus were one block; every item-level control belongs on both)."
+		},
+		"submenuLinkPadding": {
+			"type": "object",
+			"default": {},
+			"description": "4-side box-object family (box_family 'submenuLinkPadding'), a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Padding inside each submenu/accordion link (dropdown, mega fallback list, drawer accordion). Empty keeps the default 0 16px inline-start; the inline-start side is also what itemPaddingShiftHover adds to. New 2026-09-28 (Spec 36 'Item hover paint' M-21) — replaces the previously-hardcoded padding:0 16px literal in includes/nav-menu-submenu-css.php."
+		},
+		"itemColourOpen": {
+			"type": "string",
+			"default": "",
+			"description": "The label colour of a top-level accordion item WHILE ITS OWN SECTION IS EXPANDED (G-11, 2026-09-28) — a fourth colour state distinct from Normal/Hover/Current: Current is page-identity (aria-current), this is disclosure-state (the <details> element's own [open] attribute). Declared as its own element ('item-open'), not a state on 'item', for the same reason 'disabled' is its own element — 'open' is not in golden-controls.json's stateVocabulary (hover/current/scrolled). Unset paints nothing (inherits Normal)."
+		},
+		"itemOrnamentRevealMode": {
+			"type": "object",
+			"default": {},
+			"description": "G-6 (2026-09-28), a {desktop,tablet,mobile} tier object: 'static' (default — the ornament shows however itemOrnament says, no reveal effect) or 'hover-draw' (the ornament stays hidden at rest and draws its SVG strokes in sequence, stroke-dashoffset per path, staggered, on hover/focus; touch-guarded via sgs_hover_state_rules(), instant under prefers-reduced-motion). Only meaningful when itemOrnament is 'icon' at that tier — an 'index' (counter) ornament has no strokes to draw."
+		},
+		"itemOrnamentReserveSpace": {
+			"type": "boolean",
+			"default": false,
+			"description": "G-6 (2026-09-28). When itemOrnamentRevealMode is 'hover-draw', the ornament is invisible at rest; this keeps its layout box (width + gap) reserved at rest too, so the label text does not shift indent when the ornament draws in on hover. Off by default (the ornament's box collapses at rest, matching itemOrnament's own resting behaviour)."
+		},
+		"itemTrailingIcons": {
+			"type": "object",
+			"default": {},
+			"description": "G-7 (2026-09-28) — a per-item map, { [item identifier]: { source, name } | { source: 'custom', svg } }, same identifier scheme as featuredItemIds/disabledItemIds. A trailing glyph after ANY row's label (leaf items and accordion-parent rows), independent of the accordion expander (itemExpanderIcon, which only appears on rows that already have a submenu). 'custom' is a client-supplied, server-re-sanitised inline SVG (sgs_svg_kses_allowed_tags()) — the IconPicker's own client-side sanitiser is a second enforcement layer, never the only one."
+		},
+		"itemTrailingIconColour": {
+			"type": "string",
+			"default": "",
+			"description": "G-7. Colour of every row's trailing icon (block-level, one colour for all — the icon CHOICE is per-item via itemTrailingIcons, matching itemBadgeColour's block-level-colour/per-item-copy split). Unset inherits currentColor from the row's own text."
+		},
+		"itemTrailingIconSize": {
+			"type": "object",
+			"default": {},
+			"description": "G-7. Per-tier icon box size ({desktop,tablet,mobile}), same shape as itemOrnamentSize. Empty keeps the 10px default."
+		},
+		"itemBadgeColour": {
+			"type": "string",
+			"default": "accent-light",
+			"description": "Parity with sgs/nav-bar-menu (2026-09-28) — background of the optional per-item badge chip (\"SOON\", \"NEW\"). Block-level: one colour applies to every badge this drawer renders. Badge COPY itself is per-item (the operator's WordPress menu-item Description field, repurposed — includes/nav-menu-markup.php::sgs_nav_shared_badge_html(), already called from this block's render path). Token slug or hex, same shape as sgs/cart's badgeColour."
+		},
+		"itemBadgeTextColour": {
+			"type": "string",
+			"default": "accent-text",
+			"description": "Parity with sgs/nav-bar-menu (2026-09-28) — text colour of the optional per-item badge chip. See itemBadgeColour."
+		},
+		"disabledItemIds": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string"
+			},
+			"description": "Parity with sgs/nav-bar-menu (2026-09-28) — item identifiers (same scheme as featuredItemIds) rendered as non-interactive, non-focusable text instead of a link. Ticked in the Settings tab's Disabled items panel. Wired for accordion-parent rows (sgs_nav_drawer_menu_accordion_html()); leaf/sub-item rows render through the shared includes/nav-menu-markup.php::sgs_nav_drawer_menu_render_items(), out of this block's file-ownership scope for this pass — see that function's own docblock note."
+		},
+		"itemDisabledColour": {
+			"type": "string",
+			"default": "text-muted",
+			"description": "Parity with sgs/nav-bar-menu (2026-09-28) — text colour of a disabled item/sublink. Token slug or hex."
 		}
 	},
 	"render": "file:./render.php",

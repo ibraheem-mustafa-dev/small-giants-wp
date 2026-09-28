@@ -30,6 +30,8 @@ defined( 'ABSPATH' ) || exit;
  * @param bool   $has_ripple            Whether the click-ripple effect is active.
  * @param string $click_ripple_colour   Ripple colour token, or '' for the currentColour fallback.
  * @param int    $click_ripple_duration Ripple duration in ms.
+ * @param float  $hover_opacity         Fade-to opacity on hover (0-1; 0 = off).
+ * @param string $hover_easing_custom   Hand-typed curve, read only when $hover_easing_slug is 'custom'.
  * @return string[] CSS custom-property declarations, e.g. [ '--sgs-hover-scale:1.05', … ].
  */
 function build_hover_vars(
@@ -45,7 +47,9 @@ function build_hover_vars(
 	int $stagger_delay,
 	bool $has_ripple,
 	string $click_ripple_colour,
-	int $click_ripple_duration
+	int $click_ripple_duration,
+	float $hover_opacity = 0.0,
+	string $hover_easing_custom = ''
 ): array {
 	$css_vars = array();
 
@@ -88,15 +92,29 @@ function build_hover_vars(
 		: '--sgs-hover-duration:var(--wp--custom--duration--' . esc_attr( $dur_slug ) . ')';
 
 	// Easing: emit as a reference to the theme.json motion token.
-	// Slug maps to var(--wp--custom--easing--{slug}).
+	// Slug maps to var(--wp--custom--easing--{slug}). 'custom' is the one
+	// exception — a hand-typed cubic-bezier()/steps()/linear() curve, resolved
+	// (and validated) by the SAME shared helper the nav motion controls use
+	// (sgs_motion_easing_css() / sgs_motion_valid_cubic_bezier(),
+	// includes/helpers-motion-easing.php) rather than a second validator.
 	$allowed_easings = array( 'default', 'ease-out', 'ease-in', 'spring', 'linear' );
-	$easing_slug     = in_array( $hover_easing_slug, $allowed_easings, true )
-		? $hover_easing_slug
-		: 'default';
-	$css_vars[]      = '--sgs-hover-easing:var(--wp--custom--easing--' . esc_attr( $easing_slug ) . ')';
+	if ( 'custom' === $hover_easing_slug ) {
+		$css_vars[] = '--sgs-hover-easing:' . sgs_motion_easing_css( 'custom', $hover_easing_custom, 'var(--wp--custom--easing--default)' );
+	} else {
+		$easing_slug = in_array( $hover_easing_slug, $allowed_easings, true )
+			? $hover_easing_slug
+			: 'default';
+		$css_vars[]  = '--sgs-hover-easing:var(--wp--custom--easing--' . esc_attr( $easing_slug ) . ')';
+	}
 
 	if ( $stagger_delay > 0 ) {
 		$css_vars[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
+	}
+
+	// Hover opacity: 0 is the off-sentinel (mirrors scale/zoom above); 1 is a
+	// legal but no-op value (fully opaque = no visible change on hover).
+	if ( $hover_opacity > 0 ) {
+		$css_vars[] = '--sgs-hover-opacity:' . number_format( min( 1.0, $hover_opacity ), 2 );
 	}
 
 	if ( $has_ripple ) {

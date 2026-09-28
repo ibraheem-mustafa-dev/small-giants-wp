@@ -27,6 +27,7 @@ import {
 	Modal,
 	SearchControl,
 	Spinner,
+	TextareaControl,
 } from '@wordpress/components';
 import IconGrid from './IconGrid';
 import IconPreview, { withInlineFillStroke } from './IconPreview';
@@ -166,6 +167,11 @@ export default function IconPicker( {
 	);
 	const [ query, setQuery ] = useState( '' );
 	const [ activeCategory, setActiveCategory ] = useState( '__all__' );
+	// 'custom' source draft — a client-pasted inline SVG, sanitised live for
+	// preview (sanitiseSvg() is the SAME allowlist wp_kses() applies
+	// server-side; see that function's own docblock — this is a SECOND
+	// enforcement layer, never the only one).
+	const [ customSvgDraft, setCustomSvgDraft ] = useState( '' );
 
 	const [ lucide, setLucide ] = useState( null );
 	const [ emoji, setEmoji ] = useState( null );
@@ -337,7 +343,17 @@ export default function IconPicker( {
 		setActiveSource( value.source || enabledSources[ 0 ]?.key || 'lucide' );
 		setQuery( '' );
 		setActiveCategory( '__all__' );
+		setCustomSvgDraft( 'custom' === value.source ? value.svg || '' : '' );
 		setIsOpen( true );
+	};
+
+	const useCustomSvg = () => {
+		const safe = sanitiseSvg( customSvgDraft );
+		if ( '' === safe ) {
+			return;
+		}
+		onChange( { source: 'custom', svg: safe } );
+		setIsOpen( false );
 	};
 
 	return (
@@ -348,9 +364,21 @@ export default function IconPicker( {
 				onClick={ openPicker }
 				aria-haspopup="dialog"
 			>
-				<IconPreview source={ value.source } name={ value.name } size={ 24 } />
+				{ 'custom' === value.source && value.svg ? (
+					<span
+						className="sgs-icon-preview__svg"
+						style={ { width: 24, height: 24, display: 'inline-flex' } }
+						aria-hidden="true"
+						// eslint-disable-next-line react/no-danger
+						dangerouslySetInnerHTML={ { __html: sanitiseSvg( value.svg ) } }
+					/>
+				) : (
+					<IconPreview source={ value.source } name={ value.name } size={ 24 } />
+				) }
 				<span className="sgs-icon-picker__trigger-label">
-					{ value.name || __( 'Choose an icon…', 'sgs-blocks' ) }
+					{ ( 'custom' === value.source && value.svg
+						? __( 'Custom SVG', 'sgs-blocks' )
+						: value.name ) || __( 'Choose an icon…', 'sgs-blocks' ) }
 				</span>
 			</Button>
 
@@ -382,32 +410,77 @@ export default function IconPicker( {
 						) ) }
 					</div>
 
+					{ /* ── Custom SVG — a distinct paste-and-sanitise UI, no grid. ── */ }
+					{ 'custom' === activeSource && (
+						<div className="sgs-icon-picker__custom-svg">
+							<TextareaControl
+								label={ __( 'Paste SVG markup', 'sgs-blocks' ) }
+								help={ __(
+									'Scripts, event handlers and external references are stripped — this preview shows exactly what will be saved.',
+									'sgs-blocks'
+								) }
+								value={ customSvgDraft }
+								onChange={ setCustomSvgDraft }
+								rows={ 6 }
+								__nextHasNoMarginBottom
+							/>
+							{ '' !== customSvgDraft.trim() && (
+								<div className="sgs-icon-picker__custom-svg-preview">
+									<span className="sgs-icon-picker__custom-svg-label">
+										{ __( 'Preview', 'sgs-blocks' ) }
+									</span>
+									{ '' !== sanitiseSvg( customSvgDraft ) ? (
+										<span
+											className="sgs-icon-grid__svg"
+											aria-hidden="true"
+											// eslint-disable-next-line react/no-danger
+											dangerouslySetInnerHTML={ { __html: sanitiseSvg( customSvgDraft ) } }
+										/>
+									) : (
+										<p className="sgs-icon-picker__note">
+											{ __( 'Nothing survived sanitising — check the markup is a valid SVG.', 'sgs-blocks' ) }
+										</p>
+									) }
+								</div>
+							) }
+							<Button
+								variant="primary"
+								onClick={ useCustomSvg }
+								disabled={ '' === sanitiseSvg( customSvgDraft ) }
+							>
+								{ __( 'Use this icon', 'sgs-blocks' ) }
+							</Button>
+						</div>
+					) }
+
 					{ /* ── Search ───────────────────────────────────────────────── */ }
-					<SearchControl
-						value={ query }
-						onChange={ setQuery }
-						placeholder={ sprintf(
-							/* translators: %s: icon library name */
-							__( 'Search %s…', 'sgs-blocks' ),
-							activeLabel
-						) }
-						__nextHasNoMarginBottom
-					/>
+					{ 'custom' !== activeSource && (
+						<SearchControl
+							value={ query }
+							onChange={ setQuery }
+							placeholder={ sprintf(
+								/* translators: %s: icon library name */
+								__( 'Search %s…', 'sgs-blocks' ),
+								activeLabel
+							) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 
 					{ /* ── Loading / error ─────────────────────────────────────── */ }
-					{ isLoading && (
+					{ 'custom' !== activeSource && isLoading && (
 						<div className="sgs-icon-picker__status">
 							<Spinner /> { __( 'Loading icons…', 'sgs-blocks' ) }
 						</div>
 					) }
 
-					{ ! isLoading && error && (
+					{ 'custom' !== activeSource && ! isLoading && error && (
 						<div className="sgs-icon-picker__status">
 							{ __( 'Could not load icons. Try again.', 'sgs-blocks' ) }
 						</div>
 					) }
 
-					{ ! isLoading && ! error && (
+					{ 'custom' !== activeSource && ! isLoading && ! error && (
 						<div className={ `sgs-icon-picker__body${ showCategoryPanel ? ' has-categories' : '' }` }>
 							{ /* ── Category sidebar ──────────────────────────────── */ }
 							{ showCategoryPanel && (

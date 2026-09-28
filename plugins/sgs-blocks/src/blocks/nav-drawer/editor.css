@@ -50,7 +50,7 @@
    indistinguishable from one that was never written, and the collapsed shell
    silently stayed 231px tall with its body still laid out. */
 .wp-block-sgs-nav-drawer.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__body,
-.wp-block-sgs-nav-drawer.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__close-preview {
+.wp-block-sgs-nav-drawer.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__chrome-preview {
 	display: none;
 }
 
@@ -61,12 +61,15 @@
 	padding: 14px 12px;
 }
 
+/* The preview chrome row sits below the shell's "Mobile drawer" label. */
+.sgs-nav-drawer__editor .sgs-nav-drawer__chrome-preview {
+	margin-top: 24px;
+}
+
 /* The preview close × — non-functional in the editor, shown so the operator
-   sees the fixed chrome and understands it is not editable content. */
+   sees the fixed chrome and understands it is not editable content. A flex
+   item of the preview row, like the real × in the real row. */
 .sgs-nav-drawer__editor .sgs-nav-drawer__close-preview {
-	position: absolute;
-	top: 12px;
-	inset-inline-end: 12px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -83,11 +86,24 @@
 	height: 28px;
 }
 
+/* Top row panel: the logo picker's thumbnail beside its buttons. */
+.sgs-nav-drawer__logo-picker {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.sgs-nav-drawer__logo-picker-thumb {
+	max-width: 64px;
+	max-height: 40px;
+	object-fit: contain;
+}
+
 /* The editable InnerBlocks body inside the preview shell. */
 .sgs-nav-drawer__editor .sgs-nav-drawer__body {
 	display: flex;
 	flex-direction: column;
-	padding-top: 56px;
 }
 
 /* FR-37-47 — starter-look preset (StarterLookPresetControl). Inspector

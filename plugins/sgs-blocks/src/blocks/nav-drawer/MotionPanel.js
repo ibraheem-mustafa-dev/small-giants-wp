@@ -10,6 +10,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { PanelBody, RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
 import { ResponsiveOverride, MotionEasingControl } from '../../components';
+import ItemEntranceControls from './ItemEntranceControls';
 
 /** Anchor → what Automatic does at that anchor. */
 const AUTO_LABEL = {
@@ -33,6 +34,7 @@ const SHAPE_OPTIONS = [
 	{ label: __( 'Reveal from the header bar', 'sgs-blocks' ), value: 'reveal-from-bar' },
 	{ label: __( 'Curtain sweep', 'sgs-blocks' ), value: 'curtain' },
 	{ label: __( 'Scale up', 'sgs-blocks' ), value: 'scale' },
+	{ label: __( 'Grow from the anchor (its height grows, top fixed)', 'sgs-blocks' ), value: 'grow-from-anchor' },
 ];
 
 /**
@@ -200,6 +202,7 @@ export default function MotionPanel( { attributes, setAttributes, anchorDesktop 
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ItemEntranceControls attributes={ attributes } setAttributes={ setAttributes } />
 					<ToggleControl
 						label={ __( 'Items leave one after another on close', 'sgs-blocks' ) }
 						checked={ !! itemStaggerOnClose }

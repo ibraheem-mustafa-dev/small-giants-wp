@@ -60,6 +60,7 @@ defined( 'ABSPATH' ) || exit;
  * @param bool   $focus_ring       Whether the focus ring is active.
  * @param string $block_link       Block-link URL, or ''.
  * @param bool   $has_ripple       Whether the click-ripple effect is active.
+ * @param float  $hover_opacity    Fade-to opacity on hover (0-1; 0 = off).
  * @return string[] Extra classes to add to the block's root element.
  */
 function build_hover_classes(
@@ -76,7 +77,8 @@ function build_hover_classes(
 	int $stagger_delay,
 	bool $focus_ring,
 	string $block_link,
-	bool $has_ripple
+	bool $has_ripple,
+	float $hover_opacity = 0.0
 ): array {
 	$add_classes = array();
 
@@ -134,6 +136,10 @@ function build_hover_classes(
 	}
 	if ( $has_ripple ) {
 		$add_classes[] = 'sgs-has-click-ripple';
+	}
+	if ( $hover_opacity > 0 ) {
+		// Mirrors the --sgs-hover-opacity var guard in build_hover_vars().
+		$add_classes[] = 'sgs-has-hover-opacity';
 	}
 
 	return $add_classes;

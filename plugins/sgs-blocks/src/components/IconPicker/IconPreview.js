@@ -52,8 +52,9 @@ export function withInlineFillStroke( svgString ) {
 
 /**
  * @param {Object} props
- * @param {string} props.source   One of lucide | emoji | wp-icon | dashicon.
+ * @param {string} props.source   One of lucide | emoji | wp-icon | dashicon | custom.
  * @param {string} props.name     Icon identifier (lucide/wp slug, dashicon slug, or emoji char).
+ * @param {string} [props.svg]    Raw SVG markup — only read when source is 'custom'.
  * @param {number} [props.size]   Pixel size of the preview box. Default 24.
  * @param {string} [props.gradient] Optional `iconColourGradient`-style CSS
  *   gradient function (`linear-gradient(...)`/`radial-gradient(...)`). SVG
@@ -66,7 +67,7 @@ export function withInlineFillStroke( svgString ) {
  *   only stroke-based sources); emoji/dashicon ignore it, matching the
  *   frontend's `$icon_svg` scoping.
  */
-export default function IconPreview( { source, name, size = 24, gradient = '' } ) {
+export default function IconPreview( { source, name, size = 24, gradient = '', svg: customSvg = '' } ) {
 	const [ svg, setSvg ] = useState( '' );
 	const gradientId = useInstanceId( IconPreview, 'sgs-icon-preview-grad' );
 
@@ -104,6 +105,21 @@ export default function IconPreview( { source, name, size = 24, gradient = '' } 
 			>
 				{ name || '⭐' }
 			</span>
+		);
+	}
+
+	if ( 'custom' === source ) {
+		const safe = sanitiseSvg( customSvg );
+		return safe ? (
+			<span
+				className="sgs-icon-preview__svg"
+				style={ box }
+				aria-hidden="true"
+				// eslint-disable-next-line react/no-danger
+				dangerouslySetInnerHTML={ { __html: safe } }
+			/>
+		) : (
+			<span style={ box } aria-hidden="true">▢</span>
 		);
 	}
 

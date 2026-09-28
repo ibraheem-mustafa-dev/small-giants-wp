@@ -16,6 +16,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/nav-drawer-menu-ornament-reveal-css.php';
+require_once __DIR__ . '/nav-drawer-menu-parity-css.php';
+
 if ( ! function_exists( 'sgs_nav_drawer_menu_tier_map' ) ) {
 	/**
 	 * Map a tier object's values through a lookup, dropping unknown values.
@@ -127,6 +130,8 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_extras_css' ) ) {
 			$css .= sgs_hover_state_rules( $link, 'opacity:1', ':focus-visible', ' .sgs-nav-drawer-menu__ornament--swap > .sgs-nav-drawer-menu__ornament-glyph--hover' );
 		}
 
+		$css .= sgs_nav_drawer_menu_ornament_reveal_css( $attributes, $scope, $link );
+
 		// Media: shown per tier, always or grown on hover.
 		if ( 'featured-image' === ( $attributes['itemMedia'] ?? '' ) ) {
 			$reveal = $attributes['itemMediaReveal'] ?? array();
@@ -189,6 +194,11 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_extras_css' ) ) {
 
 		$css .= sgs_sibling_dim_css( $scope . ' .sgs-nav-drawer-menu__bar', '.sgs-nav-drawer-menu__item', ' .sgs-nav-drawer-menu__link', $attributes );
 		$css .= sgs_label_roll_css( $scope, ' .sgs-nav-drawer-menu__link', '', $attributes );
+
+		// G-11 (itemColourOpen), and parity with sgs/nav-bar-menu (badge/
+		// disabled/trailing-icon colours) — split into their own file once
+		// this one neared the project's 300-line cap.
+		$css .= sgs_nav_drawer_menu_parity_css( $attributes, $scope, $link );
 
 		return $css;
 	}

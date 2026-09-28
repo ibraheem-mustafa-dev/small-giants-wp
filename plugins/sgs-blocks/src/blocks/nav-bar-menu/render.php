@@ -70,6 +70,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-trigger-surface-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-detach-chip.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-link-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-item-padding-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-item-transition-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-caret-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-item-hover-scope-css.php';
 // class-sgs-container-wrapper.php is deliberately NOT required — this block
 // renders its root block-private (see §5). Requiring it would add a
 // dependency nothing uses.
@@ -977,6 +981,18 @@ $css .= sgs_nav_shared_submenu_css(
 	count( $flat_items )
 );
 
+// M-21 / Spec 36 "Item hover paint": itemPadding + submenuLinkPadding,
+// shared with sgs/nav-drawer-menu via one helper (Bean, 2026-09-28). Called
+// AFTER sgs_nav_shared_submenu_css() above so its per-side longhand padding
+// wins over that call's shorthand default by source order.
+$css .= sgs_nav_item_padding_css( $uid_sel, 'sgs-nav-bar-menu', $attributes );
+// U-18 nav audit §5: the item link's own hover/current colour transition
+// timing (itemMotionDuration/itemMotionEasing previously reached the
+// label-roll only, never this rule).
+$css .= sgs_nav_item_transition_css( $uid_sel, 'sgs-nav-bar-menu', $attributes );
+// I-B6 (U-18): caret size, resting/hover opacity, label gap, turn timing.
+$css .= sgs_nav_menu_caret_css( $uid_sel, 'sgs-nav-bar-menu', $attributes );
+
 // ── 5. Assemble — BLOCK-PRIVATE root.
 //
 // This block does not render through SGS_Container_Wrapper. Why:
@@ -1023,14 +1039,19 @@ if ( $sgs_nm_stagger > 0 ) {
 }
 $css .= $uid_sel . '{' . $sgs_nm_panel_vars . '}';
 
+// I-M4 (U-18): `scrimFadeDuration` — mirrors sgs/nav-drawer's own attribute.
+// 0 (default) keeps today's behaviour, fading the scrim WITH the panel's own
+// timing; a set value overrides both the enter and exit fade.
+$sgs_nm_scrim_fade = sgs_motion_ms( $attributes['scrimFadeDuration'] ?? 0, 0 );
+
 $css .= sgs_scrim_render(
 	$attributes,
 	$uid,
 	array(
 		'open'     => '.' . $uid . ' [data-sgs-mega-trigger][aria-expanded="true"]',
 		'z_index'  => 'calc(var(--sgs-header-z, 100) - 1)',
-		'enter_ms' => $sgs_nm_panel_in,
-		'exit_ms'  => $sgs_nm_panel_out,
+		'enter_ms' => $sgs_nm_scrim_fade > 0 ? $sgs_nm_scrim_fade : $sgs_nm_panel_in,
+		'exit_ms'  => $sgs_nm_scrim_fade > 0 ? $sgs_nm_scrim_fade : $sgs_nm_panel_out,
 		'easing'   => $sgs_nm_panel_ease,
 	)
 );
@@ -1046,6 +1067,11 @@ if ( '' !== $css ) {
 $nav_root_classes = array( 'sgs-nav-bar-menu', $uid );
 if ( $sgs_nm_stagger > 0 ) {
 	$nav_root_classes[] = 'sgs-nav-bar-menu--panel-stagger';
+	// G-5 (U-18): 'rows' staggers each mega column's own link rows/cards
+	// instead of the columns themselves — style.css's own modifier class.
+	if ( 'rows' === (string) ( $attributes['submenuItemStaggerScope'] ?? 'columns' ) ) {
+		$nav_root_classes[] = 'sgs-nav-bar-menu--panel-stagger-rows';
+	}
 }
 
 // This <nav> IS the navigation landmark, so the accessible name belongs here —

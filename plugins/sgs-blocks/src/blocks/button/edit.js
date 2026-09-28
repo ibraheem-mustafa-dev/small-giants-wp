@@ -213,6 +213,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		borderStyle,
 		borderWidth,
 		scaleHover,
+		scaleHoverTarget,
 		transitionDuration,
 		transitionEasing,
 		boxShadow,
@@ -1028,6 +1029,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						min={ 0.9 }
 						max={ 1.2 }
 						step={ 0.01 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'What scales', 'sgs-blocks' ) }
+						help={ __( 'Whole button scales the border and fill together with the label (the classic effect). Inner face only scales the label/icon, leaving the border and fill exactly where they are.', 'sgs-blocks' ) }
+						value={ scaleHoverTarget ?? 'whole' }
+						options={ [
+							{ label: __( 'Whole button', 'sgs-blocks' ), value: 'whole' },
+							{ label: __( 'Inner face only', 'sgs-blocks' ), value: 'face' },
+						] }
+						onChange={ ( val ) => setAttributes( { scaleHoverTarget: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

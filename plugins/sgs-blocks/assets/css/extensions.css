@@ -48,7 +48,8 @@
 	            color var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
 	            border-color var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
 	            transform var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
-	            box-shadow var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease);
+	            box-shadow var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
+	            opacity var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease);
 }
 
 /*
@@ -92,6 +93,13 @@
 .sgs-has-hover-scale:hover,
 .sgs-has-hover-lift:hover {
 	transform: translateY(calc(-1 * var(--sgs-hover-lift, 0px))) scale(var(--sgs-hover-scale, 1));
+}
+
+/* Hover opacity — own class, own var, same per-property gating as scale/lift/
+   shadow above: hover-effects.php only emits --sgs-hover-opacity and this
+   class together, so a block with no opacity set is never affected. */
+.sgs-has-hover-opacity:hover {
+	opacity: var(--sgs-hover-opacity, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {

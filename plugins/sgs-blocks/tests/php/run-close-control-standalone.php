@@ -159,14 +159,14 @@ ok(
 	'non-modal + trigger (desktop tier, no override): hide rule emitted at BASE scope'
 );
 ok(
-	false !== strpos( $nonmodal_trigger_desktop['css'], '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]{--sgs-nd-close-room:clamp(16px, 6vw, 32px);}}' )
-		&& false !== strpos( $nonmodal_trigger_desktop['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]{--sgs-nd-close-room:clamp(16px, 6vw, 32px);}}' ),
+	false !== strpos( $nonmodal_trigger_desktop['css'], '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__chrome--close-only{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]:has(> .sgs-nav-drawer__chrome--close-only){--sgs-nd-close-room:clamp(16px, 6vw, 32px);}}' )
+		&& false !== strpos( $nonmodal_trigger_desktop['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__chrome--close-only{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]:has(> .sgs-nav-drawer__chrome--close-only){--sgs-nd-close-room:clamp(16px, 6vw, 32px);}}' ),
 	'non-modal + trigger (desktop tier, no override): the cascade also hides the × at tablet AND mobile (both inherit trigger)'
 );
 
 $nonmodal_trigger_mobile = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'separate-x', 'mobile' => 'trigger' ) ), 'non-modal' );
 ok(
-	false !== strpos( $nonmodal_trigger_mobile['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]{--sgs-nd-close-room:clamp(16px, 6vw, 32px);}}' ),
+	false !== strpos( $nonmodal_trigger_mobile['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__chrome--close-only{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]:has(> .sgs-nav-drawer__chrome--close-only){--sgs-nd-close-room:clamp(16px, 6vw, 32px);}}' ),
 	'non-modal + trigger (mobile tier only): hide rule scoped inside the MOBILE media query'
 );
 ok(
@@ -277,7 +277,7 @@ $offset_clamped = run_close_section( $section, array( 'closeOffset' => array( 'd
 ok( false !== strpos( $offset_clamped['css'], 'translate(40px,-40px)' ), 'closeOffset is clamped to -40..40 (999 -> 40, -999 -> -40)' );
 
 $offset_start = run_close_section( $section, array( 'closePlacement' => array( 'desktop' => 'top-row-start' ), 'closeOffset' => array( 'desktop' => array( 'x' => 5, 'y' => 2 ) ) ) );
-ok( false !== strpos( $offset_start['css'], 'inset-inline-start:12px' ) && false !== strpos( $offset_start['css'], 'translate(5px,2px)' ), 'top-row-start carries its own offset translate' );
+ok( false !== strpos( $offset_start['css'], 'order:-1' ) && false !== strpos( $offset_start['css'], 'translate(5px,2px)' ), 'top-row-start orders the × first in the chrome row and carries its own offset translate' );
 
 // ════════════════════════════════════════════════════════════════════════════
 // §4.10 — closeRadius.
@@ -333,15 +333,15 @@ if ( '' === $old_section ) {
 // cover or meet the header's area (full-screen, header) stay one below it.
 // ════════════════════════════════════════════════════════════════════════════
 ok(
-	false !== strpos( $nonmodal_trigger_desktop['css'], '.sgs-nav-drawer-test[data-sgs-nav-opener-live]{--sgs-nd-close-room:clamp(16px, 6vw, 32px);}' ),
-	'non-modal + trigger: the hidden × also releases its top row (--sgs-nd-close-room shrinks to the normal body padding)'
+	false !== strpos( $nonmodal_trigger_desktop['css'], '.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__chrome--close-only{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]:has(> .sgs-nav-drawer__chrome--close-only){--sgs-nd-close-room:clamp(16px, 6vw, 32px);}' ),
+	'non-modal + trigger: the hidden × takes a close-only chrome row with it and hands the body its normal top padding (--sgs-nd-close-room)'
 );
 ok(
 	false === strpos( $nonmodal_separate['css'], '--sgs-nd-close-room' ) && false === strpos( $modal_trigger['css'], '--sgs-nd-close-room' ),
 	'the × row is released ONLY where the × can hide (never for separate-x, never for a modal drawer)'
 );
 $drawer_css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/nav-drawer/style.css' );
-ok( false !== strpos( $drawer_css, 'padding-top: var(--sgs-nd-close-room, 64px);' ), 'style.css reads the × room from --sgs-nd-close-room, default 64px' );
+ok( false !== strpos( $drawer_css, 'padding-top: var(--sgs-nd-close-room, 0px);' ) && false !== strpos( $drawer_css, 'min-height: 64px;' ), 'the chrome row reserves the 64px top band; the body adds none unless a close-only row is dropped (--sgs-nd-close-room)' );
 
 $geom_section = extract_section( $current_source, '$sgs_nd_z_under_header = ', '$anchor_attr_raw ' );
 ok( '' !== $geom_section, 'the anchor geometry section is found in the CURRENT render.php' );

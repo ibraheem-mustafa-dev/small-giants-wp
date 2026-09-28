@@ -80,10 +80,24 @@ final class Sgs_Drawer_Render {
 	private static $render_attempted = false;
 
 	/**
+	 * The Active drawer's rendered HTML, built once at `wp_enqueue_scripts` and
+	 * printed at `wp_footer`. `null` until built; '' when there is nothing to print.
+	 *
+	 * @var string|null
+	 */
+	private static $prerendered_html = null;
+
+	/**
 	 * Wire hooks. Call once from the plugin bootstrap AFTER Sgs_Active_Layout is
 	 * loaded, since every read below resolves through it.
 	 */
 	public static function register(): void {
+		// The drawer is RENDERED at `wp_enqueue_scripts` (inside `wp_head`, before
+		// the script-module import map prints) and PRINTED at `wp_footer`. A drawer
+		// first rendered in the footer enqueues its FX modules after the map has
+		// printed empty, so their bare specifiers (`@sgs/gsap-scramble`) never
+		// resolve. Rendering early also puts its styles and scripts in the head.
+		\add_action( 'wp_enqueue_scripts', array( __CLASS__, 'prerender_active_drawer' ) );
 		\add_action( 'wp_footer', array( __CLASS__, 'render_active_drawer' ), self::FOOTER_PRIORITY );
 	}
 
@@ -100,6 +114,7 @@ final class Sgs_Drawer_Render {
 	public static function reset_request_state(): void {
 		self::$requested_post_ids = array();
 		self::$render_attempted   = false;
+		self::$prerendered_html   = null;
 	}
 
 	/**
@@ -188,17 +203,45 @@ final class Sgs_Drawer_Render {
 	}
 
 	/**
-	 * Render the Active drawer at the end of the document, at most once.
+	 * Build the Active drawer's HTML once, before the head prints (`wp_enqueue_scripts`).
 	 *
-	 * Every branch below fails CLOSED — emits nothing and leaves the page exactly
-	 * as it was — because the alternative to "no drawer" must never be "an empty
-	 * `<dialog>` and no error" (a silent failure).
+	 * @return void
+	 */
+	public static function prerender_active_drawer(): void {
+		if ( null === self::$prerendered_html ) {
+			self::$prerendered_html = self::build_active_drawer_html();
+		}
+	}
+
+	/**
+	 * Print the Active drawer at the end of the document, at most once.
 	 *
 	 * @return void
 	 */
 	public static function render_active_drawer(): void {
-		if ( self::$render_attempted ) {
+		self::prerender_active_drawer();
+		$html                   = (string) self::$prerendered_html;
+		self::$prerendered_html = '';
+		if ( '' === $html ) {
 			return;
+		}
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output is trusted rendered block HTML, identical in provenance to Sgs_Active_Layout::render_active()'s return value.
+		echo $html;
+		Sgs_Active_Layout::mark_served( Sgs_Active_Layout::AREA_DRAWER );
+	}
+
+	/**
+	 * Render the Active drawer's blocks, at most once per request.
+	 *
+	 * Every branch below fails CLOSED — returns '' and leaves the page exactly
+	 * as it was — because the alternative to "no drawer" must never be "an empty
+	 * `<dialog>` and no error" (a silent failure).
+	 *
+	 * @return string Rendered HTML, or ''.
+	 */
+	private static function build_active_drawer_html(): string {
+		if ( self::$render_attempted ) {
+			return '';
 		}
 
 		// `wp_footer` does not fire in the block editor's ServerSideRender /
@@ -209,12 +252,12 @@ final class Sgs_Drawer_Render {
 		// This guard is belt-and-braces: it makes the fork explicit at the render
 		// site instead of relying on a hook that happens not to fire.
 		if ( ! sgs_is_frontend_render() ) {
-			return;
+			return '';
 		}
 
 		// Lazy: a page with no burger emits nothing here.
 		if ( ! self::has_burger() ) {
-			return;
+			return '';
 		}
 
 		// ── THE LANDMARK GUARD. A drawer may ALREADY have painted on this page:
@@ -224,7 +267,7 @@ final class Sgs_Drawer_Render {
 		// unconditionally, before this class resolves or prints anything of its
 		// own.
 		if ( Sgs_Active_Layout::has_served( Sgs_Active_Layout::AREA_DRAWER ) ) {
-			return;
+			return '';
 		}
 
 		// ── WRITE-ORDERING IS LOAD-BEARING. ───────────────────────────────────
@@ -251,10 +294,10 @@ final class Sgs_Drawer_Render {
 			}
 		}
 		if ( empty( $resolved_ids ) ) {
-			return;
+			return '';
 		}
 
-		$served_any = false;
+		$out = '';
 		foreach ( array_keys( $resolved_ids ) as $post_id ) {
 			$content = self::get_drawer_post_content( $post_id );
 			if ( '' === $content ) {
@@ -268,18 +311,11 @@ final class Sgs_Drawer_Render {
 			// yields ''. Emitting nothing is right here: the page keeps its
 			// burger, and the FR-36-9a editor notice is what tells the operator
 			// the panel is missing.
-			if ( '' === trim( $html ) ) {
-				continue;
+			if ( '' !== trim( $html ) ) {
+				$out .= $html;
 			}
-
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output is trusted rendered block HTML, identical in provenance to Sgs_Active_Layout::render_active()'s return value.
-			echo $html;
-			$served_any = true;
 		}
-
-		if ( $served_any ) {
-			Sgs_Active_Layout::mark_served( Sgs_Active_Layout::AREA_DRAWER );
-		}
+		return $out;
 	}
 
 	/**

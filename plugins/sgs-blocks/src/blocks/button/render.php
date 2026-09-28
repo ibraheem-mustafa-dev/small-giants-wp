@@ -305,6 +305,8 @@ $box_shadow_decls = sgs_shadow_decls(
 
 // Effects.
 $hover_scale         = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : 1.0;
+$hover_scale_target  = isset( $attributes['scaleHoverTarget'] ) ? sanitize_text_field( $attributes['scaleHoverTarget'] ) : 'whole';
+$hover_scale_target  = in_array( $hover_scale_target, array( 'whole', 'face' ), true ) ? $hover_scale_target : 'whole';
 $transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_easing   = isset( $attributes['transitionEasing'] ) ? sanitize_text_field( $attributes['transitionEasing'] ) : 'ease';
 
@@ -411,9 +413,18 @@ $scoped_css_parts[] = ".{$uid}.sgs-button{transition:all {$transition_duration}m
 
 // Hover scale (skip if exactly 1.0 — no-op). Touch-safe: guarded via
 // sgs_hover_state_rules() so a tap doesn't stick the scale on touchscreens.
+// 'whole' (default) scales the button element itself — border, fill and
+// label move together, the original behaviour. 'face' scales only the
+// `.sgs-button__face` wrapper around the label/icon (see step 7 below),
+// leaving the border and background fill in place — the lamalama-style
+// inner-face-only scale (G-14).
 if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
-	$scale_val          = round( $hover_scale, 3 );
-	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})" );
+	$scale_val = round( $hover_scale, 3 );
+	if ( 'face' === $hover_scale_target ) {
+		$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})", ':focus-visible', ' .sgs-button__face' );
+	} else {
+		$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})" );
+	}
 }
 
 // Hover: colour hovers are CLASS-driven (Spec 32) via the --sgs-btn-*-hover vars
@@ -845,6 +856,16 @@ if ( $icon_html ) {
 	}
 } else {
 	$inner_html = $label_html;
+}
+
+// 'face' scale target wraps the label/icon/note in their own element so the
+// hover transform (step 4 above) can move that element alone, leaving the
+// button's own border/fill (painted on .{$uid}.sgs-button itself) still.
+// Left OUT of the markup entirely for the default 'whole' target — zero
+// change to the DOM (and therefore to :has(> .sgs-button__note) et al) for
+// every button that never touches this control.
+if ( 'face' === $hover_scale_target ) {
+	$inner_html = '<span class="sgs-button__face">' . $inner_html . '</span>';
 }
 
 // ---------------------------------------------------------------------------

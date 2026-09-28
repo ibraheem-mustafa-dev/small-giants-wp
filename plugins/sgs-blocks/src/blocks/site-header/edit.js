@@ -33,6 +33,11 @@ import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from
 // file; this module only mounts them. See FloatControls.js.
 import FloatControls from './components/FloatControls';
 import { floatPreview, floatResetAttributes } from './float-preview';
+// D-1 "Rows vertical alignment" and G-1 "Scale with the viewport" — each its
+// own file for the same reason FloatControls.js is (edit.js is already well
+// past the project's 250-line ceiling).
+import RowsAlignControl from './components/RowsAlignControl';
+import FluidScaleControls, { DEFAULT_FLUID_BREAKPOINT } from './components/FluidScaleControls';
 // Section-adaptive ink (Wave 3C U-13) — its own panel, independent of the
 // "Header behaviour" ToolsPanel below (sectionInk is its own feature).
 import SectionInkPanel, { sectionInkColourRows } from './section-ink-panel';
@@ -794,6 +799,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							padding: {},
 							margin: {},
 							zIndex: {},
+							rowsAlign: {},
 							backgroundImage: undefined,
 							backgroundImageTablet: undefined,
 							backgroundImageMobile: undefined,
@@ -942,6 +948,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 					{ /* Blur, saturate and fill opacity live in the shared BackgroundPanel's Surface panel. */ }
 
+					{ /* D-1: where the rows sit vertically once Min height (above)
+					     makes the header taller than they are. */ }
+					<RowsAlignControl
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+
 				</ToolsPanel>
 			</InspectorControls>
 
@@ -956,6 +969,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							headerHideOnScroll: {},
 							headerPassThrough: {},
 							contrastSafe: {},
+							fluidScale: { enabled: false, breakpoint: DEFAULT_FLUID_BREAKPOINT },
 							...floatResetAttributes(),
 						} )
 					}
@@ -990,6 +1004,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					     scrolls away. Its controls, canvas preview and reset all
 					     live in FloatControls.js; edit.js only mounts them. */ }
 					<FloatControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+
+					{ /* G-1: viewport-fluid scale. Sits with the other structural
+					     ("pill"/pass-through) behaviours rather than the
+					     scroll-triggered ones below it. */ }
+					<FluidScaleControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>

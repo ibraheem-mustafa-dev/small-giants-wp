@@ -54,8 +54,14 @@ export function addHoverAttributes( settings ) {
 			sgsHoverDuration:     { type: 'string',  default: 'medium' },
 			// Exact duration in ms (0 = use the duration token above).
 			sgsHoverDurationMs:   { type: 'number',  default: 0 },
-			// Easing slug — maps to var(--wp--custom--easing--{slug}).
+			// Easing slug — maps to var(--wp--custom--easing--{slug}), or
+			// 'custom' to read the hand-typed curve below.
 			sgsHoverEasing:       { type: 'string',  default: 'default' },
+			// Hand-typed cubic-bezier()/steps()/linear() curve, read only when
+			// sgsHoverEasing is 'custom' — validated server-side by the SAME
+			// shared helper the nav motion controls use (D-Wave 3C U-5),
+			// includes/helpers-motion-easing.php::sgs_motion_valid_cubic_bezier().
+			sgsHoverEasingCustom: { type: 'string',  default: '' },
 			// Image zoom on hover — from the block's own hoverDefaults.
 			sgsHoverImageZoom:    { type: 'boolean', default: defaults.imageZoom },
 			// Photo zoom amount in % (0 = the block's own default, 110%).
@@ -72,6 +78,10 @@ export function addHoverAttributes( settings ) {
 			sgsHoverTilt3D:       { type: 'boolean', default: false },
 			// Focus ring for keyboard navigation — enabled on opt-in blocks.
 			sgsFocusRing:         { type: 'boolean', default: defaults.focusRing },
+			// Fade to this opacity on hover (0-1). 0 = off — mirrors the
+			// off-sentinel convention every other numeric hover control here
+			// already uses (sgsHoverScale, sgsHoverZoom, sgsHoverLift).
+			sgsHoverOpacity:      { type: 'number',  default: 0 },
 		}
 		: {};
 

@@ -24,6 +24,9 @@
 	max-width: 100vw;
 	margin: 0;
 	padding: 0;
+	/* A panel that grows out of the header (anchor `header-box`) starts its
+	   content below the header row painted over its top strip; 0 otherwise. */
+	padding-block-start: var(--sgs-nd-hb-row, 0px);
 	border: 0;
 	overflow-y: auto;
 	overscroll-behavior: contain;
@@ -132,22 +135,105 @@
 	min-height: 100%;
 	box-sizing: border-box;
 	padding: clamp(16px, 6vw, 32px);
-	/* Room for the fixed × so the first content row never sits under it.
-	   A custom property so render.php can hand the room back wherever the ×
-	   is hidden (FR-36-6: non-modal + closeStyle trigger + live opener); an
-	   operator drawerPadding top still wins, being a scoped longhand. */
-	padding-top: var(--sgs-nd-close-room, 64px);
-	/* A panel that grows out of the header (anchor `header-box`) starts its
-	   content below the header row painted over its top strip; 0 otherwise. */
-	margin-top: var(--sgs-nd-hb-row, 0px);
+	/* The chrome row above the body reserves the top band, so the body adds
+	   none. Where render.php drops a close-only row (FR-36-6: non-modal +
+	   closeStyle trigger + live opener) it sets --sgs-nd-close-room to hand
+	   the body its ordinary top padding back; an operator drawerPadding top
+	   still wins, being a scoped longhand. */
+	padding-top: var(--sgs-nd-close-room, 0px);
+}
+
+/* ── The chrome row (FR-36-6): the × close, an optional logo and ONE optional
+   free slot, rendered by render.php (includes/nav-drawer-chrome.php), never
+   InnerBlocks. The × is first in the DOM (focus-into lands on it) and `order`
+   puts it at the row's end. Height, gap, padding and fill are attributes
+   (chromeRow*), emitted as scoped longhands that beat these defaults. ── */
+.sgs-nav-drawer__chrome {
+	position: relative;
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+}
+
+/* Zero-specificity defaults the chromeRow* attributes override. */
+:where(.sgs-nav-drawer__chrome) {
+	gap: 12px;
+	min-height: 64px;
+	padding: 0 12px;
+}
+
+.sgs-nav-drawer__chrome-logo {
+	display: flex;
+	flex: none;
+	align-items: center;
+	min-height: 44px;
+	color: inherit;
+	text-decoration: none;
+}
+
+.sgs-nav-drawer__chrome-logo-picture {
+	display: block;
+}
+
+/* Zero-specificity default size; chromeLogoWidth (scoped) sets the width and
+   hands the height back to the image's own ratio. */
+:where(.sgs-nav-drawer__chrome-logo-image) {
+	display: block;
+	width: auto;
+	height: 32px;
+	max-width: 100%;
+}
+
+:where(.sgs-nav-drawer__chrome-slot) {
+	margin: 0;
+	min-width: 0;
+}
+
+.sgs-nav-drawer__chrome-slot--at-end {
+	margin-inline-start: auto;
+}
+
+.sgs-nav-drawer__chrome:has(> .sgs-nav-drawer__chrome-slot--at-end) > .sgs-nav-drawer__close {
+	margin-inline-start: 0;
+}
+
+.sgs-nav-drawer__chrome-slot--at-centre {
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	width: fit-content;
+	height: fit-content;
+}
+
+/* The slot as a button: a 44px target. Colour, border, radius and padding
+   are chromeButton* attributes (sgs_button_element_style_css), which win. */
+:where(.sgs-nav-drawer__chrome-slot--button) {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0 16px;
+	border: 1px solid currentColor;
+	border-radius: 4px;
+	color: inherit;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.sgs-nav-drawer__chrome-logo:focus-visible,
+.sgs-nav-drawer__chrome-slot--button:focus-visible {
+	outline: 2px solid var( --sgs-focus-color, currentColor );
+	outline-offset: 2px;
 }
 
 /* ── × close button — fixed dialog chrome, 44px target, visible focus. ── */
 .sgs-nav-drawer__close {
-	position: absolute;
-	top: 12px;
-	inset-inline-end: 12px;
+	position: relative;
 	z-index: 1;
+	order: 1;
+	flex: none;
+	margin-inline-start: auto;
+	box-sizing: border-box;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -165,6 +251,17 @@
 
 .sgs-nav-drawer__close:hover {
 	opacity: 0.75;
+}
+
+/* The hit area never drops below 44px, whatever closeSize paints. */
+.sgs-nav-drawer__close::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%; /* centring: direction-agnostic, paired with the -50% translate */
+	width: max(100%, 44px);
+	height: max(100%, 44px);
+	translate: -50% -50%;
 }
 
 .sgs-nav-drawer__close:focus-visible {
@@ -227,6 +324,88 @@
 
 	.wp-block-sgs-nav-drawer.sgs-nav-drawer--curtain.is-closing > .sgs-nav-drawer__body {
 		animation: var(--sgs-nd-body-out, none) calc(var(--sgs-nd-exit-dur, 200ms) / 2) ease forwards;
+	}
+
+	/* Grow from the anchor: the box's own height animates, so nothing scrolls
+	   or shows a scrollbar while it is shorter than its content.
+	   grow-from-anchor.js adds --growing for the entry only. */
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--growing,
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--grow.is-closing {
+		overflow: hidden;
+	}
+
+	/* Item entrance axis and reveal (itemStaggerAxis, itemStaggerReveal;
+	   includes/helpers-nav-drawer-stagger-shape.php). Swaps only the keyframe
+	   name of nav-drawer-menu's item stagger rules; their timing and delays
+	   stand. */
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger-shaped[open]:not(.is-closing) .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item,
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger-shaped[open]:not(.is-closing) .sgs-nav-drawer__body > :not(.wp-block-sgs-nav-drawer-menu) {
+		animation-name: sgs-nav-drawer-item-shaped-in;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger-shaped.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item {
+		animation-name: sgs-nav-drawer-item-shaped-out;
+	}
+}
+
+/* interpolate-size lets the grow reach `auto` before grow-from-anchor.js has
+   measured the full height, where the browser supports it. */
+.wp-block-sgs-nav-drawer.sgs-nav-drawer--grow {
+	interpolate-size: allow-keywords;
+}
+
+@keyframes sgs-nav-drawer-grow-in {
+	from {
+		height: var(--sgs-nd-grow-from, 0px);
+	}
+
+	to {
+		height: var(--sgs-nd-grow-to, auto);
+	}
+}
+
+@keyframes sgs-nav-drawer-grow-out {
+	from {
+		height: var(--sgs-nd-grow-to, auto);
+	}
+
+	to {
+		height: var(--sgs-nd-grow-from, 0px);
+	}
+}
+
+/* The item travels on its axis (x and y multipliers, x mirrored under RTL)
+   and, for the clip reveal, is uncovered top to bottom. The clip is dropped on
+   the last frame so a focus ring is never clipped once the item has arrived. */
+@keyframes sgs-nav-drawer-item-shaped-in {
+	from {
+		opacity: var(--sgs-nd-stagger-from-opacity, 0);
+		translate: calc(var(--sgs-nd-stagger-dist, 16px) * var(--sgs-nd-stagger-ax, 0) * var(--sgs-nd-dir, 1)) calc(var(--sgs-nd-stagger-dist, 16px) * var(--sgs-nd-stagger-ay, 1));
+		clip-path: var(--sgs-nd-stagger-clip, none);
+	}
+
+	99.9% {
+		clip-path: var(--sgs-nd-stagger-clip-end, none);
+	}
+
+	to {
+		clip-path: none;
+	}
+}
+
+@keyframes sgs-nav-drawer-item-shaped-out {
+	from {
+		clip-path: none;
+	}
+
+	0.1% {
+		clip-path: var(--sgs-nd-stagger-clip-end, none);
+	}
+
+	to {
+		opacity: var(--sgs-nd-stagger-from-opacity, 0);
+		translate: calc(var(--sgs-nd-stagger-dist, 16px) * var(--sgs-nd-stagger-ax, 0) * var(--sgs-nd-dir, 1)) calc(var(--sgs-nd-stagger-dist, 16px) * var(--sgs-nd-stagger-ay, 1));
+		clip-path: var(--sgs-nd-stagger-clip, none);
 	}
 }
 

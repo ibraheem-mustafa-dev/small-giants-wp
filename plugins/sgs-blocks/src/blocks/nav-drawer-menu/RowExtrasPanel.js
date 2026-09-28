@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { Button, PanelBody, RangeControl } from '@wordpress/components';
+import { Button, PanelBody, RangeControl, ToggleControl } from '@wordpress/components';
 import { IconPicker, ResponsiveOverride, SgsLengthControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
@@ -13,6 +13,11 @@ const REVEAL_OPTIONS = [
 	{ value: 'none', label: __( 'Hidden', 'sgs-blocks' ) },
 	{ value: 'always', label: __( 'Always', 'sgs-blocks' ) },
 	{ value: 'hover', label: __( 'On hover', 'sgs-blocks' ) },
+];
+
+const ORNAMENT_REVEAL_MODE_OPTIONS = [
+	{ value: 'static', label: __( 'Always shown', 'sgs-blocks' ) },
+	{ value: 'hover-draw', label: __( 'Draw in on hover', 'sgs-blocks' ) },
 ];
 
 const tierObject = ( value ) => ( value && typeof value === 'object' ? value : {} );
@@ -102,10 +107,13 @@ export default function RowExtrasPanel( { attributes, setAttributes } ) {
 		itemMediaWidth,
 		itemMediaHeight,
 		itemMediaRadius,
+		itemOrnamentRevealMode,
+		itemOrnamentReserveSpace,
 	} = attributes;
 	const ornamentTiers = Object.values( tierObject( itemOrnament ) );
 	const usesOrnament = ornamentTiers.some( ( v ) => 'index' === v || 'icon' === v );
 	const usesIcon = ornamentTiers.includes( 'icon' );
+	const usesHoverDraw = Object.values( tierObject( itemOrnamentRevealMode ) ).includes( 'hover-draw' );
 	const mediaOn = 'featured-image' === itemMedia;
 
 	return (
@@ -154,6 +162,25 @@ export default function RowExtrasPanel( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { itemOrnamentGap: val || '' } ) }
 						presets={ false }
 					/>
+					{ /* G-6 (2026-09-28) — icon-only; an index counter has no strokes. */ }
+					{ usesIcon && (
+						<TierToggle
+							label={ __( 'Ornament reveal', 'sgs-blocks' ) }
+							help={ __( '"Draw in on hover" hides the icon at rest and draws it stroke-by-stroke on hover or focus.', 'sgs-blocks' ) }
+							value={ itemOrnamentRevealMode }
+							options={ ORNAMENT_REVEAL_MODE_OPTIONS }
+							onChange={ ( obj ) => setAttributes( { itemOrnamentRevealMode: obj } ) }
+						/>
+					) }
+					{ usesIcon && usesHoverDraw && (
+						<ToggleControl
+							label={ __( 'Reserve ornament space at rest', 'sgs-blocks' ) }
+							help={ __( 'Keeps the label’s indent even while the ornament is hidden, instead of the row shifting when it draws in.', 'sgs-blocks' ) }
+							checked={ !! itemOrnamentReserveSpace }
+							onChange={ ( val ) => setAttributes( { itemOrnamentReserveSpace: !! val } ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</>
 			) }
 

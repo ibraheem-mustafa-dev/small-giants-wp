@@ -6709,6 +6709,22 @@
 				"role": "layout"
 			},
 			"_why": "Container \"Scroll sideways\" (away's 375 tile scroller): emitted by includes/container-scroll-row-css.php, called from SGS_Container_Wrapper::render(), which extract-signatures.py does not scan. scrollSideways is the wrapper element's css:overflow (block.json attrMap); scrollItemWidth is each item's flex-basis in that row."
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "chromeLogoShow",
+			"fields": {
+				"role": "boolean-visibility",
+				"_reason": "2026-09-28 (U-18 drawer chrome row, Spec 36 FR-36-6). Per-device show/hide of the drawer top row logo (tier object of booleans, painted as display). The trailing 'Show' is outside the show*/hide* prefix rule, so no role was derived."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "chromeSlotShow",
+			"fields": {
+				"role": "boolean-visibility",
+				"_reason": "2026-09-28 (U-18 drawer chrome row, Spec 36 FR-36-6). Per-device show/hide of the drawer top row free slot (tier object of booleans, painted as display). The trailing 'Show' is outside the show*/hide* prefix rule, so no role was derived."
+			}
 		}
 	]
 }

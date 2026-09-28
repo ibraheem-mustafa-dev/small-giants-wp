@@ -8,7 +8,7 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { useEntityRecords } from '@wordpress/core-data';
-import { ResponsiveOverride } from '../../components';
+import { ResponsiveOverride, MotionEasingControl, SgsLengthControl } from '../../components';
 import CreateDrawerControl from './CreateDrawerControl';
 import { DRAWER_POST_TYPE, DRAWER_QUERY } from './create-drawer-seed';
 
@@ -71,9 +71,17 @@ export default function DropdownSettingsPanel( {
 	submenuAlign,
 	megaAlign,
 	submenuCaret,
+	submenuCaretSize,
+	submenuCaretOpacity,
+	submenuCaretOpacityHover,
+	submenuCaretGap,
+	submenuCaretTurnDuration,
+	submenuCaretTurnEasing,
+	submenuCaretTurnEasingCustom,
 	submenuCloseGrace,
 	submenuIntentDelay,
 	submenuOpenOn,
+	itemHoverScope,
 } ) {
 	// Only PUBLISHED posts are offered — an unpublished one wouldn't resolve on
 	// the frontend either (render.php / Sgs_Drawer_Render::get_drawer_post_content()
@@ -267,6 +275,127 @@ export default function DropdownSettingsPanel( {
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom
+				/>
+				{ submenuCaret !== false && (
+					<>
+						<SgsLengthControl
+							label={ __( 'Arrow size', 'sgs-blocks' ) }
+							value={ submenuCaretSize || '' }
+							onChange={ ( value ) =>
+								setAttributes( { submenuCaretSize: value || '' } )
+							}
+							help={ __(
+								'Empty rides the item\'s own font size.',
+								'sgs-blocks'
+							) }
+							units={ [ { value: 'px', label: 'px' } ] }
+							presets={ false }
+						/>
+						<SgsLengthControl
+							label={ __( 'Gap from the label', 'sgs-blocks' ) }
+							value={ submenuCaretGap || '' }
+							onChange={ ( value ) =>
+								setAttributes( { submenuCaretGap: value || '' } )
+							}
+							units={ [ { value: 'px', label: 'px' } ] }
+							presets={ false }
+						/>
+						<RangeControl
+							label={ __( 'Arrow opacity at rest', 'sgs-blocks' ) }
+							value={
+								typeof submenuCaretOpacity === 'number'
+									? submenuCaretOpacity
+									: undefined
+							}
+							min={ 0 }
+							max={ 1 }
+							step={ 0.05 }
+							allowReset
+							onChange={ ( value ) =>
+								setAttributes( { submenuCaretOpacity: value } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<RangeControl
+							label={ __( 'Arrow opacity on hover', 'sgs-blocks' ) }
+							value={
+								typeof submenuCaretOpacityHover === 'number'
+									? submenuCaretOpacityHover
+									: undefined
+							}
+							min={ 0 }
+							max={ 1 }
+							step={ 0.05 }
+							allowReset
+							onChange={ ( value ) =>
+								setAttributes( { submenuCaretOpacityHover: value } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<RangeControl
+							label={ __( 'Arrow turn time (ms)', 'sgs-blocks' ) }
+							help={ __(
+								'How long the arrow takes to turn as its panel opens. Empty keeps today\'s instant turn.',
+								'sgs-blocks'
+							) }
+							value={
+								typeof submenuCaretTurnDuration === 'number'
+									? submenuCaretTurnDuration
+									: undefined
+							}
+							min={ 0 }
+							max={ 1000 }
+							step={ 10 }
+							allowReset
+							onChange={ ( value ) =>
+								setAttributes( { submenuCaretTurnDuration: value } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<MotionEasingControl
+							label={ __( 'Arrow turn curve', 'sgs-blocks' ) }
+							value={ submenuCaretTurnEasing }
+							custom={ submenuCaretTurnEasingCustom }
+							fallback="ease"
+							onChange={ ( value ) =>
+								setAttributes( { submenuCaretTurnEasing: value } )
+							}
+							onCustomChange={ ( value ) =>
+								setAttributes( {
+									submenuCaretTurnEasingCustom: value,
+								} )
+							}
+						/>
+					</>
+				) }
+				<SelectControl
+					label={ __( 'Hover colour applies to', 'sgs-blocks' ) }
+					value={ itemHoverScope || 'all' }
+					options={ [
+						{
+							label: __( 'Every top-level item', 'sgs-blocks' ),
+							value: 'all',
+						},
+						{
+							label: __(
+								'Only items that open a dropdown or mega panel',
+								'sgs-blocks'
+							),
+							value: 'with-submenu',
+						},
+					] }
+					onChange={ ( value ) =>
+						setAttributes( { itemHoverScope: value || 'all' } )
+					}
+					help={ __(
+						'A plain link with nothing to open (e.g. Home) stays visually inert on hover when set to the second option.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 				<SelectControl
 					label={ __( 'Open on', 'sgs-blocks' ) }

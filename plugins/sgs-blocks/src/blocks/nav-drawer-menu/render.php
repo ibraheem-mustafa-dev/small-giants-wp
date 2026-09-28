@@ -64,6 +64,14 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-item-border-featured-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-link-css.php';
+// Required directly here too (already reachable transitively via nav-menu-
+// markup.php -> nav-drawer-menu-items.php -> nav-drawer-menu-extras-css.php)
+// so scripts/colour-codemod/survey.js's findRequiredFiles() — which reads
+// only render.php's OWN require statements, one level, not the whole chain —
+// can trace itemColourOpen/itemBadge*/itemDisabledColour/itemTrailingIconColour
+// back to the real sgs_text_colour_decl()/sgs_background_paint_decl() calls
+// inside it, instead of reporting them "current: unknown" (2026-09-28).
+require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-menu-parity-css.php';
 // nav-menu-trigger-css.php is deliberately NOT required — this block never
 // emits a burger/trigger, so sgs_nav_bar_menu_trigger_css() is never called.
 // class-sgs-container-wrapper.php is deliberately NOT required — this block
@@ -263,7 +271,13 @@ if ( ! class_exists( 'SGS_Nav_Drawer_Menu_Flattener' ) ) {
 				return null;
 			}
 			$raw_url = trim( (string) ( $attrs['url'] ?? '' ) );
-			$has_url = SGS_Nav_Menu_Source::is_destination_url( $raw_url );
+			// I-D9 (2026-09-28): a real, visitable destination — not just a
+			// non-empty/non-'#' string; see sgs_nav_drawer_menu_has_real_destination()
+			// (includes/nav-drawer-menu-row-extras.php) for the non-publicly-
+			// queryable-post-type check this adds on top of the base rule.
+			$has_url = function_exists( 'sgs_nav_drawer_menu_has_real_destination' )
+				? sgs_nav_drawer_menu_has_real_destination( $raw_url, (int) ( $attrs['id'] ?? 0 ) )
+				: SGS_Nav_Menu_Source::is_destination_url( $raw_url );
 			$url     = $has_url ? $raw_url : '#';
 			$own_key = isset( $attrs['id'] ) && '' !== $attrs['id']
 				? 'id:' . sanitize_key( (string) $attrs['id'] )
@@ -487,7 +501,7 @@ $sgs_nm_accordion_exclusive = ! array_key_exists( 'sgs/navDrawerAccordionExclusi
 // resolved once (includes/nav-drawer-menu-items.php).
 $sgs_nm_row_options = sgs_nav_drawer_menu_row_options( $attributes );
 
-$items_html = sgs_nav_drawer_menu_render_items( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker, $mega_drawer_fallback_ids, $sgs_nm_accordion_exclusive, $sgs_nm_row_options );
+$items_html = sgs_nav_drawer_menu_render_items( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker, $mega_drawer_fallback_ids, $sgs_nm_accordion_exclusive, $sgs_nm_row_options, is_array( $attributes['disabledItemIds'] ?? null ) ? $attributes['disabledItemIds'] : array() );
 
 // FR-41-36 — the drawer's own `drawerBg` attribute,
 // reached via the SAME real WP block-context channel as
@@ -599,6 +613,16 @@ $css .= sgs_nav_shared_submenu_css(
 $css .= $sgs_nm_marker_css;
 // Wave 3C U-6 + U-7: ornament, expander rotation, media, sibling dim, roll.
 $css .= sgs_nav_drawer_menu_extras_css( $attributes, '.sgs-nav-drawer-menu' . $uid_sel );
+// Spec 36 "Item hover paint" M-21 (2026-09-28) — itemPadding/submenuLinkPadding
+// and the item link's own hover/current transition timing, shared with
+// sgs/nav-bar-menu. Guarded: these two files are new siblings in the shared
+// nav-menu-*-css.php family and may not be present on every checkout.
+if ( function_exists( 'sgs_nav_item_padding_css' ) ) {
+	$css .= sgs_nav_item_padding_css( $uid_sel, 'sgs-nav-drawer-menu', $attributes );
+}
+if ( function_exists( 'sgs_nav_item_transition_css' ) ) {
+	$css .= sgs_nav_item_transition_css( $uid_sel, 'sgs-nav-drawer-menu', $attributes );
+}
 
 // ── 5. Assemble — BLOCK-PRIVATE root.
 // Same as the bar block's render.php — see that file's own §5 comment for the

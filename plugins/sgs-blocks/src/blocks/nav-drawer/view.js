@@ -1,7 +1,7 @@
 /**
  * SGS Nav Drawer — frontend interactivity.
  *
- * The drawer OWNS NO behaviour of its own: open / close / focus-into /
+ * The drawer owns no open/close behaviour of its own: open / close / focus-into /
  * focus-trap / body-scroll-lock (incl. iOS) / ESC / body-reparent /
  * scrollbar-bounce compensation / `::backdrop` scrim all live in the
  * shared `store('sgs/nav')` (src/shared/nav-interactivity/store.js). The store
@@ -19,3 +19,8 @@
  */
 
 import '../../shared/nav-interactivity/store';
+import initGrowFromAnchor from './grow-from-anchor';
+
+// The one motion the drawer owns itself: `grow-from-anchor` measures its box's
+// two heights (the CSS keyframes need real lengths). See grow-from-anchor.js.
+initGrowFromAnchor();

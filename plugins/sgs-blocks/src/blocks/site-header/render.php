@@ -44,6 +44,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-z-index.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-pass-through.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-ink-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-scroll-trigger.php';
+require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-rows-align-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-fluid-scale.php';
 
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation (class-sgs-container-wrapper.php)
@@ -155,6 +157,19 @@ if ( ! empty( $sh_style_engine_args ) ) {
 // while supports.color's sub-flags are true; with them false those attributes
 // are never written, so the has-*-color classes could only ever come from
 // stale stored content.
+
+// ── D-1: rows vertical alignment. ────────────────────────────────────────────
+// The header renders its rows (site-header-row children) DIRECTLY into the
+// outer element in the common case (no content band — SGS_Container_Wrapper's
+// own min-height-flex-fill mechanism only fires when $has_band_props is true,
+// which a plain header rarely sets), so a taller `minHeight` than the rows'
+// own height otherwise leaves them pinned to the top with display:block. This
+// makes the outer a column flex container and resolves the vertical position
+// directly on THIS block's own selector — no shared-wrapper change needed.
+// Default 'center' (via sgs_emit_tier_rules_map()'s $default param): a header
+// with this attribute untouched already centres its rows, matching what any
+// flex/grid layout tool defaults to.
+$css .= sgs_header_rows_align_css( $root_sel, $attributes );
 
 // ── Header-level tri-state behaviours (FR-37-14, Spec 35 T1.4) ──────────────
 // Sticky, transparent, shrink and hide-on-scroll resolve HERE, per tier, via
@@ -776,6 +791,11 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // $sh_transparent_effective / $sh_solid_first above are the single resolver of
 // that. A second resolver inside the float file would disagree with this one.
 $css .= sgs_header_float_css( $root_sel, $attributes, $sh_transparent_effective, $sh_solid_first );
+
+// ── G-1: viewport-fluid scale — LAST, so its inset re-declarations win over
+// the pill geometry just emitted (same selector, same specificity; source
+// order decides). Emits nothing unless `fluidScale.enabled` is true. ──
+$css .= sgs_header_fluid_scale_css( $root_sel, $attributes, $sh_float_any_tier );
 
 if ( '' !== $css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied; $css from pre-sanitised values only (wp_style_engine_get_styles()).

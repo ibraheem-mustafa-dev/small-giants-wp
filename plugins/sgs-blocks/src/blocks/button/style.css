@@ -245,6 +245,23 @@
 	align-self: stretch;
 }
 
+/* Inner-face wrapper (G-14) — mounted by render.php ONLY when scaleHoverTarget
+   is 'face': the hover-scale rule then targets THIS element instead of the
+   root .sgs-button, so the border/fill painted on the root stay put and only
+   the label/icon/note face scales. Mirrors the root's own flex layout so
+   wrapping changes nothing visually at rest for a button that uses it. */
+.sgs-button__face {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+}
+
+.sgs-button__face:has(> .sgs-button__note) {
+	justify-content: space-between;
+	gap: 12px;
+}
+
 /* Icon alignment */
 .sgs-button__icon {
 	display: inline-flex;

@@ -70,39 +70,27 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	// TypographyControls' attribute contract: {prefix}FontSize/Unit/Tablet/Mobile).
 	$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
 
+	// 4a-i. Item link padding + submenu link padding (`itemPadding`,
+	// `submenuLinkPadding` — Spec 36 "Item hover paint", shared with
+	// sgs/nav-drawer-menu): includes/nav-menu-item-padding-css.php.
+	$css .= sgs_nav_item_padding_css( $uid_sel, $bem_root, $attributes );
+
 	/*
-	 * 4a-i. Item link padding (`itemPadding`, sgs/nav-bar-menu only): a
-	 * {desktop,tablet,mobile} tier object of {top,right,bottom,left}, emitted
-	 * per side at (0,2,0) over style.css's `.{bem}__link{padding:8px 12px}`
-	 * (0,1,0), so an unset side or tier keeps that default. The resting
-	 * inline-start side is also published as `--sgs-nav-link-pad-start`, which
-	 * the `itemPaddingShiftHover` rule below adds its shift to.
+	 * G-13 (U-18): `itemHoverScope`. 'with-submenu' narrows the item's OWN
+	 * hover-triggered text/background rules (below) to items that actually
+	 * open a dropdown or mega panel — a plain link (no `.{bem}__item--has-submenu`
+	 * or `.{bem}__item--mega` ancestor) opens nothing, so it should not paint
+	 * a hover colour/background either. `$link_hover_sel` is the selector
+	 * every HOVER-ONLY rule below targets in place of `$link_sel`; the
+	 * item's RESTING styling (typography, colour, `itemPadding` above)
+	 * keeps using `$link_sel` unscoped, so a non-qualifying item still gets
+	 * its normal resting appearance — only its hover/focus paint is withheld.
 	 */
-	$item_padding = $attributes['itemPadding'] ?? null;
-	if ( is_array( $item_padding ) && array() !== $item_padding ) {
-		$item_padding_start = array();
-		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
-			if ( isset( $item_padding[ $tier ]['left'] ) && '' !== $item_padding[ $tier ]['left'] ) {
-				$item_padding_start[ $tier ] = $item_padding[ $tier ]['left'];
-			}
-		}
-		$css .= sgs_emit_responsive_css(
-			$link_sel,
-			array(
-				array(
-					'value'        => $item_padding,
-					'css'          => 'padding',
-					'box'          => true,
-					'unit_default' => 'px',
-				),
-				array(
-					'value'        => $item_padding_start,
-					'css'          => '--sgs-nav-link-pad-start',
-					'unit_default' => 'px',
-				),
-			)
-		);
-	}
+	$item_hover_scope = 'with-submenu' === (string) ( $attributes['itemHoverScope'] ?? 'all' );
+	$link_hover_sel   = $item_hover_scope
+		? $uid_sel . ' .' . $bem_root . '__item--has-submenu .' . $bem_root . '__link,'
+			. $uid_sel . ' .' . $bem_root . '__item--mega .' . $bem_root . '__link'
+		: $link_sel;
 
 	/*
 	 * Caret oversize. `.{bem}__caret svg` has no
@@ -385,8 +373,22 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 		$css .= $link_sel . '[aria-current="page"]{color:' . sgs_colour_value( $item_colour_current ) . ';}';
 	}
 
-	if ( '' !== $item_text_sweep['hover'] ) {
-		$css .= $item_text_sweep['hover'];
+	// G-13 itemHoverScope: the sweep's BASE half (resting appearance) stays on
+	// $link_sel for every item, unchanged — only its HOVER half needs
+	// narrowing. sgs_nav_shared_text_sweep_css() bakes one selector into both
+	// halves of its return, so a second, hover-only call re-derives just that
+	// half against $link_hover_sel (the function is pure — same inputs,
+	// deterministic output — so this is not a second, drifting mechanism).
+	$item_text_sweep_hover = ( '' !== $item_text_sweep['hover'] && $link_hover_sel !== $link_sel )
+		? sgs_nav_shared_text_sweep_css(
+			$link_hover_sel,
+			'' !== $item_colour ? sgs_colour_value( $item_colour ) : '',
+			$item_sweep_hover
+		)['hover']
+		: $item_text_sweep['hover'];
+
+	if ( '' !== $item_text_sweep_hover ) {
+		$css .= $item_text_sweep_hover;
 	} elseif ( 'none' !== $t_text && '' !== $item_colour_hover_effective ) {
 		// $caret_svg_sel is paired in the same call — a
 		// direct :hover/:focus-visible on the caret's own svg fires when the
@@ -398,9 +400,11 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 		// resolves to '', matching every other colour branch in this file).
 		$item_colour_hover_decl = sgs_text_colour_decl( $item_colour_hover_effective );
 		if ( '' !== $item_colour_hover_decl ) {
-			$css .= sgs_hover_state_rules( $link_sel . ',' . $caret_svg_sel, $item_colour_hover_decl, ':focus-visible' );
+			// $link_hover_sel (not $link_sel): G-13 itemHoverScope narrows
+			// which items take this hover colour — see its own definition above.
+			$css .= sgs_hover_state_rules( $link_hover_sel . ',' . $caret_svg_sel, $item_colour_hover_decl, ':focus-visible' );
 			$css .= sgs_text_colour_gradient_fallback_rule(
-				$link_sel . ':hover,' . $caret_svg_sel . ':hover,' . $link_sel . ':focus-visible,' . $caret_svg_sel . ':focus-visible',
+				$link_hover_sel . ':hover,' . $caret_svg_sel . ':hover,' . $link_hover_sel . ':focus-visible,' . $caret_svg_sel . ':focus-visible',
 				$item_colour_hover_effective
 			);
 		}
@@ -440,8 +444,9 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	}
 	$item_opacity_hover = $attributes['itemOpacityHover'] ?? null;
 	if ( is_numeric( $item_opacity_hover ) ) {
+		// $link_hover_sel (not $link_sel): G-13 itemHoverScope narrows scope.
 		$css .= sgs_hover_state_rules(
-			$link_sel . ',' . $caret_svg_sel,
+			$link_hover_sel . ',' . $caret_svg_sel,
 			'opacity:' . max( 0, min( 1, (float) $item_opacity_hover ) ),
 			':focus-visible'
 		);
@@ -506,7 +511,8 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	// it costs nothing when the colours already differ.
 	if ( 'highlight' === $t_bg ) {
 		$highlight_hover_weight = max( 700, (int) ( $attributes['itemFontWeight'] ?? 400 ) + 200 );
-		$css .= sgs_hover_state_rules( $link_sel, 'font-weight:' . $highlight_hover_weight, ':focus-visible' );
+		// $link_hover_sel (not $link_sel): G-13 itemHoverScope narrows scope.
+		$css .= sgs_hover_state_rules( $link_hover_sel, 'font-weight:' . $highlight_hover_weight, ':focus-visible' );
 	}
 
 	if ( '' !== $item_bg_normal_decl || '' !== $item_bg_hover_decl || '' !== $item_bg_current_decl ) {
@@ -534,7 +540,8 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 			$css .= $link_sel . '[aria-current="page"]::before{' . $item_bg_current_decl . ';}';
 		}
 		if ( '' !== $item_bg_hover_decl ) {
-			$css .= sgs_hover_state_rules( $link_sel, $item_bg_hover_decl, ':focus-visible', '::before' );
+			// $link_hover_sel (not $link_sel): G-13 itemHoverScope narrows scope.
+			$css .= sgs_hover_state_rules( $link_hover_sel, $item_bg_hover_decl, ':focus-visible', '::before' );
 		}
 	}
 
@@ -618,6 +625,10 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	// includes/nav-menu-item-border-featured-css.php: fully self-contained, no
 	// shared state beyond $attributes/$link_sel/$uid_sel/$t_border.
 	$css .= sgs_nav_shared_item_border_css( $attributes, $link_sel, $uid_sel, $t_border, $bem_root );
+	// G-13 itemHoverScope, border channel — an ADDITIVE override (not a
+	// re-scope of the shared border module above); see that file's own
+	// docblock for why. includes/nav-menu-item-hover-scope-css.php.
+	$css .= sgs_nav_item_hover_scope_border_css( $uid_sel, $bem_root, $attributes, $t_border );
 
 	// Featured items (LABEL/PILL forms + republished custom properties + Hover
 	// state) — emitted by the same module.

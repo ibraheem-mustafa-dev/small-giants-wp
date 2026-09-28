@@ -59,14 +59,16 @@
 					"label": "Backdrop / scrim",
 					"order": 10,
 					"clusters": [
-						"fill"
+						"fill",
+						"motion"
 					],
 					"prefix": "scrim",
 					"attrMap": {
 						"css:background-color": "scrimColour",
 						"css:background-image": "scrimColourGradient",
 						"css:opacity": "scrimOpacity",
-						"css:backdrop-filter": "scrimBlur"
+						"css:backdrop-filter": "scrimBlur",
+						"css:transition-duration": "scrimFadeDuration"
 					},
 					"_note": "The shared viewport scrim (Wave 3C U-2, `includes/helpers-scrim.php::sgs_scrim_render`): the see-through layer printed at wp_footer that dims the page while this block's drawer, dialog or panel is open. Mapped here so the converter can route a draft's scrim colour, strength and blur to these attributes."
 				},
@@ -409,6 +411,9 @@
 				],
 				"itemPadding": [
 					"itemPadding"
+				],
+				"submenuLinkPadding": [
+					"submenuLinkPadding"
 				]
 			},
 			"_note_sweep_eligibility": "The ONE declarative source for the Sweep-treatment eligibility predicate, read by BOTH surfaces — edit.js decides whether to offer the Sweep segment, render.php decides whether to emit Sweep CSS — with neither re-deriving the rule (Spec 41 FR-41-26). It is NOT an `elements` entry and routes no CSS property; it sits beside colourExemptions / hideExtensions / boxFamilies. Three keys per row: `blockingBackgroundAttrs` (Sweep is withdrawn when ANY named attribute is non-empty, because background-clip:text clips the element's whole background-painting area to the glyph shapes — every state's background counts, not just the resting one), `blockingGradientAttrs` (the row's own text gradient writes background-image on the identical selector, so whichever loses is invisible) and `glyphGuard` (background-clip:text needs glyphs to grip; null means the element always has them). Every attribute named below must exist in `attributes` — a typo reads as permanently empty, so the predicate would always pass and the rule would silently cease to exist.",
@@ -815,6 +820,39 @@
 			"type": "boolean",
 			"default": true
 		},
+		"submenuCaretSize": {
+			"type": "string",
+			"default": "",
+			"description": "I-B6 (U-18). A CSS length overriding the caret glyph's width/height, which otherwise rides `1em` off the item's own font-size (nav-menu-submenu-link-css.php). Empty keeps that `1em` default. Reference: Indus's dropdown caret is 11px."
+		},
+		"submenuCaretOpacity": {
+			"type": "number",
+			"description": "I-B6 (U-18). Resting opacity (0 to 1) of the caret glyph, independent of the item's own itemOpacity. No default -- unset emits no opacity rule (fully opaque). Reference: Indus rests at 0.6."
+		},
+		"submenuCaretOpacityHover": {
+			"type": "number",
+			"description": "I-B6 (U-18). Hover/focus-visible opacity (0 to 1) of the caret glyph, touch-guarded, keyed on the same submenu-root hover/keyboard-focus condition nav-menu-css.php's own caret pairing already uses. No default -- unset emits no rule."
+		},
+		"submenuCaretGap": {
+			"type": "string",
+			"default": "",
+			"description": "I-B6 (U-18). Gap between the item label and its caret glyph, on `.{bem}__link` (also covers the mega trigger, which shares that class). Empty keeps the browser's default flex spacing (0). Reference: Indus sets 6px."
+		},
+		"submenuCaretTurnDuration": {
+			"type": "number",
+			"description": "I-B6 (U-18). Milliseconds the caret takes to turn 180 degrees while its panel is open (nav-menu-submenu-css.php's `[aria-expanded=\"true\"] .{bem}__caret{transform:rotate(180deg)}`). No default -- unset keeps today's instant (untransitioned) turn. Reference: Indus turns over 300ms."
+		},
+		"submenuCaretTurnEasing": {
+			"type": "string",
+			"default": "",
+			"enum": [ "", "ease", "ease-out-css", "ease-in-out", "default", "ease-out", "quart-out", "standard", "drafts", "ease-in", "spring", "linear", "custom" ],
+			"description": "I-B6 (U-18). Easing curve for the caret's turn, from the shared motion easing list. Empty falls back to 'ease' once a turn duration is set. Reference: Indus uses 'drafts' (cubic-bezier(0.16, 0.84, 0.32, 1))."
+		},
+		"submenuCaretTurnEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A hand-typed cubic-bezier() curve, read only when submenuCaretTurnEasing is 'custom'."
+		},
 		"submenuCloseGrace": {
 			"type": "number",
 			"default": 170
@@ -860,7 +898,12 @@
 		"itemPadding": {
 			"type": "object",
 			"default": {},
-			"description": "4-side box-object family (box_family 'itemPadding'), a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Padding inside each top-level menu link. Empty keeps the default 8px 12px; the left side is also what itemPaddingShiftHover adds to."
+			"description": "4-side box-object family (box_family 'itemPadding'), a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Padding inside each top-level menu link. Empty keeps the default 8px 12px; the left side is also what itemPaddingShiftHover adds to. Emitted by includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css() -- SHARED with sgs/nav-drawer-menu (Spec 36 'Item hover paint': the bar and drawer were one block, so every item-level control belongs on both)."
+		},
+		"submenuLinkPadding": {
+			"type": "object",
+			"default": {},
+			"description": "4-side box-object family (box_family 'submenuLinkPadding'), a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Padding inside each dropdown/mega/accordion submenu link (`.{bem}__sublink`). Empty keeps the default 0 16px; the left side is also what itemPaddingShiftHover adds to on the sublink. Emitted by includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css() (Spec 36 'Item hover paint') -- SHARED with sgs/nav-drawer-menu, same reasoning as itemPadding above."
 		},
 		"navBgGradient": {
 			"type": "string",
@@ -1042,6 +1085,12 @@
 			"default": "swap",
 			"description": "How the item BACKGROUND changes on hover: none / swap / highlight. 'highlight' renders the sliding pill, painting from itemBgHover / itemBgHoverGradient (Spec 41 FR-41-25). PHP-validated, no JSON enum."
 		},
+		"itemHoverScope": {
+			"type": "string",
+			"enum": [ "all", "with-submenu" ],
+			"default": "all",
+			"description": "U-18 gap G-13. 'all' (default): every top-level item takes the configured hover text/background paint, as today. 'with-submenu': only items that actually open a dropdown or mega panel (`.{bem}__item--has-submenu`, `.{bem}__item--mega`) take that hover paint -- a plain link (Indus's Home, Blog) stays visually inert on hover, since it opens nothing. Scopes the item's own resting-to-hover TEXT COLOUR and BACKGROUND FILL transitions only (nav-menu-css.php); the FR-41-13 parent-keeps-hover-while-submenu-open rules and the item BORDER hover (nav-menu-item-border-featured-css.php) are unaffected by this setting -- both are already submenu-scoped or out of this pass's reach."
+		},
 		"itemBorderHoverTreatment": {
 			"type": "string",
 			"default": "swap",
@@ -1217,6 +1266,12 @@
 			"type": "number",
 			"default": 8,
 			"description": "How far each panel item travels as it arrives, in pixels. Negative means it falls from above."
+		},
+		"submenuItemStaggerScope": {
+			"type": "string",
+			"enum": [ "columns", "rows" ],
+			"default": "columns",
+			"description": "U-18 gap G-5. 'columns' (default) staggers the mega panel's direct column children only, as it always has. 'rows' staggers every link row/card INSIDE each `sgs/mega-group` column instead (the column itself stops animating so only one granularity moves), so a wide panel cascades link-by-link down each column. Dropdown (non-mega) panels are unaffected either way -- their items already are the direct children this control's 'columns' mode targets."
 		},
 		"submenuTopOffset": {
 			"type": "string",
@@ -1490,6 +1545,11 @@
 			"type": "object",
 			"default": {},
 			"description": "Backdrop blur of the page behind an open dropdown or mega panel, per device, a CSS length. Unset emits no blur."
+		},
+		"scrimFadeDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "I-M4 (U-18). Fade time of the dimmed layer behind an open dropdown/mega panel, in milliseconds. 0 (default) fades it WITH the panel (submenuAnimationDuration/submenuExitDuration), matching today's behaviour. Mirrors sgs/nav-drawer's own scrimFadeDuration (FR-36-6) for the sibling case. Reference: Indus's scrim is #141923 at 25% opacity, 2px blur, 300ms ease."
 		},
 		"itemBadgeColour": {
 			"type": "string",

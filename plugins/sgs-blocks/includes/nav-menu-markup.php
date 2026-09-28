@@ -32,6 +32,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/nav-drawer-menu-items.php';
+require_once __DIR__ . '/nav-drawer-menu-disabled-item.php';
 
 if ( ! function_exists( 'sgs_nav_shared_badge_html' ) ) {
 	/**
@@ -386,9 +387,16 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 		 *                      at once).
 		 * @param array  $options Row options from sgs_nav_drawer_menu_row_options()
 		 *                      (mega mode, label roll, ornament, expander, media).
+		 * @param array  $disabled_ids Wave B parity (2026-09-28): identifiers rendered as
+		 *                      non-interactive, non-focusable text instead of a link/sublink —
+		 *                      the block's own `disabledItemIds` attribute, same identifier
+		 *                      scheme as $featured_ids. Optional -- callers built before this
+		 *                      pass nothing and every item stays a live link. Markup built by
+		 *                      includes/nav-drawer-menu-disabled-item.php, mirroring the bar's
+		 *                      own disabled-item shape (sgs_nav_bar_menu_render_items()).
 		 * @return string HTML <li> elements.
 		 */
-		function sgs_nav_drawer_menu_render_items( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '', array $mega_drawer_fallback_ids = array(), bool $exclusive = true, array $options = array() ): string {
+		function sgs_nav_drawer_menu_render_items( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '', array $mega_drawer_fallback_ids = array(), bool $exclusive = true, array $options = array(), array $disabled_ids = array() ): string {
 			// Row options (ornament, roll, media, expander, mega mode) resolved
 			// once by the caller; a caller that passes none gets the defaults.
 			$options += sgs_nav_drawer_menu_row_options( array() );
@@ -396,15 +404,20 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 			$html = '';
 			foreach ( $items as $item ) {
 				$is_featured = in_array( $item['identifier'], $featured_ids, true );
-				$li_class    = 'sgs-nav-drawer-menu__item sgs-nav-drawer-menu__item--drawer' . ( $is_featured ? ' sgs-nav-drawer-menu__item--featured' : '' );
-				$link_html   = sprintf(
-					'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s">%4$s%5$s</a></li>',
-					esc_attr( $li_class ),
-					esc_url( $item['url'] ),
-					esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-					sgs_nav_drawer_menu_label_inner( $item, $options ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html'd label, trusted icon markup, wp_get_attachment_image().
-					sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-drawer-menu' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
-				);
+				$is_disabled = in_array( $item['identifier'], $disabled_ids, true );
+				$li_class    = 'sgs-nav-drawer-menu__item sgs-nav-drawer-menu__item--drawer' . ( $is_featured ? ' sgs-nav-drawer-menu__item--featured' : '' )
+					. ( $is_disabled ? ' sgs-nav-drawer-menu__item--disabled' : '' );
+				$leaf_badge  = sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-drawer-menu' );
+				$link_html   = $is_disabled
+					? sgs_nav_drawer_disabled_link_html( $li_class, sgs_nav_drawer_menu_label_inner( $item, $options ), $leaf_badge )
+					: sprintf(
+						'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s">%4$s%5$s</a></li>',
+						esc_attr( $li_class ),
+						esc_url( $item['url'] ),
+						esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+						sgs_nav_drawer_menu_label_inner( $item, $options ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html'd label, trusted icon markup, wp_get_attachment_image().
+						$leaf_badge // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
+					);
 
 				/*
 				 * Mega item (Spec 36 FR-36-6 "Mega items in the drawer"). An item
@@ -453,14 +466,17 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 							continue;
 						}
 						$child_featured = in_array( $child['identifier'], $featured_ids, true );
-						$child_html    .= sprintf(
-							'<li class="sgs-nav-drawer-menu__subitem%1$s"><a class="sgs-nav-drawer-menu__sublink" href="%2$s" data-sgs-nav-path="%3$s">%4$s%5$s</a></li>',
-							$child_featured ? ' sgs-nav-drawer-menu__subitem--featured' : '',
-							esc_url( $child['url'] ),
-							esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
-							$sub_marker, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
-							esc_html( $child['label'] )
-						);
+						$child_disabled = in_array( $child['identifier'], $disabled_ids, true );
+						$child_html    .= $child_disabled
+							? sgs_nav_drawer_disabled_sublink_html( (string) $child['label'], $child_featured ? ' sgs-nav-drawer-menu__subitem--featured' : '' )
+							: sprintf(
+								'<li class="sgs-nav-drawer-menu__subitem%1$s"><a class="sgs-nav-drawer-menu__sublink" href="%2$s" data-sgs-nav-path="%3$s">%4$s%5$s</a></li>',
+								$child_featured ? ' sgs-nav-drawer-menu__subitem--featured' : '',
+								esc_url( $child['url'] ),
+								esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
+								$sub_marker, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+								esc_html( $child['label'] )
+							);
 					}
 
 					// Every child had an empty label: degrade to a plain link.

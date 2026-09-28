@@ -616,11 +616,12 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 
 		/*
 		 * `itemPaddingShiftHover` (M-21) — an ADDITIVE hover-only inline-start
-		 * padding shift on top of the sublink's own resting '16px' literal above
-		 * (no attribute exposes that resting value on its own, so the literal is
-		 * read directly). Shared by the bar's dropdown AND the drawer's
-		 * accordion submenu link — this function is `$bem_root`-templated and
-		 * called by both blocks' render.php, so one emission covers both
+		 * padding shift on top of the sublink's own resting inline-start
+		 * padding: `submenuLinkPadding`'s left side where set (published as
+		 * `--sgs-nav-sublink-pad-start` by includes/nav-menu-item-padding-css.php),
+		 * else the '16px' literal above. Shared by the bar's dropdown AND the
+		 * drawer's accordion submenu link — this function is `$bem_root`-templated
+		 * and called by both blocks' render.php, so one emission covers both
 		 * targets in the design report's M-21 row (halcyon minimal, indus-foods
 		 * dropdown). The SAME attribute the `item` element (nav-menu-css.php)
 		 * reads — see that file's own note for why one attribute, not two,
@@ -629,7 +630,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 */
 		$sublink_padding_shift = sgs_css_single_length_value( $attributes['itemPaddingShiftHover'] ?? '' );
 		if ( '' !== $sublink_padding_shift ) {
-			$css .= sgs_hover_state_rules( $sublink_sel, 'padding-inline-start:calc(16px + ' . $sublink_padding_shift . ')', ':focus-visible' );
+			$css .= sgs_hover_state_rules( $sublink_sel, 'padding-inline-start:calc(var(--sgs-nav-sublink-pad-start, 16px) + ' . $sublink_padding_shift . ')', ':focus-visible' );
 		}
 
 		/*
