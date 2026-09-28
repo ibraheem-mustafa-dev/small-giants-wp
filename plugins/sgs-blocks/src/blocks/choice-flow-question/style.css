@@ -346,7 +346,7 @@
 	grid-template-columns: minmax( 0, 1fr ) auto;
 	align-items: baseline;
 	align-content: start;
-	column-gap: 12px;
+	column-gap: 10px;
 	row-gap: 5px;
 	padding: 16px 18px 18px;
 	border-radius: 0;
@@ -473,8 +473,10 @@
 }
 
 /* A text card (a step with no pictures): roomier padding, a smaller lift,
-   and its badge a soft tag beside the title ("Easiest"). */
+   its badge a soft tag beside the title ("Easiest"), and every card in a row
+   as tall as the tallest (picture cards keep their own heights). */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button {
+	height: 100%;
 	align-items: center;
 	row-gap: 6px;
 	padding: 20px 22px;

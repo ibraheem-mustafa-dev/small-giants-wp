@@ -712,26 +712,26 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Every pair is genuine, bought through the brands' authorised UK suppliers, and comes boxed with its own case and cloth. Prescription lenses can go in any of them.",
+                      "fontSize": {
+                        "desktop": 13
+                      },
+                      "fontSizeUnit": "px",
+                      "textColour": "text-label",
+                      "margin": {
+                        "desktop": {
+                          "top": "28px"
+                        }
+                      }
+                    }
                   }
                 ]
               }
             ]
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Every pair is genuine, bought through the brands' authorised UK suppliers, and comes boxed with its own case and cloth. Prescription lenses can go in any of them.",
-              "fontSize": {
-                "desktop": 13
-              },
-              "fontSizeUnit": "px",
-              "textColour": "text-label",
-              "margin": {
-                "desktop": {
-                  "top": "28px"
-                }
-              }
-            }
           }
         ]
       }

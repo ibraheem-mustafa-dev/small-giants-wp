@@ -70,6 +70,22 @@ function register_shop_filter_look_settings( \WP_Customize_Manager $wp_customize
 	);
 
 	$wp_customize->add_setting(
+		'sgs_shop_filter_sticky_gap',
+		array(
+			'default'           => '',
+			'sanitize_callback' => __NAMESPACE__ . '\sanitize_shop_filter_look_number',
+		)
+	);
+	$wp_customize->add_control(
+		'sgs_shop_filter_sticky_gap',
+		array(
+			'section' => 'sgs_shop_filters',
+			'type'    => 'number',
+			'label'   => __( 'Space between the header and the desktop filter column once it stays in place as you scroll (px, blank for 24)', 'sgs-theme' ),
+		)
+	);
+
+	$wp_customize->add_setting(
 		'sgs_shop_drawer_caps',
 		array(
 			'default'           => false,
@@ -128,7 +144,7 @@ function sanitize_shop_sort_arrow( $value ): string {
 }
 
 /**
- * The option text size, swatch growth and phone gap as custom properties.
+ * The option text size, swatch growth, sticky column gap and phone gap as custom properties.
  *
  * @return void
  */
@@ -144,6 +160,10 @@ function output_shop_filter_look_style(): void {
 	$swatch = absint( get_theme_mod( 'sgs_shop_filter_swatch_hover', '' ) );
 	if ( $swatch > 100 ) {
 		$decls[] = '--sgs-swatch-hover-scale:' . number_format( $swatch / 100, 2 );
+	}
+	$sticky_gap = get_theme_mod( 'sgs_shop_filter_sticky_gap', '' );
+	if ( '' !== trim( (string) $sticky_gap ) ) {
+		$decls[] = '--sgs-shop-filter-sticky-gap:' . min( 200, absint( $sticky_gap ) ) . 'px';
 	}
 	$css = $decls ? '#sgs-shop-filters{' . implode( ';', $decls ) . '}' : '';
 	$gap = get_theme_mod( 'sgs_shop_gap_phone', '' );

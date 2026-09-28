@@ -688,15 +688,26 @@
 	background-color: var(--wp--preset--color--surface-alt, #fff);
 }
 
-/* The opened table of boxes (a prescription): rows 8px apart, 46px boxes and
-   a 13.5px note under them, as the lens draft's table. */
+/* The opened table of boxes (a prescription): rows 8px apart, 46px boxes with
+   15px numbers 10px in, 11.5px column headings, and a 13.5px note 14px under
+   them, as the lens draft's table. */
 .sgs-choice-flow .sgs-form-step.sgs-choice-flow__step--inline:has(.sgs-form-field__row-heading) {
 	row-gap: 8px;
 }
 
-.sgs-choice-flow .sgs-choice-flow__step--inline:has(.sgs-form-field__row-heading) .sgs-form-field__input {
+.sgs-choice-flow .sgs-choice-flow__step--inline:has(.sgs-form-field__row-heading) .sgs-form-field .sgs-form-field__input {
 	min-height: 46px;
 	padding-block: 0;
+	padding-inline: 10px;
+	font-size: 15px;
+}
+
+.sgs-choice-flow .sgs-choice-flow__step--inline:has(.sgs-form-field__row-heading) .sgs-form-field__column-heading {
+	font-size: 11.5px;
+}
+
+.sgs-choice-flow .sgs-choice-flow__step--inline:has(.sgs-form-field__row-heading) > .sgs-choice-flow-result {
+	margin-top: 6px;
 }
 
 /* Boxes inside an opened panel take the panel's own raised colour, as the
@@ -709,9 +720,11 @@
 	font-size: 13.5px;
 }
 
-/* A table of boxes with row headings keeps the 32px heading gutter inside the panel. */
+/* A table of boxes with row headings keeps its heading gutter inside the panel:
+   the lens draft's 56px R / L column and 8px column gap. */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline:has(> .sgs-form-field:not(.sgs-form-field--file)):has(.sgs-form-field__row-heading) {
-	padding-left: calc(20px + 32px);
+	--sgs-form-row-heading-gutter: 64px;
+	padding-left: calc(20px + var(--sgs-form-row-heading-gutter));
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline:has(> .sgs-form-field) .sgs-choice-flow-result {

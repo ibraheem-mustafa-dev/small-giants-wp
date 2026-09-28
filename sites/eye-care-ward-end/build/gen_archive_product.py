@@ -161,11 +161,12 @@ tree = [
                     B("woocommerce/product-collection-no-results", {}, [
                         B("sgs/text", {"text": "Nothing matches all of that. Loosen a filter, or message me and I'll see what I can find.",
                                        "textAlign": "center"})]),
+                    # The note under the products, in the products column as the draft's (it starts at the grid's left).
+                    B("sgs/text", {"text": "Every pair is genuine, bought through the brands' authorised UK suppliers, and comes boxed with its own case and cloth. Prescription lenses can go in any of them.",
+                                   "fontSize": {"desktop": 13}, "fontSizeUnit": "px", "textColour": "text-label",
+                                   "margin": {"desktop": {"top": "28px"}}}),
                 ]),
             ]),
-            B("sgs/text", {"text": "Every pair is genuine, bought through the brands' authorised UK suppliers, and comes boxed with its own case and cloth. Prescription lenses can go in any of them.",
-                           "fontSize": {"desktop": 13}, "fontSizeUnit": "px", "textColour": "text-label",
-                           "margin": {"desktop": {"top": "28px"}}}),
         ]),
     ]),
     B("core/template-part", {"slug": "footer", "tagName": "footer"}),

@@ -104,7 +104,8 @@
 
 /* Table headings for small boxes (field_headings()): a column heading above
    the box ("SPH") and a row heading in the gutter to the left of the row ("R");
-   a form step holding row headings keeps that gutter. */
+   a form step holding row headings keeps that gutter (--sgs-form-row-heading-gutter,
+   32px unless a layout sets its own). */
 .sgs-form-field__column-heading {
 	display: block;
 	margin-bottom: 8px;
@@ -124,7 +125,7 @@
 	bottom: 0;
 	display: flex;
 	align-items: center;
-	width: 32px;
+	width: var(--sgs-form-row-heading-gutter, 32px);
 	height: 3rem;
 	font-size: 13px;
 	font-weight: 500;
@@ -132,13 +133,13 @@
 
 .sgs-form-step:has(.sgs-form-field__row-heading),
 .sgs-form__inner:has(> .sgs-form-field > .sgs-form-field__row-heading) {
-	padding-left: 32px;
+	padding-left: var(--sgs-form-row-heading-gutter, 32px);
 	row-gap: 8px;
 }
 
 /* The table's notes (help, a note block) run under the whole table, R/L gutter included. */
 .sgs-form-step:has(.sgs-form-field__row-heading) > :not(.sgs-form-field) {
-	margin-left: -32px;
+	margin-left: calc(-1 * var(--sgs-form-row-heading-gutter, 32px));
 }
 
 /* In a table of boxes the columns sit 8px apart and each box keeps its room
@@ -1071,8 +1072,10 @@ select.sgs-form-field__input {
 	margin-top: 0.25rem;
 }
 
+/* An empty error line takes no room at all, margin included. */
 .sgs-form-field__error:empty {
 	min-height: 0;
+	margin-top: 0;
 }
 
 /* aria-invalid visual indicator — red border on the field */

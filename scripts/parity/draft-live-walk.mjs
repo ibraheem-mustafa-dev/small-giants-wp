@@ -9,7 +9,7 @@
 //
 // Usage: node scripts/parity/draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375]
 //        [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"] [--inject-live-js "js"]
-//        [--headless] [--self draft|live] [--no-auto]
+//        [--headless] [--self draft|live] [--no-auto] [--dump-auto]
 // Runs headed unless --headless is passed. Needs NODE_EXTRA_CA_CERTS set to certifi's bundle for the Hostinger sites.
 // --inject-live-css / --inject-live-js are the negative controls: they plant a known difference on the live side
 // (the catch-rate benchmark, scripts/parity/benchmark.mjs, replays past gaps this way).
@@ -150,6 +150,10 @@ async function walkSide( browser, side, width ) {
 		await page.screenshot( { path: shot, fullPage: !! state.fullPage } );
 		if ( auto ) {
 			await markClipped( ctx, shot, auto, !! state.fullPage );
+			// --dump-auto: the words and controls the automatic check compared, for diagnosing a pairing.
+			if ( argv.includes( '--dump-auto' ) ) {
+				fs.writeFileSync( path.join( outDir, `auto-${ side }-${ width }-${ state.name }.json` ), JSON.stringify( auto ) );
+			}
 		}
 		for ( const p of scrollIns ) {
 			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );

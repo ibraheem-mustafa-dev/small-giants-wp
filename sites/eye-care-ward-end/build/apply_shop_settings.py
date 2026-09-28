@@ -37,6 +37,8 @@ SETTINGS = {
     'sgs_shop_sticky_trigger': '0',
     'sgs_shop_price_look': 'thin',
     'sgs_shop_gap_phone': '10',
+    # The draft pins its filter column 110px from the top: the 77px header plus 33px.
+    'sgs_shop_filter_sticky_gap': '33',
     'sgs_shop_drawer_caps': '1',
     'sgs_shop_filter_panel_style': 'plain',
     'sgs_shop_filters_width': '270',
