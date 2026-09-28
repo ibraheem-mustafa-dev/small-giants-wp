@@ -282,7 +282,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 74,
+        "paintDeclarations": 75,
         "replacedCoreSupports": []
       }
     },
@@ -501,7 +501,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 57,
+        "paintDeclarations": 58,
         "replacedCoreSupports": [
           "anchor",
           "color",
@@ -1088,7 +1088,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 1,
+        "paintDeclarations": 2,
         "replacedCoreSupports": []
       }
     },
@@ -1126,7 +1126,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 13,
+        "paintDeclarations": 12,
         "replacedCoreSupports": []
       }
     },
@@ -1210,12 +1210,12 @@
       "surfaces": {
         "styling": false,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": true,
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 10,
+        "paintDeclarations": 12,
         "replacedCoreSupports": []
       }
     },
@@ -1234,7 +1234,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 6,
+        "paintDeclarations": 7,
         "replacedCoreSupports": []
       }
     },

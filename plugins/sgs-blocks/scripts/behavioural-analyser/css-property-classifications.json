@@ -15124,6 +15124,15 @@
     },
     {
       "slug": "sgs/choice-flow-question",
+      "attr": "introWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "CONTENT",
+        "css_element": "intro"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
       "attr": "questionFontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -21583,6 +21592,14 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceRowSpaceAbove",
+      "fields": {
+        "css_property": "margin-top",
+        "css_element": "priceRow"
       }
     },
     {
