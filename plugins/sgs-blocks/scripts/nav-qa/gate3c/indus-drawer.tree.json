@@ -133,7 +133,8 @@
                 }
               },
               "colourTextHover": "#1E2A3C",
-              "colourBackgroundHover": "#D8CA50"
+              "colourBackgroundHover": "#D8CA50",
+              "opacityHover": 0.75
             }
           },
           {
@@ -146,7 +147,8 @@
               "backgroundShape": "circle",
               "backgroundPadding": "14px",
               "ariaLabel": "Email",
-              "linkUrl": "mailto:#"
+              "linkUrl": "mailto:#",
+              "opacityHover": 0.75
             }
           },
           {
@@ -159,7 +161,8 @@
               "backgroundShape": "circle",
               "backgroundPadding": "14px",
               "ariaLabel": "Call",
-              "linkUrl": "tel:#"
+              "linkUrl": "tel:#",
+              "opacityHover": 0.75
             }
           }
         ]

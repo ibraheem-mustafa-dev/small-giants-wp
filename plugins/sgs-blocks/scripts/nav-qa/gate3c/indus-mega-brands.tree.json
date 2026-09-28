@@ -33,7 +33,16 @@
           "left": "26px"
         }
       },
-      "shadow": "0 30px 80px -30px rgba(20,25,35,.28), 0 2px 8px -2px rgba(0,0,0,.08)"
+      "shadow": "0 30px 80px -30px rgba(20,25,35,.28), 0 2px 8px -2px rgba(0,0,0,.08)",
+      "brandsEyebrowFontFamily": "'Geist Mono', monospace",
+      "brandsEyebrowFontSize": 11,
+      "brandsEyebrowFontSizeUnit": "px",
+      "brandsEyebrowFontWeight": "400",
+      "brandsEyebrowLetterSpacing": 1.54,
+      "brandsEyebrowLetterSpacingUnit": "px",
+      "brandsEyebrowLineHeight": 16.5,
+      "brandsEyebrowLineHeightUnit": "px",
+      "brandsEyebrowColour": "#68727C"
     },
     "innerBlocks": [
       {
@@ -557,7 +566,8 @@
                   },
                   "customWidthUnit": {
                     "desktop": "px"
-                  }
+                  },
+                  "opacityHover": 0.75
                 }
               }
             ]

@@ -209,7 +209,8 @@
               "lineHeight": {
                 "desktop": "22.5px"
               },
-              "lineHeightUnit": "px"
+              "lineHeightUnit": "px",
+              "opacityHover": 0.75
             }
           }
         ]
