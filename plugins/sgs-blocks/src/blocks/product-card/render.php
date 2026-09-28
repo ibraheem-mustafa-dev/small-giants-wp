@@ -236,7 +236,16 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_ca
 // 'brand' typography targets the Frame Card brand overlay (image top-left).
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'brand', '.' . $sgs_card_uid . ' .sgs-product-card__brand' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'attributeTag', '.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag' );
-$sgs_card_typo_css .= sgs_product_card_no_photo_css( $attributes, $sgs_card_uid );
+// The no-photo label (includes/product-card-no-photo.php) and the space above the price row.
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_card_uid . ' .product-card__no-image-label' );
+$sgs_no_image_label_colour = sgs_colour_value( $attributes['noImageLabelColour'] ?? '' );
+if ( '' !== $sgs_no_image_label_colour ) {
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card__no-image-label{color:' . $sgs_no_image_label_colour . ';}';
+}
+$sgs_price_row_space = trim( (string) ( $attributes['priceRowSpaceAbove'] ?? '' ) );
+if ( preg_match( '/^\d+(\.\d+)?(px|em|rem)$/', $sgs_price_row_space ) ) {
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .price-row,.' . $sgs_card_uid . ' .sgs-product-card__price-row{margin-top:' . $sgs_price_row_space . ';}';
+}
 
 // ── Frame Card component colours: rating stars/text, brand overlay ───────
 // Both attrs resolve css:color via the default {prefix}Colour convention

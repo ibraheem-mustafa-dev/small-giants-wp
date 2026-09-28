@@ -6,8 +6,9 @@
  * placeholder, or the site's chosen placeholder image (WooCommerce > Settings >
  * Products > Placeholder image). The card then shows its no-photo box: the
  * `noImageLabel` text when set ("Photo to come"), styled by its own Typography
- * target and colour, or a picture icon when not. The cart, checkout and product
- * page keep showing WooCommerce's placeholder image for the same products.
+ * target and colour (emitted by render.php, where the framework DB's seeder reads
+ * them), or a picture icon when not. The cart, checkout and product page keep
+ * showing WooCommerce's placeholder image for the same products.
  *
  * @package SGS\Blocks
  */
@@ -51,28 +52,5 @@ if ( ! function_exists( 'sgs_product_card_no_photo_markup' ) ) {
 			? '<span class="product-card__no-image-label">' . esc_html( $label ) . '</span>'
 			: '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>';
 		return '<div class="product-card__no-image" aria-hidden="true">' . $inner . '</div>';
-	}
-}
-
-if ( ! function_exists( 'sgs_product_card_no_photo_css' ) ) {
-	/**
-	 * The label's scoped type and colour, and the space above the price row.
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $uid        The card's scoping class.
-	 * @return string
-	 */
-	function sgs_product_card_no_photo_css( array $attributes, string $uid ): string {
-		$css    = sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $uid . ' .product-card__no-image-label' );
-		$colour = sgs_colour_value( $attributes['noImageLabelColour'] ?? '' );
-		if ( '' !== $colour ) {
-			$css .= '.' . $uid . ' .product-card__no-image-label{color:' . $colour . ';}';
-		}
-		// A CSS length ("6px") added above the price row, over the body's own gap between rows.
-		$space = trim( (string) ( $attributes['priceRowSpaceAbove'] ?? '' ) );
-		if ( preg_match( '/^\d+(\.\d+)?(px|em|rem)$/', $space ) ) {
-			$css .= '.' . $uid . ' .price-row,.' . $uid . ' .sgs-product-card__price-row{margin-top:' . $space . ';}';
-		}
-		return $css;
 	}
 }
