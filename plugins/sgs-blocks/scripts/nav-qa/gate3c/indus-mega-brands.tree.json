@@ -10,6 +10,11 @@
       "colourScheme": "light",
       "brandsEyebrow": "Our Brands",
       "asideWidth": "300px",
+      "asideSeparator": {
+        "style": "line",
+        "width": "3px",
+        "colour": "#0A7EA8"
+      },
       "panelBg": "#FFFFFF",
       "borderColour": "rgba(30,42,60,0.1)",
       "borderStyle": "solid",

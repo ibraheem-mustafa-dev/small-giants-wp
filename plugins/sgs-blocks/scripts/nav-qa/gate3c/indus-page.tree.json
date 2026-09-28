@@ -18,9 +18,10 @@
         "name": "sgs/site-header-row",
         "attributes": {
           "rowSlot": "middle",
+          "layout": "flex",
           "justifyContent": "space-between",
           "alignItems": "center",
-          "maxWidth": {
+          "contentWidth": {
             "desktop": "1240px"
           },
           "padding": {
@@ -34,14 +35,62 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/responsive-logo",
+            "name": "sgs/container",
             "attributes": {
-              "width": 144,
-              "linkToHome": true,
-              "logoId": 4509,
-              "logoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-foods-logo-qa-copy.png",
-              "alt": "Indus Foods"
-            }
+              "tagName": "div",
+              "layout": "flex",
+              "alignItems": "center",
+              "gap": {
+                "desktop": "5px"
+              },
+              "margin": {
+                "desktop": {
+                  "left": "-5px"
+                }
+              },
+              "padding": {
+                "desktop": {
+                  "top": "0px",
+                  "right": "0px",
+                  "bottom": "0px",
+                  "left": "0px"
+                }
+              },
+              "backgroundColour": "transparent",
+              "sgsBlockLink": "/",
+              "sgsBlockLinkLabel": "Indus Foods home",
+              "sgsHoverOpacity": 0.75
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "custom",
+                  "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 34 34\" aria-hidden=\"true\"><rect x=\"5\" y=\"5\" width=\"24\" height=\"24\" rx=\"7\" fill=\"#D8CA50\" transform=\"rotate(45 17 17)\"/></svg>",
+                  "iconSize": 34
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Indus Foods",
+                  "textColour": "#1E2A3C",
+                  "fontSize": {
+                    "desktop": "19px"
+                  },
+                  "fontWeight": "700",
+                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                  "letterSpacing": {
+                    "desktop": -0.19
+                  },
+                  "letterSpacingUnit": "px",
+                  "lineHeight": {
+                    "desktop": 28.5
+                  },
+                  "lineHeightUnit": "px"
+                }
+              }
+            ]
           },
           {
             "name": "sgs/nav-bar-menu",
@@ -122,7 +171,15 @@
                 "desktop": "15px"
               },
               "fontWeight": "700",
-              "boxShadow": "0 4px 14px -6px rgba(10,126,168,.5)"
+              "fontFamily": "'Plus Jakarta Sans', sans-serif",
+              "boxShadow": "0 4px 14px -6px rgba(10,126,168,.5)",
+              "shadowLiftOnHover": true,
+              "boxShadowHover": "0 9px 22px -6px rgba(10,126,168,.55)",
+              "transitionDuration": 200,
+              "lineHeight": {
+                "desktop": "22.5px"
+              },
+              "lineHeightUnit": "px"
             }
           }
         ]

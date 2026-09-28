@@ -19,6 +19,9 @@
       },
       "borderRadius": "12px",
       "asideWidth": "300px",
+      "asideSeparator": {
+        "style": "none"
+      },
       "groupGap": {
         "desktop": "26px"
       },

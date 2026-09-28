@@ -18,9 +18,10 @@
         "name": "sgs/site-header-row",
         "attributes": {
           "rowSlot": "middle",
+          "layout": "flex",
           "justifyContent": "space-between",
           "alignItems": "center",
-          "maxWidth": {
+          "contentWidth": {
             "desktop": "1240px"
           },
           "padding": {
