@@ -6,3 +6,12 @@
 	gap: var(--wp--preset--spacing--10, 8px);
 	width: 100%;
 }
+
+/* The banner's text alignment places each message's row: text-align alone cannot move a flex item. */
+.has-text-align-center .sgs-notice-message {
+	justify-content: center;
+}
+
+.has-text-align-right .sgs-notice-message {
+	justify-content: end;
+}
