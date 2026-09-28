@@ -136,6 +136,25 @@
 	row-gap: 8px;
 }
 
+/* In a table of boxes the columns sit 8px apart and each box keeps its room
+   for the number: tighter side padding and no spinner arrows. */
+.sgs-form-step:has(.sgs-form-field__row-heading),
+.sgs-form__inner:has(> .sgs-form-field > .sgs-form-field__row-heading) {
+	column-gap: 8px;
+}
+
+.sgs-form-step:has(.sgs-form-field__row-heading) .sgs-form-field--number .sgs-form-field__input,
+.sgs-form__inner:has(> .sgs-form-field > .sgs-form-field__row-heading) .sgs-form-field--number .sgs-form-field__input {
+	padding-inline: 12px;
+	appearance: textfield;
+}
+
+.sgs-form-step:has(.sgs-form-field__row-heading) .sgs-form-field--number .sgs-form-field__input::-webkit-inner-spin-button,
+.sgs-form-step:has(.sgs-form-field__row-heading) .sgs-form-field--number .sgs-form-field__input::-webkit-outer-spin-button {
+	margin: 0;
+	appearance: none;
+}
+
 /* Steps span full width inside the form grid */
 .sgs-form-step {
 	grid-column: 1 / -1;
