@@ -699,6 +699,12 @@
 	padding-block: 0;
 }
 
+/* Boxes inside an opened panel take the panel's own raised colour, as the
+   lens draft's white boxes on a white panel. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__step--inline .sgs-form-field__input {
+	background-color: var(--wp--preset--color--surface-alt, #fff);
+}
+
 .sgs-choice-flow .sgs-choice-flow__step--inline:has(.sgs-form-field__row-heading) .sgs-choice-flow-result__body {
 	font-size: 13.5px;
 }
