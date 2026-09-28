@@ -795,7 +795,7 @@ $css .= sgs_header_float_css( $root_sel, $attributes, $sh_transparent_effective,
 // ── G-1: viewport-fluid scale — LAST, so its inset re-declarations win over
 // the pill geometry just emitted (same selector, same specificity; source
 // order decides). Emits nothing unless `fluidScale.enabled` is true. ──
-$css .= sgs_header_fluid_scale_css( $root_sel, $attributes, $sh_float_any_tier );
+$css .= sgs_header_fluid_scale_css( $root_sel, $attributes );
 
 if ( '' !== $css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied; $css from pre-sanitised values only (wp_style_engine_get_styles()).

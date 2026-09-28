@@ -49,7 +49,13 @@ export function addHoverAttributes( settings ) {
 			// Named scale preset — from the block's own hoverDefaults.
 			sgsHoverScalePreset:  { type: 'string',  default: defaults.scalePreset },
 			// Shadow elevation preset — from the block's own hoverDefaults.
+			// Also accepts the literal value 'custom', which reads the raw
+			// box-shadow string below instead of a theme preset slug.
 			sgsHoverShadow:       { type: 'string',  default: defaults.shadow },
+			// Raw CSS box-shadow string, read only when sgsHoverShadow is
+			// 'custom'. Sanitised server-side with sgs_shadow_value() — the
+			// SAME sanitiser sgs/button's boxShadowHover uses.
+			sgsHoverShadowCustom: { type: 'string',  default: '' },
 			// Duration slug — maps to var(--wp--custom--duration--{slug}).
 			sgsHoverDuration:     { type: 'string',  default: 'medium' },
 			// Exact duration in ms (0 = use the duration token above).
@@ -82,6 +88,13 @@ export function addHoverAttributes( settings ) {
 			// off-sentinel convention every other numeric hover control here
 			// already uses (sgsHoverScale, sgsHoverZoom, sgsHoverLift).
 			sgsHoverOpacity:      { type: 'number',  default: 0 },
+			// On hover/focus-within, the block's own inline-start padding
+			// GROWS by this length on top of whatever it already has at rest
+			// — same additive shape as the nav blocks' itemPaddingShiftHover
+			// (Spec 36 "Item hover paint"), generalised to any block that
+			// opts into 'hover'. Empty = off. Validated server-side through
+			// sgs_css_single_length_value() (includes/hover-effects/vars.php).
+			sgsHoverIndent:       { type: 'string',  default: '' },
 		}
 		: {};
 

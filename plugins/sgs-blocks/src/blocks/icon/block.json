@@ -5,7 +5,7 @@
 	"version": "0.3.0",
 	"title": "SGS Icon",
 	"category": "sgs-content",
-	"description": "Icon from multiple sources — Lucide SVG, WordPress icons, Dashicons, or emoji — with size, colour, optional background shape, and optional link.",
+	"description": "Icon from multiple sources — Lucide SVG, WordPress icons, Dashicons, emoji, or a pasted custom SVG — with size, colour, optional background shape, and optional link.",
 	"keywords": [
 		"icon",
 		"svg",
@@ -106,12 +106,18 @@
 				"lucide",
 				"wp-icon",
 				"dashicon",
-				"emoji"
+				"emoji",
+				"custom"
 			]
 		},
 		"iconName": {
 			"type": "string",
 			"default": "star"
+		},
+		"iconSvg": {
+			"type": "string",
+			"default": "",
+			"description": "Client-pasted inline SVG markup when iconSource is 'custom'. Sanitised client-side (sanitiseSvg()) and re-sanitised server-side (wp_kses() + sgs_svg_kses_allowed_tags(), render.php) before output — same shape the IconPicker stores for any custom-SVG source across the framework (Spec: IconPicker.js/icon-data.js, 2026-09-28)."
 		},
 		"emojiChar": {
 			"type": "string",

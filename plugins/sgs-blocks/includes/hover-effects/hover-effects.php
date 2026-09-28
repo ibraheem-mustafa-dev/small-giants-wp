@@ -21,6 +21,9 @@
  * - sgsHoverBorderAccent (boolean)
  * - sgsHoverTilt3D (boolean)
  * - sgsFocusRing (boolean) — emits class sgs-has-focus-ring
+ * - sgsHoverIndent (string, CSS length) — additive hover/focus-within
+ *   inline-start padding growth on top of the block's own resting `padding`
+ *   left side where present (Spec 36 "Item hover paint", generalised)
  * - sgsBlockLink + sgsBlockLinkTarget + sgsBlockLinkLabel (injects an EMPTY
  *   overlay <a class="sgs-block-link-overlay"> as the block root's LAST
  *   CHILD — a stretched-link SIBLING of the content, never a wrapper, so a
@@ -104,9 +107,39 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$click_ripple_duration = absint( $attrs['sgsClickRippleDuration'] ?? 600 );
 	$hover_opacity         = min( 1.0, max( 0.0, (float) ( $attrs['sgsHoverOpacity'] ?? 0 ) ) );
 
+	require_once __DIR__ . '/../render-helpers.php';
+	require_once __DIR__ . '/../helpers-scoped-instance-vars.php';
+
+	// Custom hover shadow — a raw box-shadow string, read only when
+	// $hover_shadow is the literal 'custom'. sgs_shadow_value() is the SAME
+	// sanitiser sgs/button's boxShadowHover uses (helpers-tokens.php): passes
+	// a raw CSS shadow through (breakout-checked), or resolves a token slug.
+	$hover_shadow_custom = 'custom' === $hover_shadow
+		? sgs_shadow_value( (string) ( $attrs['sgsHoverShadowCustom'] ?? '' ) )
+		: '';
+
+	// Padding indent — additive hover-only inline-start growth (generalised
+	// nav "Item hover paint" shape, Spec 36). The RESTING base is read from
+	// this block's own `padding` tier-object attribute where present — the
+	// SAME canonical box-object shape every SGS block with padding controls
+	// uses ({desktop,tablet,mobile}.{top,right,bottom,left}) — so the growth
+	// is genuinely additive on any block using that attribute name, and
+	// simply grows from zero (documented, non-breaking) on one that doesn't.
+	$hover_indent      = sgs_css_single_length_value( $attrs['sgsHoverIndent'] ?? '' );
+	$hover_indent_base = '';
+	if ( '' !== $hover_indent ) {
+		$padding_left_raw  = $attrs['padding']['desktop']['left'] ?? '';
+		$hover_indent_base = sgs_css_single_length_value( is_string( $padding_left_raw ) ? $padding_left_raw : '' );
+	}
+
+	// 'custom' with no surviving sanitised value is inert — never counts as
+	// an active shadow (mirrors an out-of-list preset slug already being
+	// silently inert in build_hover_vars()/build_hover_classes()).
+	$hover_shadow_active = 'custom' === $hover_shadow ? ( '' !== $hover_shadow_custom ) : (bool) $hover_shadow;
+
 	$has_ripple      = 'ripple' === $click_effect;
 	$has_scale_hover = $hover_scale || $hover_scale_preset;
-	$has_hover       = $has_scale_hover || $hover_shadow || $hover_lift || $hover_opacity > 0;
+	$has_hover       = $has_scale_hover || $hover_shadow_active || $hover_lift || $hover_opacity > 0;
 
 	// Bail early if nothing is active (respects per-block defaults above).
 	if (
@@ -118,13 +151,11 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		! $hover_tilt_3d &&
 		! $focus_ring &&
 		! $block_link &&
-		! $has_ripple
+		! $has_ripple &&
+		'' === $hover_indent
 	) {
 		return $block_content;
 	}
-
-	require_once __DIR__ . '/../render-helpers.php';
-	require_once __DIR__ . '/../helpers-scoped-instance-vars.php';
 
 	// --- Locate the block's actual ROOT element. ---
 	// The no-inline styling contract (Spec 32, D293-D296) has every composite
@@ -168,7 +199,10 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$click_ripple_colour,
 		$click_ripple_duration,
 		$hover_opacity,
-		$hover_easing_custom
+		$hover_easing_custom,
+		$hover_indent,
+		$hover_indent_base,
+		$hover_shadow_custom
 	);
 
 	// --- Resolve the scoping class for the scoped <style> rule below (Spec 32
@@ -196,7 +230,9 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$focus_ring,
 		$block_link,
 		$has_ripple,
-		$hover_opacity
+		$hover_opacity,
+		$hover_indent,
+		$hover_shadow_custom
 	);
 
 	// --- Inject classes into the ROOT tag (never the leading <style>/<script>). ---

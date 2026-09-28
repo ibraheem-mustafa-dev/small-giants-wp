@@ -93,6 +93,8 @@ function currentIconName( attrs ) {
 			return attrs.dashiconName;
 		case 'wp-icon':
 			return attrs.wpIconName;
+		case 'custom':
+			return attrs.iconSvg;
 		case 'lucide':
 		default:
 			return attrs.iconName;
@@ -102,6 +104,7 @@ function currentIconName( attrs ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const { padding, margin,
 		iconSource,
+		iconSvg,
 		iconSize,
 		iconColour,
 		backgroundColour,
@@ -185,7 +188,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( { className, style: previewStyle } );
 
 	// Map the IconPicker's { source, name } back onto the block's per-source attrs.
-	const handleIconChange = ( { source, name } ) => {
+	const handleIconChange = ( { source, name, svg } ) => {
 		const next = { iconSource: source };
 		if ( 'emoji' === source ) {
 			next.emojiChar = name;
@@ -193,6 +196,8 @@ export default function Edit( { attributes, setAttributes } ) {
 			next.dashiconName = name;
 		} else if ( 'wp-icon' === source ) {
 			next.wpIconName = name;
+		} else if ( 'custom' === source ) {
+			next.iconSvg = svg;
 		} else {
 			next.iconName = name;
 		}
@@ -302,6 +307,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ {
 							source: iconSource,
 							name: currentIconName( attributes ),
+							svg: 'custom' === iconSource ? iconSvg : undefined,
 						} }
 						onChange={ handleIconChange }
 					/>
@@ -467,6 +473,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<IconPreview
 						source={ iconSource }
 						name={ currentIconName( attributes ) }
+						svg={ iconSvg }
 						size={ iconSize }
 						gradient={ iconColourGradient }
 					/>

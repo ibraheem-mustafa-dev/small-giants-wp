@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9063,
+    "row_count": 9065,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4107,6 +4107,7 @@
     "sgs/icon::iconName": "icon-lucide",
     "sgs/icon::iconSize": "select-from-enum",
     "sgs/icon::iconSource": "identity",
+    "sgs/icon::iconSvg": "svg",
     "sgs/icon::linkRel": "technical",
     "sgs/icon::linkTarget": "link-href",
     "sgs/icon::linkUrl": "link-href",
@@ -6948,6 +6949,7 @@
     "sgs/responsive-logo::maxHeightUnit": "layout",
     "sgs/responsive-logo::maxWidth": "layout",
     "sgs/responsive-logo::maxWidthUnit": "layout",
+    "sgs/responsive-logo::opacityHover": "visual",
     "sgs/responsive-logo::padding": "layout",
     "sgs/responsive-logo::shrinkWidth": "layout",
     "sgs/responsive-logo::shrinkWidthUnit": "layout",

@@ -32,6 +32,14 @@ defined( 'ABSPATH' ) || exit;
  * @param int    $click_ripple_duration Ripple duration in ms.
  * @param float  $hover_opacity         Fade-to opacity on hover (0-1; 0 = off).
  * @param string $hover_easing_custom   Hand-typed curve, read only when $hover_easing_slug is 'custom'.
+ * @param string $hover_indent          Additive hover-only inline-start padding growth (a CSS length), or '' = off.
+ * @param string $hover_indent_base     The block's own RESTING inline-start padding (read from its `padding`
+ *                                      tier-object attribute where present — see resolve in hover-effects.php),
+ *                                      or '' when unknown. The consuming rule's calc() (extensions.css) falls
+ *                                      back to 0 when this is empty, so the shift is still additive whenever the
+ *                                      base is knowable, and simply grows from zero otherwise (never breaks).
+ * @param string $hover_shadow_custom   Pre-sanitised (sgs_shadow_value()) raw box-shadow string, read only when
+ *                                      $hover_shadow is the literal 'custom'; '' otherwise.
  * @return string[] CSS custom-property declarations, e.g. [ '--sgs-hover-scale:1.05', … ].
  */
 function build_hover_vars(
@@ -49,7 +57,10 @@ function build_hover_vars(
 	string $click_ripple_colour,
 	int $click_ripple_duration,
 	float $hover_opacity = 0.0,
-	string $hover_easing_custom = ''
+	string $hover_easing_custom = '',
+	string $hover_indent = '',
+	string $hover_indent_base = '',
+	string $hover_shadow_custom = ''
 ): array {
 	$css_vars = array();
 
@@ -64,7 +75,13 @@ function build_hover_vars(
 	}
 
 	if ( $hover_shadow ) {
-		if ( is_hover_shadow_slug( $hover_shadow ) ) {
+		if ( 'custom' === $hover_shadow ) {
+			// $hover_shadow_custom already carries the sgs_shadow_value()
+			// sanitised result (breakout-checked) — emitted verbatim.
+			if ( '' !== $hover_shadow_custom ) {
+				$css_vars[] = '--sgs-hover-shadow:' . $hover_shadow_custom;
+			}
+		} elseif ( is_hover_shadow_slug( $hover_shadow ) ) {
 			$css_vars[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
 		}
 	}
@@ -115,6 +132,19 @@ function build_hover_vars(
 	// legal but no-op value (fully opaque = no visible change on hover).
 	if ( $hover_opacity > 0 ) {
 		$css_vars[] = '--sgs-hover-opacity:' . number_format( min( 1.0, $hover_opacity ), 2 );
+	}
+
+	// Padding indent — additive hover-only inline-start growth, mirroring the
+	// nav blocks' itemPaddingShiftHover shape (Spec 36 "Item hover paint")
+	// generalised to any block. Both values are custom-property VALUES only
+	// — the actual `:hover`/`:focus-within` rule consuming them lives in
+	// extensions.css's `.sgs-has-hover-indent` selector, same split as every
+	// other hover property here.
+	if ( '' !== $hover_indent ) {
+		$css_vars[] = '--sgs-hover-indent:' . $hover_indent;
+		if ( '' !== $hover_indent_base ) {
+			$css_vars[] = '--sgs-hover-indent-base:' . $hover_indent_base;
+		}
 	}
 
 	if ( $has_ripple ) {

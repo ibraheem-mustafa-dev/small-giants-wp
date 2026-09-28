@@ -93,7 +93,7 @@ if ( ! function_exists( 'sgs_icon_css_length' ) ) {
 }
 
 // ── Source resolution ─────────────────────────────────────────────────────────
-$allowed_sources = array( 'lucide', 'wp-icon', 'dashicon', 'emoji' );
+$allowed_sources = array( 'lucide', 'wp-icon', 'dashicon', 'emoji', 'custom' );
 $icon_source     = $attributes['iconSource'] ?? 'lucide';
 if ( ! in_array( $icon_source, $allowed_sources, true ) ) {
 	$icon_source = 'lucide';
@@ -109,6 +109,13 @@ $emoji_char = $attributes['emojiChar'] ?? '';
 $emoji_char = trim( $emoji_char );
 // Strip any HTML tags that may have been injected.
 $emoji_char = wp_strip_all_tags( $emoji_char );
+// Custom SVG: client-pasted markup, re-sanitised server-side (wp_kses() +
+// sgs_svg_kses_allowed_tags(), the same allowlist every other inline-SVG
+// surface uses) — the IconPicker's client-side sanitiseSvg() is a second
+// enforcement layer, never the only one, since a value can reach here by
+// direct REST/DB write.
+$icon_svg_raw = (string) ( $attributes['iconSvg'] ?? '' );
+$icon_svg     = '' !== trim( $icon_svg_raw ) ? wp_kses( $icon_svg_raw, sgs_svg_kses_allowed_tags() ) : '';
 
 $icon_size          = absint( $attributes['iconSize'] ?? 32 );
 $icon_colour        = $attributes['iconColour'] ?? 'primary';
@@ -401,12 +408,12 @@ $wrapper_attributes = get_block_wrapper_attributes( $extra_wrapper_attrs );
 switch ( $icon_source ) {
 
 	case 'wp-icon':
-		$icon_svg = sgs_get_wp_icon( $wp_icon_name );
-		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_grad['defs'] );
-		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_grad_hover['defs'] );
-		$output   = sprintf(
+		$icon_svg_output = sgs_get_wp_icon( $wp_icon_name );
+		$icon_svg_output = sgs_svg_inject_defs( $icon_svg_output, $sgs_icon_grad['defs'] );
+		$icon_svg_output = sgs_svg_inject_defs( $icon_svg_output, $sgs_icon_grad_hover['defs'] );
+		$output          = sprintf(
 			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
-			$icon_svg
+			$icon_svg_output
 		);
 		break;
 
@@ -433,14 +440,29 @@ switch ( $icon_source ) {
 		);
 		break;
 
+	case 'custom':
+		// Already sanitised above (wp_kses + sgs_svg_kses_allowed_tags()).
+		// Shares the same `.sgs-icon__svg svg` selector as lucide/wp-icon
+		// (step 3/4's gradient-selector logic already falls through to it
+		// for every source that isn't dashicon/emoji), so colour, gradient
+		// and --sgs-icon-size sizing all behave identically to the other
+		// SVG-based sources with zero extra wiring.
+		$icon_svg_output = sgs_svg_inject_defs( $icon_svg, $sgs_icon_grad['defs'] );
+		$icon_svg_output = sgs_svg_inject_defs( $icon_svg_output, $sgs_icon_grad_hover['defs'] );
+		$output          = sprintf(
+			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
+			$icon_svg_output
+		);
+		break;
+
 	case 'lucide':
 	default:
-		$icon_svg = sgs_get_lucide_icon( $icon_name );
-		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_grad['defs'] );
-		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_grad_hover['defs'] );
-		$output   = sprintf(
+		$icon_svg_output = sgs_get_lucide_icon( $icon_name );
+		$icon_svg_output = sgs_svg_inject_defs( $icon_svg_output, $sgs_icon_grad['defs'] );
+		$icon_svg_output = sgs_svg_inject_defs( $icon_svg_output, $sgs_icon_grad_hover['defs'] );
+		$output          = sprintf(
 			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
-			$icon_svg
+			$icon_svg_output
 		);
 		break;
 }
@@ -457,6 +479,10 @@ if ( '' !== $link_url ) {
 		$accessible_label = $dashicon_name;
 	} elseif ( 'wp-icon' === $icon_source && '' !== $wp_icon_name ) {
 		$accessible_label = $wp_icon_name;
+	} elseif ( 'custom' === $icon_source ) {
+		// A custom SVG has no name of its own — fall back to a generic label
+		// rather than the unrelated default iconName ('star').
+		$accessible_label = 'icon';
 	} else {
 		$accessible_label = $icon_name;
 	}

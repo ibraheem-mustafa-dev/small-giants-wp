@@ -61,6 +61,8 @@ defined( 'ABSPATH' ) || exit;
  * @param string $block_link       Block-link URL, or ''.
  * @param bool   $has_ripple       Whether the click-ripple effect is active.
  * @param float  $hover_opacity    Fade-to opacity on hover (0-1; 0 = off).
+ * @param string $hover_indent     Additive hover-only inline-start padding growth, or '' = off.
+ * @param string $hover_shadow_custom Pre-sanitised raw box-shadow string, read only when $hover_shadow is 'custom'.
  * @return string[] Extra classes to add to the block's root element.
  */
 function build_hover_classes(
@@ -78,7 +80,9 @@ function build_hover_classes(
 	bool $focus_ring,
 	string $block_link,
 	bool $has_ripple,
-	float $hover_opacity = 0.0
+	float $hover_opacity = 0.0,
+	string $hover_indent = '',
+	string $hover_shadow_custom = ''
 ): array {
 	$add_classes = array();
 
@@ -88,9 +92,13 @@ function build_hover_classes(
 	if ( $has_hover ) {
 		$add_classes[] = 'sgs-has-hover';
 	}
-	if ( $hover_shadow && is_hover_shadow_slug( $hover_shadow ) ) {
-		// Mirrors the slug check on the --sgs-hover-shadow var above: a value
-		// that is not a slug emits NO var, so it must emit no class either.
+	$hover_shadow_active = 'custom' === $hover_shadow
+		? ( '' !== $hover_shadow_custom )
+		: ( $hover_shadow && is_hover_shadow_slug( $hover_shadow ) );
+	if ( $hover_shadow_active ) {
+		// Mirrors the shadow branch's guard in build_hover_vars() exactly: a
+		// value that emits NO var (out-of-list slug, or 'custom' with nothing
+		// surviving sanitising) must emit no class either.
 		$add_classes[] = 'sgs-has-hover-shadow';
 	}
 	// ⛔ THE ALLOW-LIST MUST BE MIRRORED HERE — it was not, and the comment on the
@@ -140,6 +148,10 @@ function build_hover_classes(
 	if ( $hover_opacity > 0 ) {
 		// Mirrors the --sgs-hover-opacity var guard in build_hover_vars().
 		$add_classes[] = 'sgs-has-hover-opacity';
+	}
+	if ( '' !== $hover_indent ) {
+		// Mirrors the --sgs-hover-indent var guard in build_hover_vars().
+		$add_classes[] = 'sgs-has-hover-indent';
 	}
 
 	return $add_classes;

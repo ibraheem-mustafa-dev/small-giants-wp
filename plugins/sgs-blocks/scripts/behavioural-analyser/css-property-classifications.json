@@ -9671,14 +9671,6 @@
     },
     {
       "slug": "sgs/responsive-logo",
-      "attr": "hoverOpacity",
-      "fields": {
-        "css_property": "opacity",
-        "css_element": "link"
-      }
-    },
-    {
-      "slug": "sgs/responsive-logo",
       "attr": "logoDecorative",
       "fields": {
         "css_element": "image"
@@ -9707,6 +9699,14 @@
       "attr": "logoSwitchCustomPx",
       "fields": {
         "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "opacityHover",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "link"
       }
     },
     {
@@ -19232,7 +19232,6 @@
       "slug": "sgs/nav-drawer",
       "attr": "chromeLogoShow",
       "fields": {
-        "css_property": "display",
         "css_element": "chromeLogo"
       }
     },
@@ -19315,7 +19314,6 @@
       "slug": "sgs/nav-drawer",
       "attr": "chromeSlotShow",
       "fields": {
-        "css_property": "display",
         "css_element": "chromeSlot"
       }
     },

@@ -53,6 +53,16 @@
 }
 
 /*
+ * Padding indent — own transition, own gated class (sgs-has-hover-indent is
+ * only ever emitted alongside sgsHoverIndent being set, mirroring every
+ * other per-property class above), since a block without this control set
+ * never pays for a padding-inline-start transition it did not ask for.
+ */
+.sgs-has-hover-indent {
+	transition: padding-inline-start var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease);
+}
+
+/*
  * hover-effects.php emits --sgs-hover-scale/shadow as CSS custom properties
  * inside a scoped `<style>` rule keyed to `.sgs-hover-{uid}` (Spec 32
  * no-inline contract, FR-32-11) — it NEVER writes a `style=""` attribute.
@@ -102,8 +112,37 @@
 	opacity: var(--sgs-hover-opacity, 1);
 }
 
+/*
+ * Padding indent — additive hover/focus-within inline-start growth
+ * (build_hover_vars() → --sgs-hover-indent[-base]). `:focus-within` is
+ * KEYBOARD-reachable and stays OUTSIDE the touch guard (a keyboard user on a
+ * touchscreen laptop still needs it); `:hover` gets BOTH layers of the
+ * touch-safe guard (helpers-hover-state.php's model, hand-mirrored here
+ * since this file is a static plugin asset the hover-guard build transform
+ * never reaches — it only rewrites `build/blocks/*\/style.css`):
+ *   1. `@media (hover: hover) and (pointer: fine)` — the device's primary
+ *      pointer, needs no JavaScript.
+ *   2. `:where(:root:not(.sgs-touch-input))` — the reactive touch-input
+ *      class (src/shared/effects/motion-utils.js) for hybrid devices layer 1
+ *      alone can't catch. Zero-specificity `:where()` so `:hover` alone still
+ *      out-ranks the resting rule, same as every PHP-guarded rule.
+ */
+@media (hover: hover) and (pointer: fine) {
+	:where(:root:not(.sgs-touch-input)) .sgs-has-hover-indent:hover {
+		padding-inline-start: calc(var(--sgs-hover-indent-base, 0px) + var(--sgs-hover-indent, 0px));
+	}
+}
+
+.sgs-has-hover-indent:focus-within {
+	padding-inline-start: calc(var(--sgs-hover-indent-base, 0px) + var(--sgs-hover-indent, 0px));
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.sgs-has-hover {
+		transition: none;
+	}
+
+	.sgs-has-hover-indent {
 		transition: none;
 	}
 

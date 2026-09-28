@@ -15,6 +15,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
+import { SgsLengthControl } from '../../../../components';
 import { SCALE_PRESET_OPTIONS, DURATION_OPTIONS, EASING_OPTIONS } from '../constants';
 // Reuses the nav motion controls' own curve validator (Wave 3C U-5) — the
 // same function includes/helpers-motion-easing.php::sgs_motion_valid_cubic_bezier()
@@ -33,6 +34,7 @@ import { isValidCubicBezier } from '../../../../components/MotionEasingControl';
  * @param {number}   props.sgsHoverZoom
  * @param {number}   props.sgsHoverZoomDuration
  * @param {string}   props.sgsHoverShadow
+ * @param {string}   props.sgsHoverShadowCustom
  * @param {boolean}  props.sgsHoverImageZoom
  * @param {boolean}  props.sgsHoverGrayscale
  * @param {boolean}  props.sgsHoverBorderAccent
@@ -43,6 +45,7 @@ import { isValidCubicBezier } from '../../../../components/MotionEasingControl';
  * @param {number}   props.sgsStaggerDelay
  * @param {boolean}  props.sgsFocusRing
  * @param {number}   props.sgsHoverOpacity
+ * @param {string}   props.sgsHoverIndent
  * @param {Function} props.setAttributes
  */
 export default function HoverPanel( {
@@ -56,6 +59,7 @@ export default function HoverPanel( {
 	sgsHoverZoom,
 	sgsHoverZoomDuration,
 	sgsHoverShadow,
+	sgsHoverShadowCustom,
 	sgsHoverImageZoom,
 	sgsHoverGrayscale,
 	sgsHoverBorderAccent,
@@ -66,12 +70,20 @@ export default function HoverPanel( {
 	sgsStaggerDelay,
 	sgsFocusRing,
 	sgsHoverOpacity,
+	sgsHoverIndent,
 	setAttributes,
 } ) {
 	const customEasingInvalid =
 		'custom' === sgsHoverEasing &&
 		'' !== ( sgsHoverEasingCustom || '' ) &&
 		! isValidCubicBezier( sgsHoverEasingCustom );
+	// A local addition to the shared preset list (never edit
+	// useShadowPresetOptions() itself — other pickers reuse that hook and
+	// don't all support a custom value the same way).
+	const shadowOptionsWithCustom = [
+		...shadowOptions,
+		{ label: __( 'Custom…', 'sgs-blocks' ), value: 'custom' },
+	];
 	return (
 		<PanelBody
 			title={ __( 'Hover Effects', 'sgs-blocks' ) }
@@ -115,14 +127,30 @@ export default function HoverPanel( {
 					{ __( 'This block’s Shadow panel already has a hover shadow setting — see “Hover shadow” there.', 'sgs-blocks' ) }
 				</p>
 			) : (
-				<SelectControl
-					label={ __( 'Hover shadow', 'sgs-blocks' ) }
-					value={ sgsHoverShadow }
-					options={ shadowOptions }
-					onChange={ ( val ) => setAttributes( { sgsHoverShadow: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
+				<>
+					<SelectControl
+						label={ __( 'Hover shadow', 'sgs-blocks' ) }
+						value={ sgsHoverShadow }
+						options={ shadowOptionsWithCustom }
+						onChange={ ( val ) => setAttributes( { sgsHoverShadow: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ 'custom' === sgsHoverShadow && (
+						<TextControl
+							label={ __( 'Custom hover shadow', 'sgs-blocks' ) }
+							help={ __(
+								'A raw CSS box-shadow value, e.g. 0 20px 40px -18px rgba(0,0,0,.4).',
+								'sgs-blocks'
+							) }
+							value={ sgsHoverShadowCustom || '' }
+							onChange={ ( val ) => setAttributes( { sgsHoverShadowCustom: val } ) }
+							placeholder="0 20px 40px -18px rgba(0,0,0,.4)"
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</>
 			) }
 			{ ! hideImageZoom && (
 			<ToggleControl
@@ -261,6 +289,16 @@ export default function HoverPanel( {
 				resetFallbackValue={ 0 }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
+			/>
+			<SgsLengthControl
+				label={ __( 'Padding indent on hover', 'sgs-blocks' ) }
+				help={ __(
+					'Grows the block’s inline-start padding by this much on hover/focus, on top of whatever padding it already has at rest.',
+					'sgs-blocks'
+				) }
+				value={ sgsHoverIndent || '' }
+				onChange={ ( val ) => setAttributes( { sgsHoverIndent: val || '' } ) }
+				presets={ false }
 			/>
 		</PanelBody>
 	);

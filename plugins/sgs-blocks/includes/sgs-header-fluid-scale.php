@@ -22,12 +22,10 @@
  * (per-file limitation: older Firefox ignores it and the header simply does
  * not scale, degrading to today's fixed sizing — never a broken layout).
  *
- * `zoom` scales the header's own box and its descendants, but NOT the offsets
- * used to POSITION that box against its containing block (`top`/`left`, the
- * pill's own inset) — those are resolved before zoom's effect on the box
- * itself. The floating pill's `--sgs-header-float-inset-*` custom properties
- * are therefore re-scaled explicitly, by the SAME published factor, in a
- * second rule below.
+ * `zoom` scales everything the header paints, its own `top`/`left` offsets
+ * included (measured: a 16px float inset lands the pill 21.33px down at 1920
+ * under a 1.333 factor, the reference's 21), so the floating pill's inset
+ * needs no second rule.
  *
  * The factor is published as `--sgs-header-fluid-scale` on `:root` — a
  * unitless ratio, 1 below the breakpoint — so a `sgs/nav-drawer` anchored to
@@ -73,13 +71,9 @@ if ( ! function_exists( 'sgs_header_fluid_scale_css' ) ) {
 	 *
 	 * @param string $root_sel        The header's uid-scoped selector.
 	 * @param array  $attributes      Block attributes.
-	 * @param bool   $float_any_tier  Whether `headerFloat` resolves 'on' at any
-	 *                                device tier (already computed once in
-	 *                                render.php as $sh_float_any_tier — passed
-	 *                                in so there is one resolver of it, not two).
 	 * @return string CSS text, no <style> wrapper.
 	 */
-	function sgs_header_fluid_scale_css( string $root_sel, array $attributes, bool $float_any_tier = false ): string {
+	function sgs_header_fluid_scale_css( string $root_sel, array $attributes ): string {
 		$resolved = sgs_header_fluid_scale_resolve( $attributes );
 		if ( ! $resolved['enabled'] ) {
 			return '';
@@ -103,25 +97,6 @@ if ( ! function_exists( 'sgs_header_fluid_scale_css' ) ) {
 		// factor, two consumers (this rule, and whatever external element
 		// reads the custom property), so they can never disagree.
 		$css .= '@media (min-width:' . $bp . 'px){' . $root_sel . '{zoom:var(--sgs-header-fluid-scale,1);}}';
-
-		// Floating-pill inset re-scale. `zoom` does not touch the offsets that
-		// position the header's own box, so the pill's top/right/left insets
-		// (already resolved to `max(<authored>,env(safe-area-inset-*))` by
-		// sgs_header_float_css(), which runs BEFORE this file in render.php)
-		// are re-declared here as themselves multiplied by the same factor.
-		// Every consumer of these custom properties reads via `var()`, so a
-		// later re-declaration of just the custom property is picked up
-		// without touching the `width`/`top` declarations that reference it.
-		// Skipped entirely when float is off at every tier — nothing to
-		// rescale, and rescaling an inset that resolves to its 0px "not
-		// floating" cancel value would be a harmless but pointless no-op rule.
-		if ( $float_any_tier ) {
-			$css .= '@media (min-width:' . $bp . 'px){' . $root_sel . '{'
-				. '--sgs-header-float-inset-top:calc(var(--sgs-header-float-inset-top) * var(--sgs-header-fluid-scale,1));'
-				. '--sgs-header-float-inset-right:calc(var(--sgs-header-float-inset-right) * var(--sgs-header-fluid-scale,1));'
-				. '--sgs-header-float-inset-left:calc(var(--sgs-header-float-inset-left) * var(--sgs-header-fluid-scale,1));'
-				. '}}';
-		}
 
 		return $css;
 	}
