@@ -143,6 +143,7 @@
               "questionFontWeight": "500",
               "question": "How thin would you like them?",
               "intro": "Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth it.",
+              "introWidth": "58",
               "options": [
                 {
                   "label": "Standard · 1.5",
@@ -287,6 +288,7 @@
               "showNextStepInline": true,
               "question": "Your prescription",
               "intro": "It needs to be under two years old and from a UK optician — whoever tested your eyes has to give you a copy if you ask. You don't need it to hand right now.",
+              "introWidth": "58",
               "options": [
                 {
                   "label": "Send it later",

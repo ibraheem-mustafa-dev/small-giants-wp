@@ -1772,6 +1772,18 @@
                       {
                         "name": "sgs/product-card",
                         "attributes": {
+                          "noImageLabel": "Photo to come",
+                          "noImageLabelFontSize": {
+                            "desktop": 10.5
+                          },
+                          "noImageLabelFontSizeUnit": "px",
+                          "noImageLabelFontWeight": "400",
+                          "noImageLabelLetterSpacing": {
+                            "desktop": 0.16
+                          },
+                          "noImageLabelLetterSpacingUnit": "em",
+                          "noImageLabelTextTransform": "uppercase",
+                          "priceRowSpaceAbove": "6px",
                           "sourceMode": "wc-product",
                           "titleTextWrap": "wrap",
                           "showRating": true,
@@ -1916,6 +1928,18 @@
                       {
                         "name": "sgs/product-card",
                         "attributes": {
+                          "noImageLabel": "Photo to come",
+                          "noImageLabelFontSize": {
+                            "desktop": 10.5
+                          },
+                          "noImageLabelFontSizeUnit": "px",
+                          "noImageLabelFontWeight": "400",
+                          "noImageLabelLetterSpacing": {
+                            "desktop": 0.16
+                          },
+                          "noImageLabelLetterSpacingUnit": "em",
+                          "noImageLabelTextTransform": "uppercase",
+                          "priceRowSpaceAbove": "6px",
                           "sourceMode": "wc-product",
                           "titleTextWrap": "wrap",
                           "showRating": true,
