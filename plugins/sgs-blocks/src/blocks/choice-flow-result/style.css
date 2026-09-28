@@ -159,5 +159,6 @@
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-result__body {
 	color: var(--wp--preset--color--text-muted, #606D80);
 	font-size: 14px;
+	line-height: 1.5;
 	text-wrap: pretty;
 }

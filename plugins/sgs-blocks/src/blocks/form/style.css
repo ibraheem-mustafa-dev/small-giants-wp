@@ -136,6 +136,11 @@
 	row-gap: 8px;
 }
 
+/* The table's notes (help, a note block) run under the whole table, R/L gutter included. */
+.sgs-form-step:has(.sgs-form-field__row-heading) > :not(.sgs-form-field) {
+	margin-left: -32px;
+}
+
 /* In a table of boxes the columns sit 8px apart and each box keeps its room
    for the number: tighter side padding and no spinner arrows. */
 .sgs-form-step:has(.sgs-form-field__row-heading),
@@ -597,8 +602,8 @@ select.sgs-form-field__input {
    colour holding the prompt, the help line and a Choose file cue; the size
    limit stays for screen readers. The whole panel is the file input's target. */
 .sgs-form-field__file-zone--panel .sgs-form-field__file-label {
-	gap: 10px;
-	padding: 32px 24px;
+	gap: 8px;
+	padding: 40px 20px;
 	border-width: 1px;
 	border-color: var(--wp--preset--color--border-strong, var(--wp--preset--color--border, #ccc));
 	border-radius: 0;
@@ -616,17 +621,19 @@ select.sgs-form-field__input {
 
 .sgs-form-field__file-zone--panel .sgs-form-field__help {
 	margin: 0;
+	font-size: 13.5px;
+	line-height: 1.5;
 }
 
 .sgs-form-field__file-button {
 	display: inline-flex;
 	align-items: center;
-	min-height: 40px;
 	margin-top: 6px;
-	padding: 0 20px;
+	padding: 10px 20px;
 	border: 1px solid currentColor;
 	color: var(--wp--preset--color--text, #1a202c);
-	font-size: 12px;
+	font-size: 12.5px;
+	line-height: 1.5;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
 }
