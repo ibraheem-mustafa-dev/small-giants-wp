@@ -113,7 +113,6 @@
               "lineHeightUnit": "em",
               "textColour": "#f9f4eb",
               "backgroundColour": "transparent",
-              "maxWidth": "326px",
               "padding": {
                 "desktop": {}
               },
@@ -121,7 +120,10 @@
                 "desktop": {}
               },
               "messageMode": "random",
-              "sgsHideOnMobile": true
+              "sgsHideOnMobile": true,
+              "sgsChildSizing": {
+                "desktop": "fill"
+              }
             },
             "innerBlocks": [
               {
