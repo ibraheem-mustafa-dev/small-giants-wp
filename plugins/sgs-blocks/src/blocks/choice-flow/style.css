@@ -1486,8 +1486,8 @@
 	}
 }
 
-/* Showcase at every width: Back and the step's action share one row, Back
-   at its own width and the action taking the rest (both stay 44px+ tall). */
+/* Showcase at every width: Back at the left and the step's action at the
+   right of one row, each at its own width (both stay 44px+ tall). */
 @media (max-width: 480px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__footer-row {
 		flex-direction: row;
@@ -1495,8 +1495,13 @@
 	}
 
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__footer-actions {
-		flex: 1 1 auto;
+		flex: 0 0 auto;
 		width: auto;
+		margin-left: auto;
+	}
+
+	.sgs-choice-flow--layout-showcase :is(.sgs-choice-flow__continue, .sgs-choice-flow__add-to-basket, .sgs-choice-flow__buy-now) {
+		flex: 0 0 auto;
 	}
 }
 
