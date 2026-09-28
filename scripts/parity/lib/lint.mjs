@@ -27,7 +27,7 @@ export function lintConfig( cfg ) {
 		if ( ! a.reason || a.reason.trim().length < 12 ) {
 			problems.push( `accept #${ i } has no real reason` );
 		}
-		if ( a.pair && ! names.has( a.pair ) && a.pair !== '(state)' ) {
+		if ( a.pair && ! names.has( a.pair ) && ! [ '(state)', '(auto)' ].includes( a.pair ) ) {
 			problems.push( `accept #${ i } names unknown pair "${ a.pair }"` );
 		}
 	}

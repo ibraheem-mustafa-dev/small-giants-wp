@@ -181,6 +181,59 @@ and box only). The Indus draft's declared entrances never run in its runtime (`c
 previous state). Bean (2026-09-28): the source intent is the reference; those entrances are proved on the copy
 alone against their declared timings, not compared with the draft.
 
+## 12. Automatic check: everything no config names (on with the full checks)
+
+- **Gap:** named pairs and the screenshot review caught none of six gaps Bean then found by eye (the shop's
+  Polarised tag place, a floating Filter button after scrolling, a clipped slider handle, card prices with ".00";
+  the lens last question as two screens, its 375 footer stacking Back above the action). A config only measures
+  what its author thought of.
+- **Detected by:** the `(auto)` pseudo-pair, in every state at every width, with nothing to configure:
+  - **Words:** every painted word on both sides (screen-reader-only and zero-size text left out), matched in
+    reading order (a Myers diff, then blocks moved elsewhere in the DOM). Unmatched runs are `text-missing` /
+    `text-extra` (".00", a missing panel, a button on one side only).
+  - **Position:** each matched word's offset from the previous matched word; a change of more than 4px is one
+    `moved "<prev> → <words>"` row, so a cascade reads as one row where it starts (a tag beside the name on one
+    side and under it on the other, Back above the action instead of beside it). A reveal's start pose (a
+    faded ancestor's transform) is taken off first; fixed layers are compared on their own.
+  - **Text style:** size, weight, family, style, case, letter spacing and colour per word, runs grouped.
+  - **Controls and media** (inputs, selects, sliders, buttons and links with no words, pictures): paired through
+    their nearest matched word, else by type in order; `control-missing/extra`, `control-size`, `control-moved`.
+  - **Clipped:** a control flush (3px) with the left or right edge of an ancestor that clips its overflow is
+    `cut` when the screenshot shows ink in the last pixel column inside that edge over its rows; a pseudo-element
+    part (a range handle) cut off on one side only is a `clipped` row.
+  - **Scrolled state:** `auto-scrolled`, added after the opening state, scrolls a screen and a half (a floating
+    button, a sticky bar, content below the first screen). `autoScroll: false` for a page that opens in a modal.
+  - **Modals:** when both sides show a modal (`dialog[open]`, `aria-modal`, `role=dialog`), only its contents
+    are compared; when one side draws its drawer in the page, both whole pages are.
+- **Config:** `auto.exclude: { draft: [...], live: [...] }` adds to the default exclusions (header, footer,
+  banner and contentinfo landmarks: the nav track); `auto.root` limits a side to one element; `autoTolerance`
+  (`move`, `box`, `px`). Accept an `(auto)` row like any other, with `pair: '(auto)'` and a `when` on its key.
+  `auto: false` or `--no-auto` turns it off.
+- **Falsified by:** an `(auto)` row left open; the catch-rate benchmark below scoring under 6 of 6.
+
+### The catch-rate benchmark
+
+`scripts/parity/benchmark.mjs` replays the six gaps (`benchmark/cases.mjs`) on today's live site (the pre-fix
+CSS, or an init script, injected on the live side with `--inject-live-css` / `--inject-live-js`) against each
+page config as it stood before the gaps were found (so no pair was written with the gap in mind), and scores
+caught / 6 with `benchmark/score.mjs`. A row is new when the control run lacks it, or when its live value moved
+more than 4px while its draft value held (the injection touches live only, so a moving draft value is noise). A
+case is caught only when a new row matches its `match`, written from the gap alone ("polarised", ".00", "filter"
+in a scrolled state), so noise elsewhere on the page never counts. `--noise` adds a no-op injection per config:
+its new rows are the walker's run-to-run noise. Run it after any change to the walker's checks; re-score a
+recorded run with `node scripts/parity/benchmark/score.mjs <out dir>`.
+
+```bash
+NODE_EXTRA_CA_CERTS=<certifi cacert.pem> node ../../scripts/parity/benchmark.mjs --noise
+```
+
+**Measured 2026-09-28:** the walker before this section caught **1 of 6** (only ".00", which the shop config then
+accepted as pennies); with the automatic check it catches **6 of 6**, with 0 noise rows on the shop and 0 on the
+lens. The catching rows: a `moved "polarised → £119 …"` (the tag's offset -60 → -83 at 375); b `text-extra
+"filter"` in `auto-scrolled` at 768 and 375; c `clipped input:range "maximum price"` (whole → right) at 768 and
+375; d `text-extra "… £139.00 £171.00"` on every card; e `text-missing "perfect — order now and i'll whatsapp you…"`,
+`"add to bag £418"` and `text-extra "continue"` at every width; f `moved "back → add to bag"` (160,0 → 135,64).
+
 ## 10. Text, data and draft bugs
 
 - Word-multiset text comparison (DOM order ignored). Real-data differences (review counts, stock counts,

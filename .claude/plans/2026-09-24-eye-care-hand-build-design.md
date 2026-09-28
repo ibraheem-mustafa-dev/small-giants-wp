@@ -31,15 +31,14 @@ key), with the owed Wave C polish alongside.
   (`plans/archive/2026-09-27-choice-flow-inline-next-step.md`: the last question opens the chosen way under the options,
   as the draft). Both may reopen: another session is making the walker's header-mode checks the default for every
   page. Product page, bag drawer, checkout, order confirmation, home, lenses, about, help, contact to do.
-- **Before the remaining pages: measure the walker's catch rate (Bean 2026-09-28).** Bean wants the remaining pages
-  cloned by Sonnet subagents in waves with Opus QC, which needs a method that catches at least 95% of draft-vs-live
-  differences. Today's walker compares only the pairs a config names, plus a screenshot review; its catch rate is
-  unmeasured. Benchmark: the six gaps the walker passed and Bean found by eye (the shop's Polarised tag place, the
-  floating Filter button after scrolling, the clipped slider handle, card prices with ".00"; the lens Q4 one-screen
-  layout, the 375 footer stacking Back above the action). Build what closes the difference (candidates: pairing
-  every visible text leaf and control automatically by normalised text; a per-region pixel diff of the paired
-  screenshots; a list of screen regions no pair covers), rerun it on the pre-fix states (git shows each fix's
-  commit) and report caught / 6 plus any false-alarm rate, before running the page waves.
+- **The walker's catch rate: measured and raised to 6 of 6 (2026-09-28).** Bean wants the remaining pages cloned by
+  Sonnet subagents in waves with Opus QC, which needs a method that catches at least 95% of draft-vs-live
+  differences. `scripts/parity/benchmark.mjs` replays the six gaps Bean found by eye on today's live site against
+  the page configs as they stood before the gaps were found: the walker before caught **1 of 6** (".00", then
+  accepted as pennies by the config). The automatic check (GAP-CHECKLIST.md section 12: every painted word, control
+  and picture compared with no config naming it, an `auto-scrolled` state, and a pixel check for a control cut off
+  at a clipping edge) catches **6 of 6** with 0 noise rows on shop and lens. Next: shop.mjs and lens.mjs rerun under
+  it (their automatic rows are the false-alarm count), then the page waves.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,

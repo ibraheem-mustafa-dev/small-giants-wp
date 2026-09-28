@@ -178,3 +178,8 @@ plugins/sgs-blocks/scripts/parity/__fluid_selftest_fixtures__/
 # have been uploaded into the live plugin directory, web-accessible.
 plugins/sgs-blocks/stackable/
 plugins/sgs-blocks/now.tmp.json
+
+# Parity walker and catch-rate benchmark output (screenshots, reports)
+scripts/parity/benchmark/out/
+scripts/parity/benchmark/*.log
+sites/*/build/qa/parity/out/

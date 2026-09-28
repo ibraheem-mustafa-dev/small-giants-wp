@@ -8,9 +8,11 @@
 // accepted, or a shot with no review note. The gap classes: scripts/parity/GAP-CHECKLIST.md.
 //
 // Usage: node scripts/parity/draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375]
-//        [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"] [--headless] [--self draft|live]
+//        [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"] [--inject-live-js "js"]
+//        [--headless] [--self draft|live] [--no-auto]
 // Runs headed unless --headless is passed. Needs NODE_EXTRA_CA_CERTS set to certifi's bundle for the Hostinger sites.
-// --inject-live-css is the negative control: it plants a known difference on the live side.
+// --inject-live-css / --inject-live-js are the negative controls: they plant a known difference on the live side
+// (the catch-rate benchmark, scripts/parity/benchmark.mjs, replays past gaps this way).
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
@@ -22,6 +24,7 @@ import { collectStructure, compareStructure, driveDiffs } from './lib/structure.
 import { writeContactSheet } from './lib/review.mjs';
 import { makeHelpers, anchorOffset } from './lib/helpers.mjs';
 import { sampleTimeline, collectChrome, hoverChrome, compareChrome } from './lib/chrome-walk.mjs';
+import { withAutoScroll, collectAutoOn, markClipped, autoPair } from './lib/auto-walk.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const { chromium, devices } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
@@ -47,6 +50,7 @@ const widths = ( flag( '--widths' ) || ( cfg.widths || [ 1440, 768, 375 ] ).join
 const onlyStates = flag( '--states' )?.split( ',' );
 const accept = argv.includes( '--no-accept' ) ? [] : cfg.accept || [];
 const injectCss = flag( '--inject-live-css' );
+const injectJs = flag( '--inject-live-js' );
 const outDir = path.resolve( flag( '--out' ) || path.join( path.dirname( cfgPath ), 'out', cfg.name ) );
 fs.mkdirSync( outDir, { recursive: true } );
 const tol = { box: 2, px: 0.5, ...( cfg.tolerance || {} ) };
@@ -63,6 +67,13 @@ if ( self ) {
 	cfg.pairs.forEach( ( pr ) => ( pr.draft = pr.live = pr[ self ] ) );
 }
 
+// The automatic check (GAP-CHECKLIST.md section 12): every word, control and picture compared with no
+// config naming it, plus a scrolled state. On with the full checks; `auto: false` or --no-auto turns it off.
+const autoOn = header && false !== cfg.auto && ! argv.includes( '--no-auto' );
+if ( autoOn ) {
+	withAutoScroll( cfg );
+}
+
 const pairsFor = ( state ) => cfg.pairs.filter( ( p ) => ! p.states || p.states.includes( state.name ) );
 
 async function walkSide( browser, side, width ) {
@@ -76,6 +87,10 @@ async function walkSide( browser, side, width ) {
 			s.textContent = css;
 			document.head.appendChild( s );
 		} ), injectCss );
+	}
+	if ( side === 'live' && injectJs ) {
+		// Runs before any page script, so it can reset a setting or strip an attribute the page reads.
+		await ctx.addInitScript( injectJs );
 	}
 	const page = await ctx.newPage();
 	const errors = [];
@@ -126,8 +141,12 @@ async function walkSide( browser, side, width ) {
 		for ( const p of scrollIns ) {
 			snap[ p.name ].scroll = { pre: await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE ] ) };
 		}
+		const auto = autoOn ? await collectAutoOn( page, side, cfg ) : null;
 		const shot = path.join( outDir, `${ side }-${ width }-${ state.name }.png` );
 		await page.screenshot( { path: shot, fullPage: !! state.fullPage } );
+		if ( auto ) {
+			await markClipped( ctx, shot, auto, !! state.fullPage );
+		}
 		for ( const p of scrollIns ) {
 			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
 			await page.evaluate( centreOf, [ p[ side ], RESOLVE ] );
@@ -162,7 +181,10 @@ async function walkSide( browser, side, width ) {
 			await page.mouse.move( 1, 1 );
 			await page.waitForTimeout( 400 );
 		}
-		states[ state.name ] = { snap, shot, log, structure };
+		states[ state.name ] = { snap, shot, log, structure, auto };
+		if ( state.autoScrolled ) {
+			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
+		}
 	}
 	await ctx.close();
 	return { states, errors };
@@ -170,7 +192,7 @@ async function walkSide( browser, side, width ) {
 
 // Headed by default: the Hostinger sites answer a headless browser with a 403 bot challenge.
 const browser = await chromium.launch( { headless: argv.includes( '--headless' ), args: [ '--hide-scrollbars' ] } );
-const results = { config: cfg.name, when: new Date().toISOString(), injectCss, runs: [], errors: {} };
+const results = { config: cfg.name, when: new Date().toISOString(), injectCss, injectJs, runs: [], errors: {} };
 for ( const width of widths ) {
 	const draft = await walkSide( browser, 'draft', width );
 	const live = await walkSide( browser, 'live', width );
@@ -205,6 +227,10 @@ for ( const width of widths ) {
 			];
 			const all = header ? compareChrome( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) }, diffs ) : diffs;
 			run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, all ) };
+		}
+		if ( autoOn ) {
+			const a = autoPair( d.auto, l.auto, cfg.autoTolerance );
+			run.pairs[ '(auto)' ] = { words: a.words, diffs: judge( '(auto)', a.diffs ) };
 		}
 		results.runs.push( run );
 	}

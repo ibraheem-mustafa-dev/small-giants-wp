@@ -29,6 +29,8 @@ const choose = ( label ) => ( {
 
 export default {
 	name: 'lens',
+	// The pop-up is a modal over the product page: scrolling the window moves nothing in it.
+	autoScroll: false,
 	draft: {
 		url: 'https://mintcream-lyrebird-224487.hostingersite.com/',
 		open: async ( h ) => {

@@ -47,7 +47,7 @@ export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 		},
 		// Clicks the smallest visible element whose rendered text matches the regex source.
 		clickText: async ( src, opts = {} ) => {
-			const ok = await page.evaluate( ( [ finder, res ] ) => {
+			const tryClick = () => page.evaluate( ( [ finder, res ] ) => {
 				// eslint-disable-next-line no-new-func
 				const el = new Function( `return (${ res });` )()( finder );
 				if ( el ) {
@@ -55,6 +55,15 @@ export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 				}
 				return !! el;
 			}, [ { text: src, tag: opts.tag || 'a,button,[role=button],[role=tab],label,summary,h3,span,div', within: opts.within, nth: opts.nth }, RESOLVE ] );
+			let ok = await tryClick();
+			// A required control on a slow-rendering page (the Hostinger sites sometimes paint late): up to
+			// 6s more before the run fails. An optional one is judged at once (its absence is the finding).
+			// A page still navigating (a redirect after load) destroys the evaluate: wait for it and look again.
+			for ( let t = 0; ! ok && ! opts.optional && t < 20; t++ ) {
+				await page.waitForTimeout( 300 );
+				await page.waitForLoadState( 'domcontentloaded' ).catch( () => {} );
+				ok = await tryClick().catch( () => false );
+			}
 			h.log.push( opts.nav ? { type: 'goto', target: `/${ src }/` } : { type: 'click', target: `/${ src }/`, hit: ok, optional: !! opts.optional } );
 			if ( ! ok && ! opts.optional ) {
 				throw new Error( `${ side }: nothing visible matches /${ src }/` );

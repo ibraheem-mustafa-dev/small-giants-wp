@@ -46,6 +46,8 @@ export default {
 	name: 'shop',
 	draft: { url: DRAFT, open: ( h ) => h.clickText( '^sunglasses$', { wait: 1200 } ) },
 	live: { url: LIVE },
+	// The draft's floating WhatsApp bubble sits outside its footer (the nav track checks it).
+	auto: { exclude: { draft: [ 'a[aria-label^="Message Fatima"]' ] } },
 	states: [
 		{ name: 'opening', fullPage: true },
 		{
