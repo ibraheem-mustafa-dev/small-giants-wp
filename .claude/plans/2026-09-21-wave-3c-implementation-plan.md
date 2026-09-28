@@ -472,7 +472,9 @@ difference for Wave 3C and the rebuild brief is parked in `.claude/plans/2026-09
   hidden at 375 (L1-L10). Indus: text sizes, every hover colour and motion, mega-panel spacing and order, and the
   drawer's order and contents (I-1 to I-3). The cause is proven: `u18-copy-probe.mjs` reads no type, hover, motion
   or order, and the draft's stylesheet was never parsed. Full list and the method questions:
-  `.claude/plans/2026-09-27-reference-capture-method-plan.md`. **Next is that plan, not more fixes.**
+  `.claude/plans/2026-09-27-reference-capture-method-plan.md`. Its steps 1-5 are done (2026-09-28): the
+  hand-read diff and walker reports are in `reports/visual-diff/u18-*`, and the walker's full checks find every
+  row. **Next is that plan's step 6** (sort each row into composition or framework capability, plan, fix).
 - Residue, named (not built): `widthType: fit` and a label's `fullWidth: false` do not hold inside a stretching flex
   column, and `sgs/mega-aside` has no alignment control (worked around with flex-row wrappers); the Indus drawer's
   fourth social is Twitter because no block draws the draft's flat white Google G; lamalama's drawer menu has no
@@ -679,7 +681,7 @@ Gate 3C passes when:
 
 **Status 2026-09-27.** Items 2, 3 and 5 pass. Item 1 passes: M-08's one uncovered cell, lamalama's corner card,
 is accepted as DEC-18 (Bean, 2026-09-27). Item 4 FAILS on Bean's eye: both copies are far from visual copies, and
-the 75/76 and 23/23 counts measured geometry only. Next: `.claude/plans/2026-09-27-reference-capture-method-plan.md`.
+the 75/76 and 23/23 counts measured geometry only. Next: step 6 of `.claude/plans/2026-09-27-reference-capture-method-plan.md`.
 
 ## 8. Wave 4 preconditions
 
