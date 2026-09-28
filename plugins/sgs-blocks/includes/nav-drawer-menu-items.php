@@ -27,7 +27,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 	 * Resolve the drawer menu's per-row options once per render.
 	 *
 	 * @param array $attributes Block attributes.
-	 * @return array{mega_mode:string,roll:string,ornament_html:string,ornament_hover_html:string,has_ornament:bool,expander_html:string,media:bool,media_size:string}
+	 * @return array{mega_mode:string,roll:string,ornament_html:string,ornament_hover_html:string,has_ornament:bool,expander_html:string,media:bool,media_size:string,disabled_ids:string[],ornament_hidden_ids:string[]}
 	 */
 	function sgs_nav_drawer_menu_row_options( array $attributes ): array {
 		$ornament      = is_array( $attributes['itemOrnament'] ?? null ) ? $attributes['itemOrnament'] : array();
@@ -73,6 +73,11 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 			// sgs_nav_drawer_menu_accordion_html() for the accordion-parent
 			// row's disabled treatment.
 			'disabled_ids'        => is_array( $attributes['disabledItemIds'] ?? null ) ? $attributes['disabledItemIds'] : array(),
+			// Per-item ornament opt-out (2026-09-28) — item identifiers (same
+			// scheme as disabled_ids/featuredItemIds) that render NO ornament
+			// span at all, read by sgs_nav_drawer_menu_label_inner() for both
+			// leaf and accordion-parent rows.
+			'ornament_hidden_ids' => is_array( $attributes['ornamentHiddenItemIds'] ?? null ) ? $attributes['ornamentHiddenItemIds'] : array(),
 		);
 	}
 }
@@ -158,13 +163,22 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_label_inner' ) ) {
 	 * and media. The ornament is decorative (`aria-hidden`); an `index`
 	 * ornament is painted by CSS as a counter on this span.
 	 *
+	 * An item listed in `ornamentHiddenItemIds` (2026-09-28) gets no
+	 * `.sgs-nav-drawer-menu__ornament` span at all — omitting the span, not
+	 * just hiding it, is what "reserves no ornament space" means: the span's
+	 * own `margin-inline-end` (style.css) is the only source of the gap
+	 * before the label, so a row with no span has no gap either.
+	 *
 	 * @param array $item    A flattened menu item.
 	 * @param array $options sgs_nav_drawer_menu_row_options().
 	 * @return string HTML.
 	 */
 	function sgs_nav_drawer_menu_label_inner( array $item, array $options ): string {
+		$ornament_hidden_ids = is_array( $options['ornament_hidden_ids'] ?? null ) ? $options['ornament_hidden_ids'] : array();
+		$ornament_hidden     = in_array( (string) ( $item['identifier'] ?? '' ), $ornament_hidden_ids, true );
+
 		$ornament = '';
-		if ( ! empty( $options['has_ornament'] ) ) {
+		if ( ! $ornament_hidden && ! empty( $options['has_ornament'] ) ) {
 			$hover     = (string) ( $options['ornament_hover_html'] ?? '' );
 			$ornament  = '<span class="sgs-nav-drawer-menu__ornament' . ( '' !== $hover ? ' sgs-nav-drawer-menu__ornament--swap' : '' ) . '" aria-hidden="true">';
 			$ornament .= '' !== (string) $options['ornament_html'] ? '<span class="sgs-nav-drawer-menu__ornament-glyph">' . $options['ornament_html'] . '</span>' : '';

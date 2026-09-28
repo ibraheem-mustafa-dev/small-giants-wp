@@ -587,6 +587,14 @@
 			"default": "",
 			"description": "Space between the ornament and the label. Unset 0.5em."
 		},
+		"ornamentHiddenItemIds": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string"
+			},
+			"description": "Per-item opt-out from the leading ornament (same identifier scheme as featuredItemIds/disabledItemIds). A listed item renders no ornament glyph/counter and reserves no ornament space, matching a row that has no ornament at all. Ticked in the Settings tab's Ornament panel; has no effect when itemOrnament is none at every tier."
+		},
 		"itemExpanderIcon": {
 			"type": "object",
 			"default": {

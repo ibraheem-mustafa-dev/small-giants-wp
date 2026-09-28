@@ -60,6 +60,7 @@ import MegaDrawerPanel from '../../shared/nav-menu-panels/MegaDrawerPanel';
 import ItemEffectsPanel from '../../shared/nav-menu-panels/ItemEffectsPanel';
 import RowExtrasPanel from './RowExtrasPanel';
 import DisabledItemsPanel from './DisabledItemsPanel';
+import OrnamentHiddenItemsPanel from './OrnamentHiddenItemsPanel';
 import SubmenuLinkPaddingPanel from './SubmenuLinkPaddingPanel';
 import TrailingIconPanel from './TrailingIconPanel';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
@@ -130,6 +131,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		splitAfterItemId,
 		splitSide,
 		disabledItemIds,
+		ornamentHiddenItemIds,
 	} = attributes;
 
 	const { menuOptions, isResolving, resolvedItems, toggleFeatured } =
@@ -144,6 +146,15 @@ export default function Edit( { attributes, setAttributes } ) {
 			? [ ...( disabledItemIds || [] ), identifier ]
 			: ( disabledItemIds || [] ).filter( ( id ) => id !== identifier );
 		setAttributes( { disabledItemIds: next } );
+	};
+
+	// Same local toggler shape as toggleDisabled — the per-item ornament
+	// opt-out (ornamentHiddenItemIds) is block-scoped for the same reason.
+	const toggleOrnamentHidden = ( identifier, checked ) => {
+		const next = checked
+			? [ ...( ornamentHiddenItemIds || [] ), identifier ]
+			: ( ornamentHiddenItemIds || [] ).filter( ( id ) => id !== identifier );
+		setAttributes( { ornamentHiddenItemIds: next } );
 	};
 
 	// Reference element for resolving `var(--wp--preset--color--x)` stops via
@@ -587,6 +598,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					resolvedItems={ resolvedItems }
 					toggleDisabled={ toggleDisabled }
 					disabledItemIds={ disabledItemIds }
+				/>
+
+				{ /* Same placement rule as Disabled items above — a data-source
+				   pick (which items skip the ornament), not a style. */ }
+				<OrnamentHiddenItemsPanel
+					menuRef={ ref }
+					resolvedItems={ resolvedItems }
+					toggleOrnamentHidden={ toggleOrnamentHidden }
+					ornamentHiddenItemIds={ ornamentHiddenItemIds }
 				/>
 			</InspectorControls>
 
