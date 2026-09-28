@@ -6437,7 +6437,7 @@
     "sgs/product-card::priceNoteFontFamily": "typography",
     "sgs/product-card::priceNoteFontSize": "typography",
     "sgs/product-card::priceNoteFontSizeUnit": "typography",
-    "sgs/product-card::priceRowSpaceAbove": null,
+    "sgs/product-card::priceRowSpaceAbove": "styling",
     "sgs/product-card::productId": "enum-class-probe",
     "sgs/product-card::productName": "identity",
     "sgs/product-card::ratingColour": "color",

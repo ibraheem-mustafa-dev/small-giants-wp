@@ -9225,6 +9225,46 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "noImageLabelColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "noImageLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "noImageLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "noImageLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "noImageLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "noImageLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "noImageLabelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "noImageLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "noImageLabelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "noImageLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "pillFontSize",
       "fields": {
         "css_property": "font-size",
@@ -9301,6 +9341,14 @@
       "fields": {
         "css_property": "font-size",
         "css_element": "price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceRowSpaceAbove",
+      "fields": {
+        "css_property": "margin-top",
+        "css_element": "priceRow"
       }
     },
     {
@@ -21592,14 +21640,6 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "image"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "priceRowSpaceAbove",
-      "fields": {
-        "css_property": "margin-top",
-        "css_element": "priceRow"
       }
     },
     {
