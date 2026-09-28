@@ -287,7 +287,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		.join( '' );
 
 	const blockProps = useBlockProps( {
-		className: `sgs-form ${ formPreviewScope }`,
+		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }`,
 	} );
 
 	// Base roster of blocks a form's own children may ever sensibly be — unlike
