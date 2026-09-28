@@ -49,15 +49,46 @@
               "fontFamily": "'Sometype Mono', monospace",
               "fontSize": { "desktop": 10 },
               "fontSizeUnit": "px",
+              "fontWeight": "500",
+              "letterSpacing": { "desktop": -0.2 },
+              "letterSpacingUnit": "px",
               "textColour": "#ffffff",
               "backgroundColour": "transparent",
               "padding": { "desktop": {} },
-              "margin": { "desktop": {} }
+              "margin": { "desktop": {} },
+              "messageMode": "rotate",
+              "sgsHideOnMobile": true
             },
             "innerBlocks": [
               {
-                "name": "sgs/text",
-                "attributes": { "text": "LOOKING SHARP TODAY" }
+                "name": "sgs/notice-message",
+                "attributes": { "label": "Slide 1" },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": { "text": "NICE ENTRANCE" }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/notice-message",
+                "attributes": { "label": "Slide 2" },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": { "text": "YOU MADE IT" }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/notice-message",
+                "attributes": { "label": "Slide 3" },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": { "text": "LET'S DO DAMAGE" }
+                  }
+                ]
               }
             ]
           },

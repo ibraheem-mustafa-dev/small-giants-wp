@@ -17,7 +17,16 @@
         "bottom": "1px",
         "left": "1px"
       },
-      "borderRadius": "12px"
+      "borderRadius": "12px",
+      "shadow": "0 30px 80px -30px rgba(20,25,35,.28), 0 2px 8px -2px rgba(0,0,0,.08)",
+      "panelPadding": {
+        "desktop": {
+          "top": "24px",
+          "right": "22px",
+          "bottom": "10px",
+          "left": "26px"
+        }
+      }
     },
     "innerBlocks": [
       {

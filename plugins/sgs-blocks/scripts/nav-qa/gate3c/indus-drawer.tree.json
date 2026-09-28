@@ -2,26 +2,48 @@
   {
     "name": "sgs/nav-drawer",
     "attributes": {
-      "drawerBg": "#0A7EA8"
+      "drawerBg": "#0A7EA8",
+      "closeSize": "38px",
+      "closeRadius": {
+        "desktop": "8px"
+      },
+      "toggleCloseColour": "#FFFFFF",
+      "itemStagger": 55,
+      "itemStaggerDuration": 420,
+      "itemStaggerDistance": {
+        "desktop": 24
+      },
+      "scrimFadeDuration": 300
     },
     "innerBlocks": [
       {
-        "name": "sgs/nav-drawer-menu",
+        "name": "sgs/responsive-logo",
         "attributes": {
-          "ref": 132,
-          "navLabel": "QA copy Indus mobile",
-          "navColour": "#FFFFFF",
-          "itemColour": "#FFFFFF",
-          "itemBorderColour": "rgba(255,255,255,.18)",
-          "itemBorderWidth": {
-            "bottom": "1px"
-          }
+          "width": 120,
+          "linkToHome": true,
+          "logoId": 4509,
+          "logoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/indus-foods-logo-qa-copy.png",
+          "alt": "Indus Foods"
         }
       },
       {
         "name": "sgs/container",
         "attributes": {
-          "backgroundColour": "transparent"
+          "backgroundColour": "transparent",
+          "layout": "flex",
+          "flexDirection": "row",
+          "alignItems": "center",
+          "gap": {
+            "desktop": "10px"
+          },
+          "padding": {
+            "desktop": {
+              "top": "6px",
+              "right": "0px",
+              "bottom": "22px",
+              "left": "0px"
+            }
+          }
         },
         "innerBlocks": [
           {
@@ -31,6 +53,24 @@
               "url": "#",
               "colourText": "#1E2A3C",
               "colourBackground": "#D8CA50",
+              "widthType": {
+                "desktop": "full"
+              },
+              "icon": "arrow-right",
+              "iconPosition": "after",
+              "fontFamily": "'Plus Jakarta Sans', sans-serif",
+              "fontSize": {
+                "desktop": "15px"
+              },
+              "fontWeight": "700",
+              "padding": {
+                "desktop": {
+                  "top": "14px",
+                  "right": "18px",
+                  "bottom": "14px",
+                  "left": "18px"
+                }
+              },
               "borderRadius": {
                 "desktop": {
                   "topLeft": "26px",
@@ -49,6 +89,7 @@
               "iconColour": "#1E2A3C",
               "backgroundColour": "#D8CA50",
               "backgroundShape": "circle",
+              "backgroundPadding": "14px",
               "ariaLabel": "Email",
               "linkUrl": "mailto:#"
             }
@@ -61,6 +102,7 @@
               "iconColour": "#1E2A3C",
               "backgroundColour": "#D8CA50",
               "backgroundShape": "circle",
+              "backgroundPadding": "14px",
               "ariaLabel": "Call",
               "linkUrl": "tel:#"
             }
@@ -68,58 +110,49 @@
         ]
       },
       {
-        "name": "sgs/container",
+        "name": "sgs/nav-drawer-menu",
         "attributes": {
-          "backgroundColour": "transparent"
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/icon",
-            "attributes": {
-              "iconName": "linkedin",
-              "iconSize": 20,
-              "iconColour": "#FFFFFF",
-              "backgroundColour": "#0A66C2",
-              "backgroundShape": "circle",
-              "ariaLabel": "LinkedIn",
-              "linkUrl": "#"
+          "ref": 132,
+          "navLabel": "QA copy Indus mobile",
+          "navColour": "#FFFFFF",
+          "itemColour": "#FFFFFF",
+          "itemFontFamily": "'Plus Jakarta Sans', sans-serif",
+          "itemFontSize": {
+            "desktop": "20px"
+          },
+          "itemFontWeight": "700",
+          "itemLetterSpacing": {
+            "desktop": -0.2
+          },
+          "itemLetterSpacingUnit": "px",
+          "itemBorderColour": "#D8CA50",
+          "itemBorderWidth": {
+            "bottom": "1px"
+          },
+          "itemMotionDuration": 250,
+          "itemExpanderRotate": 45
+        }
+      },
+      {
+        "name": "sgs/social-icons",
+        "attributes": {
+          "colourMode": "brand",
+          "iconStyle": "circle",
+          "iconSize": 38,
+          "gap": "12px",
+          "textAlign": "center",
+          "margin": {
+            "desktop": {
+              "top": "26px"
             }
           },
-          {
-            "name": "sgs/icon",
-            "attributes": {
-              "iconName": "facebook",
-              "iconSize": 20,
-              "iconColour": "#FFFFFF",
-              "backgroundColour": "#1877F2",
-              "backgroundShape": "circle",
-              "ariaLabel": "Facebook",
-              "linkUrl": "#"
-            }
-          },
-          {
-            "name": "sgs/icon",
-            "attributes": {
-              "iconName": "instagram",
-              "iconSize": 20,
-              "iconColour": "#FFFFFF",
-              "backgroundColour": "#E1306C",
-              "backgroundShape": "circle",
-              "ariaLabel": "Instagram",
-              "linkUrl": "#"
-            }
-          },
-          {
-            "name": "sgs/icon",
-            "attributes": {
-              "iconName": "twitter",
-              "iconSize": 20,
-              "iconColour": "#FFFFFF",
-              "ariaLabel": "Twitter/X",
-              "linkUrl": "#"
-            }
-          }
-        ]
+          "icons": [
+            { "platform": "linkedin", "url": "#", "label": "LinkedIn" },
+            { "platform": "facebook", "url": "#", "label": "Facebook" },
+            { "platform": "google", "url": "#", "label": "Google" },
+            { "platform": "instagram", "url": "#", "label": "Instagram" }
+          ]
+        }
       }
     ]
   }

@@ -53,7 +53,7 @@
               "scrimOpacity": { "desktop": 0.25 },
               "scrimBlur": { "desktop": "2px" },
               "gap": {
-                "desktop": "4px"
+                "desktop": "2px"
               },
               "submenuAlign": "page-centred",
               "megaAlign": {
@@ -75,11 +75,28 @@
               },
               "itemFontWeight": "600",
               "itemFontFamily": "'Plus Jakarta Sans', sans-serif",
+              "itemLetterSpacing": {
+                "desktop": -0.15
+              },
+              "itemLetterSpacingUnit": "px",
+              "itemMotionDuration": 220,
+              "itemMagnetEnabled": true,
+              "itemMagnetStrength": 0.14,
+              "itemLineHeight": 18,
+              "itemLineHeightUnit": "px",
+              "submenuAnimation": "fade-lift",
+              "submenuAnimationDuration": 340,
+              "submenuAnimationEasing": "custom",
+              "submenuAnimationEasingCustom": "cubic-bezier(.16,.84,.32,1)",
+              "submenuItemStagger": 26,
+              "submenuItemStaggerDistance": 14,
+              "submenuItemStaggerDuration": 460,
+              "submenuItemStaggerMax": 320,
               "itemPadding": {
-                "top": "13px",
-                "right": "16px",
-                "bottom": "13px",
-                "left": "16px"
+                "top": "12px",
+                "right": "15px",
+                "bottom": "12px",
+                "left": "15px"
               },
               "submenuCloseGrace": 170,
               "submenuIntentDelay": 0,
@@ -122,7 +139,11 @@
                 "desktop": "15px"
               },
               "fontWeight": "700",
-              "boxShadow": "0 4px 14px -6px rgba(10,126,168,.5)"
+              "fontFamily": "'Plus Jakarta Sans', sans-serif",
+              "boxShadow": "0 4px 14px -6px rgba(10,126,168,.5)",
+              "shadowLiftOnHover": true,
+              "boxShadowHover": "0 9px 22px -6px rgba(10,126,168,.55)",
+              "transitionDuration": 200
             }
           }
         ]

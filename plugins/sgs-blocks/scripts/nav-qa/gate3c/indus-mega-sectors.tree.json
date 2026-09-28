@@ -17,7 +17,16 @@
         "bottom": "1px",
         "left": "1px"
       },
-      "borderRadius": "12px"
+      "borderRadius": "12px",
+      "shadow": "0 30px 80px -30px rgba(20,25,35,.28), 0 2px 8px -2px rgba(0,0,0,.08)",
+      "panelPadding": {
+        "desktop": {
+          "top": "28px",
+          "right": "28px",
+          "bottom": "28px",
+          "left": "28px"
+        }
+      }
     },
     "innerBlocks": [
       {
@@ -67,7 +76,9 @@
                   "bottom": "18px",
                   "left": "18px"
                 }
-              }
+              },
+              "shadowLiftOnHover": true,
+              "shadow": "soft"
             },
             "innerBlocks": [
               {
@@ -147,7 +158,13 @@
                     "name": "sgs/heading",
                     "attributes": {
                       "content": "Food Service",
-                      "level": "h3", "margin": { "desktop": { "top": "0px", "bottom": "0px" } },
+                      "level": "h3",
+                      "margin": {
+                        "desktop": {
+                          "top": "0px",
+                          "bottom": "0px"
+                        }
+                      },
                       "textColour": "#1E2A3C",
                       "fontSize": {
                         "desktop": "17px"
@@ -193,44 +210,44 @@
                   "alignItems": "flex-start"
                 },
                 "innerBlocks": [
-              {
-                "name": "sgs/button",
-                "attributes": {
-                  "label": "Explore Food Service",
-                  "url": "#",
-                  "inheritStyle": "custom",
-                  "colourText": "#1E2A3C",
-                  "colourBackground": "transparent",
-                  "borderWidth": {
-                    "top": "0px",
-                    "right": "0px",
-                    "bottom": "0px",
-                    "left": "0px"
-                  },
-                  "fontSize": {
-                    "desktop": "13.5px"
-                  },
-                  "fontWeight": "700",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                  "textAlign": "left",
-                  "icon": "arrow-right",
-                  "iconPosition": "after",
-                  "minHeight": {
-                    "desktop": "0px"
-                  },
-                  "padding": {
-                    "desktop": {
-                      "top": "0px",
-                      "right": "0px",
-                      "bottom": "0px",
-                      "left": "0px"
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Explore Food Service",
+                      "url": "#",
+                      "inheritStyle": "custom",
+                      "colourText": "#1E2A3C",
+                      "colourBackground": "transparent",
+                      "borderWidth": {
+                        "top": "0px",
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px"
+                      },
+                      "fontSize": {
+                        "desktop": "13.5px"
+                      },
+                      "fontWeight": "700",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "textAlign": "left",
+                      "icon": "arrow-right",
+                      "iconPosition": "after",
+                      "minHeight": {
+                        "desktop": "0px"
+                      },
+                      "padding": {
+                        "desktop": {
+                          "top": "0px",
+                          "right": "0px",
+                          "bottom": "0px",
+                          "left": "0px"
+                        }
+                      },
+                      "widthType": {
+                        "desktop": "fit"
+                      }
                     }
-                  },
-                  "widthType": {
-                    "desktop": "fit"
                   }
-                }
-              }
                 ]
               }
             ]
@@ -261,7 +278,9 @@
                   "bottom": "18px",
                   "left": "18px"
                 }
-              }
+              },
+              "shadowLiftOnHover": true,
+              "shadow": "soft"
             },
             "innerBlocks": [
               {
@@ -341,7 +360,13 @@
                     "name": "sgs/heading",
                     "attributes": {
                       "content": "Manufacturing",
-                      "level": "h3", "margin": { "desktop": { "top": "0px", "bottom": "0px" } },
+                      "level": "h3",
+                      "margin": {
+                        "desktop": {
+                          "top": "0px",
+                          "bottom": "0px"
+                        }
+                      },
                       "textColour": "#FFFFFF",
                       "fontSize": {
                         "desktop": "17px"
@@ -387,44 +412,44 @@
                   "alignItems": "flex-start"
                 },
                 "innerBlocks": [
-              {
-                "name": "sgs/button",
-                "attributes": {
-                  "label": "Explore Manufacturing",
-                  "url": "#",
-                  "inheritStyle": "custom",
-                  "colourText": "#FFFFFF",
-                  "colourBackground": "transparent",
-                  "borderWidth": {
-                    "top": "0px",
-                    "right": "0px",
-                    "bottom": "0px",
-                    "left": "0px"
-                  },
-                  "fontSize": {
-                    "desktop": "13.5px"
-                  },
-                  "fontWeight": "700",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                  "textAlign": "left",
-                  "icon": "arrow-right",
-                  "iconPosition": "after",
-                  "minHeight": {
-                    "desktop": "0px"
-                  },
-                  "padding": {
-                    "desktop": {
-                      "top": "0px",
-                      "right": "0px",
-                      "bottom": "0px",
-                      "left": "0px"
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Explore Manufacturing",
+                      "url": "#",
+                      "inheritStyle": "custom",
+                      "colourText": "#FFFFFF",
+                      "colourBackground": "transparent",
+                      "borderWidth": {
+                        "top": "0px",
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px"
+                      },
+                      "fontSize": {
+                        "desktop": "13.5px"
+                      },
+                      "fontWeight": "700",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "textAlign": "left",
+                      "icon": "arrow-right",
+                      "iconPosition": "after",
+                      "minHeight": {
+                        "desktop": "0px"
+                      },
+                      "padding": {
+                        "desktop": {
+                          "top": "0px",
+                          "right": "0px",
+                          "bottom": "0px",
+                          "left": "0px"
+                        }
+                      },
+                      "widthType": {
+                        "desktop": "fit"
+                      }
                     }
-                  },
-                  "widthType": {
-                    "desktop": "fit"
                   }
-                }
-              }
                 ]
               }
             ]
@@ -455,7 +480,9 @@
                   "bottom": "18px",
                   "left": "18px"
                 }
-              }
+              },
+              "shadowLiftOnHover": true,
+              "shadow": "soft"
             },
             "innerBlocks": [
               {
@@ -535,7 +562,13 @@
                     "name": "sgs/heading",
                     "attributes": {
                       "content": "Retail",
-                      "level": "h3", "margin": { "desktop": { "top": "0px", "bottom": "0px" } },
+                      "level": "h3",
+                      "margin": {
+                        "desktop": {
+                          "top": "0px",
+                          "bottom": "0px"
+                        }
+                      },
                       "textColour": "#FFFFFF",
                       "fontSize": {
                         "desktop": "17px"
@@ -581,44 +614,44 @@
                   "alignItems": "flex-start"
                 },
                 "innerBlocks": [
-              {
-                "name": "sgs/button",
-                "attributes": {
-                  "label": "Explore Retail",
-                  "url": "#",
-                  "inheritStyle": "custom",
-                  "colourText": "#FFFFFF",
-                  "colourBackground": "transparent",
-                  "borderWidth": {
-                    "top": "0px",
-                    "right": "0px",
-                    "bottom": "0px",
-                    "left": "0px"
-                  },
-                  "fontSize": {
-                    "desktop": "13.5px"
-                  },
-                  "fontWeight": "700",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                  "textAlign": "left",
-                  "icon": "arrow-right",
-                  "iconPosition": "after",
-                  "minHeight": {
-                    "desktop": "0px"
-                  },
-                  "padding": {
-                    "desktop": {
-                      "top": "0px",
-                      "right": "0px",
-                      "bottom": "0px",
-                      "left": "0px"
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Explore Retail",
+                      "url": "#",
+                      "inheritStyle": "custom",
+                      "colourText": "#FFFFFF",
+                      "colourBackground": "transparent",
+                      "borderWidth": {
+                        "top": "0px",
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px"
+                      },
+                      "fontSize": {
+                        "desktop": "13.5px"
+                      },
+                      "fontWeight": "700",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "textAlign": "left",
+                      "icon": "arrow-right",
+                      "iconPosition": "after",
+                      "minHeight": {
+                        "desktop": "0px"
+                      },
+                      "padding": {
+                        "desktop": {
+                          "top": "0px",
+                          "right": "0px",
+                          "bottom": "0px",
+                          "left": "0px"
+                        }
+                      },
+                      "widthType": {
+                        "desktop": "fit"
+                      }
                     }
-                  },
-                  "widthType": {
-                    "desktop": "fit"
                   }
-                }
-              }
                 ]
               }
             ]
@@ -649,7 +682,9 @@
                   "bottom": "18px",
                   "left": "18px"
                 }
-              }
+              },
+              "shadowLiftOnHover": true,
+              "shadow": "soft"
             },
             "innerBlocks": [
               {
@@ -729,7 +764,13 @@
                     "name": "sgs/heading",
                     "attributes": {
                       "content": "Wholesale",
-                      "level": "h3", "margin": { "desktop": { "top": "0px", "bottom": "0px" } },
+                      "level": "h3",
+                      "margin": {
+                        "desktop": {
+                          "top": "0px",
+                          "bottom": "0px"
+                        }
+                      },
                       "textColour": "#075E80",
                       "fontSize": {
                         "desktop": "17px"
@@ -775,44 +816,44 @@
                   "alignItems": "flex-start"
                 },
                 "innerBlocks": [
-              {
-                "name": "sgs/button",
-                "attributes": {
-                  "label": "Explore Wholesale",
-                  "url": "#",
-                  "inheritStyle": "custom",
-                  "colourText": "#075E80",
-                  "colourBackground": "transparent",
-                  "borderWidth": {
-                    "top": "0px",
-                    "right": "0px",
-                    "bottom": "0px",
-                    "left": "0px"
-                  },
-                  "fontSize": {
-                    "desktop": "13.5px"
-                  },
-                  "fontWeight": "700",
-                  "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                  "textAlign": "left",
-                  "icon": "arrow-right",
-                  "iconPosition": "after",
-                  "minHeight": {
-                    "desktop": "0px"
-                  },
-                  "padding": {
-                    "desktop": {
-                      "top": "0px",
-                      "right": "0px",
-                      "bottom": "0px",
-                      "left": "0px"
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Explore Wholesale",
+                      "url": "#",
+                      "inheritStyle": "custom",
+                      "colourText": "#075E80",
+                      "colourBackground": "transparent",
+                      "borderWidth": {
+                        "top": "0px",
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px"
+                      },
+                      "fontSize": {
+                        "desktop": "13.5px"
+                      },
+                      "fontWeight": "700",
+                      "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+                      "textAlign": "left",
+                      "icon": "arrow-right",
+                      "iconPosition": "after",
+                      "minHeight": {
+                        "desktop": "0px"
+                      },
+                      "padding": {
+                        "desktop": {
+                          "top": "0px",
+                          "right": "0px",
+                          "bottom": "0px",
+                          "left": "0px"
+                        }
+                      },
+                      "widthType": {
+                        "desktop": "fit"
+                      }
                     }
-                  },
-                  "widthType": {
-                    "desktop": "fit"
                   }
-                }
-              }
                 ]
               }
             ]
