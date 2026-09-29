@@ -119,6 +119,8 @@ $glyph_size            = (string) ( $attributes['glyphSize'] ?? '32px' );
 $glyph_colour          = (string) ( $attributes['glyphColour'] ?? '' );
 $image_fallback        = ! empty( $attributes['imageFallback'] );
 $image_fallback_colour = (string) ( $attributes['imageFallbackColour'] ?? '' );
+// The fallback tile's label ("Photo to come"), as sgs/product-card's noImageLabel.
+$no_image_label        = trim( (string) ( $attributes['noImageLabel'] ?? '' ) );
 
 // Block-wide image overlay (Eye Care "Shop by shape" gap, wave B round 2) — a
 // colour/gradient layer painted between every card's photo and its
@@ -842,6 +844,10 @@ $class_names  = array_merge(
 // multiple grids on one page can differ. Only set values are emitted.
 $sgs_grid_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_grid_uid . ' .sgs-card-grid__title' );
 $sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'subtitle', '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle' );
+$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label' );
+if ( '' !== (string) ( $attributes['noImageLabelColour'] ?? '' ) ) {
+	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label{color:' . sgs_colour_value( (string) $attributes['noImageLabelColour'] ) . ';}';
+}
 
 // Per-item title/subtitle colour (was inline `style="color:…"` on every
 // title/subtitle element — moved to a scoped rule keyed off the same uid so
@@ -1045,6 +1051,9 @@ foreach ( $items as $index => $item ) :
 			<?php endif; ?>
 			<?php if ( $item_show_overlay ) : ?>
 				<div class="sgs-card-grid__image-overlay" aria-hidden="true"></div>
+			<?php endif; ?>
+			<?php if ( $item_use_fallback && '' !== $no_image_label ) : ?>
+				<span class="sgs-card-grid__no-image-label"><?php echo esc_html( $no_image_label ); ?></span>
 			<?php endif; ?>
 			<?php if ( '' !== $item_glyph_html && ! $glyph_in_caption ) : ?>
 				<?php echo $item_glyph_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_card_grid_glyph_html() via wp_kses(). ?>

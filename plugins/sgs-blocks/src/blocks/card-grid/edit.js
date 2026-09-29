@@ -422,6 +422,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		glyphColour,
 		imageFallback,
 		imageFallbackColour,
+		noImageLabel,
+		noImageLabelColour,
+		noImageLabelFontSize,
+		noImageLabelFontSizeUnit,
 		overlayColour,
 		overlayGradient,
 		overlayOpacity,
@@ -598,6 +602,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					// Image-fallback background — omitted entirely (not disabled)
 					// when the feature is off, per SgsColourPanel's own
 					// rows.filter(Boolean) contract.
+					imageFallback && noImageLabel && {
+						key: 'no-image-label',
+						label: __( 'No-photo label', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Colour', 'sgs-blocks' ),
+								value: noImageLabelColour,
+								onChange: ( val ) => setAttributes( { noImageLabelColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 					imageFallback && {
 						key: 'image-fallback',
 						label: __( 'Image fallback background', 'sgs-blocks' ),
@@ -1144,6 +1161,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
+					{ imageFallback && (
+						<TextControl
+							label={ __( 'Label on a fallback tile', 'sgs-blocks' ) }
+							help={ __( 'Shown across the top of a card with no image, e.g. “Photo to come”. Empty shows no label. Its type is under Text Styling, its colour under Colours.', 'sgs-blocks' ) }
+							value={ noImageLabel || '' }
+							onChange={ ( val ) => setAttributes( { noImageLabel: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 				</PanelBody>
 
 				{ /* Image overlay opacity + blend mode (wave B round 2) — the colour/
@@ -1372,7 +1399,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								showStyle: true,
 								showLineHeight: true,
 							},
-						] }
+							imageFallback && noImageLabel && {
+								key: 'noImageLabel',
+								label: __( 'No-photo label', 'sgs-blocks' ),
+								prefix: 'noImageLabel',
+								showStyle: false,
+								showLineHeight: false,
+								showLetterSpacing: true,
+								showTransform: true,
+							},
+						].filter( Boolean ) }
 					/>
 				</PanelBody>
 
@@ -1565,6 +1601,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								) }
 								{ overlayStyle && (
 									<span className="sgs-card-grid__image-overlay" aria-hidden="true" style={ overlayStyle } />
+								) }
+								{ useFallback && noImageLabel && (
+									<span
+										className="sgs-card-grid__no-image-label"
+										style={ {
+											color: colourVar( noImageLabelColour ) || undefined,
+											fontSize: '' !== ( noImageLabelFontSize?.desktop ?? '' ) ? `${ noImageLabelFontSize.desktop }${ noImageLabelFontSizeUnit || 'px' }` : undefined,
+										} }
+									>
+										{ noImageLabel }
+									</span>
 								) }
 								{ glyphNode && ! glyphInCaption ? glyphNode : (
 									! glyphNode &&

@@ -1930,7 +1930,19 @@
           "staggerDelay": 70,
           "borderColourHover": "border-hover",
           "cardShadowHover": "0 18px 44px",
-          "cardShadowColourHover": "primary 10%"
+          "cardShadowColourHover": "primary 10%",
+          "noImageLabel": "Photo to come",
+          "noImageLabelFontSize": {
+            "desktop": 10
+          },
+          "noImageLabelFontSizeUnit": "px",
+          "noImageLabelFontWeight": "400",
+          "noImageLabelLetterSpacing": {
+            "desktop": 0.16
+          },
+          "noImageLabelLetterSpacingUnit": "em",
+          "noImageLabelTextTransform": "uppercase",
+          "noImageLabelColour": "rgba(250,248,245,0.5)"
         }
       }
     ]

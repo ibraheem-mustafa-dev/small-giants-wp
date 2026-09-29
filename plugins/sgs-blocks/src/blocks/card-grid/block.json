@@ -151,7 +151,9 @@
         "image-wrap": {
           "label": "Image wrapper",
           "order": 4,
-          "clusters": ["fill"],
+          "clusters": [
+            "fill"
+          ],
           "prefix": "imageFallback",
           "attrMap": {
             "css:background-color": "imageFallbackColour"
@@ -206,7 +208,9 @@
         "imageOverlay": {
           "label": "Image overlay",
           "order": 8,
-          "clusters": ["fill"],
+          "clusters": [
+            "fill"
+          ],
           "attrMap": {
             "css:background-color": "overlayColour",
             "css:background-image": "overlayGradient"
@@ -225,11 +229,22 @@
         "glyph": {
           "label": "Card glyph",
           "order": 6,
-          "clusters": ["text"],
+          "clusters": [
+            "text"
+          ],
           "attrMap": {
             "css:color": "glyphColour"
           },
           "_note": "New 2026-09-24 (Eye Care 'Shop by shape' gap, FR-31-nn candidate) — a per-item glyph icon (`items[].glyph`, a Lucide slug) rendered as `.sgs-card-grid__glyph` inside `.sgs-card-grid__image-wrap`, over the image or over the image-fallback tile. `glyphColour`/`glyphSize` are block-wide (one glyph treatment for every card, same scope as `cardBackground`) — resolved in the block's own `src/blocks/card-grid/glyph-fallback.php` helper file (kept out of render.php, which is already over the 300-line guidance) via a `--sgs-card-grid-glyph-colour` custom property, not a direct override, so an unset colour still inherits the theme's inverse-text token (FR-35-5 pattern). `clusters: [\"text\"]` added 2026-09-24 (compliance fix) — `css:color` is a `text` cluster member (mirrors sgs/icon's own `icon` element, which resolves its `iconColour` attrMap the same way); with `clusters: []` the attrMap was declared but never consulted by check-element-manifest-conformance.js's cluster-resolution pass, so `glyphColour` reported as an ORPHAN despite the mapping being correct. `glyphSize` has no css: mapping (a custom-property-driven size, not a standard cluster member, same honest gap as sgs/icon's own `iconSize`) and stays an unclaimed orphan by the same precedent."
+        },
+        "noImageLabel": {
+          "label": "No-photo label",
+          "order": 9,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "noImageLabel",
+          "_note": "The label on a fallback tile (noImageLabel, e.g. 'Photo to come') for a card with no image; the same element and setting names as sgs/product-card. Colour resolves by the default {prefix}Colour convention (noImageLabelColour)."
         }
       }
     }
@@ -275,18 +290,36 @@
           },
           "media": {
             "anyOf": [
-              { "type": "string" },
-              { "type": "null" },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              },
               {
                 "type": "object",
                 "properties": {
-                  "url": { "type": "string" },
-                  "type": { "type": "string" },
-                  "id": { "type": "number" },
-                  "alt": { "type": "string" },
-                  "mime": { "type": "string" },
-                  "width": { "type": "number" },
-                  "height": { "type": "number" }
+                  "url": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "number"
+                  },
+                  "alt": {
+                    "type": "string"
+                  },
+                  "mime": {
+                    "type": "string"
+                  },
+                  "width": {
+                    "type": "number"
+                  },
+                  "height": {
+                    "type": "number"
+                  }
                 }
               }
             ],
@@ -321,13 +354,21 @@
           },
           "glyphImage": {
             "anyOf": [
-              { "type": "null" },
+              {
+                "type": "null"
+              },
               {
                 "type": "object",
                 "properties": {
-                  "url": { "type": "string" },
-                  "id": { "type": "number" },
-                  "alt": { "type": "string" }
+                  "url": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "number"
+                  },
+                  "alt": {
+                    "type": "string"
+                  }
                 }
               }
             ],
@@ -866,6 +907,40 @@
       "type": "string",
       "default": "normal",
       "description": "CSS mix-blend-mode for the overlay. Only applies once overlayColour or overlayGradient is set — the control is disabled otherwise. 'normal' = no blend override (today's output). Attribute shape and control mirror sgs/media's overlayBlendMode."
+    },
+    "noImageLabel": {
+      "type": "string",
+      "default": "",
+      "description": "Text shown on a fallback tile (a card with no image, imageFallback on), e.g. 'Photo to come'. Empty = no label. Same setting as sgs/product-card's noImageLabel."
+    },
+    "noImageLabelFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "noImageLabelFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "noImageLabelFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "noImageLabelLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "noImageLabelLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "noImageLabelTextTransform": {
+      "type": "string",
+      "default": ""
+    },
+    "noImageLabelColour": {
+      "type": "string",
+      "default": "",
+      "description": "No-photo label colour. Theme token slug or raw colour. Empty = the tile's text colour at half strength."
     }
   },
   "render": "file:./render.php",

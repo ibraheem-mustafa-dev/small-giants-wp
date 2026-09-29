@@ -162,6 +162,22 @@
 	object-fit: contain;
 }
 
+/* The fallback tile's label ("Photo to come", noImageLabel): small spaced
+   capitals across the top of the tile, the tile's text colour at half
+   strength. The Typography target and colour setting override these. */
+:where(.sgs-card-grid__no-image-label) {
+	position: absolute;
+	inset-inline: 0;
+	top: 15px;
+	z-index: 1;
+	text-align: center;
+	font-size: 11px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: color-mix(in srgb, currentColor 50%, transparent);
+	pointer-events: none;
+}
+
 /* Fallback-only "no glyph set" state — the card title's first letter,
    centred in the tile, on the same backdrop as the glyph icon for the
    same contrast-independent-of-background reason. */
