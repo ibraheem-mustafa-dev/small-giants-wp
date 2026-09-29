@@ -95,6 +95,40 @@
 	color: var(--sgs-social-glyph-hover);
 }
 
+/* Circle style. A brand/ground-coloured disc of --sgs-social-circle diameter
+ * (= iconSize) painted by ::before and centred in an item box that stays
+ * >= 44px, so a 38px disc keeps a WCAG 2.5.8 hit area. Reads the same
+ * --sgs-social-bg property as filled/pill (brand mode sets it per item). */
+.sgs-social-icons--circle .sgs-social-icons__item {
+	position: relative;
+	isolation: isolate;
+	color: var(--wp--preset--color--text-inverse, #fff);
+}
+
+.sgs-social-icons--circle .sgs-social-icons__item::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: -1;
+	width: var(--sgs-social-circle, 38px);
+	height: var(--sgs-social-circle, 38px);
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	background: var(--sgs-social-bg);
+	background-image: var(--sgs-social-bg-gradient, none);
+	transition: inherit;
+}
+
+.sgs-social-icons--circle .sgs-social-icons__item:hover {
+	color: var(--wp--preset--color--text-inverse, #fff);
+}
+
+.sgs-social-icons--circle .sgs-social-icons__item:hover::before {
+	background: var(--sgs-social-bg-hover);
+	background-image: var(--sgs-social-bg-hover-gradient, none);
+}
+
 /* Pill style. Reads the same --sgs-social-bg custom property as the other
  * shaped styles (filled/outlined/pill); render.php emits it from
  * iconBackground/iconBackgroundGradient, so an operator's chosen background

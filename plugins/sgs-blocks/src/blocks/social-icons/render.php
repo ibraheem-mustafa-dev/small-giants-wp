@@ -130,7 +130,7 @@ if ( empty( $icons ) ) {
 }
 
 // Allowlist the style variant so it can never break out of a class/selector.
-$allowed_styles = array( 'plain', 'filled', 'outlined', 'pill', 'boxed' );
+$allowed_styles = array( 'plain', 'filled', 'outlined', 'pill', 'boxed', 'circle' );
 $style_type     = in_array( $style_type_raw, $allowed_styles, true ) ? $style_type_raw : 'plain';
 
 $platform_icons = array(
@@ -392,7 +392,20 @@ $sgs_social_defs_injected = false;
 // itself keeps rendering at the operator-chosen `iconSize` (fixed px, not a
 // 100%-of-parent stretch) so a small glyph gets extra transparent padding
 // instead of being blown up to fill the enlarged hit area.
-$item_size = max( 44, $icon_size + ( 'plain' === $style_type ? 0 : 16 ) );
+// `circle`: iconSize is the painted disc diameter (a ::before, style.css), the
+// glyph is half of it, and the item box stays >= 44px so a 38px disc keeps a
+// 44px hit area.
+$circle_glyph_size = (int) ( $attributes['circleGlyphSize'] ?? 0 );
+$glyph_size        = $icon_size;
+if ( 'circle' === $style_type ) {
+	$glyph_size = $circle_glyph_size > 0 ? min( $circle_glyph_size, $icon_size ) : (int) round( $icon_size * 0.5 );
+}
+if ( 'circle' === $style_type ) {
+	$item_size = max( 44, $icon_size );
+	$scoped_css[] = "{$root_sel}.sgs-social-icons--circle{--sgs-social-circle:{$icon_size}px;}";
+} else {
+	$item_size = max( 44, $icon_size + ( 'plain' === $style_type ? 0 : 16 ) );
+}
 if ( $show_labels ) {
 	// A visible label needs the item box to grow with its text rather than
 	// stay a fixed icon-only square — height keeps the same touch-target
@@ -402,7 +415,7 @@ if ( $show_labels ) {
 } else {
 	$scoped_css[] = "{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}";
 }
-$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{width:{$icon_size}px;height:{$icon_size}px;}";
+$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{width:{$glyph_size}px;height:{$glyph_size}px;}";
 
 // --- Base spacing (padding/margin) + WP colour support — skip-serialised in
 // block.json, emitted scoped via the stable core style engine (contract §B). ---
@@ -558,7 +571,10 @@ foreach ( $icons as $icon_item ) {
 		// for why these four platforms can't use their Lucide entry as-is.
 		// Every other platform keeps resolving through the Lucide map below,
 		// unchanged.
-		$brand_icon_svg = sgs_social_icons_get_brand_icon( $platform, $colour_mode );
+		// The circle style paints a brand-coloured disc behind the glyph, so the
+		// glyph must be a flat (currentColor, white) mark: the four-colour Google
+		// "G" would vanish into the red disc.
+		$brand_icon_svg = sgs_social_icons_get_brand_icon( $platform, 'circle' === $style_type ? 'theme' : $colour_mode );
 		if ( '' !== $brand_icon_svg ) {
 			$glyph_html = $brand_icon_svg;
 		} else {
@@ -593,6 +609,19 @@ foreach ( $icons as $icon_item ) {
 		$brand_hex    = $platform_brand_colours[ $platform ] ?? $platform_brand_colours['custom'];
 		$brand_value  = sgs_colour_value( $brand_hex );
 		$scoped_css[] = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}";
+	}
+
+	// Per-item colour override (icons[].colour / .colourHover): wins over the
+	// brand/theme value for this item only, scoped nth-child, no inline style.
+	$item_colour       = isset( $icon_item['colour'] ) && is_string( $icon_item['colour'] ) ? trim( $icon_item['colour'] ) : '';
+	$item_colour_hover = isset( $icon_item['colourHover'] ) && is_string( $icon_item['colourHover'] ) ? trim( $icon_item['colourHover'] ) : '';
+	if ( '' !== $item_colour ) {
+		$item_value   = sgs_colour_value( $item_colour );
+		$scoped_css[] = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$item_value};--sgs-social-border:{$item_value};--sgs-social-glyph:{$item_value};}";
+	}
+	if ( '' !== $item_colour_hover ) {
+		$item_hover_value = sgs_colour_value( $item_colour_hover );
+		$scoped_css[]     = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg-hover:{$item_hover_value};--sgs-social-border-hover:{$item_hover_value};--sgs-social-glyph-hover:{$item_hover_value};}";
 	}
 
 	if ( $show_labels ) {

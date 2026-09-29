@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { Button, PanelBody, RangeControl, ToggleControl } from '@wordpress/components';
 import { IconPicker, ResponsiveOverride, SgsLengthControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import OrnamentFramesControls from './OrnamentFramesControls';
 
 const ORNAMENT_OPTIONS = [
 	{ value: 'none', label: __( 'None', 'sgs-blocks' ) },
@@ -172,6 +173,7 @@ export default function RowExtrasPanel( { attributes, setAttributes } ) {
 							onChange={ ( obj ) => setAttributes( { itemOrnamentRevealMode: obj } ) }
 						/>
 					) }
+					{ usesIcon && <OrnamentFramesControls attributes={ attributes } setAttributes={ setAttributes } /> }
 					{ usesIcon && usesHoverDraw && (
 						<ToggleControl
 							label={ __( 'Reserve ornament space at rest', 'sgs-blocks' ) }

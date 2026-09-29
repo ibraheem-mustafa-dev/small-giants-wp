@@ -920,6 +920,140 @@ if ( $sgs_mm_in_drawer ) {
 $css .= '@media (max-width: 1023px){' . $stack_rules . '}';
 
 // ---------------------------------------------------------------------------
+// 6b. In the drawer (Spec 36 FR-36-6). The drawer copy of a panel paints its
+// own ground, link rows and aside card from the `drawer*` attributes, so a
+// client's drawer look is a set of inspector controls, never a fork of the
+// panel post. Everything below is emitted ONLY for the drawer context and only
+// for a control the operator has set (an empty attribute emits nothing), so
+// the bar copy and an untouched drawer copy are unchanged. Each selector is
+// rooted on this instance's own uid class, which out-specifies the child
+// blocks' own single-class scoped rules (sgs/text, sgs/heading, sgs/container)
+// without `!important`.
+//
+// Structure the rules key on (the "link rows + one feature card" preset the
+// Indus About panel is built from):
+//   link row     = a direct-child sgs/container of `.sgs-mega-group`
+//   row number   = the row's direct-child sgs/text
+//   row label    = an sgs/heading inside the row
+//   row desc     = an sgs/text inside a nested container of the row
+//   card slots   = the aside's direct children in order: media frame, tag,
+//                  title, description, link (the mega-aside five-slot order)
+// ---------------------------------------------------------------------------
+if ( $sgs_mm_in_drawer ) {
+	$sgs_dv_len    = static function ( string $key ) use ( $attributes ): string {
+		return sgs_css_single_length_value( isset( $attributes[ $key ] ) && is_string( $attributes[ $key ] ) ? trim( $attributes[ $key ] ) : '' );
+	};
+	$sgs_dv_aside  = $root_sel . '.sgs-mega-panel--in-drawer .sgs-mega-aside';
+	$sgs_dv_col    = static function ( string $key ) use ( $attributes ): string {
+		return isset( $attributes[ $key ] ) && is_string( $attributes[ $key ] ) && '' !== trim( $attributes[ $key ] )
+			? sgs_colour_value( trim( $attributes[ $key ] ) )
+			: '';
+	};
+	// A 1-4 token padding shorthand, each token a validated single length.
+	$sgs_dv_box    = static function ( string $key ) use ( $attributes ): string {
+		$raw    = isset( $attributes[ $key ] ) && is_string( $attributes[ $key ] ) ? trim( $attributes[ $key ] ) : '';
+		$tokens = '' === $raw ? array() : preg_split( '/\s+/', $raw );
+		if ( ! is_array( $tokens ) || count( $tokens ) > 4 ) {
+			return '';
+		}
+		$out = array();
+		foreach ( $tokens as $token ) {
+			$len = sgs_css_single_length_value( $token );
+			if ( '' === $len ) {
+				return '';
+			}
+			$out[] = $len;
+		}
+		return implode( ' ', $out );
+	};
+	$sgs_dv_decl   = static function ( string $prop, string $value ): string {
+		return '' !== $value ? $prop . ':' . $value . ';' : '';
+	};
+
+	// Ground: the drawer copy is transparent unless a ground is set, so the
+	// drawer's own fill shows through.
+	$sgs_dv_bg = $sgs_dv_col( 'drawerBg' );
+	$css      .= $root_sel . '{background-color:' . ( '' !== $sgs_dv_bg ? $sgs_dv_bg : 'transparent' ) . ';background-image:none;}';
+
+	// Link rows.
+	$sgs_dv_row = $group_sel . ' > .wp-block-sgs-container';
+	$sgs_dv_row_decls = $sgs_dv_decl( 'border-color', $sgs_dv_col( 'drawerLinkDivider' ) )
+		. $sgs_dv_decl( 'min-height', $sgs_dv_len( 'drawerLinkMinHeight' ) )
+		. ( '' !== $sgs_dv_len( 'drawerLinkMinHeight' ) ? 'box-sizing:border-box;' : '' );
+	$sgs_dv_pad_y     = $sgs_dv_len( 'drawerLinkPaddingY' );
+	if ( '' !== $sgs_dv_pad_y ) {
+		$sgs_dv_row_decls .= 'padding-top:' . $sgs_dv_pad_y . ';padding-bottom:' . $sgs_dv_pad_y . ';';
+	}
+	if ( '' !== $sgs_dv_row_decls ) {
+		$css .= $sgs_dv_row . '{' . $sgs_dv_row_decls . '}';
+	}
+	$sgs_dv_parts = array(
+		$sgs_dv_row . ' > .wp-block-sgs-text'                                   => array( 'drawerLinkNumColour', 'drawerLinkNumSize' ),
+		$sgs_dv_row . ' .wp-block-sgs-heading'                                  => array( 'drawerLinkLabelColour', 'drawerLinkLabelSize' ),
+		$sgs_dv_row . ' .wp-block-sgs-container .wp-block-sgs-text'             => array( 'drawerLinkDescColour', 'drawerLinkDescSize' ),
+	);
+	foreach ( $sgs_dv_parts as $sgs_dv_sel => $sgs_dv_keys ) {
+		$sgs_dv_decls = $sgs_dv_decl( 'color', $sgs_dv_col( $sgs_dv_keys[0] ) ) . $sgs_dv_decl( 'font-size', $sgs_dv_len( $sgs_dv_keys[1] ) );
+		if ( '' !== $sgs_dv_decls ) {
+			$css .= $sgs_dv_sel . '{' . $sgs_dv_decls . '}';
+		}
+	}
+
+	// Aside position: `first` lifts the aside above the groups through `order`
+	// on the (flex or grid) content row; `last` keeps source order.
+	$sgs_dv_order_first = isset( $attributes['drawerAsideOrder'] ) && 'first' === $attributes['drawerAsideOrder'];
+	if ( $sgs_dv_order_first ) {
+		$css .= $sgs_dv_aside . '{order:-1;}';
+	}
+
+	// Aside card.
+	$sgs_dv_card_decls = $sgs_dv_decl( 'background-color', $sgs_dv_col( 'drawerCardBg' ) );
+	$sgs_dv_card_space = $sgs_dv_len( 'drawerCardSpacing' );
+	if ( '' !== $sgs_dv_card_space ) {
+		$sgs_dv_card_decls .= ( $sgs_dv_order_first ? 'margin-bottom:' : 'margin-top:' ) . $sgs_dv_card_space . ';';
+	}
+	if ( ! empty( $attributes['drawerCardCompact'] ) ) {
+		$sgs_dv_thumb  = $sgs_dv_len( 'drawerCardThumbSize' );
+		$sgs_dv_thumb  = '' !== $sgs_dv_thumb ? $sgs_dv_thumb : '64px';
+		$sgs_dv_gap    = $sgs_dv_len( 'drawerCardGap' );
+		$sgs_dv_border = $sgs_dv_col( 'drawerCardBorderColour' );
+		$sgs_dv_radius = $sgs_dv_len( 'drawerCardRadius' );
+		$sgs_dv_pad    = $sgs_dv_len( 'drawerCardPadding' );
+
+		$css .= $sgs_dv_aside . '{display:grid;grid-template-columns:' . $sgs_dv_thumb . ' minmax(0,1fr);column-gap:' . ( '' !== $sgs_dv_gap ? $sgs_dv_gap : '14px' ) . ';align-items:center;align-content:center;flex:none;width:100%;'
+			. 'border:' . ( '' !== $sgs_dv_border ? '1px solid ' . $sgs_dv_border : '0' ) . ';'
+			. 'border-radius:' . ( '' !== $sgs_dv_radius ? $sgs_dv_radius : '0' ) . ';'
+			. 'padding:' . ( '' !== $sgs_dv_pad ? $sgs_dv_pad : '0' ) . ';'
+			. $sgs_dv_card_decls . '}';
+		// Slot 1 (media frame) is the thumbnail, spanning the tag, title and link rows.
+		$css .= $sgs_dv_aside . ' > :nth-child(1){grid-column:1;grid-row:1 / span 3;width:' . $sgs_dv_thumb . ';height:' . $sgs_dv_thumb . ';min-height:0;margin:0;overflow:hidden;}';
+		$css .= $sgs_dv_aside . ' > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:0 0 6px;}';
+		$css .= $sgs_dv_aside . ' > :nth-child(3){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:normal;}';
+		$css .= $sgs_dv_aside . ' > :nth-child(4){display:none;}';
+		$css .= $sgs_dv_aside . ' > :nth-child(5){grid-column:2;grid-row:3;margin:6px 0 0;}';
+
+		$sgs_dv_tag_size = $sgs_dv_len( 'drawerCardTagSize' );
+		$sgs_dv_tag_pad  = $sgs_dv_box( 'drawerCardTagPadding' );
+		if ( '' !== $sgs_dv_tag_size || '' !== $sgs_dv_tag_pad ) {
+			$css .= $sgs_dv_aside . ' > :nth-child(2) .wp-block-sgs-label{'
+				. $sgs_dv_decl( 'font-size', $sgs_dv_tag_size )
+				. $sgs_dv_decl( 'padding', $sgs_dv_tag_pad )
+				. ( '' !== $sgs_dv_tag_size ? 'line-height:1.5;' : '' ) . '}';
+		}
+		$sgs_dv_title_size = $sgs_dv_len( 'drawerCardTitleSize' );
+		if ( '' !== $sgs_dv_title_size ) {
+			$css .= $sgs_dv_aside . ' > :nth-child(3){font-size:' . $sgs_dv_title_size . ';}';
+		}
+		$sgs_dv_link_size = $sgs_dv_len( 'drawerCardLinkSize' );
+		if ( '' !== $sgs_dv_link_size ) {
+			$css .= $sgs_dv_aside . ' > :nth-child(5) .sgs-button{font-size:' . $sgs_dv_link_size . ';line-height:1.5;}';
+		}
+	} elseif ( '' !== $sgs_dv_card_decls ) {
+		$css .= $sgs_dv_aside . '{' . $sgs_dv_card_decls . '}';
+	}
+}
+
+// ---------------------------------------------------------------------------
 // 7. Brands eyebrow — a small mono micro-label rendered above the
 // content row. Spans the FULL row (not just the left column); see the
 // `brandsEyebrow` attribute note in block.json for why

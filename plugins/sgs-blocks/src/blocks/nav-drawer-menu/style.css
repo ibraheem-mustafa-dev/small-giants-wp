@@ -263,6 +263,104 @@
 	position: absolute;
 }
 
+/*
+ * Ornament frame sequence (includes/nav-drawer-menu-ornament-frames.php).
+ * The frames are stacked over the settled glyph and transparent at rest. On row
+ * hover or keyboard focus frame N flashes for one `--sgs-ndm-frame-ms` slot,
+ * delayed by N slots, while the settled glyph is held transparent for the whole
+ * sequence (`--sgs-ndm-frame-n` slots) and then shows as normal. The per-tier
+ * animation names `--sgs-ndm-frame-flash` / `--sgs-ndm-frame-hide` are `none`
+ * where the sequence is switched off. Every animation rule sits inside
+ * `prefers-reduced-motion: no-preference`, so reduced motion shows only the
+ * final glyph and never flashes.
+ */
+.sgs-nav-drawer-menu__ornament-frames {
+	inset: 0;
+	pointer-events: none;
+	position: absolute;
+}
+
+.sgs-nav-drawer-menu__ornament-frame {
+	display: block;
+	height: 100%;
+	inset: 0;
+	opacity: 0;
+	position: absolute;
+	width: 100%;
+}
+
+.sgs-nav-drawer-menu__ornament-frame svg {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+@keyframes sgs-ndm-frame-flash {
+	from,
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes sgs-ndm-frame-hide {
+	from,
+	to {
+		opacity: 0;
+	}
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(1) {
+	--sgs-ndm-frame-i: 0;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(2) {
+	--sgs-ndm-frame-i: 1;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(3) {
+	--sgs-ndm-frame-i: 2;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(4) {
+	--sgs-ndm-frame-i: 3;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(5) {
+	--sgs-ndm-frame-i: 4;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(6) {
+	--sgs-ndm-frame-i: 5;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(7) {
+	--sgs-ndm-frame-i: 6;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(8) {
+	--sgs-ndm-frame-i: 7;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	@media (hover: hover) and (pointer: fine) {
+		.sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-frame {
+			animation: var(--sgs-ndm-frame-flash, sgs-ndm-frame-flash) var(--sgs-ndm-frame-ms, 60ms) linear calc(var(--sgs-ndm-frame-i, 0) * var(--sgs-ndm-frame-ms, 60ms));
+		}
+
+		.sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-glyph {
+			animation: var(--sgs-ndm-frame-hide, sgs-ndm-frame-hide) calc(var(--sgs-ndm-frame-n, 1) * var(--sgs-ndm-frame-ms, 60ms)) linear;
+		}
+	}
+
+	.sgs-nav-drawer-menu__link:focus-visible .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-frame {
+		animation: var(--sgs-ndm-frame-flash, sgs-ndm-frame-flash) var(--sgs-ndm-frame-ms, 60ms) linear calc(var(--sgs-ndm-frame-i, 0) * var(--sgs-ndm-frame-ms, 60ms));
+	}
+
+	.sgs-nav-drawer-menu__link:focus-visible .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-glyph {
+		animation: var(--sgs-ndm-frame-hide, sgs-ndm-frame-hide) calc(var(--sgs-ndm-frame-n, 1) * var(--sgs-ndm-frame-ms, 60ms)) linear;
+	}
+}
+
 /* Per-item media: the linked page's featured image, beside the label. */
 .sgs-nav-drawer-menu__media {
 	display: var(--sgs-ndm-media-display, none);

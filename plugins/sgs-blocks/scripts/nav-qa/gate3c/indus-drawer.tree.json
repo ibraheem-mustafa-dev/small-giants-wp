@@ -211,6 +211,7 @@
           "colourMode": "brand",
           "iconStyle": "circle",
           "iconSize": 38,
+          "circleGlyphSize": 15,
           "gap": "12px",
           "textAlign": "center",
           "margin": {
@@ -231,11 +232,13 @@
             },
             {
               "platform": "google",
+              "colour": "#EA4335",
               "url": "#",
               "label": "Google"
             },
             {
               "platform": "instagram",
+              "colour": "#E1306C",
               "url": "#",
               "label": "Instagram"
             }

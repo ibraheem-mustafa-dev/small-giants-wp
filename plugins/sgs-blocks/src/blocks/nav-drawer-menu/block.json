@@ -1212,6 +1212,24 @@
 			"default": false,
 			"description": "G-6 (2026-09-28). When itemOrnamentRevealMode is 'hover-draw', the ornament is invisible at rest; this keeps its layout box (width + gap) reserved at rest too, so the label text does not shift indent when the ornament draws in on hover. Off by default (the ornament's box collapses at rest, matching itemOrnament's own resting behaviour)."
 		},
+		"itemOrnamentFrames": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object"
+			},
+			"description": "Ornament frame sequence: an ordered list of alternate glyph frames, each a custom SVG ({source:'custom', svg}, re-sanitised server-side with sgs_svg_kses_allowed_tags(), at most 8). On row hover or keyboard focus they flash in order, one slot each, before the ornament settles on its resting (or hover) glyph. Pure CSS (includes/nav-drawer-menu-ornament-frames.php); frames are aria-hidden and prefers-reduced-motion shows only the final glyph. Empty (default) renders exactly as before. Icon ornaments only."
+		},
+		"itemOrnamentFrameDuration": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier ({desktop,tablet,mobile}), the milliseconds each ornament frame is shown (10 to 1000). Unset is 60."
+		},
+		"itemOrnamentFramePlay": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier ({desktop,tablet,mobile}), 'on' or 'off': whether the ornament frame sequence plays at that device size. Unset is on (when itemOrnamentFrames has frames)."
+		},
 		"itemTrailingIcons": {
 			"type": "object",
 			"default": {},

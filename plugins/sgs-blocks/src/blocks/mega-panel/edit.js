@@ -248,6 +248,29 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderRadius,
 		asideWidth,
 		asideSeparator,
+		drawerBg,
+		drawerAsideOrder,
+		drawerLinkNumColour,
+		drawerLinkNumSize,
+		drawerLinkLabelColour,
+		drawerLinkLabelSize,
+		drawerLinkDescColour,
+		drawerLinkDescSize,
+		drawerLinkDivider,
+		drawerLinkMinHeight,
+		drawerLinkPaddingY,
+		drawerCardCompact,
+		drawerCardBg,
+		drawerCardBorderColour,
+		drawerCardRadius,
+		drawerCardPadding,
+		drawerCardGap,
+		drawerCardSpacing,
+		drawerCardThumbSize,
+		drawerCardTagSize,
+		drawerCardTagPadding,
+		drawerCardTitleSize,
+		drawerCardLinkSize,
 		brandsEyebrow,
 		brandsEyebrowFontFamily,
 		brandsEyebrowFontSize,
@@ -1175,6 +1198,221 @@ export default function Edit( { attributes, setAttributes } ) {
 						mediaType="image"
 						scope="element"
 					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'In the drawer', 'sgs-blocks' ) } initialOpen={ false }>
+					<p className="sgs-mega-panel-editor-note">
+						{ __(
+							'Applies only when this panel renders inside the mobile drawer. Empty values leave the drawer copy as it is.',
+							'sgs-blocks'
+						) }
+					</p>
+					<SgsColourPanel
+						rows={ [
+							{
+								key: 'drawerBg',
+								label: __( 'Drawer ground', 'sgs-blocks' ),
+								states: [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: drawerBg,
+										onChange: ( val ) => setAttributes( { drawerBg: val ?? '' } ),
+										linked: true,
+									},
+								],
+							},
+							{
+								key: 'drawerLinkNumColour',
+								label: __( 'Link number colour', 'sgs-blocks' ),
+								states: [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: drawerLinkNumColour,
+										onChange: ( val ) => setAttributes( { drawerLinkNumColour: val ?? '' } ),
+										linked: true,
+									},
+								],
+							},
+							{
+								key: 'drawerLinkLabelColour',
+								label: __( 'Link label colour', 'sgs-blocks' ),
+								states: [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: drawerLinkLabelColour,
+										onChange: ( val ) => setAttributes( { drawerLinkLabelColour: val ?? '' } ),
+										linked: true,
+									},
+								],
+							},
+							{
+								key: 'drawerLinkDescColour',
+								label: __( 'Link description colour', 'sgs-blocks' ),
+								states: [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: drawerLinkDescColour,
+										onChange: ( val ) => setAttributes( { drawerLinkDescColour: val ?? '' } ),
+										linked: true,
+									},
+								],
+							},
+							{
+								key: 'drawerLinkDivider',
+								label: __( 'Link divider colour', 'sgs-blocks' ),
+								states: [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: drawerLinkDivider,
+										onChange: ( val ) => setAttributes( { drawerLinkDivider: val ?? '' } ),
+										linked: true,
+									},
+								],
+							},
+							{
+								key: 'drawerCardBg',
+								label: __( 'Card ground', 'sgs-blocks' ),
+								states: [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: drawerCardBg,
+										onChange: ( val ) => setAttributes( { drawerCardBg: val ?? '' } ),
+										linked: true,
+									},
+								],
+							},
+							{
+								key: 'drawerCardBorderColour',
+								label: __( 'Card border colour', 'sgs-blocks' ),
+								states: [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: drawerCardBorderColour,
+										onChange: ( val ) => setAttributes( { drawerCardBorderColour: val ?? '' } ),
+										linked: true,
+									},
+								],
+							},
+						] }
+					/>
+					<ToggleGroupControl
+						label={ __( 'Side card position', 'sgs-blocks' ) }
+						value={ drawerAsideOrder || 'last' }
+						onChange={ ( value ) => setAttributes( { drawerAsideOrder: value || 'last' } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="first" label={ __( 'Above links', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="last" label={ __( 'Below links', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
+					<SgsLengthControl
+						label={ __( 'Link number size', 'sgs-blocks' ) }
+						value={ drawerLinkNumSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerLinkNumSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Link label size', 'sgs-blocks' ) }
+						value={ drawerLinkLabelSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerLinkLabelSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Link description size', 'sgs-blocks' ) }
+						value={ drawerLinkDescSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerLinkDescSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Link row minimum height', 'sgs-blocks' ) }
+						value={ drawerLinkMinHeight || '' }
+						onChange={ ( value ) => setAttributes( { drawerLinkMinHeight: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Link row vertical padding', 'sgs-blocks' ) }
+						value={ drawerLinkPaddingY || '' }
+						onChange={ ( value ) => setAttributes( { drawerLinkPaddingY: value || '' } ) }
+						presets={ false }
+					/>
+					<ToggleControl
+						label={ __( 'Compact side card', 'sgs-blocks' ) }
+						help={ __(
+							'Shows the side panel as a thumbnail, tag, title and link in a row. The description is hidden.',
+							'sgs-blocks'
+						) }
+						checked={ !! drawerCardCompact }
+						onChange={ ( value ) => setAttributes( { drawerCardCompact: !! value } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SgsLengthControl
+						label={ __( 'Card spacing from links', 'sgs-blocks' ) }
+						value={ drawerCardSpacing || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardSpacing: value || '' } ) }
+						presets={ false }
+					/>
+					{ drawerCardCompact && (
+						<>
+					<SgsLengthControl
+						label={ __( 'Card corner radius', 'sgs-blocks' ) }
+						value={ drawerCardRadius || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardRadius: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card padding', 'sgs-blocks' ) }
+						value={ drawerCardPadding || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardPadding: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card thumbnail gap', 'sgs-blocks' ) }
+						value={ drawerCardGap || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardGap: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card thumbnail size', 'sgs-blocks' ) }
+						value={ drawerCardThumbSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardThumbSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card tag size', 'sgs-blocks' ) }
+						value={ drawerCardTagSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardTagSize: value || '' } ) }
+						presets={ false }
+					/>
+							<TextControl
+								label={ __( 'Card tag padding', 'sgs-blocks' ) }
+								help={ __( '1 to 4 lengths, e.g. 3px 8px.', 'sgs-blocks' ) }
+								value={ drawerCardTagPadding || '' }
+								onChange={ ( value ) => setAttributes( { drawerCardTagPadding: value || '' } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+					<SgsLengthControl
+						label={ __( 'Card title size', 'sgs-blocks' ) }
+						value={ drawerCardTitleSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardTitleSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card link size', 'sgs-blocks' ) }
+						value={ drawerCardLinkSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardLinkSize: value || '' } ) }
+						presets={ false }
+					/>
+						</>
+					) }
 				</PanelBody>
 
 				{ /* SgsBorderControl: width + style + colour (+ gradient) — borderWidth/
