@@ -385,6 +385,10 @@
 .sgs-nav-drawer-menu__mega-body {
 	display: block;
 	list-style: none;
+}
+
+/* The panel's default inset, de-specified so a scoped padding setting wins. */
+:where(.sgs-nav-drawer-menu__mega-body) {
 	padding: 0 12px 12px;
 }
 
