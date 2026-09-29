@@ -200,7 +200,16 @@ async function walkSide( browser, side, width ) {
 }
 
 // Headed by default: the Hostinger sites answer a headless browser with a 403 bot challenge.
-const browser = await chromium.launch( { headless: argv.includes( '--headless' ), args: [ '--hide-scrollbars' ] } );
+// Cloud sessions reach the sites through an HTTPS proxy whose certificate Chromium must trust:
+// PARITY_PROXY_SPKI (the proxy CA's SPKI hash) trusts that one key and routes through HTTPS_PROXY;
+// PARITY_CHROMIUM points at the installed browser. Unset (a local run), nothing changes.
+const cloudProxy = process.env.PARITY_PROXY_SPKI && process.env.HTTPS_PROXY;
+const browser = await chromium.launch( {
+	headless: argv.includes( '--headless' ),
+	args: [ '--hide-scrollbars', ...( cloudProxy ? [ '--ignore-certificate-errors-spki-list=' + process.env.PARITY_PROXY_SPKI ] : [] ) ],
+	...( cloudProxy ? { proxy: { server: process.env.HTTPS_PROXY } } : {} ),
+	...( process.env.PARITY_CHROMIUM ? { executablePath: process.env.PARITY_CHROMIUM } : {} ),
+} );
 const results = { config: cfg.name, when: new Date().toISOString(), injectCss, injectJs, runs: [], errors: {} };
 for ( const width of widths ) {
 	const draft = await walkSide( browser, 'draft', width );

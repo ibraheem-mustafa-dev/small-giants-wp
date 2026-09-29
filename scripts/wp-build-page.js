@@ -229,7 +229,14 @@ async function main() {
 		console.error( `[warn] per-device shape check skipped (framework DB not readable: ${ String( e.message ).split( /\r?\n/ )[ 0 ] })` );
 	}
 
-	const browser = await chromium.launch( { headless: true } );
+	// Cloud sessions: the same opt-in proxy trust as scripts/parity/draft-live-walk.mjs
+	// (PARITY_PROXY_SPKI + HTTPS_PROXY, PARITY_CHROMIUM). Unset (a local run), nothing changes.
+	const cloudProxy = process.env.PARITY_PROXY_SPKI && process.env.HTTPS_PROXY;
+	const browser = await chromium.launch( {
+		headless: true,
+		...( cloudProxy ? { proxy: { server: process.env.HTTPS_PROXY }, args: [ '--ignore-certificate-errors-spki-list=' + process.env.PARITY_PROXY_SPKI ] } : {} ),
+		...( process.env.PARITY_CHROMIUM ? { executablePath: process.env.PARITY_CHROMIUM } : {} ),
+	} );
 	const page = await ( await browser.newContext( { ignoreHTTPSErrors: true } ) ).newPage();
 	try {
 		try {

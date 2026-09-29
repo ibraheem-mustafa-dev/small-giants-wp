@@ -230,6 +230,12 @@ export default {
 			...[ 'border-bottom-width', 'border-bottom-color', 'padding-bottom' ].map( ( key ) => ( { pair, kind: 'style', key, reason: 'The link\'s line under its words is a text underline, not a bottom border, so it stays under the words inside the 44px touch target (Bean 2026-09-27)' } ) ),
 			{ pair, kind: 'hover', key: 'text-decoration-line', reason: 'The underline is the resting look and stays on hover, as the draft\'s bottom border does' },
 		] ),
+		// The hero's entrance is a script animation (animation-observer.js, element.animate()), cancelled
+		// once it finishes, so a sample after load reads "none" where the draft's CSS animation stays
+		// listed. Recorded on the live page (2026-09-29, Element.prototype.animate wrapped before load):
+		// label 150ms delay / 800ms / ease, headline 280 / 900 / ease, subtext 420 / 900 / ease — the
+		// draft's 0.15s/0.8s, 0.28s/0.9s and 0.42s/0.9s ease exactly.
+		...[ 'hero-label', 'hero-heading', 'hero-subtext' ].map( ( pair ) => ( { pair, kind: 'motion', reason: 'Script entrance (element.animate), cancelled when finished; recorded live 2026-09-29 at the draft\'s exact delay, duration and curve' } ) ),
 		// The review arrows' inner padding: a 40px round button whose icon is centred either way; the
 		// painted box matches the draft's, so the 1px 6px padding paints nothing.
 		...[ 'review-arrow-prev', 'review-arrow-next' ].flatMap( ( pair ) => [ 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ].map( ( key ) => ( { pair, kind: 'style', key, reason: 'Inner padding of a fixed 40px round arrow whose icon is centred; the painted box matches the draft' } ) ) ),
