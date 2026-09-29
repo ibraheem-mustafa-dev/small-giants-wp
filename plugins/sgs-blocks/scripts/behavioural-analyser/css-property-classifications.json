@@ -436,7 +436,7 @@
       "slug": "sgs/brand-strip",
       "attr": "columns",
       "fields": {
-        "css_property": "height,max-width,min-width,width",
+        "css_property": "height,max-width,width",
         "css_tier": "desktop",
         "css_layer": "OUTER"
       }
@@ -8993,6 +8993,15 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "stepGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
@@ -14540,6 +14549,22 @@
     },
     {
       "slug": "sgs/brand-strip",
+      "attr": "brandTextDividerColour",
+      "fields": {
+        "css_property": "border-inline-end-color",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextDividerWidth",
+      "fields": {
+        "css_property": "border-inline-end-width",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
       "attr": "brandTextFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -14567,6 +14592,14 @@
       "attr": "brandTextLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextMinWidth",
+      "fields": {
+        "css_property": "min-width",
         "css_element": "brand-text"
       }
     },
@@ -15603,6 +15636,15 @@
       "attr": "borderWidth",
       "fields": {
         "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "boxAspectRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
