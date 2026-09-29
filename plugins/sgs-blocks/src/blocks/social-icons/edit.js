@@ -96,6 +96,7 @@ const STYLE_OPTIONS = [
 	{ label: __( 'Outlined', 'sgs-blocks' ), value: 'outlined' },
 	{ label: __( 'Boxed', 'sgs-blocks' ), value: 'boxed' },
 	{ label: __( 'Pill', 'sgs-blocks' ), value: 'pill' },
+	{ label: __( 'Circle (icon size = disc diameter)', 'sgs-blocks' ), value: 'circle' },
 ];
 
 const COLOUR_MODE_OPTIONS = [
@@ -129,6 +130,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		source,
 		icons,
 		iconSize,
+		circleGlyphSize,
 		iconBackground,
 		iconBackgroundGradient,
 		iconBackgroundHover,
@@ -229,7 +231,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	// always renders at the operator-chosen iconSize. Using the real value
 	// here (not a fixed box) means a real SVG at iconSize always fits inside
 	// a box floored at 44px.
-	const itemSize = Math.max( 44, iconSize + ( 'plain' === iconStyle ? 0 : 16 ) );
+	const itemSize = 'circle' === iconStyle ? Math.max( 44, iconSize ) : Math.max( 44, iconSize + ( 'plain' === iconStyle ? 0 : 16 ) );
+	const glyphSize = 'circle' === iconStyle
+		? ( circleGlyphSize > 0 ? Math.min( circleGlyphSize, iconSize ) : Math.round( iconSize * 0.5 ) )
+		: iconSize;
 
 	// iconBorderColourGradient real mechanism (render.php): a masked
 	// `::before` ring via `sgs_border_gradient_css()`, scoped to
@@ -464,6 +469,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ 'circle' === iconStyle && (
+						<RangeControl
+							label={ __( 'Glyph size in circle (px)', 'sgs-blocks' ) }
+							help={ __( '0 = automatic (half the circle size).', 'sgs-blocks' ) }
+							value={ circleGlyphSize || 0 }
+							onChange={ ( val ) => setAttributes( { circleGlyphSize: val ?? 0 } ) }
+							min={ 0 }
+							max={ 48 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 					<SpacingControl
 						label={ __( 'Gap', 'sgs-blocks' ) }
 						value={ gap }
@@ -557,6 +574,24 @@ export default function Edit( { attributes, setAttributes } ) {
 								help={ __( 'Accessible name (aria-label), auto-generated. Edit to override — leave empty to keep the auto default shown above.', 'sgs-blocks' ) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
+							/>
+							<DesignTokenPicker
+								label={ __( 'Icon colour (this icon only)', 'sgs-blocks' ) }
+								help={ __( 'Overrides the brand or theme colour for this icon. Leave empty to keep it.', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: icon.colour || '',
+										onChange: ( val ) => updateIcon( index, 'colour', val ?? '' ),
+									},
+									{
+										key: 'hover',
+										label: __( 'Hover', 'sgs-blocks' ),
+										value: icon.colourHover || '',
+										onChange: ( val ) => updateIcon( index, 'colourHover', val ?? '' ),
+									},
+								] }
 							/>
 							{ 'custom' === icon.platform && (
 								<MediaUploadCheck>
@@ -696,13 +731,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								   rather than reimplementing it here. */ }
 								<BrandIconGlyph
 									platform={ platform }
-									size={ iconSize }
+									size={ glyphSize }
 									colourMode={ colourMode }
 									fallback={ (
 										<IconPreview
 											source="lucide"
 											name={ PLATFORM_ICONS[ platform ] || 'link' }
-											size={ iconSize }
+											size={ glyphSize }
 											gradient={ iconGlyphColourGradient }
 										/>
 									) }
@@ -724,25 +759,27 @@ export default function Edit( { attributes, setAttributes } ) {
 							className="sgs-social-icons__item"
 							style={ {
 								...itemBoxSizeStyle,
-								color: 'brand' === colourMode
-									? ( PLATFORM_BRAND_COLOURS[ icon.platform ] || PLATFORM_BRAND_COLOURS.custom )
-									: undefined,
+								color: icon.colour
+									? resolveColourToken( icon.colour, palette )
+									: ( 'brand' === colourMode
+										? ( PLATFORM_BRAND_COLOURS[ icon.platform ] || PLATFORM_BRAND_COLOURS.custom )
+										: undefined ),
 								borderImage: itemBorderImage,
 							} }
 						>
 							<span className="sgs-social-icons__icon" aria-hidden="true">
 								{ 'custom' === icon.platform && icon.customIconUrl ? (
-									<img src={ icon.customIconUrl } alt="" width={ iconSize } height={ iconSize } />
+									<img src={ icon.customIconUrl } alt="" width={ glyphSize } height={ glyphSize } />
 								) : (
 									<BrandIconGlyph
 										platform={ icon.platform }
-										size={ iconSize }
+										size={ glyphSize }
 										colourMode={ colourMode }
 										fallback={ (
 											<IconPreview
 												source="lucide"
 												name={ PLATFORM_ICONS[ icon.platform ] || 'link' }
-												size={ iconSize }
+												size={ glyphSize }
 												gradient={ iconGlyphColourGradient }
 											/>
 										) }
