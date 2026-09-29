@@ -476,6 +476,12 @@
               "bottom": "26px",
               "left": "26px"
             }
+          },
+          "asideGap": {
+            "desktop": "0px"
+          },
+          "asideJustify": {
+            "desktop": "center"
           }
         },
         "innerBlocks": [
@@ -628,6 +634,12 @@
                   "opacityHover": 0.75,
                   "minHeight": {
                     "desktop": "0px"
+                  },
+                  "iconGap": {
+                    "desktop": "8px"
+                  },
+                  "contentAlign": {
+                    "desktop": "flex-start"
                   }
                 }
               }

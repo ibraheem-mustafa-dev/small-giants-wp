@@ -87,7 +87,20 @@
       },
       "drawerGap": {
         "desktop": "0px"
-      }
+      },
+      "closePadding": {
+        "desktop": {
+          "top": "1px",
+          "right": "6px",
+          "bottom": "1px",
+          "left": "6px"
+        }
+      },
+      "closeHoverOpacity": 1,
+      "closeLineHeight": {
+        "desktop": 20
+      },
+      "closeLineHeightUnit": "px"
     },
     "innerBlocks": [
       {

@@ -208,6 +208,7 @@
               },
               "lineHeightUnit": "px",
               "opacityHover": 0.75,
+              "liftHover": 2,
               "colourTextHover": "#FFFFFF",
               "colourBackgroundHover": "#0A7EA8",
               "minHeight": {

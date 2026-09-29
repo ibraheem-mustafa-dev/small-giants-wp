@@ -3,20 +3,61 @@
     "name": "sgs/site-header",
     "attributes": {
       "align": "full",
-      "headerFloat": { "desktop": "on", "tablet": "on", "mobile": "on" },
-      "headerFloatInset": { "desktop": { "top": "1rem", "right": "1rem", "left": "1rem" } },
-      "headerFloatCollapse": { "enabled": false, "breakpoint": 768 },
-      "headerPassThrough": { "desktop": "on", "tablet": "on", "mobile": "on" },
-      "maxWidth": { "desktop": "27.375rem" },
-      "minHeight": { "desktop": "50px" },
+      "headerFloat": {
+        "desktop": "on",
+        "tablet": "on",
+        "mobile": "on"
+      },
+      "headerFloatInset": {
+        "desktop": {
+          "top": "1rem",
+          "right": "1rem",
+          "left": "1rem"
+        }
+      },
+      "headerFloatCollapse": {
+        "enabled": false,
+        "breakpoint": 768
+      },
+      "headerPassThrough": {
+        "desktop": "on",
+        "tablet": "on",
+        "mobile": "on"
+      },
+      "maxWidth": {
+        "desktop": "27.375rem"
+      },
+      "minHeight": {
+        "desktop": "50px"
+      },
       "borderRadius": {
-        "desktop": { "topLeft": "4px", "topRight": "4px", "bottomLeft": "4px", "bottomRight": "4px" }
+        "desktop": {
+          "topLeft": "4px",
+          "topRight": "4px",
+          "bottomLeft": "4px",
+          "bottomRight": "4px"
+        }
+      },
+      "fluidScale": {
+        "enabled": true,
+        "breakpoint": 1440
       },
       "surfaceBlur": "4px",
       "backgroundColour": "#000000",
       "surfaceOpacity": 0.6,
-      "zIndex": { "desktop": 20, "tablet": 20, "mobile": 20 },
-      "padding": { "desktop": { "top": "0", "bottom": "0", "left": "0", "right": "0" } }
+      "zIndex": {
+        "desktop": 20,
+        "tablet": 20,
+        "mobile": 20
+      },
+      "padding": {
+        "desktop": {
+          "top": "0",
+          "bottom": "0",
+          "left": "0",
+          "right": "0"
+        }
+      }
     },
     "innerBlocks": [
       {
@@ -25,8 +66,17 @@
           "rowSlot": "middle",
           "justifyContent": "space-between",
           "alignItems": "center",
-          "padding": { "desktop": { "top": "0", "bottom": "0", "left": "9px", "right": "13px" } },
-          "gap": { "desktop": "0px" }
+          "padding": {
+            "desktop": {
+              "top": "0",
+              "bottom": "0",
+              "left": "9px",
+              "right": "13px"
+            }
+          },
+          "gap": {
+            "desktop": "0px"
+          }
         },
         "innerBlocks": [
           {
@@ -36,7 +86,8 @@
               "logoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lamalama-logo-still.png",
               "width": 36,
               "linkToHome": true,
-              "alt": "Go to Lama Lama homepage"
+              "alt": "Go to Lama Lama homepage",
+              "opacityHover": 0
             }
           },
           {
@@ -47,17 +98,75 @@
               "textAlign": "center",
               "textTransform": "uppercase",
               "fontFamily": "'Sometype Mono', monospace",
-              "fontSize": { "desktop": 10 },
+              "fontSize": {
+                "desktop": 10
+              },
               "fontSizeUnit": "px",
-              "textColour": "#ffffff",
+              "fontWeight": "500",
+              "letterSpacing": {
+                "desktop": -0.2
+              },
+              "letterSpacingUnit": "px",
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "lineHeightUnit": "em",
+              "textColour": "#f9f4eb",
               "backgroundColour": "transparent",
-              "padding": { "desktop": {} },
-              "margin": { "desktop": {} }
+              "padding": {
+                "desktop": {}
+              },
+              "margin": {
+                "desktop": {}
+              },
+              "messageMode": "random",
+              "sgsHideOnMobile": true,
+              "sgsChildSizing": {
+                "desktop": "fill"
+              }
             },
             "innerBlocks": [
               {
-                "name": "sgs/text",
-                "attributes": { "text": "LOOKING SHARP TODAY" }
+                "name": "sgs/notice-message",
+                "attributes": {
+                  "label": "Slide 1"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "NICE ENTRANCE"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/notice-message",
+                "attributes": {
+                  "label": "Slide 2"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "YOU MADE IT"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/notice-message",
+                "attributes": {
+                  "label": "Slide 3"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "LET'S DO DAMAGE"
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -68,16 +177,50 @@
               "drawerRef": 4428,
               "navLabel": "Lama Lama menu",
               "collapsePoint": 99999,
-              "triggerSurface": { "desktop": "on", "tablet": "on", "mobile": "on" },
-              "triggerMode": { "desktop": "icon" },
+              "triggerSurface": {
+                "desktop": "on",
+                "tablet": "on",
+                "mobile": "on"
+              },
+              "triggerMode": {
+                "desktop": "icon"
+              },
               "burgerSize": "36px",
-              "burgerWidth": { "desktop": "30px" },
-              "burgerIconWidth": { "desktop": "16px" },
-              "burgerIconHeight": { "desktop": "12px" },
+              "burgerWidth": {
+                "desktop": "30px"
+              },
+              "burgerIconWidth": {
+                "desktop": "16px"
+              },
+              "burgerIconHeight": {
+                "desktop": "12px"
+              },
               "burgerColour": "#f9f4eb",
               "burgerMorph": "line",
               "burgerBarCount": 3,
-              "showBurger": true
+              "showBurger": true,
+              "burgerPadding": {
+                "desktop": {
+                  "top": "12px",
+                  "right": "7px",
+                  "bottom": "12px",
+                  "left": "7px"
+                }
+              },
+              "burgerBorderRadius": {
+                "desktop": "0px"
+              },
+              "burgerBarGap": {
+                "desktop": "3px"
+              },
+              "burgerBorderStyle": "solid",
+              "burgerBorderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
+              },
+              "burgerBorderColour": "#f9f4eb"
             }
           }
         ]
@@ -87,11 +230,22 @@
   {
     "name": "sgs/container",
     "attributes": {
-      "contentWidth": { "desktop": "full" },
+      "contentWidth": {
+        "desktop": "full"
+      },
       "backgroundColour": "#0a0a0a",
       "textColour": "#ffffff",
-      "minHeight": { "desktop": "100vh" },
-      "padding": { "desktop": { "top": "120px", "bottom": "120px", "left": "24px", "right": "24px" } }
+      "minHeight": {
+        "desktop": "100vh"
+      },
+      "padding": {
+        "desktop": {
+          "top": "120px",
+          "bottom": "120px",
+          "left": "24px",
+          "right": "24px"
+        }
+      }
     },
     "innerBlocks": [
       {
