@@ -168,6 +168,10 @@
               "opacityHover": 0.75,
               "sgsChildSizing": {
                 "desktop": "fill"
+              },
+              "textAlign": "left",
+              "iconGap": {
+                "desktop": "8px"
               }
             }
           },

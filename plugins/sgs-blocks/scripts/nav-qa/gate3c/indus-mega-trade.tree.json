@@ -466,7 +466,7 @@
               "minHeight": {
                 "desktop": "130px"
               },
-              "backgroundColour": "rgba(255,255,255,0.08)",
+              "backgroundColour": "transparent",
               "borderStyle": "solid",
               "borderWidth": {
                 "top": "1px",

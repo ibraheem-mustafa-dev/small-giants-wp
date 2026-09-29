@@ -20,7 +20,7 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl } from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, MotionEasingControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
@@ -90,14 +90,6 @@ const TEXT_DECORATION_OPTIONS = [
 	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
 	{ label: __( 'Overline', 'sgs-blocks' ), value: 'overline' },
 	{ label: __( 'Strike-through', 'sgs-blocks' ), value: 'line-through' },
-];
-
-const EASING_OPTIONS = [
-	{ label: 'ease', value: 'ease' },
-	{ label: 'ease-in', value: 'ease-in' },
-	{ label: 'ease-out', value: 'ease-out' },
-	{ label: 'ease-in-out', value: 'ease-in-out' },
-	{ label: 'linear', value: 'linear' },
 ];
 
 // UnitControl unit sets.
@@ -220,6 +212,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		opacityHover,
 		transitionDuration,
 		transitionEasing,
+		transitionEasingCustom,
 		boxShadow,
 		boxShadowColour,
 		boxShadowHover,
@@ -1143,13 +1136,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SelectControl
+					<MotionEasingControl
 						label={ __( 'Transition easing', 'sgs-blocks' ) }
 						value={ transitionEasing }
-						options={ EASING_OPTIONS }
+						custom={ transitionEasingCustom }
 						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						onCustomChange={ ( val ) => setAttributes( { transitionEasingCustom: val } ) }
 					/>
 				</PanelBody>
 

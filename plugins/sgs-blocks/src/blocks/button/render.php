@@ -319,10 +319,8 @@ $hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
 // independent property from the scale's `transform`.
 $hover_lift          = isset( $attributes['liftHover'] ) ? min( 24, max( 0, (int) $attributes['liftHover'] ) ) : 0;
 $transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
-$transition_easing   = isset( $attributes['transitionEasing'] ) ? sanitize_text_field( $attributes['transitionEasing'] ) : 'ease';
-
-$allowed_easings   = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
-$transition_easing = in_array( $transition_easing, $allowed_easings, true ) ? $transition_easing : 'ease';
+// Shared motion easing names (and a validated custom curve), as every other SGS motion control.
+$transition_easing   = sgs_motion_easing_css( (string) ( $attributes['transitionEasing'] ?? 'ease' ), (string) ( $attributes['transitionEasingCustom'] ?? '' ), 'ease' );
 
 // ---------------------------------------------------------------------------
 // 2. Unique ID for scoped CSS.

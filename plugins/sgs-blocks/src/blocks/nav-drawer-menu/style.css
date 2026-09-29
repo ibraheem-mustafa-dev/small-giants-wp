@@ -88,8 +88,10 @@
 	min-height: 44px;
 	padding: 8px 12px;
 	text-decoration: none;
-	transition: background-color var(--wp--custom--transition--fast, 150ms ease),
-		color var(--wp--custom--transition--fast, 150ms ease);
+	/* itemMotionDuration/itemMotionEasing, published as --sgs-nav-item-motion by
+	   includes/nav-menu-item-transition-css.php::sgs_nav_item_transition_css; unset keeps the token. */
+	transition: background-color var(--sgs-nav-item-motion, var(--wp--custom--transition--fast, 150ms ease)),
+		color var(--sgs-nav-item-motion, var(--wp--custom--transition--fast, 150ms ease));
 }
 
 /* Long labels wrap in a vertical list. Every instance of THIS block is the
