@@ -28,7 +28,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 	 * Resolve the drawer menu's per-row options once per render.
 	 *
 	 * @param array $attributes Block attributes.
-	 * @return array{mega_mode:string,roll:string,ornament_html:string,ornament_hover_html:string,has_ornament:bool,expander_html:string,media:bool,media_size:string,disabled_ids:string[],ornament_hidden_ids:string[],ornament_reserve:bool,ornament_frames_html:string}
+	 * @return array{mega_mode:string,roll:string,magnet:bool,ornament_html:string,ornament_hover_html:string,has_ornament:bool,expander_html:string,media:bool,media_size:string,disabled_ids:string[],ornament_hidden_ids:string[],ornament_reserve:bool,ornament_frames_html:string}
 	 */
 	function sgs_nav_drawer_menu_row_options( array $attributes ): array {
 		$ornament      = is_array( $attributes['itemOrnament'] ?? null ) ? $attributes['itemOrnament'] : array();
@@ -47,6 +47,9 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 		return array(
 			'mega_mode'           => 'link' === ( $attributes['megaDrawerMode'] ?? 'panel' ) ? 'link' : 'panel',
 			'roll'                => sgs_label_roll_value( $attributes['labelRoll'] ?? '' ),
+			// `itemMagnetEnabled` — the label carries the magnet-target class only
+			// while the effect is on, so an untouched drawer's markup is unchanged.
+			'magnet'              => ! empty( $attributes['itemMagnetEnabled'] ),
 			'has_ornament'        => ! empty( $ornament_used ),
 			'ornament_html'       => ( $uses_icon && $icons ) ? sgs_nav_shared_icon_markup(
 				$attributes['itemOrnamentIcon'] ?? null,
@@ -194,7 +197,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_label_inner' ) ) {
 			$ornament = '<span class="sgs-nav-drawer-menu__ornament sgs-nav-drawer-menu__ornament--blank" aria-hidden="true"><span class="sgs-nav-drawer-menu__ornament-glyph"></span></span>';
 		}
 		return $ornament
-			. '<span class="sgs-nav-drawer-menu__link-text">' . sgs_label_roll_markup( (string) ( $item['label'] ?? '' ), (string) ( $options['roll'] ?? '' ) ) . '</span>'
+			. '<span class="sgs-nav-drawer-menu__link-text' . ( ! empty( $options['magnet'] ) ? ' sgs-nav-drawer-menu__magnet-target' : '' ) . '">' . sgs_label_roll_markup( (string) ( $item['label'] ?? '' ), (string) ( $options['roll'] ?? '' ) ) . '</span>'
 			. sgs_nav_drawer_menu_media_html( $item, $options )
 			. sgs_nav_drawer_menu_trailing_icon_html( $item, $options );
 	}

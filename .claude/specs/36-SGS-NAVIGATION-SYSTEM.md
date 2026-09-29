@@ -221,15 +221,71 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `itemMotionDuration`/`itemMotionEasing` time the item's own colour and background transition
   (`includes/nav-menu-item-transition-css.php::sgs_nav_item_transition_css`; unset keeps the fast token) as well
   as the label roll.
-- **Bar item hover scope and caret (U-18).** `sgs/nav-bar-menu::itemHoverScope` `all` | `with-submenu`: with
+- **Item hover scope and caret (U-18).** `itemHoverScope` `all` | `with-submenu` on `sgs/nav-bar-menu` and
+  `sgs/nav-drawer-menu` (the drawer's rows that open a section are its `--has-submenu` and `--mega` items;
+  its caret is the accordion expander, see "Drawer item-level parity" below): with
   `with-submenu` every hover paint channel (text, ground, opacity, border swap/sweep, highlight weight) applies
   only to items that open a dropdown or mega panel (`includes/nav-menu-item-hover-scope-css.php`). The caret takes
   `submenuCaretSize`, `submenuCaretGap`, `submenuCaretOpacity`/`submenuCaretOpacityHover` and its open turn
-  `submenuCaretTurnDuration` + `submenuCaretTurnEasing`(`Custom`) (`includes/nav-menu-caret-css.php`). The bar's
+  `submenuCaretTurnDuration` + `submenuCaretTurnEasing`(`Custom`) (`includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css`,
+  called by both blocks). The bar's
   scrim fades over `scrimFadeDuration`, mirroring `sgs/nav-drawer`. `submenuItemStaggerScope` `columns` | `rows`
   staggers either a panel's columns or every link row and card inside them. With `triggerSurface` on, plain
   non-interactive content in the trigger row passes its tap to the menu trigger; links, buttons and inputs keep
   their own (`includes/nav-trigger-surface-css.php`).
+- **Drawer item-level parity.** `sgs/nav-drawer-menu` offers the same item-level customisation as
+  `sgs/nav-bar-menu`, on its own markup. Every attribute below is declared in
+  `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json`, empty or `none` emits nothing, and every rule sits in
+  the block's scoped `<style>` (Spec 32). Not offered because they are bar-only by nature: `burger*`, `trigger*`,
+  `showBurger`, `collapsePoint`, `drawerRef`, `scrim*` (owned by `sgs/nav-drawer`), `megaAlign`, `submenuAlign`,
+  `submenuMinWidth`, `submenuTopOffset`, `submenuOpenOn`, `submenuIntentDelay`, `submenuCloseGrace`.
+  - **Row divider.** `itemSeparatorWidth`, `itemSeparatorStyle`, `itemSeparatorColour`, `itemSeparatorColourHover`,
+    `itemSeparatorHoverTreatment` (`none` | `swap` | `sweep`) and `itemSeparatorSweepAngle` (default 90, a horizontal
+    rule; the bar's default is 180 because its rule is vertical). A `::before` across the top edge of every top-level
+    row except the first, emitted only when width AND colour are set
+    (`includes/nav-drawer-menu-separator-css.php::sgs_nav_drawer_menu_separator_css`). It is independent of the row's
+    own border (`itemBorderWidth`/`itemBorderColour*`), so both can run in different colours. Hovering or focusing
+    either row it sits between repaints it, through the row's own link, expander or whole-row toggle (not the open
+    section beneath it). Sweep needs a solid line, so a dashed or dotted style withdraws it to `swap`
+    (`supports.sgs.sweepEligibility.itemSeparatorHoverTreatment`). The bar's vertical emitter skips the drawer
+    (`includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css`).
+  - **Hover scope, magnet, alignment.** `itemHoverScope` is read by the shared item emitters
+    (`includes/nav-menu-css.php::sgs_nav_shared_item_state_css`). `itemMagnetStrength` (0.02 to 0.5, shown with
+    `itemMagnetEnabled`) rides as `data-magnet-strength` on the list and is read by
+    `src/blocks/nav-drawer-menu/view.js::initBarEffects`; the row label carries `__magnet-target` only while the
+    magnet is on (`includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_label_inner`). It is pointer-fine only: touch
+    input and reduced motion switch it off inside `magnet.js`. `justifyContent` sets `justify-content` on
+    `.sgs-nav-drawer-menu__link` (`includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_row_layout_css`); `center`
+    also reserves the expander's 56px at the row start so the label sits on the row's true centre.
+  - **Expander caret.** `submenuCaretSize`, `submenuCaretOpacity` and `submenuCaretTurnDuration`/`Easing`(`Custom`)
+    style `.sgs-nav-drawer-menu__caret`, alongside `itemExpanderIcon` and `itemExpanderRotate`, through
+    `includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css` with the drawer's selectors. `submenuCaretGap` sets `gap`
+    on a whole-row toggle (`.sgs-nav-drawer-menu__accordion-summary--row`), the only row where label and expander share a
+    box; a split row keeps its expander pinned to the row end as its own 44px target. `submenuCaretOpacityHover` follows
+    the row's head (link, expander or whole-row toggle).
+  - **Section motion.** `submenuAnimation` takes `none` (default, the instant native toggle), `fade`, `fade-lift`
+    (an 8px rise) or `height`; `submenuAnimationDuration`, `submenuExitDuration`, `submenuAnimationEasing`(`Custom`) time
+    it. The bar's `slide-down` and `grow` are floating-panel shapes with no inline equivalent and are not offered.
+    Built on the `<details>` element's `::details-content` slot with `interpolate-size` and a discrete
+    `content-visibility` transition, so a browser without them opens and closes whole; the closed rule carries the exit
+    timing and the `[open]` rule the entry timing. `height` clips only while moving, then releases the clip so a section
+    shadow or focus ring is never trimmed at rest. Accordion mode only: a drill-down section is an overlay that slides
+    in and keeps its own motion, and nothing is emitted for it
+    (`includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_motion` returns the root modifier classes
+    `sgs-nav-drawer-menu--acc-fade`, `--acc-fade-lift`, `--acc-height`, and the `--sgs-ndm-acc-*` values;
+    the structure is at the end of `nav-drawer-menu/style.css`). All of it sits inside `prefers-reduced-motion: no-preference`.
+  - **Row stagger.** `submenuItemStagger` (ms between rows, 0 is off), `submenuItemStaggerDistance`,
+    `submenuItemStaggerDuration` (0 uses the opening time), `submenuItemStaggerMax` (0 is no cap) and
+    `submenuItemStaggerScope`. `columns` staggers a plain section's rows and a mega section's direct column children;
+    `rows` staggers each link row or card inside every `sgs/mega-group` column instead, and the column stops moving.
+    Rows animate each time their `<details>` opens, on their own index (`--sgs-ndm-si`) so they never inherit the
+    top-level item stagger's `--sgs-i`. Accordion mode only.
+  - **Section box.** `submenuBorderRadius` and `submenuShadow`/`submenuShadowColour` paint the open section's `<ul>`
+    (`includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_box_css`); an untouched drawer section stays
+    square and flat.
+  Inspector: the Colour panel's "Row divider colour" row (with the treatment and angle), Layout (justify, hover scope, split), "Row divider"
+  (width, style), "Row extras" (expander caret), "Submenu — Container" (radius, shadow), "Section motion" (animation, timing,
+  stagger) and "Effects" (magnet and its strength).
 - **Drawer row states and extras (U-18).** `sgs/nav-drawer-menu::itemColourOpen` paints a row's label while its own
   accordion section is open (distinct from Current, which is page identity). A top-level item with children and
   no destination of its own (empty URL, `#`, or an object whose post type is not publicly queryable, such as
@@ -538,6 +594,7 @@ spanning the tag, title and link rows, the description is hidden, and `drawerCar
 `drawerCardTagSize`/`drawerCardTagPadding`, `drawerCardTitleSize`, `drawerCardLinkSize` and
 `drawerCardSpacing` (below the card when first, above when last) size it. The Indus About panel's values
 are set in `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-mega-about.tree.json`.
+Every drawer colour takes a gradient sibling (`drawerBgGradient`, `drawerLinkNumColourGradient`, `drawerLinkLabelColourGradient`, `drawerLinkDescColourGradient`, `drawerLinkDividerGradient`, `drawerCardBgGradient`, `drawerCardBorderColourGradient`; a gradient wins over its flat colour) and reaches the page through the shared helpers: the two grounds through `sgs_custom_property_gradient_decls()` (`--sgs-mm-drawer-bg`, `--sgs-mm-drawer-card-bg`), the three link text colours through `sgs_resolve_text_colour_or_gradient()` / `sgs_text_colour_decl()` / `sgs_text_colour_gradient_fallback_rule()`, the hairline and the card border through `sgs_border_states_css()`. The inspector's "Preview in the editor as" toggle (Desktop / Drawer, editor state only, never saved) makes the canvas paint the drawer copy: `mega-panel/edit.js` adds `sgs-mega-panel--in-drawer`, paints the ground on the wrapper, and renders `mega-panel/drawer-preview.js::drawerPreviewCss()`, the editor twin of the `$sgs_mm_in_drawer` rules (a gradient border previews as a `border-image`, not the front end's masked ring).
 `link` (or a panel that resolves to nothing) gives a plain link. `megaDrawerFallbackIds` takes precedence
 for an item authored as a `core/navigation-submenu` with real nested child links: those render as an
 ordinary accordion instead. A panel holding a form should stay `link` (a panel renders twice on a page, so
@@ -669,7 +726,9 @@ stagger. The speed curves are one shared list, `plugins/sgs-blocks/includes/help
   Entry and exit run through `@starting-style` and `transition-behavior: allow-discrete` on `display`; while a
   panel closes it takes no pointer hits and leaves the Tab order, so moving from one trigger to the next never
   re-opens the old panel. A browser without the exit part closes instantly. The bar's scrim fades with the
-  panels; the drawer's scrim fades with the drawer unless `scrimFadeDuration` is set.
+  panels; the drawer's scrim fades with the drawer unless `scrimFadeDuration` is set. `sgs/nav-drawer-menu` reads the
+  same `submenuAnimation*`, `submenuExitDuration` and `submenuItemStagger*` attributes for its accordion sections, with
+  its own values and rules (see "Drawer item-level parity").
 - **Close and focus.** The drawer closes only after every animation inside it has finished (the dialog's own,
   a curtain's `::before`, a reversed item stagger): `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::whenAnimationsSettle`, with a fail-safe timer.
   When the entry is longer than 500ms, focus holds on the dialog until the entry ends, so the first link's
@@ -793,7 +852,8 @@ different element from the bar's own item paint (FR-36-4):
   (`block.json::attributes.itemOrnament`).
 - **Accordion expander.** `itemExpanderIcon` (icon-picker, default `chevron-down`) is the `<summary>` glyph;
   `itemExpanderRotate` (degrees, default 180, range -360 to 360) is the turn it takes while its accordion is
-  open — 45 degrees turns a plus into a cross (`block.json::attributes.itemExpanderRotate`).
+  open — 45 degrees turns a plus into a cross (`block.json::attributes.itemExpanderRotate`). Its size, gap, opacity and
+  turn timing are the `submenuCaret*` attributes (Spec 36 "Drawer item-level parity").
 - **Per-item media (M-15).** `itemMedia` (`''` | `featured-image`) shows the linked page's own featured image
   beside its label; a GIF or WebP is served full size so it keeps animating. `itemMediaReveal` (per tier:
   `none` | `always` | `hover`, growing from zero width on hover or keyboard focus), `itemMediaWidth` (unset
@@ -809,9 +869,10 @@ different element from the bar's own item paint (FR-36-4):
   one shared item-motion timing pair for sibling dim, label roll and the ornament crossfade
   (`block.json::attributes.labelRoll`). Distinct from `triggerHoverLabel`/`triggerOpenLabel` (FR-36-27), which
   roll the BURGER TRIGGER's own word, not a list item's.
-- **Row separators** needed no new setting: the existing `itemBorderWidth`/`itemBorderColour*` family already
-  paints the bottom edge of a vertical row as a separator (on the horizontal bar the same attribute paints the
-  item underline instead — `block.json::attributes.itemBorderWidth`).
+- **Row separators.** Two independent mechanisms. The `itemBorderWidth`/`itemBorderColour*` family paints the
+  bottom edge of a vertical row (on the horizontal bar the same attribute paints the item underline instead —
+  `block.json::attributes.itemBorderWidth`). The `itemSeparator*` family draws the rule between stacked rows, with its
+  own colours and hover treatment (Spec 36 "Drawer item-level parity").
 - **Numbered link lists.** `sgs/icon-list`'s `markerType: 'numbered'` plus its per-item `description` (FR-36-26)
   serves the numbered starter pattern (`sgs/mega-compact-links-numbered`) that pairs with this unit.
 

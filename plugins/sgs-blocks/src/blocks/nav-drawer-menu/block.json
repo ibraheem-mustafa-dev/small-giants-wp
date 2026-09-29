@@ -33,6 +33,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"shadowLift": false,
 			"enabledExtensions": [ "childSizing" ],
 			"colourExemptions": {
 				"indicator": {
@@ -271,9 +272,33 @@
 						"css:border-color": "submenuBorderColour",
 						"css:border-color-gradient": "submenuBorderColourGradient",
 						"css:border-width": "submenuBorderWidth",
-						"css:border-style": "submenuBorderStyle"
+						"css:border-style": "submenuBorderStyle",
+						"css:border-radius": "submenuBorderRadius",
+						"css:box-shadow": "submenuShadow",
+						"css:box-shadow-color": "submenuShadowColour"
 					},
-					"_note": "The floating dropdown PANEL — <div class=\"sgs-nav-drawer-menu__submenu\"> — as distinct from the links inside it, which are the `sublink` element (Spec 41 FR-41-9). Base only: NO `states` key at all, because the panel has neither a hover nor a current state for any property. Its visibility is a binary open/closed disclosure toggled by the trigger; once open the pointer is always over an interactive CHILD, so a pointer-driven change on the panel surface itself is never perceivable — the hoverable surface inside the panel is the LINK background (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent on `sublink`). Recorded as `supports.sgs.colourExemptions.submenu-bg` and `.submenu-border`. `\"prefix\": \"\"` for the same reason `sublink` carries it: a `submenu` prefix would claim submenuColour* and the submenu typography family, which belong to the LINK. Every member is therefore explicit. The submenuMinWidth/submenuBorderRadius/submenuShadow/submenuShadowColour attrMap entries are not declared on this block: the drawer's accordion-nested submenu panel does not offer these controls; the bar block (sgs/nav-bar-menu) declares them."
+					"_note": "The open accordion SECTION — <ul class=\"sgs-nav-drawer-menu__submenu\"> — as distinct from the links inside it, which are the `sublink` element (Spec 41 FR-41-9). Base only: NO `states` key at all, because the panel has neither a hover nor a current state for any property. Its visibility is a binary open/closed disclosure toggled by the trigger; once open the pointer is always over an interactive CHILD, so a pointer-driven change on the panel surface itself is never perceivable — the hoverable surface inside the panel is the LINK background (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent on `sublink`). Recorded as `supports.sgs.colourExemptions.submenu-bg` and `.submenu-border`. `\"prefix\": \"\"` for the same reason `sublink` carries it: a `submenu` prefix would claim submenuColour* and the submenu typography family, which belong to the LINK. Every member is therefore explicit. submenuBorderRadius, submenuShadow and submenuShadowColour paint the section's own box (includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_box_css). submenuMinWidth is not declared here: a section is exactly as wide as the drawer, so a minimum width has nothing to protect against."
+				},
+				"item-separator": {
+					"label": "Row divider",
+					"order": 5.5,
+					"clusters": [
+						"border"
+					],
+					"prefix": "itemSeparator",
+					"attrMap": {
+						"css:border-top-color": "itemSeparatorColour",
+						"css:border-top-width": "itemSeparatorWidth",
+						"css:border-top-style": "itemSeparatorStyle"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-top-color": "itemSeparatorColourHover"
+							}
+						}
+					},
+					"_note": "The independent horizontal rule between stacked top-level rows, drawn as a `::before` on every `.sgs-nav-drawer-menu__item` except the first (includes/nav-drawer-menu-separator-css.php). A GENUINELY SEPARATE element from `item`: it never reads itemBorderColour/itemBorderWidth (the row's own border edge), so both can run at once in different colours. `itemSeparatorHoverTreatment`/`itemSeparatorSweepAngle` are control-selector/parameter attrs (role:behaviour), not paintable CSS values."
 				},
 				"item-dimmed": {
 					"label": "Dimmed sibling item",
@@ -325,7 +350,7 @@
 					"attrMap": {
 						"css:transform": "itemExpanderRotate"
 					},
-					"_note": "Wave 3C U-7: the <summary> expander glyph (.sgs-nav-drawer-menu__caret). itemExpanderRotate is the rotate() applied while its accordion is open; itemExpanderIcon is the glyph (icon source)."
+					"_note": "Wave 3C U-7: the <summary> expander glyph (.sgs-nav-drawer-menu__caret). itemExpanderRotate is the rotate() applied while its accordion is open; itemExpanderIcon is the glyph (icon source). submenuCaretSize, submenuCaretGap, submenuCaretOpacity, submenuCaretOpacityHover and submenuCaretTurnDuration/Easing/EasingCustom style the same glyph through includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css, the helper sgs/nav-bar-menu calls for its own caret."
 				},
 				"media": {
 					"label": "Item media",
@@ -442,6 +467,17 @@
 							"ridge",
 							"inset",
 							"outset"
+						]
+					}
+				},
+				"itemSeparatorHoverTreatment": {
+					"blockingBackgroundAttrs": [],
+					"blockingGradientAttrs": [],
+					"glyphGuard": {
+						"attr": "itemSeparatorStyle",
+						"disallowedValues": [
+							"dashed",
+							"dotted"
 						]
 					}
 				}
@@ -608,6 +644,192 @@
 			"type": "number",
 			"default": 180,
 			"description": "Degrees the expander glyph turns while its accordion is open (-360 to 360). 45 turns a plus into a cross."
+		},
+		"itemSeparatorStyle": {
+			"type": "string",
+			"default": "solid",
+			"description": "Row divider line style: solid / dashed / dotted / none. PHP-validated, no JSON enum. Read with itemSeparatorWidth and itemSeparatorColour by includes/nav-drawer-menu-separator-css.php."
+		},
+		"itemSeparatorWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the independent horizontal divider drawn ABOVE every top-level row except the first (the rule between stacked rows), as a CSS length such as '1px'. Separate from itemBorderWidth (the row's own border edge) so the two can be styled apart. '' (default) draws nothing: includes/nav-drawer-menu-separator-css.php gates the whole rule on a width AND a colour, so an untouched drawer emits no divider. No Current state: a rule between rows is not itself a page."
+		},
+		"itemSeparatorColour": {
+			"type": "string",
+			"default": "text-muted",
+			"description": "Resting colour of the row divider. Default 'text-muted' measures a real WCAG non-text contrast pass on a light drawer surface while staying quieter than the accent hover colour."
+		},
+		"itemSeparatorColourHover": {
+			"type": "string",
+			"default": "accent",
+			"description": "Hover/focus colour of the row divider, shared by the row below it and the row above it (the rule belongs to both). Touch-guarded."
+		},
+		"itemSeparatorHoverTreatment": {
+			"type": "string",
+			"default": "swap",
+			"description": "How the row divider changes on hover: none / swap / sweep. Sweep is offered and emitted only when supports.sgs.sweepEligibility.itemSeparatorHoverTreatment passes (a solid line). PHP-validated, no JSON enum."
+		},
+		"itemSeparatorSweepAngle": {
+			"type": "number",
+			"default": 90,
+			"description": "Directional sweep angle for the row divider (CSS gradient-angle degrees). Default 90 (left to right) suits a horizontal rule between stacked rows; the bar's default is 180 because its divider is vertical. Shown only when itemSeparatorHoverTreatment is 'sweep'."
+		},
+		"itemHoverScope": {
+			"type": "string",
+			"enum": [
+				"all",
+				"with-submenu"
+			],
+			"default": "all",
+			"description": "'all' (default): every top-level row takes the configured hover paint. 'with-submenu': only rows that open an accordion section (`.sgs-nav-drawer-menu__item--has-submenu`, `--mega`) take the hover text, background, opacity and border paint; a plain link row stays inert on hover. Read by includes/nav-menu-css.php::sgs_nav_shared_item_state_css and includes/nav-menu-item-hover-scope-css.php, the same helpers sgs/nav-bar-menu uses."
+		},
+		"itemMagnetStrength": {
+			"type": "number",
+			"description": "The row-label magnet's pull FACTOR, 0.02 to 0.5. No default: unset keeps magnet.js's own shipped strength (factor 0.15, an 8px cap). When set, the cap is lifted, the pointer only engages inside the label's own box. Emitted as `data-magnet-strength` on the list and read by view.js::initBarEffects. Shown only while `itemMagnetEnabled` is on; pointer-fine only (touch and reduced motion switch the effect off)."
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			],
+			"description": "How a row's content (ornament, label, image, trailing icon) is spread across the row: `justify-content` on `.sgs-nav-drawer-menu__link`. '' keeps the row's own alignment (start)."
+		},
+		"submenuCaretSize": {
+			"type": "string",
+			"default": "",
+			"description": "A CSS length overriding the accordion expander glyph's width/height, which otherwise rides `1em` off the row's own font-size. Empty keeps that default."
+		},
+		"submenuCaretGap": {
+			"type": "string",
+			"default": "",
+			"description": "Gap between a row's label and its expander glyph. Applies to a row that toggles as a whole (a top-level item with no page of its own), where label and expander share one row. In a split row the expander is its own 44px touch target pinned to the row end, so there is no gap to set. Empty keeps the default (0)."
+		},
+		"submenuCaretOpacity": {
+			"type": "number",
+			"description": "Resting opacity (0 to 1) of the expander glyph, independent of the row's own itemOpacity. No default: unset emits no opacity rule."
+		},
+		"submenuCaretOpacityHover": {
+			"type": "number",
+			"description": "Opacity (0 to 1) of the expander glyph while its row's head (label, expander or whole-row toggle) is hovered or keyboard-focused. Touch-guarded. No default: unset emits no rule."
+		},
+		"submenuCaretTurnDuration": {
+			"type": "number",
+			"description": "Milliseconds the expander glyph takes to turn while its section opens (the turn angle is itemExpanderRotate). No default: unset keeps the block's own 200ms expander transition."
+		},
+		"submenuCaretTurnEasing": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"ease",
+				"ease-out-css",
+				"ease-in-out",
+				"default",
+				"ease-out",
+				"quart-out",
+				"standard",
+				"drafts",
+				"ease-in",
+				"spring",
+				"linear",
+				"custom"
+			],
+			"description": "Easing curve for the expander's turn, from the shared motion easing list. Empty falls back to 'ease' once a turn duration is set."
+		},
+		"submenuCaretTurnEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A hand-typed cubic-bezier() curve, read only when submenuCaretTurnEasing is 'custom'."
+		},
+		"submenuAnimation": {
+			"type": "string",
+			"default": "none",
+			"description": "How an accordion section arrives and leaves: none / fade / fade-lift / height. PHP-validated, no JSON enum. Default none keeps today's instant native <details> toggle. `height` collapses and grows the section's height; `fade` and `fade-lift` (8px lift) change opacity only. Accordion mode only: drill-down keeps its own slide. Built on `::details-content` and `interpolate-size`, so a browser without them opens and closes whole. Under reduced motion sections open and close whole. The bar's `slide-down` and `grow` are floating-panel shapes with no inline equivalent and are not offered."
+		},
+		"submenuAnimationDuration": {
+			"type": "number",
+			"default": 180,
+			"description": "Opening time of an accordion section, in milliseconds, 0 to 3000."
+		},
+		"submenuAnimationEasing": {
+			"type": "string",
+			"default": "ease-out-css",
+			"enum": [
+				"ease",
+				"ease-out-css",
+				"ease-in-out",
+				"default",
+				"ease-out",
+				"quart-out",
+				"standard",
+				"drafts",
+				"ease-in",
+				"spring",
+				"linear",
+				"custom"
+			],
+			"description": "Speed curve for a section opening and closing, from the shared motion easing list (includes/helpers-motion-easing.php)."
+		},
+		"submenuAnimationEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A cubic-bezier() curve, read only when submenuAnimationEasing is custom. Validated; an invalid curve falls back to ease-out."
+		},
+		"submenuExitDuration": {
+			"type": "number",
+			"default": 150,
+			"description": "Closing time of an accordion section, in milliseconds. 0 closes instantly."
+		},
+		"submenuItemStagger": {
+			"type": "number",
+			"default": 0,
+			"description": "Delay between each row arriving when an accordion section opens, in milliseconds. 0 turns the stagger off. Accordion mode only."
+		},
+		"submenuItemStaggerDistance": {
+			"type": "number",
+			"default": 8,
+			"description": "How far each row travels as it arrives, in pixels. Negative means it falls from above."
+		},
+		"submenuItemStaggerDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "Each row's own arrival time in milliseconds. 0 uses the section's opening time."
+		},
+		"submenuItemStaggerMax": {
+			"type": "number",
+			"default": 0,
+			"description": "Cap on a row's delay in milliseconds. 0 means no cap."
+		},
+		"submenuItemStaggerScope": {
+			"type": "string",
+			"enum": [
+				"columns",
+				"rows"
+			],
+			"default": "columns",
+			"description": "'columns' (default) staggers a plain section's rows, and a mega section's direct column children. 'rows' staggers every link row/card inside each `sgs/mega-group` column instead (the column itself stops animating so only one granularity moves). A plain link section is unaffected either way, its rows are already the direct children."
+		},
+		"submenuBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "The open accordion section's corner radius, the same FLAT corner object shape as itemBorderRadius (topLeft / topRight / bottomRight / bottomLeft, CSS length strings, read by sgs_corner_object_shorthand()). Default EMPTY: the section keeps its square corners."
+		},
+		"submenuShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Box shadow of the open accordion section, composed with submenuShadowColour by sgs_shadow_value_composed(). Empty draws no shadow."
+		},
+		"submenuShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "The shadow's colour. The name is fixed by ShadowControl.js::shadowAttrKeys, which composes it as <base>Colour."
 		},
 		"itemMedia": {
 			"type": "string",

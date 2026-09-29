@@ -3,6 +3,7 @@ import { Button, PanelBody, RangeControl, ToggleControl } from '@wordpress/compo
 import { IconPicker, ResponsiveOverride, SgsLengthControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import OrnamentFramesControls from './OrnamentFramesControls';
+import ExpanderCaretControls from './ExpanderCaretControls';
 
 const ORNAMENT_OPTIONS = [
 	{ value: 'none', label: __( 'None', 'sgs-blocks' ) },
@@ -86,8 +87,8 @@ function TierLength( { label, help, value, onChange } ) {
 /**
  * sgs/nav-drawer-menu — Settings: "Row extras" PanelBody (Wave 3C U-7; design
  * `.claude/reports/2026-09-25-u6-u7-design.md` 3e, 3f). The leading ornament
- * (a number or an icon, per device), the accordion expander glyph and its
- * open rotation, and per-item media (each linked page's featured image).
+ * (a number or an icon, per device), the accordion expander glyph, its
+ * open rotation and its caret styling, and per-item media (each linked page's featured image).
  * Ornament and media colours live in the Colour panel.
  *
  * @param {Object}   root0               Props.
@@ -204,6 +205,8 @@ export default function RowExtrasPanel( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			{ /* The expander's size, gap, opacity and turn timing: the bar's arrow controls, on the same glyph. */ }
+			<ExpanderCaretControls attributes={ attributes } setAttributes={ setAttributes } />
 
 			<ToggleGroupControl
 				label={ __( 'Item image', 'sgs-blocks' ) }

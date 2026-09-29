@@ -72,6 +72,11 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-link-css.php';
 // back to the real sgs_text_colour_decl()/sgs_background_paint_decl() calls
 // inside it, instead of reporting them "current: unknown" (2026-09-28).
 require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-menu-parity-css.php';
+// Row divider, row alignment, section box and section motion (Spec 36 "Drawer
+// item-level parity"), plus the shared caret helper the bar also calls.
+require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-menu-separator-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-menu-section-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-caret-css.php';
 // nav-menu-trigger-css.php is deliberately NOT required — this block never
 // emits a burger/trigger, so sgs_nav_bar_menu_trigger_css() is never called.
 // class-sgs-container-wrapper.php is deliberately NOT required — this block
@@ -159,9 +164,10 @@ if ( ! class_exists( 'SGS_Nav_Drawer_Menu_Flattener' ) ) {
 	 *
 	 * Unlike the bar block's class, this one carries no submenu settings
 	 * (`$this->submenu`, `get_submenu()`): `submenuAlign`/`submenuCaret`/
-	 * `submenuCloseGrace`/`submenuAnimation` are BAR-only and this block never
-	 * declares them — `sgs_nav_drawer_menu_render_items()` (the function this
-	 * block calls) takes no submenu-settings argument at all.
+	 * `submenuCloseGrace` are BAR-only and this block never declares them. The
+	 * section motion, caret and box attributes it shares with the bar reach the
+	 * page as scoped CSS, not as markup, so `sgs_nav_drawer_menu_render_items()`
+	 * (the function this block calls) takes no submenu-settings argument at all.
 	 */
 	class SGS_Nav_Drawer_Menu_Flattener {
 
@@ -566,6 +572,17 @@ $bar_data_attrs            = '';
 $bar_data_attrs           .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
 $bar_data_attrs           .= $magnet_enabled ? ' data-magnet' : '';
 
+/*
+ * `itemMagnetStrength` — unset means magnet.js's own shipped strength (no
+ * attribute at all); a set value rides as `data-magnet-strength`, clamped to
+ * the control's 0.02 to 0.5 range, and view.js::initBarEffects reads it. Same
+ * contract as sgs/nav-bar-menu.
+ */
+$sgs_nm_item_magnet_strength = $attributes['itemMagnetStrength'] ?? null;
+if ( $magnet_enabled && is_numeric( $sgs_nm_item_magnet_strength ) ) {
+	$bar_data_attrs .= ' data-magnet-strength="' . esc_attr( (string) max( 0.02, min( 0.5, (float) $sgs_nm_item_magnet_strength ) ) ) . '"';
+}
+
 // This instance IS always the in-drawer nested list (FR-36-6): the
 // `--drawer` BEM modifier + resolved submenu model ride unconditionally —
 // style.css's structural accordion/drill-down rules key off both, and
@@ -613,6 +630,14 @@ $css .= sgs_nav_shared_submenu_css(
 $css .= $sgs_nm_marker_css;
 // Wave 3C U-6 + U-7: ornament, expander rotation, media, sibling dim, roll.
 $css .= sgs_nav_drawer_menu_extras_css( $attributes, '.sgs-nav-drawer-menu' . $uid_sel );
+// Item-level parity with sgs/nav-bar-menu (Spec 36 "Drawer item-level parity"):
+// row divider, row alignment, the open section's box, and its open/close motion
+// and row stagger. Empty attributes emit nothing.
+$css .= sgs_nav_drawer_menu_separator_css( $attributes, $uid_sel );
+$css .= sgs_nav_drawer_menu_row_layout_css( $attributes, $uid_sel );
+$css .= sgs_nav_drawer_menu_section_box_css( $attributes, $uid_sel );
+$sgs_nm_section_motion = sgs_nav_drawer_menu_section_motion( $attributes, $uid_sel, $submenu_model_ctx );
+$css                  .= $sgs_nm_section_motion['css'];
 // Spec 36 "Item hover paint" M-21 (2026-09-28) — itemPadding/submenuLinkPadding
 // and the item link's own hover/current transition timing, shared with
 // sgs/nav-bar-menu. Guarded: these two files are new siblings in the shared
@@ -623,6 +648,23 @@ if ( function_exists( 'sgs_nav_item_padding_css' ) ) {
 if ( function_exists( 'sgs_nav_item_transition_css' ) ) {
 	$css .= sgs_nav_item_transition_css( $uid_sel, 'sgs-nav-drawer-menu', $attributes );
 }
+// I-B6 (U-18) caret controls, mapped onto the accordion expander. The gap sits
+// on the whole-row toggle (label and expander share one row only there); the
+// hover and focus opacity follow the row's own head (label, expander or
+// whole-row toggle), not the open section beneath it.
+$sgs_nm_caret_root = $uid_sel . ' .sgs-nav-drawer-menu__';
+$css              .= sgs_nav_menu_caret_css(
+	$uid_sel,
+	'sgs-nav-drawer-menu',
+	$attributes,
+	array(
+		'gap'            => $sgs_nm_caret_root . 'accordion-summary--row',
+		'hover_mouse'    => $sgs_nm_caret_root . 'accordion-row:has(> .sgs-nav-drawer-menu__link:hover) .sgs-nav-drawer-menu__caret,'
+			. $sgs_nm_caret_root . 'accordion-summary:hover .sgs-nav-drawer-menu__caret',
+		'hover_keyboard' => $sgs_nm_caret_root . 'accordion-row:has(> .sgs-nav-drawer-menu__link:focus-visible) .sgs-nav-drawer-menu__caret,'
+			. $sgs_nm_caret_root . 'accordion-summary:focus-visible .sgs-nav-drawer-menu__caret',
+	)
+);
 
 // ── 5. Assemble — BLOCK-PRIVATE root.
 // Same as the bar block's render.php — see that file's own §5 comment for the
@@ -638,7 +680,7 @@ if ( '' !== $css ) {
 // `$uid` MUST ride onto the rendered element as a CLASS or every scoped rule
 // above is a silent render no-op. `sgs-nav-drawer-menu` is this block's own
 // BEM root; `$uid` is the per-instance scope.
-$nav_root_classes = array( 'sgs-nav-drawer-menu', $uid );
+$nav_root_classes = array_merge( array( 'sgs-nav-drawer-menu', $uid ), $sgs_nm_section_motion['classes'] );
 
 // This <nav> IS the navigation landmark, so the accessible name belongs here
 // — on the element carrying the role. Exactly one <nav> per instance and

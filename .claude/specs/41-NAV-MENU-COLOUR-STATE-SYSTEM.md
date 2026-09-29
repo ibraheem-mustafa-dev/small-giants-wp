@@ -341,7 +341,7 @@ but that shares `itemBorderColour` / `Hover` / `Current` with the SAME family's 
 — one colour set, two edges — so it cannot be styled independently, which is what "independent"
 requires.
 
-**Attributes** (declared in `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`):
+**Attributes** (declared in `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`, and in `nav-drawer-menu/block.json` with the sweep angle defaulting to 90):
 
 | Attribute | Type | Default | Meaning |
 |---|---|---|---|
@@ -371,11 +371,12 @@ touch-safe primitives as every other hover rule (`sgs_hover_guarded_rule()` for 
 half, an unguarded `:focus-within` rule alongside it); `sgs_hover_state_rules()` cannot express the
 sibling form.
 
-**Scope: bar-only by construction.** The attribute family and its emitter live only in
-`sgs/nav-bar-menu`; `sgs/nav-drawer-menu` never declares `itemSeparator*` and never renders the
-rule. The emitter also gates on the bar not carrying the `--drawer` modifier
-(`.sgs-nav-bar-menu__bar:not(.sgs-nav-bar-menu__bar--drawer)`). A vertical list has no "next item to
-the right" on that axis.
+**Scope.** This emitter draws the bar's vertical rule between adjacent items and gates on the bar not
+carrying the `--drawer` modifier (`.sgs-nav-bar-menu__bar:not(.sgs-nav-bar-menu__bar--drawer)`); it skips
+the `sgs-nav-drawer-menu` BEM root outright. `sgs/nav-drawer-menu` declares the same `itemSeparator*`
+family and draws a horizontal rule between stacked rows instead, with its own emitter
+(`includes/nav-drawer-menu-separator-css.php::sgs_nav_drawer_menu_separator_css`; Spec 36 "Drawer
+item-level parity"). Its sweep angle defaults to 90 rather than 180.
 
 **Emitter:** `plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css`.
 The `item-separator` element in `block.json`'s `supports.sgs.elements` plus the
