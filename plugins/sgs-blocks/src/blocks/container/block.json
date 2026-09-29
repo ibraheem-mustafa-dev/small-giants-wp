@@ -36,6 +36,11 @@
 				"blockLink",
 				"childSizing"
 			],
+			"_comment_hoverExclude": "The Hover panel's image zoom and grayscale have nothing to act on here: a container's own picture is its background, zoomed from the Background panel (bgHoverZoom), and an image block inside has its own Hover panel.",
+			"hoverExcludeControls": [
+				"imageZoom",
+				"grayscale"
+			],
 			"boxFamilies": {
 				"padding": [
 					"padding"
@@ -379,6 +384,26 @@
 		"bgAnimationDuration": {
 			"type": "number",
 			"default": 20
+		},
+		"bgHoverZoom": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgHoverZoomScale": {
+			"type": "number",
+			"default": 105
+		},
+		"bgHoverZoomDuration": {
+			"type": "number",
+			"default": 600
+		},
+		"bgHoverZoomEasing": {
+			"type": "string",
+			"default": "ease"
+		},
+		"bgHoverZoomEasingCustom": {
+			"type": "string",
+			"default": ""
 		},
 		"shadow": {
 			"type": "string"

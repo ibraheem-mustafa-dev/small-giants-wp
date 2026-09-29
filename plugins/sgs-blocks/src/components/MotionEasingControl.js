@@ -51,6 +51,38 @@ export function isValidCubicBezier( value ) {
 }
 
 /**
+ * The CSS timing function for a named easing — the JS twin of
+ * `sgs_motion_easing_css()` (includes/helpers-motion-easing.php), for editor
+ * canvas previews.
+ *
+ * @param {string} value    The named easing.
+ * @param {string} custom   The custom curve, read when value is `custom`.
+ * @param {string} fallback CSS used for an unknown value or an invalid curve.
+ * @return {string} A CSS timing function.
+ */
+export function motionEasingCss( value, custom = '', fallback = 'ease' ) {
+	if ( [ 'default', 'ease-out', 'ease-in', 'spring' ].includes( value ) ) {
+		return `var(--wp--custom--easing--${ value })`;
+	}
+	const literals = {
+		ease: 'ease',
+		'ease-out-css': 'ease-out',
+		'ease-in-out': 'ease-in-out',
+		linear: 'linear',
+		'quart-out': 'cubic-bezier(0.165, 0.84, 0.44, 1)',
+		standard: 'cubic-bezier(0.4, 0, 0.2, 1)',
+		drafts: 'cubic-bezier(0.16, 0.84, 0.32, 1)',
+	};
+	if ( literals[ value ] ) {
+		return literals[ value ];
+	}
+	if ( 'custom' === value && isValidCubicBezier( custom ) ) {
+		return custom.trim();
+	}
+	return fallback;
+}
+
+/**
  * A named-easing select plus the custom-curve field shown for `custom`.
  *
  * @param {Object}   props                The props.

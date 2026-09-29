@@ -16,6 +16,7 @@
  * - sgsHoverDuration (string slug — instant/fast/medium/slow/extra-slow)
  * - sgsHoverEasing (string slug — default/ease-out/ease-in/spring/linear)
  * - sgsHoverImageZoom (boolean)
+ * - sgsHoverZoomStyle ('' clipped inside the frame | 'spill' whole image grows)
  * - sgsStaggerDelay (ms per child)
  * - sgsHoverGrayscale (boolean)
  * - sgsHoverBorderAccent (boolean)
@@ -84,7 +85,9 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$hover_zoom            = min( 130, absint( $attrs['sgsHoverZoom'] ?? $defaults['zoom'] ) );
 	$hover_zoom_duration   = min( 2000, absint( $attrs['sgsHoverZoomDuration'] ?? $defaults['zoom_duration'] ) );
 	$hover_scale_preset    = $attrs['sgsHoverScalePreset'] ?? $defaults['scale_preset'];
-	$hover_shadow          = $attrs['sgsHoverShadow'] ?? $defaults['shadow'];
+	$hover_shadow          = in_array( 'shadow', $excluded_controls, true )
+		? ''
+		: ( $attrs['sgsHoverShadow'] ?? $defaults['shadow'] );
 	$hover_dur_slug        = $attrs['sgsHoverDuration'] ?? 'medium';
 	$hover_dur_ms          = min( 2000, absint( $attrs['sgsHoverDurationMs'] ?? 0 ) );
 	$hover_easing_slug     = $attrs['sgsHoverEasing'] ?? 'default';
@@ -92,6 +95,7 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$hover_img_zoom        = in_array( 'imageZoom', $excluded_controls, true )
 		? false
 		: (bool) ( $attrs['sgsHoverImageZoom'] ?? $defaults['image_zoom'] );
+	$hover_zoom_spill      = $hover_img_zoom && 'spill' === ( $attrs['sgsHoverZoomStyle'] ?? $defaults['zoom_style'] );
 	$stagger_delay         = (int) ( $attrs['sgsStaggerDelay'] ?? 0 );
 	$hover_grayscale       = in_array( 'grayscale', $excluded_controls, true )
 		? false
@@ -234,6 +238,11 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$hover_indent,
 		$hover_shadow_custom
 	);
+	// Zoom style "Whole image grows": the shared rule in assets/css/extensions.css lets the
+	// image spill past its frame instead of clipping it.
+	if ( $hover_zoom_spill ) {
+		$add_classes[] = 'sgs-has-img-zoom--spill';
+	}
 
 	// --- Inject classes into the ROOT tag (never the leading <style>/<script>). ---
 	// Regexes below are anchored to $sgs_root (the substring starting at the

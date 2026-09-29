@@ -439,6 +439,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		backgroundPosition: attributes.backgroundPosition,
 		backgroundRepeat: attributes.backgroundRepeat,
 		backgroundAttachment: attributes.backgroundAttachment,
+		bgHoverZoom: attributes.bgHoverZoom,
+		bgHoverZoomScale: attributes.bgHoverZoomScale,
+		bgHoverZoomDuration: attributes.bgHoverZoomDuration,
+		bgHoverZoomEasing: attributes.bgHoverZoomEasing,
+		bgHoverZoomEasingCustom: attributes.bgHoverZoomEasingCustom,
 	}, [] );
 
 	const wrapperStyle = {

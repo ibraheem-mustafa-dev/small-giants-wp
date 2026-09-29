@@ -74,6 +74,9 @@ export function addHoverAttributes( settings ) {
 			sgsHoverZoom:         { type: 'number',  default: defaults.zoom },
 			// Photo zoom duration in ms (0 = the block's own default).
 			sgsHoverZoomDuration: { type: 'number',  default: defaults.zoomDuration },
+			// Photo zoom style: '' = zooms inside the image's frame (clipped); 'spill' = the whole
+			// visible image grows past its frame. Read by the shared rule in assets/css/extensions.css.
+			sgsHoverZoomStyle:    { type: 'string',  default: defaults.zoomStyle },
 			// Stagger animation delay in ms (applied to direct children).
 			sgsStaggerDelay:      { type: 'number',  default: 0 },
 			// Grayscale-to-colour effect on images.

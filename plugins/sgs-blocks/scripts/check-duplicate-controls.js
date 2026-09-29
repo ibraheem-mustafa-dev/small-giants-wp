@@ -271,6 +271,17 @@ function classifyHoverAttr( attrName ) {
 
 	const has = ( w ) => words.includes( w );
 
+	// BACKGROUND-IMAGE ZOOM (2026-09-29): the Background panel's "Zoom background on hover"
+	// (`bgHoverZoom`, `bgHoverZoomScale/Duration/Easing/EasingCustom`) is its own effect on
+	// the block's background image, which the universal Hover panel never touches — its
+	// image zoom scales media elements (.sgs-media-el), its scale/duration/easing drive the
+	// block's lift and scale. The words "scale"/"duration"/"easing" in these names are the
+	// zoom's own settings, not a second copy of the panel's (the panel keeps a separate
+	// "Photo zoom duration" for the same reason).
+	if ( has( 'zoom' ) && ( has( 'bg' ) || has( 'background' ) ) ) {
+		return null;
+	}
+
 	let category = null;
 	// COLOUR FIRST (2026-08-25). The universal panel exposes NO colour control
 	// at all — verified against hover-effects.js, which registers only scale /
@@ -2157,6 +2168,13 @@ function runSelfTest() {
 		{ name: 'scaleHover classifies as scale', attr: 'scaleHover', expectCategory: 'scale' },
 		{ name: 'imageZoomHover classifies as imageZoom', attr: 'imageZoomHover', expectCategory: 'imageZoom' },
 		{ name: 'grayscaleHover classifies as grayscale', attr: 'grayscaleHover', expectCategory: 'grayscale' },
+		{
+			name: 'bgHoverZoomEasing classifies to nothing (background-image zoom has no panel equivalent)',
+			attr: 'bgHoverZoomEasing',
+			expectCategory: null,
+		},
+		{ name: 'bgHoverZoomScale classifies to nothing (the zoom amount, not block scale)', attr: 'bgHoverZoomScale', expectCategory: null },
+		{ name: 'bgHoverDuration still classifies as duration (no zoom word)', attr: 'bgHoverDuration', expectCategory: 'duration' },
 		{
 			name: 'pauseOnHover classifies to nothing (behavioural toggle, no panel equivalent)',
 			attr: 'pauseOnHover',

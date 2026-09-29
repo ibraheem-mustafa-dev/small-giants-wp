@@ -37,6 +37,7 @@ import { SurfaceTreatmentPanel, isSimpleBackgroundImage } from '../../../compone
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 import qualifyingBlocks from '../../extensions/generated-fx-qualifying-blocks.json';
 import { LENGTH_UNITS } from './_shared';
+import MotionEasingControl from '../../../components/MotionEasingControl';
 
 /*
  * Blocks that already offer `surface-treatment` via the shared fx ToolsPanel
@@ -124,6 +125,11 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 		bgParallax = false,
 		bgKenBurns = false,
 		bgAnimationDuration = 20,
+		bgHoverZoom = false,
+		bgHoverZoomScale = 105,
+		bgHoverZoomDuration = 600,
+		bgHoverZoomEasing = 'ease',
+		bgHoverZoomEasingCustom = '',
 		bgSvgContent = '',
 		bgSvgPosition = 'background',
 		bgSvgAnimation = 'none',
@@ -783,7 +789,7 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 				help={ __( 'Slow zoom animation on the background image.', 'sgs-blocks' ) }
 				checked={ bgKenBurns }
 				onChange={ ( val ) =>
-					setAttributes( { bgKenBurns: val, bgParallax: val ? false : bgParallax } )
+					setAttributes( { bgKenBurns: val, bgParallax: val ? false : bgParallax, bgHoverZoom: val ? false : bgHoverZoom } )
 				}
 				__nextHasNoMarginBottom
 			/>
@@ -792,7 +798,7 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 				help={ __( 'Fixed background-attachment parallax effect. Disabled on touch devices.', 'sgs-blocks' ) }
 				checked={ bgParallax }
 				onChange={ ( val ) =>
-					setAttributes( { bgParallax: val, bgKenBurns: val ? false : bgKenBurns } )
+					setAttributes( { bgParallax: val, bgKenBurns: val ? false : bgKenBurns, bgHoverZoom: val ? false : bgHoverZoom } )
 				}
 				__nextHasNoMarginBottom
 			/>
@@ -807,6 +813,55 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
+			) }
+			<ToggleControl
+				label={ __( 'Zoom background on hover', 'sgs-blocks' ) }
+				help={ __( 'The background image grows slightly, inside the block, while the block is hovered or focused. Turns off Ken-burns and parallax.', 'sgs-blocks' ) }
+				checked={ bgHoverZoom }
+				onChange={ ( val ) =>
+					setAttributes( {
+						bgHoverZoom: val,
+						bgKenBurns: val ? false : bgKenBurns,
+						bgParallax: val ? false : bgParallax,
+					} )
+				}
+				__nextHasNoMarginBottom
+			/>
+			{ bgHoverZoom && (
+				<>
+					<RangeControl
+						label={ __( 'Zoom (%)', 'sgs-blocks' ) }
+						value={ bgHoverZoomScale }
+						onChange={ ( val ) => setAttributes( { bgHoverZoomScale: val ?? 105 } ) }
+						min={ 101 }
+						max={ 150 }
+						step={ 1 }
+						allowReset
+						resetFallbackValue={ 105 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<RangeControl
+						label={ __( 'Zoom duration (ms)', 'sgs-blocks' ) }
+						value={ bgHoverZoomDuration }
+						onChange={ ( val ) => setAttributes( { bgHoverZoomDuration: val ?? 600 } ) }
+						min={ 0 }
+						max={ 3000 }
+						step={ 50 }
+						allowReset
+						resetFallbackValue={ 600 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<MotionEasingControl
+						label={ __( 'Zoom easing', 'sgs-blocks' ) }
+						value={ bgHoverZoomEasing }
+						custom={ bgHoverZoomEasingCustom }
+						fallback="ease"
+						onChange={ ( val ) => setAttributes( { bgHoverZoomEasing: val } ) }
+						onCustomChange={ ( val ) => setAttributes( { bgHoverZoomEasingCustom: val } ) }
+					/>
+				</>
 			) }
 		</PanelBody>
 	);

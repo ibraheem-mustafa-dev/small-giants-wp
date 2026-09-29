@@ -97,13 +97,16 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		// covered with no second declaration.
 		const hasShadowLift = Boolean( type?.attributes ) &&
 			Object.prototype.hasOwnProperty.call( type.attributes, 'shadowLiftOnHover' );
-		const hideShadowPicker = hasShadowLift;
+		// A block can also exclude the picker outright (`hoverExcludeControls: ["shadow"]`) when
+		// it owns a hover shadow of its own elsewhere (sgs/media: the shadow atom's hover colour).
+		const hideShadowPicker = hasShadowLift || excludedHoverControls.includes( 'shadow' );
 
 		const {
 			sgsHoverScale,
 			sgsHoverLift,
 			sgsHoverZoom,
 			sgsHoverZoomDuration,
+			sgsHoverZoomStyle,
 			sgsHoverShadow,
 			sgsHoverShadowCustom,
 			sgsHoverDuration,
@@ -188,6 +191,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							sgsHoverLift={ sgsHoverLift }
 							sgsHoverZoom={ sgsHoverZoom }
 							sgsHoverZoomDuration={ sgsHoverZoomDuration }
+							sgsHoverZoomStyle={ sgsHoverZoomStyle }
 							sgsHoverShadow={ sgsHoverShadow }
 							sgsHoverShadowCustom={ sgsHoverShadowCustom }
 							sgsHoverImageZoom={ sgsHoverImageZoom }

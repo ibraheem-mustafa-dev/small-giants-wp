@@ -1363,8 +1363,20 @@ list `"hover"` in `supports.sgs.enabledExtensions`; rendered by `includes/hover-
 plus scoped custom properties; per-block defaults from `supports.sgs.hoverDefaults`):
 - `sgsHoverScale` (fine %, 0 = off), `sgsHoverScalePreset` (1.02 / 1.05 / 1.1) and `sgsHoverLift` (px) — one transform
 - `sgsHoverShadow` — a shadow preset slug (never defaulted on a block that draws the automatic lift, `shadowLiftOnHover`)
-- `sgsHoverImageZoom`, `sgsHoverZoom` (%, 0 = the block's 110%), `sgsHoverZoomDuration` (ms) — the photo zoom, read by
-  each block's own image rule as `scale(var(--sgs-hover-zoom, 1.1))`
+- `sgsHoverImageZoom`, `sgsHoverZoom` (%, 0 = 110%), `sgsHoverZoomDuration` (ms), `sgsHoverZoomStyle` (`''` zooms
+  inside the image's frame, `spill` = the whole visible image grows past it) — the photo zoom, eased by `sgsHoverEasing`.
+  One shared rule (`assets/css/extensions.css`, "Hover Image Zoom") keys on the media markers `.sgs-media-box` /
+  `.sgs-media-el`, so it works on any block whose image is a media element (`sgs/media` opts in with
+  `enabledExtensions:["hover"]` and `hoverExcludeControls:["shadow"]`, its shadow atom owning the image's hover shadow);
+  hovering or focusing the frame triggers it, touch-guarded, off under reduced motion. card-grid, team-member,
+  info-box and product-card keep their own card-hover zoom rules on the same `--sgs-hover-zoom` value.
+  `supports.sgs.hoverExcludeControls` hides `imageZoom`, `grayscale` or `shadow` where a block has nothing for them
+  to act on (sgs/container: its own picture is its background, zoomed from the Background panel)
+- **Background zoom on hover** (Background panel, every block rendering through `SGS_Container_Wrapper`):
+  `bgHoverZoom`, `bgHoverZoomScale` (101-150 %, default 105), `bgHoverZoomDuration` (ms, default 600),
+  `bgHoverZoomEasing` + `bgHoverZoomEasingCustom` (`MotionEasingControl` / `sgs_motion_easing_css()`). Hovering or
+  focusing into the block scales its background image inside the block (`includes/container-bg-hover-zoom.php`);
+  off while Ken Burns or parallax is on. The canvas twin is `backgroundPreview()`'s `sgs-ed-bg-hover-zoom`
 - `sgsHoverDuration` (a duration token), `sgsHoverDurationMs` (exact ms, overrides the token), `sgsHoverEasing`
   (a token, or `custom` with `sgsHoverEasingCustom`, validated by `sgs_motion_easing_css()`)
 - `sgsHoverOpacity` (0 to 1, 0 = off) — the hover fade, touch-guarded like the transform

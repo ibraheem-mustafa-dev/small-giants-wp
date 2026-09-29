@@ -410,6 +410,26 @@
 			"type": "number",
 			"default": 20
 		},
+		"bgHoverZoom": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgHoverZoomScale": {
+			"type": "number",
+			"default": 105
+		},
+		"bgHoverZoomDuration": {
+			"type": "number",
+			"default": 600
+		},
+		"bgHoverZoomEasing": {
+			"type": "string",
+			"default": "ease"
+		},
+		"bgHoverZoomEasingCustom": {
+			"type": "string",
+			"default": ""
+		},
 		"bgKenBurns": {
 			"type": "boolean",
 			"default": false

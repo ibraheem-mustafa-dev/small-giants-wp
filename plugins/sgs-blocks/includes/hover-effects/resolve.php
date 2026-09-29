@@ -47,7 +47,7 @@ function is_hover_shadow_slug( $value ): bool {
  * to emit one.
  *
  * @param string $block_name Block name (e.g. 'sgs/card-grid').
- * @return array { scale_preset: string, shadow: string, image_zoom: bool, focus_ring: bool, lift: int, zoom: int, zoom_duration: int }
+ * @return array { scale_preset: string, shadow: string, image_zoom: bool, focus_ring: bool, lift: int, zoom: int, zoom_duration: int, zoom_style: string }
  */
 function resolve_hover_defaults( string $block_name ): array {
 	$all_off = array(
@@ -58,6 +58,7 @@ function resolve_hover_defaults( string $block_name ): array {
 		'lift'          => 0,
 		'zoom'          => 0,
 		'zoom_duration' => 0,
+		'zoom_style'    => '',
 	);
 
 	if ( '' === $block_name ) {
@@ -112,6 +113,7 @@ function resolve_hover_defaults( string $block_name ): array {
 		'lift'          => absint( $declared['lift'] ?? 0 ),
 		'zoom'          => absint( $declared['zoom'] ?? 0 ),
 		'zoom_duration' => absint( $declared['zoomDuration'] ?? 0 ),
+		'zoom_style'    => 'spill' === ( $declared['zoomStyle'] ?? '' ) ? 'spill' : '',
 	);
 }
 

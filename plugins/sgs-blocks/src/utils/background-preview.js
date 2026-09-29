@@ -1,6 +1,7 @@
 import { resolveColourToken } from '../components/DesignTokenPicker';
 import { sanitiseSvg } from './sanitise-svg';
 import { surfaceBackdropPreview, wrapperToneClass } from './surface-preview';
+import { motionEasingCss } from '../components/MotionEasingControl';
 
 
 /**
@@ -220,6 +221,11 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 		bgKenBurns = false,
 		bgAnimationDuration = 20,
 		bgParallax = false,
+		bgHoverZoom = false,
+		bgHoverZoomScale = 105,
+		bgHoverZoomDuration = 600,
+		bgHoverZoomEasing = 'ease',
+		bgHoverZoomEasingCustom = '',
 		backgroundOverlayColour,
 		overlayGradient,
 		backgroundOverlayOpacity,
@@ -232,6 +238,9 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 	const hasBgVideo = !! bgVideo?.url;
 	const hasBgLottie = ! hasBgImage && ! hasBgVideo && !! bgLottie;
 	const hasBgMedia = hasBgImage && ! hasBgVideo;
+	// Background zoom on hover — mirrors includes/container-bg-hover-zoom.php (same clamps,
+	// same easing resolution, off while Ken Burns or parallax moves the image).
+	const bgZoom = bgHoverZoom && hasBgMedia && ! bgKenBurns && ! bgParallax;
 
 	const overlayPreview = overlayPaintPreview(
 		backgroundOverlayColour,
@@ -266,6 +275,11 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 		...( bgKenBurns && hasBgImage && {
 			'--sgs-ken-burns-duration': `${ bgAnimationDuration }s`,
 		} ),
+		...( bgZoom && {
+			'--sgs-ed-bg-zoom': String( Math.max( 101, Math.min( 150, Number( bgHoverZoomScale ) || 105 ) ) / 100 ),
+			'--sgs-ed-bg-zoom-duration': `${ Math.max( 0, Math.min( 3000, Math.round( Number( bgHoverZoomDuration ) || 0 ) ) ) }ms`,
+			'--sgs-ed-bg-zoom-easing': motionEasingCss( bgHoverZoomEasing || 'ease', bgHoverZoomEasingCustom, 'ease' ),
+		} ),
 		// Overlay layer — a ::after mirror in the shared editor stylesheet, same
 		// reasoning as the background-image ::before above: painting it on the
 		// element itself would dim the client's real content, not just the
@@ -289,6 +303,7 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 	const className = [
 		hasBgMedia ? 'sgs-ed-has-bg-media' : '',
 		bgParallax ? 'sgs-container--parallax' : '',
+		bgZoom ? 'sgs-ed-bg-hover-zoom' : '',
 		overlayPreview.hasOverlay ? 'sgs-ed-has-overlay' : '',
 		toneClass,
 	]

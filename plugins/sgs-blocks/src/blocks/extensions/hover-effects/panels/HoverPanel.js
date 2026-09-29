@@ -33,6 +33,7 @@ import { isValidCubicBezier } from '../../../../components/MotionEasingControl';
  * @param {number}   props.sgsHoverLift
  * @param {number}   props.sgsHoverZoom
  * @param {number}   props.sgsHoverZoomDuration
+ * @param {string}   props.sgsHoverZoomStyle
  * @param {string}   props.sgsHoverShadow
  * @param {string}   props.sgsHoverShadowCustom
  * @param {boolean}  props.sgsHoverImageZoom
@@ -58,6 +59,7 @@ export default function HoverPanel( {
 	sgsHoverLift,
 	sgsHoverZoom,
 	sgsHoverZoomDuration,
+	sgsHoverZoomStyle,
 	sgsHoverShadow,
 	sgsHoverShadowCustom,
 	sgsHoverImageZoom,
@@ -155,13 +157,25 @@ export default function HoverPanel( {
 			{ ! hideImageZoom && (
 			<ToggleControl
 				label={ __( 'Zoom image on hover', 'sgs-blocks' ) }
-				help={ __( 'Gently scales any image inside the block when hovered.', 'sgs-blocks' ) }
+				help={ __( 'Scales the image when it is hovered or focused. Uses this panel’s easing.', 'sgs-blocks' ) }
 				checked={ sgsHoverImageZoom }
 				onChange={ ( val ) => setAttributes( { sgsHoverImageZoom: val } ) }
 			/>
 			) }
 			{ ! hideImageZoom && sgsHoverImageZoom && (
 				<>
+					<SelectControl
+						label={ __( 'Zoom style', 'sgs-blocks' ) }
+						help={ __( 'Inside the frame: the image grows but stays within its box. Whole image grows: the visible image scales past its edges.', 'sgs-blocks' ) }
+						value={ sgsHoverZoomStyle || '' }
+						options={ [
+							{ label: __( 'Zoom inside the frame', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Whole image grows', 'sgs-blocks' ), value: 'spill' },
+						] }
+						onChange={ ( val ) => setAttributes( { sgsHoverZoomStyle: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<RangeControl
 						label={ __( 'Photo zoom (%)', 'sgs-blocks' ) }
 						help={ __( 'How far the image grows on hover. 0 = the block default (110%).', 'sgs-blocks' ) }

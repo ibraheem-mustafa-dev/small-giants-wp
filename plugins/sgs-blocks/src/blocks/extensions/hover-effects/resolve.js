@@ -24,13 +24,13 @@
  * two-condition rule the PHP enforces explicitly.
  *
  * @param {Object} settings Block settings from blocks.registerBlockType.
- * @return {{ scalePreset: string, shadow: string, imageZoom: boolean, focusRing: boolean, lift: number, zoom: number, zoomDuration: number }} Defaults.
+ * @return {{ scalePreset: string, shadow: string, imageZoom: boolean, focusRing: boolean, lift: number, zoom: number, zoomDuration: number, zoomStyle: string }} Defaults.
  */
 export function resolveBlockDefaults( settings ) {
 	const declared = settings?.supports?.sgs?.hoverDefaults;
 
 	if ( ! declared || 'object' !== typeof declared ) {
-		return { scalePreset: '', shadow: '', imageZoom: false, focusRing: false, lift: 0, zoom: 0, zoomDuration: 0 };
+		return { scalePreset: '', shadow: '', imageZoom: false, focusRing: false, lift: 0, zoom: 0, zoomDuration: 0, zoomStyle: '' };
 	}
 
 	// ONE control (Bean's ruling, 2026-09-24): a block that draws the automatic shadow
@@ -53,6 +53,7 @@ export function resolveBlockDefaults( settings ) {
 		lift:         Number.isFinite( declared.lift ) ? declared.lift : 0,
 		zoom:         Number.isFinite( declared.zoom ) ? declared.zoom : 0,
 		zoomDuration: Number.isFinite( declared.zoomDuration ) ? declared.zoomDuration : 0,
+		zoomStyle:    'spill' === declared.zoomStyle ? 'spill' : '',
 	};
 }
 

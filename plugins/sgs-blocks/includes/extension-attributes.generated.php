@@ -150,6 +150,7 @@ return array(
 	'sgsHoverTilt3D' => array( 'type' => 'boolean' ),
 	'sgsHoverZoom' => array( 'type' => 'number' ),
 	'sgsHoverZoomDuration' => array( 'type' => 'number' ),
+	'sgsHoverZoomStyle' => array( 'type' => 'string' ),
 	'sgsMaxWidth' => array( 'type' => 'string' ),
 	'sgsObjectFit' => array( 'type' => 'string' ),
 	'sgsObjectPosition' => array( 'type' => 'object' ),

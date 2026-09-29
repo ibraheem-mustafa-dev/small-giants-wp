@@ -52,6 +52,7 @@ require_once __DIR__ . '/helpers-css-sizing-keyword.php';
 // U-17 (design §3.1) — not yet wired into render-helpers.php's autoload
 // chain, so required directly here (idempotent — require_once).
 require_once __DIR__ . '/lottie-render.php';
+require_once __DIR__ . '/container-bg-hover-zoom.php';
 
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
@@ -506,6 +507,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$bg_parallax             = ! empty( $attributes['bgParallax'] );
 			$bg_ken_burns            = ! empty( $attributes['bgKenBurns'] );
 			$bg_animation_duration   = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
+			// Background panel "Zoom background on hover" (includes/container-bg-hover-zoom.php).
+			// Off while Ken Burns or parallax moves the same image.
+			$bg_hover_zoom           = ! empty( $attributes['bgHoverZoom'] ) && ! $bg_parallax && ! $bg_ken_burns;
 
 			$shadow = $attributes['shadow'] ?? '';
 			// is_array guard (Spec 35 Phase 1.4b, STAGE 2): `shadow` is being made
@@ -2439,6 +2443,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $container_queries
 				|| '' !== $overlay_decls
 				|| ( $bg_parallax || $bg_ken_burns ) // D6: universal.
+				|| ( $bg_hover_zoom && $has_bg_image )
 				|| ( $has_bg_video && ( ! empty( $bg_video_tablet['url'] ) || ! empty( $bg_video_mobile['url'] ) ) ) // D6: universal.
 				// U-17 — the pause control's scoped positioning rule and the
 				// Lottie layer's own aspect-ratio custom property both need a
@@ -2566,6 +2571,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$responsive_css .= '.' . $uid . ':has(.sgs-media-box){overflow-x:clip;overflow-y:visible;position:relative;z-index:2;}';
 				$responsive_css .= '.' . $uid . ' .sgs-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}';
 				$responsive_css .= '@media (prefers-reduced-motion: no-preference){.' . $uid . ' .sgs-media-box:hover .sgs-media-el,.' . $uid . ' .sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}';
+			}
+
+			// Background image zoom on hover: the real <img> when one rendered, else the
+			// root's ::before image layer (tiled or sized backgrounds).
+			if ( $bg_hover_zoom && $has_bg_image && ! $has_bg_video && ! $has_bg_lottie && $uid
+				&& ( '' !== $bg_img_html || ! empty( $sgs_media_layer_decls ) ) ) {
+				$responsive_css .= sgs_container_bg_hover_zoom_css(
+					$uid,
+					'' !== $bg_img_html,
+					$attributes['bgHoverZoomScale'] ?? 105,
+					$attributes['bgHoverZoomDuration'] ?? 600,
+					(string) ( $attributes['bgHoverZoomEasing'] ?? 'ease' ),
+					(string) ( $attributes['bgHoverZoomEasingCustom'] ?? '' )
+				);
 			}
 
 			// FR-32-1 / D345 — shape-divider height + colour, captured as declarations
