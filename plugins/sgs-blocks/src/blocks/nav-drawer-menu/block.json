@@ -33,6 +33,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"shadowLift": false,
 			"enabledExtensions": [ "childSizing" ],
 			"colourExemptions": {
 				"indicator": {

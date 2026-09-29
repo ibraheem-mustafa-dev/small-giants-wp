@@ -345,11 +345,11 @@
 
 @media (prefers-reduced-motion: no-preference) {
 	@media (hover: hover) and (pointer: fine) {
-		.sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-frame {
+		:where(:root:not(.sgs-touch-input)) .sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-frame {
 			animation: var(--sgs-ndm-frame-flash, sgs-ndm-frame-flash) var(--sgs-ndm-frame-ms, 60ms) linear calc(var(--sgs-ndm-frame-i, 0) * var(--sgs-ndm-frame-ms, 60ms));
 		}
 
-		.sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-glyph {
+		:where(:root:not(.sgs-touch-input)) .sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-glyph {
 			animation: var(--sgs-ndm-frame-hide, sgs-ndm-frame-hide) calc(var(--sgs-ndm-frame-n, 1) * var(--sgs-ndm-frame-ms, 60ms)) linear;
 		}
 	}

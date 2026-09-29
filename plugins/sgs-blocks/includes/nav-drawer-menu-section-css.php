@@ -16,6 +16,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-hover-state.php';
+
 if ( ! function_exists( 'sgs_nav_drawer_menu_row_layout_css' ) ) {
 	/**
 	 * `justifyContent` — how a row's content is spread across the row.
@@ -62,14 +64,17 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_section_box_css' ) ) {
 		if ( null !== $radius && '' !== $radius ) {
 			$decls .= 'border-radius:' . $radius . ';';
 		}
-		$shadow = sgs_shadow_value_composed(
-			(string) ( $attributes['submenuShadow'] ?? '' ),
-			(string) ( $attributes['submenuShadowColour'] ?? '' )
-		);
-		if ( '' !== $shadow ) {
-			$decls .= 'box-shadow:' . $shadow . ';';
+		$shadow_shape  = (string) ( $attributes['submenuShadow'] ?? '' );
+		$shadow_colour = (string) ( $attributes['submenuShadowColour'] ?? '' );
+		$decls        .= implode( ';', sgs_shadow_box_decls( $shadow_shape, $shadow_colour ) );
+		if ( '' === $decls ) {
+			return '';
 		}
-		return '' === $decls ? '' : '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-drawer-menu__submenu{' . $decls . '}';
+		$sel = '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-drawer-menu__submenu';
+		// The drawer is an overlay (`supports.sgs.shadowLift` false), so this returns ''
+		// unless that declaration changes; the wiring keeps the section on the shared lift rule.
+		return $sel . '{' . $decls . '}'
+			. sgs_shadow_hover_rules( $sel, $shadow_shape, $shadow_colour, $attributes, 'sgs/nav-drawer-menu' );
 	}
 }
 
