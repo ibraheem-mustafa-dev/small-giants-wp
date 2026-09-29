@@ -1121,7 +1121,7 @@
       "surfaces": {
         "styling": false,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": true,
         "animation": false
       },
@@ -1615,7 +1615,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 15,
+        "paintDeclarations": 19,
         "replacedCoreSupports": [
           "anchor",
           "border",
