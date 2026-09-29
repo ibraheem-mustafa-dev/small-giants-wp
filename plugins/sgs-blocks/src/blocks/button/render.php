@@ -315,8 +315,8 @@ $hover_scale_target  = in_array( $hover_scale_target, array( 'whole', 'face' ), 
 // is applied at build time (scripts/hover-guard postbuild transform), not here.
 $hover_opacity = isset( $attributes['opacityHover'] ) ? (float) $attributes['opacityHover'] : 0.0;
 $hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
-// Hover lift (px, 0 = off): translateY(-N) on the button root, composed with the
-// scale in ONE transform declaration so the two never overwrite each other.
+// Hover lift (px, 0 = off): `translate: 0 -N px` on the button root, an
+// independent property from the scale's `transform`.
 $hover_lift          = isset( $attributes['liftHover'] ) ? min( 24, max( 0, (int) $attributes['liftHover'] ) ) : 0;
 $transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_easing   = isset( $attributes['transitionEasing'] ) ? sanitize_text_field( $attributes['transitionEasing'] ) : 'ease';
@@ -432,20 +432,17 @@ $scoped_css_parts[] = ".{$uid}.sgs-button{transition:all {$transition_duration}m
 // `.sgs-button__face` wrapper around the label/icon (see step 7 below),
 // leaving the border and background fill in place — the lamalama-style
 // inner-face-only scale (G-14).
-$lift_fn = $hover_lift > 0 ? "translateY(-{$hover_lift}px)" : '';
 if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 	$scale_val = round( $hover_scale, 3 );
-	if ( 'face' === $hover_scale_target ) {
-		// The face wrapper scales; the root carries only the lift.
-		$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})", ':focus-visible', ' .sgs-button__face' );
-		if ( '' !== $lift_fn ) {
-			$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:{$lift_fn}" );
-		}
-	} else {
-		$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", 'transform:' . trim( $lift_fn . " scale({$scale_val})" ) );
-	}
-} elseif ( '' !== $lift_fn ) {
-	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:{$lift_fn}" );
+	$scoped_css_parts[] = 'face' === $hover_scale_target
+		? sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})", ':focus-visible', ' .sgs-button__face' )
+		: sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})" );
+}
+// Hover lift paints the independent `translate` property (not `transform`),
+// so it composes with the scale above without the two contending for one
+// declaration; it always moves the button root, whichever part scales.
+if ( $hover_lift > 0 ) {
+	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "translate:0 -{$hover_lift}px" );
 }
 
 // Content alignment + label-to-icon gap, per device. Both are flex properties

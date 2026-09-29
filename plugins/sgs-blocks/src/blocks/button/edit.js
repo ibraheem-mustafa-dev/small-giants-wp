@@ -421,7 +421,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}
 	if ( widthType?.desktop === 'full' ) blockClasses.push( 'sgs-button--full' );
 	// Hover lift canvas mirror — a clientId-scoped :hover rule (render.php
-	// emits translateY(-N) on the same hover state).
+	// emits translate: 0 -N px on the same hover state).
 	const liftScope = `sgs-button-lift-${ clientId }`;
 	if ( liftHover > 0 ) blockClasses.push( liftScope );
 	const blockProps = useBlockProps( {
@@ -1188,7 +1188,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ /* Editor preview — the button element IS the block root (D288, no wrapper div).
 			   The label is now RichText on-canvas (matching core/button) instead of a
 			   sidebar TextControl. */ }
-			{ liftHover > 0 && <style>{ `.${ liftScope }:hover{transform:translateY(-${ Math.min( 24, liftHover ) }px)}` }</style> }
+			{ liftHover > 0 && <style>{ `.${ liftScope }:hover{translate:0 -${ Math.min( 24, liftHover ) }px}` }</style> }
 			<span { ...blockProps }>
 				{ backgroundLayerStyle && (
 					<span aria-hidden="true" style={ backgroundLayerStyle } />
