@@ -2,46 +2,71 @@
   {
     "name": "sgs/nav-drawer",
     "attributes": {
-      "drawerAlign": "left",
+      "drawerAlign": "stretch",
       "drawerBg": "surface",
       "modality": "modal",
       "panelSize": {
         "desktop": "100%"
       },
-      "submenuModel": "accordion"
+      "submenuModel": "accordion",
+      "drawerGap": {
+        "desktop": "0px"
+      },
+      "drawerPadding": {
+        "desktop": {
+          "top": "0px",
+          "right": "24px",
+          "bottom": "20px",
+          "left": "24px"
+        }
+      },
+      "chromeRowHeight": {
+        "desktop": "64px"
+      },
+      "chromeRowPadding": {
+        "desktop": {
+          "top": "20px",
+          "right": "0px",
+          "bottom": "0px",
+          "left": "0px"
+        }
+      },
+      "chromeSlotType": "heading",
+      "chromeSlotText": "EYE CARE",
+      "chromeSlotHeadingLevel": "p",
+      "chromeSlotPlacement": "after-logo",
+      "chromeSlotFontFamily": "heading",
+      "chromeSlotFontWeight": "500",
+      "chromeSlotLetterSpacing": {
+        "desktop": 0.14
+      },
+      "chromeSlotLetterSpacingUnit": "em",
+      "closeBorderWidth": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "closeBorderStyle": "none",
+      "itemStagger": 50,
+      "itemStaggerDuration": 500,
+      "itemStaggerDistance": {
+        "desktop": 18
+      }
     },
     "innerBlocks": [
       {
         "name": "sgs/container",
         "attributes": {
-          "tagName": "div",
-          "layout": "flex",
-          "justifyContent": "space-between",
-          "alignItems": "center"
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "EYE CARE",
-              "fontFamily": "heading",
-              "fontWeight": "500",
-              "letterSpacing": {
-                "desktop": 0.14
-              },
-              "letterSpacingUnit": "em",
-              "fontSize": {
-                "desktop": "15px"
-              }
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
           "tagName": "nav",
+          "contentWidth": {
+            "desktop": "full"
+          },
+          "ariaLabel": "Shop",
           "layout": "stack",
+          "gap": {
+            "desktop": "0px"
+          },
           "margin": {
             "desktop": {
               "top": "32px"
@@ -50,44 +75,191 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/icon-list",
+            "name": "sgs/button",
             "attributes": {
-              "markerType": "none",
-              "items": [
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Sunglasses",
-                  "url": "/shop/"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Brands",
-                  "url": "/shop/"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Prescription lenses",
-                  "url": "/prescription-lenses/"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Glasses — SOON",
-                  "url": ""
-                }
-              ],
-              "itemTextDecoration": "none",
-              "itemFontFamily": "heading",
-              "itemFontWeight": "500",
-              "itemFontSize": {
-                "desktop": "34px"
+              "inheritStyle": "custom",
+              "label": "Sunglasses",
+              "url": "/shop/",
+              "widthType": {
+                "desktop": "full"
               },
-              "dividers": true,
-              "gap": "40"
+              "contentAlign": {
+                "desktop": "flex-start"
+              },
+              "textAlign": "left",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "fontSize": {
+                "desktop": 34
+              },
+              "fontSizeUnit": "px",
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "lineHeightUnit": "em",
+              "textDecoration": "none",
+              "textDecorationHover": "none",
+              "colourText": "text",
+              "colourTextHover": "text",
+              "borderStyle": "solid",
+              "borderWidth": {
+                "bottom": "1px"
+              },
+              "borderColour": "border",
+              "borderColourHover": "border",
+              "padding": {
+                "desktop": {
+                  "top": "14px",
+                  "right": "0px",
+                  "bottom": "14px",
+                  "left": "0px"
+                }
+              }
             }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "inheritStyle": "custom",
+              "label": "Brands",
+              "url": "/shop/",
+              "widthType": {
+                "desktop": "full"
+              },
+              "contentAlign": {
+                "desktop": "flex-start"
+              },
+              "textAlign": "left",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "fontSize": {
+                "desktop": 34
+              },
+              "fontSizeUnit": "px",
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "lineHeightUnit": "em",
+              "textDecoration": "none",
+              "textDecorationHover": "none",
+              "colourText": "text",
+              "colourTextHover": "text",
+              "borderStyle": "solid",
+              "borderWidth": {
+                "bottom": "1px"
+              },
+              "borderColour": "border",
+              "borderColourHover": "border",
+              "padding": {
+                "desktop": {
+                  "top": "14px",
+                  "right": "0px",
+                  "bottom": "14px",
+                  "left": "0px"
+                }
+              }
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "inheritStyle": "custom",
+              "label": "Prescription lenses",
+              "url": "/prescription-lenses/",
+              "widthType": {
+                "desktop": "full"
+              },
+              "contentAlign": {
+                "desktop": "flex-start"
+              },
+              "textAlign": "left",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "fontSize": {
+                "desktop": 34
+              },
+              "fontSizeUnit": "px",
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "lineHeightUnit": "em",
+              "textDecoration": "none",
+              "textDecorationHover": "none",
+              "colourText": "text",
+              "colourTextHover": "text",
+              "borderStyle": "solid",
+              "borderWidth": {
+                "bottom": "1px"
+              },
+              "borderColour": "border",
+              "borderColourHover": "border",
+              "padding": {
+                "desktop": {
+                  "top": "14px",
+                  "right": "0px",
+                  "bottom": "14px",
+                  "left": "0px"
+                }
+              }
+            }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "contentWidth": {
+                "desktop": "full"
+              },
+              "layout": "flex",
+              "flexDirection": "row",
+              "flexWrap": "nowrap",
+              "alignItems": "baseline",
+              "gap": {
+                "desktop": "9px"
+              },
+              "borderStyle": "solid",
+              "borderWidth": {
+                "bottom": "1px"
+              },
+              "borderColour": "border",
+              "padding": {
+                "desktop": {
+                  "top": "14px",
+                  "right": "0px",
+                  "bottom": "14px",
+                  "left": "0px"
+                }
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Glasses",
+                  "fontFamily": "heading",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": "34px"
+                  },
+                  "textColour": "#A39C90"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "SOON",
+                  "fontFamily": "body",
+                  "fontSize": {
+                    "desktop": "12px"
+                  },
+                  "letterSpacing": {
+                    "desktop": 0.14
+                  },
+                  "letterSpacingUnit": "em",
+                  "textColour": "#A39C90"
+                }
+              }
+            ]
           }
         ]
       },
@@ -95,10 +267,14 @@
         "name": "sgs/container",
         "attributes": {
           "tagName": "nav",
+          "contentWidth": {
+            "desktop": "full"
+          },
+          "ariaLabel": "More",
           "layout": "stack",
           "margin": {
             "desktop": {
-              "top": "28px"
+              "top": "23px"
             }
           }
         },
@@ -140,7 +316,8 @@
               "itemLetterSpacing": {
                 "desktop": 0.04
               },
-              "gap": "30"
+              "gap": "10",
+              "itemPaddingBlock": "5px"
             }
           }
         ]
@@ -149,11 +326,19 @@
         "name": "sgs/container",
         "attributes": {
           "tagName": "div",
+          "contentWidth": {
+            "desktop": "full"
+          },
           "layout": "stack",
           "gap": {
             "desktop": "12px"
           },
           "margin": {
+            "desktop": {
+              "top": "auto"
+            }
+          },
+          "padding": {
             "desktop": {
               "top": "28px"
             }
@@ -161,9 +346,45 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/container",
+            "name": "sgs/button",
             "attributes": {
-              "tagName": "div",
+              "inheritStyle": "custom",
+              "label": "0121 729 8233",
+              "url": "tel:01217298233",
+              "linkSource": "phone",
+              "widthType": {
+                "desktop": "full"
+              },
+              "contentAlign": {
+                "desktop": "flex-start"
+              },
+              "textAlign": "left",
+              "icon": "phone",
+              "iconPosition": "before",
+              "iconSize": {
+                "desktop": 17
+              },
+              "iconGap": {
+                "desktop": "12px"
+              },
+              "iconColour": "text",
+              "iconColourHover": "text",
+              "fontSize": {
+                "desktop": 15
+              },
+              "fontSizeUnit": "px",
+              "fontWeight": "400",
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "lineHeightUnit": "em",
+              "textDecoration": "none",
+              "textDecorationHover": "none",
+              "colourText": "text",
+              "colourTextHover": "text",
+              "colourBackground": "surface-alt",
+              "colourBackgroundHover": "surface-alt",
+              "borderStyle": "solid",
               "borderWidth": {
                 "top": "1px",
                 "right": "1px",
@@ -171,42 +392,172 @@
                 "left": "1px"
               },
               "borderColour": "border",
-              "borderStyle": "solid",
-              "backgroundColour": "surface-alt",
+              "borderColourHover": "border",
               "padding": {
                 "desktop": {
                   "top": "14px",
+                  "right": "16px",
                   "bottom": "14px",
-                  "left": "16px",
-                  "right": "16px"
+                  "left": "16px"
                 }
+              }
+            }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "contentWidth": {
+                "desktop": "full"
+              },
+              "layout": "flex",
+              "flexDirection": "row",
+              "flexWrap": "nowrap",
+              "gap": {
+                "desktop": "10px"
               }
             },
             "innerBlocks": [
               {
-                "name": "sgs/business-info",
+                "name": "sgs/button",
                 "attributes": {
-                  "displayType": "phone",
-                  "showIcon": true,
-                  "fontSize": {
-                    "desktop": "15px"
+                  "inheritStyle": "custom",
+                  "label": "Instagram",
+                  "ariaLabel": "Instagram",
+                  "url": "https://www.instagram.com/eyecare.birmingham/",
+                  "linkTarget": "_blank",
+                  "rel": "noopener",
+                  "icon": "instagram",
+                  "iconPosition": "only",
+                  "iconSize": {
+                    "desktop": 18
+                  },
+                  "sgsChildSizing": {
+                    "desktop": "fill"
+                  },
+                  "minHeight": {
+                    "desktop": 46
+                  },
+                  "minHeightUnit": "px",
+                  "colourText": "text",
+                  "colourTextHover": "text",
+                  "iconColour": "text",
+                  "iconColourHover": "text",
+                  "colourBackground": "surface-alt",
+                  "colourBackgroundHover": "surface-alt",
+                  "borderStyle": "solid",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderColour": "border",
+                  "borderColourHover": "border",
+                  "padding": {
+                    "desktop": {
+                      "top": "0px",
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px"
+                    }
                   }
+                }
+              },
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "inheritStyle": "custom",
+                  "label": "Google reviews",
+                  "ariaLabel": "Google reviews",
+                  "url": "https://share.google/9YZzTiRj2gvW1Xrpr",
+                  "linkTarget": "_blank",
+                  "rel": "noopener",
+                  "icon": "star",
+                  "iconPosition": "only",
+                  "iconSize": {
+                    "desktop": 18
+                  },
+                  "sgsChildSizing": {
+                    "desktop": "fill"
+                  },
+                  "minHeight": {
+                    "desktop": 46
+                  },
+                  "minHeightUnit": "px",
+                  "colourText": "text",
+                  "colourTextHover": "text",
+                  "iconColour": "text",
+                  "iconColourHover": "text",
+                  "colourBackground": "surface-alt",
+                  "colourBackgroundHover": "surface-alt",
+                  "borderStyle": "solid",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderColour": "border",
+                  "borderColourHover": "border",
+                  "padding": {
+                    "desktop": {
+                      "top": "0px",
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "inheritStyle": "custom",
+                  "label": "WhatsApp",
+                  "ariaLabel": "WhatsApp",
+                  "url": "https://wa.me/4479605978",
+                  "linkTarget": "_blank",
+                  "rel": "noopener",
+                  "icon": "message-circle",
+                  "iconPosition": "only",
+                  "iconSize": {
+                    "desktop": 18
+                  },
+                  "sgsChildSizing": {
+                    "desktop": "fill"
+                  },
+                  "minHeight": {
+                    "desktop": 46
+                  },
+                  "minHeightUnit": "px",
+                  "colourText": "success",
+                  "colourTextHover": "success",
+                  "iconColour": "success",
+                  "iconColourHover": "success",
+                  "colourBackground": "whatsapp-soft",
+                  "colourBackgroundHover": "whatsapp-soft",
+                  "borderStyle": "solid",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderColour": "whatsapp-line",
+                  "borderColourHover": "whatsapp-line",
+                  "padding": {
+                    "desktop": {
+                      "top": "0px",
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px"
+                    }
+                  },
+                  "linkSource": "whatsapp"
                 }
               }
             ]
-          },
-          {
-            "name": "sgs/social-icons",
-            "attributes": {
-              "source": "site-info",
-              "colourMode": "brand",
-              "iconStyle": "boxed",
-              "iconSize": 18,
-              "iconBackground": "surface-alt",
-              "iconBorderColour": "border",
-              "iconGlyphColour": "text",
-              "gap": "10"
-            }
           }
         ]
       }

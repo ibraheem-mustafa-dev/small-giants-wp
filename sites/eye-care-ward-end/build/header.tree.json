@@ -49,13 +49,7 @@
       "backgroundColour": "surface",
       "surfaceOpacity": 90,
       "surfaceBlur": "16px",
-      "contentWidth": {
-        "desktop": "normal"
-      },
       "headerSticky": {
-        "desktop": "on"
-      },
-      "headerShrink": {
         "desktop": "on"
       },
       "borderWidth": {
@@ -63,14 +57,7 @@
       },
       "borderStyle": "solid",
       "borderColour": "border",
-      "padding": {
-        "desktop": {
-          "top": "20px",
-          "bottom": "20px",
-          "left": "24px",
-          "right": "24px"
-        }
-      }
+      "scrolledOffset": 40
     },
     "innerBlocks": [
       {
@@ -85,11 +72,41 @@
           "rowSlot": "middle",
           "layout": "grid",
           "gridTemplateColumns": {
-            "desktop": "1fr auto 1fr"
+            "desktop": "1fr auto 1fr",
+            "tablet": "1fr auto 1fr",
+            "mobile": "1fr auto 1fr"
           },
           "alignItems": "center",
           "gap": {
             "desktop": "16px"
+          },
+          "padding": {
+            "desktop": {
+              "top": "17px",
+              "right": "28px",
+              "bottom": "17px",
+              "left": "28px"
+            },
+            "tablet": {
+              "top": "20px",
+              "right": "28px",
+              "bottom": "20px",
+              "left": "28px"
+            },
+            "mobile": {
+              "top": "12px",
+              "right": "16px",
+              "bottom": "12px",
+              "left": "16px"
+            }
+          },
+          "maxWidth": {
+            "desktop": "1440px"
+          },
+          "rowShrink": {
+            "desktop": "on",
+            "tablet": "on",
+            "mobile": "off"
           }
         },
         "innerBlocks": [
@@ -107,7 +124,7 @@
               "submenuOpenOn": "hover",
               "collapsePoint": 1060,
               "gap": {
-                "desktop": "0px"
+                "desktop": "24px"
               },
               "itemTextTransform": "uppercase",
               "triggerMode": {
@@ -134,6 +151,50 @@
               "triggerIconPosition": "before",
               "megaAlign": {
                 "desktop": "full-width"
+              },
+              "itemPadding": {
+                "desktop": {
+                  "top": "6px",
+                  "right": "0px",
+                  "bottom": "6px",
+                  "left": "0px"
+                }
+              },
+              "itemBorderWidth": {
+                "bottom": "1px"
+              },
+              "itemBorderStyle": "solid",
+              "itemBorderColour": "transparent",
+              "itemBorderColourHover": "primary",
+              "itemBorderColourCurrent": "transparent",
+              "itemColourHover": "text",
+              "itemFontWeightCurrent": "400",
+              "submenuAnimationDuration": 200,
+              "itemDisabledColour": "#8B8478",
+              "burgerBarCount": 2,
+              "burgerIconWidth": {
+                "desktop": "22px"
+              },
+              "burgerBarGap": {
+                "desktop": "5px"
+              },
+              "burgerPadding": {
+                "desktop": {
+                  "top": "8px",
+                  "right": "8px",
+                  "bottom": "8px",
+                  "left": "8px"
+                }
+              },
+              "burgerWidth": {
+                "mobile": "38px"
+              },
+              "burgerHoverColour": "transparent",
+              "margin": {
+                "desktop": {},
+                "tablet": {
+                  "left": "-8px"
+                }
               }
             }
           },
@@ -146,17 +207,21 @@
               "gap": {
                 "desktop": "12px"
               },
-              "tagName": "div"
+              "tagName": "div",
+              "contentWidth": {
+                "desktop": "full"
+              }
             },
             "innerBlocks": [
               {
                 "name": "sgs/responsive-logo",
                 "attributes": {
                   "logoId": 198,
-                  "width": 40,
+                  "width": 48,
                   "linkToHome": true,
-                  "shrinkWidth": 30,
-                  "shrinkWidthUnit": "px"
+                  "shrinkWidth": 40,
+                  "shrinkWidthUnit": "px",
+                  "opacityHover": 1
                 }
               },
               {
@@ -165,9 +230,12 @@
                   "layout": "stack",
                   "flexDirection": "column",
                   "gap": {
-                    "desktop": "2px"
+                    "desktop": "4px"
                   },
-                  "tagName": "div"
+                  "tagName": "div",
+                  "contentWidth": {
+                    "desktop": "full"
+                  }
                 },
                 "innerBlocks": [
                   {
@@ -181,7 +249,17 @@
                       },
                       "letterSpacingUnit": "em",
                       "fontSize": {
-                        "desktop": "16px"
+                        "desktop": "18px"
+                      },
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "lineHeight": {
+                        "desktop": 1
+                      },
+                      "margin": {
+                        "desktop": {
+                          "bottom": "0px"
+                        }
                       }
                     }
                   },
@@ -197,7 +275,10 @@
                         "desktop": 0.32
                       },
                       "letterSpacingUnit": "em",
-                      "textColour": "text-muted"
+                      "textColour": "text-subtle",
+                      "lineHeight": {
+                        "desktop": 1
+                      }
                     }
                   }
                 ]
@@ -214,14 +295,33 @@
               "gap": {
                 "desktop": "6px"
               },
-              "tagName": "div"
+              "tagName": "div",
+              "contentWidth": {
+                "desktop": "full"
+              }
             },
             "innerBlocks": [
               {
                 "name": "sgs/business-info",
                 "attributes": {
                   "displayType": "phone",
-                  "showIcon": true
+                  "showIcon": true,
+                  "fontSize": {
+                    "desktop": "12.5px"
+                  },
+                  "letterSpacing": {
+                    "desktop": 0.04
+                  },
+                  "textTransform": "none",
+                  "textColour": "text-soft",
+                  "textColourHover": "text",
+                  "padding": {
+                    "desktop": {
+                      "left": "10px",
+                      "right": "10px"
+                    }
+                  },
+                  "sgsCollapseVisibility": "hide"
                 }
               },
               {
@@ -233,7 +333,7 @@
                   "submenuOpenOn": "hover",
                   "collapsePoint": 1060,
                   "gap": {
-                    "desktop": "8px"
+                    "desktop": "6px"
                   },
                   "itemTextTransform": "uppercase",
                   "submenuCaret": false,
@@ -249,7 +349,25 @@
                   "itemLetterSpacingUnit": "em",
                   "megaAlign": {
                     "desktop": "full-width"
-                  }
+                  },
+                  "itemPadding": {
+                    "desktop": {
+                      "top": "6px",
+                      "right": "10px",
+                      "bottom": "6px",
+                      "left": "10px"
+                    }
+                  },
+                  "itemBorderWidth": {
+                    "bottom": "1px"
+                  },
+                  "itemBorderStyle": "solid",
+                  "itemBorderColour": "transparent",
+                  "itemBorderColourHover": "primary",
+                  "itemBorderColourCurrent": "transparent",
+                  "itemColourHover": "text",
+                  "itemFontWeightCurrent": "400",
+                  "submenuAnimationDuration": 200
                 }
               },
               {
@@ -269,8 +387,9 @@
                   },
                   "pillBorderRadius": "999px",
                   "badgeColour": "accent",
-                  "badgeTextColour": "primary-text",
-                  "freeDeliveryMessage": "You're %s away from free delivery"
+                  "badgeTextColour": "text",
+                  "freeDeliveryMessage": "You're %s away from free delivery",
+                  "showZero": true
                 }
               }
             ]

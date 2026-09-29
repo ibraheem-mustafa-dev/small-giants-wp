@@ -137,7 +137,7 @@ export default {
 		{ name: 'drawer-link-contact', states: [ 'drawer-open' ], hover: true, draft: din( dlink( '^contact$' ) ), live: lin( llink( '^contact$' ) ) },
 		{ name: 'drawer-phone', states: [ 'drawer-open' ], hover: true, draft: din( dlink( '^0121 729 8233$' ) ), live: lin( llink( '^0121 729 8233$' ) ) },
 		{ name: 'drawer-whatsapp', states: [ 'drawer-open' ], hover: true, text: false,
-			draft: din( '(p) => p.querySelector("a[aria-label=\\"WhatsApp\\"]")' ), live: `${ LDRAWER } .sgs-social-icons__item[aria-label*="WhatsApp"]` },
+			draft: din( '(p) => p.querySelector("a[aria-label=\\"WhatsApp\\"]")' ), live: `${ LDRAWER } a.sgs-button[aria-label*="WhatsApp"]` },
 	],
 	// No accept rules: nothing measured yet (no walk run for this config).
 	accept: [],
