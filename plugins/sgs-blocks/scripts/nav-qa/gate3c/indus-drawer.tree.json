@@ -240,6 +240,9 @@
           "itemLineHeight": 25,
           "itemLineHeightUnit": "px",
           "submenuCaretSize": "11px",
+          "gap": {
+            "desktop": "0px"
+          },
           "submenuBg": "transparent",
           "submenuPadding": {
             "desktop": {
@@ -266,7 +269,7 @@
           "iconStyle": "circle",
           "iconSize": 38,
           "circleGlyphSize": 15,
-          "gap": "12px",
+          "gap": "6px",
           "textAlign": "center",
           "margin": {
             "desktop": {
