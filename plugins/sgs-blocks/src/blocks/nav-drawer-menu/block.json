@@ -419,6 +419,18 @@
 						"css:font-size": "itemTrailingIconSize"
 					},
 					"_note": "G-7, 2026-09-28: a per-item trailing glyph (.sgs-nav-drawer-menu__trailing-icon) after ANY row's label, independent of the accordion expander. The glyph CHOICE is per-item (itemTrailingIcons, a map keyed by item identifier); colour and size are block-level, matching the badge/ornament split. Unset colour inherits currentColor."
+				},
+				"mega-body": {
+					"label": "Mega panel body",
+					"order": 13.6,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:padding": "megaBodyPadding"
+					},
+					"_note": "The <li class=\"sgs-nav-drawer-menu__mega-body\"> that holds a mega item's own panel inside its drawer accordion (megaDrawerMode 'panel', Spec 36 FR-36-6). megaBodyPadding replaces the hardcoded 0 12px 12px (style.css keeps it as the unset default)."
 				}
 			},
 			"boxFamilies": {
@@ -433,6 +445,9 @@
 				],
 				"submenuLinkPadding": [
 					"submenuLinkPadding"
+				],
+				"megaBodyPadding": [
+					"megaBodyPadding"
 				]
 			},
 			"_note_sweep_eligibility": "The ONE declarative source for the Sweep-treatment eligibility predicate, read by BOTH surfaces — edit.js decides whether to offer the Sweep segment, render.php decides whether to emit Sweep CSS — with neither re-deriving the rule (Spec 41 FR-41-26). It is NOT an `elements` entry and routes no CSS property; it sits beside colourExemptions / hideExtensions / boxFamilies. Three keys per row: `blockingBackgroundAttrs` (Sweep is withdrawn when ANY named attribute is non-empty, because background-clip:text clips the element's whole background-painting area to the glyph shapes — every state's background counts, not just the resting one), `blockingGradientAttrs` (the row's own text gradient writes background-image on the identical selector, so whichever loses is invisible) and `glyphGuard` (background-clip:text needs glyphs to grip; null means the element always has them). Every attribute named below must exist in `attributes` — a typo reads as permanently empty, so the predicate would always pass and the rule would silently cease to exist.",
@@ -1420,6 +1435,11 @@
 			"type": "object",
 			"default": {},
 			"description": "4-side box-object family (box_family 'submenuLinkPadding'), a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Padding inside each submenu/accordion link (dropdown, mega fallback list, drawer accordion). Empty keeps the default 0 16px inline-start; the inline-start side is also what itemPaddingShiftHover adds to. New 2026-09-28 (Spec 36 'Item hover paint' M-21) — replaces the previously-hardcoded padding:0 16px literal in includes/nav-menu-submenu-css.php."
+		},
+		"megaBodyPadding": {
+			"type": "object",
+			"default": {},
+			"description": "4-side box-object family (box_family 'megaBodyPadding'), a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Padding around a mega item's panel inside its drawer accordion (.sgs-nav-drawer-menu__mega-body). Empty keeps the default 0 12px 12px."
 		},
 		"itemColourOpen": {
 			"type": "string",

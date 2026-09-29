@@ -111,6 +111,17 @@
  * outline) on hover when the operator supplies a hover shape colour token.
  */
 
+/* The shape is the glyph (--sgs-icon-size) PLUS backgroundPadding around it.
+   The theme's border-box reset would fold the padding into the glyph width, so
+   an 18px glyph with 14px padding drew a 28px circle with no room for the glyph. */
+.sgs-icon--bg-circle,
+.sgs-icon--bg-pill,
+.sgs-icon--bg-rounded,
+.sgs-icon--bg-square,
+.sgs-icon--bg-outline {
+	box-sizing: content-box;
+}
+
 .sgs-icon--bg-circle {
 	border-radius: 50%;
 	padding: var(--sgs-icon-shape-padding, 12px);

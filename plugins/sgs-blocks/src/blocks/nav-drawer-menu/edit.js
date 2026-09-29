@@ -64,6 +64,7 @@ import RowExtrasPanel from './RowExtrasPanel';
 import DisabledItemsPanel from './DisabledItemsPanel';
 import OrnamentHiddenItemsPanel from './OrnamentHiddenItemsPanel';
 import SubmenuLinkPaddingPanel from './SubmenuLinkPaddingPanel';
+import MegaBodyPaddingPanel from './MegaBodyPaddingPanel';
 import RowSeparatorPanel from './RowSeparatorPanel';
 import SectionMotionPanel from './SectionMotionPanel';
 // The bar's own treatment node (none / swap / sweep + angle) for its separator
@@ -684,6 +685,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<SubmenuLinkPaddingPanel
 					submenuLinkPadding={ attributes.submenuLinkPadding }
+					setAttributes={ setAttributes }
+				/>
+
+				<MegaBodyPaddingPanel
+					megaBodyPadding={ attributes.megaBodyPadding }
 					setAttributes={ setAttributes }
 				/>
 

@@ -3,6 +3,7 @@
     "name": "sgs/nav-drawer",
     "attributes": {
       "drawerBg": "#0A7EA8",
+      "drawerAlign": "stretch",
       "closeSize": "38px",
       "closeRadius": {
         "desktop": "8px"
@@ -245,6 +246,14 @@
               "top": "0px",
               "right": "0px",
               "bottom": "0px",
+              "left": "0px"
+            }
+          },
+          "megaBodyPadding": {
+            "desktop": {
+              "top": "0px",
+              "right": "0px",
+              "bottom": "12px",
               "left": "0px"
             }
           }

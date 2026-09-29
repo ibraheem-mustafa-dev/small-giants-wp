@@ -586,7 +586,8 @@ module carries no hardcoded English), and returns focus to the `<summary>` on Ba
 **Mega items in the drawer.** `sgs/nav-drawer-menu` `megaDrawerMode` (`panel` default | `link`). Under
 `panel` a mega item renders its own mega panel post inside its accordion row: the panel is server-rendered
 block content, so no JS is needed; the body is `ul.sgs-nav-drawer-menu__submenu > li.sgs-nav-drawer-menu__mega-body`,
-which `nav-drilldown.js` already handles. Both menu forks render a panel through one helper,
+which `nav-drilldown.js` already handles. The body's padding is `megaBodyPadding` (per device, Styles tab
+"Mega panel padding"; unset keeps `0 12px 12px`), since the mega panel sits inside it and cannot remove it. Both menu forks render a panel through one helper,
 `plugins/sgs-blocks/includes/helpers-mega-render.php::sgs_mega_render_item_panel`; the render context (`''` or `drawer`) rides a
 push/pop stack read by `sgs_mega_render_context()`, and in the drawer `sgs/mega-panel` hashes its own class
 and draws no floating shell (fill, border, radius, shadow, backdrop, width cap, padding, the `cards` hover
