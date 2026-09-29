@@ -23,6 +23,7 @@ import {
 	TypographyControls,
 } from '../../components';
 import { MEDIA_ATOM_IDS } from '../../components/media/atoms/registry.js';
+import { fillsBox } from '../../components/media/canvasStyle.js';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { sanitiseSvg } from '../../utils';
 
@@ -131,7 +132,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const mediaElementClassName = [ 'sgs-media__img', 'sgs-media-el', mediaScopeClass ]
 		.filter( Boolean )
 		.join( ' ' );
-	const mediaBoxClassName = [ 'sgs-media-box', mediaScopeClass ].filter( Boolean ).join( ' ' );
+	// Box shape "Fill": the frame is sized by the layout, the picture covers it
+	// (same modifier render.php adds via SGS_Media_Element::fills_box()).
+	const mediaFills = fillsBox( { attributes, blockSlug: 'sgs/media', atoms: MEDIA_ATOM_IDS } );
+	const mediaBoxClassName = [ 'sgs-media-box', mediaFills ? 'sgs-media-box--fill' : '', mediaScopeClass ].filter( Boolean ).join( ' ' );
 
 	const onSelectImage = ( media ) => {
 		setAttributes( {

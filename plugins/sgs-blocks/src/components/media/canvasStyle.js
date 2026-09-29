@@ -50,6 +50,7 @@
  * @package SGS\Blocks
  */
 import { MEDIA_ATOMS } from './atoms/registry.js';
+import { mediaStoredAttrName } from '../MediaElementControls.js';
 
 import { css as sourceCss } from './atoms/source.js';
 import { css as mediaTypeCss } from './atoms/media-type.js';
@@ -59,7 +60,7 @@ import { css as intrinsicCss } from './atoms/intrinsic.js';
 import { css as svgPresentationCss } from './atoms/svg-presentation.js';
 import { css as objectFitCss } from './atoms/object-fit.js';
 import { css as focalPointCss } from './atoms/focal-point.js';
-import { css as boxShapeCss } from './atoms/box-shape.js';
+import { css as boxShapeCss, resolveSizingMode } from './atoms/box-shape.js';
 import { css as overlayCss } from './atoms/overlay.js';
 import { css as motionCss } from './atoms/motion.js';
 import { css as opacityCss } from './atoms/opacity.js';
@@ -169,6 +170,32 @@ export function elementCustomProperties( { attributes, prefix = '', blockSlug = 
 }
 
 /**
+ * Is box-shape's sizing mode `fill` for these values? JS twin of
+ * `SGS_Media_Element::fills_box()`: the frame then carries
+ * `sgs-media-box--fill` and the picture covers it (box-shape.css).
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes  Block attributes.
+ * @param {string}   [props.prefix]    Surface prefix.
+ * @param {string}   [props.blockSlug] Block slug.
+ * @param {string[]} [props.atoms]     Declared atom ids.
+ * @return {boolean} True in fill mode.
+ */
+export function fillsBox( { attributes, prefix = '', blockSlug = '', atoms = [] } ) {
+	if ( ! ( atoms || [] ).includes( 'box-shape' ) ) {
+		return false;
+	}
+	const mode = resolveSizingMode(
+		attributes[ mediaStoredAttrName( blockSlug, prefix, 'MediaSizing' ) ],
+		attributes[ mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' ) ],
+		attributes,
+		prefix,
+		blockSlug
+	);
+	return 'fill' === mode;
+}
+
+/**
  * Does this element's CURRENT attribute values need a container to attach
  * to? JS twin of `SGS_Media_Element::requires_box()` — value-aware, not
  * declaration-aware, for the identical reason: `overlay` with no colour/
@@ -183,6 +210,9 @@ export function elementCustomProperties( { attributes, prefix = '', blockSlug = 
  * @return {boolean} True when at least one box atom emits real CSS for these values.
  */
 export function requiresBox( { attributes, prefix = '', blockSlug = '', atoms = [] } ) {
+	if ( fillsBox( { attributes, prefix, blockSlug, atoms } ) ) {
+		return true;
+	}
 	const boxAtomIds = ( atoms || [] ).filter(
 		( id ) => MEDIA_ATOMS[ id ] && 'box' === MEDIA_ATOMS[ id ].attachesTo
 	);

@@ -145,7 +145,7 @@ export function normaliseRatio( value ) {
  *
  * @param {*} rawSizing Raw `MediaSizing` value.
  * @param {*} objectFit The surface's own object-fit value (may be `custom`).
- * @return {string} 'auto' | 'height' | 'ratio'.
+ * @return {string} 'auto' | 'height' | 'ratio' | 'fill'.
  */
 export function resolveSizingMode(
 	rawSizing,

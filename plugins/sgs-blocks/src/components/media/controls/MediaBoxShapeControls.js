@@ -39,6 +39,7 @@ const MODE_OPTIONS = [
 	{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
 	{ label: __( 'Fixed height', 'sgs-blocks' ), value: 'height' },
 	{ label: __( 'Aspect ratio', 'sgs-blocks' ), value: 'ratio' },
+	{ label: __( 'Fill space', 'sgs-blocks' ), value: 'fill' },
 ];
 
 const SHAPE_OPTIONS = [
@@ -126,7 +127,7 @@ function LengthFieldRow( {
 
 /**
  * @param {Object}   props
- * @param {string}   props.sizing           Current 'auto' | 'height' | 'ratio'.
+ * @param {string}   props.sizing           Current 'auto' | 'height' | 'ratio' | 'fill'.
  * @param {Function} props.onSizingChange
  * @param {string}   props.ratio            Ratio string (either format — the
  *                                          caller normalises on write).
@@ -238,7 +239,7 @@ export default function MediaBoxShapeControls( {
 		<>
 			<ToggleGroupControl
 				label={ __( 'Box shape', 'sgs-blocks' ) }
-				help={ __( 'Auto follows the picture. Fixed height and Aspect ratio each set the box, then the picture fills it.', 'sgs-blocks' ) }
+				help={ __( 'Auto follows the picture. Fixed height and Aspect ratio each set the box, then the picture fills it. Fill space takes the space the layout gives it (such as its half of a two-column row, at least the Minimum height) and the picture covers it.', 'sgs-blocks' ) }
 				value={ resolvedSizing }
 				onChange={ ( v ) => onSizingChange( v || 'auto' ) }
 				isBlock

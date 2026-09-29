@@ -280,6 +280,46 @@
 	}
 }
 
+/* ── Box shape sizing mode "Fill" (2026-09-29) ───────────────────────────
+ * Lives here, not in box-shape.css: box-shape attaches to the ELEMENT, and
+ * this rule sizes the FRAME marker this file owns (check-media-atom-purity).
+ * The frame (`.sgs-media-box--fill`, added by SGS_Media_Element::box_classes()
+ * / fills_box() and the JS twin fillsBox()) takes its size from the layout —
+ * its half of a two-column row, a stretched grid cell — and never shorter than
+ * Minimum height; the picture covers it and never sizes it. The picture's own
+ * proportions would otherwise set the row's height (a portrait photo made a
+ * split section 1,500px tall). Height/Aspect ratio do not apply in this mode.
+ */
+.sgs-media-box--fill {
+	position: relative;
+	min-height: var( --sgs-media-min-height, 0px );
+}
+
+.sgs-media-box--fill .sgs-media-el {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	max-height: none;
+	aspect-ratio: auto;
+}
+
+@media ( max-width: 1023px ) {
+	.sgs-media-box--fill {
+		min-height: var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0px ) );
+	}
+}
+
+@media ( max-width: 767px ) {
+	.sgs-media-box--fill {
+		min-height: var(
+			--sgs-media-min-height-mobile,
+			var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0px ) )
+		);
+	}
+}
+
 /* ── box-shape.css ───────────────────────────────────────────────────── */
 /*
  * box-shape — sizing mode (auto/height/ratio), named shape, min/max/width,

@@ -1242,6 +1242,10 @@ $sgs_media_requires_box = ( class_exists( 'SGS_Media_Element' ) && SGS_Media_Ele
 	|| ! empty( $attributes['sgsHoverImageZoom'] );
 if ( $sgs_media_requires_box ) {
 	$wrapper_classes[] = SGS_Media_Element::CLASS_BOX;
+	// Box shape "Fill": the frame is sized by the layout, the picture covers it.
+	if ( SGS_Media_Element::fills_box( $attributes, '', 'sgs/media', $sgs_media_atoms ) ) {
+		$wrapper_classes[] = SGS_Media_Element::CLASS_BOX_FILL;
+	}
 }
 
 $wrapper_attributes = get_block_wrapper_attributes(

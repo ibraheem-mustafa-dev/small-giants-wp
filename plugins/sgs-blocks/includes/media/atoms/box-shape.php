@@ -77,10 +77,10 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_resolve_sizing_mode' ) ) {
 	 *
 	 * @param mixed $raw_sizing Raw `MediaSizing` value.
 	 * @param mixed $object_fit The surface's own object-fit value (may be 'custom').
-	 * @return string 'auto' | 'height' | 'ratio'.
+	 * @return string 'auto' | 'height' | 'ratio' | 'fill'.
 	 */
 	function sgs_media_atom_box_shape_resolve_sizing_mode( $raw_sizing, $object_fit, array $attributes = array(), $prefix = '', $block_slug = '' ) {
-		$vocabulary = array( 'auto', 'height', 'ratio' );
+		$vocabulary = array( 'auto', 'height', 'ratio', 'fill' );
 		if ( is_string( $raw_sizing ) && in_array( $raw_sizing, $vocabulary, true ) ) {
 			return $raw_sizing;
 		}

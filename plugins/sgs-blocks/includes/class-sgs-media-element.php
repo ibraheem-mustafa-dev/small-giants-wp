@@ -61,6 +61,13 @@ if ( ! class_exists( 'SGS_Media_Element' ) ) {
 		const CLASS_BOX = 'sgs-media-box';
 
 		/**
+		 * Modifier on the container when box-shape's sizing mode is `fill`: the
+		 * frame takes its size from the layout and Minimum height, and the picture
+		 * covers it without sizing it (assets/css/media-atoms/box-shape.css).
+		 */
+		const CLASS_BOX_FILL = 'sgs-media-box--fill';
+
+		/**
 		 * Atoms whose CSS keys on the BOX marker.
 		 *
 		 * Mirrors `attachesTo` in `src/components/media/atoms/registry.js`.
@@ -136,6 +143,9 @@ if ( ! class_exists( 'SGS_Media_Element' ) ) {
 				return false;
 			}
 			$atoms = $atoms ?? array();
+			if ( self::fills_box( $attributes, $prefix, $block_slug, $atoms ) ) {
+				return true;
+			}
 			foreach ( array_intersect( $atoms, self::$box_atoms ) as $atom_id ) {
 				$fn = 'sgs_media_atom_' . str_replace( '-', '_', (string) $atom_id ) . '_css';
 				if ( ! function_exists( $fn ) ) {
@@ -201,10 +211,39 @@ if ( ! class_exists( 'SGS_Media_Element' ) ) {
 				return array();
 			}
 			$classes = array( self::CLASS_BOX );
+			if ( self::fills_box( $attributes, $prefix, $block_slug, $atoms ) ) {
+				$classes[] = self::CLASS_BOX_FILL;
+			}
 			if ( '' !== $scope_class ) {
 				$classes[] = $scope_class;
 			}
 			return $classes;
+		}
+
+		/**
+		 * Whether box-shape's sizing mode is `fill` for these values: the element
+		 * then needs its frame, carrying CLASS_BOX_FILL.
+		 *
+		 * @param array       $attributes Block attributes.
+		 * @param string|null $prefix     Surface prefix ('' when unprefixed).
+		 * @param string|null $block_slug Block slug, for stored-name resolution.
+		 * @param array|null  $atoms      Declared atom ids.
+		 * @return bool
+		 */
+		public static function fills_box( array $attributes, $prefix = '', $block_slug = '', $atoms = null ) {
+			if ( ! in_array( 'box-shape', (array) $atoms, true ) || ! function_exists( 'sgs_media_atom_box_shape_resolve_sizing_mode' ) ) {
+				return false;
+			}
+			$prefix     = (string) $prefix;
+			$block_slug = (string) $block_slug;
+			$mode       = sgs_media_atom_box_shape_resolve_sizing_mode(
+				$attributes[ sgs_media_element_stored_attr( $block_slug, $prefix, 'MediaSizing' ) ] ?? null,
+				$attributes[ sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFit' ) ] ?? null,
+				$attributes,
+				$prefix,
+				$block_slug
+			);
+			return 'fill' === $mode;
 		}
 
 		/**

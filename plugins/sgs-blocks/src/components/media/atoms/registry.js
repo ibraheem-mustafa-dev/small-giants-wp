@@ -328,7 +328,9 @@ export const MEDIA_ATOMS = {
 			// are READ, not matched.
 			ratio: [ '1 / 1', '4 / 3', '3 / 2', '16 / 9', '21 / 9', '4 / 5', '3 / 4', '2 / 3', '9 / 16' ],
 			shape: [ 'none', 'rounded', 'circle', 'square' ],
-			sizing: [ 'auto', 'height', 'ratio' ],
+			// 'fill' (2026-09-29): the picture covers a frame sized by the layout and
+			// Minimum height (SGS_Media_Element::CLASS_BOX_FILL, box-shape.css).
+			sizing: [ 'auto', 'height', 'ratio', 'fill' ],
 		},
 	},
 
