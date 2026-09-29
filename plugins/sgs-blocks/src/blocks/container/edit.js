@@ -212,6 +212,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   const style = {
     gap: gapCssValue( gap, previewTier ),
     minHeight: resolveResponsiveTier( attributes.minHeight, previewTier )?.value || undefined,
+    aspectRatio: /^\s*\d+(\.\d+)?\s*(\/\s*\d+(\.\d+)?\s*)?$/.test( attributes.boxAspectRatio || '' ) ? attributes.boxAspectRatio : undefined,
     ...(shadow && { boxShadow: resolveShadowPreviewComposed( shadow, attributes.shadowColour ) }),
     ...bgPreview.style,
     ...svgPreview.style,
@@ -632,6 +633,15 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
               />
             ) }
           </ResponsiveOverride>
+          <TextControl
+            label={ __( "Shape (width / height)", "sgs-blocks" ) }
+            help={ __( "e.g. 4 / 5 for a portrait box, 16 / 9 for a wide one. The height follows the width. Leave empty to size by the content.", "sgs-blocks" ) }
+            value={ attributes.boxAspectRatio || "" }
+            onChange={ ( val ) => setAttributes( { boxAspectRatio: val } ) }
+            placeholder="4 / 5"
+            __nextHasNoMarginBottom
+            __next40pxDefaultSize
+          />
           {/* Duplicate "Text align" control REMOVED 2026-09-07 (Bean-reported).
               This SelectControl wrote the SAME `textAlign` attribute as the
               "Text alignment" ToggleGroupControl already rendered by

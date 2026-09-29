@@ -79,3 +79,10 @@ header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] {
 header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] > .sgs-container__overlay {
 	opacity: 0;
 }
+
+/* WordPress spaces every top-level part of the page (.wp-site-blocks > *) by the
+ * site-wide block gap. A site header sits flush against whatever is stacked above
+ * it (an announcement or trust bar in the same header area), never 24px below it. */
+:where(.wp-site-blocks) > .wp-block-sgs-site-header {
+	margin-block-start: 0;
+}
