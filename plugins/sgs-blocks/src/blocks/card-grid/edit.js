@@ -1580,8 +1580,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								</span>
 							);
 						}
+						// Mirrors render.php: a text-only card renders no image area.
+						const needsWrap = hasMedia || useFallback || !! item.glyphImage?.url || !! item.glyph
+							|| variant === 'overlay' || effectHover === 'overlay-slide';
 						return (
 						<div key={ item._key } className="sgs-card-grid__item">
+							{ needsWrap && (
 							<div className={ wrapClassName } style={ wrapStyle }>
 								{ item.media?.url ? (
 									item.media.type === 'video' ? (
@@ -1657,6 +1661,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									</div>
 								) }
 							</div>
+							) }
 							{ variant === 'card' && (
 								<div className="sgs-card-grid__body">
 									{ item.title && (

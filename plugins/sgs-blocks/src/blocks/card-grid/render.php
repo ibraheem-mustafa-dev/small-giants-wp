@@ -1047,8 +1047,14 @@ foreach ( $items as $index => $item ) :
 	// In the overlay variant the glyph belongs to the caption, above the title,
 	// instead of being pinned to the bottom of the image where the caption sits.
 	$glyph_in_caption = ( 'overlay' === $variant );
+	// A text-only card (no photo, no fallback tile, no glyph, and a variant whose
+	// title sits below rather than over the image) has nothing to put in the image
+	// area, so it renders none: an empty wrap still took the aspect-ratio height.
+	$item_needs_wrap = $item_has_media || $item_use_fallback || '' !== $item_glyph_html
+		|| 'overlay' === $variant || 'overlay-slide' === $hover_effect;
 	?>
 	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item" data-card-key="<?php echo esc_attr( $card_grid_item_key ); ?>"<?php echo $link_attr; ?>>
+		<?php if ( $item_needs_wrap ) : ?>
 		<div class="<?php echo esc_attr( $image_wrap_class ); ?>"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>
 			<?php if ( '' !== $media_html ) : ?>
 				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
@@ -1078,6 +1084,7 @@ foreach ( $items as $index => $item ) :
 				</div>
 			<?php endif; ?>
 		</div>
+		<?php endif; ?>
 		<?php if ( 'card' === $variant ) : ?>
 			<div class="sgs-card-grid__body">
 				<?php if ( ! empty( $item['title'] ) ) : ?>
