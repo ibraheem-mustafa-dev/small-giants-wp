@@ -1505,15 +1505,6 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "staggerDelay",
-      "fields": {
-        "css_property": "anim:stagger",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
       "attr": "subtitleColour",
       "fields": {
         "css_property": "color",
@@ -15196,6 +15187,15 @@
       "attr": "sgsAnimationEasing",
       "fields": {
         "css_property": "anim:easing",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "staggerDelay",
+      "fields": {
+        "css_property": "anim:stagger",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
