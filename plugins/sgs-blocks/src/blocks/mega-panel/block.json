@@ -87,6 +87,7 @@
 					],
 					"attrMap": {
 						"css:background-color": "drawerBg",
+						"css:background-image": "drawerBgGradient",
 						"css:order": "drawerAsideOrder"
 					},
 					"_note": "The panel root and aside position when this panel renders inside the mobile drawer (sgs_mega_render_context() = 'drawer'). Empty drawerBg paints transparent."
@@ -100,6 +101,7 @@
 					],
 					"attrMap": {
 						"css:border-color": "drawerLinkDivider",
+						"css:border-color-gradient": "drawerLinkDividerGradient",
 						"css:min-height": "drawerLinkMinHeight",
 						"css:padding-block": "drawerLinkPaddingY"
 					},
@@ -114,6 +116,7 @@
 					],
 					"attrMap": {
 						"css:color": "drawerLinkNumColour",
+						"css:color-gradient": "drawerLinkNumColourGradient",
 						"css:font-size": "drawerLinkNumSize"
 					},
 					"_note": "The row's direct-child sgs/text, in the drawer only."
@@ -127,6 +130,7 @@
 					],
 					"attrMap": {
 						"css:color": "drawerLinkLabelColour",
+						"css:color-gradient": "drawerLinkLabelColourGradient",
 						"css:font-size": "drawerLinkLabelSize"
 					},
 					"_note": "The sgs/heading inside a link row, in the drawer only."
@@ -140,6 +144,7 @@
 					],
 					"attrMap": {
 						"css:color": "drawerLinkDescColour",
+						"css:color-gradient": "drawerLinkDescColourGradient",
 						"css:font-size": "drawerLinkDescSize"
 					},
 					"_note": "The sgs/text inside a link row's nested container, in the drawer only."
@@ -154,7 +159,9 @@
 					],
 					"attrMap": {
 						"css:background-color": "drawerCardBg",
+						"css:background-image": "drawerCardBgGradient",
 						"css:border-color": "drawerCardBorderColour",
+						"css:border-color-gradient": "drawerCardBorderColourGradient",
 						"css:border-radius": "drawerCardRadius",
 						"css:padding": "drawerCardPadding",
 						"css:column-gap": "drawerCardGap",
@@ -505,6 +512,11 @@
 			"default": "",
 			"description": "Drawer ground. Paints the panel root's background-color inside the mobile drawer only. Empty = transparent, so the drawer's own fill shows through."
 		},
+		"drawerBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the panel root in the mobile drawer only, instead of drawerBg (emitted as --sgs-mm-drawer-bg-gradient through sgs_custom_property_gradient_decls()). Non-empty wins over drawerBg."
+		},
 		"drawerAsideOrder": {
 			"type": "string",
 			"default": "last",
@@ -514,6 +526,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Colour of each link row's number (the row's direct-child sgs/text) in the drawer."
+		},
+		"drawerLinkNumColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the drawer link number as a text-clip gradient. Non-empty wins over drawerLinkNumColour."
 		},
 		"drawerLinkNumSize": {
 			"type": "string",
@@ -525,6 +542,11 @@
 			"default": "",
 			"description": "Colour of each link row's label (the sgs/heading in the row) in the drawer."
 		},
+		"drawerLinkLabelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the drawer link label as a text-clip gradient. Non-empty wins over drawerLinkLabelColour."
+		},
 		"drawerLinkLabelSize": {
 			"type": "string",
 			"default": "",
@@ -535,6 +557,11 @@
 			"default": "",
 			"description": "Colour of each link row's description (the sgs/text in the row's nested container) in the drawer."
 		},
+		"drawerLinkDescColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the drawer link description as a text-clip gradient. Non-empty wins over drawerLinkDescColour."
+		},
 		"drawerLinkDescSize": {
 			"type": "string",
 			"default": "",
@@ -544,6 +571,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Border colour of each link row's hairline in the drawer (the row's own border width and style stay the block's)."
+		},
+		"drawerLinkDividerGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting each drawer link row hairline through a masked ring. Non-empty wins over drawerLinkDivider."
 		},
 		"drawerLinkMinHeight": {
 			"type": "string",
@@ -565,10 +597,20 @@
 			"default": "",
 			"description": "Ground of the aside card in the drawer (overrides asideBg there)."
 		},
+		"drawerCardBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the drawer aside card ground (--sgs-mm-drawer-card-bg-gradient). Non-empty wins over drawerCardBg."
+		},
 		"drawerCardBorderColour": {
 			"type": "string",
 			"default": "",
 			"description": "Compact card's 1px border colour in the drawer. Empty = no border."
+		},
+		"drawerCardBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the compact drawer card border through a masked ring. Non-empty wins over drawerCardBorderColour."
 		},
 		"drawerCardRadius": {
 			"type": "string",
