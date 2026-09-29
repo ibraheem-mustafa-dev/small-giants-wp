@@ -306,6 +306,16 @@ if ( 'none' !== $bg_shape && '' !== $bg_padding ) {
 		$root_decls[] = '--sgs-icon-shape-padding:' . $sgs_bg_padding_css;
 	}
 }
+// iconRotate — a paint-time rotate() on the root: a transform never changes
+// layout, so the box stays iconSize wide however far the shape is turned. A
+// rotated shape (e.g. a diamond) is one plain square + this control, not a
+// rotation baked into an oversized custom-SVG viewBox. 0 emits nothing.
+$icon_rotate = isset( $attributes['iconRotate'] ) && is_numeric( $attributes['iconRotate'] )
+	? max( -360.0, min( 360.0, (float) $attributes['iconRotate'] ) )
+	: 0.0;
+if ( abs( $icon_rotate ) > 0.001 ) {
+	$root_decls[] = 'transform:rotate(' . round( $icon_rotate, 2 ) . 'deg)';
+}
 // Text-align — when unset (empty), emit nothing so inheritance works.
 if ( $text_align ) {
 	$root_decls[] = 'text-align:' . esc_attr( $text_align );

@@ -315,6 +315,9 @@ $hover_scale_target  = in_array( $hover_scale_target, array( 'whole', 'face' ), 
 // is applied at build time (scripts/hover-guard postbuild transform), not here.
 $hover_opacity = isset( $attributes['opacityHover'] ) ? (float) $attributes['opacityHover'] : 0.0;
 $hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
+// Hover lift (px, 0 = off): translateY(-N) on the button root, composed with the
+// scale in ONE transform declaration so the two never overwrite each other.
+$hover_lift          = isset( $attributes['liftHover'] ) ? min( 24, max( 0, (int) $attributes['liftHover'] ) ) : 0;
 $transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_easing   = isset( $attributes['transitionEasing'] ) ? sanitize_text_field( $attributes['transitionEasing'] ) : 'ease';
 
@@ -429,13 +432,44 @@ $scoped_css_parts[] = ".{$uid}.sgs-button{transition:all {$transition_duration}m
 // `.sgs-button__face` wrapper around the label/icon (see step 7 below),
 // leaving the border and background fill in place — the lamalama-style
 // inner-face-only scale (G-14).
+$lift_fn = $hover_lift > 0 ? "translateY(-{$hover_lift}px)" : '';
 if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 	$scale_val = round( $hover_scale, 3 );
 	if ( 'face' === $hover_scale_target ) {
+		// The face wrapper scales; the root carries only the lift.
 		$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})", ':focus-visible', ' .sgs-button__face' );
+		if ( '' !== $lift_fn ) {
+			$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:{$lift_fn}" );
+		}
 	} else {
-		$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})" );
+		$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", 'transform:' . trim( $lift_fn . " scale({$scale_val})" ) );
 	}
+} elseif ( '' !== $lift_fn ) {
+	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:{$lift_fn}" );
+}
+
+// Content alignment + label-to-icon gap, per device. Both are flex properties
+// of the button root; when the 'face' wrapper is mounted it is the flex parent
+// of the label/icon, so the same declarations are emitted onto it too. Unset
+// attrs emit nothing (the centred, gapless default stands).
+$content_align_allowed = array( 'flex-start', 'center', 'flex-end' );
+$content_align_props   = array(
+	array(
+		'value'     => $attributes['contentAlign'] ?? array(),
+		'css'       => 'justify-content',
+		'transform' => static function ( $raw ) use ( $content_align_allowed ) {
+			return in_array( $raw, $content_align_allowed, true ) ? $raw : '';
+		},
+	),
+	array(
+		'value'        => $attributes['iconGap'] ?? array(),
+		'css'          => 'gap',
+		'unit_default' => 'px',
+	),
+);
+$scoped_css_parts[]    = sgs_emit_responsive_css( ".{$uid}.sgs-button", $content_align_props );
+if ( 'face' === $hover_scale_target ) {
+	$scoped_css_parts[] = sgs_emit_responsive_css( ".{$uid}.sgs-button .sgs-button__face", $content_align_props );
 }
 
 // Hover: colour hovers are CLASS-driven (Spec 32) via the --sgs-btn-*-hover vars

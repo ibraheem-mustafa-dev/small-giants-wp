@@ -871,7 +871,11 @@ if ( 'line' === $sep_style_val ) {
 	$sep_colour_val = '' !== $sep_colour_raw
 		? sgs_colour_value( $sep_colour_raw )
 		: 'color-mix(in srgb, var(--sgs-mm-accent-border) 45%, transparent)';
-	$css           .= $aside_sel . '{border-left:' . $sep_width_val . ' solid ' . $sep_colour_val . ';padding-left:24px;}';
+	// The rule carries NO padding: the gap between the divider and the aside's
+	// content is sgs/mega-aside's own `asidePadding` (its default left inset is
+	// 24px), so a client's aside padding is honoured rather than beaten by a
+	// higher-specificity `padding-left` from here.
+	$css           .= $aside_sel . '{border-left:' . $sep_width_val . ' solid ' . $sep_colour_val . ';}';
 }
 
 /*
@@ -1186,7 +1190,7 @@ $sgs_mp_tone_class   = ( ! $sgs_mm_in_drawer && function_exists( 'sgs_surface_to
 // ---------------------------------------------------------------------------
 
 $wrapper_args = array(
-	'class'             => 'sgs-mega-panel ' . $uid . ( '' !== $sgs_mp_tone_class ? ' ' . $sgs_mp_tone_class : '' ) . ( $sgs_mm_in_drawer ? ' sgs-mega-panel--in-drawer' : '' ),
+	'class'             => 'sgs-mega-panel ' . $uid . ( '' !== $sgs_mp_tone_class ? ' ' . $sgs_mp_tone_class : '' ) . ( $sgs_mm_in_drawer ? ' sgs-mega-panel--in-drawer' : '' ) . ( 'none' === $sep_style_val ? ' sgs-mega-panel--aside-sep-none' : '' ),
 	'data-mega-style'   => $style,
 	'data-mega-scheme'  => $colour_scheme,
 	'data-mega-variant' => $variant,

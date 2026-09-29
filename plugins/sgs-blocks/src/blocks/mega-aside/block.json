@@ -23,7 +23,7 @@
 			"elements": {
 				"aside": {
 					"label": "Aside",
-					"layer": "CONTENT",
+					"layer": "GRID",
 					"order": 1,
 					"clusters": [ "fill", "layout" ],
 					"isWrapper": true,
@@ -32,6 +32,8 @@
 						"css:background-image": "asideBgGradient",
 						"css:padding": "asidePadding",
 						"css:border-radius": "asideRadius",
+						"css:gap": "asideGap",
+						"css:justify-content": "asideJustify",
 						"css:border-color": "asideBorderColour",
 						"css:border-width": "asideBorderWidth",
 						"css:border-color-gradient": "asideBorderColourGradient"
@@ -78,12 +80,27 @@
 		"asidePadding": {
 			"type": "object",
 			"default": {
-				"desktop": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" }
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
 			}
 		},
 		"asideRadius": {
 			"type": "string",
 			"default": ""
+		},
+		"asideGap": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device gap between the aside's stacked children (media, tag, heading, text, button). Tier object {desktop,tablet,mobile} of CSS lengths; an unset tier inherits the tier below, and empty keeps style.css's 16px stack gap."
+		},
+		"asideJustify": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device vertical alignment of the aside's content along its column (justify-content: flex-start|center|flex-end|space-between). Tier object {desktop,tablet,mobile}; empty keeps the CSS initial value (start). PHP-validated enum (no JSON enum, so an out-of-set value cannot coerce to the default)."
 		},
 		"asideBorderColour": {
 			"type": "string",
@@ -105,7 +122,12 @@
 		},
 		"asideBorderWidth": {
 			"type": "object",
-			"default": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" }
+			"default": {
+				"top": "0px",
+				"right": "0px",
+				"bottom": "0px",
+				"left": "0px"
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

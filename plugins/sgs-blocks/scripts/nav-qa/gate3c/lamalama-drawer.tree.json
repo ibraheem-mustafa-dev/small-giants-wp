@@ -41,8 +41,8 @@
       "entryEasing": "custom",
       "entryEasingCustom": "cubic-bezier(0.16, 1, 0.3, 1)",
       "entryFade": false,
-      "itemStagger": 30,
-      "itemStaggerDuration": 300,
+      "itemStagger": 50,
+      "itemStaggerDuration": 750,
       "itemStaggerDistance": {
         "desktop": 18
       },
@@ -138,7 +138,28 @@
           "itemOrnamentSize": {
             "desktop": "10px"
           },
-          "itemOrnamentGap": "10px"
+          "itemOrnamentGap": "10px",
+          "itemHoverScope": "all",
+          "itemOrnamentFrames": [
+            {
+              "source": "custom",
+              "svg": "<svg viewBox=\"0 0 10 10\" fill=\"currentColor\"><path d=\"M3 8H1v2h2V8ZM5 6H3v2h2V6ZM7 8H5v2h2V8ZM9 6H7v2h2V6ZM7 4H5v2h2V4ZM3 4H1v2h2V4ZM9 2H7v2h2V2ZM5 2H3v2h2V2ZM7 0H5v2h2V0ZM10 8H9v2h1V8ZM10 4H9v2h1V4ZM10 0H9v2h1V0ZM3 0H1v2h2V0ZM1 6H0v2h1V6ZM1 2H0v2h1V2Z\"/></svg>"
+            },
+            {
+              "source": "custom",
+              "svg": "<svg viewBox=\"0 0 10 10\" fill=\"currentColor\"><path d=\"M4 8H2v2h2V8ZM6 6H4v2h2V6ZM8 8H6v2h2V8ZM10 6H8v2h2V6ZM8 4H6v2h2V4ZM4 4H2v2h2V4ZM10 2H8v2h2V2ZM6 2H4v2h2V2ZM8 0H6v2h2V0ZM4 0H2v2h2V0ZM2 6H0v2h2V6ZM2 2H0v2h2V2Z\"/></svg>"
+            },
+            {
+              "source": "custom",
+              "svg": "<svg viewBox=\"0 0 10 10\" fill=\"currentColor\"><path d=\"M1 8H0v2h1V8ZM3 6H1v2h2V6ZM5 8H3v2h2V8ZM9 8H7v2h2V8ZM7 6H5v2h2V6ZM5 4H3v2h2V4ZM9 4H7v2h2V4ZM1 4H0v2h1V4ZM7 2H5v2h2V2ZM3 2H1v2h2V2ZM10 6H9v2h1V6ZM10 2H9v2h1V2ZM5 0H3v2h2V0ZM1 0H0v2h1V0ZM9 0H7v2h2V0Z\"/></svg>"
+            }
+          ],
+          "itemOrnamentFrameDuration": {
+            "desktop": 100
+          },
+          "itemOrnamentFramePlay": {
+            "desktop": "on"
+          }
         }
       },
       {
@@ -157,7 +178,7 @@
           },
           "margin": {
             "desktop": {
-              "top": "19px",
+              "top": "14px",
               "right": "13px",
               "left": "13px"
             }
@@ -201,7 +222,7 @@
               "textTransform": "uppercase",
               "colourText": "#f9f4eb",
               "colourBackground": "transparent",
-              "colourTextHover": "#000000",
+              "colourTextHover": "#1a1c1c",
               "colourBackgroundHover": "#f9f4eb",
               "borderColourHover": "#f9f4eb",
               "borderWidth": {

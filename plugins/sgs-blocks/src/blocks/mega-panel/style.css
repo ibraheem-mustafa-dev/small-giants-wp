@@ -418,7 +418,6 @@
 .wp-block-sgs-mega-panel:not( .sgs-mega-panel--aside-sep-none ) .sgs-mega-aside {
 	border-left: var( --sgs-mm-aside-sep-width, 1px ) solid
 		var( --sgs-mm-aside-sep-colour, var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) ) );
-	padding-left: 24px;
 }
 
 /* -- mobile / in-drawer stack (content-preserving — every group + aside keeps

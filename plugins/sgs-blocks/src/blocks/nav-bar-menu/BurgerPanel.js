@@ -7,7 +7,7 @@ import {
 } from '@wordpress/components';
 import { useBlockEditContext, store as blockEditorStore } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
-import { SgsLengthControl, IconPicker, MotionEasingControl, ResponsiveOverride } from '../../components';
+import { SgsLengthControl, IconPicker, MotionEasingControl, ResponsiveOverride, ResponsiveBoxControl, SgsBorderControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { resolveTier } from '../../utils';
 
@@ -108,6 +108,24 @@ export default function BurgerPanel( {
 		( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.burgerIconHeight,
 		[ clientId ]
 	);
+
+	// Menu button box controls (padding, corner radius, border, bar gap) —
+	// same reason as `burgerWidth` above: read off the stored attributes.
+	const burgerBox = useSelect(
+		( select ) => {
+			const stored = select( blockEditorStore ).getBlockAttributes( clientId ) || {};
+			return {
+				burgerPadding: stored.burgerPadding,
+				burgerBorderRadius: stored.burgerBorderRadius,
+				burgerBorderWidth: stored.burgerBorderWidth,
+				burgerBorderStyle: stored.burgerBorderStyle,
+				burgerBorderColour: stored.burgerBorderColour,
+				burgerBarGap: stored.burgerBarGap,
+			};
+		},
+		[ clientId ]
+	);
+	const { burgerPadding, burgerBorderRadius, burgerBorderWidth, burgerBorderStyle, burgerBorderColour, burgerBarGap } = burgerBox;
 
 	// `triggerMode` is a TIER OBJECT. The icon picker, the
 	// Label field and the morph controls apply to EVERY tier at once (one
@@ -294,6 +312,76 @@ export default function BurgerPanel( {
 					/>
 				) }
 			</ResponsiveOverride>
+
+			{ /* Space between the default glyph's bars, per device. Writes the
+			   bar-stack height (bars x 2px + gaps) — see nav-menu-trigger-css.php. */ }
+			{ showsIcon && (
+				<ResponsiveOverride
+					label={ __( 'Bar gap', 'sgs-blocks' ) }
+					value={ burgerBarGap }
+					onChange={ ( obj ) => setAttributes( { burgerBarGap: obj } ) }
+				>
+					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						<SgsLengthControl
+							hideLabelFromVision
+							label={ __( 'Bar gap', 'sgs-blocks' ) }
+							value={ ownValue || '' }
+							placeholder={ inherited ? effectiveValue || '' : '' }
+							units={ [ { value: 'px', label: 'px', default: 6 } ] }
+							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							help={ __( 'Leave empty to keep the default spacing. Overrides Bar stack height.', 'sgs-blocks' ) }
+							presets={ false }
+						/>
+					) }
+				</ResponsiveOverride>
+			) }
+
+			<ResponsiveBoxControl
+				label={ __( 'Button padding', 'sgs-blocks' ) }
+				values={ {
+					base: burgerPadding?.desktop ?? {},
+					tablet: burgerPadding?.tablet ?? {},
+					mobile: burgerPadding?.mobile ?? {},
+				} }
+				onChange={ ( tier, next ) => {
+					const key = 'base' === tier ? 'desktop' : tier;
+					setAttributes( { burgerPadding: { ...( burgerPadding || {} ), [ key ]: next } } );
+				} }
+			/>
+
+			<ResponsiveOverride
+				label={ __( 'Button corner radius', 'sgs-blocks' ) }
+				value={ burgerBorderRadius }
+				onChange={ ( obj ) => setAttributes( { burgerBorderRadius: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SgsLengthControl
+						hideLabelFromVision
+						label={ __( 'Button corner radius', 'sgs-blocks' ) }
+						value={ ownValue || '' }
+						placeholder={ inherited ? effectiveValue || '' : '' }
+						units={ [
+							{ value: 'px', label: 'px', default: 8 },
+							{ value: '%', label: '%', default: 50 },
+						] }
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
+						help={ __( 'Leave empty for the default rounded corners; 0 gives square corners.', 'sgs-blocks' ) }
+						presets={ false }
+					/>
+				) }
+			</ResponsiveOverride>
+
+			<SgsBorderControl
+				label={ __( 'Button border', 'sgs-blocks' ) }
+				widthValues={ burgerBorderWidth ?? {} }
+				onWidthChange={ ( next ) => setAttributes( { burgerBorderWidth: next } ) }
+				styleValue={ burgerBorderStyle }
+				onStyleChange={ ( value ) => setAttributes( { burgerBorderStyle: value } ) }
+				colourLabel={ __( 'Button border colour', 'sgs-blocks' ) }
+				colourValue={ burgerBorderColour }
+				onColourChange={ ( value ) => setAttributes( { burgerBorderColour: value ?? '' } ) }
+				colourLinked
+			/>
 
 			<ToggleControl
 				label={ __( 'Magnetic pull', 'sgs-blocks' ) }

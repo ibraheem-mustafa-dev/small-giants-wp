@@ -154,6 +154,32 @@ if ( function_exists( 'sgs_emit_responsive_css' ) && ! empty( $aside_padding_obj
 	);
 }
 
+// Stack gap + vertical content alignment, per device. Both are tier objects
+// read through sgs_emit_responsive_css(); an unset attr emits nothing so
+// style.css's `gap:16px` and the CSS-initial `justify-content` stand. The
+// scoped rule (0,2,0) out-ranks style.css's `.sgs-mega-aside` (0,1,0).
+$aside_justify_allowed = array( 'flex-start', 'center', 'flex-end', 'space-between' );
+if ( function_exists( 'sgs_emit_responsive_css' ) ) {
+	$css .= sgs_emit_responsive_css(
+		$root_sel,
+		array(
+			array(
+				'value'        => $attributes['asideGap'] ?? array(),
+				'css'          => 'gap',
+				'unit_default' => 'px',
+			),
+			array(
+				'value'     => $attributes['asideJustify'] ?? array(),
+				'css'       => 'justify-content',
+				'transform' => static function ( $raw ) use ( $aside_justify_allowed ) {
+					return in_array( $raw, $aside_justify_allowed, true ) ? $raw : '';
+				},
+			),
+		),
+		array( 'container' => true )
+	);
+}
+
 // ---------------------------------------------------------------------------
 // 3. Format arrangement (structural — depends only on the enum, not on a
 // resolved instance VALUE, so this mirrors the same rule shape declared

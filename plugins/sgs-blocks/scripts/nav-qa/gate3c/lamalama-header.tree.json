@@ -198,7 +198,29 @@
               "burgerColour": "#f9f4eb",
               "burgerMorph": "line",
               "burgerBarCount": 3,
-              "showBurger": true
+              "showBurger": true,
+              "burgerPadding": {
+                "desktop": {
+                  "top": "12px",
+                  "right": "7px",
+                  "bottom": "12px",
+                  "left": "7px"
+                }
+              },
+              "burgerBorderRadius": {
+                "desktop": "0px"
+              },
+              "burgerBarGap": {
+                "desktop": "3px"
+              },
+              "burgerBorderStyle": "solid",
+              "burgerBorderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
+              },
+              "burgerBorderColour": "#f9f4eb"
             }
           }
         ]

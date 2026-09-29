@@ -22,7 +22,7 @@
           "justifyContent": "space-between",
           "alignItems": "center",
           "contentWidth": {
-            "desktop": "1240px"
+            "desktop": "1184px"
           },
           "padding": {
             "desktop": {
@@ -41,12 +41,7 @@
               "layout": "flex",
               "alignItems": "center",
               "gap": {
-                "desktop": "5px"
-              },
-              "margin": {
-                "desktop": {
-                  "left": "-5px"
-                }
+                "desktop": "10px"
               },
               "padding": {
                 "desktop": {
@@ -59,15 +54,17 @@
               "backgroundColour": "transparent",
               "sgsBlockLink": "/",
               "sgsBlockLinkLabel": "Indus Foods home",
-              "sgsHoverOpacity": 0.75
+              "sgsHoverOpacity": 0.75,
+              "textColour": "#1E2A3C",
+              "textColourHover": "#1E2A3C"
             },
             "innerBlocks": [
               {
                 "name": "sgs/icon",
                 "attributes": {
                   "iconSource": "custom",
-                  "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 34 34\" aria-hidden=\"true\"><rect x=\"5\" y=\"5\" width=\"24\" height=\"24\" rx=\"7\" fill=\"#D8CA50\" transform=\"rotate(45 17 17)\"/></svg>",
-                  "iconSize": 34
+                  "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect width=\"24\" height=\"24\" rx=\"7\" fill=\"#D8CA50\"/></svg>",
+                  "iconSize": 24, "iconRotate": 45
                 }
               },
               {
@@ -141,7 +138,6 @@
               "submenuAnimation": "fade-lift",
               "submenuAnimationDuration": 340,
               "submenuAnimationEasing": "custom",
-              "submenuAnimationEasingCustom": "cubic-bezier(.16,.84,.32,1)",
               "submenuItemStagger": 26,
               "submenuItemStaggerDistance": 14,
               "submenuItemStaggerDuration": 460,
@@ -163,7 +159,8 @@
               "submenuCloseGrace": 170,
               "submenuIntentDelay": 0,
               "submenuTopOffset": "12px",
-              "drawerRef": 4456
+              "drawerRef": 4456,
+              "submenuAnimationEasingCustom": "cubic-bezier(.16,.84,.32,1)"
             }
           },
           {
@@ -210,7 +207,13 @@
                 "desktop": "22.5px"
               },
               "lineHeightUnit": "px",
-              "opacityHover": 0.75
+              "opacityHover": 0.75,
+              "liftHover": 2,
+              "colourTextHover": "#FFFFFF",
+              "colourBackgroundHover": "#0A7EA8",
+              "minHeight": {
+                "desktop": "0px"
+              }
             }
           }
         ]

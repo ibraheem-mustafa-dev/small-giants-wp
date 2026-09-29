@@ -252,7 +252,8 @@
 					"prefix": "burgerIcon",
 					"attrMap": {
 						"css:width": "burgerIconWidth",
-						"css:height": "burgerIconHeight"
+						"css:height": "burgerIconHeight",
+						"css:gap": "burgerBarGap"
 					},
 					"_note": "U-18 G6. The `.sgs-nav-bar-menu__burger-icon` bar-stack BOX — a genuinely separate element from `burger` above, whose own `css:width`/`css:height` are already claimed by `burgerWidth` (the BUTTON's width) and `burgerSize` (the BUTTON's height). Its own element, matching `detach-chip`'s precedent for a sub-part that cannot share its parent's element entry. `burgerIconHeight` writes the `--sgs-nbm-icon-h` custom property (not a bare `height` declaration) because `.sgs-nav-bar-menu__burger-icon--two-bar` already sets that property at full (0,1,0) specificity in style.css; the emitted rule targets `.sgs-nav-bar-menu__burger-icon` at (0,2,0) so it wins, and every morph pose (`x`, `x-rotate`, `line`, two-bar) already derives its travel from that one property, so setting it here reaches every pose for free. `burgerIconWidth` writes a new `--sgs-nbm-icon-w` custom property, declared with its 24px default and consumed by a `width: var(--sgs-nbm-icon-w)` read in the same zero-specificity `:where()` box rule in style.css, mirroring how `height` reads `--sgs-nbm-icon-h` there."
 				},
@@ -269,6 +270,11 @@
 					"attrMap": {
 						"css:width": "burgerWidth",
 						"css:height": "burgerSize",
+						"css:padding": "burgerPadding",
+						"css:border-radius": "burgerBorderRadius",
+						"css:border-width": "burgerBorderWidth",
+						"css:border-style": "burgerBorderStyle",
+						"css:border-color": "burgerBorderColour",
 						"css:color": "burgerColour",
 						"css:color-gradient": "burgerColourGradient",
 						"css:background-color": "burgerBg",
@@ -694,6 +700,37 @@
 			"type": "object",
 			"default": {},
 			"description": "FR-U18-G1. Per-tier {desktop,tablet,mobile} CSS length overriding the burger button's WIDTH only (burgerSize keeps height/min-height), so the button can be a genuinely non-square touch target (e.g. 30px wide x 36px tall, lamalama.com). A tier left unset inherits the tier above (sgs_resolve_tier() cascade), and an empty object falls all the way back to burgerSize -- byte-identical to pre-G1 output."
+		},
+		"burgerPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Menu button padding per device, a {desktop,tablet,mobile} tier object of {top,right,bottom,left} CSS lengths. Unset keeps style.css's padding:0. Emitted on .sgs-nav-bar-menu__burger by includes/nav-menu-trigger-css.php."
+		},
+		"burgerBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Menu button corner radius per device, a {desktop,tablet,mobile} tier object of CSS lengths (0 gives square corners). Unset keeps style.css's zero-specificity default (the theme's medium radius, 8px)."
+		},
+		"burgerBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Menu button border width, a {top,right,bottom,left} box of CSS lengths, one value for every device like every SgsBorderControl width. Unset keeps style.css's border:none. A 0 width with a style still writes the border-style."
+		},
+		"burgerBorderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": [ "solid", "dashed", "dotted", "double", "none" ],
+			"description": "Menu button border style, written only alongside burgerBorderWidth."
+		},
+		"burgerBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Menu button border colour: a palette slug or any colour. Unset follows the button's text colour (currentColor)."
+		},
+		"burgerBarGap": {
+			"type": "object",
+			"default": {},
+			"description": "Space between the default glyph's bars, per device: a {desktop,tablet,mobile} tier object of CSS lengths. Sets the bar-stack height to (bars x 2px) + (bars - 1) x gap through --sgs-nbm-icon-h, so every morph pose follows. Unset keeps today's stack height (18px, or 8.5px with two bars); a set value wins over burgerIconHeight."
 		},
 		"burgerIconWidth": {
 			"type": "object",

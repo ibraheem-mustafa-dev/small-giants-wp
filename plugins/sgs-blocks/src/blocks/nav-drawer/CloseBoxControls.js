@@ -10,7 +10,8 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SgsBorderControl } from '../../components';
+import { RangeControl } from '@wordpress/components';
+import { SgsBorderControl, ResponsiveBoxControl } from '../../components';
 import { TierLength } from './chrome-tier-controls';
 
 /**
@@ -20,7 +21,7 @@ import { TierLength } from './chrome-tier-controls';
  * @return {Element} The controls.
  */
 export default function CloseBoxControls( { attributes, setAttributes } ) {
-	const { closeBorderWidth, closeBorderStyle, closeBorderColour, closeIconSize } = attributes;
+	const { closeBorderWidth, closeBorderStyle, closeBorderColour, closeIconSize, closePadding, closeHoverOpacity } = attributes;
 
 	return (
 		<>
@@ -39,6 +40,31 @@ export default function CloseBoxControls( { attributes, setAttributes } ) {
 				label={ __( 'Close icon size', 'sgs-blocks' ) }
 				value={ closeIconSize }
 				onChange={ ( obj ) => setAttributes( { closeIconSize: obj } ) }
+			/>
+			<ResponsiveBoxControl
+				label={ __( 'Close button padding', 'sgs-blocks' ) }
+				values={ {
+					base: closePadding?.desktop ?? {},
+					tablet: closePadding?.tablet ?? {},
+					mobile: closePadding?.mobile ?? {},
+				} }
+				onChange={ ( tier, next ) => {
+					const key = 'base' === tier ? 'desktop' : tier;
+					setAttributes( { closePadding: { ...( closePadding || {} ), [ key ]: next } } );
+				} }
+			/>
+			<RangeControl
+				label={ __( 'Close button hover opacity', 'sgs-blocks' ) }
+				help={ __( '1 switches the hover fade off.', 'sgs-blocks' ) }
+				value={ closeHoverOpacity ?? 0.75 }
+				onChange={ ( value ) => setAttributes( { closeHoverOpacity: value ?? 0.75 } ) }
+				min={ 0 }
+				max={ 1 }
+				step={ 0.05 }
+				allowReset
+				resetFallbackValue={ 0.75 }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 		</>
 	);

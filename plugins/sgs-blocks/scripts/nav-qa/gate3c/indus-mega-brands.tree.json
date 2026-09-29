@@ -8,7 +8,6 @@
         "desktop": "1080px"
       },
       "colourScheme": "light",
-      "brandsEyebrow": "Our Brands",
       "asideWidth": "300px",
       "asideSeparator": {
         "style": "line",
@@ -27,374 +26,433 @@
       "borderRadius": "12px",
       "panelPadding": {
         "desktop": {
-          "top": "26px",
-          "right": "26px",
-          "bottom": "26px",
-          "left": "26px"
+          "top": "0px",
+          "right": "0px",
+          "bottom": "0px",
+          "left": "0px"
         }
       },
       "shadow": "0 30px 80px -30px rgba(20,25,35,.28), 0 2px 8px -2px rgba(0,0,0,.08)",
-      "brandsEyebrowFontFamily": "'Geist Mono', monospace",
-      "brandsEyebrowFontSize": 11,
-      "brandsEyebrowFontSizeUnit": "px",
-      "brandsEyebrowFontWeight": "400",
-      "brandsEyebrowLetterSpacing": 1.54,
-      "brandsEyebrowLetterSpacingUnit": "px",
-      "brandsEyebrowLineHeight": 16.5,
-      "brandsEyebrowLineHeightUnit": "px",
-      "brandsEyebrowColour": "#68727C"
+      "groupGap": {
+        "desktop": "0px"
+      }
     },
     "innerBlocks": [
       {
         "name": "sgs/container",
         "attributes": {
           "tagName": "div",
-          "layout": "grid",
+          "layout": "flex",
+          "flexDirection": "column",
           "contentWidth": {
             "desktop": "full"
           },
-          "columns": {
-            "desktop": 4,
-            "tablet": 2,
-            "mobile": 1
-          },
-          "minColumnWidth": {
-            "desktop": 140
-          },
           "gap": {
-            "desktop": "10px"
+            "desktop": "0px"
+          },
+          "padding": {
+            "desktop": {
+              "top": "26px",
+              "right": "26px",
+              "bottom": "26px",
+              "left": "26px"
+            },
+            "tablet": {
+              "top": "0px",
+              "right": "0px",
+              "bottom": "0px",
+              "left": "0px"
+            },
+            "mobile": {
+              "top": "0px",
+              "right": "0px",
+              "bottom": "0px",
+              "left": "0px"
+            }
           }
         },
         "innerBlocks": [
           {
-            "name": "sgs/container",
+            "name": "sgs/text",
             "attributes": {
-              "tagName": "div",
-              "layout": "flex",
-              "alignItems": "center",
-              "justifyContent": "center",
-              "gap": {
-                "desktop": "8px"
+              "text": "Our Brands",
+              "textColour": "#68727C",
+              "fontFamily": "'Geist Mono', monospace",
+              "fontSize": {
+                "desktop": "11px"
               },
-              "minHeight": {
-                "desktop": "64px"
+              "fontWeight": "400",
+              "textTransform": "uppercase",
+              "letterSpacing": {
+                "desktop": 1.54
               },
-              "backgroundColour": "#FAFAF8",
-              "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.1)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
+              "letterSpacingUnit": "px",
+              "lineHeight": {
+                "desktop": 16.5
               },
-              "borderRadius": {
+              "lineHeightUnit": "px",
+              "margin": {
                 "desktop": {
-                  "topLeft": "12px",
-                  "topRight": "12px",
-                  "bottomLeft": "12px",
-                  "bottomRight": "12px"
+                  "top": "0px",
+                  "bottom": "14px"
                 }
-              }
-            },
-            "innerBlocks": []
+              },
+              "sgsHideOnTablet": true,
+              "sgsHideOnMobile": true
+            }
           },
           {
             "name": "sgs/container",
             "attributes": {
               "tagName": "div",
-              "layout": "flex",
-              "alignItems": "center",
-              "justifyContent": "center",
+              "layout": "grid",
+              "contentWidth": {
+                "desktop": "full"
+              },
+              "columns": {
+                "desktop": 4,
+                "tablet": 2,
+                "mobile": 1
+              },
+              "minColumnWidth": {
+                "desktop": 140
+              },
               "gap": {
-                "desktop": "8px"
-              },
-              "minHeight": {
-                "desktop": "64px"
-              },
-              "backgroundColour": "#FAFAF8",
-              "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.1)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
-              },
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "12px",
-                  "topRight": "12px",
-                  "bottomLeft": "12px",
-                  "bottomRight": "12px"
-                }
+                "desktop": "10px"
               }
             },
-            "innerBlocks": []
-          },
-          {
-            "name": "sgs/container",
-            "attributes": {
-              "tagName": "div",
-              "layout": "flex",
-              "alignItems": "center",
-              "justifyContent": "center",
-              "gap": {
-                "desktop": "8px"
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "minHeight": {
+                    "desktop": "64px"
+                  },
+                  "backgroundColour": "#FAFAF8",
+                  "borderStyle": "solid",
+                  "borderColour": "rgba(30,42,60,0.1)",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  }
+                },
+                "innerBlocks": []
               },
-              "minHeight": {
-                "desktop": "64px"
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "minHeight": {
+                    "desktop": "64px"
+                  },
+                  "backgroundColour": "#FAFAF8",
+                  "borderStyle": "solid",
+                  "borderColour": "rgba(30,42,60,0.1)",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  }
+                },
+                "innerBlocks": []
               },
-              "backgroundColour": "#FAFAF8",
-              "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.1)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "minHeight": {
+                    "desktop": "64px"
+                  },
+                  "backgroundColour": "#FAFAF8",
+                  "borderStyle": "solid",
+                  "borderColour": "rgba(30,42,60,0.1)",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  }
+                },
+                "innerBlocks": []
               },
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "12px",
-                  "topRight": "12px",
-                  "bottomLeft": "12px",
-                  "bottomRight": "12px"
-                }
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "minHeight": {
+                    "desktop": "64px"
+                  },
+                  "backgroundColour": "#FAFAF8",
+                  "borderStyle": "solid",
+                  "borderColour": "rgba(30,42,60,0.1)",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  }
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "minHeight": {
+                    "desktop": "64px"
+                  },
+                  "backgroundColour": "#FAFAF8",
+                  "borderStyle": "solid",
+                  "borderColour": "rgba(30,42,60,0.1)",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  }
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "minHeight": {
+                    "desktop": "64px"
+                  },
+                  "backgroundColour": "#FAFAF8",
+                  "borderStyle": "solid",
+                  "borderColour": "rgba(30,42,60,0.1)",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  }
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "minHeight": {
+                    "desktop": "64px"
+                  },
+                  "backgroundColour": "#FAFAF8",
+                  "borderStyle": "solid",
+                  "borderColour": "rgba(30,42,60,0.1)",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  }
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "minHeight": {
+                    "desktop": "64px"
+                  },
+                  "backgroundColour": "#FAFAF8",
+                  "borderStyle": "solid",
+                  "borderColour": "rgba(30,42,60,0.1)",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  }
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "minHeight": {
+                    "desktop": "64px"
+                  },
+                  "backgroundColour": "#FAFAF8",
+                  "borderStyle": "solid",
+                  "borderColour": "rgba(30,42,60,0.1)",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  }
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "minHeight": {
+                    "desktop": "64px"
+                  },
+                  "backgroundColour": "#FAFAF8",
+                  "borderStyle": "solid",
+                  "borderColour": "rgba(30,42,60,0.1)",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  }
+                },
+                "innerBlocks": []
               }
-            },
-            "innerBlocks": []
-          },
-          {
-            "name": "sgs/container",
-            "attributes": {
-              "tagName": "div",
-              "layout": "flex",
-              "alignItems": "center",
-              "justifyContent": "center",
-              "gap": {
-                "desktop": "8px"
-              },
-              "minHeight": {
-                "desktop": "64px"
-              },
-              "backgroundColour": "#FAFAF8",
-              "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.1)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
-              },
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "12px",
-                  "topRight": "12px",
-                  "bottomLeft": "12px",
-                  "bottomRight": "12px"
-                }
-              }
-            },
-            "innerBlocks": []
-          },
-          {
-            "name": "sgs/container",
-            "attributes": {
-              "tagName": "div",
-              "layout": "flex",
-              "alignItems": "center",
-              "justifyContent": "center",
-              "gap": {
-                "desktop": "8px"
-              },
-              "minHeight": {
-                "desktop": "64px"
-              },
-              "backgroundColour": "#FAFAF8",
-              "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.1)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
-              },
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "12px",
-                  "topRight": "12px",
-                  "bottomLeft": "12px",
-                  "bottomRight": "12px"
-                }
-              }
-            },
-            "innerBlocks": []
-          },
-          {
-            "name": "sgs/container",
-            "attributes": {
-              "tagName": "div",
-              "layout": "flex",
-              "alignItems": "center",
-              "justifyContent": "center",
-              "gap": {
-                "desktop": "8px"
-              },
-              "minHeight": {
-                "desktop": "64px"
-              },
-              "backgroundColour": "#FAFAF8",
-              "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.1)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
-              },
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "12px",
-                  "topRight": "12px",
-                  "bottomLeft": "12px",
-                  "bottomRight": "12px"
-                }
-              }
-            },
-            "innerBlocks": []
-          },
-          {
-            "name": "sgs/container",
-            "attributes": {
-              "tagName": "div",
-              "layout": "flex",
-              "alignItems": "center",
-              "justifyContent": "center",
-              "gap": {
-                "desktop": "8px"
-              },
-              "minHeight": {
-                "desktop": "64px"
-              },
-              "backgroundColour": "#FAFAF8",
-              "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.1)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
-              },
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "12px",
-                  "topRight": "12px",
-                  "bottomLeft": "12px",
-                  "bottomRight": "12px"
-                }
-              }
-            },
-            "innerBlocks": []
-          },
-          {
-            "name": "sgs/container",
-            "attributes": {
-              "tagName": "div",
-              "layout": "flex",
-              "alignItems": "center",
-              "justifyContent": "center",
-              "gap": {
-                "desktop": "8px"
-              },
-              "minHeight": {
-                "desktop": "64px"
-              },
-              "backgroundColour": "#FAFAF8",
-              "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.1)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
-              },
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "12px",
-                  "topRight": "12px",
-                  "bottomLeft": "12px",
-                  "bottomRight": "12px"
-                }
-              }
-            },
-            "innerBlocks": []
-          },
-          {
-            "name": "sgs/container",
-            "attributes": {
-              "tagName": "div",
-              "layout": "flex",
-              "alignItems": "center",
-              "justifyContent": "center",
-              "gap": {
-                "desktop": "8px"
-              },
-              "minHeight": {
-                "desktop": "64px"
-              },
-              "backgroundColour": "#FAFAF8",
-              "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.1)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
-              },
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "12px",
-                  "topRight": "12px",
-                  "bottomLeft": "12px",
-                  "bottomRight": "12px"
-                }
-              }
-            },
-            "innerBlocks": []
-          },
-          {
-            "name": "sgs/container",
-            "attributes": {
-              "tagName": "div",
-              "layout": "flex",
-              "alignItems": "center",
-              "justifyContent": "center",
-              "gap": {
-                "desktop": "8px"
-              },
-              "minHeight": {
-                "desktop": "64px"
-              },
-              "backgroundColour": "#FAFAF8",
-              "borderStyle": "solid",
-              "borderColour": "rgba(30,42,60,0.1)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
-              },
-              "borderRadius": {
-                "desktop": {
-                  "topLeft": "12px",
-                  "topRight": "12px",
-                  "bottomLeft": "12px",
-                  "bottomRight": "12px"
-                }
-              }
-            },
-            "innerBlocks": []
+            ]
           }
         ]
       },
@@ -418,6 +476,12 @@
               "bottom": "26px",
               "left": "26px"
             }
+          },
+          "asideGap": {
+            "desktop": "0px"
+          },
+          "asideJustify": {
+            "desktop": "center"
           }
         },
         "innerBlocks": [
@@ -567,7 +631,16 @@
                   "customWidthUnit": {
                     "desktop": "px"
                   },
-                  "opacityHover": 0.75
+                  "opacityHover": 0.75,
+                  "minHeight": {
+                    "desktop": "0px"
+                  },
+                  "iconGap": {
+                    "desktop": "8px"
+                  },
+                  "contentAlign": {
+                    "desktop": "flex-start"
+                  }
                 }
               }
             ]
