@@ -2497,25 +2497,30 @@
     },
     "innerBlocks": [
       {
-        "name": "sgs/container",
+        "name": "sgs/media",
         "attributes": {
           "sgsAnimation": "fade-up",
           "sgsAnimationDistance": "26",
           "sgsAnimationDuration": "460",
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-          "backgroundColour": "primary",
+          "mediaType": "image",
+          "imageId": 202,
+          "imageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg",
+          "imageAlt": "Person wearing sunglasses outdoors",
+          "objectFit": "cover",
+          "objectPosition": "50% 20%",
+          "height": {
+            "desktop": "100%"
+          },
           "minHeight": {
             "desktop": "430px"
           },
-          "textWrap": "wrap",
-          "backgroundImage": {
-            "id": 202,
-            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg",
-            "alt": "Person wearing sunglasses outdoors"
-          },
-          "backgroundPosition": "center 20%"
-        },
-        "innerBlocks": []
+          "sgsHoverImageZoom": true,
+          "sgsHoverZoom": 105,
+          "sgsHoverZoomDuration": 1400,
+          "sgsHoverEasing": "custom",
+          "sgsHoverEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+        }
       },
       {
         "name": "sgs/container",
