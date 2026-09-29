@@ -61,7 +61,12 @@
           "className": "sgs-hero__label",
           "fontWeight": "400",
           "lineHeight": 1.5,
-          "lineHeightUnit": "em"
+          "lineHeightUnit": "em",
+          "margin": {
+            "desktop": {
+              "bottom": "16px"
+            }
+          }
         }
       },
       {
@@ -94,7 +99,12 @@
           "textWrap": "pretty",
           "className": "sgs-hero__headline",
           "maxWidth": 15,
-          "maxWidthUnit": "ch"
+          "maxWidthUnit": "ch",
+          "margin": {
+            "desktop": {
+              "bottom": "0"
+            }
+          }
         }
       },
       {
@@ -116,7 +126,8 @@
           "maxWidthUnit": "ch",
           "margin": {
             "desktop": {
-              "top": "22px"
+              "top": "22px",
+              "bottom": "0"
             }
           },
           "textWrap": "pretty",
@@ -1302,7 +1313,9 @@
                     "desktop": 1.02
                   },
                   "lineHeightUnit": "unitless",
-                  "textWrap": "pretty"
+                  "textWrap": "pretty",
+                  "maxWidth": 566,
+                  "maxWidthUnit": "px"
                 }
               }
             ]
@@ -2824,7 +2837,9 @@
                   "bottom": "22px"
                 }
               },
-              "textWrap": "pretty"
+              "textWrap": "pretty",
+              "maxWidth": 622,
+              "maxWidthUnit": "px"
             }
           },
           {
