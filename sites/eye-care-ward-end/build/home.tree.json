@@ -58,7 +58,10 @@
           "letterSpacing": 0.24,
           "letterSpacingUnit": "em",
           "textTransform": "uppercase",
-          "className": "sgs-hero__label"
+          "className": "sgs-hero__label",
+          "fontWeight": "400",
+          "lineHeight": 1.5,
+          "lineHeightUnit": "em"
         }
       },
       {
@@ -74,7 +77,8 @@
           "fontFamily": "'Playfair Display',serif",
           "fontWeight": "500",
           "fontSize": {
-            "desktop": 62,
+            "desktop": 63.36,
+            "tablet": 42,
             "mobile": 40
           },
           "fontSizeUnit": "px",
@@ -116,7 +120,8 @@
             }
           },
           "textWrap": "pretty",
-          "className": "sgs-hero__subheadline"
+          "className": "sgs-hero__subheadline",
+          "fontWeight": "400"
         }
       },
       {
@@ -170,42 +175,16 @@
           {
             "name": "sgs/button",
             "attributes": {
-              "inheritStyle": "custom",
+              "inheritStyle": "outline",
               "label": "Add your prescription",
               "url": "https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/",
-              "colourBackground": "transparent",
               "colourText": "text-inverse",
-              "borderColour": "rgba(250,248,245,.75)",
-              "borderWidth": {
-                "top": "1px",
-                "right": "1px",
-                "bottom": "1px",
-                "left": "1px"
-              },
-              "borderRadius": {
-                "desktop": {}
-              },
-              "minHeight": {
-                "desktop": "52px"
-              },
-              "fontSize": {
-                "desktop": 13
-              },
               "fontSizeUnit": "px",
-              "fontWeight": "400",
               "letterSpacing": {
                 "desktop": 0.1
               },
               "letterSpacingUnit": "em",
-              "textTransform": "uppercase",
-              "padding": {
-                "desktop": {
-                  "top": "0",
-                  "bottom": "0",
-                  "left": "28px",
-                  "right": "28px"
-                }
-              }
+              "textTransform": "uppercase"
             }
           }
         ]
@@ -217,7 +196,16 @@
     "attributes": {
       "backgroundColour": "#fff",
       "textWrap": "wrap",
-      "className": "sgs-brand-marquee"
+      "className": "sgs-brand-marquee",
+      "contentWidth": {
+        "desktop": "1440px"
+      },
+      "padding": {
+        "desktop": {
+          "left": "0",
+          "right": "0"
+        }
+      }
     },
     "innerBlocks": [
       {
@@ -246,7 +234,8 @@
           "brandTextLetterSpacingUnit": "em",
           "brandTextTextTransform": "uppercase",
           "brandTextColour": "#3A352F",
-          "brandTextColourHover": "text"
+          "brandTextColourHover": "text",
+          "backgroundColour": "surface-alt"
         }
       }
     ]
@@ -353,10 +342,6 @@
               "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/",
               "colourBackground": "transparent",
               "colourText": "text",
-              "borderColour": "text",
-              "borderWidth": {
-                "bottom": "1px"
-              },
               "fontSize": {
                 "desktop": 13
               },
@@ -376,8 +361,12 @@
                   "top": "0",
                   "left": "0",
                   "right": "0",
-                  "bottom": "3px"
+                  "bottom": "0"
                 }
+              },
+              "textDecoration": "underline",
+              "minHeight": {
+                "desktop": "44px"
               }
             }
           }
@@ -1286,7 +1275,8 @@
                       "bottom": "10px"
                     }
                   },
-                  "textTransform": "uppercase"
+                  "textTransform": "uppercase",
+                  "textColour": "accent"
                 }
               },
               {
@@ -1406,7 +1396,11 @@
                       "top": "22px"
                     }
                   },
-                  "textWrap": "pretty"
+                  "textWrap": "pretty",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless"
                 }
               },
               {
@@ -1482,7 +1476,11 @@
                       "top": "22px"
                     }
                   },
-                  "textWrap": "pretty"
+                  "textWrap": "pretty",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless"
                 }
               },
               {
@@ -1558,7 +1556,11 @@
                       "top": "22px"
                     }
                   },
-                  "textWrap": "pretty"
+                  "textWrap": "pretty",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless"
                 }
               },
               {
@@ -1634,7 +1636,11 @@
                       "top": "22px"
                     }
                   },
-                  "textWrap": "pretty"
+                  "textWrap": "pretty",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless"
                 }
               },
               {
@@ -1757,10 +1763,6 @@
               "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/",
               "colourBackground": "transparent",
               "colourText": "text",
-              "borderColour": "text",
-              "borderWidth": {
-                "bottom": "1px"
-              },
               "fontSize": {
                 "desktop": 13
               },
@@ -1780,8 +1782,12 @@
                   "top": "0",
                   "left": "0",
                   "right": "0",
-                  "bottom": "3px"
+                  "bottom": "0"
                 }
+              },
+              "textDecoration": "underline",
+              "minHeight": {
+                "desktop": "44px"
               }
             }
           }
@@ -1800,8 +1806,8 @@
             "mobile": "16px"
           },
           "aspectRatio": "4 / 5",
-          "effectHover": "zoom",
-          "imageZoomHover": true,
+          "effectHover": "lift",
+          "imageZoomHover": false,
           "shadowLiftOnHover": true,
           "imageFallback": true,
           "imageFallbackColour": "#2B2721",
@@ -1915,7 +1921,8 @@
           "sgsAnimationDuration": "460",
           "sgsAnimationDistance": "26",
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-          "staggerDelay": 70
+          "staggerDelay": 70,
+          "borderColourHover": "border-hover"
         }
       }
     ]
@@ -1978,7 +1985,8 @@
                 }
               },
               "text": "From the clinic",
-              "textTransform": "uppercase"
+              "textTransform": "uppercase",
+              "textColour": "accent-text"
             }
           },
           {
@@ -2504,7 +2512,8 @@
                 }
               },
               "text": "Prescription sunglasses",
-              "textTransform": "uppercase"
+              "textTransform": "uppercase",
+              "textColour": "accent-text"
             }
           },
           {
@@ -2578,39 +2587,27 @@
                   "number": "3",
                   "title": "Send your prescription now, or later — no rush"
                 }
-              ]
+              ],
+              "numberFontFamily": "heading",
+              "titleFontFamily": "body",
+              "titleLineHeight": {
+                "desktop": 1.5
+              },
+              "titleLineHeightUnit": "em"
             }
           },
           {
             "name": "sgs/button",
             "attributes": {
-              "inheritStyle": "custom",
+              "inheritStyle": "primary",
               "label": "How lenses work here",
               "url": "https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/",
-              "colourBackground": "primary",
-              "colourText": "text-inverse",
-              "colourBackgroundHover": "primary-hover",
-              "fontSize": {
-                "desktop": 13
-              },
               "fontSizeUnit": "px",
-              "fontWeight": "400",
               "letterSpacing": {
                 "desktop": 0.1
               },
               "letterSpacingUnit": "em",
-              "textTransform": "uppercase",
-              "minHeight": {
-                "desktop": "52px"
-              },
-              "padding": {
-                "desktop": {
-                  "top": "0",
-                  "bottom": "0",
-                  "left": "28px",
-                  "right": "28px"
-                }
-              }
+              "textTransform": "uppercase"
             }
           }
         ]
@@ -2753,7 +2750,8 @@
                 }
               },
               "text": "You're buying from a person",
-              "textTransform": "uppercase"
+              "textTransform": "uppercase",
+              "textColour": "accent-text"
             }
           },
           {
@@ -2893,7 +2891,8 @@
                       "left": "24px",
                       "right": "24px"
                     }
-                  }
+                  },
+                  "colourBackgroundHover": "rgba(20,20,20,0.14)"
                 }
               }
             ]

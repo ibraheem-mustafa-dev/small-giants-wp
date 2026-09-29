@@ -213,6 +213,15 @@ export default {
 		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-27): "No reviews yet" until real reviews exist, where the draft shows made-up stars', when: ( d ) => ( ( d ) => /^text-missing "★|^text-missing "\)"$|^text-extra "no reviews yet"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		{ pair: 'card-gucci', reason: 'Accepted (Bean 2026-09-27): "No reviews yet" until real reviews exist, where the draft shows made-up stars (the card is 5-6px shorter for it)', when: ( d ) => 'text' === d.kind || 'h' === d.key },
 		{ pair: 'card-body', key: 'h', reason: 'Accepted (Bean 2026-09-27): "No reviews yet" in place of made-up stars' },
+		// WordPress runs wptexturize() on post content, curling a straight apostrophe; the draft's
+		// text is unprocessed. The standing pattern of lens.mjs, about.mjs and contact.mjs.
+		{ kind: 'text', reason: 'WordPress wptexturize() converts the straight apostrophe to a typographic one; the draft\'s text is unprocessed', when: ( d ) => d.draft.replace( /'/g, '’' ) === d.live },
+		// The two "see all" text links are held to the 44px touch target (Bean 2026-09-27), their
+		// underlined text centred in it, where the draft's link is its own 23px line.
+		...[ 'bestsellers-see-all', 'shapetiles-see-all' ].flatMap( ( pair ) => [
+			{ pair, kind: 'box', key: 'h', reason: '44px touch targets (the accessibility baseline), Bean 2026-09-27', when: ( d ) => 44 === d.live && d.draft < 44 },
+			{ pair, kind: 'box', key: 'text-inset-y', reason: '44px touch targets (Bean 2026-09-27): the link text sits centred in the taller target' },
+		] ),
 		{ pair: 'card-rrp', kind: 'text', reason: '"Recommended retail price:" is screen-reader text only', when: ( d ) => words( d.draft ) === words( d.live.replace( /recommended retail price:/i, '' ) ) },
 		{ pair: 'card-photo', kind: 'style', reason: 'The same photo: the draft paints it as a div background, live as an <img> with object-fit cover' },
 		{ pair: 'card-brand', kind: 'style', key: 'background-image', reason: 'The same gradient written with and without the 0% and 100% stops', when: ( d ) => d.live.includes( '62%' ) },
