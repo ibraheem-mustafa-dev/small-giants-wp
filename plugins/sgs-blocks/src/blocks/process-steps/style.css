@@ -174,6 +174,12 @@
 	align-self: start;
 }
 
+/* The title's bottom margin spaces it from its description; a step with no
+ * description keeps none (it would only pad the gap between steps). */
+.sgs-process-steps--layout-list .sgs-process-steps__title:last-child {
+	margin-bottom: 0;
+}
+
 .sgs-process-steps--layout-list .sgs-process-steps__description {
 	grid-column: 2;
 	grid-row: 2;

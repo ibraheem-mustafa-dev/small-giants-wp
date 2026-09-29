@@ -2656,7 +2656,14 @@
                 "desktop": 1.5
               },
               "numberLineHeightUnit": "em",
-          "numberGap": "16px"
+          "numberGap": "16px",
+          "stepGap": "17.5px",
+          "padding": {
+            "desktop": {
+              "top": "0",
+              "bottom": "0"
+            }
+          }
             }
           },
           {

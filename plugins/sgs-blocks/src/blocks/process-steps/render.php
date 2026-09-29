@@ -478,6 +478,11 @@ $scoped_css[] = sgs_typography_css_rule( $attributes, 'title', $title_scope );
 // weight stay (this scoped rule out-ranks them when set).
 $scoped_css[] = sgs_typography_css_rule( $attributes, 'number', $num_scope );
 
+// Space between the steps (stepGap); unset keeps style.css's gap.
+if ( '' !== (string) ( $attributes['stepGap'] ?? '' ) ) {
+	$scoped_css[] = $root_sel . '{gap:' . sgs_css_length_value( (string) $attributes['stepGap'] ) . ';}';
+}
+
 // List layout only: space between the number and its text (numberGap); unset
 // keeps style.css's column-gap. Scoped with the uid so it out-ranks style.css.
 if ( 'list' === $layout && '' !== (string) ( $attributes['numberGap'] ?? '' ) ) {
