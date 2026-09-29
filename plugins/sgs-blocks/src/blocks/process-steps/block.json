@@ -188,6 +188,9 @@
 					"label": "Process step",
 					"order": 7,
 					"clusters": [],
+					"attrMap": {
+						"css:column-gap": "numberGap"
+					},
 					"_note": "Per-step fields (number/title/description/icon) are plain repeater content from the `steps` array — styled block-wide via the number/title/description elements above, no independent per-step override. Mirrors sgs/accordion's `item` and sgs/timeline's `entry`."
 				}
 			}
@@ -479,6 +482,11 @@
 		"numberLineHeightUnit": {
 			"type": "string",
 			"default": "em"
+		},
+		"numberGap": {
+			"type": "string",
+			"default": "",
+			"description": "List layout only: space between the step number and its text (a CSS length). Empty keeps the stylesheet's spacing-20 gap."
 		},
 		"titleFontFamily": {
 			"type": "string",

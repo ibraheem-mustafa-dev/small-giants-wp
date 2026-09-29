@@ -478,6 +478,13 @@ $scoped_css[] = sgs_typography_css_rule( $attributes, 'title', $title_scope );
 // weight stay (this scoped rule out-ranks them when set).
 $scoped_css[] = sgs_typography_css_rule( $attributes, 'number', $num_scope );
 
+// List layout only: space between the number and its text (numberGap); unset
+// keeps style.css's column-gap. Scoped with the uid so it out-ranks style.css.
+if ( 'list' === $layout && '' !== (string) ( $attributes['numberGap'] ?? '' ) ) {
+	$scoped_css[] = $root_sel . '.sgs-process-steps--layout-list .sgs-process-steps__step{column-gap:'
+		. sgs_css_length_value( (string) $attributes['numberGap'] ) . ';}';
+}
+
 // 'list' layout paints no badge fill (no circle/square box behind the
 // number) — only numberColour (the text colour) still applies, matching the
 // brief's "number keeps using the block's existing number colour/font

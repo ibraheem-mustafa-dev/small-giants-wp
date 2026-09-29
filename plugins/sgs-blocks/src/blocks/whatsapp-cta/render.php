@@ -210,6 +210,15 @@ if ( $btn_hover_decls ) {
 if ( '' !== (string) ( $attributes['iconGap'] ?? '' ) ) {
 	$btn_decls[] = 'gap:' . sgs_css_length_value( (string) $attributes['iconGap'] );
 }
+// Minimum height (minHeight); unset keeps the variant's style.css minimum.
+if ( '' !== (string) ( $attributes['minHeight'] ?? '' ) ) {
+	$btn_decls[] = 'min-height:' . sgs_css_length_value( (string) $attributes['minHeight'] );
+}
+// Icon size (iconSize): the glyph is square, so one length sets both sides.
+if ( '' !== (string) ( $attributes['iconSize'] ?? '' ) ) {
+	$icon_size    = sgs_css_length_value( (string) $attributes['iconSize'] );
+	$scoped_css[] = '.' . $uid . ' .sgs-whatsapp-cta__icon{width:' . $icon_size . ';height:' . $icon_size . ';}';
+}
 if ( $btn_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $btn_decls ) . ';}';
 }

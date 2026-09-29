@@ -135,7 +135,8 @@
 	box-shadow: 0 4px 12px color-mix(in srgb, var(--wp--custom--shadow-colour) 25%, transparent);
 }
 
-.sgs-whatsapp-cta--floating .sgs-whatsapp-cta__icon {
+/* Variant default icon size, de-specified so the Icon size setting (iconSize, a scoped .{uid} rule) wins. */
+:where(.sgs-whatsapp-cta--floating) .sgs-whatsapp-cta__icon {
 	width: 28px;
 	height: 28px;
 }
@@ -186,7 +187,8 @@
 	justify-content: center;
 }
 
-.sgs-whatsapp-cta--card .sgs-whatsapp-cta__icon-badge .sgs-whatsapp-cta__icon {
+/* Variant default icon size, de-specified so the Icon size setting (iconSize, a scoped .{uid} rule) wins. */
+:where(.sgs-whatsapp-cta--card .sgs-whatsapp-cta__icon-badge) .sgs-whatsapp-cta__icon {
 	width: 20px;
 	height: 20px;
 }

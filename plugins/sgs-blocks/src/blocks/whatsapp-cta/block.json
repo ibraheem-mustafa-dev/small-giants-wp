@@ -67,7 +67,8 @@
 						"css:border-width": "cardBorderWidth",
 						"css:border-style": "cardBorderStyle",
 						"css:border-color": "cardBorderColour",
-						"css:gap": "iconGap"
+						"css:gap": "iconGap",
+						"css:min-height": "minHeight"
 					},
 					"states": {
 						"hover": {
@@ -80,6 +81,15 @@
 						}
 					},
 					"_note2": "Wave B (2026-09-24): cardBorderWidth/cardBorderStyle/cardBorderColour added to this SAME root element's attrMap — the card variant's border decorates the root <a>, the same element `button` already maps padding/margin/borderRadius onto (Spec 35 §14: border colour lives in SgsBorderControl, mounted here alongside the existing radius/padding controls, never in SgsColourPanel)."
+				},
+				"icon": {
+					"label": "WhatsApp icon",
+					"order": 4,
+					"clusters": [],
+					"attrMap": {
+						"css:width": "iconSize"
+					},
+					"_note": "The brand glyph svg (.sgs-whatsapp-cta__icon) inside the button. iconSize sets its width AND height (a square glyph), emitted as a scoped rule on the icon; unset keeps the svg's own 24px attributes (28px floating, 20px card badge)."
 				},
 				"card-title": {
 					"label": "Card title",
@@ -400,6 +410,16 @@
 			"type": "string",
 			"default": "",
 			"description": "Space between the WhatsApp icon and the label (a CSS length). Empty keeps the stylesheet's spacing-10 gap."
+		},
+		"iconSize": {
+			"type": "string",
+			"default": "",
+			"description": "Width and height of the WhatsApp icon (a CSS length). Empty keeps the icon's own size."
+		},
+		"minHeight": {
+			"type": "string",
+			"default": "",
+			"description": "Minimum height of the button (a CSS length). Empty keeps the variant's stylesheet minimum (44px on inline, the touch-target floor)."
 		}
 	},
 	"editorScript": "file:./index.js",

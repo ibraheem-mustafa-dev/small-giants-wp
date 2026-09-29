@@ -28,7 +28,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
@@ -132,6 +132,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberFontWeight,
 		numberLineHeight,
 		numberLineHeightUnit,
+		numberGap,
 		titleColour,
 		titleColourGradient,
 		titleColourHover,
@@ -575,6 +576,15 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) ) }
 					</ToggleGroupControl>
+					{ 'list' === layout && (
+						<SgsLengthControl
+							label={ __( 'Space between number and text', 'sgs-blocks' ) }
+							help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
+							value={ numberGap || '' }
+							onChange={ ( val ) => setAttributes( { numberGap: val || '' } ) }
+							presets={ false }
+						/>
+					) }
 					{ 'list' !== layout && (
 						<SelectControl
 							label={ __( 'Connector style', 'sgs-blocks' ) }
@@ -726,7 +736,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<div { ...blockProps }>
 				{ steps.map( ( step, index ) => (
-					<div key={ index } className="sgs-process-steps__step">
+					<div
+						key={ index }
+						className="sgs-process-steps__step"
+						style={ 'list' === layout && numberGap ? { columnGap: numberGap } : undefined }
+					>
 						{ step.icon && (
 							<span
 								className="sgs-process-steps__icon"

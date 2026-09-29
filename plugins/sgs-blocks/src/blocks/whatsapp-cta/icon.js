@@ -9,13 +9,14 @@
  * @package SGS\Blocks
  */
 
-export default function WhatsappIcon( { className = 'sgs-whatsapp-cta__icon' } ) {
+export default function WhatsappIcon( { className = 'sgs-whatsapp-cta__icon', size = '' } ) {
 	return (
 		<svg
 			className={ className }
 			viewBox="0 0 24 24"
 			width="24"
 			height="24"
+			style={ size ? { width: size, height: size } : undefined }
 			fill="currentColor"
 			aria-hidden="true"
 		>

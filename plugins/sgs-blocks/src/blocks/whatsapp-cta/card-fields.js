@@ -36,7 +36,7 @@ export function VariantContent( { attributes, setAttributes } ) {
 	if ( 'floating' === variant ) {
 		return (
 			<>
-				<WhatsappIcon />
+				<WhatsappIcon size={ attributes.iconSize } />
 				{ label ? (
 					<span className="sgs-whatsapp-cta__label sgs-whatsapp-cta__label--floating">
 						{ label }
@@ -52,7 +52,7 @@ export function VariantContent( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			<WhatsappIcon />
+			<WhatsappIcon size={ attributes.iconSize } />
 			<RichText
 				tagName="span"
 				className="sgs-whatsapp-cta__label"
@@ -75,7 +75,7 @@ export function CardFields( { attributes, setAttributes } ) {
 	return (
 		<>
 			<span className="sgs-whatsapp-cta__icon-badge">
-				<WhatsappIcon />
+				<WhatsappIcon size={ attributes.iconSize } />
 			</span>
 			<span className="sgs-whatsapp-cta__card-text">
 				<RichText

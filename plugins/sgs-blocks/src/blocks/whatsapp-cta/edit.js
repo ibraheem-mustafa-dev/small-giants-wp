@@ -72,6 +72,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			cardBorderWidth,
 			cardBorderStyle,
 			iconGap: attributes.iconGap,
+			minHeight: attributes.minHeight,
 		}, colourVar, resolveTextColourPreviewStyle ),
 	} );
 
@@ -244,6 +245,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
 						value={ attributes.iconGap || '' }
 						onChange={ ( val ) => setAttributes( { iconGap: val || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Icon size', 'sgs-blocks' ) }
+						help={ __( 'Width and height of the icon. Empty keeps the default size.', 'sgs-blocks' ) }
+						value={ attributes.iconSize || '' }
+						onChange={ ( val ) => setAttributes( { iconSize: val || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Minimum height', 'sgs-blocks' ) }
+						help={ __( 'Keep at 44px or more so the button stays easy to tap. Empty keeps the default.', 'sgs-blocks' ) }
+						value={ attributes.minHeight || '' }
+						onChange={ ( val ) => setAttributes( { minHeight: val || '' } ) }
 						presets={ false }
 					/>
 				</PanelBody>
