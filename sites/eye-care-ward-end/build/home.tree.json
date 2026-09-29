@@ -2509,9 +2509,7 @@
           "imageAlt": "Person wearing sunglasses outdoors",
           "objectFit": "cover",
           "objectPosition": "50% 20%",
-          "height": {
-            "desktop": "100%"
-          },
+          "mediaSizing": "fill",
           "minHeight": {
             "desktop": "430px"
           },
@@ -2657,7 +2655,8 @@
               "numberLineHeight": {
                 "desktop": 1.5
               },
-              "numberLineHeightUnit": "em"
+              "numberLineHeightUnit": "em",
+          "numberGap": "16px"
             }
           },
           {
@@ -2921,6 +2920,8 @@
                     }
                   },
                   "iconGap": "11px",
+          "iconSize": "20px",
+          "minHeight": "52px",
                   "sgsHoverLift": 3,
                   "sgsHoverScalePreset": "",
                   "sgsHoverShadow": ""

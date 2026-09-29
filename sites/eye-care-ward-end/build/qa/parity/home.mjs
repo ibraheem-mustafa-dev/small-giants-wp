@@ -155,7 +155,7 @@ export default {
 		// The last tile (Oversized): its own fade/stagger entrance below the fold.
 		{ name: 'shapetile-oversized', scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
 			draft: { js: stile( 'Oversized' ) },
-			live: { js: '(r) => [...r.querySelectorAll(".sgs-card-grid__item")].find((a) => /^\\s*oversized\\s*$/i.test(a.textContent.trim()))' } },
+			live: { js: '(r) => [...r.querySelectorAll(".sgs-card-grid__item")].find((a) => /^\\s*oversized\\s*$/i.test(a.querySelector(".sgs-card-grid__title")?.textContent || ""))' } },
 
 		// What people say (Google reviews).
 		{ name: 'reviews-eyebrow', draft: { text: '^from the clinic$', tag: 'p' }, live: { text: '^from the clinic$', tag: 'p' }, box: [ 'h' ] },
@@ -176,7 +176,7 @@ export default {
 		// Prescription-sunglasses strip. Fixed 2026-09-28: live's background photo is decorative
 		// (correctly `alt=""` + `aria-hidden`, WCAG-appropriate for a non-informative image), so it
 		// never matches an alt-text finder; find it by its background-image class instead.
-		{ name: 'about-photo', draft: 'main img[alt="Person wearing sunglasses outdoors"]', live: '.sgs-about-strip .sgs-container__image-bg', text: false, box: [ 'w' ] },
+		{ name: 'about-photo', draft: 'main img[alt="Person wearing sunglasses outdoors"]', live: 'main img[alt="Person wearing sunglasses outdoors"]', text: false, box: [ 'w' ] },
 		{ name: 'about-eyebrow', draft: { text: '^prescription sunglasses$', tag: 'p' }, live: { text: '^prescription sunglasses$', tag: 'p' }, box: [ 'h' ] },
 		{ name: 'about-heading', draft: { text: '^any pair here', tag: 'h2' }, live: { text: '^any pair here', tag: 'h2' }, box: [ 'h' ] },
 		{ name: 'about-text', draft: { text: '^three questions with pictures', tag: 'p' }, live: { text: '^three questions with pictures', tag: 'p' } },
@@ -267,6 +267,7 @@ export default {
 		...[ 'card-gucci', 'card-holbrook', 'card-photo', 'shapetile-wayfarer', 'shapetile-oversized' ].map( ( pair ) => ( { pair, kind: 'motion', key: 'transition', reason: 'Accepted (Bean 2026-09-27): hover timing curves: live uses the site\'s standard easing where the draft uses ease (card) and a custom curve (photo zoom); durations match' } ) ),
 		// Secondary text in text-muted #5E584F where the draft's greys are lighter (Bean, confirmed
 		// 2026-09-28): the grid's own colour, as the (auto) rule above for its words.
+		{ pair: 'bestsellers-grid', kind: 'box', key: 'y-from-bestsellers-heading', reason: 'The cards sit 81px below the heading on both sides at 1440/768/375 (measured 2026-09-29); the draft\'s grid box starts 26px above its first card, live\'s grid box starts at the card' },
 		{ pair: 'bestsellers-grid', kind: 'style', key: 'color', reason: 'Accepted (Bean, confirmed 2026-09-28): secondary text uses the darker text-muted #5E584F where the draft uses lighter greys', when: ( d ) => 'rgb(94, 88, 79)' === d.live },
 		// The prescription steps: the draft's step element holds its own number (serif, accent), so its
 		// text starts with the digit and its own font is the number's; live's number is its own element.
