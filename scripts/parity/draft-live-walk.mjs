@@ -25,6 +25,7 @@ import { writeContactSheet } from './lib/review.mjs';
 import { makeHelpers, anchorOffset } from './lib/helpers.mjs';
 import { sampleTimeline, collectChrome, hoverChrome, compareChrome } from './lib/chrome-walk.mjs';
 import { withAutoScroll, collectAutoOn, markClipped, autoPair } from './lib/auto-walk.mjs';
+import closeOnExit from '../lib/close-browser-on-exit.js';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const { chromium, devices } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
@@ -204,9 +205,10 @@ async function walkSide( browser, side, width ) {
 // PARITY_PROXY_SPKI (the proxy CA's SPKI hash) trusts that one key and routes through HTTPS_PROXY;
 // PARITY_CHROMIUM points at the installed browser. Unset (a local run), nothing changes.
 const cloudProxy = process.env.PARITY_PROXY_SPKI && process.env.HTTPS_PROXY;
+closeOnExit.closeBrowserOnExit();
 const browser = await chromium.launch( {
 	headless: argv.includes( '--headless' ),
-	args: [ '--hide-scrollbars', ...( cloudProxy ? [ '--ignore-certificate-errors-spki-list=' + process.env.PARITY_PROXY_SPKI ] : [] ) ],
+	args: [ '--hide-scrollbars', ...closeOnExit.browserOwnerArgs(), ...( cloudProxy ? [ '--ignore-certificate-errors-spki-list=' + process.env.PARITY_PROXY_SPKI ] : [] ) ],
 	...( cloudProxy ? { proxy: { server: process.env.HTTPS_PROXY } } : {} ),
 	...( process.env.PARITY_CHROMIUM ? { executablePath: process.env.PARITY_CHROMIUM } : {} ),
 } );

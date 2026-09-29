@@ -232,9 +232,13 @@ async function main() {
 	// Cloud sessions: the same opt-in proxy trust as scripts/parity/draft-live-walk.mjs
 	// (PARITY_PROXY_SPKI + HTTPS_PROXY, PARITY_CHROMIUM). Unset (a local run), nothing changes.
 	const cloudProxy = process.env.PARITY_PROXY_SPKI && process.env.HTTPS_PROXY;
+	// fail() calls process.exit(), which skips the finally below; the tagged browser still dies.
+	const closeOnExit = require( './lib/close-browser-on-exit' );
+	closeOnExit.closeBrowserOnExit();
 	const browser = await chromium.launch( {
 		headless: true,
-		...( cloudProxy ? { proxy: { server: process.env.HTTPS_PROXY }, args: [ '--ignore-certificate-errors-spki-list=' + process.env.PARITY_PROXY_SPKI ] } : {} ),
+		args: [ ...closeOnExit.browserOwnerArgs(), ...( cloudProxy ? [ '--ignore-certificate-errors-spki-list=' + process.env.PARITY_PROXY_SPKI ] : [] ) ],
+		...( cloudProxy ? { proxy: { server: process.env.HTTPS_PROXY } } : {} ),
 		...( process.env.PARITY_CHROMIUM ? { executablePath: process.env.PARITY_CHROMIUM } : {} ),
 	} );
 	const page = await ( await browser.newContext( { ignoreHTTPSErrors: true } ) ).newPage();
