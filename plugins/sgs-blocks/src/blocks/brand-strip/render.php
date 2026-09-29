@@ -231,6 +231,10 @@ $has_background = ( '' !== $native_bg || '' !== $preset_bg_slug );
 
 $classes = array( 'sgs-brand-strip' );
 $classes[] = 'sgs-brand-strip--tile-' . esc_attr( $tile_shape );
+if ( 'text' === $brand_display ) {
+	// Text-only strip sizes by its text, not the logo tile (style.css).
+	$classes[] = 'sgs-brand-strip--text';
+}
 if ( 'none' !== $safe_image_effect ) {
 	$classes[] = 'sgs-brand-strip--effect-' . esc_attr( $safe_image_effect );
 }

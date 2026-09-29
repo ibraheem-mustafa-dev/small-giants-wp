@@ -22,7 +22,7 @@ import {
 	ToggleControl,
 	Notice,
 } from '@wordpress/components';
-import { TypographyControls } from '../../components';
+import { TypographyControls, SgsLengthControl } from '../../components';
 
 const SOURCE_OPTIONS = [
 	{ label: __( 'Manual (add logos below)', 'sgs-blocks' ), value: 'manual' },
@@ -169,6 +169,23 @@ export function BrandTextStylePanel( { attributes, setAttributes } ) {
 				showTransform
 				showLetterSpacing
 			/>
+			{ 'text' === attributes.brandDisplay && (
+				<>
+					<SgsLengthControl
+						label={ __( 'Minimum width per brand', 'sgs-blocks' ) }
+						value={ attributes.brandTextMinWidth || '' }
+						onChange={ ( val ) => setAttributes( { brandTextMinWidth: val ?? '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Divider width', 'sgs-blocks' ) }
+						help={ __( 'A line on the right edge of each brand. Empty = no divider. Set its colour in the Colour panel.', 'sgs-blocks' ) }
+						value={ attributes.brandTextDividerWidth || '' }
+						onChange={ ( val ) => setAttributes( { brandTextDividerWidth: val ?? '' } ) }
+						presets={ false }
+					/>
+				</>
+			) }
 		</PanelBody>
 	);
 }

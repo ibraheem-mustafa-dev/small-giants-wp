@@ -272,6 +272,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		brandTextColour,
 		brandTextColourGradient,
 		brandTextColourHover,
+		brandTextDividerColour,
 		scrolling,
 		scrollSpeed,
 		scrollDuration,
@@ -533,6 +534,22 @@ export default function Edit( { attributes, setAttributes } ) {
 											label: __( 'Hover', 'sgs-blocks' ),
 											value: brandTextColourHover,
 											onChange: ( val ) => setAttributes( { brandTextColourHover: val ?? '' } ),
+										},
+									],
+								},
+						  ]
+						: [] ),
+					...( 'text' === brandDisplay
+						? [
+								{
+									key: 'brandTextDivider',
+									label: __( 'Brand divider colour', 'sgs-blocks' ),
+									states: [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: brandTextDividerColour,
+											onChange: ( val ) => setAttributes( { brandTextDividerColour: val ?? '' } ),
 										},
 									],
 								},
