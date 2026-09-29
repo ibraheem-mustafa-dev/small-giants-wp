@@ -1234,7 +1234,12 @@ if ( 'svg' === $media_type ) {
 // operator actually sets an overlay colour/gradient — declaring it alone must
 // not force a `<figure>` wrapper nothing will use. `requires_box()` computes
 // each box atom's real CSS output for THESE attribute values before deciding.
-$sgs_media_requires_box = class_exists( 'SGS_Media_Element' ) && SGS_Media_Element::requires_box( $attributes, '', 'sgs/media', $sgs_media_atoms );
+//
+// The Hover panel's image zoom needs the frame too: the shared rule in
+// assets/css/extensions.css hovers and clips on `.sgs-media-box`, and a naked
+// <img> has no frame to zoom inside.
+$sgs_media_requires_box = ( class_exists( 'SGS_Media_Element' ) && SGS_Media_Element::requires_box( $attributes, '', 'sgs/media', $sgs_media_atoms ) )
+	|| ! empty( $attributes['sgsHoverImageZoom'] );
 if ( $sgs_media_requires_box ) {
 	$wrapper_classes[] = SGS_Media_Element::CLASS_BOX;
 }
