@@ -3,6 +3,7 @@
     "name": "sgs/nav-drawer",
     "attributes": {
       "drawerBg": "#0A7EA8",
+      "drawerAlign": "stretch",
       "closeSize": "38px",
       "closeRadius": {
         "desktop": "8px"
