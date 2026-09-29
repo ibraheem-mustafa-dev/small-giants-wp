@@ -382,10 +382,14 @@
 }
 
 /* A mega item's panel inside its accordion (Spec 36 FR-36-6). The padding is
-   the unset default of megaBodyPadding (render.php overrides it per device). */
+   the unset default of megaBodyPadding, zero-specificity so render.php's
+   per-device rule always wins. */
 .sgs-nav-drawer-menu__mega-body {
 	display: block;
 	list-style: none;
+}
+
+:where(.sgs-nav-drawer-menu__mega-body) {
 	padding: 0 12px 12px;
 }
 
