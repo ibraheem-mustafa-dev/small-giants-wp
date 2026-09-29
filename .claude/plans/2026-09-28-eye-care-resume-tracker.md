@@ -17,7 +17,7 @@ call, so nothing of it was built.
 |---|---|---|
 | 1. Shop and lens tail | **100%** | Done, pushed, both walks exit 0 |
 | 2. Page waves (9 pages) | **about 50%** | Everything built and deployed once; no page passes yet |
-| Motion batch (framework) | **80%** | Built, browser-tested and pushed 2026-09-29; needs reseed, full build, deploy and walks on Bean's PC |
+| Motion batch (framework) | **100%** | Built 2026-09-29, reseeded (0c92c79), deployed and applied by Bean; the shop walk passes with it (0 open) |
 | 3. Phase 6 launch readiness | **0%** | Waits until every page passes |
 
 ## Task 1: shop and lens tail (DONE)
@@ -54,7 +54,7 @@ supplied"), 0 draft products, £268 purchase passes on all three routes.
 | Lenses | `lenses.mjs` | 596 | Process-step fonts, heading line height, 62ch intro, "Choose a frame" → /shop/, exact entrances; config reaches the draft via footer link below 1440 | Ran, not reviewed | 60% |
 | Help | `help.mjs` | 1,526 | Crash at 768 fixed; answers text-soft, "Questions" line height, phone line colour | Ran, not reviewed | 55% |
 | Contact | `contact.mjs` | 1,763 | Form side-by-side setting; focus ring accepted (deliberate a11y design, D459) | Ran, not reviewed | 55% |
-| Home | `home.mjs` | 3,003 (≈900 were the agent's own finder errors, fixed); 1,774 on the post-deploy walk | 2026-09-29 from the 1,774-row report: eyebrow colours (accent / accent-text), hero label and subtext weight, headline 63.36 / 42 (tablet) px, why-buy heading line height 1.5, see-all links as underlined text in a 44px target, brand strip full width on white, shape tiles lift with the border-hover colour, step numbers in the heading font, the two hero/strip buttons on Eye Care's outline and primary presets (the draft's 3px lift), the qualifications button's hover ground; apostrophe and 44px accepts in home.mjs | Tree not yet applied; re-walk after | 65% |
+| Home | `home.mjs` | 3,003 → 1,774 → 1,112 (2026-09-29, after round 1) | Round 1 (365ef91, applied) and round 2 (99a706d, not yet applied): eyebrow colours, hero type sizes, why-buy line height, see-all links, brand strip, tile hover and gaps, step-number font, buttons on the presets at 52px, trust-bar exclusion, grid and photo finders, marquee / underline / line-box accepts | Round 2 to apply and walk | 75% |
 | Bag drawer | `bag.mjs` | never walked | none yet | First walk ran, not reviewed | 20% |
 | Checkout | `checkout.mjs` | never walked | none yet | First walk ran, not reviewed | 20% |
 | Order confirmation | `confirmation.mjs` | never walked | needs a real test order first | not run | 10% |
@@ -108,13 +108,14 @@ start here (a TypeScript plugin version clash), so it runs in the PC build.
   `/handoff` never ran.
 - **Another session** was making the walker's header-mode checks the default; that may reopen shop and lens.
 
-## Framework gaps found on Home (2026-09-29, not built)
+## Framework gaps found on Home (2026-09-29, proposed, not built)
 
 - `sgs/whatsapp-cta` has no control for the icon-to-label gap (draft 11px, live 4px) or a hover lift (draft lifts 3px;
   live grows 2% and fades to 0.9).
-- `sgs/process-steps` has no number font-weight control (draft 500; live 700 from the block's own style).
-- `sgs/button` set to a custom style has no hover lift of its own; only the theme presets carry one (Home's buttons
-  now use the presets where the draft's look matches one).
+- `sgs/process-steps` has no number font size or weight control (draft 15.5px / 500; live 21-24px / 700 from the block's own style).
+- `sgs/card-grid` tiles: the resting 1px border (`cardBorderWidth`) does not paint on the tile the walker measures, and the hover shadow is the theme's floating shadow, not the draft's 0 18px 44px at 10%.
+- Versace (103) and Polaroid (107) show a broken image on Home's cards where the draft shows "Photo to come": their product image points at a missing file (data, check with WP-CLI).
+- The hero entrance rows: confirm by eye that the hero text rises on load before accepting them as a walker blind spot.
 - `sgs/google-reviews` arrows have no padding control (draft 1px 6px).
 - To verify on the next walk: the hero entrance rows (the walker may not see script animations once they finish),
   best-sellers grid 34px lower under its heading (the live pair may match a wrapper, not the grid), shape-tile border.
