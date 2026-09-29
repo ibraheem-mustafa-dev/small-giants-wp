@@ -8,14 +8,14 @@ Finds every `<ServerSideRender>` JSX usage across `src/blocks/*/edit.js` and rep
 
 | Block | File | Line | Wrapped in `<Disabled>`? |
 |---|---|---|---|
-| sgs/account | src/blocks/account/edit.js | 180 | yes |
+| sgs/account | src/blocks/account/edit.js | 187 | yes |
 | sgs/before-after | src/blocks/before-after/edit.js | 976 | yes |
 | sgs/brand-strip | src/blocks/brand-strip/edit.js | 1088 | yes |
 | sgs/business-info | src/blocks/business-info/edit.js | 409 | yes |
-| sgs/card-grid | src/blocks/card-grid/edit.js | 1453 | yes |
+| sgs/card-grid | src/blocks/card-grid/edit.js | 1489 | yes |
 | sgs/google-reviews | src/blocks/google-reviews/edit.js | 659 | yes |
-| sgs/nav-bar-menu | src/blocks/nav-bar-menu/edit.js | 935 | yes |
-| sgs/nav-drawer-menu | src/blocks/nav-drawer-menu/edit.js | 643 | yes |
-| sgs/product-card | src/blocks/product-card/edit.js | 3127 | yes |
-| sgs/responsive-logo | src/blocks/responsive-logo/edit.js | 850 | yes |
+| sgs/nav-bar-menu | src/blocks/nav-bar-menu/edit.js | 984 | yes |
+| sgs/nav-drawer-menu | src/blocks/nav-drawer-menu/edit.js | 753 | yes |
+| sgs/product-card | src/blocks/product-card/edit.js | 3156 | yes |
+| sgs/responsive-logo | src/blocks/responsive-logo/edit.js | 867 | yes |
 | sgs/trustpilot-reviews | src/blocks/trustpilot-reviews/edit.js | 792 | yes |
