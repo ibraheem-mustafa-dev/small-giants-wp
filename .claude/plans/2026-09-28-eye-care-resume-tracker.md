@@ -120,7 +120,18 @@ start here (a TypeScript plugin version clash), so it runs in the PC build.
 - Not framework: the tile hover shadow uses the existing `cardShadowHover`; the review arrows' padding is
   accepted (a 40px round button, box matches); the arrows' cream ground needs a browser check (the white
   `arrowColourBackground` is emitted).
-- To verify on the next walk: the hero entrance rows; Versace (103) and Polaroid (107) images on Home (run the
+- `sgs/card-grid`: a label on the fallback tile (`noImageLabel`, "Photo to come"), as `sgs/product-card` (054d908).
+- **Hover image zoom** (ba74c6b): the Hover panel's "Zoom image on hover" is one shared rule on the media markers
+  (any block whose image is a media element) with a new "Zoom style" (inside the frame / whole image grows);
+  `sgs/media` gains the Hover panel. The Background panel gains "Zoom background on hover" (zoom %, duration,
+  easing) for every wrapper block; the container's dead Hover-panel zoom and grayscale switches are hidden.
+  The hero's split-media spill zoom is unchanged (still the wrapper's fixed 105%): hero has no Hover panel, and
+  adding one would bring section-wide lift and scale. Giving it zoom controls is its own follow-up.
+- Home's prescription-strip photo is now `sgs/media` with that zoom (97b08d8, tree only; applies after deploy).
+- Test tooling (8be3974): the walker and `wp-build-page.js` now close their browser on every exit and sweep
+  browsers left by killed runs (`scripts/lib/close-browser-on-exit.js`).
+- To verify on the next walk: the Home photo panel fills its grid cell and zooms 105% over 1.4s on hover;
+  the hero entrance rows; Versace (103) and Polaroid (107) images on Home (run the
   WP-CLI check with single quotes in PowerShell).
 
 ## Parked (recorded, not for now)
