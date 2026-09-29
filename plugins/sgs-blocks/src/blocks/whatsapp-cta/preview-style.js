@@ -51,6 +51,7 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 		cardBorderColour,
 		cardBorderWidth,
 		cardBorderStyle,
+		iconGap,
 	} = previewAttrs;
 
 	// D636 — sibling gradient attribute preview (mirrors sgs/counter's
@@ -62,6 +63,7 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 	const rootStyle = {
 		...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
 		backgroundColor: colourVar( backgroundColour ) || undefined,
+		gap: iconGap || undefined,
 		...( backgroundColourGradient &&
 		/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient )
 			? { backgroundImage: backgroundColourGradient }

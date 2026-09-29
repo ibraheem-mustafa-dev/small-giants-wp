@@ -108,17 +108,20 @@ start here (a TypeScript plugin version clash), so it runs in the PC build.
   `/handoff` never ran.
 - **Another session** was making the walker's header-mode checks the default; that may reopen shop and lens.
 
-## Framework gaps found on Home (2026-09-29, proposed, not built)
+## Framework fixes from Home (built 2026-09-29, need reseed + deploy)
 
-- `sgs/whatsapp-cta` has no control for the icon-to-label gap (draft 11px, live 4px) or a hover lift (draft lifts 3px;
-  live grows 2% and fades to 0.9).
-- `sgs/process-steps` has no number font size or weight control (draft 15.5px / 500; live 21-24px / 700 from the block's own style).
-- `sgs/card-grid` tiles: the resting 1px border (`cardBorderWidth`) does not paint on the tile the walker measures, and the hover shadow is the theme's floating shadow, not the draft's 0 18px 44px at 10%.
-- Versace (103) and Polaroid (107) show a broken image on Home's cards where the draft shows "Photo to come": their product image points at a missing file (data, check with WP-CLI).
-- The hero entrance rows: confirm by eye that the hero text rises on load before accepting them as a walker blind spot.
-- `sgs/google-reviews` arrows have no padding control (draft 1px 6px).
-- To verify on the next walk: the hero entrance rows (the walker may not see script animations once they finish),
-  best-sellers grid 34px lower under its heading (the live pair may match a wrapper, not the grid), shape-tile border.
+- `sgs/process-steps`: the step number gains size, weight and line-height settings (it had colour, fill and font
+  family only; size and weight were fixed in style.css, which the code itself called "honest gaps"). The
+  render-side typography helper was already wired for the "number" prefix; the defaults moved into `:where()`.
+- `sgs/card-grid`: the tile border (`cardBorderWidth` / `cardBorderColour`) painted only in the "Card" style, so
+  it was a dead control on Overlay tiles; it now paints on every style (unset width 0, no change elsewhere).
+- `sgs/whatsapp-cta`: a new "Space between icon and label" setting; its fixed 1px hover lift and 0.9 fade leave
+  style.css for the universal Hover panel (default lift 1px via `hoverDefaults.lift`, as `sgs/product-card`).
+- Not framework: the tile hover shadow uses the existing `cardShadowHover`; the review arrows' padding is
+  accepted (a 40px round button, box matches); the arrows' cream ground needs a browser check (the white
+  `arrowColourBackground` is emitted).
+- To verify on the next walk: the hero entrance rows; Versace (103) and Polaroid (107) images on Home (run the
+  WP-CLI check with single quotes in PowerShell).
 
 ## Parked (recorded, not for now)
 

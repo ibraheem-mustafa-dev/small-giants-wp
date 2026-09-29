@@ -10,7 +10,7 @@ import {
 	TextareaControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
+import { SgsLengthControl, TypographyControls, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 import { VariantContent, cardColourRows, CardTypographyPanel } from './card-fields';
 import { FloatingPanel } from './floating-panel';
@@ -71,6 +71,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			cardBorderColour,
 			cardBorderWidth,
 			cardBorderStyle,
+			iconGap: attributes.iconGap,
 		}, colourVar, resolveTextColourPreviewStyle ),
 	} );
 
@@ -238,6 +239,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					<SgsLengthControl
+						label={ __( 'Space between icon and label', 'sgs-blocks' ) }
+						help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
+						value={ attributes.iconGap || '' }
+						onChange={ ( val ) => setAttributes( { iconGap: val || '' } ) }
+						presets={ false }
+					/>
 				</PanelBody>
 
 				{ /* ── Border panel ── border-radius is a single block-owned

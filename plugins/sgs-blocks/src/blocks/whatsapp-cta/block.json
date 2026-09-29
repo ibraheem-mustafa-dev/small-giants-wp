@@ -25,7 +25,8 @@
 				"scalePreset": "1.02",
 				"shadow": "soft",
 				"imageZoom": false,
-				"focusRing": true
+				"focusRing": true,
+				"lift": 1
 			},
 			"hoverExcludeControls": [
 				"imageZoom",
@@ -65,7 +66,8 @@
 						"css:border-radius": "borderRadius",
 						"css:border-width": "cardBorderWidth",
 						"css:border-style": "cardBorderStyle",
-						"css:border-color": "cardBorderColour"
+						"css:border-color": "cardBorderColour",
+						"css:gap": "iconGap"
 					},
 					"states": {
 						"hover": {
@@ -393,6 +395,11 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Floating button steps aside (and leaves the tab order) whenever a non-floating sgs/whatsapp-cta is on screen, so the same WhatsApp CTA never shows twice at once."
+		},
+		"iconGap": {
+			"type": "string",
+			"default": "",
+			"description": "Space between the WhatsApp icon and the label (a CSS length). Empty keeps the stylesheet's spacing-10 gap."
 		}
 	},
 	"editorScript": "file:./index.js",

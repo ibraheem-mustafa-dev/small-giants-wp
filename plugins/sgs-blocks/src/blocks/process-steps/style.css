@@ -47,6 +47,13 @@
 
 /* ===== Number Badge ===== */
 
+/* The number's default weight and line height, at zero specificity so the
+   block's own numberFontWeight / numberLineHeight settings always win. */
+:where(.sgs-process-steps__number) {
+	font-weight: 700;
+	line-height: 1;
+}
+
 .sgs-process-steps__number {
 	display: inline-flex;
 	align-items: center;
@@ -54,8 +61,6 @@
 	width: var(--sgs-step-number-size);
 	height: var(--sgs-step-number-size);
 	font-size: var(--wp--preset--font-size--x-large, 1.5rem); /* up from large — readable on the bigger circle */
-	font-weight: 700;
-	line-height: 1;
 	margin-bottom: var(--wp--preset--spacing--20);
 	flex-shrink: 0;
 }

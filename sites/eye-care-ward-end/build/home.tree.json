@@ -1928,7 +1928,9 @@
           "sgsAnimationDistance": "26",
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
           "staggerDelay": 70,
-          "borderColourHover": "border-hover"
+          "borderColourHover": "border-hover",
+          "cardShadowHover": "0 18px 44px",
+          "cardShadowColourHover": "primary 10%"
         }
       }
     ]
@@ -2599,7 +2601,16 @@
               "titleLineHeight": {
                 "desktop": 1.5
               },
-              "titleLineHeightUnit": "em"
+              "titleLineHeightUnit": "em",
+              "numberFontSize": {
+                "desktop": 15.5
+              },
+              "numberFontSizeUnit": "px",
+              "numberFontWeight": "500",
+              "numberLineHeight": {
+                "desktop": 1.5
+              },
+              "numberLineHeightUnit": "em"
             }
           },
           {
@@ -2862,7 +2873,11 @@
                       "top": "0",
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "iconGap": "11px",
+                  "sgsHoverLift": 3,
+                  "sgsHoverScalePreset": "",
+                  "sgsHoverShadow": ""
                 }
               },
               {

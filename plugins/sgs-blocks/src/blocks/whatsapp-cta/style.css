@@ -32,10 +32,8 @@
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
-.sgs-whatsapp-cta__btn:hover {
-	opacity: 0.9;
-	transform: translateY(-1px);
-}
+/* Hover lift and fade come from the universal Hover panel (supports.sgs.hoverDefaults:
+   a 1px lift by default; its Lift and Opacity controls change them). */
 
 .sgs-whatsapp-cta__btn:focus-visible {
 	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));

@@ -127,6 +127,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberColourHoverGradient,
 		numberBackground,
 		numberFontFamily,
+		numberFontSize,
+		numberFontSizeUnit,
+		numberFontWeight,
+		numberLineHeight,
+		numberLineHeightUnit,
 		titleColour,
 		titleColourGradient,
 		titleColourHover,
@@ -232,6 +237,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		// sgs_font_family_sanitise()'s own docblock in helpers-typography.php),
 		// so it can be handed to the canvas style object with no lookup.
 		fontFamily: numberFontFamily || undefined,
+		// Size, weight and line height: the desktop tier only (the canvas has
+		// no responsive preview), as sgs/tabs' tab-button preview does.
+		fontSize: '' !== ( numberFontSize?.desktop ?? '' ) ? `${ numberFontSize.desktop }${ numberFontSizeUnit || 'px' }` : undefined,
+		fontWeight: numberFontWeight || undefined,
+		lineHeight: '' !== ( numberLineHeight?.desktop ?? '' ) ? `${ numberLineHeight.desktop }${ numberLineHeightUnit || '' }` : undefined,
 	};
 
 	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
@@ -370,19 +380,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						);
 					} )() }
-					{ /* Font-family only — the number badge has no per-instance
-					     size/weight/line-height attrs (numberFontSize/Weight/
-					     LineHeight are honest gaps, still static style.css), so
-					     every other TypographyControls field is switched off.
-					     Reuses the same shared TypographyControls/
-					     sgs_typography_css_rule() mechanism already proven on
-					     the `title` element below, prefix "number" matching the
-					     number element's own attrMap prefix. */ }
+					{ /* Font family, size, weight and line height — the same
+					     shared TypographyControls/sgs_typography_css_rule()
+					     mechanism as the `title` element below, prefix "number"
+					     matching the number element's own attrMap prefix. Unset,
+					     the number keeps style.css's own size and weight. */ }
 					<TypographyControls showFontFamily
-						showSize={ false }
-						showWeight={ false }
 						showStyle={ false }
-						showLineHeight={ false }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="number"

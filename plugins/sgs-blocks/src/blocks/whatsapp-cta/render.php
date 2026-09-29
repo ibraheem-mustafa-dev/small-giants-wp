@@ -206,6 +206,10 @@ if ( '' !== $bg_gradient_hover ) {
 if ( $btn_hover_decls ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $btn_hover_decls ) );
 }
+// Space between the icon and the label (iconGap); unset keeps style.css's gap.
+if ( '' !== (string) ( $attributes['iconGap'] ?? '' ) ) {
+	$btn_decls[] = 'gap:' . sgs_css_length_value( (string) $attributes['iconGap'] );
+}
 if ( $btn_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $btn_decls ) . ';}';
 }

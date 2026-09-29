@@ -126,7 +126,10 @@
 						"css:color": "numberColour",
 						"css:background-color": "numberBackground",
 						"css:background-image": "numberBackgroundGradient",
-						"css:font-family": "numberFontFamily"
+						"css:font-family": "numberFontFamily",
+						"css:font-size": "numberFontSize",
+						"css:font-weight": "numberFontWeight",
+						"css:line-height": "numberLineHeight"
 					},
 					"states": {
 						"hover": {
@@ -456,6 +459,26 @@
 		"numberFontFamily": {
 			"type": "string",
 			"default": ""
+		},
+		"numberFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"numberFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"numberFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"numberLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"numberLineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"titleFontFamily": {
 			"type": "string",

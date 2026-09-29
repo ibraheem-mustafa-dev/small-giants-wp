@@ -24,6 +24,12 @@
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 	transition-property: background-color, color, border-color, transform, box-shadow;
+	/* The tile border (cardBorderWidth / cardBorderColour) paints on every
+	   variant, not only "card": an overlay or image tile offers the same
+	   controls. Unset, the width is 0 and nothing changes. */
+	border-style: solid;
+	border-color: var(--sgs-card-border-color, transparent);
+	border-width: var(--sgs-card-border-width, 0);
 }
 
 /* Card variant — elevated card style.
@@ -34,9 +40,6 @@
    opts in to a custom value via the resting-state inspector controls. */
 .sgs-card-grid--card .sgs-card-grid__item {
 	background: var(--sgs-card-background, var(--wp--preset--color--surface-alt, #fff));
-	border-style: solid;
-	border-color: var(--sgs-card-border-color, transparent);
-	border-width: var(--sgs-card-border-width, 0);
 	box-shadow: var(--sgs-card-shadow, var(--wp--preset--shadow--soft));
 }
 
