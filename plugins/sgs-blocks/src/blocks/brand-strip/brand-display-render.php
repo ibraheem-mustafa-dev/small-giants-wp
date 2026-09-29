@@ -99,6 +99,24 @@ if ( ! function_exists( 'sgs_brand_strip_text_style_css' ) ) {
 				. '{color:' . sgs_colour_value( $hover_colour ) . ';}';
 		}
 
+		// Text-item box: minimum width per brand (custom property read by the
+		// `--text` rule in style.css) and an inline-end divider. Both emit
+		// nothing when empty. Selector carries the root scope so it wins over
+		// style.css's `border-color: transparent` on the text item.
+		$min_width = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['brandTextMinWidth'] ?? '' ) : '';
+		if ( '' !== $min_width ) {
+			$rules[] = "{$root_sel}{--sgs-brand-text-min-width:{$min_width};}";
+		}
+
+		$divider_width = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['brandTextDividerWidth'] ?? '' ) : '';
+		if ( '' !== $divider_width ) {
+			$divider_colour = '' !== ( $attributes['brandTextDividerColour'] ?? '' ) && function_exists( 'sgs_colour_value' )
+				? sgs_colour_value( $attributes['brandTextDividerColour'] )
+				: 'currentColor';
+			$rules[]        = "{$root_sel} .sgs-brand-strip__item--text"
+				. "{border-inline-end:{$divider_width} solid {$divider_colour};}";
+		}
+
 		return $rules;
 	}
 }

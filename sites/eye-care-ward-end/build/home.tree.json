@@ -248,7 +248,14 @@
           "brandTextTextTransform": "uppercase",
           "brandTextColour": "#3A352F",
           "brandTextColourHover": "text",
-          "backgroundColour": "surface-alt"
+          "backgroundColour": "surface-alt",
+          "brandOrder": "term_order",
+          "brandMaxItems": 16,
+          "brandTextMinWidth": "174px",
+          "brandTextDividerWidth": "1px",
+          "brandTextDividerColour": "#EFEAE2",
+          "tilePadding": 26,
+          "logoGap": 0
         }
       }
     ]
@@ -2772,7 +2779,8 @@
             "desktop": "10px"
           },
           "textAlign": "center",
-          "textWrap": "wrap"
+          "textWrap": "wrap",
+          "boxAspectRatio": "4 / 5"
         },
         "innerBlocks": [
           {

@@ -97,6 +97,7 @@
 						"css:overflow": "scrollSideways",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
+						"css:aspect-ratio": "boxAspectRatio",
 						"css:box-shadow": "shadow",
 						"css:box-shadow-color": "shadowColour",
 						"anim:parallax": "bgParallax",
@@ -422,6 +423,11 @@
 		"minHeight": {
 			"type": "object",
 			"default": {}
+		},
+		"boxAspectRatio": {
+			"type": "string",
+			"default": "",
+			"description": "The block's shape as width / height (e.g. \"4 / 5\"); empty = sized by its content. Height then follows the width, never shorter than its content or Min height."
 		},
 		"alignItems": {
 			"type": "string",

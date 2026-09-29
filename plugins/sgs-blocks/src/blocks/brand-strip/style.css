@@ -234,13 +234,37 @@
  * scoped by render.php (prefix `brandText`; see brand-display-render.php). */
 .sgs-brand-strip__item--text {
 	width: auto;
-	min-width: var(--sgs-tile-size);
+	/* Sized by its text: 44px is the WCAG touch-target floor. Width floor is
+	 * the brandTextMinWidth setting (0 = content width). Vertical padding is 0
+	 * so the height is the floor, not the tile padding. */
+	height: auto;
+	min-height: 44px;
+	min-width: var(--sgs-brand-text-min-width, 0px);
+	padding-block: 0;
 	padding-left: var(--sgs-tile-padding, 10px);
 	padding-right: var(--sgs-tile-padding, 10px);
 	background-color: transparent;
 	background-image: none;
+	/* No tile frame around a name: the tile's transparent border would still
+	 * offset the text. The brandTextDivider setting draws its own inline-end line. */
+	border-width: 0;
 	border-color: transparent;
 	box-shadow: none;
+}
+
+.sgs-brand-strip__item--text a {
+	/* The item is auto-height, so the base `height: 100%` would collapse to the
+	 * text line; stretch the link across the item's cross size instead so the
+	 * whole 44px is the tap target and the text stays vertically centred. */
+	height: auto;
+	align-self: stretch;
+}
+
+/* Text-only strip (Display: Text only): no logo tile to reserve or cap, so the
+ * tile-cap CLS reserve and the columns x tile-cap width cap do not apply. */
+.sgs-brand-strip--text {
+	min-height: 0;
+	max-width: none;
 }
 
 .sgs-brand-strip__brand-text {

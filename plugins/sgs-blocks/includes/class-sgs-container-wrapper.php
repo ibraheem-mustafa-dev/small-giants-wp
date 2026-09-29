@@ -1472,6 +1472,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// overlay's own alpha is the one dimming mechanism now.
 			}
 
+			// Box shape (sgs/container's boxAspectRatio, "4 / 5" or "1.25"): the height
+			// follows the width. Named apart from card-grid/gallery/post-grid's own
+			// `aspectRatio` (their ITEMS' shape), which also render through here.
+			if ( isset( $attributes['boxAspectRatio'] ) && is_string( $attributes['boxAspectRatio'] )
+				&& preg_match( '/^\s*(\d+(?:\.\d+)?)\s*(?:\/\s*(\d+(?:\.\d+)?)\s*)?$/', $attributes['boxAspectRatio'], $sgs_ar )
+				&& (float) $sgs_ar[1] > 0 && ( ! isset( $sgs_ar[2] ) || '' === $sgs_ar[2] || (float) $sgs_ar[2] > 0 ) ) {
+				$styles[] = 'aspect-ratio:' . $sgs_ar[1] . ( isset( $sgs_ar[2] ) && '' !== $sgs_ar[2] ? ' / ' . $sgs_ar[2] : '' );
+			}
+
 			// Ken-burns duration.
 			if ( $bg_ken_burns && $has_bg_image ) { // D6: universal, was section-only.
 				$styles[] = '--sgs-ken-burns-duration:' . absint( $bg_animation_duration ) . 's';
