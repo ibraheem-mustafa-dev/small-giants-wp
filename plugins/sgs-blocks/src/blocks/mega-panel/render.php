@@ -920,6 +920,205 @@ if ( $sgs_mm_in_drawer ) {
 $css .= '@media (max-width: 1023px){' . $stack_rules . '}';
 
 // ---------------------------------------------------------------------------
+// 6b. In the drawer (Spec 36 FR-36-6). The drawer copy of a panel paints its
+// own ground, link rows and aside card from the `drawer*` attributes, so a
+// client's drawer look is a set of inspector controls, never a fork of the
+// panel post. Everything below is emitted ONLY for the drawer context and only
+// for a control the operator has set (an empty attribute emits nothing), so
+// the bar copy and an untouched drawer copy are unchanged. Each selector is
+// rooted on this instance's own uid class, which out-specifies the child
+// blocks' own single-class scoped rules (sgs/text, sgs/heading, sgs/container)
+// without `!important`.
+//
+// Structure the rules key on (the "link rows + one feature card" preset the
+// Indus About panel is built from):
+//   link row     = a direct-child sgs/container of `.sgs-mega-group`
+//   row number   = the row's direct-child sgs/text
+//   row label    = an sgs/heading inside the row
+//   row desc     = an sgs/text inside a nested container of the row
+//   card slots   = the aside's direct children in order: media frame, tag,
+//                  title, description, link (the mega-aside five-slot order)
+// ---------------------------------------------------------------------------
+if ( $sgs_mm_in_drawer ) {
+	$sgs_dv_len    = static function ( string $key ) use ( $attributes ): string {
+		return sgs_css_single_length_value( isset( $attributes[ $key ] ) && is_string( $attributes[ $key ] ) ? trim( $attributes[ $key ] ) : '' );
+	};
+	$sgs_dv_aside  = $root_sel . '.sgs-mega-panel--in-drawer .sgs-mega-aside';
+	// A 1-4 token padding shorthand, each token a validated single length.
+	$sgs_dv_box    = static function ( string $key ) use ( $attributes ): string {
+		$raw    = isset( $attributes[ $key ] ) && is_string( $attributes[ $key ] ) ? trim( $attributes[ $key ] ) : '';
+		$tokens = '' === $raw ? array() : preg_split( '/\s+/', $raw );
+		if ( ! is_array( $tokens ) || count( $tokens ) > 4 ) {
+			return '';
+		}
+		$out = array();
+		foreach ( $tokens as $token ) {
+			$len = sgs_css_single_length_value( $token );
+			if ( '' === $len ) {
+				return '';
+			}
+			$out[] = $len;
+		}
+		return implode( ' ', $out );
+	};
+	$sgs_dv_decl   = static function ( string $prop, string $value ): string {
+		return '' !== $value ? $prop . ':' . $value . ';' : '';
+	};
+	// Consumer declarations for a custom-property fill: the flat / gradient
+	// property is read only when the matching `--var` / `--var-gradient`
+	// sibling sgs_custom_property_gradient_decls() emitted exists, so an unset
+	// fill emits nothing and the element keeps its own paint.
+	$sgs_dv_fill_consume = static function ( array $decls, string $var_name ): string {
+		$out = '';
+		foreach ( $decls as $decl ) {
+			if ( 0 === strpos( $decl, '--' . $var_name . ':' ) ) {
+				$out .= 'background-color:var(--' . $var_name . ');';
+			} elseif ( 0 === strpos( $decl, '--' . $var_name . '-gradient:' ) ) {
+				$out .= 'background-image:var(--' . $var_name . '-gradient);';
+			}
+		}
+		return $out;
+	};
+
+	// Ground: the drawer copy is transparent unless a ground is set, so the
+	// drawer's own fill shows through. The custom-property pair comes from
+	// sgs_custom_property_gradient_decls(); the consumer supplies the
+	// transparent / no-image defaults.
+	$sgs_dv_bg_vars = sgs_custom_property_gradient_decls(
+		'sgs-mm-drawer-bg',
+		(string) ( $attributes['drawerBg'] ?? '' ),
+		(string) ( $attributes['drawerBgGradient'] ?? '' )
+	);
+	$css .= $root_sel . '{' . implode( '', array_map( static fn( string $d ): string => $d . ';', $sgs_dv_bg_vars ) )
+		. 'background-color:var(--sgs-mm-drawer-bg,transparent);background-image:var(--sgs-mm-drawer-bg-gradient,none);}';
+
+	// Link rows. The hairline colour (flat or gradient ring) goes through
+	// sgs_border_states_css(); the row's own border width and style stay the
+	// block's.
+	$sgs_dv_row       = $group_sel . ' > .wp-block-sgs-container';
+	$sgs_dv_row_decls = $sgs_dv_decl( 'min-height', $sgs_dv_len( 'drawerLinkMinHeight' ) )
+		. ( '' !== $sgs_dv_len( 'drawerLinkMinHeight' ) ? 'box-sizing:border-box;' : '' );
+	$sgs_dv_pad_y     = $sgs_dv_len( 'drawerLinkPaddingY' );
+	if ( '' !== $sgs_dv_pad_y ) {
+		$sgs_dv_row_decls .= 'padding-top:' . $sgs_dv_pad_y . ';padding-bottom:' . $sgs_dv_pad_y . ';';
+	}
+	if ( '' !== $sgs_dv_row_decls ) {
+		$css .= $sgs_dv_row . '{' . $sgs_dv_row_decls . '}';
+	}
+	$css .= sgs_border_states_css(
+		$sgs_dv_row,
+		$attributes,
+		array(
+			'base'     => 'drawerLinkDivider',
+			'gradient' => 'drawerLinkDividerGradient',
+			'width'    => '1px',
+		)
+	);
+
+	// Link number / label / description: colour (flat or text-clip gradient)
+	// and size, one rule per part. Keyed by the colour attribute, the way
+	// sgs/post-grid keys its text parts.
+	$sgs_dv_text_parts = array(
+		'drawerLinkNumColour'   => array(
+			'selector' => $sgs_dv_row . ' > .wp-block-sgs-text',
+			'size'     => 'drawerLinkNumSize',
+		),
+		'drawerLinkLabelColour' => array(
+			'selector' => $sgs_dv_row . ' .wp-block-sgs-heading',
+			'size'     => 'drawerLinkLabelSize',
+		),
+		'drawerLinkDescColour'  => array(
+			'selector' => $sgs_dv_row . ' .wp-block-sgs-container .wp-block-sgs-text',
+			'size'     => 'drawerLinkDescSize',
+		),
+	);
+	foreach ( $sgs_dv_text_parts as $sgs_dv_attr => $sgs_dv_part ) {
+		$sgs_dv_paint = sgs_resolve_text_colour_or_gradient(
+			(string) ( $attributes[ $sgs_dv_attr ] ?? '' ),
+			(string) ( $attributes[ $sgs_dv_attr . 'Gradient' ] ?? '' )
+		);
+		$sgs_dv_text_decl = sgs_text_colour_decl( $sgs_dv_paint );
+		$sgs_dv_decls     = ( '' !== $sgs_dv_text_decl ? $sgs_dv_text_decl . ';' : '' )
+			. $sgs_dv_decl( 'font-size', $sgs_dv_len( $sgs_dv_part['size'] ) );
+		if ( '' !== $sgs_dv_decls ) {
+			$css .= $sgs_dv_part['selector'] . '{' . $sgs_dv_decls . '}'
+				. sgs_text_colour_gradient_fallback_rule( $sgs_dv_part['selector'], $sgs_dv_paint );
+		}
+	}
+
+	// Aside position: `first` lifts the aside above the groups through `order`
+	// on the (flex or grid) content row; `last` keeps source order.
+	$sgs_dv_order_first = isset( $attributes['drawerAsideOrder'] ) && 'first' === $attributes['drawerAsideOrder'];
+	if ( $sgs_dv_order_first ) {
+		$css .= $sgs_dv_aside . '{order:-1;}';
+	}
+
+	// Aside card ground: same custom-property pair as the panel ground, but
+	// emitted only when set (an unset card keeps the aside's own fill).
+	$sgs_dv_card_vars  = sgs_custom_property_gradient_decls(
+		'sgs-mm-drawer-card-bg',
+		(string) ( $attributes['drawerCardBg'] ?? '' ),
+		(string) ( $attributes['drawerCardBgGradient'] ?? '' )
+	);
+	$sgs_dv_card_decls = implode( '', array_map( static fn( string $d ): string => $d . ';', $sgs_dv_card_vars ) )
+		. $sgs_dv_fill_consume( $sgs_dv_card_vars, 'sgs-mm-drawer-card-bg' );
+	$sgs_dv_card_space = $sgs_dv_len( 'drawerCardSpacing' );
+	if ( '' !== $sgs_dv_card_space ) {
+		$sgs_dv_card_decls .= ( $sgs_dv_order_first ? 'margin-bottom:' : 'margin-top:' ) . $sgs_dv_card_space . ';';
+	}
+	if ( ! empty( $attributes['drawerCardCompact'] ) ) {
+		$sgs_dv_thumb  = $sgs_dv_len( 'drawerCardThumbSize' );
+		$sgs_dv_thumb  = '' !== $sgs_dv_thumb ? $sgs_dv_thumb : '64px';
+		$sgs_dv_gap    = $sgs_dv_len( 'drawerCardGap' );
+		$sgs_dv_radius = $sgs_dv_len( 'drawerCardRadius' );
+		$sgs_dv_pad    = $sgs_dv_len( 'drawerCardPadding' );
+		$sgs_dv_border = '' !== trim( (string) ( $attributes['drawerCardBorderColour'] ?? '' ) )
+			|| '' !== trim( (string) ( $attributes['drawerCardBorderColourGradient'] ?? '' ) );
+
+		$css .= $sgs_dv_aside . '{display:grid;grid-template-columns:' . $sgs_dv_thumb . ' minmax(0,1fr);column-gap:' . ( '' !== $sgs_dv_gap ? $sgs_dv_gap : '14px' ) . ';align-items:center;align-content:center;flex:none;width:100%;'
+			. 'border-style:solid;border-width:' . ( $sgs_dv_border ? '1px' : '0' ) . ';'
+			. 'border-radius:' . ( '' !== $sgs_dv_radius ? $sgs_dv_radius : '0' ) . ';'
+			. 'padding:' . ( '' !== $sgs_dv_pad ? $sgs_dv_pad : '0' ) . ';'
+			. $sgs_dv_card_decls . '}';
+		// The card's 1px border colour (flat, or a gradient ring).
+		$css .= sgs_border_states_css(
+			$sgs_dv_aside,
+			$attributes,
+			array(
+				'base'     => 'drawerCardBorderColour',
+				'gradient' => 'drawerCardBorderColourGradient',
+				'width'    => '1px',
+			)
+		);
+		// Slot 1 (media frame) is the thumbnail, spanning the tag, title and link rows.
+		$css .= $sgs_dv_aside . ' > :nth-child(1){grid-column:1;grid-row:1 / span 3;width:' . $sgs_dv_thumb . ';height:' . $sgs_dv_thumb . ';min-height:0;margin:0;overflow:hidden;}';
+		$css .= $sgs_dv_aside . ' > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:0 0 6px;}';
+		$css .= $sgs_dv_aside . ' > :nth-child(3){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:normal;}';
+		$css .= $sgs_dv_aside . ' > :nth-child(4){display:none;}';
+		$css .= $sgs_dv_aside . ' > :nth-child(5){grid-column:2;grid-row:3;margin:6px 0 0;}';
+
+		$sgs_dv_tag_size = $sgs_dv_len( 'drawerCardTagSize' );
+		$sgs_dv_tag_pad  = $sgs_dv_box( 'drawerCardTagPadding' );
+		if ( '' !== $sgs_dv_tag_size || '' !== $sgs_dv_tag_pad ) {
+			$css .= $sgs_dv_aside . ' > :nth-child(2) .wp-block-sgs-label{'
+				. $sgs_dv_decl( 'font-size', $sgs_dv_tag_size )
+				. $sgs_dv_decl( 'padding', $sgs_dv_tag_pad )
+				. ( '' !== $sgs_dv_tag_size ? 'line-height:1.5;' : '' ) . '}';
+		}
+		$sgs_dv_title_size = $sgs_dv_len( 'drawerCardTitleSize' );
+		if ( '' !== $sgs_dv_title_size ) {
+			$css .= $sgs_dv_aside . ' > :nth-child(3){font-size:' . $sgs_dv_title_size . ';}';
+		}
+		$sgs_dv_link_size = $sgs_dv_len( 'drawerCardLinkSize' );
+		if ( '' !== $sgs_dv_link_size ) {
+			$css .= $sgs_dv_aside . ' > :nth-child(5) .sgs-button{font-size:' . $sgs_dv_link_size . ';line-height:1.5;}';
+		}
+	} elseif ( '' !== $sgs_dv_card_decls ) {
+		$css .= $sgs_dv_aside . '{' . $sgs_dv_card_decls . '}';
+	}
+}
+
+// ---------------------------------------------------------------------------
 // 7. Brands eyebrow — a small mono micro-label rendered above the
 // content row. Spans the FULL row (not just the left column); see the
 // `brandsEyebrow` attribute note in block.json for why

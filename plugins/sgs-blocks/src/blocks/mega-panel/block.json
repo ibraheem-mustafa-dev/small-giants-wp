@@ -78,6 +78,148 @@
 					},
 					"_note": "The optional `.sgs-mega-aside` grid column, when a sgs/mega-aside child is present (asideSeparator's border-left divider is a compound value — colour+width+style — so it is documented here rather than mapped to a single css: key). accentBackgroundImageGradient is a gradient sibling for accentBackgroundImage — that base attribute feeds only a COLOUR STOP inside the spotlight glow's radial-gradient (via the derived --sgs-mm-soft-image 10% tint), which a gradient cannot be meaningfully passed through the same way a flat colour can, so when set this BYPASSES that derivation entirely and replaces the WHOLE background-image on the same `[data-spotlight]::before` selector with the raw gradient. Default empty string: the slug+color-mix() behaviour applies when unset."
 				},
+				"drawer": {
+					"label": "Drawer ground",
+					"layer": "GRID",
+					"order": 5,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "drawerBg",
+						"css:background-image": "drawerBgGradient",
+						"css:order": "drawerAsideOrder"
+					},
+					"_note": "The panel root and its content row when this panel renders inside the mobile drawer (sgs_mega_render_context() = 'drawer'). GRID layer: the row arranges the groups and the aside, and drawerAsideOrder places the aside first or last in it. Empty drawerBg paints transparent."
+				},
+				"drawerLinks": {
+					"label": "Drawer link rows",
+					"layer": "CONTENT",
+					"order": 5.1,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:border-color": "drawerLinkDivider",
+						"css:border-color-gradient": "drawerLinkDividerGradient",
+						"css:min-height": "drawerLinkMinHeight",
+						"css:padding-block": "drawerLinkPaddingY"
+					},
+					"_note": "Each direct-child sgs/container of `.sgs-mega-group`, in the drawer only."
+				},
+				"drawerLinkNumber": {
+					"label": "Drawer link number",
+					"layer": "CONTENT",
+					"order": 5.2,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "drawerLinkNumColour",
+						"css:color-gradient": "drawerLinkNumColourGradient",
+						"css:font-size": "drawerLinkNumSize"
+					},
+					"_note": "The row's direct-child sgs/text, in the drawer only."
+				},
+				"drawerLinkLabel": {
+					"label": "Drawer link label",
+					"layer": "CONTENT",
+					"order": 5.3,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "drawerLinkLabelColour",
+						"css:color-gradient": "drawerLinkLabelColourGradient",
+						"css:font-size": "drawerLinkLabelSize"
+					},
+					"_note": "The sgs/heading inside a link row, in the drawer only."
+				},
+				"drawerLinkDesc": {
+					"label": "Drawer link description",
+					"layer": "CONTENT",
+					"order": 5.4,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "drawerLinkDescColour",
+						"css:color-gradient": "drawerLinkDescColourGradient",
+						"css:font-size": "drawerLinkDescSize"
+					},
+					"_note": "The sgs/text inside a link row's nested container, in the drawer only."
+				},
+				"drawerCard": {
+					"label": "Drawer aside card",
+					"layer": "CONTENT",
+					"order": 5.5,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "drawerCardBg",
+						"css:background-image": "drawerCardBgGradient",
+						"css:border-color": "drawerCardBorderColour",
+						"css:border-color-gradient": "drawerCardBorderColourGradient",
+						"css:border-radius": "drawerCardRadius",
+						"css:padding": "drawerCardPadding",
+						"css:gap": "drawerCardGap",
+						"css:margin-block": "drawerCardSpacing"
+					},
+					"_note": "The aside as a compact horizontal card in the drawer (drawerCardCompact). drawerCardSpacing is margin-bottom when drawerAsideOrder is 'first', margin-top otherwise."
+				},
+				"drawerCardThumb": {
+					"label": "Drawer card thumbnail",
+					"layer": "CONTENT",
+					"order": 5.6,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:width": "drawerCardThumbSize"
+					},
+					"_note": "The aside's first slot (media frame), square, in the compact card."
+				},
+				"drawerCardTag": {
+					"label": "Drawer card tag",
+					"layer": "CONTENT",
+					"order": 5.7,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"attrMap": {
+						"css:font-size": "drawerCardTagSize",
+						"css:padding": "drawerCardTagPadding"
+					},
+					"_note": "The aside's second slot (tag label), in the compact card."
+				},
+				"drawerCardTitle": {
+					"label": "Drawer card title",
+					"layer": "CONTENT",
+					"order": 5.8,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:font-size": "drawerCardTitleSize"
+					},
+					"_note": "The aside's third slot, in the compact card."
+				},
+				"drawerCardLink": {
+					"label": "Drawer card link",
+					"layer": "CONTENT",
+					"order": 5.9,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:font-size": "drawerCardLinkSize"
+					},
+					"_note": "The aside's fifth slot (link button), in the compact card."
+				},
 				"icon": {
 					"label": "Icon chip",
 					"layer": "CONTENT",
@@ -366,6 +508,156 @@
 					"type": "string"
 				}
 			}
+		},
+		"drawerBg": {
+			"type": "string",
+			"default": "",
+			"description": "Drawer ground. Paints the panel root's background-color inside the mobile drawer only. Empty = transparent, so the drawer's own fill shows through."
+		},
+		"drawerBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the panel root in the mobile drawer only, instead of drawerBg (emitted as --sgs-mm-drawer-bg-gradient through sgs_custom_property_gradient_decls()). Non-empty wins over drawerBg."
+		},
+		"drawerAsideOrder": {
+			"type": "string",
+			"default": "last",
+			"description": "Where the aside (feature card) sits in the drawer: 'first' lifts it above the link groups through CSS `order`, 'last' keeps source order. PHP-validated in render.php (no JSON enum, so an out-of-set stored value cannot be silently coerced)."
+		},
+		"drawerLinkNumColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of each link row's number (the row's direct-child sgs/text) in the drawer."
+		},
+		"drawerLinkNumColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the drawer link number as a text-clip gradient. Non-empty wins over drawerLinkNumColour."
+		},
+		"drawerLinkNumSize": {
+			"type": "string",
+			"default": "",
+			"description": "Font size of each link row's number in the drawer, any single CSS length (e.g. 12px)."
+		},
+		"drawerLinkLabelColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of each link row's label (the sgs/heading in the row) in the drawer."
+		},
+		"drawerLinkLabelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the drawer link label as a text-clip gradient. Non-empty wins over drawerLinkLabelColour."
+		},
+		"drawerLinkLabelSize": {
+			"type": "string",
+			"default": "",
+			"description": "Font size of each link row's label in the drawer."
+		},
+		"drawerLinkDescColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of each link row's description (the sgs/text in the row's nested container) in the drawer."
+		},
+		"drawerLinkDescColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the drawer link description as a text-clip gradient. Non-empty wins over drawerLinkDescColour."
+		},
+		"drawerLinkDescSize": {
+			"type": "string",
+			"default": "",
+			"description": "Font size of each link row's description in the drawer."
+		},
+		"drawerLinkDivider": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of each link row's hairline in the drawer (the row's own border width and style stay the block's)."
+		},
+		"drawerLinkDividerGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting each drawer link row hairline through a masked ring. Non-empty wins over drawerLinkDivider."
+		},
+		"drawerLinkMinHeight": {
+			"type": "string",
+			"default": "",
+			"description": "Minimum height of each link row in the drawer (border-box)."
+		},
+		"drawerLinkPaddingY": {
+			"type": "string",
+			"default": "",
+			"description": "Top and bottom padding of each link row in the drawer."
+		},
+		"drawerCardCompact": {
+			"type": "boolean",
+			"default": false,
+			"description": "Renders the aside as a compact horizontal card in the drawer: the media frame becomes a thumbnail beside the tag, title and link; the description is hidden. Uses the aside's five-slot order (media, tag, title, description, link)."
+		},
+		"drawerCardBg": {
+			"type": "string",
+			"default": "",
+			"description": "Ground of the aside card in the drawer (overrides asideBg there)."
+		},
+		"drawerCardBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the drawer aside card ground (--sgs-mm-drawer-card-bg-gradient). Non-empty wins over drawerCardBg."
+		},
+		"drawerCardBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Compact card's 1px border colour in the drawer. Empty = no border."
+		},
+		"drawerCardBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the compact drawer card border through a masked ring. Non-empty wins over drawerCardBorderColour."
+		},
+		"drawerCardRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Compact card's corner radius in the drawer. Empty = square."
+		},
+		"drawerCardPadding": {
+			"type": "string",
+			"default": "",
+			"description": "Compact card's padding in the drawer, any single CSS length. Empty = none."
+		},
+		"drawerCardGap": {
+			"type": "string",
+			"default": "",
+			"description": "Compact card's gap between thumbnail and text in the drawer. Empty = 14px."
+		},
+		"drawerCardSpacing": {
+			"type": "string",
+			"default": "",
+			"description": "Space between the card and the link groups in the drawer: below it when the card is first, above it when last."
+		},
+		"drawerCardThumbSize": {
+			"type": "string",
+			"default": "",
+			"description": "Compact card's square thumbnail size in the drawer. Empty = 64px."
+		},
+		"drawerCardTagSize": {
+			"type": "string",
+			"default": "",
+			"description": "Font size of the compact card's tag in the drawer."
+		},
+		"drawerCardTagPadding": {
+			"type": "string",
+			"default": "",
+			"description": "Padding of the compact card's tag in the drawer, 1 to 4 CSS lengths (e.g. 3px 8px)."
+		},
+		"drawerCardTitleSize": {
+			"type": "string",
+			"default": "",
+			"description": "Font size of the compact card's title in the drawer."
+		},
+		"drawerCardLinkSize": {
+			"type": "string",
+			"default": "",
+			"description": "Font size of the compact card's link button in the drawer."
 		},
 		"brandsEyebrow": {
 			"type": "string",

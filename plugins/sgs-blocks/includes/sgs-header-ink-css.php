@@ -20,6 +20,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-responsive.php';
+require_once __DIR__ . '/helpers-hover-state.php';
 require_once __DIR__ . '/helpers-motion-easing.php';
 require_once __DIR__ . '/class-sgs-breakpoints.php';
 
@@ -141,6 +142,31 @@ if ( ! function_exists( 'sgs_header_ink_live_state' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_header_ink_not_hover_rule' ) ) {
+	/**
+	 * A rule that applies to each selector except while it is hovered or keyboard-focused.
+	 *
+	 * The hover exclusion sits behind the shared hover guard (`sgs_hover_media_wrap()` plus
+	 * `SGS_HOVER_NOT_TOUCH`); a device without a hovering pointer gets the focus-only
+	 * exclusion instead, so a tap's sticky :hover never disables the rule.
+	 *
+	 * @param string $selectors Comma-separated base selectors.
+	 * @param string $block     Declaration block including braces.
+	 * @return string CSS.
+	 */
+	function sgs_header_ink_not_hover_rule( string $selectors, string $block ): string {
+		$parts = array_map( 'trim', explode( ',', $selectors ) );
+		$hover = array();
+		$touch = array();
+		foreach ( $parts as $part ) {
+			$hover[] = SGS_HOVER_NOT_TOUCH . ' ' . $part . ':not(:hover):not(:focus-visible)';
+			$touch[] = $part . ':not(:focus-visible)';
+		}
+		return sgs_hover_media_wrap( implode( ',', $hover ) . $block )
+			. '@media not all and (hover: hover) and (pointer: fine){' . implode( ',', $touch ) . $block . '}';
+	}
+}
+
 if ( ! function_exists( 'sgs_header_ink_mode_rule' ) ) {
 	/**
 	 * The CSS text for one resolved mode, unwrapped (the caller wraps it in
@@ -174,11 +200,15 @@ if ( ! function_exists( 'sgs_header_ink_mode_rule' ) ) {
 		// While live, top-level links, the burger and header icons follow the ink
 		// over their own colour; hover, focus, dropdowns and filled chips keep theirs.
 		foreach ( array( 'dark', 'light' ) as $tone ) {
-			$on   = $root_sel . '.is-header-on-' . $tone;
-			$css .= $on . ' .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link:not(:hover):not(:focus-visible),'
-				. $on . ' .sgs-nav-bar-menu__burger:not(:hover):not(:focus-visible),'
-				. $on . ' .wp-block-sgs-business-info:not(.is-style-button) .sgs-business-info__link:not(:hover):not(:focus-visible)'
-				. '{color:inherit !important;-webkit-text-fill-color:currentColor !important;}'
+			$on = $root_sel . '.is-header-on-' . $tone;
+			// The `:not(:hover)` half is a hover state, so it is guarded like any other:
+			// hover-capable pointers exclude hover from the override, touch (where a tap
+			// leaves :hover stuck on) excludes focus only.
+			$hoverable = $on . ' .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link,'
+				. $on . ' .sgs-nav-bar-menu__burger,'
+				. $on . ' .wp-block-sgs-business-info:not(.is-style-button) .sgs-business-info__link';
+			$inherit   = '{color:inherit !important;-webkit-text-fill-color:currentColor !important;}';
+			$css      .= sgs_header_ink_not_hover_rule( $hoverable, $inherit )
 				. $on . ' .wp-block-sgs-business-info:not(.is-style-button),' . $on . ' .sgs-cart,'
 				. $on . ' .sgs-social-icons:not(.sgs-social-icons--filled):not(.sgs-social-icons--pill) .sgs-social-icons__item'
 				. '{--sgs-bi-icon-colour:currentColor !important;--sgs-cart-icon-colour:currentColor !important;--sgs-social-glyph:currentColor !important;}';

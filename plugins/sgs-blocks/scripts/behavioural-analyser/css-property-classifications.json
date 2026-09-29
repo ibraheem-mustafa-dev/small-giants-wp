@@ -6789,6 +6789,16 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerCardBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "groupBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -8949,6 +8959,15 @@
       "fields": {
         "css_property": "font-weight",
         "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "step"
       }
     },
     {
@@ -13491,6 +13510,14 @@
     },
     {
       "slug": "sgs/whatsapp-cta",
+      "attr": "iconSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
       "attr": "labelColour",
       "fields": {
         "css_property": "color",
@@ -13570,6 +13597,15 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "card-text"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "minHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -18250,6 +18286,264 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerAsideOrder",
+      "fields": {
+        "css_property": "order",
+        "css_layer": "GRID",
+        "css_element": "drawer"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "GRID",
+        "css_element": "drawer"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "GRID",
+        "css_element": "drawer"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardBorderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardLinkSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardLink"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardSpacing",
+      "fields": {
+        "css_property": "margin-block",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardTagPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardTag"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardTagSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardTag"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardThumbSize",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardThumb"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardTitleSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardTitle"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkDescColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkDesc"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkDescColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkDesc"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkDescSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkDesc"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkDivider",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkDividerGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkLabelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkLabel"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkLabelColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkLabel"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkLabelSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkLabel"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkNumColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkNumber"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkNumColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkNumber"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkNumSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkNumber"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkPaddingY",
+      "fields": {
+        "css_property": "padding-block",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "groupBorderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -20322,6 +20616,14 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "itemOrnamentFrameDuration",
+      "fields": {
+        "css_property": "anim:duration",
+        "css_element": "ornament"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemOrnamentGap",
       "fields": {
         "css_property": "gap",
@@ -20352,6 +20654,39 @@
         "css_property": "padding-inline-start",
         "css_element": "sublink",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemSeparatorColour",
+      "fields": {
+        "css_property": "border-top-color",
+        "css_element": "item-separator"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemSeparatorColourHover",
+      "fields": {
+        "css_property": "border-top-color",
+        "css_element": "item-separator",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemSeparatorStyle",
+      "fields": {
+        "css_property": "border-top-style",
+        "css_element": "item-separator"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemSeparatorWidth",
+      "fields": {
+        "css_property": "border-top-width",
+        "css_element": "item-separator"
       }
     },
     {
@@ -20570,6 +20905,14 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuBorderStyle",
       "fields": {
         "css_property": "border-style",
@@ -20773,6 +21116,22 @@
         "css_property": "opacity",
         "css_element": "sublink",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "submenu-panel"
       }
     },
     {

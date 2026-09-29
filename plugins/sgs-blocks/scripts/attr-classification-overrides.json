@@ -3458,6 +3458,38 @@
 			}
 		},
 		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemSeparatorHoverTreatment",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-29 (drawer item-level parity with sgs/nav-bar-menu). The same treatment-selector (none/swap/sweep) as sgs/nav-bar-menu.itemSeparatorHoverTreatment, for the drawer's row divider: it chooses WHICH hover mechanism paints, not a paintable value. 'behaviour', matching the bar and the drawer's own itemColourHoverTreatment/itemBgHoverTreatment/itemBorderHoverTreatment."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemSeparatorSweepAngle",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-29 (drawer item-level parity). The same gradient-angle parameter as sgs/nav-bar-menu.itemSeparatorSweepAngle, consumed inside the sweep maths (includes/nav-drawer-menu-separator-css.php via includes/sweep-css.php), never painted as a value of its own. 'behaviour', matching the bar."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemOrnamentFrames",
+			"fields": {
+				"role": "identity",
+				"_reason": "2026-09-29 (ornament frame sequence). An ordered list of custom SVG glyph frames the row ornament flashes through on hover/focus -- content items (which glyphs), not a paintable CSS value. 'identity', matching the same block's itemTrailingIcons list of per-row custom glyphs."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemOrnamentFramePlay",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-29 (ornament frame sequence). A per-device on/off switch for playing the frame sequence -- selects whether the animation runs, not a paintable value. 'behaviour', the role for control-selector switches on this block family."
+			}
+		},
+		{
 			"slug": "sgs/modal",
 			"attr": "modalRef",
 			"fields": {

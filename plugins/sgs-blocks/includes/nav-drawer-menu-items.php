@@ -21,13 +21,14 @@ require_once __DIR__ . '/helpers-item-effects.php';
 require_once __DIR__ . '/nav-menu-treatments.php';
 require_once __DIR__ . '/nav-drawer-menu-extras-css.php';
 require_once __DIR__ . '/nav-drawer-menu-row-extras.php';
+require_once __DIR__ . '/nav-drawer-menu-ornament-frames.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 	/**
 	 * Resolve the drawer menu's per-row options once per render.
 	 *
 	 * @param array $attributes Block attributes.
-	 * @return array{mega_mode:string,roll:string,ornament_html:string,ornament_hover_html:string,has_ornament:bool,expander_html:string,media:bool,media_size:string,disabled_ids:string[],ornament_hidden_ids:string[],ornament_reserve:bool}
+	 * @return array{mega_mode:string,roll:string,magnet:bool,ornament_html:string,ornament_hover_html:string,has_ornament:bool,expander_html:string,media:bool,media_size:string,disabled_ids:string[],ornament_hidden_ids:string[],ornament_reserve:bool,ornament_frames_html:string}
 	 */
 	function sgs_nav_drawer_menu_row_options( array $attributes ): array {
 		$ornament      = is_array( $attributes['itemOrnament'] ?? null ) ? $attributes['itemOrnament'] : array();
@@ -46,6 +47,9 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 		return array(
 			'mega_mode'           => 'link' === ( $attributes['megaDrawerMode'] ?? 'panel' ) ? 'link' : 'panel',
 			'roll'                => sgs_label_roll_value( $attributes['labelRoll'] ?? '' ),
+			// `itemMagnetEnabled` — the label carries the magnet-target class only
+			// while the effect is on, so an untouched drawer's markup is unchanged.
+			'magnet'              => ! empty( $attributes['itemMagnetEnabled'] ),
 			'has_ornament'        => ! empty( $ornament_used ),
 			'ornament_html'       => ( $uses_icon && $icons ) ? sgs_nav_shared_icon_markup(
 				$attributes['itemOrnamentIcon'] ?? null,
@@ -79,6 +83,9 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 			// leaf and accordion-parent rows.
 			'ornament_hidden_ids' => is_array( $attributes['ornamentHiddenItemIds'] ?? null ) ? $attributes['ornamentHiddenItemIds'] : array(),
 			'ornament_reserve'    => ! empty( $attributes['itemOrnamentReserveSpace'] ),
+			// Ornament frame sequence — the sanitised, aria-hidden frame spans
+			// ('' when the list is empty or the ornament is not an icon).
+			'ornament_frames_html' => $uses_icon ? sgs_nav_drawer_menu_ornament_frames_html( $attributes['itemOrnamentFrames'] ?? null ) : '',
 		);
 	}
 }
@@ -180,15 +187,17 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_label_inner' ) ) {
 		$ornament = '';
 		if ( ! $ornament_hidden && ! empty( $options['has_ornament'] ) ) {
 			$hover     = (string) ( $options['ornament_hover_html'] ?? '' );
-			$ornament  = '<span class="sgs-nav-drawer-menu__ornament' . ( '' !== $hover ? ' sgs-nav-drawer-menu__ornament--swap' : '' ) . '" aria-hidden="true">';
+			$frames    = (string) ( $options['ornament_frames_html'] ?? '' );
+			$ornament  = '<span class="sgs-nav-drawer-menu__ornament' . ( '' !== $hover ? ' sgs-nav-drawer-menu__ornament--swap' : '' ) . ( '' !== $frames ? ' sgs-nav-drawer-menu__ornament--frames' : '' ) . '" aria-hidden="true">';
 			$ornament .= '' !== (string) $options['ornament_html'] ? '<span class="sgs-nav-drawer-menu__ornament-glyph">' . $options['ornament_html'] . '</span>' : '';
 			$ornament .= '' !== $hover ? '<span class="sgs-nav-drawer-menu__ornament-glyph sgs-nav-drawer-menu__ornament-glyph--hover">' . $hover . '</span>' : '';
+			$ornament .= $frames;
 			$ornament .= '</span>';
 		} elseif ( $ornament_hidden && ! empty( $options['has_ornament'] ) && ! empty( $options['ornament_reserve'] ) ) {
 			$ornament = '<span class="sgs-nav-drawer-menu__ornament sgs-nav-drawer-menu__ornament--blank" aria-hidden="true"><span class="sgs-nav-drawer-menu__ornament-glyph"></span></span>';
 		}
 		return $ornament
-			. '<span class="sgs-nav-drawer-menu__link-text">' . sgs_label_roll_markup( (string) ( $item['label'] ?? '' ), (string) ( $options['roll'] ?? '' ) ) . '</span>'
+			. '<span class="sgs-nav-drawer-menu__link-text' . ( ! empty( $options['magnet'] ) ? ' sgs-nav-drawer-menu__magnet-target' : '' ) . '">' . sgs_label_roll_markup( (string) ( $item['label'] ?? '' ), (string) ( $options['roll'] ?? '' ) ) . '</span>'
 			. sgs_nav_drawer_menu_media_html( $item, $options )
 			. sgs_nav_drawer_menu_trailing_icon_html( $item, $options );
 	}
@@ -247,7 +256,11 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_accordion_html' ) ) {
 		$details_id    = $uid . '-drill-' . substr( md5( (string) $item['identifier'] ), 0, 8 );
 		$name_attr     = $exclusive ? ' name="sgs-nav-drawer-menu-accordion-' . esc_attr( $uid ) . '"' : '';
 		$label         = (string) ( $item['label'] ?? '' );
-		$summary_class = 'sgs-nav-drawer-menu__accordion-summary' . ( $row_toggle ? ' sgs-nav-drawer-menu__accordion-summary--row' : '' );
+		// A whole-row toggle IS the row's link: it carries `__link` so every
+		// item rule keyed on `.sgs-nav-drawer-menu__link` (typography, colour,
+		// hover/open state, padding, ornament and trailing-icon hover) paints it
+		// exactly like a link row. The caret-only summary stays a bare toggle.
+		$summary_class = 'sgs-nav-drawer-menu__accordion-summary' . ( $row_toggle ? ' sgs-nav-drawer-menu__link sgs-nav-drawer-menu__accordion-summary--row' : '' );
 		$expander      = (string) $options['expander_html'];
 		$caret_html    = '<span class="sgs-nav-drawer-menu__caret" aria-hidden="true">' . $expander . '</span>';
 

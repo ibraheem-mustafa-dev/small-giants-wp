@@ -187,9 +187,11 @@
 				"step": {
 					"label": "Process step",
 					"order": 7,
-					"clusters": [],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
-						"css:column-gap": "numberGap"
+						"css:gap": "numberGap"
 					},
 					"_note": "Per-step fields (number/title/description/icon) are plain repeater content from the `steps` array — styled block-wide via the number/title/description elements above, no independent per-step override. Mirrors sgs/accordion's `item` and sgs/timeline's `entry`."
 				}

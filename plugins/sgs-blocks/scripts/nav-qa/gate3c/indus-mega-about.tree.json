@@ -33,7 +33,28 @@
           "left": "26px"
         }
       },
-      "shadow": "0 30px 80px -30px rgba(20,25,35,.28), 0 2px 8px -2px rgba(0,0,0,.08)"
+      "shadow": "0 30px 80px -30px rgba(20,25,35,.28), 0 2px 8px -2px rgba(0,0,0,.08)",
+      "drawerAsideOrder": "first",
+      "drawerLinkNumColour": "#D8CA50",
+      "drawerLinkNumSize": "12px",
+      "drawerLinkLabelColour": "#FFFFFF",
+      "drawerLinkLabelSize": "15px",
+      "drawerLinkDescColour": "rgba(255,255,255,0.7)",
+      "drawerLinkDescSize": "12.5px",
+      "drawerLinkDivider": "rgba(255,255,255,0.15)",
+      "drawerLinkMinHeight": "70px",
+      "drawerLinkPaddingY": "13px",
+      "drawerCardCompact": true,
+      "drawerCardBg": "#075E80",
+      "drawerCardBorderColour": "rgba(255,255,255,0.3)",
+      "drawerCardPadding": "16px",
+      "drawerCardGap": "14px",
+      "drawerCardSpacing": "14px",
+      "drawerCardThumbSize": "64px",
+      "drawerCardTagSize": "10px",
+      "drawerCardTagPadding": "3px 8px",
+      "drawerCardTitleSize": "15px",
+      "drawerCardLinkSize": "12.5px"
     },
     "innerBlocks": [
       {

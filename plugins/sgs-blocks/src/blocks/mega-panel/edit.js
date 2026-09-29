@@ -34,6 +34,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 import {
 	useBlockProps,
 	useInnerBlocksProps,
@@ -58,7 +59,9 @@ import {
 	SurfaceGroundControls,
 	TypographyControls,
 	fillRow,
+	textRow,
 } from '../../components';
+import drawerPreviewCss from './drawer-preview';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import { CursorFieldRowControls } from '../../components/CursorFieldRowControls';
 import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
@@ -211,7 +214,13 @@ function eyebrowFontFamilyPreview( value ) {
 		: value;
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
+	// Editor-only UI state (never saved): which tier the canvas previews. In
+	// 'drawer' the canvas applies the drawer* attributes the way render.php
+	// paints the drawer copy of this panel.
+	const [ previewTier, setPreviewTier ] = useState( 'desktop' );
+	const isDrawerPreview = 'drawer' === previewTier;
+
 	const {
 		variant,
 		style,
@@ -248,6 +257,36 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderRadius,
 		asideWidth,
 		asideSeparator,
+		drawerBg,
+		drawerBgGradient,
+		drawerAsideOrder,
+		drawerLinkNumColour,
+		drawerLinkNumColourGradient,
+		drawerLinkNumSize,
+		drawerLinkLabelColour,
+		drawerLinkLabelColourGradient,
+		drawerLinkLabelSize,
+		drawerLinkDescColour,
+		drawerLinkDescColourGradient,
+		drawerLinkDescSize,
+		drawerLinkDivider,
+		drawerLinkDividerGradient,
+		drawerLinkMinHeight,
+		drawerLinkPaddingY,
+		drawerCardCompact,
+		drawerCardBg,
+		drawerCardBgGradient,
+		drawerCardBorderColour,
+		drawerCardBorderColourGradient,
+		drawerCardRadius,
+		drawerCardPadding,
+		drawerCardGap,
+		drawerCardSpacing,
+		drawerCardThumbSize,
+		drawerCardTagSize,
+		drawerCardTagPadding,
+		drawerCardTitleSize,
+		drawerCardLinkSize,
 		brandsEyebrow,
 		brandsEyebrowFontFamily,
 		brandsEyebrowFontSize,
@@ -417,6 +456,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		// property, not a custom-prop indirection.
 		padding: paddingFromBox( panelPadding?.desktop ),
 		borderRadius: borderRadius || undefined,
+		// Drawer preview ground — mirrors render.php's in-drawer root rule
+		// (transparent unless drawerBg / drawerBgGradient is set). Inline so it
+		// out-ranks style.css's own root background rules.
+		...( isDrawerPreview
+			? {
+					backgroundColor: drawerBg ? colourVar( drawerBg ) || drawerBg : 'transparent',
+					backgroundImage:
+						drawerBgGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( drawerBgGradient )
+							? drawerBgGradient
+							: 'none',
+			  }
+			: {} ),
 		// borderWidth/borderStyle canvas mirror (borderColour arrives via
 		// --sgs-mm-panel-border above). Mirrors render.php exactly: width always
 		// paints (each side falls back to 1px), style/colour ride the same
@@ -461,10 +512,48 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 	const toneClass = surfaceToneClass( toneLayers, colourPalette, gradientPresets );
 
+	// Scope class for the drawer-preview stylesheet (one per block instance, so
+	// two panels previewing at once never share rules).
+	const drawerScopeClass = `sgs-mega-panel-dv-${ String( clientId || '' ).replace( /[^a-z0-9]/gi, '' ) }`;
+	const drawerPreviewStyles = isDrawerPreview
+		? drawerPreviewCss( `.wp-block-sgs-mega-panel.${ drawerScopeClass }`, {
+				drawerAsideOrder,
+				drawerLinkNumColour,
+				drawerLinkNumColourGradient,
+				drawerLinkNumSize,
+				drawerLinkLabelColour,
+				drawerLinkLabelColourGradient,
+				drawerLinkLabelSize,
+				drawerLinkDescColour,
+				drawerLinkDescColourGradient,
+				drawerLinkDescSize,
+				drawerLinkDivider,
+				drawerLinkDividerGradient,
+				drawerLinkMinHeight,
+				drawerLinkPaddingY,
+				drawerCardCompact,
+				drawerCardBg,
+				drawerCardBgGradient,
+				drawerCardBorderColour,
+				drawerCardBorderColourGradient,
+				drawerCardRadius,
+				drawerCardPadding,
+				drawerCardGap,
+				drawerCardSpacing,
+				drawerCardThumbSize,
+				drawerCardTagSize,
+				drawerCardTagPadding,
+				drawerCardTitleSize,
+				drawerCardLinkSize,
+		  } )
+		: '';
+
 	const wrapperClassName = [
 		'sgs-mega-panel',
 		! headings && 'sgs-mega-panel--headings-off',
 		'none' === sepStyle && 'sgs-mega-panel--aside-sep-none',
+		isDrawerPreview && 'sgs-mega-panel--in-drawer',
+		isDrawerPreview && drawerScopeClass,
 		toneClass,
 	]
 		.filter( Boolean )
@@ -1177,6 +1266,190 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
+				<PanelBody title={ __( 'In the drawer', 'sgs-blocks' ) } initialOpen={ false }>
+					<p className="sgs-mega-panel-editor-note">
+						{ __(
+							'Applies only when this panel renders inside the mobile drawer. Empty values leave the drawer copy as it is.',
+							'sgs-blocks'
+						) }
+					</p>
+					<ToggleGroupControl
+						label={ __( 'Preview in the editor as', 'sgs-blocks' ) }
+						value={ previewTier }
+						onChange={ ( value ) => setPreviewTier( value || 'desktop' ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="desktop" label={ __( 'Desktop', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="drawer" label={ __( 'Drawer', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
+					<SgsColourPanel
+						rows={ [
+							fillRow( {
+								key: 'drawerBg',
+								label: __( 'Drawer ground', 'sgs-blocks' ),
+								attrs: { base: 'drawerBg', gradient: 'drawerBgGradient' },
+								attributes,
+								setAttributes,
+							} ),
+							textRow( {
+								key: 'drawerLinkNumColour',
+								label: __( 'Link number colour', 'sgs-blocks' ),
+								attrs: { base: 'drawerLinkNumColour', gradient: 'drawerLinkNumColourGradient' },
+								attributes,
+								setAttributes,
+							} ),
+							textRow( {
+								key: 'drawerLinkLabelColour',
+								label: __( 'Link label colour', 'sgs-blocks' ),
+								attrs: { base: 'drawerLinkLabelColour', gradient: 'drawerLinkLabelColourGradient' },
+								attributes,
+								setAttributes,
+							} ),
+							textRow( {
+								key: 'drawerLinkDescColour',
+								label: __( 'Link description colour', 'sgs-blocks' ),
+								attrs: { base: 'drawerLinkDescColour', gradient: 'drawerLinkDescColourGradient' },
+								attributes,
+								setAttributes,
+							} ),
+							fillRow( {
+								key: 'drawerLinkDivider',
+								label: __( 'Link divider colour', 'sgs-blocks' ),
+								attrs: { base: 'drawerLinkDivider', gradient: 'drawerLinkDividerGradient' },
+								attributes,
+								setAttributes,
+							} ),
+							fillRow( {
+								key: 'drawerCardBg',
+								label: __( 'Card ground', 'sgs-blocks' ),
+								attrs: { base: 'drawerCardBg', gradient: 'drawerCardBgGradient' },
+								attributes,
+								setAttributes,
+							} ),
+							fillRow( {
+								key: 'drawerCardBorderColour',
+								label: __( 'Card border colour', 'sgs-blocks' ),
+								attrs: { base: 'drawerCardBorderColour', gradient: 'drawerCardBorderColourGradient' },
+								attributes,
+								setAttributes,
+							} ),
+						] }
+					/>
+					<ToggleGroupControl
+						label={ __( 'Side card position', 'sgs-blocks' ) }
+						value={ drawerAsideOrder || 'last' }
+						onChange={ ( value ) => setAttributes( { drawerAsideOrder: value || 'last' } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="first" label={ __( 'Above links', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="last" label={ __( 'Below links', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
+					<SgsLengthControl
+						label={ __( 'Link number size', 'sgs-blocks' ) }
+						value={ drawerLinkNumSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerLinkNumSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Link label size', 'sgs-blocks' ) }
+						value={ drawerLinkLabelSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerLinkLabelSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Link description size', 'sgs-blocks' ) }
+						value={ drawerLinkDescSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerLinkDescSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Link row minimum height', 'sgs-blocks' ) }
+						value={ drawerLinkMinHeight || '' }
+						onChange={ ( value ) => setAttributes( { drawerLinkMinHeight: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Link row vertical padding', 'sgs-blocks' ) }
+						value={ drawerLinkPaddingY || '' }
+						onChange={ ( value ) => setAttributes( { drawerLinkPaddingY: value || '' } ) }
+						presets={ false }
+					/>
+					<ToggleControl
+						label={ __( 'Compact side card', 'sgs-blocks' ) }
+						help={ __(
+							'Shows the side panel as a thumbnail, tag, title and link in a row. The description is hidden.',
+							'sgs-blocks'
+						) }
+						checked={ !! drawerCardCompact }
+						onChange={ ( value ) => setAttributes( { drawerCardCompact: !! value } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SgsLengthControl
+						label={ __( 'Card spacing from links', 'sgs-blocks' ) }
+						value={ drawerCardSpacing || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardSpacing: value || '' } ) }
+						presets={ false }
+					/>
+					{ drawerCardCompact && (
+						<>
+					<SgsLengthControl
+						label={ __( 'Card corner radius', 'sgs-blocks' ) }
+						value={ drawerCardRadius || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardRadius: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card padding', 'sgs-blocks' ) }
+						value={ drawerCardPadding || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardPadding: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card thumbnail gap', 'sgs-blocks' ) }
+						value={ drawerCardGap || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardGap: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card thumbnail size', 'sgs-blocks' ) }
+						value={ drawerCardThumbSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardThumbSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card tag size', 'sgs-blocks' ) }
+						value={ drawerCardTagSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardTagSize: value || '' } ) }
+						presets={ false }
+					/>
+							<TextControl
+								label={ __( 'Card tag padding', 'sgs-blocks' ) }
+								help={ __( '1 to 4 lengths, e.g. 3px 8px.', 'sgs-blocks' ) }
+								value={ drawerCardTagPadding || '' }
+								onChange={ ( value ) => setAttributes( { drawerCardTagPadding: value || '' } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+					<SgsLengthControl
+						label={ __( 'Card title size', 'sgs-blocks' ) }
+						value={ drawerCardTitleSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardTitleSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card link size', 'sgs-blocks' ) }
+						value={ drawerCardLinkSize || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardLinkSize: value || '' } ) }
+						presets={ false }
+					/>
+						</>
+					) }
+				</PanelBody>
+
 				{ /* SgsBorderControl: width + style + colour (+ gradient) — borderWidth/
 				   borderStyle default to 1px/solid, matching render.php's fallback
 				   (SgsBorderControl always renders the width box; there is no
@@ -1222,6 +1495,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ drawerPreviewStyles && <style>{ drawerPreviewStyles }</style> }
 				{ 'brands' === resolvedVariant && brandsEyebrow && (
 					<p
 						className="sgs-mega-panel__eyebrow"

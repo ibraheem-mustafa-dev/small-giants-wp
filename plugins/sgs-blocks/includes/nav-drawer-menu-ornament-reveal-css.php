@@ -82,11 +82,9 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_ornament_stroke_draw_css' ) ) {
 	 * (§6b default, skip a tier that resolves the same as the tier above)
 	 * but is hand-rolled rather than calling that helper directly: this
 	 * fragment owns MULTIPLE selectors of its own (not a single declaration
-	 * list on the caller's selector) and nests a touch-guarded hover query,
-	 * which that helper's single-selector-declarations shape cannot carry —
-	 * nesting `@media (hover:hover)` inside `@media (max-width:…)` is invalid
-	 * plain CSS, so the width and hover-capability conditions are combined
-	 * into ONE `@media` per tier instead.
+	 * list on the caller's selector). The reveal itself goes through
+	 * `sgs_hover_state_rules()` (guarded `:hover`, unguarded `:focus-visible`),
+	 * nested inside the tier's width `@media` where there is one.
 	 *
 	 * @param array  $reveal `itemOrnamentRevealMode`'s tier object.
 	 * @param string $scope  The instance scope selector.
@@ -95,29 +93,6 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_ornament_stroke_draw_css' ) ) {
 	 */
 	function sgs_nav_drawer_menu_ornament_stroke_draw_css( array $reveal, string $scope, string $link ): string {
 		$glyph_shapes = ' .sgs-nav-drawer-menu__ornament-glyph svg :is(path,line,polyline,polygon,circle,rect,ellipse)';
-
-		// The link's own selector may be a comma list (rare, but sgs_hover_
-		// state_rules() supports it) — build the same :hover/:focus-visible
-		// pair it would, minus its own unconditional @media wrapper.
-		$parts     = array_map( 'trim', explode( ',', trim( $link ) ) );
-		$hover_sel = implode(
-			',',
-			array_map(
-				static function ( $part ) use ( $glyph_shapes ) {
-					return SGS_HOVER_NOT_TOUCH . ' ' . $part . ':hover' . $glyph_shapes;
-				},
-				$parts
-			)
-		);
-		$focus_sel = implode(
-			',',
-			array_map(
-				static function ( $part ) use ( $glyph_shapes ) {
-					return $part . ':focus-visible' . $glyph_shapes;
-				},
-				$parts
-			)
-		);
 
 		$stagger = '';
 		foreach ( array( 2, 3, 4 ) as $n ) {
@@ -130,11 +105,9 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_ornament_stroke_draw_css' ) ) {
 		 * reveal + stagger. `%1$s` is the width condition ('' for desktop,
 		 * 'max-width:1023px'/'max-width:767px' for tablet/mobile).
 		 */
-		$on = static function ( string $width_cond ) use ( $scope, $glyph_shapes, $hover_sel, $focus_sel, $stagger ): string {
-			$hover_media = '' === $width_cond ? SGS_HOVER_MEDIA : '@media ' . $width_cond . ' and (hover: hover) and (pointer: fine)';
-			$css         = $scope . $glyph_shapes . '{stroke-dasharray:64;stroke-dashoffset:64;transition:stroke-dashoffset 500ms ease;}'
-				. $hover_media . '{' . $hover_sel . '{stroke-dashoffset:0;}}'
-				. $focus_sel . '{stroke-dashoffset:0;}'
+		$on = static function ( string $width_cond ) use ( $scope, $glyph_shapes, $link, $stagger ): string {
+			$css = $scope . $glyph_shapes . '{stroke-dasharray:64;stroke-dashoffset:64;transition:stroke-dashoffset 500ms ease;}'
+				. sgs_hover_state_rules( $link, 'stroke-dashoffset:0;', ':focus-visible', $glyph_shapes )
 				. $stagger;
 			return '' === $width_cond ? $css : '@media ' . $width_cond . '{' . $css . '}';
 		};

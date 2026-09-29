@@ -193,6 +193,14 @@
 					"rel": {
 						"type": "string"
 					},
+					"colour": {
+						"type": "string",
+						"_comment": "Per-item disc/background colour override (any CSS colour or palette slug). When set it replaces the brand/theme --sgs-social-bg (and border/glyph resting colours) for this item only."
+					},
+					"colourHover": {
+						"type": "string",
+						"_comment": "Per-item hover disc/background colour override; when empty the block-level hover colour applies."
+					},
 					"iconDecorative": {
 						"type": "boolean",
 						"default": true,
@@ -212,6 +220,11 @@
 		"iconSize": {
 			"type": "number",
 			"default": 24
+		},
+		"circleGlyphSize": {
+			"type": "number",
+			"default": 0,
+			"description": "Circle style only: glyph size in px inside the disc. 0 = auto (half the disc diameter)."
 		},
 		"iconBackground": {
 			"type": "string",

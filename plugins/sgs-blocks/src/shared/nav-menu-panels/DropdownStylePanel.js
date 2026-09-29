@@ -20,25 +20,21 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  * controls the drawer's inline accordion row has no use for.
  *
  * `showSizingControls` (bar `true`, drawer `false`) gates every control the
- * drawer's own block.json does NOT declare an attribute for — confirmed by
- * reading `nav-drawer-menu/block.json` directly (no `submenuAnimation`,
- * `submenuTopOffset`, `submenuMinWidth`, `submenuBorderRadius`,
- * `submenuShadow`, `submenuShadowColour` entries). Rendering these
+ * drawer's own block.json does NOT declare an attribute for. Rendering these
  * unconditionally would write to attributes the drawer's manifest doesn't
  * declare — a dead control (D338), which `check-dead-controls.js` bans:
- *   - "Open animation" (`submenuAnimation`) — BAR-only. The drawer's
- *     accordion is native `<details>`; opening is a display toggle, not an
- *     animated disclosure.
+ *   - "Open animation" (`submenuAnimation`) — BAR-only HERE. The drawer
+ *     declares the same attribute with its own values (none, fade, fade-lift,
+ *     height) and edits it in its own "Section motion" panel.
  *   - "Distance below the bar" (`submenuTopOffset`) — BAR-only; meaningless
  *     for a row that flows inline rather than floating.
- *   - "Minimum width" (`submenuMinWidth`) — DROPPED on the drawer by D1060
- *     ruling 6. The drawer's nested row is exactly as wide as the drawer
- *     panel; a minimum width has nothing to protect against.
- *   - "Box shadow" (`submenuShadow`/`submenuShadowColour`) — DROPPED on the
- *     drawer by D1060 ruling 6. A shadow on an inline accordion row (not a
- *     floating panel) has no surface to cast onto.
- *   - The Border control's `radiusValues`/`onRadiusChange`
- *     (`submenuBorderRadius`) — DROPPED on the drawer by D1060 ruling 6.
+ *   - "Minimum width" (`submenuMinWidth`) — not on the drawer. The drawer's
+ *     nested row is exactly as wide as the drawer panel; a minimum width has
+ *     nothing to protect against.
+ * `showBoxControls` (drawer `true`; the bar gets them through
+ * `showSizingControls`) adds the open section's box: the Border control's
+ * `radiusValues`/`onRadiusChange` (`submenuBorderRadius`) and "Box shadow"
+ * (`submenuShadow`/`submenuShadowColour`).
  * What stays visible on BOTH, unconditionally: "Inner spacing"
  * (`submenuPadding` — BOTH-classified; the bar's own block.json default is
  * `0`, the drawer's is a non-zero bottom-heavy shape, per each block's own
@@ -73,26 +69,29 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  * @param {Object}   root0                          Props.
  * @param {boolean}  root0.showSizingControls       True on `sgs/nav-bar-menu`, false on
  *                                                  `sgs/nav-drawer-menu` (see docblock above).
+ * @param {boolean}  [root0.showBoxControls]        True on `sgs/nav-drawer-menu`: shows the section's
+ *                                                  corner radius and box shadow without the bar-only sizing controls.
  * @param {string}   [root0.submenuAnimation]       `submenuAnimation` — bar only.
  * @param {string}   [root0.submenuTopOffset]       `submenuTopOffset` — bar only.
  * @param {string}   [root0.submenuMinWidth]        `submenuMinWidth` — bar only.
  * @param {Object}   root0.submenuPadding           `submenuPadding` — responsive tier object, BOTH.
  * @param {Object}   root0.submenuBorderWidth       `submenuBorderWidth`, BOTH.
  * @param {string}   root0.submenuBorderStyle       `submenuBorderStyle`, BOTH.
- * @param {Object}   [root0.submenuBorderRadius]    `submenuBorderRadius` — bar only.
+ * @param {Object}   [root0.submenuBorderRadius]    `submenuBorderRadius` — with `showSizingControls` or `showBoxControls`.
  * @param {Object}   root0.submenuLinkBorderWidth   `submenuLinkBorderWidth`, BOTH.
  * @param {string}   root0.submenuLinkBorderStyle   `submenuLinkBorderStyle`, BOTH.
- * @param {string}   [root0.submenuShadow]          `submenuShadow` — bar only. Named explicitly,
+ * @param {string}   [root0.submenuShadow]          `submenuShadow` — with `showSizingControls` or `showBoxControls`. Named explicitly,
  *                                                  not read off `attributes`, so the attribute
  *                                                  name appears in `edit.js` where
  *                                                  inspector-scan rule 21's corpus can see it.
- * @param {string}   [root0.submenuShadowColour]    `submenuShadowColour` — bar only.
+ * @param {string}   [root0.submenuShadowColour]    `submenuShadowColour` — with `showSizingControls` or `showBoxControls`.
  * @param {Object}   [root0.attributes]             Full attributes — `ShadowControl` reads and
- *                                                  writes its own key pair (bar only).
+ *                                                  writes its own key pair (bar, and the drawer with `showBoxControls`).
  * @param {Function} root0.setAttributes            The block's attribute setter.
  */
 export default function DropdownStylePanel( {
 	showSizingControls,
+	showBoxControls = false,
 	submenuAnimation,
 	submenuTopOffset,
 	submenuMinWidth,
@@ -107,6 +106,7 @@ export default function DropdownStylePanel( {
 	attributes,
 	setAttributes,
 } ) {
+	const showBox = showSizingControls || showBoxControls;
 	return (
 		<ToolsPanel
 			label={ __( 'Submenu — Container', 'sgs-blocks' ) }
@@ -117,9 +117,9 @@ export default function DropdownStylePanel( {
 								submenuAnimation: 'none',
 								submenuTopOffset: '',
 								submenuMinWidth: '',
-								submenuBorderRadius: {},
 						  }
 						: {} ),
+					...( showBox ? { submenuBorderRadius: {} } : {} ),
 					submenuPadding: {},
 					submenuBorderWidth: {},
 					submenuBorderStyle: '',
@@ -227,7 +227,7 @@ export default function DropdownStylePanel( {
 				hasValue={ () =>
 					Object.keys( submenuBorderWidth || {} ).length > 0 ||
 					!! submenuBorderStyle ||
-					( showSizingControls &&
+					( showBox &&
 						Object.keys( submenuBorderRadius || {} ).length > 0 )
 				}
 				label={ __( 'Border', 'sgs-blocks' ) }
@@ -235,7 +235,7 @@ export default function DropdownStylePanel( {
 					setAttributes( {
 						submenuBorderWidth: {},
 						submenuBorderStyle: '',
-						...( showSizingControls ? { submenuBorderRadius: {} } : {} ),
+						...( showBox ? { submenuBorderRadius: {} } : {} ),
 					} )
 				}
 			>
@@ -250,7 +250,7 @@ export default function DropdownStylePanel( {
 					onStyleChange={ ( next ) =>
 						setAttributes( { submenuBorderStyle: next || '' } )
 					}
-					{ ...( showSizingControls
+					{ ...( showBox
 						? {
 								radiusValues: submenuBorderRadius || {},
 								onRadiusChange: ( next ) =>
@@ -300,7 +300,7 @@ export default function DropdownStylePanel( {
 			   never declares and the editor silently discards every write to it
 			   (D338). ⛔ Shadow is gradient-exempt by mechanism: `box-shadow` takes a
 			   colour, and a gradient there is invalid CSS the browser drops. */ }
-			{ showSizingControls && (
+			{ showBox && (
 				<ToolsPanelItem
 					hasValue={ () => !! submenuShadow || !! submenuShadowColour }
 					label={ __( 'Box shadow', 'sgs-blocks' ) }

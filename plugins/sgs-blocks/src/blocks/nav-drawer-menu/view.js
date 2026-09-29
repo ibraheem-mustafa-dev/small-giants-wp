@@ -90,8 +90,24 @@ function initBarEffects( root ) {
 	}
 
 	if ( bar.hasAttribute( 'data-magnet' ) ) {
+		// `itemMagnetStrength` — `data-magnet-strength` rides only when the
+		// operator set it (render.php). Absent: `initMagnet( el )` with no
+		// options, magnet.js's own factor 0.15 and 8px cap. Present: that
+		// factor with the cap lifted, since the pointer only engages while
+		// inside the label's own box. Touch input and reduced motion switch
+		// the effect off inside magnet.js itself.
+		const strengthAttr = bar.getAttribute( 'data-magnet-strength' );
+		const strength =
+			null !== strengthAttr ? parseFloat( strengthAttr ) : NaN;
+		const magnetOpts = Number.isFinite( strength )
+			? { factor: strength, maxPull: Infinity }
+			: undefined;
+
 		bar.querySelectorAll( '.sgs-nav-drawer-menu__magnet-target' ).forEach(
-			( el ) => activeCleanups.push( initMagnet( el ) )
+			( el ) =>
+				activeCleanups.push(
+					magnetOpts ? initMagnet( el, magnetOpts ) : initMagnet( el )
+				)
 		);
 	}
 

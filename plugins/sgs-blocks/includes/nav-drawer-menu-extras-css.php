@@ -18,6 +18,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/nav-drawer-menu-ornament-reveal-css.php';
 require_once __DIR__ . '/nav-drawer-menu-parity-css.php';
+require_once __DIR__ . '/nav-drawer-menu-ornament-frames.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_menu_tier_map' ) ) {
 	/**
@@ -131,6 +132,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_extras_css' ) ) {
 		}
 
 		$css .= sgs_nav_drawer_menu_ornament_reveal_css( $attributes, $scope, $link );
+		$css .= sgs_nav_drawer_menu_ornament_frames_css( $attributes, $scope );
 
 		// Media: shown per tier, always or grown on hover.
 		if ( 'featured-image' === ( $attributes['itemMedia'] ?? '' ) ) {

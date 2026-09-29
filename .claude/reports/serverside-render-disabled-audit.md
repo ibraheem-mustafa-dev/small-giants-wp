@@ -15,7 +15,7 @@ Finds every `<ServerSideRender>` JSX usage across `src/blocks/*/edit.js` and rep
 | sgs/card-grid | src/blocks/card-grid/edit.js | 1489 | yes |
 | sgs/google-reviews | src/blocks/google-reviews/edit.js | 659 | yes |
 | sgs/nav-bar-menu | src/blocks/nav-bar-menu/edit.js | 984 | yes |
-| sgs/nav-drawer-menu | src/blocks/nav-drawer-menu/edit.js | 753 | yes |
+| sgs/nav-drawer-menu | src/blocks/nav-drawer-menu/edit.js | 827 | yes |
 | sgs/product-card | src/blocks/product-card/edit.js | 3156 | yes |
 | sgs/responsive-logo | src/blocks/responsive-logo/edit.js | 867 | yes |
 | sgs/trustpilot-reviews | src/blocks/trustpilot-reviews/edit.js | 792 | yes |

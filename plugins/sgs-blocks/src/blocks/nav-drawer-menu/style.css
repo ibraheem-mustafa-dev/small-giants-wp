@@ -9,9 +9,11 @@
  *   - the `justify-content` bar-alignment default + `.sgs-nav-drawer-menu__bar`'s
  *     `flex-wrap` (a horizontal-row concern) — the drawer list is always a
  *     vertical list;
- *   - the submenu OPEN-ANIMATION rules (fade/slide-down keyframes) — the
- *     drawer's accordion is native `<details>` and never renders
- *     `.sgs-nav-drawer-menu__submenu-wrap` at all;
+ *   - the bar's floating-panel open-animation rules (fade/slide-down/grow
+ *     keyframes) — the drawer's accordion is native `<details>` and never
+ *     renders `.sgs-nav-drawer-menu__submenu-wrap` at all. Its own section
+ *     motion (`submenuAnimation`: fade, fade-lift, height) and row stagger are
+ *     at the end of this file, keyed on root modifier classes;
  *   - the sticky-header dropdown-panel reparent fix
  *     (`[data-sgs-nav-fixed]`) — a BAR-only mega/dropdown-panel stacking
  *     rescue; the drawer's own `<dialog>` already promotes to the top layer.
@@ -261,6 +263,104 @@
 	inset: 0;
 	opacity: 0;
 	position: absolute;
+}
+
+/*
+ * Ornament frame sequence (includes/nav-drawer-menu-ornament-frames.php).
+ * The frames are stacked over the settled glyph and transparent at rest. On row
+ * hover or keyboard focus frame N flashes for one `--sgs-ndm-frame-ms` slot,
+ * delayed by N slots, while the settled glyph is held transparent for the whole
+ * sequence (`--sgs-ndm-frame-n` slots) and then shows as normal. The per-tier
+ * animation names `--sgs-ndm-frame-flash` / `--sgs-ndm-frame-hide` are `none`
+ * where the sequence is switched off. Every animation rule sits inside
+ * `prefers-reduced-motion: no-preference`, so reduced motion shows only the
+ * final glyph and never flashes.
+ */
+.sgs-nav-drawer-menu__ornament-frames {
+	inset: 0;
+	pointer-events: none;
+	position: absolute;
+}
+
+.sgs-nav-drawer-menu__ornament-frame {
+	display: block;
+	height: 100%;
+	inset: 0;
+	opacity: 0;
+	position: absolute;
+	width: 100%;
+}
+
+.sgs-nav-drawer-menu__ornament-frame svg {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+@keyframes sgs-ndm-frame-flash {
+	from,
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes sgs-ndm-frame-hide {
+	from,
+	to {
+		opacity: 0;
+	}
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(1) {
+	--sgs-ndm-frame-i: 0;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(2) {
+	--sgs-ndm-frame-i: 1;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(3) {
+	--sgs-ndm-frame-i: 2;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(4) {
+	--sgs-ndm-frame-i: 3;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(5) {
+	--sgs-ndm-frame-i: 4;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(6) {
+	--sgs-ndm-frame-i: 5;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(7) {
+	--sgs-ndm-frame-i: 6;
+}
+
+.sgs-nav-drawer-menu__ornament-frame:nth-child(8) {
+	--sgs-ndm-frame-i: 7;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	@media (hover: hover) and (pointer: fine) {
+		:where(:root:not(.sgs-touch-input)) .sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-frame {
+			animation: var(--sgs-ndm-frame-flash, sgs-ndm-frame-flash) var(--sgs-ndm-frame-ms, 60ms) linear calc(var(--sgs-ndm-frame-i, 0) * var(--sgs-ndm-frame-ms, 60ms));
+		}
+
+		:where(:root:not(.sgs-touch-input)) .sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-glyph {
+			animation: var(--sgs-ndm-frame-hide, sgs-ndm-frame-hide) calc(var(--sgs-ndm-frame-n, 1) * var(--sgs-ndm-frame-ms, 60ms)) linear;
+		}
+	}
+
+	.sgs-nav-drawer-menu__link:focus-visible .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-frame {
+		animation: var(--sgs-ndm-frame-flash, sgs-ndm-frame-flash) var(--sgs-ndm-frame-ms, 60ms) linear calc(var(--sgs-ndm-frame-i, 0) * var(--sgs-ndm-frame-ms, 60ms));
+	}
+
+	.sgs-nav-drawer-menu__link:focus-visible .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-glyph {
+		animation: var(--sgs-ndm-frame-hide, sgs-ndm-frame-hide) calc(var(--sgs-ndm-frame-n, 1) * var(--sgs-ndm-frame-ms, 60ms)) linear;
+	}
 }
 
 /* Per-item media: the linked page's featured image, beside the label. */
@@ -772,5 +872,281 @@
 	to {
 		opacity: 0;
 		translate: 0 var(--sgs-nd-stagger-dist, 16px);
+	}
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ * ACCORDION SECTION MOTION AND ROW STAGGER (Spec 36 "Drawer item-level parity").
+ * Structure only. render.php adds one of `.sgs-nav-drawer-menu--acc-fade`,
+ * `--acc-fade-lift`, `--acc-height` (from `submenuAnimation`) and, with a stagger,
+ * `--acc-stagger` (+ `--acc-stagger-rows` for `submenuItemStaggerScope: rows`) to
+ * the root, and writes --sgs-ndm-acc-in / -out / -ease and --sgs-ndm-stag-step /
+ * -dur / -dist / -max / -ease on the instance
+ * (includes/nav-drawer-menu-section-css.php). Neither class is added for
+ * drill-down mode, whose sections slide in as overlays. An untouched drawer has
+ * none of the classes, so its native `<details>` toggle stays instant.
+ *
+ * The section body is the `<details>` element's `::details-content` slot. The
+ * closed rule carries the EXIT timing and the `[open]` rule the ENTRY timing,
+ * because a transition uses the destination state's own timing. `content-visibility`
+ * is transitioned discretely so the body stays rendered until the exit finishes.
+ * A browser without `::details-content` skips the whole block and toggles instantly.
+ * Everything sits inside `prefers-reduced-motion: no-preference`.
+ * ═══════════════════════════════════════════════════════════════════════
+ */
+@media (prefers-reduced-motion: no-preference) {
+	@supports selector(::details-content) {
+		:is(.sgs-nav-drawer-menu--acc-fade, .sgs-nav-drawer-menu--acc-fade-lift, .sgs-nav-drawer-menu--acc-height) .sgs-nav-drawer-menu__accordion {
+			interpolate-size: allow-keywords;
+		}
+
+		.sgs-nav-drawer-menu--acc-fade .sgs-nav-drawer-menu__accordion::details-content {
+			opacity: 0;
+			transition: opacity var(--sgs-ndm-acc-out, 150ms) var(--sgs-ndm-acc-ease, ease-out),
+				content-visibility var(--sgs-ndm-acc-out, 150ms) var(--sgs-ndm-acc-ease, ease-out) allow-discrete;
+		}
+
+		.sgs-nav-drawer-menu--acc-fade .sgs-nav-drawer-menu__accordion[open]::details-content {
+			opacity: 1;
+			transition: opacity var(--sgs-ndm-acc-in, 180ms) var(--sgs-ndm-acc-ease, ease-out),
+				content-visibility var(--sgs-ndm-acc-in, 180ms) var(--sgs-ndm-acc-ease, ease-out) allow-discrete;
+		}
+
+		.sgs-nav-drawer-menu--acc-fade-lift .sgs-nav-drawer-menu__accordion::details-content {
+			opacity: 0;
+			translate: 0 -8px;
+			transition: opacity var(--sgs-ndm-acc-out, 150ms) var(--sgs-ndm-acc-ease, ease-out),
+				translate var(--sgs-ndm-acc-out, 150ms) var(--sgs-ndm-acc-ease, ease-out),
+				content-visibility var(--sgs-ndm-acc-out, 150ms) var(--sgs-ndm-acc-ease, ease-out) allow-discrete;
+		}
+
+		.sgs-nav-drawer-menu--acc-fade-lift .sgs-nav-drawer-menu__accordion[open]::details-content {
+			opacity: 1;
+			translate: 0 0;
+			transition: opacity var(--sgs-ndm-acc-in, 180ms) var(--sgs-ndm-acc-ease, ease-out),
+				translate var(--sgs-ndm-acc-in, 180ms) var(--sgs-ndm-acc-ease, ease-out),
+				content-visibility var(--sgs-ndm-acc-in, 180ms) var(--sgs-ndm-acc-ease, ease-out) allow-discrete;
+		}
+
+		/* Height clips while it moves. Once the entry has finished the clip is
+		   released (a 0s discrete `overflow` flip delayed by the entry time), so a
+		   section shadow or a focus ring is never trimmed at rest. */
+		.sgs-nav-drawer-menu--acc-height .sgs-nav-drawer-menu__accordion::details-content {
+			block-size: 0;
+			overflow: clip;
+			transition: block-size var(--sgs-ndm-acc-out, 150ms) var(--sgs-ndm-acc-ease, ease-out),
+				content-visibility var(--sgs-ndm-acc-out, 150ms) var(--sgs-ndm-acc-ease, ease-out) allow-discrete;
+		}
+
+		.sgs-nav-drawer-menu--acc-height .sgs-nav-drawer-menu__accordion[open]::details-content {
+			block-size: auto;
+			overflow: visible;
+			transition: block-size var(--sgs-ndm-acc-in, 180ms) var(--sgs-ndm-acc-ease, ease-out),
+				content-visibility var(--sgs-ndm-acc-in, 180ms) var(--sgs-ndm-acc-ease, ease-out) allow-discrete,
+				overflow 0s var(--sgs-ndm-acc-in, 180ms) allow-discrete;
+		}
+	}
+}
+
+/* Row index inside an open section: a plain section's rows, a mega section's
+   columns, and the link rows inside each column. Its own variable, not `--sgs-i`
+   (the top-level item stagger's, which these rows would otherwise inherit). */
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(1) {
+	--sgs-ndm-si: 0;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(2) {
+	--sgs-ndm-si: 1;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(3) {
+	--sgs-ndm-si: 2;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(4) {
+	--sgs-ndm-si: 3;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(5) {
+	--sgs-ndm-si: 4;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(6) {
+	--sgs-ndm-si: 5;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(7) {
+	--sgs-ndm-si: 6;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(8) {
+	--sgs-ndm-si: 7;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(9) {
+	--sgs-ndm-si: 8;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(10) {
+	--sgs-ndm-si: 9;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(11) {
+	--sgs-ndm-si: 10;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(12) {
+	--sgs-ndm-si: 11;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(13) {
+	--sgs-ndm-si: 12;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(14) {
+	--sgs-ndm-si: 13;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(15) {
+	--sgs-ndm-si: 14;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(16) {
+	--sgs-ndm-si: 15;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(17) {
+	--sgs-ndm-si: 16;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(18) {
+	--sgs-ndm-si: 17;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(19) {
+	--sgs-ndm-si: 18;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(20) {
+	--sgs-ndm-si: 19;
+}
+
+:is(
+	.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+):nth-child(n + 21) {
+	--sgs-ndm-si: 20;
+}
+
+@supports (transition-delay: calc(sibling-index() * 1ms)) {
+	:is(
+		.sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+		.sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+		.sgs-nav-drawer-menu__mega-body .sgs-mega-group > *
+	) {
+		--sgs-ndm-si: calc(sibling-index() - 1);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-nav-drawer-menu--acc-stagger .sgs-nav-drawer-menu__accordion[open] .sgs-nav-drawer-menu__submenu > .sgs-nav-drawer-menu__subitem,
+	.sgs-nav-drawer-menu--acc-stagger .sgs-nav-drawer-menu__accordion[open] .sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > *,
+	.sgs-nav-drawer-menu--acc-stagger-rows .sgs-nav-drawer-menu__accordion[open] .sgs-nav-drawer-menu__mega-body .sgs-mega-group > * {
+		animation: sgs-nav-drawer-menu-section-row-in var(--sgs-ndm-stag-dur, 180ms) var(--sgs-ndm-stag-ease, ease-out) both;
+		animation-delay: min(calc(var(--sgs-ndm-si, 0) * var(--sgs-ndm-stag-step, 0ms)), var(--sgs-ndm-stag-max, 100000ms));
+	}
+
+	/* "Rows" scope: only one granularity moves, so the column-level stagger stops. */
+	.sgs-nav-drawer-menu--acc-stagger-rows .sgs-nav-drawer-menu__accordion[open] .sgs-nav-drawer-menu__mega-body .sgs-mega-panel__content > * {
+		animation: none;
+	}
+}
+
+@keyframes sgs-nav-drawer-menu-section-row-in {
+	from {
+		opacity: 0;
+		translate: 0 var(--sgs-ndm-stag-dist, 8px);
 	}
 }
