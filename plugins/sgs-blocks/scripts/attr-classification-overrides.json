@@ -1339,7 +1339,7 @@
 			"slug": "sgs/button",
 			"attr": "liftHover",
 			"fields": {
-				"css_property": "transform",
+				"css_property": "translate",
 				"css_state": "hover"
 			}
 		},
