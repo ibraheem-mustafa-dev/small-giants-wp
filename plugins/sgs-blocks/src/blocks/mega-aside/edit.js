@@ -28,8 +28,9 @@ import {
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
+	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, resolveColourToken, SgsColourPanel, SgsLengthControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, SpacingControl, resolveColourToken, SgsColourPanel, SgsLengthControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
@@ -52,6 +53,13 @@ function boxShorthand( box, keys ) {
 	}
 	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
 }
+
+const JUSTIFY_OPTIONS = [
+	{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
+	{ label: __( 'Space between', 'sgs-blocks' ), value: 'space-between' },
+];
 
 const TEMPLATE = [
 	[ 'sgs/media', {} ],
@@ -84,6 +92,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		asideBgHoverGradient,
 		asidePadding,
 		asideRadius,
+		asideGap,
+		asideJustify,
 		asideBorderColour,
 		asideBorderColourGradient,
 		asideBorderColourHover,
@@ -133,6 +143,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		if ( asideBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBorderColourGradient ) ) {
 			previewStyle.borderImage = `${ asideBorderColourGradient } 1`;
 		}
+	}
+	// Stack gap + vertical alignment — desktop tier mirrors render.php.
+	if ( asideGap?.desktop ) {
+		previewStyle.gap = asideGap.desktop;
+	}
+	if ( asideJustify?.desktop ) {
+		previewStyle.justifyContent = asideJustify.desktop;
 	}
 	const paddingPreview = boxShorthand( asidePadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
@@ -309,6 +326,43 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							} );
 						} }
 					/>
+
+					{ /* block.json attributes.asideGap / asideJustify (tier objects) +
+					   render.php (sgs_emit_responsive_css on the aside's scoped rule). */ }
+					<ResponsiveOverride
+						label={ __( 'Content gap', 'sgs-blocks' ) }
+						value={ asideGap }
+						onChange={ ( obj ) => setAttributes( { asideGap: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SpacingControl
+								freeInput
+								value={ ownValue }
+								placeholder={ inherited ? effectiveValue : '16px' }
+								onChange={ setOwnValue }
+							/>
+						) }
+					</ResponsiveOverride>
+
+					<ResponsiveOverride
+						label={ __( 'Vertical alignment', 'sgs-blocks' ) }
+						value={ asideJustify }
+						onChange={ ( obj ) => setAttributes( { asideJustify: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								value={ ownValue || '' }
+								options={
+									'desktop' === tier
+										? [ { label: __( 'Default (start)', 'sgs-blocks' ), value: '' }, ...JUSTIFY_OPTIONS ]
+										: [ { label: __( '— inherit —', 'sgs-blocks' ), value: '' }, ...JUSTIFY_OPTIONS ]
+								}
+								onChange={ ( val ) => setOwnValue( val ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
 
 					{ /* units array is REQUIRED by the box-object interface contract. Without it
 					     the operator gets whatever unit set core happens to

@@ -78,7 +78,9 @@
 						"css:text-align": "textAlign",
 						"css:text-wrap": "textWrap",
 						"css:text-indent": "textIndent",
-						"css:column-count": "textColumns"
+						"css:column-count": "textColumns",
+					"css:gap": "iconGap",
+					"css:justify-content": "contentAlign"
 					},
 					"states": {
 						"hover": {
@@ -113,7 +115,7 @@
 							}
 						}
 					},
-					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize remains an unmapped bespoke icon control, not a Text/Fill/Layout member. iconGap was deleted (D613) -- confirmed dead on both sides, no consumer anywhere in the plugin. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient/iconColourHoverGradient, added 2026-08-16 (Builder 4) — non-empty wins over the flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize remains an unmapped bespoke icon control, not a Text/Fill/Layout member. iconGap (per-device label-to-icon gap) is mapped on the button element as css:gap because the gap is a flex gap on the button root (and its `.sgs-button__face` wrapper). `liftHover` is unmapped like scaleHover (hover translate, classified by an attr-classification override). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient/iconColourHoverGradient, added 2026-08-16 (Builder 4) — non-empty wins over the flat currentColor paint at render time (helpers-svg-gradient.php)."
 				}
 			}
 		}
@@ -371,6 +373,21 @@
 		"scaleHover": {
 			"type": "number",
 			"default": 1
+		},
+		"liftHover": {
+			"type": "number",
+			"default": 0,
+			"description": "Raises the button by this many px on hover/focus (translateY(-N px), 0-24; 0 = off, so an untouched button is unaffected). Combines with scaleHover in one transform."
+		},
+		"contentAlign": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device alignment of the label + icon inside the button along its row (justify-content: flex-start|center|flex-end). Tier object {desktop,tablet,mobile}; empty keeps the centred default. Distinct from textAlign, which cannot move flex content."
+		},
+		"iconGap": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device gap between the label and the icon (CSS length). Tier object {desktop,tablet,mobile}; empty adds no gap."
 		},
 		"opacityHover": {
 			"type": "number",

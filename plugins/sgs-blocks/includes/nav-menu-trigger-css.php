@@ -15,6 +15,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-responsive.php';
+require_once __DIR__ . '/helpers-box.php';
+
 if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 	/**
 	 * Build the menu-button half of the nav bar menu's scoped <style>.
@@ -253,6 +256,60 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 
 				$sgs_nm_icon_prev_decl = $sgs_nm_icon_tier_decl;
 			}
+		}
+
+		/*
+		 * Bar gap (burgerBarGap), per device: the space BETWEEN the default glyph's
+		 * bars. The bars are 2px each (style.css) spread by space-between across the
+		 * stack box, so the stack height is (bars x 2px) + (bars - 1) x gap; that is
+		 * written to `--sgs-nbm-icon-h`, which every morph pose already reads. Emitted
+		 * after the burgerIconHeight rule above so a set gap wins over it.
+		 */
+		$sgs_nm_bar_count = 2 === (int) ( $attributes['burgerBarCount'] ?? 3 ) ? 2 : 3;
+		$css             .= sgs_emit_responsive_css(
+			$uid_sel . ' .sgs-nav-bar-menu__burger-icon',
+			array(
+				array(
+					'value'     => $attributes['burgerBarGap'] ?? array(),
+					'css'       => '--sgs-nbm-icon-h',
+					'transform' => static function ( $raw ) use ( $sgs_nm_bar_count ) {
+						$gap = sgs_css_length_value( is_numeric( $raw ) ? $raw . 'px' : (string) $raw );
+						return '' === $gap ? '' : 'calc(' . ( $sgs_nm_bar_count * 2 ) . 'px + ' . ( $sgs_nm_bar_count - 1 ) . ' * ' . $gap . ')';
+					},
+				),
+			)
+		);
+
+		/*
+		 * Menu button box: padding + corner radius per device, and the border (width
+		 * box / style / colour). style.css's `.burger` sets padding:0 and border:none
+		 * at (0,1,0) and a zero-specificity 8px radius; these rules carry the scope
+		 * class (0,2,0) so they win. A border style is only ever written alongside a
+		 * width (the G5 rule), and a 0 width still writes it (border: 0 solid).
+		 */
+		$css .= sgs_emit_responsive_css(
+			$burger_sel,
+			array(
+				array(
+					'value'        => $attributes['burgerPadding'] ?? array(),
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+				array(
+					'value'        => $attributes['burgerBorderRadius'] ?? array(),
+					'css'          => 'border-radius',
+					'unit_default' => 'px',
+				),
+			)
+		);
+		$burger_border_width = is_array( $attributes['burgerBorderWidth'] ?? null ) ? sgs_box_object_shorthand( $attributes['burgerBorderWidth'] ) : null;
+		if ( null !== $burger_border_width && '' !== $burger_border_width ) {
+			$burger_border_style  = (string) ( $attributes['burgerBorderStyle'] ?? 'solid' );
+			$burger_border_style  = in_array( $burger_border_style, array( 'solid', 'dashed', 'dotted', 'double', 'none' ), true ) ? $burger_border_style : 'solid';
+			$burger_border_colour = sgs_colour_value( (string) ( $attributes['burgerBorderColour'] ?? '' ) );
+			$css                 .= $burger_sel . '{border-style:' . $burger_border_style . ';border-width:' . esc_attr( $burger_border_width ) . ';'
+				. ( '' !== $burger_border_colour ? 'border-color:' . $burger_border_colour . ';' : '' ) . '}';
 		}
 
 		/*

@@ -250,7 +250,8 @@
 }
 
 .sgs-nav-drawer__close:hover {
-	opacity: 0.75;
+	/* closeHoverOpacity — render.php's chrome CSS sets the custom property. */
+	opacity: var( --sgs-nd-close-hover-opacity, 0.75 );
 }
 
 /* The hit area never drops below 44px, whatever closeSize paints. */

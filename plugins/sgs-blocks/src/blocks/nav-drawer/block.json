@@ -158,6 +158,8 @@
 						"css:text-transform": "closeTextTransform",
 						"css:letter-spacing": "closeLetterSpacing",
 						"css:border-radius": "closeRadius",
+						"css:padding": "closePadding",
+						"css:line-height": "closeLineHeight",
 						"css:transform": "closeOffset",
 						"css:border-width": "closeBorderWidth",
 						"css:border-style": "closeBorderStyle",
@@ -171,7 +173,7 @@
 							}
 						}
 					},
-					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColourHover is wired in render.php via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routes both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) is uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor), following the site-wide focus token, which is correct behaviour, just not this element's colour attrs. closeSize (mirrors sgs/nav-bar-menu's burgerSize, css:width+css:height) and the close-LABEL typography quintet (closeFontSize/closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing, mirrors sgs/nav-bar-menu's burgerFontSize/burgerFontFamily/burgerFontWeight/burgerTextTransform/burgerLetterSpacing) use the same mechanism (sgs_typography_css_rule()) -- see render.php's close-typography block for the closeStyle-dependent text-transform resolution, and closeSize for the icon-vs-text width branch mirroring burgerSize's own triggerMode branch. toggleCloseColourHoverGradient is the Hover gradient sibling of toggleCloseColourGradient; no smart-contrast swap applies to the close button (unlike the bar's itemColourHover). Spec 35 §12 audit item 5 (2026-09-24) added closeRadius (css:border-radius, already a `layout`-cluster member this element declares) and closeOffset (css:transform, a translate() nudge -- also a `layout`-cluster member). closePlacement is DELIBERATELY UNMAPPED: it is an enum POSITION MODE (top-row-end | top-row-start | same-slot), not a routable CSS length/colour/timing value -- the converter's attrMap contract routes a cluster member to a CSS-VALUE-bearing attribute, and closePlacement instead selects which static position rule (top/left/inset-inline-*) applies, which the css:transform/closeOffset entry above already carries the moving part of. Ruling: closePlacement stays out of attrMap by design, not as an oversight. The close box border (closeBorderWidth box object, closeBorderStyle, closeBorderColour) is emitted by includes/nav-drawer-chrome-css.php, with the style written only alongside a real width. The close glyph size (closeIconSize) is its own `closeIcon` element because css:width here already routes to closeSize."
+					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColourHover is wired in render.php via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routes both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) is uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor), following the site-wide focus token, which is correct behaviour, just not this element's colour attrs. closeHoverOpacity (hover fade) is deliberately UNMAPPED: css:opacity is a fill-cluster member and this element declares no fill cluster, so it is classified through attr-classification-overrides.json (css_property opacity, css_state hover), like sgs/button scaleHover. closePadding and closeLineHeight (the label line-height, emitted by sgs_typography_css_rule() on .sgs-nav-drawer__close-text) are mapped. closeSize (mirrors sgs/nav-bar-menu's burgerSize, css:width+css:height) and the close-LABEL typography quintet (closeFontSize/closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing, mirrors sgs/nav-bar-menu's burgerFontSize/burgerFontFamily/burgerFontWeight/burgerTextTransform/burgerLetterSpacing) use the same mechanism (sgs_typography_css_rule()) -- see render.php's close-typography block for the closeStyle-dependent text-transform resolution, and closeSize for the icon-vs-text width branch mirroring burgerSize's own triggerMode branch. toggleCloseColourHoverGradient is the Hover gradient sibling of toggleCloseColourGradient; no smart-contrast swap applies to the close button (unlike the bar's itemColourHover). Spec 35 §12 audit item 5 (2026-09-24) added closeRadius (css:border-radius, already a `layout`-cluster member this element declares) and closeOffset (css:transform, a translate() nudge -- also a `layout`-cluster member). closePlacement is DELIBERATELY UNMAPPED: it is an enum POSITION MODE (top-row-end | top-row-start | same-slot), not a routable CSS length/colour/timing value -- the converter's attrMap contract routes a cluster member to a CSS-VALUE-bearing attribute, and closePlacement instead selects which static position rule (top/left/inset-inline-*) applies, which the css:transform/closeOffset entry above already carries the moving part of. Ruling: closePlacement stays out of attrMap by design, not as an oversight. The close box border (closeBorderWidth box object, closeBorderStyle, closeBorderColour) is emitted by includes/nav-drawer-chrome-css.php, with the style written only alongside a real width. The close glyph size (closeIconSize) is its own `closeIcon` element because css:width here already routes to closeSize."
 				},
 				"closeIcon": {
 					"label": "Close icon",
@@ -351,6 +353,25 @@
 		"closeRadius": {
 			"type": "object",
 			"default": {}
+		},
+		"closePadding": {
+			"type": "object",
+			"default": {},
+			"description": "Close button padding per device, a {desktop,tablet,mobile} tier object of {top,right,bottom,left} CSS lengths. Unset keeps the stylesheet's padding (0, or 0 12px under text-swap/icon-and-text). Emitted by includes/nav-drawer-chrome-css.php."
+		},
+		"closeHoverOpacity": {
+			"type": "number",
+			"default": 0.75,
+			"description": "Close button opacity on hover, 0 to 1. The default 0.75 is style.css's own hover fade; 1 switches the fade off. Emitted as the --sgs-nd-close-hover-opacity custom property by includes/nav-drawer-chrome-css.php."
+		},
+		"closeLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Close LABEL line-height per device (unitless number). Emitted on .sgs-nav-drawer__close-text by sgs_typography_css_rule() under text-swap/icon-and-text; unset inherits."
+		},
+		"closeLineHeightUnit": {
+			"type": "string",
+			"default": ""
 		},
 		"closeBorderWidth": {
 			"type": "object",

@@ -121,6 +121,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		shapeColourHover,
 		scaleHover,
 		opacityHover,
+		iconRotate,
 		iconAlign,
 		textAlign,
 	} = attributes;
@@ -173,6 +174,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		// Mirrors render.php's `$root_decls[] = 'text-align:' . $text_align`
 		// (emitted only when set, so inheritance works when empty — same here).
 		textAlign: textAlign || undefined,
+		// Mirrors render.php's paint-time rotate() (layout box unchanged).
+		transform: iconRotate ? `rotate(${ iconRotate }deg)` : undefined,
 	};
 
 	// Base padding/margin preview — padding/margin are owned tier-object
@@ -321,6 +324,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 16 }
 						max={ 128 }
 						step={ 4 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<RangeControl
+						label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
+						help={ __( 'Turns the icon and its shape without changing the space it takes up.', 'sgs-blocks' ) }
+						value={ iconRotate ?? 0 }
+						onChange={ ( val ) => setAttributes( { iconRotate: val ?? 0 } ) }
+						min={ -180 }
+						max={ 180 }
+						step={ 5 }
+						allowReset
+						resetFallbackValue={ 0 }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

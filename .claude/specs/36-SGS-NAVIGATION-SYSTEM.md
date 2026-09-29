@@ -372,6 +372,16 @@ hides child settings, so a client could not edit the icon-list link lists. The p
 every editor mount and silently drop stored content that no longer lines up with the template by position.
 An operator cannot break a column's shape but can freely select and edit any nested block's own settings.
 
+**Aside column.** `sgs/mega-panel`'s `asideSeparator` (`style` line | none, `colour`, `width`) paints only the
+divider: the rule carries no padding, so the gap between the divider and the content is `sgs/mega-aside`'s own
+`asidePadding` (default 24px on every side), which a client can change. `style: none` adds
+`sgs-mega-panel--aside-sep-none` on the frontend (`mega-panel/render.php`) as well as in the editor, and
+`style.css::.wp-block-sgs-mega-panel:not(.sgs-mega-panel--aside-sep-none) .sgs-mega-aside` paints the divider
+only when it is absent. `sgs/mega-aside` also owns `asideGap` (tier length, the gap between its stacked
+children; unset keeps `style.css`'s 16px) and `asideJustify` (tier: `flex-start` | `center` | `flex-end` |
+`space-between`, its content's alignment along the column; unset keeps the start). Both are emitted by
+`mega-aside/render.php` through `sgs_emit_responsive_css()`.
+
 **Competitive positioning (Spec 02 §23):** the mega system is the block-native alternative to Max Mega Menu,
 JetMenu (Crocoblock), and Kadence Pro mega menu — ARIA-compliant, semantic HTML, **zero external
 dependencies**. Elementor's mega menu needs Elementor Pro ($59–399/yr) and generates heavy DOM; Max Mega Menu
@@ -481,7 +491,13 @@ reserved 64px: `.sgs-nav-drawer__body` padding-top is `var(--sgs-nd-close-room, 
   `chromeSlotNewTab`) styled by `sgs_button_element_style_css()` with the `chromeButton` prefix.
 - **Close box:** `closeBorderWidth` (one box for every device, the border-control rule), `closeBorderStyle`,
   `closeBorderColour` (style written only with a width) and `closeIconSize` (tier); the hit area never drops
-  below 44px (`::after`).
+  below 44px (`::after`). `closePadding` (tier box; unset keeps `style.css`'s `padding:0`, or `0 12px` under
+  `text-swap`/`icon-and-text`) is emitted by `includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css` at a
+  higher specificity than those style rules. `closeHoverOpacity` (0 to 1, default 0.75) is the × hover fade,
+  written as `--sgs-nd-close-hover-opacity` and read by `style.css::.sgs-nav-drawer__close:hover` (1 switches
+  the fade off). `closeLineHeight` (tier, with `closeLineHeightUnit`, unitless by default) is the close label's
+  line-height, emitted on `.sgs-nav-drawer__close-text` by `sgs_typography_css_rule()` with the rest of the
+  `close` typography set.
 - A row holding only the × carries `--close-only`; under the `trigger` close style the row goes with the × and
   the body gets its padding back (`--sgs-nd-close-room`), so an empty row costs no space.
 - `plugins/sgs-blocks/src/blocks/nav-drawer/edit.js::TEMPLATE` seeds `sgs/nav-drawer-menu` ONLY; the logo and
@@ -895,7 +911,13 @@ and `burgerWidth` (per tier, empty = square) its width; a button under 44px keep
 per tier and both empty by default, which keeps the box at 24x18 (U-18 G6; lamalama's bars are 16px in a 12px
 stack). They write `--sgs-nbm-icon-w` and `--sgs-nbm-icon-h` rather than bare `width`/`height`, because every
 `burgerMorph` pose derives its open travel from `--sgs-nbm-icon-h` through `calc()`, so one property reaches
-every pose. Bar THICKNESS (2px) still has no setting; no reference has needed one. The bar items' label magnet
+every pose. `burgerBarGap` (per tier, empty by default) is the space between the bars: it writes
+`--sgs-nbm-icon-h` as `calc(bars x 2px + (bars - 1) x gap)` from `includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css`,
+after the `burgerIconHeight` rule, so a set gap wins over it. The button's own box takes `burgerPadding` (tier
+box; unset keeps `padding:0`), `burgerBorderRadius` (tier length; unset keeps the zero-specificity
+`:where(.sgs-nav-bar-menu__burger)` medium-radius default, 8px, in `style.css`; 0 gives square corners) and
+`burgerBorderWidth` (box, one value for every device) / `burgerBorderStyle` / `burgerBorderColour` (the style
+is written only alongside a width, and a 0 width still writes it). Bar THICKNESS (2px) still has no setting; no reference has needed one. The bar items' label magnet
 takes `itemMagnetStrength` (the pull factor; unset keeps the built-in 0.15 capped at 8px). The burger button
 carries `data-sgs-nav-collapse` (its `collapsePoint`) for FR-36-6's resize rule.
 **Reach, built (Wave 3C U-14):** `triggerSurface` (tier on/off, "Whole row opens the menu", M-39, DEC-14 as

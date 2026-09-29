@@ -82,7 +82,7 @@ import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, resolveCol
 	ShadowControl, SurfaceGroundControls, ScrimControls, scrimColourRow,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting } from '../../utils';
+import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting, tierBoxShorthand } from '../../utils';
 
 /**
  * Content template: the menu ONLY. templateLock:false. The logo and the one
@@ -155,6 +155,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		closeOffset,
 		closeOnScrollDistance,
 		closeRadius,
+		closePadding,
 		accordionExclusive,
 		closeLabel,
 		closeIcon,
@@ -1421,6 +1422,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							   DEVICE's resolved value, falling back to the un-migrated
 							   4px default (style.css::.sgs-nav-drawer__close). */
 							borderRadius: closeRadiusActive,
+							// closePadding editor-canvas mirror (active device tier).
+							...( tierBoxShorthand( closePadding, activeDeviceTier ) ? { padding: tierBoxShorthand( closePadding, activeDeviceTier ) } : {} ),
 							// closePlacement/closeOffset editor-canvas mirror (SHOULD 10).
 							...closePlacementPreviewStyle,
 						} }

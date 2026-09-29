@@ -137,6 +137,30 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_css' ) ) {
 				. ( '' !== $colour ? 'border-color:' . $colour . ';' : '' ) . '}';
 		}
 
+		// The × box padding (closePadding), per device. The scoped selector
+		// out-ranks style.css's `--close-text-swap`/`--close-icon-and-text`
+		// `padding:0 12px` (0,2,0) with the drawer root's second class.
+		$css .= sgs_emit_responsive_css(
+			$close_sel,
+			array(
+				array(
+					'value'        => $attributes['closePadding'] ?? array(),
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+			)
+		);
+
+		// The × hover fade (closeHoverOpacity). style.css reads the custom
+		// property with the 0.75 default, so only a differing value is emitted.
+		$hover_opacity = isset( $attributes['closeHoverOpacity'] ) && is_numeric( $attributes['closeHoverOpacity'] )
+			? min( 1.0, max( 0.0, (float) $attributes['closeHoverOpacity'] ) )
+			: 0.75;
+		if ( abs( $hover_opacity - 0.75 ) > 0.001 ) {
+			$css .= $close_sel . '{--sgs-nd-close-hover-opacity:' . round( $hover_opacity, 2 ) . ';}';
+		}
+
 		// The × glyph size (closeIconSize), per device.
 		$css .= sgs_emit_responsive_css(
 			$root_sel . ' .sgs-nav-drawer__close svg',

@@ -20,7 +20,7 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
@@ -213,6 +213,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		borderStyle,
 		borderWidth,
 		scaleHover,
+		liftHover,
+		contentAlign,
+		iconGap,
 		scaleHoverTarget,
 		opacityHover,
 		transitionDuration,
@@ -293,6 +296,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	};
 
 	const previewStyle = {};
+
+	// Content alignment + label-to-icon gap (desktop tier) — mirrors render.php's
+	// scoped justify-content / gap on the button root.
+	if ( contentAlign?.desktop ) previewStyle.justifyContent = contentAlign.desktop;
+	if ( iconGap?.desktop ) previewStyle.gap = iconGap.desktop;
 
 	// colourTextGradient/colourBackgroundGradient real mechanism (render.php,
 	// D636 + the button-specific "Real text gradient" precondition,
@@ -412,6 +420,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		blockClasses.push( `sgs-button--${ inheritStyle }` );
 	}
 	if ( widthType?.desktop === 'full' ) blockClasses.push( 'sgs-button--full' );
+	// Hover lift canvas mirror — a clientId-scoped :hover rule (render.php
+	// emits translateY(-N) on the same hover state).
+	const liftScope = `sgs-button-lift-${ clientId }`;
+	if ( liftHover > 0 ) blockClasses.push( liftScope );
 	const blockProps = useBlockProps( {
 		className: blockClasses.join( ' ' ),
 		style: previewStyle,
@@ -694,6 +706,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								resetAll={ () =>
 									setAttributes( {
 										iconSize: {},
+										iconGap: {},
 									} )
 								}
 							>
@@ -721,6 +734,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 												step={ 1 }
 												__nextHasNoMarginBottom
 												__next40pxDefaultSize
+											/>
+										) }
+									</ResponsiveOverride>
+								</ToolsPanelItem>
+								{ /* iconGap is a TIER OBJECT — block.json attributes.iconGap +
+								   render.php (gap on the button root / face wrapper). */ }
+								<ToolsPanelItem
+									label={ __( 'Icon gap', 'sgs-blocks' ) }
+									hasValue={ () => !! iconGap?.desktop }
+									onDeselect={ () => setAttributes( { iconGap: {} } ) }
+								>
+									<ResponsiveOverride
+										label={ __( 'Icon gap', 'sgs-blocks' ) }
+										value={ iconGap }
+										onChange={ ( obj ) => setAttributes( { iconGap: obj } ) }
+									>
+										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+											<SpacingControl
+												freeInput
+												value={ ownValue }
+												placeholder={ inherited ? effectiveValue : '' }
+												onChange={ setOwnValue }
 											/>
 										) }
 									</ResponsiveOverride>
@@ -819,6 +854,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										setAttributes( { [ minHeightUnitAttr ]: unit } );
 									}
 								} }
+							/>
+						) }
+					</ResponsiveOverride>
+
+					{ /* Content alignment — block.json attributes.contentAlign (tier
+					   object) + render.php (justify-content on the button root and
+					   its face wrapper). textAlign cannot move flex content. */ }
+					<ResponsiveOverride
+						label={ __( 'Content alignment', 'sgs-blocks' ) }
+						value={ contentAlign }
+						onChange={ ( obj ) => setAttributes( { contentAlign: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								value={ ownValue || '' }
+								options={ [
+									{ label: 'desktop' === tier ? __( 'Centre (default)', 'sgs-blocks' ) : __( '— inherit —', 'sgs-blocks' ), value: '' },
+									{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
+									{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+									{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
+								] }
+								onChange={ ( val ) => setOwnValue( val ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -1036,6 +1095,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<RangeControl
+						label={ __( 'Hover lift (px)', 'sgs-blocks' ) }
+						help={ __( 'Raises the button on hover/focus. 0 = no lift. Works together with scale.', 'sgs-blocks' ) }
+						value={ liftHover ?? 0 }
+						onChange={ ( val ) => setAttributes( { liftHover: val ?? 0 } ) }
+						min={ 0 }
+						max={ 24 }
+						step={ 1 }
+						allowReset
+						resetFallbackValue={ 0 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<SelectControl
 						label={ __( 'What scales', 'sgs-blocks' ) }
 						help={ __( 'Whole button scales the border and fill together with the label (the classic effect). Inner face only scales the label/icon, leaving the border and fill exactly where they are.', 'sgs-blocks' ) }
@@ -1116,6 +1188,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ /* Editor preview — the button element IS the block root (D288, no wrapper div).
 			   The label is now RichText on-canvas (matching core/button) instead of a
 			   sidebar TextControl. */ }
+			{ liftHover > 0 && <style>{ `.${ liftScope }:hover{transform:translateY(-${ Math.min( 24, liftHover ) }px)}` }</style> }
 			<span { ...blockProps }>
 				{ backgroundLayerStyle && (
 					<span aria-hidden="true" style={ backgroundLayerStyle } />

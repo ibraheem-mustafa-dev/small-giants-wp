@@ -1328,6 +1328,22 @@
 			}
 		},
 		{
+			"slug": "sgs/nav-drawer",
+			"attr": "closeHoverOpacity",
+			"fields": {
+				"css_property": "opacity",
+				"css_state": "hover"
+			}
+		},
+		{
+			"slug": "sgs/button",
+			"attr": "liftHover",
+			"fields": {
+				"css_property": "transform",
+				"css_state": "hover"
+			}
+		},
+		{
 			"slug": "sgs/card-grid",
 			"attr": "scaleHover",
 			"fields": {
