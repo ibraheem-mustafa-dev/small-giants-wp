@@ -181,13 +181,7 @@
               "backgroundPadding": "14px",
               "ariaLabel": "Email",
               "linkUrl": "mailto:#",
-              "opacityHover": 0.75,
-              "sgsChildSizing": {
-                "desktop": "fixed"
-              },
-              "sgsChildWidth": {
-                "desktop": "46px"
-              }
+              "opacityHover": 0.75
             }
           },
           {
@@ -201,13 +195,7 @@
               "backgroundPadding": "14px",
               "ariaLabel": "Call",
               "linkUrl": "tel:#",
-              "opacityHover": 0.75,
-              "sgsChildSizing": {
-                "desktop": "fixed"
-              },
-              "sgsChildWidth": {
-                "desktop": "46px"
-              }
+              "opacityHover": 0.75
             }
           }
         ]
@@ -250,7 +238,16 @@
           "itemExpanderRotate": 45,
           "itemLineHeight": 25,
           "itemLineHeightUnit": "px",
-          "submenuCaretSize": "11px"
+          "submenuCaretSize": "11px",
+          "submenuBg": "transparent",
+          "submenuPadding": {
+            "desktop": {
+              "top": "0px",
+              "right": "0px",
+              "bottom": "0px",
+              "left": "0px"
+            }
+          }
         }
       },
       {

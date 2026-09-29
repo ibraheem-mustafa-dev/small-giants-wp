@@ -166,6 +166,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	const basePadding = attributes.padding?.desktop;
 	const baseMargin = attributes.margin?.desktop;
 	const previewStyle = {};
+	// Mirrors render.php: textAlign is the flex row's justify-content.
+	const justifyPreview = { left: 'flex-start', center: 'center', right: 'flex-end', justify: 'space-between' }[ attributes.textAlign ];
+	if ( justifyPreview ) {
+		previewStyle.justifyContent = justifyPreview;
+	}
 	const paddingPreview = boxShorthand( basePadding );
 	if ( paddingPreview ) {
 		previewStyle.padding = paddingPreview;

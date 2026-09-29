@@ -484,9 +484,21 @@ if ( $mobile_box_decls ) {
 }
 
 // Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
-// mechanism, which offers font-size/weight/style/line-height. There is no
-// text-align: this root is display:flex with no inline/block content of its own.
+// mechanism (font-size/weight/style/line-height).
 $scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
+
+// Alignment: the root is a flex row, so `text-align` alone cannot move the
+// icons; the textAlign control is painted as the row's justify-content.
+$sgs_si_justify_map = array(
+	'left'    => 'flex-start',
+	'center'  => 'center',
+	'right'   => 'flex-end',
+	'justify' => 'space-between',
+);
+$sgs_si_align       = (string) ( $attributes['textAlign'] ?? '' );
+if ( isset( $sgs_si_justify_map[ $sgs_si_align ] ) ) {
+	$scoped_css[] = "{$root_sel}{justify-content:{$sgs_si_justify_map[ $sgs_si_align ]};}";
+}
 
 // ---------------------------------------------------------------------------
 // Root element classes + attributes. NO 'style' key is passed to
