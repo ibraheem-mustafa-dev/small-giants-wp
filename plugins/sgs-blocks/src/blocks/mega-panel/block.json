@@ -80,17 +80,18 @@
 				},
 				"drawer": {
 					"label": "Drawer ground",
-					"layer": "CONTENT",
+					"layer": "GRID",
 					"order": 5,
 					"clusters": [
-						"fill"
+						"fill",
+						"layout"
 					],
 					"attrMap": {
 						"css:background-color": "drawerBg",
 						"css:background-image": "drawerBgGradient",
 						"css:order": "drawerAsideOrder"
 					},
-					"_note": "The panel root and aside position when this panel renders inside the mobile drawer (sgs_mega_render_context() = 'drawer'). Empty drawerBg paints transparent."
+					"_note": "The panel root and its content row when this panel renders inside the mobile drawer (sgs_mega_render_context() = 'drawer'). GRID layer: the row arranges the groups and the aside, and drawerAsideOrder places the aside first or last in it. Empty drawerBg paints transparent."
 				},
 				"drawerLinks": {
 					"label": "Drawer link rows",
@@ -164,7 +165,7 @@
 						"css:border-color-gradient": "drawerCardBorderColourGradient",
 						"css:border-radius": "drawerCardRadius",
 						"css:padding": "drawerCardPadding",
-						"css:column-gap": "drawerCardGap",
+						"css:gap": "drawerCardGap",
 						"css:margin-block": "drawerCardSpacing"
 					},
 					"_note": "The aside as a compact horizontal card in the drawer (drawerCardCompact). drawerCardSpacing is margin-bottom when drawerAsideOrder is 'first', margin-top otherwise."
@@ -186,7 +187,8 @@
 					"layer": "CONTENT",
 					"order": 5.7,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"attrMap": {
 						"css:font-size": "drawerCardTagSize",

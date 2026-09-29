@@ -322,14 +322,16 @@
 					"order": 11,
 					"clusters": [
 						"text",
-						"layout"
+						"layout",
+						"animation"
 					],
 					"prefix": "",
 					"attrMap": {
 						"css:color": "itemOrnamentColour",
 						"css:font-size": "itemOrnamentSize",
 						"css:display": "itemOrnament",
-						"css:gap": "itemOrnamentGap"
+						"css:gap": "itemOrnamentGap",
+						"anim:duration": "itemOrnamentFrameDuration"
 					},
 					"states": {
 						"hover": {
