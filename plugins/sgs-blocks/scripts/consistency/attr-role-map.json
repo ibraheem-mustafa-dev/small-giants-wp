@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9145,
+    "row_count": 9151,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -6211,6 +6211,11 @@
     "sgs/process-steps::numberColourHover": "color",
     "sgs/process-steps::numberColourHoverGradient": "colour-gradient",
     "sgs/process-steps::numberFontFamily": "typography",
+    "sgs/process-steps::numberFontSize": "typography",
+    "sgs/process-steps::numberFontSizeUnit": "typography",
+    "sgs/process-steps::numberFontWeight": "typography",
+    "sgs/process-steps::numberLineHeight": "typography",
+    "sgs/process-steps::numberLineHeightUnit": "typography",
     "sgs/process-steps::numberStyle": "behaviour",
     "sgs/process-steps::padding": "layout",
     "sgs/process-steps::sgsAnimation": "motion",
@@ -8966,6 +8971,7 @@
     "sgs/whatsapp-cta::fxWaveBase": "behaviour",
     "sgs/whatsapp-cta::fxWaveSpeed": "behaviour",
     "sgs/whatsapp-cta::fxWaveVariant": "behaviour",
+    "sgs/whatsapp-cta::iconGap": "layout",
     "sgs/whatsapp-cta::label": "text-content",
     "sgs/whatsapp-cta::labelColour": "color",
     "sgs/whatsapp-cta::labelColourGradient": "colour-gradient",

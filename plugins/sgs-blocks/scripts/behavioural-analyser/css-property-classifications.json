@@ -8897,6 +8897,30 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "numberFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
@@ -13414,6 +13438,15 @@
         "css_property": "background-image",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "iconGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
       }
     },
     {
