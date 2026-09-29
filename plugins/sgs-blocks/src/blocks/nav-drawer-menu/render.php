@@ -636,6 +636,21 @@ $css .= sgs_nav_drawer_menu_extras_css( $attributes, '.sgs-nav-drawer-menu' . $u
 $css .= sgs_nav_drawer_menu_separator_css( $attributes, $uid_sel );
 $css .= sgs_nav_drawer_menu_row_layout_css( $attributes, $uid_sel );
 $css .= sgs_nav_drawer_menu_section_box_css( $attributes, $uid_sel );
+// megaBodyPadding: the padding around a mega item's panel in its accordion
+// (style.css keeps 0 12px 12px as the unset default; (0,2,0) beats its (0,1,0)).
+if ( is_array( $attributes['megaBodyPadding'] ?? null ) ) {
+	$css .= sgs_emit_responsive_css(
+		$uid_sel . ' .sgs-nav-drawer-menu__mega-body',
+		array(
+			array(
+				'value'        => $attributes['megaBodyPadding'],
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
 $sgs_nm_section_motion = sgs_nav_drawer_menu_section_motion( $attributes, $uid_sel, $submenu_model_ctx );
 $css                  .= $sgs_nm_section_motion['css'];
 // Spec 36 "Item hover paint" M-21 (2026-09-28) — itemPadding/submenuLinkPadding

@@ -248,6 +248,14 @@
               "bottom": "0px",
               "left": "0px"
             }
+          },
+          "megaBodyPadding": {
+            "desktop": {
+              "top": "0px",
+              "right": "0px",
+              "bottom": "12px",
+              "left": "0px"
+            }
           }
         }
       },
