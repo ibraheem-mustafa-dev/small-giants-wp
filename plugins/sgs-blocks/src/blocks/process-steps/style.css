@@ -162,6 +162,10 @@
 	width: auto;
 	height: auto;
 	min-width: 1.5em;
+	/* No badge in the list layout: the number is plain text, so it starts at
+	 * the column's edge like the text beside it rather than centring in a box
+	 * sized for a badge (which set the text 7px off the draft's measure). */
+	justify-content: flex-start;
 	background: none;
 	border-radius: 0;
 	margin-bottom: 0;
