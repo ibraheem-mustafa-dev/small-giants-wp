@@ -229,7 +229,7 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `submenuCaretSize`, `submenuCaretGap`, `submenuCaretOpacity`/`submenuCaretOpacityHover` and its open turn
   `submenuCaretTurnDuration` + `submenuCaretTurnEasing`(`Custom`) (`includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css`,
   called by both blocks). The bar's
-  scrim fades over `scrimFadeDuration`, mirroring `sgs/nav-drawer`. `submenuItemStaggerScope` `columns` | `rows`
+  scrim fades over `scrimFadeDuration`, mirroring `sgs/nav-drawer`, on `scrimFadeEasing` (shared motion list plus `scrimFadeEasingCustom`; empty follows the panel's easing). `submenuItemStaggerScope` `columns` | `rows`
   staggers either a panel's columns or every link row and card inside them. With `triggerSurface` on, plain
   non-interactive content in the trigger row passes its tap to the menu trigger; links, buttons and inputs keep
   their own (`includes/nav-trigger-surface-css.php`).

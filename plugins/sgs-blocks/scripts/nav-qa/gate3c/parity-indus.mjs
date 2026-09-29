@@ -19,7 +19,8 @@ const DDRAWER = fixedAt( 300 );
 const LPANEL = `() => [...document.querySelectorAll('.sgs-mega-panel')].find((p) => p.getClientRects().length && p.getBoundingClientRect().height > 20)`;
 const LDRAWER = `() => document.querySelector('dialog.sgs-nav-drawer[open]')`;
 // The smallest visible element in a root whose text matches.
-const inRoot = ( rootJs, re, tags = '*' ) => ( { js: `() => { const r = (${ rootJs })(); return r && [...r.querySelectorAll('${ tags }')].filter((e) => e.getClientRects().length && /${ re }/i.test(e.innerText.trim())).sort((a, b) => a.innerText.length - b.innerText.length)[0]; }` } );
+// Shortest matching text wins; on a tie (a wrapper whose only text is its child's) the innermost element.
+const inRoot = ( rootJs, re, tags = '*' ) => ( { js: `() => { const r = (${ rootJs })(); return r && [...r.querySelectorAll('${ tags }')].filter((e) => e.getClientRects().length && /${ re }/i.test(e.innerText.trim())).sort((a, b) => a.innerText.length - b.innerText.length || (b.contains(a) ? -1 : a.contains(b) ? 1 : 0))[0]; }` } );
 const DBAR = 'header > div';
 const LBAR = 'header.sgs-site-header';
 const item = ( scope, label, tag ) => ( { text: `^${ label }$`, tag, within: scope } );

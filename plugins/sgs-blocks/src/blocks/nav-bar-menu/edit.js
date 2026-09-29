@@ -60,6 +60,7 @@ import {
 	textRow,
 	ScrimControls,
 	scrimColourRow,
+	MotionEasingControl,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils';
@@ -189,6 +190,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submenuOpenOn,
 		itemHoverScope,
 		scrimFadeDuration,
+		scrimFadeEasing,
+		scrimFadeEasingCustom,
 		submenuAnimation,
 		submenuTopOffset,
 		submenuMinWidth,
@@ -897,6 +900,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							scrimOpacity: {},
 							scrimBlur: {},
 							scrimFadeDuration: 0,
+							scrimFadeEasing: '',
+							scrimFadeEasingCustom: '',
 						} )
 					}
 				>
@@ -931,6 +936,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							resetFallbackValue={ 0 }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Backdrop fade easing', 'sgs-blocks' ) }
+						hasValue={ () => !! scrimFadeEasing }
+						onDeselect={ () =>
+							setAttributes( { scrimFadeEasing: '', scrimFadeEasingCustom: '' } )
+						}
+					>
+						<MotionEasingControl
+							label={ __( 'Backdrop fade easing', 'sgs-blocks' ) }
+							value={ scrimFadeEasing }
+							custom={ scrimFadeEasingCustom }
+							fallback="ease"
+							onChange={ ( val ) => setAttributes( { scrimFadeEasing: val } ) }
+							onCustomChange={ ( val ) => setAttributes( { scrimFadeEasingCustom: val } ) }
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
