@@ -96,7 +96,7 @@
 							}
 						}
 					},
-					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps. Typography routes through the shared TypographyControls/sgs_typography_css_rule() mechanism, root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). There is no `text-align` capability: this root is `display:flex` (style.css) with no inline/block content of its own, so `text-align` would be inert."
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps. Typography routes through the shared TypographyControls/sgs_typography_css_rule() mechanism, root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). textAlign is painted as the flex row's justify-content (render.php), because `text-align` alone is inert on a `display:flex` root."
 				},
 				"icon": {
 					"label": "Icon",
