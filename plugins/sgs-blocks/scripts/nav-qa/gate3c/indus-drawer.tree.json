@@ -66,6 +66,27 @@
         "desktop": 0.55,
         "tablet": 0.55,
         "mobile": 0.55
+      },
+      "closeFontSize": "20",
+      "closeFontSizeUnit": "px",
+      "closeFontFamily": "'Plus Jakarta Sans', system-ui, sans-serif",
+      "closeFontWeight": "400",
+      "closeTextTransform": "none",
+      "closeLetterSpacing": {
+        "desktop": 0
+      },
+      "closeLetterSpacingUnit": "px",
+      "toggleCloseColourHover": "#FFFFFF",
+      "drawerPadding": {
+        "desktop": {
+          "top": "0px",
+          "right": "20px",
+          "bottom": "32px",
+          "left": "20px"
+        }
+      },
+      "drawerGap": {
+        "desktop": "0px"
       }
     },
     "innerBlocks": [
@@ -86,7 +107,8 @@
               "bottom": "22px",
               "left": "0px"
             }
-          }
+          },
+          "flexWrap": "nowrap"
         },
         "innerBlocks": [
           {
@@ -96,9 +118,6 @@
               "url": "#",
               "colourText": "#1E2A3C",
               "colourBackground": "#D8CA50",
-              "widthType": {
-                "desktop": "full"
-              },
               "icon": "arrow-right",
               "iconPosition": "after",
               "fontFamily": "'Plus Jakarta Sans', sans-serif",
@@ -134,7 +153,10 @@
               },
               "colourTextHover": "#1E2A3C",
               "colourBackgroundHover": "#D8CA50",
-              "opacityHover": 0.75
+              "opacityHover": 0.75,
+              "sgsChildSizing": {
+                "desktop": "fill"
+              }
             }
           },
           {
@@ -148,7 +170,13 @@
               "backgroundPadding": "14px",
               "ariaLabel": "Email",
               "linkUrl": "mailto:#",
-              "opacityHover": 0.75
+              "opacityHover": 0.75,
+              "sgsChildSizing": {
+                "desktop": "fixed"
+              },
+              "sgsChildWidth": {
+                "desktop": "46px"
+              }
             }
           },
           {
@@ -162,7 +190,13 @@
               "backgroundPadding": "14px",
               "ariaLabel": "Call",
               "linkUrl": "tel:#",
-              "opacityHover": 0.75
+              "opacityHover": 0.75,
+              "sgsChildSizing": {
+                "desktop": "fixed"
+              },
+              "sgsChildWidth": {
+                "desktop": "46px"
+              }
             }
           }
         ]
@@ -202,7 +236,10 @@
             "left": "16px"
           },
           "itemMotionDuration": 250,
-          "itemExpanderRotate": 45
+          "itemExpanderRotate": 45,
+          "itemLineHeight": 25,
+          "itemLineHeightUnit": "px",
+          "submenuCaretSize": "11px"
         }
       },
       {
