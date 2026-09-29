@@ -181,6 +181,11 @@ export default {
 		'auto-scrolled@375': 'Scrolled (2026-09-28): two across, Medusa Biggie, PLD 6003/N (tag under the name, Bean), Carrera 1055/S and FZ6001 on both; RRP under the price with dots beside it; "No reviews yet" for the stars (Bean). Live "PHOTO TO COME" far fainter (open, with Bean). No floating Filter button; only the chat bubble floats.',
 	},
 	accept: [
+		// The draft's filter column is still running its view-swap fade-in (Bean 2026-09-27) when the
+		// walker hovers in the first state after the shop opens, so its swatch reads no growth there
+		// (reproduced headless 2026-09-29). Measured directly the same day, the draft's swatch grows to
+		// 1.12 on hover, as live's (sgs_shop_filter_swatch_hover 112); the later states compare it equal.
+		{ pair: 'swatch-black', state: 'filters-open', kind: 'hover', reason: 'Hover sampled during the draft\'s view-swap fade-in; measured directly, the draft\'s swatch grows to 1.12 as live\'s', when: ( d ) => ( 'transform' === d.key && /^matrix\(1\.12, 0, 0, 1\.12/.test( d.live ) ) || ( 'hover-effects' === d.key && 'moves' === d.live ) },
 		// Measured, not painted: the property differs but the pixels do not.
 		...[ 'display', 'column-gap', 'row-gap', 'align-items', 'text-align', 'justify-content' ].map( ( key ) => ( {
 			kind: 'style', key, notPainted: true, reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child or centred text)',

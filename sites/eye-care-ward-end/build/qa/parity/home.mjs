@@ -18,8 +18,10 @@ const words = ( t ) => String( t ).replace( /\s+/g, ' ' ).trim().toLowerCase().s
 const numTile = ( num ) => `(r) => { const n = [...r.querySelectorAll('*')].find((e) => e.children.length === 0 && e.textContent.trim() === '${ num }'); return n && n.parentElement; }`;
 // The draft renders a typographic apostrophe (’); matches either so "I'm"/"you're" find on both sides.
 const AP = "['’]";
-// Every brand name the brand strip can show (mega-brands.tree.json), lower-cased: a row made only of these is marquee timing.
-const BRAND_WORDS = /^(?:(?:adidas\ originals|ferrari\ scuderia|emporio\ armani|giorgio\ armani|tommy\ hilfiger|david\ beckham|calvin\ klein|michael\ kors|ralph\ lauren|marc\ jacobs|balenciaga|dsquared2|hugo\ boss|montblanc|swarovski|mulberry|polaroid|superdry|barbour|carrera|gabbana|maxmara|o[’']neill|ray\-ban|tiffany|versace|diesel|armani|oakley|police|radley|chloé|coach|dolce|farah|gucci|lipsy|prada|vogue|dkny|fila|nike|&)\s*)+$/;
+// Every brand name the brand strip can show (mega-brands.tree.json), lower-cased: a row made only of
+// these (and "&") is marquee timing.
+const BRAND_LIST = ["adidas originals", "balenciaga", "barbour", "calvin klein", "carrera", "chloé", "coach", "dkny", "david beckham", "diesel", "dolce", "gabbana", "dsquared2", "emporio armani", "armani", "farah", "ferrari scuderia", "fila", "giorgio armani", "gucci", "hugo boss", "lipsy", "marc jacobs", "maxmara", "michael kors", "montblanc", "mulberry", "nike", "o\'neill", "o’neill", "oakley", "polaroid", "police", "prada", "radley", "ralph lauren", "ray-ban", "superdry", "swarovski", "tiffany", "tommy hilfiger", "versace", "vogue"];
+const BRAND_WORDS = new RegExp( '^(?:(?:' + [ ...BRAND_LIST ].sort( ( x, y ) => y.length - x.length ).map( ( b ) => b.replace( /[.*+?^${}()|[\]\\-]/g, '\\$&' ) ).join( '|' ) + '|&)\\s*)+$' );
 // A shape-tile card: the clickable element itself carries the visible text AND the card's own
 // aspect-ratio style (found directly, not by walking up an arbitrary number of ancestors — the
 // walk-up approach landed on an inner content wrapper, not the card).
@@ -223,7 +225,22 @@ export default {
 		{ kind: 'text', reason: 'WordPress wptexturize() converts the straight apostrophe to a typographic one; the draft\'s text is unprocessed', when: ( d ) => d.draft.replace( /'/g, '’' ) === d.live },
 		// The brand strip is a moving marquee: which brand names are on screen differs with the
 		// moment each side is captured. Only rows made purely of the site's brand names.
-		{ pair: '(auto)', reason: 'The brand strip scrolls continuously; which brand names are in view depends on the moment each side is captured', when: ( d ) => /^text-(missing|extra) "/.test( d.key ) && BRAND_WORDS.test( d.key.replace( /^text-(missing|extra) "|"( #\d+)?$/g, '' ) ) },
+		{ pair: '(auto)', reason: 'The brand strip scrolls continuously; which brand names are in view depends on the moment each side is captured', when: ( d ) => {
+			if ( ! /^text-(missing|extra) "/.test( d.key ) ) {
+				return false;
+			}
+			const text = d.key.replace( /^text-(missing|extra) "|"( #\d+)?$/g, '' ).trim();
+			// A long run is cut off mid-brand: drop up to three trailing words that start a brand name.
+			const words = text.split( ' ' );
+			for ( let k = 0; k <= 3 && k < words.length; k++ ) {
+				const head = words.slice( 0, words.length - k ).join( ' ' );
+				const tail = words.slice( words.length - k ).join( ' ' );
+				if ( BRAND_WORDS.test( head ) && ( 0 === k || BRAND_LIST.some( ( b ) => b.startsWith( tail ) ) ) ) {
+					return true;
+				}
+			}
+			return false;
+		} },
 		// A text link drawn as an underline on the words where the draft uses a 1px bottom border with
 		// 3px padding: the same 1px line under the text, kept inside the 44px touch target.
 		...[ 'bestsellers-see-all', 'shapetiles-see-all' ].flatMap( ( pair ) => [
@@ -239,8 +256,24 @@ export default {
 		// The review arrows' inner padding: a 40px round button whose icon is centred either way; the
 		// painted box matches the draft's, so the 1px 6px padding paints nothing.
 		...[ 'review-arrow-prev', 'review-arrow-next' ].flatMap( ( pair ) => [ 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ].map( ( key ) => ( { pair, kind: 'style', key, reason: 'Inner padding of a fixed 40px round arrow whose icon is centred; the painted box matches the draft' } ) ) ),
-		// A button's line box inside its fixed min-height: its painted box and text position match.
-		{ kind: 'style', key: 'line-height', reason: 'Line box of a button label inside a fixed min-height; the painted box and the text position match', when: ( d ) => /(btn|button)/.test( d.pair || '' ) && 'normal' === d.draft },
+		// A button's line box inside its fixed min-height, and a border style with no border width:
+		// neither moves a pixel while the button's box matches.
+		...[ 'hero-btn-shop', 'hero-btn-prescription', 'about-button', 'optician-qualifications-button' ].flatMap( ( pair ) => [
+			{ pair, kind: 'style', key: 'line-height', notPainted: true, reason: 'Line box of a button label inside a fixed min-height; the painted box and the text position match' },
+			{ pair, kind: 'style', key: 'border-top-style', notPainted: true, reason: 'A border style on a button whose border width is 0' },
+		] ),
+		// Hover timing curves (Bean 2026-09-27, shop.mjs): live uses the site's standard easing where the
+		// draft uses ease (cards, tiles) and a custom curve (photo zoom); the durations match.
+		...[ 'card-gucci', 'card-holbrook', 'card-photo', 'shapetile-wayfarer', 'shapetile-oversized' ].map( ( pair ) => ( { pair, kind: 'motion', key: 'transition', reason: 'Accepted (Bean 2026-09-27): hover timing curves: live uses the site\'s standard easing where the draft uses ease (card) and a custom curve (photo zoom); durations match' } ) ),
+		// Secondary text in text-muted #5E584F where the draft's greys are lighter (Bean, confirmed
+		// 2026-09-28): the grid's own colour, as the (auto) rule above for its words.
+		{ pair: 'bestsellers-grid', kind: 'style', key: 'color', reason: 'Accepted (Bean, confirmed 2026-09-28): secondary text uses the darker text-muted #5E584F where the draft uses lighter greys', when: ( d ) => 'rgb(94, 88, 79)' === d.live },
+		// The prescription steps: the draft's step element holds its own number (serif, accent), so its
+		// text starts with the digit and its own font is the number's; live's number is its own element.
+		// The numbers themselves are compared by the automatic check and match (15.5px, 500, serif, accent).
+		...[ 'about-step-1', 'about-step-2', 'about-step-3' ].map( ( pair ) => ( { pair, reason: 'The draft\'s step element contains its number; live renders the number as its own element, matched separately by the automatic check', when: ( d ) => ( 'text' === d.kind && d.draft.replace( /^\d+\s*/, '' ) === d.live ) || [ 'font-family', 'font-weight', 'color' ].includes( d.key ) } ) ),
+		// A tile ground that is transparent on both sides ("none" is no ground; alpha 0 is none too).
+		{ pair: 'shapetile-wayfarer', key: 'painted-ground', reason: 'Transparent on both sides (alpha 0 vs no ground)', when: ( d ) => /,\s*0\)$/.test( d.draft ) && 'none' === d.live },
 		// The two "see all" text links are held to the 44px touch target (Bean 2026-09-27), their
 		// underlined text centred in it, where the draft's link is its own 23px line.
 		...[ 'bestsellers-see-all', 'shapetiles-see-all' ].flatMap( ( pair ) => [
@@ -296,7 +329,7 @@ export default {
 		// (product.mjs's help-toggle, lens.mjs's add-to-bag) — here on the arrow's own background instead of text.
 		...[ 'review-arrow-prev', 'review-arrow-next' ].map( ( pair ) => ( {
 			pair, reason: 'Accepted (Bean 2026-09-28, as the palette\'s text-inverse #FAF8F5 used elsewhere for the draft\'s pure white): the arrow\'s background is the palette off-white, not #FFFFFF',
-			when: ( d ) => [ 'background-color', 'painted-ground' ].includes( d.key ) && 'rgb(255, 255, 255)' === d.draft && ( 'rgb(250, 248, 245)' === d.live || 'rgba(250, 248, 245, 1)' === d.live ),
+			when: ( d ) => [ 'background-color', 'painted-ground' ].includes( d.key ) && [ 'rgb(255, 255, 255)', 'rgba(255, 255, 255, 1)' ].includes( d.draft ) && [ 'rgb(250, 248, 245)', 'rgba(250, 248, 245, 1)' ].includes( d.live ),
 		} ) ),
 	],
 	// Review notes: region by region, written after opening every shot in out/home (2026-09-28).

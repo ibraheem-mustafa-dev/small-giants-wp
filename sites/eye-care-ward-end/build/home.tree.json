@@ -146,9 +146,6 @@
               "colourBackground": "surface",
               "colourText": "text",
               "colourBackgroundHover": "surface-alt",
-              "borderRadius": {
-                "desktop": {}
-              },
               "minHeight": {
                 "desktop": "52px"
               },
@@ -334,7 +331,12 @@
                   "lineHeight": {
                     "desktop": 1.02
                   },
-                  "lineHeightUnit": "unitless"
+                  "lineHeightUnit": "unitless",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "0"
+                    }
+                  }
                 }
               }
             ]
@@ -1316,7 +1318,11 @@
               "maxWidthUnit": "ch",
               "text": "I'm an optician who genuinely enjoys this part of the job — finding people frames that suit them. This shop exists so I can show you the whole range properly instead of scrolling a supplier's catalogue at the counter, and because I'd rather price frames fairly than squeeze the most out of every sale.",
               "textColour": "#E2DCD3",
-              "textWrap": "pretty"
+              "textWrap": "pretty",
+              "lineHeight": {
+                "desktop": 1.5
+              },
+              "lineHeightUnit": "unitless"
             }
           }
         ]
@@ -1755,7 +1761,12 @@
                   "lineHeight": {
                     "desktop": 1.02
                   },
-                  "lineHeightUnit": "unitless"
+                  "lineHeightUnit": "unitless",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "0"
+                    }
+                  }
                 }
               }
             ]
@@ -1835,12 +1846,13 @@
             {
               "title": "Pilot",
               "media": null,
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Pilot",
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=pilot&query_type_shape=or",
               "glyphImage": {
                 "id": 148,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/pilot.png",
                 "alt": ""
-              }
+              },
+              "_key": "cee27622-c959-43b8-b601-0b560ad459df"
             },
             {
               "title": "Wayfarer",
@@ -1850,12 +1862,13 @@
                 "type": "image",
                 "alt": "Wayfarer-style sunglasses"
               },
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Wayfarer",
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=wayfarer&query_type_shape=or",
               "glyphImage": {
                 "id": 149,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.png",
                 "alt": ""
-              }
+              },
+              "_key": "d7defaa8-cfc7-486a-9ecd-6c1721acde08"
             },
             {
               "title": "Round",
@@ -1865,12 +1878,13 @@
                 "type": "image",
                 "alt": "Round sunglasses"
               },
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Round",
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=round&query_type_shape=or",
               "glyphImage": {
                 "id": 150,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.png",
                 "alt": ""
-              }
+              },
+              "_key": "cb51666e-6e8d-45a4-b9b0-9cb440f39a50"
             },
             {
               "title": "Cat-eye",
@@ -1880,12 +1894,13 @@
                 "type": "image",
                 "alt": "Cat-eye sunglasses"
               },
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Cat-eye",
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=cat-eye&query_type_shape=or",
               "glyphImage": {
                 "id": 151,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cat-eye.png",
                 "alt": ""
-              }
+              },
+              "_key": "8a9fa055-6299-4475-a702-baf03c5bf734"
             },
             {
               "title": "Square",
@@ -1895,22 +1910,24 @@
                 "type": "image",
                 "alt": "Square sunglasses"
               },
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Square",
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=square&query_type_shape=or",
               "glyphImage": {
                 "id": 152,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.png",
                 "alt": ""
-              }
+              },
+              "_key": "b8eb3414-77bb-4477-ad53-a3e3b3211eec"
             },
             {
               "title": "Oversized",
               "media": null,
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Oversized",
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=oversized&query_type_shape=or",
               "glyphImage": {
                 "id": 153,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/oversized.png",
                 "alt": ""
-              }
+              },
+              "_key": "ecb562d4-7eda-451b-9a3e-543dc6ade4f4"
             }
           ],
           "overlayGradient": "linear-gradient(180deg,rgba(20,20,20,0) 38%,rgba(20,20,20,.72) 100%)",
@@ -2877,9 +2894,6 @@
                     "desktop": 1.5
                   },
                   "labelLineHeightUnit": "",
-                  "borderRadius": {
-                    "desktop": {}
-                  },
                   "padding": {
                     "desktop": {
                       "top": "0",
