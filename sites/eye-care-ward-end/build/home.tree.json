@@ -184,7 +184,12 @@
                 "desktop": 0.1
               },
               "letterSpacingUnit": "em",
-              "textTransform": "uppercase"
+              "textTransform": "uppercase",
+              "minHeight": {
+                "desktop": "52px"
+              },
+              "borderColourHover": "text-inverse",
+              "colourTextHover": "text-inverse"
             }
           }
         ]
@@ -1802,8 +1807,9 @@
             "mobile": 2
           },
           "gap": {
-            "desktop": "24px",
-            "mobile": "16px"
+            "desktop": "18px",
+            "tablet": "18px",
+            "mobile": "10px"
           },
           "aspectRatio": "4 / 5",
           "effectHover": "lift",
@@ -2607,7 +2613,10 @@
                 "desktop": 0.1
               },
               "letterSpacingUnit": "em",
-              "textTransform": "uppercase"
+              "textTransform": "uppercase",
+              "minHeight": {
+                "desktop": "52px"
+              }
             }
           }
         ]

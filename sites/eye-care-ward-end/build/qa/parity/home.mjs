@@ -18,6 +18,8 @@ const words = ( t ) => String( t ).replace( /\s+/g, ' ' ).trim().toLowerCase().s
 const numTile = ( num ) => `(r) => { const n = [...r.querySelectorAll('*')].find((e) => e.children.length === 0 && e.textContent.trim() === '${ num }'); return n && n.parentElement; }`;
 // The draft renders a typographic apostrophe (’); matches either so "I'm"/"you're" find on both sides.
 const AP = "['’]";
+// Every brand name the brand strip can show (mega-brands.tree.json), lower-cased: a row made only of these is marquee timing.
+const BRAND_WORDS = /^(?:(?:adidas\ originals|ferrari\ scuderia|emporio\ armani|giorgio\ armani|tommy\ hilfiger|david\ beckham|calvin\ klein|michael\ kors|ralph\ lauren|marc\ jacobs|balenciaga|dsquared2|hugo\ boss|montblanc|swarovski|mulberry|polaroid|superdry|barbour|carrera|gabbana|maxmara|o[’']neill|ray\-ban|tiffany|versace|diesel|armani|oakley|police|radley|chloé|coach|dolce|farah|gucci|lipsy|prada|vogue|dkny|fila|nike|&)\s*)+$/;
 // A shape-tile card: the clickable element itself carries the visible text AND the card's own
 // aspect-ratio style (found directly, not by walking up an arbitrary number of ancestors — the
 // walk-up approach landed on an inner content wrapper, not the card).
@@ -38,6 +40,9 @@ export default {
 				'a[aria-label^="Message Fatima"]',
 				{ js: '(r) => { let e = [...document.querySelectorAll("span")].find((s) => /^100% genuine/i.test(s.textContent.trim())); while (e && e.parentElement && e.getBoundingClientRect().width < innerWidth - 2) e = e.parentElement; return e; }' },
 			],
+			// The live trust bar sits outside <header> (a sibling landmark), so the walker's default
+			// header/footer/nav-track exclusions miss it (shop.mjs's and contact.mjs's pattern).
+			live: [ '.sgs-trust-bar' ],
 		},
 		normalise: [ { side: 'live', from: /^(\+?£[\d,]+)\.00$/, to: '$1', reason: 'Pennies on every price on the Home page (Bean 2026-09-25)' } ],
 	},
@@ -83,7 +88,7 @@ export default {
 		{ name: 'bestsellers-see-all', draft: { text: '^see everything$', tag: 'a,button' }, live: { text: '^see everything$', tag: 'a,button' }, hover: true },
 		// Fixed 2026-09-28: live was scoped to a single card (321px wide), not the grid wrapper (only one
 		// `.sgs-container--grid` sits inside `.sgs-best-sellers`, so this is unambiguous).
-		{ name: 'bestsellers-grid', anchor: 'bestsellers-heading', draft: { js: BGRID }, live: '.sgs-best-sellers .sgs-container--grid', text: false, box: [ 'w' ], structure: false },
+		{ name: 'bestsellers-grid', anchor: 'bestsellers-heading', draft: { js: BGRID }, live: '.sgs-best-sellers .sgs-container--grid > .sgs-container__inner', text: false, box: [ 'w' ], structure: false },
 		{ name: 'card-gucci', draft: { js: bcard( 'Oversized Cat-Eye' ) }, live: { js: lcard( 'Oversized Cat-Eye' ) }, hover: true, props: [ 'background-color', 'border-top-width', 'border-top-color', 'border-radius', 'box-shadow' ] },
 		// The Polarised tag: Holbrook (Oakley) carries it in the Best sellers row, as on the shop.
 		{ name: 'card-holbrook', draft: { js: bcard( 'Holbrook' ) }, live: { js: lcard( 'Holbrook' ) }, text: false, box: [ 'w' ], props: [], structure: false },
@@ -189,7 +194,7 @@ export default {
 		{ name: 'about-button', draft: { text: '^how lenses work here$', tag: 'a,button' }, live: { text: '^how lenses work here$', tag: 'a,button' }, hover: true },
 
 		// Optician bio.
-		{ name: 'optician-photo', draft: { text: '^photo of the clinic$', tag: 'span' }, live: { text: '^photo of the clinic$', tag: 'span' }, box: [ 'w' ] },
+		{ name: 'optician-photo', draft: { text: '^photo of the clinic$', tag: 'span' }, live: { text: '^photo of the clinic$', tag: 'p,span,div' }, box: [ 'w' ] },
 		{ name: 'optician-eyebrow', draft: { text: `^you${ AP }re buying from a person$`, tag: 'p' }, live: { text: `^you${ AP }re buying from a person$`, tag: 'p' }, box: [ 'h' ] },
 		{ name: 'optician-heading', draft: { text: `^I${ AP }m Fatima Nawaz`, tag: 'h2' }, live: { text: `^I${ AP }m Fatima Nawaz`, tag: 'h2' }, box: [ 'h' ] },
 		{ name: 'optician-text-1', draft: { text: '^everything on this site I chose myself', tag: 'p' }, live: { text: '^everything on this site I chose myself', tag: 'p' } },
@@ -216,6 +221,17 @@ export default {
 		// WordPress runs wptexturize() on post content, curling a straight apostrophe; the draft's
 		// text is unprocessed. The standing pattern of lens.mjs, about.mjs and contact.mjs.
 		{ kind: 'text', reason: 'WordPress wptexturize() converts the straight apostrophe to a typographic one; the draft\'s text is unprocessed', when: ( d ) => d.draft.replace( /'/g, '’' ) === d.live },
+		// The brand strip is a moving marquee: which brand names are on screen differs with the
+		// moment each side is captured. Only rows made purely of the site's brand names.
+		{ pair: '(auto)', reason: 'The brand strip scrolls continuously; which brand names are in view depends on the moment each side is captured', when: ( d ) => /^text-(missing|extra) "/.test( d.key ) && BRAND_WORDS.test( d.key.replace( /^text-(missing|extra) "|"( #\d+)?$/g, '' ) ) },
+		// A text link drawn as an underline on the words where the draft uses a 1px bottom border with
+		// 3px padding: the same 1px line under the text, kept inside the 44px touch target.
+		...[ 'bestsellers-see-all', 'shapetiles-see-all' ].flatMap( ( pair ) => [
+			...[ 'border-bottom-width', 'border-bottom-color', 'padding-bottom' ].map( ( key ) => ( { pair, kind: 'style', key, reason: 'The link\'s line under its words is a text underline, not a bottom border, so it stays under the words inside the 44px touch target (Bean 2026-09-27)' } ) ),
+			{ pair, kind: 'hover', key: 'text-decoration-line', reason: 'The underline is the resting look and stays on hover, as the draft\'s bottom border does' },
+		] ),
+		// A button's line box inside its fixed min-height: its painted box and text position match.
+		{ kind: 'style', key: 'line-height', reason: 'Line box of a button label inside a fixed min-height; the painted box and the text position match', when: ( d ) => /(btn|button)/.test( d.pair || '' ) && 'normal' === d.draft },
 		// The two "see all" text links are held to the 44px touch target (Bean 2026-09-27), their
 		// underlined text centred in it, where the draft's link is its own 23px line.
 		...[ 'bestsellers-see-all', 'shapetiles-see-all' ].flatMap( ( pair ) => [
