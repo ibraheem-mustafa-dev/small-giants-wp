@@ -116,9 +116,8 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 		// it stores as term meta `order` (Products > Brands; `menu_order` over its REST
 		// API). Core's `term_order` orderby only means anything alongside object_ids,
 		// so on its own it silently fell back to the default order. Brands with no
-		// stored position are still listed (the NOT EXISTS clause) and sort among
-		// themselves by name; MySQL puts a missing value first, so give every brand a
-		// position when using this order.
+		// stored position are still listed (the NOT EXISTS clause); MySQL puts a
+		// missing value first, so give every brand a position when using this order.
 		if ( 'term_order' === $orderby ) {
 			$query['meta_query'] = array(
 				'relation'     => 'OR',
@@ -131,11 +130,12 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 					'compare' => 'NOT EXISTS',
 				),
 			);
-			$query['orderby'] = array(
-				'brand_order' => 'ASC',
-				'name'        => 'ASC',
-			);
-			unset( $query['order'] );
+			// WP_Term_Query takes ONE orderby string: a named meta_query clause is
+			// supported, an array of them (WP_Query's form) is not. It is passed to
+			// strtolower(), a TypeError fatal on PHP 8 (it took the page down,
+			// 2026-09-29).
+			$query['orderby'] = 'brand_order';
+			$query['order']   = 'ASC';
 		}
 
 		$terms = get_terms( $query );
