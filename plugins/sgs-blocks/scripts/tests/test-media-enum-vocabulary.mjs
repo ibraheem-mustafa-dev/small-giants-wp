@@ -19,11 +19,12 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const ROOT = path.resolve( HERE, '..', '..' );
-const { MEDIA_ATOMS } = await import( path.join( ROOT, 'src/components/media/atoms/registry.js' ) );
+// pathToFileURL, not a bare path: on Windows a `C:\\…` path is not a valid import specifier.
+const { MEDIA_ATOMS } = await import( pathToFileURL( path.join( ROOT, 'src/components/media/atoms/registry.js' ) ).href );
 
 // Which stored base each vocabulary governs. `backdrop` (object-fit on a CSS background)
 // and `ratio` (free text on several blocks, READ not matched) are not enums.
