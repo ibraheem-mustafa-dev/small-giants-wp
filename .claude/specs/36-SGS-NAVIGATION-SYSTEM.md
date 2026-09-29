@@ -238,7 +238,18 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `itemOrnamentRevealMode` (tier: `static` | `hover-draw`) hides the ornament at rest and draws its SVG strokes in
   sequence on hover or focus, and `itemOrnamentReserveSpace` keeps its space at rest
   (`includes/nav-drawer-menu-ornament-reveal-css.php`). `ornamentHiddenItemIds` (item ids, `id:<menu item>`) turns
-  the ornament off per item; with reserved space on, that row keeps an invisible placeholder so its label lines up. `itemTrailingIcons` (per-item map), `itemTrailingIconColour`
+  the ornament off per item; with reserved space on, that row keeps an invisible placeholder so its label lines up.
+  `itemOrnamentFrames` (an ordered list of up to 8 custom-SVG frames, icon ornaments only) flashes alternate glyphs on
+  row hover or keyboard focus before the ornament settles on `itemOrnamentIcon`/`itemOrnamentIconHover`;
+  `itemOrnamentFrameDuration` (per tier, ms per frame, default 60) and `itemOrnamentFramePlay` (per tier, `on` | `off`)
+  tune it. It is pure CSS: each frame is an `aria-hidden` stacked span that runs a one-slot animation delayed by its
+  index, while the settled glyph is held transparent for the whole run; the per-tier values reach the static rules as
+  custom properties, and every animation rule sits inside `prefers-reduced-motion: no-preference`, so reduced motion
+  shows only the final glyph. An empty list renders exactly as before
+  (`includes/nav-drawer-menu-ornament-frames.php::sgs_nav_drawer_menu_ornament_frames_css`,
+  `src/blocks/nav-drawer-menu/style.css::.sgs-nav-drawer-menu__ornament--frames`). A whole-row-toggle `<summary>` also
+  carries `.sgs-nav-drawer-menu__link`, so every item rule (typography, colour, hover, padding, ornament) paints it
+  like a link row (`includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_accordion_html`). `itemTrailingIcons` (per-item map), `itemTrailingIconColour`
   and `itemTrailingIconSize` put a trailing glyph on any row; the shared IconPicker takes a pasted custom SVG,
   re-sanitised server-side with `sgs_svg_kses_allowed_tags()`. The drawer also takes the bar's badge colours and
   `disabledItemIds`/`itemDisabledColour`.
@@ -509,6 +520,24 @@ push/pop stack read by `sgs_mega_render_context()`, and in the drawer `sgs/mega-
 and draws no floating shell (fill, border, radius, shadow, backdrop, width cap, padding, the `cards` hover
 glow, the tone class) while keeping `container-type` for its narrow stack; its text follows the drawer. The
 drawer's `sublinkMarkerColour` also colours an embedded panel's list markers (`--sgs-list-marker-colour`).
+`sgs/mega-panel` carries an "In the drawer" inspector panel (`edit.js`) whose `drawer*` attributes
+(`block.json::attributes`, elements `drawer`, `drawerLinks`, `drawerLinkNumber`, `drawerLinkLabel`,
+`drawerLinkDesc`, `drawerCard*`) paint the drawer copy only, through the panel's scoped CSS
+(`mega-panel/render.php`, the `$sgs_mm_in_drawer` block after the stack rules; every rule is rooted on the
+instance uid so it out-specifies the child blocks' own scoped colours, no inline style, and an empty
+attribute emits nothing). `drawerBg` is the panel ground (transparent when empty, so the drawer's fill
+shows). Link rows are the direct-child `sgs/container`s of `.sgs-mega-group`: `drawerLinkNumColour`/`Size`
+(the row's direct-child `sgs/text`), `drawerLinkLabelColour`/`Size` (the row's `sgs/heading`),
+`drawerLinkDescColour`/`Size` (the `sgs/text` in the row's nested container), `drawerLinkDivider` (row
+hairline colour), `drawerLinkMinHeight` (border-box) and `drawerLinkPaddingY`. `drawerAsideOrder`
+(`first`|`last`, default `last`) places the aside above or below the groups through CSS `order` on the
+content row. `drawerCardCompact` turns the aside into a horizontal card by its five-slot order (media frame,
+tag, title, description, link): the frame becomes a square thumbnail (`drawerCardThumbSize`, default 64px)
+spanning the tag, title and link rows, the description is hidden, and `drawerCardBg`,
+`drawerCardBorderColour`, `drawerCardRadius`, `drawerCardPadding`, `drawerCardGap` (default 14px),
+`drawerCardTagSize`/`drawerCardTagPadding`, `drawerCardTitleSize`, `drawerCardLinkSize` and
+`drawerCardSpacing` (below the card when first, above when last) size it. The Indus About panel's values
+are set in `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-mega-about.tree.json`.
 `link` (or a panel that resolves to nothing) gives a plain link. `megaDrawerFallbackIds` takes precedence
 for an item authored as a `core/navigation-submenu` with real nested child links: those render as an
 ordinary accordion instead. A panel holding a form should stay `link` (a panel renders twice on a page, so
