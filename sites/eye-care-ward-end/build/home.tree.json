@@ -252,8 +252,8 @@
           "brandOrder": "term_order",
           "brandMaxItems": 16,
           "brandTextMinWidth": "174px",
-          "brandTextDividerWidth": "1px",
-          "brandTextDividerColour": "#EFEAE2",
+          "brandTextSeparatorWidth": "1px",
+          "brandTextSeparatorColour": "#EFEAE2",
           "tilePadding": 26,
           "logoGap": 0
         }

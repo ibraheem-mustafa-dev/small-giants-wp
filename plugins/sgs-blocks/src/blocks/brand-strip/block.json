@@ -145,14 +145,15 @@
 				"label": "Brand text (no-logo fallback)",
 				"order": 4,
 				"clusters": [
-					"text"
+					"text",
+					"layout"
 				],
 				"prefix": "brandText",
 				"_note": "Text fallback shown when Display is 'Text only', or on a per-item basis under 'Logo, else text' when that item's source has no image (chiefly the Product-brands source, where a WooCommerce brand term commonly has no thumbnail set). A DIFFERENT element from 'caption' above — caption is an optional label UNDER a logo image; this IS the visible content when there is no image, rendered on .sgs-brand-strip__brand-text (render.php + brand-display-render.php).",
 				"attrMap": {
 					"css:min-width": "brandTextMinWidth",
-					"css:border-inline-end-width": "brandTextDividerWidth",
-					"css:border-inline-end-color": "brandTextDividerColour",
+					"css:border-right-width": "brandTextSeparatorWidth",
+					"css:border-right-color": "brandTextSeparatorColour",
 					"css:font-size": "brandTextFontSize",
 					"css:font-family": "brandTextFontFamily",
 					"css:font-weight": "brandTextFontWeight",
@@ -350,12 +351,12 @@
 			"default": "",
 			"description": "Text-only display: minimum width of each brand item (CSS length). Empty sizes to the text."
 		},
-		"brandTextDividerWidth": {
+		"brandTextSeparatorWidth": {
 			"type": "string",
 			"default": "",
 			"description": "Text-only display: width of the divider on each brand item's inline-end edge (CSS length). Empty = no divider."
 		},
-		"brandTextDividerColour": {
+		"brandTextSeparatorColour": {
 			"type": "string",
 			"default": "",
 			"description": "Text-only display: colour of the inline-end divider. Empty uses the current text colour."

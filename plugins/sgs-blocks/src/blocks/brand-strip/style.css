@@ -246,7 +246,7 @@
 	background-color: transparent;
 	background-image: none;
 	/* No tile frame around a name: the tile's transparent border would still
-	 * offset the text. The brandTextDivider setting draws its own inline-end line. */
+	 * offset the text. The brandTextSeparator settings draw its own right-edge line. */
 	border-width: 0;
 	border-color: transparent;
 	box-shadow: none;
