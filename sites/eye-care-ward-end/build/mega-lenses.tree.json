@@ -6,12 +6,31 @@
       "style": "columns",
       "colourScheme": "light",
       "maxWidth": {
-        "desktop": "1120px"
+        "desktop": "1440px"
       },
+      "panelBg": "surface-alt",
+      "panelPadding": {
+        "desktop": {
+          "top": "36px",
+          "right": "52px",
+          "bottom": "40px",
+          "left": "52px"
+        }
+      },
+      "borderRadius": "0",
+      "borderStyle": "solid",
+      "borderWidth": {
+        "top": "0",
+        "right": "0",
+        "bottom": "1px",
+        "left": "0"
+      },
+      "borderColour": "border",
+      "shadow": "0 24px 48px 0",
+      "shadowColour": "#141414 12%",
       "groupGap": {
-        "desktop": "1px"
-      },
-      "panelBg": "surface-alt"
+        "desktop": "0"
+      }
     },
     "innerBlocks": [
       {
@@ -22,24 +41,93 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/label",
+            "name": "sgs/container",
             "attributes": {
-              "text": "Single vision",
-              "textColour": "text-muted"
-            }
-          },
-          {
-            "name": "sgs/heading",
-            "attributes": {
-              "level": "h3",
-              "content": "from \u00c2\u00a359"
-            }
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Distance or reading, tinted to match the frame."
-            }
+              "tagName": "div",
+              "layout": "stack",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "100%"
+              },
+              "backgroundColour": "surface-alt",
+              "backgroundColourHover": "#F7F4EF",
+              "padding": {
+                "desktop": {
+                  "top": "26px",
+                  "right": "24px",
+                  "bottom": "26px",
+                  "left": "24px"
+                }
+              },
+              "borderStyle": "solid",
+              "borderWidth": {
+                "top": "1px",
+                "right": "0",
+                "bottom": "1px",
+                "left": "1px"
+              },
+              "borderColour": "border"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/label",
+                "attributes": {
+                  "text": "Single vision",
+                  "textColour": "text-label",
+                  "fontSize": {
+                    "desktop": 11.5
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "400",
+                  "letterSpacing": 0.18,
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase"
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "from £59",
+                  "fontFamily": "heading",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 26
+                  },
+                  "fontSizeUnit": "px",
+                  "letterSpacing": {
+                    "desktop": 0
+                  },
+                  "textTransform": "none",
+                  "textColour": "text",
+                  "margin": {
+                    "desktop": {
+                      "top": "0",
+                      "bottom": "0"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Distance or reading, tinted to match the frame.",
+                  "fontSize": {
+                    "desktop": "14px"
+                  },
+                  "textColour": "text-muted",
+                  "textWrap": "pretty",
+                  "margin": {
+                    "desktop": {
+                      "top": "0",
+                      "bottom": "0"
+                    }
+                  }
+                }
+              }
+            ]
           }
         ]
       },
@@ -51,24 +139,93 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/label",
+            "name": "sgs/container",
             "attributes": {
-              "text": "Varifocal",
-              "textColour": "text-muted"
-            }
-          },
-          {
-            "name": "sgs/heading",
-            "attributes": {
-              "level": "h3",
-              "content": "from \u00c2\u00a3129"
-            }
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Near and far in one lens, no visible line."
-            }
+              "tagName": "div",
+              "layout": "stack",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "100%"
+              },
+              "backgroundColour": "surface-alt",
+              "backgroundColourHover": "#F7F4EF",
+              "padding": {
+                "desktop": {
+                  "top": "26px",
+                  "right": "24px",
+                  "bottom": "26px",
+                  "left": "24px"
+                }
+              },
+              "borderStyle": "solid",
+              "borderWidth": {
+                "top": "1px",
+                "right": "0",
+                "bottom": "1px",
+                "left": "1px"
+              },
+              "borderColour": "border"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/label",
+                "attributes": {
+                  "text": "Varifocal",
+                  "textColour": "text-label",
+                  "fontSize": {
+                    "desktop": 11.5
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "400",
+                  "letterSpacing": 0.18,
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase"
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "from £129",
+                  "fontFamily": "heading",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 26
+                  },
+                  "fontSizeUnit": "px",
+                  "letterSpacing": {
+                    "desktop": 0
+                  },
+                  "textTransform": "none",
+                  "textColour": "text",
+                  "margin": {
+                    "desktop": {
+                      "top": "0",
+                      "bottom": "0"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Near and far in one lens, no visible line.",
+                  "fontSize": {
+                    "desktop": "14px"
+                  },
+                  "textColour": "text-muted",
+                  "textWrap": "pretty",
+                  "margin": {
+                    "desktop": {
+                      "top": "0",
+                      "bottom": "0"
+                    }
+                  }
+                }
+              }
+            ]
           }
         ]
       },
@@ -80,24 +237,93 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/label",
+            "name": "sgs/container",
             "attributes": {
-              "text": "Polarised",
-              "textColour": "text-muted"
-            }
-          },
-          {
-            "name": "sgs/heading",
-            "attributes": {
-              "level": "h3",
-              "content": "+\u00c2\u00a340"
-            }
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Kills glare off water, roads and windscreens."
-            }
+              "tagName": "div",
+              "layout": "stack",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "100%"
+              },
+              "backgroundColour": "surface-alt",
+              "backgroundColourHover": "#F7F4EF",
+              "padding": {
+                "desktop": {
+                  "top": "26px",
+                  "right": "24px",
+                  "bottom": "26px",
+                  "left": "24px"
+                }
+              },
+              "borderStyle": "solid",
+              "borderWidth": {
+                "top": "1px",
+                "right": "0",
+                "bottom": "1px",
+                "left": "1px"
+              },
+              "borderColour": "border"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/label",
+                "attributes": {
+                  "text": "Polarised",
+                  "textColour": "text-label",
+                  "fontSize": {
+                    "desktop": 11.5
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "400",
+                  "letterSpacing": 0.18,
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase"
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "+£40",
+                  "fontFamily": "heading",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 26
+                  },
+                  "fontSizeUnit": "px",
+                  "letterSpacing": {
+                    "desktop": 0
+                  },
+                  "textTransform": "none",
+                  "textColour": "text",
+                  "margin": {
+                    "desktop": {
+                      "top": "0",
+                      "bottom": "0"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Kills glare off water, roads and windscreens.",
+                  "fontSize": {
+                    "desktop": "14px"
+                  },
+                  "textColour": "text-muted",
+                  "textWrap": "pretty",
+                  "margin": {
+                    "desktop": {
+                      "top": "0",
+                      "bottom": "0"
+                    }
+                  }
+                }
+              }
+            ]
           }
         ]
       },
@@ -109,24 +335,93 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/label",
+            "name": "sgs/container",
             "attributes": {
-              "text": "Light-reactive",
-              "textColour": "text-muted"
-            }
-          },
-          {
-            "name": "sgs/heading",
-            "attributes": {
-              "level": "h3",
-              "content": "+\u00c2\u00a370"
-            }
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Clear indoors, dark outside in under a minute."
-            }
+              "tagName": "div",
+              "layout": "stack",
+              "gap": {
+                "desktop": "8px"
+              },
+              "minHeight": {
+                "desktop": "100%"
+              },
+              "backgroundColour": "surface-alt",
+              "backgroundColourHover": "#F7F4EF",
+              "padding": {
+                "desktop": {
+                  "top": "26px",
+                  "right": "24px",
+                  "bottom": "26px",
+                  "left": "24px"
+                }
+              },
+              "borderStyle": "solid",
+              "borderWidth": {
+                "top": "1px",
+                "right": "1px",
+                "bottom": "1px",
+                "left": "1px"
+              },
+              "borderColour": "border"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/label",
+                "attributes": {
+                  "text": "Light-reactive",
+                  "textColour": "text-label",
+                  "fontSize": {
+                    "desktop": 11.5
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "400",
+                  "letterSpacing": 0.18,
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase"
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "+£70",
+                  "fontFamily": "heading",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 26
+                  },
+                  "fontSizeUnit": "px",
+                  "letterSpacing": {
+                    "desktop": 0
+                  },
+                  "textTransform": "none",
+                  "textColour": "text",
+                  "margin": {
+                    "desktop": {
+                      "top": "0",
+                      "bottom": "0"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Clear indoors, dark outside in under a minute.",
+                  "fontSize": {
+                    "desktop": "14px"
+                  },
+                  "textColour": "text-muted",
+                  "textWrap": "pretty",
+                  "margin": {
+                    "desktop": {
+                      "top": "0",
+                      "bottom": "0"
+                    }
+                  }
+                }
+              }
+            ]
           }
         ]
       }

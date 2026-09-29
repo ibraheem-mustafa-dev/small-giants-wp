@@ -826,6 +826,22 @@
       "type": "string",
       "default": ""
     },
+    "titleFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "titleLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "titleLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "titleTextTransform": {
+      "type": "string",
+      "default": ""
+    },
     "titleFontStyle": {
       "type": "string",
       "enum": [
@@ -844,6 +860,22 @@
       "default": "em"
     },
     "subtitleFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "subtitleFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "subtitleLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "subtitleLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "subtitleTextTransform": {
       "type": "string",
       "default": ""
     },

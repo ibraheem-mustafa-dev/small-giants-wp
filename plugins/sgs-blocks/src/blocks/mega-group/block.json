@@ -17,6 +17,7 @@
 		"anchor": false,
 		"align": false,
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"elements": {
 				"group": {
 					"label": "Group",

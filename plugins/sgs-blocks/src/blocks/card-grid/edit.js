@@ -1390,6 +1390,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								showWeight: true,
 								showStyle: true,
 								showLineHeight: true,
+								showFontFamily: true,
+								showLetterSpacing: true,
+								showTransform: true,
 							},
 							{
 								key: 'subtitle',
@@ -1398,6 +1401,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								showWeight: true,
 								showStyle: true,
 								showLineHeight: true,
+								showFontFamily: true,
+								showLetterSpacing: true,
+								showTransform: true,
 							},
 							imageFallback && noImageLabel && {
 								key: 'noImageLabel',
