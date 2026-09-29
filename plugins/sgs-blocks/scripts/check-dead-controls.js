@@ -685,12 +685,22 @@ function readBlock( dir ) {
 	);
 	const providesContext = meta.providesContext || {}; // { contextKey: attrName }
 	const usesContext = Array.isArray( meta.usesContext ) ? meta.usesContext : [];
+	// A block's own stagger attribute, declared as `anim:stagger` in an
+	// element's attrMap, is read by name at render time by the shared entrance
+	// code (includes/animation-stagger.php::sgs_entrance_declared_stagger_attr),
+	// so its literal never needs to appear in the block's own files.
+	const animStaggerAttrs = new Set(
+		Object.values( meta.supports?.sgs?.elements || {} )
+			.map( ( el ) => el?.attrMap?.[ 'anim:stagger' ] )
+			.filter( ( a ) => 'string' === typeof a && a )
+	);
 	return {
 		name: meta.name || path.basename( dir ),
 		dir,
 		attrs,
 		dynamic,
 		usesWrapper,
+		animStaggerAttrs,
 		ownCorpus,
 		providesContext,
 		usesContext,
@@ -1154,6 +1164,11 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 			if ( mediaElementAtomConsumed.has( attr ) ) {
 				continue;
 			}
+		// Declared entrance stagger (attrMap `anim:stagger`), read by the shared
+		// consumer named in readBlock() — only while that consumer exists.
+		if ( block.animStaggerAttrs?.has( attr ) && /\bsgs_entrance_declared_stagger_attr\s*\(/.test( sharedCorpus ) ) {
+			continue;
+		}
 		// Rule (a) — responsive variant: a {base}Tablet/Mobile/Desktop attr is
 		// consumed if its base is consumed AND the BLOCK'S OWN corpus builds
 		// responsive keys dynamically / emits @media (the legitimate reason its

@@ -17,7 +17,7 @@ call, so nothing of it was built.
 |---|---|---|
 | 1. Shop and lens tail | **100%** | Done, pushed, both walks exit 0 |
 | 2. Page waves (9 pages) | **about 50%** | Everything built and deployed once; no page passes yet |
-| Motion batch (framework) | **0%** | Agent failed at start (usage limit) |
+| Motion batch (framework) | **80%** | Built, browser-tested and pushed 2026-09-29; needs reseed, full build, deploy and walks on Bean's PC |
 | 3. Phase 6 launch readiness | **0%** | Waits until every page passes |
 
 ## Task 1: shop and lens tail (DONE)
@@ -82,15 +82,18 @@ The queue's "exit code 0" was the queue runner's, not the walks'.
 5. Mega panels keep all 40 brands and 12 shapes (26 brands and 3 shapes open an empty shop).
 6. EASIEST tag stays inside its card.
 
-## Motion batch (NOT STARTED)
+## Motion batch (BUILT 2026-09-29, not yet deployed)
 
-Spec in `2026-09-28-eye-care-product-page-parity.md` §Motion batch. Three framework fixes, then the shop's cards take
-the exact values and the shop walk reruns (this reopens the passing shop page):
+Built in a cloud session as universal Animation-panel settings with editor controls; details and browser proof in
+`2026-09-28-eye-care-product-page-parity.md` §Motion batch. The draft's reveal trigger (1% past 6% up the screen)
+is now the framework default, with a "Start when" control; a block's own delay is kept; "Stagger the blocks
+inside" (any block with inner blocks) and a block's own stagger (repeated lists) replace hand-typed delays;
+card-grid tiles use the same settings. Eye Care's shop card and Home trees updated (not yet applied).
 
-1. `animation-observer.js` reveals at threshold 0.15 with no margin; the draft uses 0.01 and rootMargin
-   `0px 0px -6% 0px`.
-2. The observer adds its own `index × 100ms` stagger on top of an explicit `sgsAnimationDelay` (double stagger).
-3. `sgs/card-grid` tiles animate from a hard-coded scroll-linked CSS rule that ignores the entrance settings.
+Checks run here: PHP syntax, webpack compile, 116 of 127 fast gates pass; of the 11 failures, 8 need the framework
+DB or Python packages (bs4, tinycss2) only on Bean's PC, `check-hardcoded-render-defaults` fails on untouched
+`main` too, and `shadow-lift-check` is an artefact of compiling without the prebuild generators. ESLint could not
+start here (a TypeScript plugin version clash), so it runs in the PC build.
 
 ## Loose ends
 
@@ -117,8 +120,8 @@ Times include a 50% pad.
 
 1. **Read the eight re-walk reports** (`out/<page>/report.md` and contact sheets) and note each page's open count.
    45-70 min. Done when every page has a number and a short list of causes.
-2. **Motion batch**: build the three fixes, gates, reseed, deploy, set the shop's card values, rerun the shop walk.
-   1.5-2 h. Done when the shop walk exits 0 again and Home/About/Lenses reveals match the draft.
+2. **Motion batch deploy** (code built 2026-09-29): reseed, full build, deploy, apply the shop and Home trees,
+   rerun the shop and Home walks. 45-70 min. Done when the shop walk exits 0 again and Home's reveals match.
 3. **Fix-and-walk loop per page** (one browser run at a time): product, about, lenses, help, contact, home, bag,
    checkout. About 30 min a page, so 4-6 h in total. Done when each walker exits 0 with every shot reviewed.
 4. **Test order and confirmation walk**: place a test order on eye-care-test once checkout is clean, then walk

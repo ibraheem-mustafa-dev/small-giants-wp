@@ -76,9 +76,10 @@ CARD = dict(
     # The draft's card hover: 4px lift over 0.4s, a soft 18/44 shadow, the photo to 106% over 0.9s, border #CFC7BB.
     sgsHoverLift=4, sgsHoverDurationMs=400, sgsHoverShadow="diffuse", sgsHoverImageZoom=True, sgsHoverZoom=106,
     sgsHoverZoomDuration=900, borderColourHover="border-hover",
-    # The draft's scroll-in: each card fades up as it comes into view, a row cascading (its 460ms, 26px, 70ms
-    # steps; the framework's nearest motion tokens are 500ms, 30px and 100ms).
-    sgsAnimation="fade-up", sgsAnimationDuration="slow", sgsAnimationEasing="ease-out", sgsAnimationDistance="30",
+    # The draft's scroll-in, exact: each card fades up 26px over 460ms on its cubic ease-out once it passes 6% up
+    # the screen (the framework default), the cards cascading 70ms apart by position, up to the 7th.
+    sgsAnimation="fade-up", sgsAnimationDuration="460", sgsAnimationEasing="cubic-bezier(0.33, 1, 0.68, 1)",
+    sgsAnimationDistance="26", sgsAnimationStagger="70", sgsAnimationStaggerMax="7",
     # Card text parts: price 18/27, RRP in text-label, 17px colour dots growing to 125% when pointed at.
     priceLineHeight=27, priceLineHeightUnit="px", rrpColour="text-label", swatchSize=17, swatchHoverGrow=125,
     # The draft's photo fill, dot and heart rings, and the brand overlay's 12/14 padding.

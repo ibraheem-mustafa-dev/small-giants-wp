@@ -43,7 +43,7 @@ key), with the owed Wave C polish alongside.
     "Photo to come", attachment 353; products keep it as their photo for the preflight gate); (3) the card's new
     "Space above the price" (padding, 6px); (4) the grid-to-note gap (the floating Filter button's reserved space
     follows its switch; WooCommerce's 30px collection margin gone); (6) titleTextWrap wrap; (7) Customizer "Filter
-    panel heading size" 22px; (9) reveal at 15% visible with no bottom margin (the draft's trigger, measured); (12)
+    panel heading size" 22px; (9) reveal at the draft's trigger (1% of the block past a line 6% up the screen, read from the draft's source 2026-09-29; the 15% first measured matched it only for a 450px card); (12)
     the 375 stage name bar at 14/17px; (13) the question's new "Intro width", 58 on thickness and prescription.
     Found not to be draft differences: (5) the 375 RRP beside the price on Aviator and Wayfarer comes from their
     dots taking their own line (Bean accepted 2026-09-27); (11) the stage price column is the pennies' width.

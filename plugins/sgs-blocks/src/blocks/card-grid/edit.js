@@ -1298,7 +1298,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange={ ( val ) => setAttributes( { staggerDelay: val } ) }
 								min={ 0 }
 								max={ 500 }
-								step={ 25 }
+								step={ 5 }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>

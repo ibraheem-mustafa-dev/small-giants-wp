@@ -38,6 +38,8 @@
       "__experimentalSkipSerialization": true
     },
     "sgs": {
+      "animationItems": ".sgs-card-grid__item, .sgs-product-card",
+      "_comment_animationItems": "The grid's entrance plays tile by tile: each card takes the block's Animation settings and the grid's staggerDelay (attrMap anim:stagger) is the step between them (includes/animation-stagger.php, assets/js/animation-entrance-timing.js). Replaces a fixed scroll-linked tile rule that read none of the settings.",
       "collection": true,
       "scalarStylingLift": true,
       "imageControls": true,

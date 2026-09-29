@@ -1460,13 +1460,23 @@ is one JSON literal between the `sgs-entrance-effects` markers in the observer, 
 seeder (`scripts/dbschema/seed-motion-shape-signatures.py::_extract_entrance_rows`) reads.
 
 - **Timing.** Duration and easing resolve from the theme tokens (`--wp--custom--duration--*`,
-  `--wp--custom--easing--*`); delay is `sgsAnimationDelay` (0 to 800ms) plus a 100ms-per-index
-  stagger for elements in view at load and for elements that reach view in the same observer batch
-  (a row of cards scrolled into view cascades rather than popping at once). `sgsAnimationDistance` (15, 30, 50 or 100px, written only
-  when set) replaces a directional effect's own travel (30px fade, 100px slide).
-- **When it plays.** In view at load: at once. Otherwise the animation is created paused (start
-  pose) within 200px of the viewport and plays at 15% in view; it plays once (a script animation
-  does not replay when a hidden container shows again) and is cancelled when finished.
+  `--wp--custom--easing--*`) or a custom value (0-5000ms; CSS `ease` or a stored raw easing
+  string); `sgsAnimationDistance` (15, 30, 50 or 100px, or a custom 0-400px, written only when set)
+  replaces a directional effect's own travel (30px fade, 100px slide). The delay is
+  `sgsAnimationDelay` plus the block's stagger, resolved by `assets/js/animation-entrance-timing.js`:
+  its own `sgsAnimationStagger` step times its position among the matching animated blocks beside
+  it, else the nearest parent's `sgsAnimationStaggerChildren` step times its position among that
+  parent's animated blocks (page order, an animated block between them owning its own children),
+  capped at `sgsAnimationStaggerMax` (default 7). With no stagger set, elements with no delay of
+  their own that start together (in view at load, or in one observer batch) play 100ms apart.
+  `supports.sgs.animationItems` hands a block's entrance to its repeated items (`sgs/card-grid`
+  tiles), staggered by its declared `anim:stagger` attribute.
+- **When it plays.** An entrance plays once 1% of the block has passed its "Start when" line,
+  `sgsAnimationTrigger` % of the screen height above the bottom edge (default 6, the Eye Care
+  draft's reveal: threshold 0.01, rootMargin `0px 0px -6% 0px`); one IntersectionObserver per line.
+  Past its line at load: at once. Otherwise the animation is created paused (start pose) within
+  200px of the viewport and plays at its line; it plays once (a script animation does not replay
+  when a hidden container shows again) and is cancelled when finished.
 - **Before it plays.** A `wp_head` flag and rule (`sgs-entrance-pending`,
   `plugins/sgs-blocks/includes/animation-attributes.php::print_entrance_pending_flag`, printed render-blocking because
   `extensions.css` loads asynchronously) hold animated elements at opacity 0 until the observer has

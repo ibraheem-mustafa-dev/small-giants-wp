@@ -1328,11 +1328,16 @@ All SGS blocks receive animation and interaction controls via the block extensio
 **Attributes (injected into all `sgs/*` blocks by `src/blocks/extensions/animation.js`; server mirror in `includes/extension-attributes.generated.php`):**
 - `sgsAnimation` — none | fade-up | fade-down | fade-in | fade-left | fade-right | slide-up | slide-down | slide-left | slide-right | scale-in | scale-out | rotate-in | flip-in | blur-in | bounce-in | reveal-up (default: none)
 - `sgsAnimationDelay` — 0 | 100 | 200 | 300 | 500 | 800 ms (default: 0)
-- `sgsAnimationDuration` — the theme duration tokens: instant (60ms) | fast (150ms) | medium (300ms) | slow (500ms) | extra-slow (800ms) (default: medium)
-- `sgsAnimationEasing` — the theme easing tokens: default | ease-out | ease-in | spring | linear (default: default)
-- `sgsAnimationDistance` — '' | 15 | 30 | 50 | 100 px, directional effects only (default: '' = the effect's own 30px fade or 100px slide)
+- `sgsAnimationDuration` — the theme duration tokens: instant (60ms) | fast (150ms) | medium (300ms) | slow (500ms) | extra-slow (800ms), or a custom millisecond count 0-5000 (default: medium)
+- `sgsAnimationEasing` — the theme easing tokens: default | ease-out | ease-in | spring | linear, or CSS `ease`; a stored raw CSS easing string (e.g. `cubic-bezier(…)`) is used as-is (default: default)
+- `sgsAnimationDistance` — '' | 15 | 30 | 50 | 100 px or a custom 0-400 px, directional effects only (default: '' = the effect's own 30px fade or 100px slide)
+- `sgsAnimationTrigger` — "Start when": the entrance starts once 1% of the block passes a line this many % of the screen height above its bottom edge, 0-50 (default: '' = 6)
+- `sgsAnimationStagger` — the block's own stagger step, 0-1000 ms, against the matching animated blocks beside it; reaches cards in a repeated list whose parent is not an SGS block (a product template)
+- `sgsAnimationStaggerChildren` — "Stagger the blocks inside", 0-1000 ms: a parent's step for its animated blocks in page order; offered on blocks with inner blocks, animated or not. A block declaring its own stagger attribute (attrMap `anim:stagger`, e.g. `sgs/card-grid` `staggerDelay`) supplies it instead
+- `sgsAnimationStaggerMax` — the position after which the stagger stops growing, 1-50 (default: '' = 7)
+- `supports.sgs.animationItems` (block.json) — a selector for a block's own repeated items, which then enter one by one with the block's settings (`sgs/card-grid`)
 
-**Implementation:** `assets/js/animation-observer.js` plays each entrance with `element.animate()`, so it never shares a block's own `transition`, `animation` or `transform`; elements in view at load play with a 100ms-per-index stagger, the rest play at 15% in view, 100ms apart when several reach view together. A render-blocking head flag (`plugins/sgs-blocks/includes/animation-attributes.php::print_entrance_pending_flag`) holds entrances until their start pose is placed. Reduced motion and no-JS show content unanimated. Full contract: Spec 38 §4.3a.
+**Implementation:** `assets/js/animation-observer.js` plays each entrance with `element.animate()`, so it never shares a block's own `transition`, `animation` or `transform`; `assets/js/animation-entrance-timing.js` resolves when it starts and its stagger, and `includes/animation-stagger.php` writes the timing attributes for dynamic blocks. A stagger adds position × step (position among the group's animated blocks, capped) to the block's own delay; with none set, blocks with no delay of their own that start together play 100ms apart. A render-blocking head flag (`plugins/sgs-blocks/includes/animation-attributes.php::print_entrance_pending_flag`) holds entrances until their start pose is placed. Reduced motion and no-JS show content unanimated. Full contract: Spec 38 §4.3a.
 
 #### Hover Animations (CSS-first, JS for complex effects)
 

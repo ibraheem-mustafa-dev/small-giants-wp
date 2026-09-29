@@ -495,12 +495,22 @@ final class SGS_Blocks {
 			);
 		}
 
+		// The entrance observer reads its trigger line and stagger from
+		// sgsEntranceTiming (animation-entrance-timing.js), loaded first.
+		wp_register_script(
+			'sgs-animation-entrance-timing',
+			SGS_BLOCKS_URL . 'assets/js/animation-entrance-timing.js',
+			[],
+			SGS_BLOCKS_VERSION,
+			true
+		);
+
 		$js_file = SGS_BLOCKS_PATH . 'assets/js/animation-observer.js';
 		if ( file_exists( $js_file ) ) {
 			wp_enqueue_script(
 				'sgs-animation-observer',
 				SGS_BLOCKS_URL . 'assets/js/animation-observer.js',
-				[],
+				[ 'sgs-animation-entrance-timing' ],
 				SGS_BLOCKS_VERSION,
 				true
 			);

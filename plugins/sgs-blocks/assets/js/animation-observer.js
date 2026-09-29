@@ -9,11 +9,15 @@
  * animations (header shrink, counter reveal) and scroll-driven transforms
  * (hide-on-scroll) keep running underneath it unchanged.
  *
- * Elements already in the viewport on load play at once (their own delay
- * plus a 100ms-per-index stagger). The rest are created — paused, which
- * already paints their start pose — once they come within 200px of the
- * viewport, then played when 15% of them is in view; ones that reach view
- * together play 100ms apart, like those in view at load. Until this script has
+ * When each entrance starts and how it is staggered come from
+ * assets/js/animation-entrance-timing.js (sgsEntranceTiming, enqueued as this
+ * script's dependency): an entrance plays once 1% of its block has passed the
+ * block's "Start when" line (6% of the screen height above the bottom edge
+ * unless set), elements past that line at load play at once, and a stagger
+ * set in the editor adds its step per position to the block's own delay. With
+ * no stagger set, blocks with no delay of their own that start together play
+ * 100ms apart. The rest are created — paused, which already paints their
+ * start pose — once they come within 200px of the viewport. Until this script has
  * put the start poses in place, a head flag (sgs-entrance-pending, printed by
  * includes/animation-attributes.php) holds animated elements at opacity 0; it
  * lifts itself after 3s, and without JavaScript it never exists, so content
@@ -31,6 +35,13 @@
 	// and horizontal-panel blocks; this extension no longer hides anything
 	// itself, so nothing here depends on it.
 	document.documentElement.classList.add( 'sgs-js' );
+
+	var T = globalThis.sgsEntranceTiming;
+
+	// A block that enters item by item hands its entrance to its items first.
+	if ( T ) {
+		T.expandItems( document );
+	}
 
 	var elements = document.querySelectorAll( '[data-sgs-animation]' );
 
@@ -159,7 +170,8 @@
 	/**
 	 * Resolve one element's timing: duration and easing from its theme
 	 * tokens (bounce-in's own overshoot curve wins over any stored easing),
-	 * delay from its data attribute plus an optional load-time stagger.
+	 * delay from its data attribute plus its editor stagger, or with none set
+ * (and no delay of its own) an automatic load-time stagger.
 	 *
 	 * @param {Element}     el        Target element.
 	 * @param {Object}      effect    Entry from EFFECTS.
@@ -202,8 +214,14 @@
 			}
 		}
 
-		var baseDelay = Number.parseInt( el.dataset.sgsAnimationDelay || '0', 10 );
-		var delay     = null === loadIndex ? baseDelay : baseDelay + loadIndex * 100;
+		var baseDelay = Number.parseInt( el.dataset.sgsAnimationDelay || '0', 10 ) || 0;
+		var stagger   = T ? T.staggerOffset( el ) : null;
+		var delay     = baseDelay;
+		if ( null !== stagger ) {
+			delay = baseDelay + stagger;
+		} else if ( null !== loadIndex && 0 === baseDelay ) {
+			delay = loadIndex * 100;
+		}
 
 		return { duration: duration, easing: easing, delay: delay, fill: 'backwards' };
 	}
@@ -289,29 +307,24 @@
 	}
 
 	/**
-	 * Check whether an element is currently within the viewport.
-	 *
-	 * Uses the same 15% threshold as the play IntersectionObserver so the
-	 * in-viewport check is consistent with the scroll-triggered check.
+	 * Whether an element has already crossed its "Start when" line.
 	 *
 	 * @param {Element} el Element to test.
-	 * @return {boolean} True if the element is in the viewport.
+	 * @return {boolean} True if it should play at load.
 	 */
 	function isInViewport( el ) {
-		const rect           = el.getBoundingClientRect();
-		const viewportHeight = globalThis.innerHeight || document.documentElement.clientHeight;
-		const viewportWidth  = globalThis.innerWidth  || document.documentElement.clientWidth;
+		return T.inTriggerZone( el );
+	}
 
-		// Element must be at least 15% visible (matches observer threshold).
-		const visibleHeight = Math.min( rect.bottom, viewportHeight ) - Math.max( rect.top, 0 );
-		const visibleWidth  = Math.min( rect.right, viewportWidth )   - Math.max( rect.left, 0 );
-
-		if ( visibleHeight <= 0 || visibleWidth <= 0 ) {
-			return false;
-		}
-
-		const visibleFraction = ( visibleHeight * visibleWidth ) / ( rect.height * rect.width );
-		return visibleFraction >= 0.15;
+	/**
+	 * Whether the observer adds its automatic spacing to this element: only
+	 * with no editor stagger and no delay of its own.
+	 *
+	 * @param {Element} el Element to test.
+	 * @return {boolean} True when automatic spacing applies.
+	 */
+	function autoSpaced( el ) {
+		return null === T.staggerOffset( el ) && ! ( Number.parseInt( el.dataset.sgsAnimationDelay || '0', 10 ) > 0 );
 	}
 
 	try {
@@ -339,37 +352,45 @@
 			{ threshold: 0, rootMargin: NEAR_MARGIN_PX + 'px 0px ' + NEAR_MARGIN_PX + 'px 0px' }
 		);
 
-		// "Play" observer — plays the animation once 15% of the element is
-		// in view, with no margin at the bottom edge (a 450px card reveals with
-		// 68px showing, as the Eye Care draft measured; a -40px margin left a
-		// row just inside the fold blank). Creates it first on a fast scroll
-		// where the near observer has not fired yet.
-		var playObserver = new IntersectionObserver(
-			function ( entries ) {
-				// Elements that come into view together (a row of cards) play in
-				// sequence, 100ms apart, like the ones in view at load.
-				entries.filter( function ( entry ) {
-					return entry.isIntersecting;
-				} ).forEach( function ( entry, index ) {
-					const el = entry.target;
-					let animation = animations.get( el );
-					if ( ! animation ) {
-						animation = createAnimation( el, null );
-					}
-					if ( animation ) {
-						animations.set( el, animation );
-						if ( index > 0 && animation.effect ) {
+		// "Play" observers — one per "Start when" line: plays the animation
+		// once 1% of the element has passed it. Creates it first on a fast
+		// scroll where the near observer has not fired yet.
+		var playObservers = {};
+		var onPlay = function ( entries, playObserver ) {
+			// Elements that start together (a row of cards) with no stagger
+			// or delay of their own play in sequence, 100ms apart, like the
+			// ones in view at load.
+			var autoIndex = 0;
+			entries.filter( function ( entry ) {
+				return entry.isIntersecting;
+			} ).forEach( function ( entry ) {
+				const el = entry.target;
+				let animation = animations.get( el );
+				if ( ! animation ) {
+					animation = createAnimation( el, null );
+				}
+				if ( animation ) {
+					animations.set( el, animation );
+					if ( animation.effect && autoSpaced( el ) ) {
+						var index = autoIndex++;
+						if ( index > 0 ) {
 							animation.effect.updateTiming( { delay: ( animation.effect.getTiming().delay || 0 ) + index * 100 } );
 						}
-						animation.play();
 					}
-					el.classList.add( 'sgs-animated' );
-					playObserver.unobserve( el );
-					nearObserver.unobserve( el );
-				} );
-			},
-			{ threshold: 0.15 }
-		);
+					animation.play();
+				}
+				el.classList.add( 'sgs-animated' );
+				playObserver.unobserve( el );
+				nearObserver.unobserve( el );
+			} );
+		};
+		var playObserverFor = function ( el ) {
+			var pct = T.triggerPct( el );
+			if ( ! playObservers[ pct ] ) {
+				playObservers[ pct ] = new IntersectionObserver( onPlay, T.observerOptions( pct ) );
+			}
+			return playObservers[ pct ];
+		};
 
 		// Elements already in the viewport on page load play at once — both
 		// observers fire async and would otherwise miss them.
@@ -381,7 +402,7 @@
 				return;
 			}
 			// Already within the near margin (e.g. peeking in at the fold below
-			// the 15% play threshold): hold its start pose now, before the
+			// its "Start when" line): hold its start pose now, before the
 			// pending flag lifts, rather than on the near observer's first
 			// asynchronous callback.
 			const rect = el.getBoundingClientRect();
@@ -393,13 +414,15 @@
 				}
 			}
 			nearObserver.observe( el );
-			playObserver.observe( el );
+			playObserverFor( el ).observe( el );
 		} );
 
-		// Stagger already-visible elements by 100ms per index so they play
-		// in sequence rather than all at once.
-		inViewOnLoad.forEach( function ( el, index ) {
-			const animation = createAnimation( el, index );
+		// Already-visible elements play in sequence (their editor stagger, or
+		// 100ms apart when they have none) rather than all at once.
+		// The automatic spacing counts only the elements it applies to.
+		var autoIndex = 0;
+		inViewOnLoad.forEach( function ( el ) {
+			const animation = createAnimation( el, autoSpaced( el ) ? autoIndex++ : null );
 			if ( ! animation ) {
 				return;
 			}

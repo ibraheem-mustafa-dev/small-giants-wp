@@ -2,10 +2,13 @@
  * Animation extension — injects entrance-animation controls into ALL sgs/*
  * blocks via WordPress filters.
  *
- * Adds five attributes (sgsAnimation, sgsAnimationDelay, sgsAnimationDuration,
- * sgsAnimationEasing, sgsAnimationDistance) and outputs them as data-*
- * attributes on the saved markup. assets/js/animation-observer.js reads
- * these and plays the entrance as a Web Animations API script animation.
+ * Adds the entrance attributes (sgsAnimation, sgsAnimationDelay,
+ * sgsAnimationDuration, sgsAnimationEasing, sgsAnimationDistance) and its
+ * timing (sgsAnimationTrigger, sgsAnimationStagger,
+ * sgsAnimationStaggerChildren, sgsAnimationStaggerMax — EntranceStaggerControls)
+ * and outputs them as data-* attributes on the saved markup.
+ * assets/js/animation-observer.js reads these and plays the entrance as a Web
+ * Animations API script animation.
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
@@ -13,6 +16,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { AnimationControl } from '../../components';
+import EntranceStaggerControls from '../../components/EntranceStaggerControls';
 import { isExtensionHidden } from './hide-extensions';
 
 /**
@@ -93,6 +97,10 @@ function addAnimationAttributes( settings, name ) {
 			sgsAnimationDuration: { type: 'string', default: existingDuration      ?? 'medium' },
 			sgsAnimationEasing:   { type: 'string', default: existingEasing        ?? 'default' },
 			sgsAnimationDistance: { type: 'string', default: existingDistance      ?? '' },
+			sgsAnimationTrigger:         { type: 'string', default: '' },
+			sgsAnimationStagger:         { type: 'string', default: '' },
+			sgsAnimationStaggerChildren: { type: 'string', default: '' },
+			sgsAnimationStaggerMax:      { type: 'string', default: '' },
 		},
 	};
 }
@@ -226,6 +234,12 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 								} )
 							}
 						/>
+						<EntranceStaggerControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							clientId={ props.clientId }
+							hasAnimation={ hasAnimation }
+						/>
 					</PanelBody>
 				</InspectorControls>
 			</>
@@ -238,6 +252,32 @@ addFilter(
 	'sgs/animation-controls',
 	withAnimationControls
 );
+
+/**
+ * A parent's "Stagger the blocks inside" (and its stop point) — saved whether
+ * or not the parent animates itself, and only when set, so existing static
+ * blocks' saved markup stays byte-identical.
+ *
+ * @param {Object} props      Save props.
+ * @param {Object} attributes Block attributes.
+ * @return {Object} Save props.
+ */
+function withStaggerChildrenProps( props, attributes ) {
+	const next = { ...props };
+	if ( attributes.sgsAnimationStaggerChildren ) {
+		next[ 'data-sgs-animation-stagger-children' ] =
+			attributes.sgsAnimationStaggerChildren;
+	}
+	if (
+		attributes.sgsAnimationStaggerMax &&
+		( attributes.sgsAnimationStaggerChildren ||
+			( attributes.sgsAnimationStagger && attributes.sgsAnimation && 'none' !== attributes.sgsAnimation ) )
+	) {
+		next[ 'data-sgs-animation-stagger-max' ] =
+			attributes.sgsAnimationStaggerMax;
+	}
+	return next;
+}
 
 function addAnimationSaveProps( props, blockType, attributes ) {
 	if ( ! shouldHaveAnimation( blockType.name ) ) {
@@ -261,11 +301,19 @@ function addAnimationSaveProps( props, blockType, attributes ) {
 			saveProps[ 'data-sgs-animation-distance' ] =
 				attributes.sgsAnimationDistance;
 		}
+		if ( attributes.sgsAnimationTrigger ) {
+			saveProps[ 'data-sgs-animation-trigger' ] =
+				attributes.sgsAnimationTrigger;
+		}
+		if ( attributes.sgsAnimationStagger ) {
+			saveProps[ 'data-sgs-animation-stagger' ] =
+				attributes.sgsAnimationStagger;
+		}
 
-		return saveProps;
+		return withStaggerChildrenProps( saveProps, attributes );
 	}
 
-	return props;
+	return withStaggerChildrenProps( props, attributes );
 }
 
 addFilter(

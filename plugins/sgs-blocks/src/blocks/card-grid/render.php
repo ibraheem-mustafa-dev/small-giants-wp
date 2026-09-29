@@ -107,7 +107,6 @@ $card_shadow         = $attributes['cardShadow'] ?? '';
 $card_shadow_colour  = $attributes['cardShadowColour'] ?? '';
 $hover_image_zoom    = ! empty( $attributes['imageZoomHover'] );
 $hover_grayscale     = ! empty( $attributes['grayscaleHover'] );
-$stagger_delay       = $attributes['staggerDelay'] ?? 0;
 $query_post_type     = sanitize_key( $attributes['queryPostType'] ?? 'post' );
 $query_per_page      = absint( $attributes['queryPostsPerPage'] ?? 6 );
 $query_category      = absint( $attributes['queryCategory'] ?? 0 );
@@ -688,9 +687,6 @@ if ( 'wc-product' === $source || 'cpt-collection' === $source ) {
 	if ( $hover_shadow ) {
 		$wc_class_names[] = 'sgs-has-hover';
 	}
-	if ( $stagger_delay ) {
-		$wc_class_names[] = 'sgs-has-stagger';
-	}
 
 	$gap_value_wc   = sgs_container_gap_value( $gap );
 	$wc_style_parts = array(
@@ -710,9 +706,6 @@ if ( 'wc-product' === $source || 'cpt-collection' === $source ) {
 	}
 	if ( $hover_shadow ) {
 		$wc_style_parts[] = '--sgs-hover-shadow: ' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );
-	}
-	if ( $stagger_delay ) {
-		$wc_style_parts[] = '--sgs-stagger: ' . absint( $stagger_delay ) . 'ms';
 	}
 
 	$wc_wrapper_opts = array(
@@ -893,9 +886,6 @@ if ( $hover_grayscale ) {
 if ( $card_grid_overlay_active ) {
 	$class_names[] = 'sgs-card-grid--has-image-overlay';
 }
-if ( $stagger_delay ) {
-	$class_names[] = 'sgs-has-stagger';
-}
 
 // Resolve gap via the shared helper — handles both preset slugs ("30" →
 // var(--wp--preset--spacing--30)) and raw CSS lengths ("16px" → "16px").
@@ -925,17 +915,9 @@ if ( $hover_scale ) {
 if ( $hover_shadow ) {
 	$grid_style_parts[] = '--sgs-hover-shadow: ' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );
 }
-if ( $stagger_delay ) {
-	$grid_style_parts[] = '--sgs-stagger: ' . absint( $stagger_delay ) . 'ms';
-}
-
-// Per-item stagger-index custom-property VALUE (FR-32-4, D345) — varies per
-// item, so it cannot be a single scoped rule on the block root; emitted into a
-// `:nth-child(N)` scoped rule instead (same mechanism as sgs/social-icons' /
-// sgs/pricing-table's per-item colour), N = this item's 1-based position among
-// ALL rendered card items (every item renders `.sgs-card-grid__item`
-// unconditionally).
-$card_grid_stagger_css = '';
+// staggerDelay (attrMap anim:stagger) reaches the page as the grid's
+// data-sgs-animation-stagger-children (includes/animation-stagger.php): the
+// step between tiles entering one by one (supports.sgs.animationItems).
 
 // Spec 35 Part 4 — per-item crop, keyed by the item's OWN stable `_key`
 // (src/utils/generateItemKey.js), never by array index/`:nth-child` (both
@@ -974,9 +956,6 @@ foreach ( $items as $index => $item ) :
 	);
 	$has_link  = '' !== $link_attr;
 	$item_tag  = $has_link ? 'a' : 'div';
-	if ( $stagger_delay ) {
-		$card_grid_stagger_css .= $root_sel . ' .sgs-card-grid__item:nth-child(' . ( absint( $index ) + 1 ) . '){--sgs-item-index:' . absint( $index ) . ';}';
-	}
 
 	// Unified media slot — sgs_render_media() emits the right tag for either
 	// image or video.
@@ -1104,21 +1083,16 @@ foreach ( $items as $index => $item ) :
 	</<?php echo esc_attr( $item_tag ); ?>>
 	<?php
 endforeach;
-$card_grid_stagger_tag  = $card_grid_stagger_css ? '<style>' . wp_strip_all_tags( $card_grid_stagger_css ) . '</style>' : '';
 $card_grid_per_item_tag = $card_grid_per_item_css ? '<style>' . wp_strip_all_tags( $card_grid_per_item_css ) . '</style>' : '';
 
-// FR-32-4a (no-inline contract): the per-item stagger rule addresses items by
-// `:nth-child(N)`, and `:nth-child` counts EVERY element sibling — including a
-// `<style>` tag. Emitting these tags inside $inner_html would put them in the
-// SAME parent as the card items and shift every index (by 1 to 3, depending on
-// which of the three tags is non-empty), so item 0 would never be nth-child(1).
-// They are therefore emitted BEFORE the wrapper — siblings of the block ROOT,
-// not of the items — exactly as sgs/gallery, sgs/google-reviews and
-// sgs/social-icons already do. $inner_html then holds ONLY the card items, so
-// item N really is nth-child(N+1). Relative order of the three tags is
-// preserved, and each is a `.{uid}`-scoped rule, so moving them earlier in the
-// document cannot change which rule wins.
-$card_grid_style_tags = $card_grid_native_style_tag . $sgs_grid_typo_tag . $card_grid_stagger_tag . $card_grid_per_item_tag;
+// FR-32-4a (no-inline contract): the scoped <style> tags are emitted BEFORE
+// the wrapper — siblings of the block ROOT, not of the items — exactly as
+// sgs/gallery, sgs/google-reviews and sgs/social-icons do, so $inner_html holds
+// ONLY the card items and an item's position among its siblings is its real
+// position (the per-tile entrance stagger counts it). Relative order of the
+// tags is preserved, and each is a `.{uid}`-scoped rule, so moving them earlier
+// in the document cannot change which rule wins.
+$card_grid_style_tags = $card_grid_native_style_tag . $sgs_grid_typo_tag . $card_grid_per_item_tag;
 $inner_html           = ob_get_clean();
 
 echo $card_grid_style_tags . SGS_Container_Wrapper::render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $card_grid_style_tags is CSS passed through wp_strip_all_tags(); SGS_Container_Wrapper::render() escapes internally.

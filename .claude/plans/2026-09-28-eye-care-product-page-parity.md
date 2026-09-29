@@ -47,7 +47,7 @@ and its CSS emitted in the block's `render.php` (logic in helpers: `buybox/rende
 | F11 (built) | A related-products section with no products hides, heading included | n/a | "More from Gucci" empty |
 | F12 (built) | Size guide pop-up: 720px wide, 1px border, soft shadow, "×" close, zoom-in entrance | as measured | 800px, icon close, none |
 
-All twelve built 2026-09-28 (not yet deployed). Also fixed in passing: `sgs/button`'s "fit" width never fitted (a
+All twelve built 2026-09-28 and live on eye-care-test since 620e534bf. Also fixed in passing: `sgs/button`'s "fit" width never fitted (a
 flex-column parent stretched it; now `width: fit-content`, render.php and the editor preview); `sgs/modal`'s trigger
 hover colours never reached the page (an undefined accumulator); `sgs/breadcrumbs` gained "Space around the
 separator"; an empty form error line kept 4px. Parked: `buybox/render.php` is ~1480 lines (limit 300), grown by this
@@ -55,7 +55,7 @@ wave's settings; its split is owed.
 
 ## Content (sites/eye-care-ward-end)
 
-- C1 Details tab: DONE in the tree (not yet applied): the draft's 18 rows and values (measured 2026-09-28). Model
+- C1 Details tab: DONE and applied: the draft's 18 rows and values (measured 2026-09-28). Model
   code binds the short description ("GG1566S · 001", as the buybox); "Lenses as supplied" binds the new
   `_sgs_lens_supplied` meta, seeded by `woo-seed/seed-facets.php` from the draft's catalogue (`pol`, `lensCat`:
   "Tinted, category 2"); UV protection, prescription, warranty, dispatch ("1 working day") and with-lenses are the
@@ -78,15 +78,24 @@ wave's settings; its split is owed.
   `?sort=…`, `?brand=…`), the footer's two links and About's "Shop the range" carry the draft's in-app routes. Point
   them at `/shop/` with WooCommerce's own filter parameters (read the format from the live shop's filter clicks).
 
-## Motion batch (next, from the page diagnoses, Bean's exact-entrance decision)
+## Motion batch (built 2026-09-29, not yet deployed)
 
-The draft's scroll reveal engine (read from its bundle by the Home agent): fade + 26px rise, 460ms, cubic ease-out
-`cubic-bezier(0.33, 1, 0.68, 1)`, stagger `min(index, 7) × 70ms` by sibling within a reveal group, IntersectionObserver
-threshold 0.01 with rootMargin `0px 0px -6% 0px`. Framework differences to close: (1) `animation-observer.js`
-reveals at threshold 0.15 with no margin (later than the draft); (2) it adds its own `index × 100ms` batch stagger on
-top of an explicit `sgsAnimationDelay`; (3) `sgs/card-grid` tiles animate by a hard-coded scroll-linked CSS rule
-that reads none of the entrance settings. Then the shop's cards (gen_archive_product.py `CARD`: preset 500ms / 30px /
-ease-out today) take the exact values, and the shop walk reruns.
+The draft's scroll reveal engine (its source, `design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html`
+`reveals()`/`show()`): fade + 26px rise, 460ms, cubic ease-out `cubic-bezier(0.33, 1, 0.68, 1)`, stagger
+`min(index, 7) × 70ms` by sibling within a reveal group, IntersectionObserver threshold 0.01 with rootMargin
+`0px 0px -6% 0px`. Built as universal Animation-panel settings (Spec 02 Entrance Animations, Spec 38 §4.3a), each
+with an editor control: "Start when" (`sgsAnimationTrigger`, default 6%: the draft's trigger is the framework
+default), a block's own stagger (`sgsAnimationStagger`), "Stagger the blocks inside" on any block with inner blocks
+(`sgsAnimationStaggerChildren`), and where the stagger stops (`sgsAnimationStaggerMax`, default 7). A block's own
+delay is kept exactly; the automatic 100ms spacing applies only to blocks with no delay or stagger. `sgs/card-grid`
+tiles now enter one by one through the same settings (`supports.sgs.animationItems`; its `staggerDelay` is the
+step), replacing a fixed scroll-linked tile rule. Eye Care: the shop's card takes the exact values with its own
+70ms stagger (`gen_archive_product.py` `CARD`); Home's hand-typed 0/70/140… delays became "Stagger the blocks
+inside: 70" on their five parents, and the shape tiles take the exact values with a 70ms step. Proven in a
+browser fixture (Chromium, 2026-09-29): parent stagger 0/70/240/210ms (own 100ms kept, a static heading skipped),
+a card in a list wrapper 0/70/140/140 (cap 2), card-grid tiles 0/80/160, plain blocks 0/100, "Start when" 30%
+holds below its line and plays above it. To do on Bean's PC: reseed, full build, deploy, apply the shop and Home
+trees, rerun the shop and Home walks.
 
 ## Accepted with the decision they follow
 

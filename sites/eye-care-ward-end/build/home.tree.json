@@ -396,7 +396,8 @@
             "desktop": "18px",
             "mobile": "10px"
           },
-          "textWrap": "wrap"
+          "textWrap": "wrap",
+          "sgsAnimationStaggerChildren": "70"
         },
         "innerBlocks": [
           {
@@ -408,7 +409,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "0",
               "priceRowSpaceAbove": "6px",
               "noImageLabel": "Photo to come",
               "noImageLabelFontSize": {
@@ -510,7 +510,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "70",
               "priceRowSpaceAbove": "6px",
               "noImageLabel": "Photo to come",
               "noImageLabelFontSize": {
@@ -612,7 +611,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "140",
               "priceRowSpaceAbove": "6px",
               "noImageLabel": "Photo to come",
               "noImageLabelFontSize": {
@@ -714,7 +712,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "210",
               "priceRowSpaceAbove": "6px",
               "noImageLabel": "Photo to come",
               "noImageLabelFontSize": {
@@ -816,7 +813,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "280",
               "priceRowSpaceAbove": "6px",
               "noImageLabel": "Photo to come",
               "noImageLabelFontSize": {
@@ -918,7 +914,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "350",
               "priceRowSpaceAbove": "6px",
               "noImageLabel": "Photo to come",
               "noImageLabelFontSize": {
@@ -1020,7 +1015,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "420",
               "priceRowSpaceAbove": "6px",
               "noImageLabel": "Photo to come",
               "noImageLabelFontSize": {
@@ -1122,7 +1116,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "490",
               "priceRowSpaceAbove": "6px",
               "noImageLabel": "Photo to come",
               "noImageLabelFontSize": {
@@ -1350,7 +1343,8 @@
             "tablet": "repeat(2,minmax(0,1fr))"
           },
           "layout": "grid",
-          "textWrap": "wrap"
+          "textWrap": "wrap",
+          "sgsAnimationStaggerChildren": "70"
         },
         "innerBlocks": [
           {
@@ -1360,7 +1354,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "0",
               "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
@@ -1437,7 +1430,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "70",
               "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
@@ -1514,7 +1506,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "140",
               "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
@@ -1591,7 +1582,6 @@
               "sgsAnimationDistance": "26",
               "sgsAnimationDuration": "460",
               "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-              "sgsAnimationDelay": "210",
               "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
@@ -1920,7 +1910,12 @@
               "letterSpacing": "0.1em"
             }
           },
-          "titleFontWeight": "400"
+          "titleFontWeight": "400",
+          "sgsAnimation": "fade-up",
+          "sgsAnimationDuration": "460",
+          "sgsAnimationDistance": "26",
+          "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
+          "staggerDelay": 70
         }
       }
     ]
@@ -1947,7 +1942,8 @@
         }
       },
       "textWrap": "wrap",
-      "className": "sgs-google-reviews"
+      "className": "sgs-google-reviews",
+      "sgsAnimationStaggerChildren": "70"
     },
     "innerBlocks": [
       {
@@ -1957,7 +1953,6 @@
           "sgsAnimationDistance": "26",
           "sgsAnimationDuration": "460",
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-          "sgsAnimationDelay": "0",
           "contentBandMargin": {
             "desktop": {
               "bottom": "28px"
@@ -2013,7 +2008,6 @@
           "sgsAnimationDistance": "26",
           "sgsAnimationDuration": "460",
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-          "sgsAnimationDelay": "70",
           "arrowBorderRadius": {
             "desktop": {
               "bottomLeft": "50%",
@@ -2440,7 +2434,8 @@
         }
       },
       "textWrap": "wrap",
-      "className": "sgs-about-strip"
+      "className": "sgs-about-strip",
+      "sgsAnimationStaggerChildren": "70"
     },
     "innerBlocks": [
       {
@@ -2450,7 +2445,6 @@
           "sgsAnimationDistance": "26",
           "sgsAnimationDuration": "460",
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-          "sgsAnimationDelay": "0",
           "backgroundColour": "primary",
           "minHeight": {
             "desktop": "430px"
@@ -2472,7 +2466,6 @@
           "sgsAnimationDistance": "26",
           "sgsAnimationDuration": "460",
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-          "sgsAnimationDelay": "70",
           "backgroundColour": "surface",
           "contentBandPadding": {
             "desktop": {
@@ -2658,7 +2651,8 @@
         }
       },
       "textWrap": "wrap",
-      "className": "sgs-optician"
+      "className": "sgs-optician",
+      "sgsAnimationStaggerChildren": "70"
     },
     "innerBlocks": [
       {
@@ -2668,7 +2662,6 @@
           "sgsAnimationDistance": "26",
           "sgsAnimationDuration": "460",
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-          "sgsAnimationDelay": "0",
           "backgroundColour": "#DFD8CC",
           "borderColour": "#D0C8BA",
           "borderStyle": "solid",
@@ -2740,7 +2733,6 @@
           "sgsAnimationDistance": "26",
           "sgsAnimationDuration": "460",
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-          "sgsAnimationDelay": "70",
           "textWrap": "wrap"
         },
         "innerBlocks": [
