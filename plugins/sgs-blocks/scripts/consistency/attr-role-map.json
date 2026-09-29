@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9286,
+    "row_count": 9288,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -995,6 +995,8 @@
     "sgs/brand-strip::brandTextLetterSpacing": "typography",
     "sgs/brand-strip::brandTextLetterSpacingUnit": "typography",
     "sgs/brand-strip::brandTextMinWidth": "layout",
+    "sgs/brand-strip::brandTextSeparatorColour": "color",
+    "sgs/brand-strip::brandTextSeparatorWidth": "layout",
     "sgs/brand-strip::brandTextTextTransform": "typography",
     "sgs/brand-strip::columns": "layout",
     "sgs/brand-strip::effectHover": "select-from-enum",

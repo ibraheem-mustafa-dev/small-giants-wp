@@ -14549,22 +14549,6 @@
     },
     {
       "slug": "sgs/brand-strip",
-      "attr": "brandTextDividerColour",
-      "fields": {
-        "css_property": "border-inline-end-color",
-        "css_element": "brand-text"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
-      "attr": "brandTextDividerWidth",
-      "fields": {
-        "css_property": "border-inline-end-width",
-        "css_element": "brand-text"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
       "attr": "brandTextFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -14600,6 +14584,22 @@
       "attr": "brandTextMinWidth",
       "fields": {
         "css_property": "min-width",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextSeparatorColour",
+      "fields": {
+        "css_property": "border-right-color",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextSeparatorWidth",
+      "fields": {
+        "css_property": "border-right-width",
         "css_element": "brand-text"
       }
     },
