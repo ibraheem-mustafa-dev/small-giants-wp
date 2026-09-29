@@ -586,6 +586,36 @@
 			}
 		},
 		{
+			"slug": "sgs/brand-strip",
+			"attr": "brandTextDividerColour",
+			"fields": {
+				"css_property": "border-inline-end-color",
+				"css_element": "brand-text",
+				"derived_selector": ".sgs-brand-strip__item--text"
+			},
+			"_why": "2026-09-29. Text-mode brand item setting (brand-display-render.php::sgs_brand_strip_text_style_css), matching block.json supports.sgs.elements.brand-text.attrMap. The emission scanner cannot pair it: the value is resolved into a variable (sgs_css_length_value / sgs_colour_value inside a conditional) and the selector string is built with the root scope variable, so no literal property/selector pair sits in one statement. min-width is delivered through --sgs-brand-text-min-width, read by style.css .sgs-brand-strip__item--text. The deploy gate check-colour-attr-css-property refused brandTextDividerColour with no css_property."
+		},
+		{
+			"slug": "sgs/brand-strip",
+			"attr": "brandTextDividerWidth",
+			"fields": {
+				"css_property": "border-inline-end-width",
+				"css_element": "brand-text",
+				"derived_selector": ".sgs-brand-strip__item--text"
+			},
+			"_why": "2026-09-29. Text-mode brand item setting (brand-display-render.php::sgs_brand_strip_text_style_css), matching block.json supports.sgs.elements.brand-text.attrMap. The emission scanner cannot pair it: the value is resolved into a variable (sgs_css_length_value / sgs_colour_value inside a conditional) and the selector string is built with the root scope variable, so no literal property/selector pair sits in one statement. min-width is delivered through --sgs-brand-text-min-width, read by style.css .sgs-brand-strip__item--text. The deploy gate check-colour-attr-css-property refused brandTextDividerColour with no css_property."
+		},
+		{
+			"slug": "sgs/brand-strip",
+			"attr": "brandTextMinWidth",
+			"fields": {
+				"css_property": "min-width",
+				"css_element": "brand-text",
+				"derived_selector": ".sgs-brand-strip__item--text"
+			},
+			"_why": "2026-09-29. Text-mode brand item setting (brand-display-render.php::sgs_brand_strip_text_style_css), matching block.json supports.sgs.elements.brand-text.attrMap. The emission scanner cannot pair it: the value is resolved into a variable (sgs_css_length_value / sgs_colour_value inside a conditional) and the selector string is built with the root scope variable, so no literal property/selector pair sits in one statement. min-width is delivered through --sgs-brand-text-min-width, read by style.css .sgs-brand-strip__item--text. The deploy gate check-colour-attr-css-property refused brandTextDividerColour with no css_property."
+		},
+		{
 			"slug": "sgs/product-card",
 			"attr": "tagTextColour",
 			"fields": {
