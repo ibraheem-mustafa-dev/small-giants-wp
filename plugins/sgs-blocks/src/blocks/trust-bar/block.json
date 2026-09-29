@@ -615,7 +615,10 @@
 			"default": "contain",
 			"enum": [
 				"cover",
-				"contain"
+				"contain",
+				"fill",
+				"none",
+				"scale-down"
 			]
 		},
 		"textColour": {

@@ -257,6 +257,12 @@
 	margin: 0 0 var(--wp--preset--spacing--10) 0;
 }
 
+/* The bottom margin spaces a title from what follows it; a title with nothing
+ * after it (a shape tile's overlay) keeps none. */
+.sgs-card-grid__title:last-child {
+	margin-bottom: 0;
+}
+
 /* Default title font-weight and line-height (0 specificity via :where()) —
    titleFontWeight and titleLineHeight attributes now drive this; must always lose
    to the attribute-driven scoped rule. */

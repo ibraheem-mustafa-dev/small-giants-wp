@@ -248,7 +248,14 @@
           "brandTextTextTransform": "uppercase",
           "brandTextColour": "#3A352F",
           "brandTextColourHover": "text",
-          "backgroundColour": "surface-alt"
+          "backgroundColour": "surface-alt",
+          "brandOrder": "term_order",
+          "brandMaxItems": 16,
+          "brandTextMinWidth": "174px",
+          "brandTextSeparatorWidth": "1px",
+          "brandTextSeparatorColour": "#EFEAE2",
+          "tilePadding": 26,
+          "logoGap": 0
         }
       }
     ]
@@ -1706,7 +1713,8 @@
         }
       },
       "textWrap": "wrap",
-      "className": "sgs-shape-tiles"
+      "className": "sgs-shape-tiles",
+      "backgroundColour": "surface-stage"
     },
     "innerBlocks": [
       {
@@ -1972,7 +1980,16 @@
           },
           "noImageLabelLetterSpacingUnit": "em",
           "noImageLabelTextTransform": "uppercase",
-          "noImageLabelColour": "rgba(250,248,245,0.5)"
+          "noImageLabelColour": "rgba(250,248,245,0.5)",
+          "cardBackground": "surface-stage",
+          "cardPadding": {
+            "desktop": {
+              "top": "18px",
+              "right": "16px",
+              "bottom": "18px",
+              "left": "16px"
+            }
+          }
         }
       }
     ]
@@ -2457,7 +2474,12 @@
               "top": "0"
             }
           },
-          "writeReviewTextDecoration": "none"
+          "writeReviewTextDecoration": "none",
+          "aggregateStarSize": {
+            "desktop": "16.8px",
+            "tablet": "16.8px",
+            "mobile": "16.8px"
+          }
         }
       }
     ]
@@ -2656,7 +2678,14 @@
                 "desktop": 1.5
               },
               "numberLineHeightUnit": "em",
-          "numberGap": "16px"
+              "numberGap": "16px",
+              "stepGap": "17.5px",
+              "padding": {
+                "desktop": {
+                  "top": "0",
+                  "bottom": "0"
+                }
+              }
             }
           },
           {
@@ -2750,7 +2779,8 @@
             "desktop": "10px"
           },
           "textAlign": "center",
-          "textWrap": "wrap"
+          "textWrap": "wrap",
+          "boxAspectRatio": "4 / 5"
         },
         "innerBlocks": [
           {
@@ -2920,8 +2950,8 @@
                     }
                   },
                   "iconGap": "11px",
-          "iconSize": "20px",
-          "minHeight": "52px",
+                  "iconSize": "20px",
+                  "minHeight": "52px",
                   "sgsHoverLift": 3,
                   "sgsHoverScalePreset": "",
                   "sgsHoverShadow": ""

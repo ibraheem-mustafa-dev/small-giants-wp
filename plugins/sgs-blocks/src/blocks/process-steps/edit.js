@@ -133,6 +133,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberLineHeight,
 		numberLineHeightUnit,
 		numberGap,
+		stepGap,
 		titleColour,
 		titleColourGradient,
 		titleColourHover,
@@ -226,6 +227,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			...wrapperTextStyle,
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
+			gap: stepGap || undefined,
 		},
 	} );
 
@@ -576,6 +578,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) ) }
 					</ToggleGroupControl>
+					<SgsLengthControl
+						label={ __( 'Space between steps', 'sgs-blocks' ) }
+						help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
+						value={ stepGap || '' }
+						onChange={ ( val ) => setAttributes( { stepGap: val || '' } ) }
+						presets={ false }
+					/>
 					{ 'list' === layout && (
 						<SgsLengthControl
 							label={ __( 'Space between number and text', 'sgs-blocks' ) }

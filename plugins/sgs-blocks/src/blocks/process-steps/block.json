@@ -66,6 +66,7 @@
 						"css:background-color-gradient": "backgroundColourGradient",
 						"css:padding": "padding",
 						"css:margin": "margin",
+						"css:gap": "stepGap",
 						"css:border-radius": "borderRadius",
 						"css:border-width": "borderWidth",
 						"css:border-color": "borderColour",
@@ -484,6 +485,11 @@
 		"numberLineHeightUnit": {
 			"type": "string",
 			"default": "em"
+		},
+		"stepGap": {
+			"type": "string",
+			"default": "",
+			"description": "Space between the steps (a CSS length). Empty keeps the stylesheet's spacing-30 gap."
 		},
 		"numberGap": {
 			"type": "string",

@@ -105,15 +105,40 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 			? $attributes['logoFit']
 			: 'contain';
 
-		$terms = get_terms(
-			array(
-				'taxonomy'   => 'product_brand',
-				'orderby'    => $orderby,
-				'order'      => $order,
-				'hide_empty' => $hide_empty,
-				'number'     => $max_items,
-			)
+		$query = array(
+			'taxonomy'   => 'product_brand',
+			'orderby'    => $orderby,
+			'order'      => $order,
+			'hide_empty' => $hide_empty,
+			'number'     => $max_items,
 		);
+		// "Taxonomy order" is WooCommerce's own brand order: the drag-and-drop position
+		// it stores as term meta `order` (Products > Brands; `menu_order` over its REST
+		// API). Core's `term_order` orderby only means anything alongside object_ids,
+		// so on its own it silently fell back to the default order. Brands with no
+		// stored position are still listed (the NOT EXISTS clause); MySQL puts a
+		// missing value first, so give every brand a position when using this order.
+		if ( 'term_order' === $orderby ) {
+			$query['meta_query'] = array(
+				'relation'     => 'OR',
+				'brand_order'  => array(
+					'key'  => 'order',
+					'type' => 'NUMERIC',
+				),
+				'no_order'     => array(
+					'key'     => 'order',
+					'compare' => 'NOT EXISTS',
+				),
+			);
+			// WP_Term_Query takes ONE orderby string: a named meta_query clause is
+			// supported, an array of them (WP_Query's form) is not. It is passed to
+			// strtolower(), a TypeError fatal on PHP 8 (it took the page down,
+			// 2026-09-29).
+			$query['orderby'] = 'brand_order';
+			$query['order']   = 'ASC';
+		}
+
+		$terms = get_terms( $query );
 
 		if ( is_wp_error( $terms ) || empty( $terms ) ) {
 			return array();

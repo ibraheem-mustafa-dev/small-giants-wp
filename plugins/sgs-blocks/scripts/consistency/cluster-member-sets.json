@@ -436,6 +436,14 @@
 					]
 				},
 				{
+					"key": "css:min-width",
+					"label": "Min width",
+					"suffixes": [
+						"MinWidth"
+					],
+					"note": "Added 2026-09-29 (sgs/brand-strip.brandTextMinWidth): a real width floor had no member, so the setting read as a placement defect. Mirrors css:max-width."
+				},
+				{
 					"key": "css:max-height",
 					"label": "Max height",
 					"suffixes": [

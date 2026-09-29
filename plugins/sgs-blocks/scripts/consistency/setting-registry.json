@@ -1174,7 +1174,9 @@
 			"optimal_control": {
 				"component": "TextControl/UnitControl — a single-side length, not the 4-side BoxControl this block's own shorthand css:border-width row already uses",
 				"props": {
-					"units": [ "px" ]
+					"units": [
+						"px"
+					]
 				},
 				"preset_layer": null,
 				"units": "px",
@@ -2100,6 +2102,37 @@
 			"divergence": "7 attrs mix RangeControl/SelectControl/TextControl/UnitControl; TextControl is a free-text field for what should be a validated unit value",
 			"divergence_severity": "medium",
 			"notes": "This is also the container/wrapper contentWidth capability (Spec 31 §13.6 3-layer model) — must not silently reintroduce a hardcoded default per the 'hardcoded wrapper defaults are cheats' rule in CLAUDE.md. Absorbed css:percentage 2026-07-20 — sgs/decorative-image `maxWidthPercent` (RangeControl 0-100) is a max-width in %, not a distinct property."
+		},
+		{
+			"setting_key": "css:min-width",
+			"category": "css-property",
+			"label": "Min width",
+			"optimal_control": {
+				"component": "UnitControl inside ResponsiveControl",
+				"props": {
+					"units": [
+						"px",
+						"%",
+						"rem",
+						"vw"
+					],
+					"isResetValueOnUnitChange": true,
+					"withInputField": true
+				},
+				"preset_layer": null,
+				"units": "px/%/rem/vw; empty = no minimum",
+				"responsive_device_tier": true,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset — clearing MUST mean 'no minimum width'"
+			},
+			"shared_component": "ResponsiveControl",
+			"spec_ref": "n/a — added ad hoc (2026-09-29), not part of the original Spec 35 Phase 2 sweep",
+			"current_state": "1 distinct attr name (brandTextMinWidth) / 1 instance, sgs/brand-strip.",
+			"divergence": "n/a — single adopter so far, no divergence to measure yet.",
+			"divergence_severity": "n/a",
+			"notes": "Added 2026-09-29 for sgs/brand-strip.brandTextMinWidth (text-mode brand items: a floor each name box never narrows below, longer names grow past it). Mirrors css:max-width. Empty = no floor."
 		},
 		{
 			"setting_key": "css:min-height",
