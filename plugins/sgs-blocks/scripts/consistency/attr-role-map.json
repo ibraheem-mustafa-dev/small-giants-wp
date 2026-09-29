@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9288,
+    "row_count": 9289,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -5385,6 +5385,7 @@
     "sgs/nav-drawer-menu::labelRoll": "enum-mode",
     "sgs/nav-drawer-menu::listColumns": "layout",
     "sgs/nav-drawer-menu::margin": "layout",
+    "sgs/nav-drawer-menu::megaBodyPadding": "layout",
     "sgs/nav-drawer-menu::megaDrawerFallbackIds": null,
     "sgs/nav-drawer-menu::megaDrawerMode": "select-from-enum",
     "sgs/nav-drawer-menu::navBg": "color",

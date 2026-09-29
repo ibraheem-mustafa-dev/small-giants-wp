@@ -20921,6 +20921,14 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "megaBodyPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "mega-body"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "navBg",
       "fields": {
         "css_property": "background-color",
