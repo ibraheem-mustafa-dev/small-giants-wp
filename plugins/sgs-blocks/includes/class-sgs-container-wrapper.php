@@ -1234,7 +1234,19 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// the pre-existing 'sgs-container--has-min-height' shim (or an
 			// operator's own alignItems/justifyContent choice) already applies to
 			// the correct element with no fix needed.
-			$sgs_min_height_flex_fill = $is_section && $grid_on_inner && ( '' !== $min_height || $has_responsive_min_height );
+			// Box shape (sgs/container's boxAspectRatio, "4 / 5" or "1.25"): the height
+			// follows the width. Named apart from card-grid/gallery/post-grid's own
+			// `aspectRatio` (their ITEMS' shape), which also render through here.
+			// Parsed here because a shaped box sizes its height from outside its
+			// content exactly as a min-height does, so its band fills it the same way.
+			$sgs_box_ratio = '';
+			if ( isset( $attributes['boxAspectRatio'] ) && is_string( $attributes['boxAspectRatio'] )
+				&& preg_match( '/^\s*(\d+(?:\.\d+)?)\s*(?:\/\s*(\d+(?:\.\d+)?)\s*)?$/', $attributes['boxAspectRatio'], $sgs_ar )
+				&& (float) $sgs_ar[1] > 0 && ( ! isset( $sgs_ar[2] ) || '' === $sgs_ar[2] || (float) $sgs_ar[2] > 0 ) ) {
+				$sgs_box_ratio = $sgs_ar[1] . ( isset( $sgs_ar[2] ) && '' !== $sgs_ar[2] ? ' / ' . $sgs_ar[2] : '' );
+			}
+
+			$sgs_min_height_flex_fill = $is_section && $grid_on_inner && ( '' !== $min_height || $has_responsive_min_height || '' !== $sgs_box_ratio );
 			if ( $sgs_min_height_flex_fill ) {
 				$base_outer_decls[] = 'display:flex';
 				$base_outer_decls[] = 'flex-direction:column';
@@ -1472,13 +1484,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// overlay's own alpha is the one dimming mechanism now.
 			}
 
-			// Box shape (sgs/container's boxAspectRatio, "4 / 5" or "1.25"): the height
-			// follows the width. Named apart from card-grid/gallery/post-grid's own
-			// `aspectRatio` (their ITEMS' shape), which also render through here.
-			if ( isset( $attributes['boxAspectRatio'] ) && is_string( $attributes['boxAspectRatio'] )
-				&& preg_match( '/^\s*(\d+(?:\.\d+)?)\s*(?:\/\s*(\d+(?:\.\d+)?)\s*)?$/', $attributes['boxAspectRatio'], $sgs_ar )
-				&& (float) $sgs_ar[1] > 0 && ( ! isset( $sgs_ar[2] ) || '' === $sgs_ar[2] || (float) $sgs_ar[2] > 0 ) ) {
-				$styles[] = 'aspect-ratio:' . $sgs_ar[1] . ( isset( $sgs_ar[2] ) && '' !== $sgs_ar[2] ? ' / ' . $sgs_ar[2] : '' );
+			// Box shape — parsed above, beside the min-height flex-fill it shares.
+			if ( '' !== $sgs_box_ratio ) {
+				$styles[] = 'aspect-ratio:' . $sgs_box_ratio;
 			}
 
 			// Ken-burns duration.

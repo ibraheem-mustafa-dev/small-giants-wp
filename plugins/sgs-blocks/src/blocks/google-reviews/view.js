@@ -85,6 +85,30 @@ function maxScrollLeft( list ) {
 }
 
 /**
+ * Cards per arrow click for the current viewport (the block's arrowStep setting).
+ * render.php resolves each device tier (inheriting down) and passes the framework's
+ * breakpoints alongside, so the choice matches the CSS tiers exactly. Read at click
+ * time: a resize or rotation between clicks takes effect on the next one.
+ *
+ * @param {Object} ctx The block's interactivity context.
+ * @return {number} Whole cards to move, at least 1.
+ */
+function arrowStep( ctx ) {
+	const step = ctx?.arrowStep;
+	if ( ! step ) {
+		return 1;
+	}
+	const width = window.innerWidth;
+	let tier = step.desktop;
+	if ( width <= step.mobileMax ) {
+		tier = step.mobile;
+	} else if ( width <= step.tabletMax ) {
+		tier = step.tablet;
+	}
+	return Math.max( 1, parseInt( tier, 10 ) || 1 );
+}
+
+/**
  * Smooth-scroll a slider's list so the item at `index` is at its start.
  *
  * @param {Element} root  `.sgs-google-reviews` root element.
@@ -187,7 +211,8 @@ store( 'sgs/google-reviews', {
 					target = idx;
 				}
 			} );
-			scrollToItem( root, target === -1 ? items.length - 1 : target );
+			// Further back by the cards-per-click setting, never past the first card.
+			scrollToItem( root, target === -1 ? items.length - 1 : Math.max( 0, target - ( arrowStep( getContext() ) - 1 ) ) );
 		},
 
 		/**
@@ -223,7 +248,8 @@ store( 'sgs/google-reviews', {
 					target = target === -1 ? idx : Math.min( target, idx );
 				}
 			} );
-			scrollToItem( root, target === -1 ? 0 : target );
+			// On by the cards-per-click setting; scrollToItem clamps at the last card.
+			scrollToItem( root, target === -1 ? 0 : target + ( arrowStep( getContext() ) - 1 ) );
 		},
 
 		/**
