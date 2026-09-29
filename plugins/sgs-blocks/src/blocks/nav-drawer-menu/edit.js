@@ -3,8 +3,10 @@
  * DRAWER LIST ONLY. This block only ever renders inside `sgs/nav-drawer`
  * (block.json `"ancestor": ["sgs/nav-drawer"]`), so there is no bar/drawer
  * fork to detect: the whole file is drawer-only content, and every "bar
- * only" control (item separator, burger, dropdown-specific settings) is
- * absent from this block's own panels (see each panel file's own docblock).
+ * only" control (burger, trigger, scrim, dropdown placement) is absent from
+ * this block's own panels (see each panel file's own docblock). The row
+ * divider, caret styling, section motion and section box mirror the bar's
+ * controls on the drawer's own markup.
  *
  * The list is fully server-rendered by render.php (menu source resolved via
  * SGS_Nav_Menu_Source). The editor uses ServerSideRender for the canvas
@@ -62,6 +64,11 @@ import RowExtrasPanel from './RowExtrasPanel';
 import DisabledItemsPanel from './DisabledItemsPanel';
 import OrnamentHiddenItemsPanel from './OrnamentHiddenItemsPanel';
 import SubmenuLinkPaddingPanel from './SubmenuLinkPaddingPanel';
+import RowSeparatorPanel from './RowSeparatorPanel';
+import SectionMotionPanel from './SectionMotionPanel';
+// The bar's own treatment node (none / swap / sweep + angle) for its separator
+// colour row, reused as-is: it names nothing bar-specific.
+import { ItemSeparatorTreatment } from '../nav-bar-menu/BarColourRowExtras';
 import TrailingIconPanel from './TrailingIconPanel';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
 // rather than inside the shared ColourRowExtras/ColourTreatment modules,
@@ -106,6 +113,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		submenuOpacityHover,
 		itemFontWeightCurrent,
 		itemMagnetEnabled,
+		itemMagnetStrength,
+		itemSeparatorWidth,
+		itemSeparatorStyle,
+		itemSeparatorColour,
+		itemSeparatorColourHover,
+		itemSeparatorHoverTreatment,
+		itemSeparatorSweepAngle,
+		itemHoverScope,
+		justifyContent,
+		submenuBorderRadius,
+		submenuShadow,
+		submenuShadowColour,
 		submenuBorderColour,
 		submenuBorderColourGradient,
 		submenuLinkBorderWidth,
@@ -191,13 +210,13 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// ── The Colour panel (Spec 41 §9.6) ──────────────────────────────────────
 	//
-	// Unlike the bar block's `colourRows`, this has no "Item separator colour
-	// (bar)" row (the itemSeparatorWidth/Colour family is BAR-only) and no
-	// "Menu button" rows (burger-icon / burger-bg — the whole burger family is
-	// BAR-only). The "item-border" row's label is unconditionally "Row
-	// separator colour" — this block IS always the drawer (the bar's identical
-	// attribute family paints its own item UNDERLINE instead — see
-	// itemBorderWidth's own block.json description on both blocks).
+	// Unlike the bar block's `colourRows`, this has no "Menu button" rows
+	// (burger-icon / burger-bg — the whole burger family is BAR-only). The
+	// "item-border" row's label is unconditionally "Row border colour" — this
+	// block IS always the drawer (the bar's identical attribute family paints
+	// its own item UNDERLINE instead — see itemBorderWidth's own block.json
+	// description on both blocks). The independent between-row rule is the
+	// "Row divider colour" row that follows it.
 	const colourRows = [
 		fillRow( {
 			key: 'nav-bg',
@@ -309,7 +328,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			// shared itemBorderWidth/Colour family always reads as a row
 			// separator here (the bar's identical attribute family paints an
 			// item UNDERLINE instead).
-			label: __( 'Row separator colour', 'sgs-blocks' ),
+			label: __( 'Row border colour', 'sgs-blocks' ),
 			...( itemSurface
 				? { contrastAgainst: itemSurface, contrastLargeText: true }
 				: {} ),
@@ -344,6 +363,43 @@ export default function Edit( { attributes, setAttributes } ) {
 					onChange={ ( val ) => setAttributes( { itemBorderHoverTreatment: val } ) }
 					angle={ sweepAngle }
 					onAngleChange={ ( val ) => setAttributes( { sweepAngle: val } ) }
+				/>
+			),
+		},
+		// The independent horizontal rule between stacked top-level rows — the
+		// drawer's counterpart of the bar's between-item divider (FR-41-37). No
+		// Current state: a rule between rows is not itself a page.
+		{
+			key: 'item-separator',
+			label: __( 'Row divider colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: itemSeparatorColour,
+					onChange: ( val ) =>
+						setAttributes( { itemSeparatorColour: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: itemSeparatorColourHover,
+					onChange: ( val ) =>
+						setAttributes( { itemSeparatorColourHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+			after: (
+				<ItemSeparatorTreatment
+					value={ itemSeparatorHoverTreatment }
+					onChange={ ( val ) =>
+						setAttributes( { itemSeparatorHoverTreatment: val } )
+					}
+					angle={ itemSeparatorSweepAngle }
+					onAngleChange={ ( val ) =>
+						setAttributes( { itemSeparatorSweepAngle: val } )
+					}
 				/>
 			),
 		},
@@ -583,6 +639,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				/>
 
 				<SplitPanel
+					justifyContent={ justifyContent }
+					itemHoverScope={ itemHoverScope }
 					splitAfterItemId={ splitAfterItemId }
 					splitSide={ splitSide }
 					resolvedItems={ resolvedItems }
@@ -687,8 +745,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				{ /* No ItemSeparatorPanel — itemSeparator* is BAR-only (measured);
-				   a vertical list has no "next item to the right" to divide. */ }
+				{ /* The row divider: a horizontal rule between stacked rows, the
+				   drawer's counterpart of the bar's between-item separator. */ }
+				<RowSeparatorPanel
+					itemSeparatorWidth={ itemSeparatorWidth }
+					itemSeparatorStyle={ itemSeparatorStyle }
+					setAttributes={ setAttributes }
+				/>
 
 				<SubmenuItemsPanel
 					sublinkMarkerIcon={ sublinkMarkerIcon }
@@ -697,6 +760,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<DropdownStylePanel
 					showSizingControls={ false }
+					showBoxControls
+					submenuBorderRadius={ submenuBorderRadius }
+					submenuShadow={ submenuShadow }
+					submenuShadowColour={ submenuShadowColour }
+					attributes={ attributes }
 					submenuPadding={ submenuPadding }
 					submenuBorderWidth={ submenuBorderWidth }
 					submenuBorderStyle={ submenuBorderStyle }
@@ -705,9 +773,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 				/>
 
+				<SectionMotionPanel attributes={ attributes } setAttributes={ setAttributes } />
+
 				<EffectsPanel
 					itemMagnetEnabled={ itemMagnetEnabled }
 					setAttributes={ setAttributes }
+					magnetStrength={ itemMagnetStrength }
+					onMagnetStrengthChange={ ( val ) =>
+						setAttributes( { itemMagnetStrength: val } )
+					}
 				/>
 
 				<FeaturedPanel

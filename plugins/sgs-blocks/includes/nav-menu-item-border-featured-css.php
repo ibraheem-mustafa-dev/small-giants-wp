@@ -246,7 +246,10 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		// (nav-menu-submenu-link-css.php), so the separator centres at every
 		// tier; 8px matches the attribute's own default.
 		$item_separator_gap       = 'var(--sgs-nm-gap, 8px)';
-		if ( '' !== $item_separator_width && '' !== $item_separator_colour ) {
+		// `sgs/nav-drawer-menu` reads the same attributes but draws a horizontal rule
+		// between stacked rows (includes/nav-drawer-menu-separator-css.php), so this
+		// bar-fork selector, which its always-`--drawer` list never matches, is skipped.
+		if ( '' !== $item_separator_width && '' !== $item_separator_colour && 'sgs-nav-drawer-menu' !== $bem_root ) {
 			$item_separator_item_sel = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item:not(:first-child)';
 
 			/*
