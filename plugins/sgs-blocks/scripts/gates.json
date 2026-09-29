@@ -1253,5 +1253,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 138
+  },
+  {
+    "id": "test-media-enum-vocabulary",
+    "cmd": "node scripts/tests/test-media-enum-vocabulary.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 139
   }
 ]
