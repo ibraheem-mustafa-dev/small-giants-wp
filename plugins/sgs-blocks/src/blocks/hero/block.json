@@ -670,7 +670,8 @@
 			"enum": [
 				"auto",
 				"height",
-				"ratio"
+				"ratio",
+				"fill"
 			]
 		},
 		"splitMediaShape": {

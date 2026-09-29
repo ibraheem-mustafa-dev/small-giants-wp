@@ -435,13 +435,14 @@
 			"type": "string",
 			"default": "center center"
 		},
-		"_comment_mediaSizing": "C19 shared media-sizing panel (2026-08-27). Three-way mode picker (auto/height/ratio) that makes `height` (above) and `style.dimensions.aspectRatio` (native support) mutually exclusive instead of letting both be set at once. NO `default` key deliberately — a `\"default\": null` on a typed attribute 400s every SSR preview (memory `a-null-default-is-worse-than-no-default`); render.php + edit.js both derive an absent value the same way (ratio set -> ratio; else height set -> height; else auto), so existing/old content renders identically with no edit needed.",
+		"_comment_mediaSizing": "C19 shared media-sizing panel (2026-08-27). Four-way mode picker (auto/height/ratio/fill — fill added 2026-09-29: the picture covers a frame the layout sizes, SGS_Media_Element::CLASS_BOX_FILL) that makes `height` (above) and `style.dimensions.aspectRatio` (native support) mutually exclusive instead of letting both be set at once. NO `default` key deliberately — a `\"default\": null` on a typed attribute 400s every SSR preview (memory `a-null-default-is-worse-than-no-default`); render.php + edit.js both derive an absent value the same way (ratio set -> ratio; else height set -> height; else auto), so existing/old content renders identically with no edit needed.",
 		"mediaSizing": {
 			"type": "string",
 			"enum": [
 				"auto",
 				"height",
-				"ratio"
+				"ratio",
+				"fill"
 			]
 		},
 		"aspectRatio": {
