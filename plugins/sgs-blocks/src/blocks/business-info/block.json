@@ -644,11 +644,13 @@
 					"order": 3,
 					"clusters": [
 						"text",
-						"fill"
+						"fill",
+						"layout"
 					],
 					"attrMap": {
 						"css:color": "iconColour",
-						"css:stroke": "iconColourGradient"
+						"css:stroke": "iconColourGradient",
+						"css:width": "iconSize"
 					},
 					"states": {
 						"hover": {
