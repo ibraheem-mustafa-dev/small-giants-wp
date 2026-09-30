@@ -54,7 +54,9 @@
       "drawerCardTagSize": "10px",
       "drawerCardTagPadding": "3px 8px",
       "drawerCardTitleSize": "15px",
-      "drawerCardLinkSize": "12.5px"
+      "drawerCardLinkSize": "12.5px",
+      "drawerCardTagMargin": "4px 0 6px",
+      "drawerCardTitleLineHeight": "22.5px"
     },
     "innerBlocks": [
       {
@@ -734,7 +736,7 @@
               "alignItems": "flex-start",
               "margin": {
                 "desktop": {
-                  "top": "18px"
+                  "top": "23px"
                 }
               }
             },
@@ -789,7 +791,7 @@
               "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
               "margin": {
                 "desktop": {
-                  "top": "12px"
+                  "top": "7px"
                 }
               }
             }

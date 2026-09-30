@@ -286,6 +286,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		drawerCardTagSize,
 		drawerCardTagPadding,
 		drawerCardTitleSize,
+		drawerCardTitleLineHeight,
+		drawerCardTagMargin,
 		drawerCardLinkSize,
 		brandsEyebrow,
 		brandsEyebrowFontFamily,
@@ -544,6 +546,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				drawerCardTagSize,
 				drawerCardTagPadding,
 				drawerCardTitleSize,
+				drawerCardTitleLineHeight,
+				drawerCardTagMargin,
 				drawerCardLinkSize,
 		  } )
 		: '';
@@ -1434,10 +1438,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							<TextControl
+								label={ __( 'Card tag spacing', 'sgs-blocks' ) }
+								help={ __( '1 to 4 lengths around the tag, e.g. 4px 0 6px. Empty keeps 0 0 6px.', 'sgs-blocks' ) }
+								value={ drawerCardTagMargin || '' }
+								onChange={ ( value ) => setAttributes( { drawerCardTagMargin: value || '' } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
 					<SgsLengthControl
 						label={ __( 'Card title size', 'sgs-blocks' ) }
 						value={ drawerCardTitleSize || '' }
 						onChange={ ( value ) => setAttributes( { drawerCardTitleSize: value || '' } ) }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card title line height', 'sgs-blocks' ) }
+						value={ drawerCardTitleLineHeight || '' }
+						onChange={ ( value ) => setAttributes( { drawerCardTitleLineHeight: value || '' } ) }
 						presets={ false }
 					/>
 					<SgsLengthControl

@@ -223,10 +223,11 @@
             "desktop": -0.2
           },
           "itemLetterSpacingUnit": "px",
-          "itemBorderColour": "#D8CA50",
-          "itemBorderWidth": {
-            "bottom": "1px"
-          },
+          "itemSeparatorWidth": "1px",
+          "itemSeparatorStyle": "solid",
+          "itemSeparatorColour": "#D8CA50",
+          "itemSeparatorPosition": "below",
+          "itemSeparatorHoverTreatment": "none",
           "itemPadding": {
             "top": "17px",
             "right": "4px",

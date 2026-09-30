@@ -315,7 +315,21 @@ const CONTENT_SKIP_TAGS = new Set( [ 'STYLE', 'SCRIPT', 'TEMPLATE' ] );
  * @param {number}      wrapWidth The wrap's own measured width (fallback).
  * @return {number} The measured content width.
  */
-function measurePanelContentWidth( panel, wrapWidth ) {
+/**
+ * The panel's live `scale` (an entrance such as fade-lift starts it at 0.99).
+ * getBoundingClientRect() reports the scaled box, so a width measured on the
+ * first frame of the entrance would be locked in 1% short; dividing by this
+ * gives the layout width the panel settles at.
+ *
+ * @param {HTMLElement} el The panel wrap.
+ * @return {number} The current scale, 1 when none.
+ */
+function liveScale( el ) {
+	const value = parseFloat( window.getComputedStyle( el ).scale );
+	return Number.isFinite( value ) && value > 0 ? value : 1;
+}
+
+function measurePanelContentWidth( panel, wrapWidth, scale = 1 ) {
 	let widest = 0;
 	let found = false;
 	for ( const child of panel.children ) {
@@ -323,7 +337,7 @@ function measurePanelContentWidth( panel, wrapWidth ) {
 			continue;
 		}
 		found = true;
-		widest = Math.max( widest, child.getBoundingClientRect().width );
+		widest = Math.max( widest, child.getBoundingClientRect().width / scale );
 	}
 	// Nothing laid out yet (0px) is not a width: keep the wrap's own.
 	return found && widest > 0 ? widest : wrapWidth;
@@ -487,13 +501,14 @@ function repositionPanel( root ) {
 		 * the widest qualifying child gives `placePanel` the panel's own
 		 * width to centre/align at, when that is narrower than the box.
 		 */
-		const contentWidth = isDropdown ? null : measurePanelContentWidth( panel, rect.width );
+		const scale = liveScale( panel );
+		const contentWidth = isDropdown ? null : measurePanelContentWidth( panel, rect.width / scale, scale );
 		const placed = placePanel( {
 			align: PANEL_ALIGNS.includes( align ) ? align : ( isDropdown ? 'start' : 'page-centred' ),
 			isDropdown,
 			anchorLeft: anchor.left,
 			anchorWidth: anchor.width,
-			width: rect.width,
+			width: rect.width / scale,
 			bounds,
 			gutter: 28,
 			contentWidth,

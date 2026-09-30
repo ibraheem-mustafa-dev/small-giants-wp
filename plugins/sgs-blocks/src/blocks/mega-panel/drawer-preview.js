@@ -126,8 +126,9 @@ export default function drawerPreviewCss( scope, v ) {
 		`border-radius:${ v.drawerCardRadius || '0' };padding:${ v.drawerCardPadding || '0' };` +
 		`${ cardDecls }${ borderPaint( v.drawerCardBorderColour, v.drawerCardBorderColourGradient ) }}`;
 	css += `${ aside } > :nth-child(1){grid-column:1;grid-row:1 / span 3;width:${ thumb };height:${ thumb };min-height:0;margin:0;overflow:hidden;}`;
-	css += `${ aside } > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:0 0 6px;}`;
-	css += `${ aside } > :nth-child(3){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:normal;}`;
+	const tagMargin = v.drawerCardTagMargin && BOX_RE.test( v.drawerCardTagMargin ) ? v.drawerCardTagMargin : '0 0 6px';
+	css += `${ aside } > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:${ tagMargin };}`;
+	css += `${ aside } > :nth-child(3){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:${ v.drawerCardTitleLineHeight || 'normal' };}`;
 	css += `${ aside } > :nth-child(4){display:none;}`;
 	css += `${ aside } > :nth-child(5){grid-column:2;grid-row:3;margin:6px 0 0;}`;
 

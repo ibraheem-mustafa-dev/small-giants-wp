@@ -63,6 +63,9 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_separator_css' ) ) {
 
 		$bem    = 'sgs-nav-drawer-menu';
 		$bar    = $uid_sel . ' .' . $bem . '__bar';
+		if ( 'below' === (string) ( $attributes['itemSeparatorPosition'] ?? 'between' ) ) {
+			return sgs_nav_drawer_menu_separator_below_css( $bar, $bem, $width, $style, $colour, $hover, $treatment );
+		}
 		$item   = $bar . ' > .' . $bem . '__item:not(:first-child)';
 		$motion = 'var(--sgs-ndm-motion, 300ms ease)';
 		$css    = '';
@@ -115,6 +118,49 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_separator_css' ) ) {
 			$css .= '@media (prefers-reduced-motion:reduce){' . $item . '::before{transition:none;}}';
 		}
 
+		return $css;
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_drawer_menu_separator_below_css' ) ) {
+	/**
+	 * `itemSeparatorPosition` `below`: every top-level row, the last included, carries
+	 * the divider as its own bottom border, so the line runs under the row AND its open
+	 * section and takes its width in layout (a row wrapper's `border-bottom`, as the
+	 * Indus draft draws it). The line belongs to its own row only, so the hover colour
+	 * follows that row's head; a sweep has no border to band, so it swaps instead.
+	 *
+	 * @param string $bar       The instance's bar selector.
+	 * @param string $bem       BEM root.
+	 * @param string $width     Resolved width.
+	 * @param string $style     Resolved style.
+	 * @param string $colour    Resolved resting colour.
+	 * @param string $hover     Resolved hover colour ('' for none).
+	 * @param string $treatment none | swap | sweep.
+	 * @return string CSS fragment.
+	 */
+	function sgs_nav_drawer_menu_separator_below_css( string $bar, string $bem, string $width, string $style, string $colour, string $hover, string $treatment ): string {
+		$item = $bar . ' > .' . $bem . '__item';
+		$swap = 'none' !== $treatment && '' !== $hover;
+		$css  = $item . '{border-bottom:' . $width . ' ' . $style . ' ' . $colour . ';'
+			. ( $swap ? 'transition:border-bottom-color var(--sgs-ndm-motion, 300ms ease);' : '' ) . '}';
+		if ( ! $swap ) {
+			return $css;
+		}
+		$heads = array(
+			'> .' . $bem . '__link',
+			'> .' . $bem . '__accordion-row > .' . $bem . '__link',
+			'> .' . $bem . '__accordion-row > .' . $bem . '__accordion > .' . $bem . '__accordion-summary',
+		);
+		$hover_sels = array();
+		$focus_sels = array();
+		foreach ( $heads as $head ) {
+			$hover_sels[] = $item . ':has(' . $head . ':hover)';
+			$focus_sels[] = $item . ':has(' . $head . ':focus-visible)';
+		}
+		$css .= sgs_hover_guarded_rule( implode( ',', $hover_sels ), 'border-bottom-color:' . $hover );
+		$css .= implode( ',', $focus_sels ) . '{border-bottom-color:' . $hover . ';}';
+		$css .= '@media (prefers-reduced-motion:reduce){' . $item . '{transition:none;}}';
 		return $css;
 	}
 }
