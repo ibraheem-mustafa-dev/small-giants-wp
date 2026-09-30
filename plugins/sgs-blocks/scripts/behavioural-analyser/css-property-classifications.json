@@ -1587,9 +1587,25 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "subtitleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "subtitleLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "subtitle"
       }
     },
@@ -1646,9 +1662,25 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "titleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "titleLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "title"
       }
     },
@@ -18490,6 +18522,15 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerCardTagMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardTag"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerCardTagPadding",
       "fields": {
         "css_property": "padding",
@@ -18513,6 +18554,15 @@
         "css_property": "width",
         "css_layer": "CONTENT",
         "css_element": "drawerCardThumb"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardTitleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardTitle"
       }
     },
     {
@@ -19583,6 +19633,14 @@
       "attr": "scrimFadeDuration",
       "fields": {
         "css_property": "transition-duration",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "scrimFadeEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
         "css_element": "scrim"
       }
     },
