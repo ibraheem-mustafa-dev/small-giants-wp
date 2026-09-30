@@ -255,7 +255,8 @@
           "brandTextSeparatorWidth": "1px",
           "brandTextSeparatorColour": "#EFEAE2",
           "tilePadding": 26,
-          "logoGap": 0
+          "logoGap": 0,
+          "brandHideEmpty": false
         }
       }
     ]
@@ -1322,7 +1323,12 @@
                   "lineHeightUnit": "unitless",
                   "textWrap": "pretty",
                   "maxWidth": 566,
-                  "maxWidthUnit": "px"
+                  "maxWidthUnit": "px",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "0"
+                    }
+                  }
                 }
               }
             ]
@@ -2071,7 +2077,12 @@
               "lineHeight": {
                 "desktop": 1.02
               },
-              "lineHeightUnit": "unitless"
+              "lineHeightUnit": "unitless",
+              "margin": {
+                "desktop": {
+                  "bottom": "0"
+                }
+              }
             }
           }
         ]
@@ -2479,6 +2490,16 @@
             "desktop": "16.8px",
             "tablet": "16.8px",
             "mobile": "16.8px"
+          },
+          "dateLineHeight": {
+            "desktop": "23",
+            "tablet": "23",
+            "mobile": "23"
+          },
+          "dateLineHeightUnit": "px",
+          "arrowStep": {
+            "desktop": "2",
+            "mobile": "1"
           }
         }
       }
@@ -2954,7 +2975,9 @@
                   "minHeight": "52px",
                   "sgsHoverLift": 3,
                   "sgsHoverScalePreset": "",
-                  "sgsHoverShadow": ""
+                  "sgsHoverShadow": "",
+                  "sgsHoverDurationMs": 250,
+                  "sgsHoverEasing": "ease"
                 }
               },
               {

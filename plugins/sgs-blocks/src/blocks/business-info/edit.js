@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl, TextControl, Notice } from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
-import { ResponsiveBoxControl, SgsColourPanel, SsrPreviewGuard, textRow, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, SsrPreviewGuard, textRow, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
 
 /** Labels for the type selector drop-down. */
 const TYPE_OPTIONS = [
@@ -170,6 +170,60 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { showIcon: val } ) }
 							__nextHasNoMarginBottom
 						/>
+						{ showIcon && (
+							<ResponsiveOverride
+								label={ __( 'Icon size', 'sgs-blocks' ) }
+								value={ attributes.iconSize }
+								onChange={ ( obj ) => setAttributes( { iconSize: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									<SgsLengthControl
+										presets={ false }
+										label={ __( 'Icon size', 'sgs-blocks' ) }
+										help={ __( 'Empty keeps the icon at the text size.', 'sgs-blocks' ) || undefined }
+										value={ ownValue || '' }
+										placeholder={ inherited ? effectiveValue : '1em' }
+										onChange={ ( val ) => setOwnValue( val || '' ) }
+									/>
+								) }
+							</ResponsiveOverride>
+						) }
+						{ showIcon && (
+							<ResponsiveOverride
+								label={ __( 'Space between icon and text', 'sgs-blocks' ) }
+								value={ attributes.iconGap }
+								onChange={ ( obj ) => setAttributes( { iconGap: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									<SgsLengthControl
+										presets={ false }
+										label={ __( 'Space between icon and text', 'sgs-blocks' ) }
+										help={ null || undefined }
+										value={ ownValue || '' }
+										placeholder={ inherited ? effectiveValue : '0.5em' }
+										onChange={ ( val ) => setOwnValue( val || '' ) }
+									/>
+								) }
+							</ResponsiveOverride>
+						) }
+						
+							<ResponsiveOverride
+								label={ __( 'Link minimum height', 'sgs-blocks' ) }
+								value={ attributes.linkMinHeight }
+								onChange={ ( obj ) => setAttributes( { linkMinHeight: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									<SgsLengthControl
+										presets={ false }
+										label={ __( 'Link minimum height', 'sgs-blocks' ) }
+										help={ __( 'Empty keeps the 44px touch-target height.', 'sgs-blocks' ) || undefined }
+										value={ ownValue || '' }
+										placeholder={ inherited ? effectiveValue : '44px' }
+										onChange={ ( val ) => setOwnValue( val || '' ) }
+									/>
+								) }
+							</ResponsiveOverride>
+						
 						<SelectControl
 							label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
 							help={ __(

@@ -12,8 +12,8 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl } from '@wordpress/components';
-import { DesignTokenPicker } from '../../../components';
+import { RangeControl, SelectControl } from '@wordpress/components';
+import { DesignTokenPicker, ResponsiveOverride } from '../../../components';
 import { Section, Row } from './panel-kit';
 import { TierBox, TierLength, BorderField } from './panel-fields';
 
@@ -50,6 +50,7 @@ export const PAGINATION_OPTIONS = [
 /** Every attribute this section owns (drives "Reset all"). */
 export const NAVIGATION_ATTRS = [
 	'navPosition',
+	'arrowStep',
 	'pagination',
 	...SCROLLBAR_ATTRS,
 	...DOT_ATTRS,
@@ -73,6 +74,30 @@ export default function NavigationPanel( { attributes, setAttributes } ) {
 					help={ __( 'No position ever puts an arrow over a review.', 'sgs-blocks' ) }
 					__next40pxDefaultSize
 				/>
+			</Row>
+			<Row label={ __( 'Cards per arrow click', 'sgs-blocks' ) } attrs={ [ 'arrowStep' ] } { ...shared }>
+				<ResponsiveOverride
+					label={ __( 'Cards per arrow click', 'sgs-blocks' ) }
+					value={ attributes.arrowStep }
+					onChange={ ( obj ) => setAttributes( { arrowStep: obj } ) }
+				>
+					{ ( { ownValue, effectiveValue, setOwnValue } ) => (
+						<RangeControl
+							label={ __( 'Cards per arrow click', 'sgs-blocks' ) }
+							hideLabelFromVision
+							value={ Number( ownValue || effectiveValue || 1 ) }
+							min={ 1 }
+							max={ 6 }
+							step={ 1 }
+							allowReset
+							resetFallbackValue={ undefined }
+							onChange={ ( val ) => setOwnValue( val ? String( val ) : '' ) }
+							help={ __( 'How far each arrow moves the reviews. Set per device.', 'sgs-blocks' ) }
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					) }
+				</ResponsiveOverride>
 			</Row>
 			<Row label={ __( 'Progress indicator', 'sgs-blocks' ) } attrs={ [ 'pagination' ] } { ...shared }>
 				<SelectControl

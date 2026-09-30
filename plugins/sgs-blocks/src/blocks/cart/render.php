@@ -378,6 +378,57 @@ if ( 'pill' === $trigger_style ) {
 	// Scalar length (Spec 32 S7): sgs_css_length_value() sanitises and passes
 	// the value through with its own unit; empty leaves style.css's own
 	// border-radius:999px default in place (no override emitted).
+	// Pill text (size, weight, letter spacing, capitals) through the shared
+	// typography helper; unset keeps style.css's defaults.
+	$pill_typo_css = sgs_typography_css_rule( $attributes, 'pill', $pill_sel );
+	if ( '' !== $pill_typo_css ) {
+		$scoped_css[] = $pill_typo_css;
+	}
+
+	// Height floor per device (pillMinHeight). Unset keeps the 44px
+	// touch-target default in style.css; a design may set a slimmer pill.
+	if ( is_array( $attributes['pillMinHeight'] ?? null ) && ! empty( $attributes['pillMinHeight'] ) ) {
+		$pill_min_height_css = sgs_emit_responsive_css(
+			$pill_sel,
+			array(
+				array(
+					'value'        => $attributes['pillMinHeight'],
+					'css'          => 'min-height',
+					'unit_default' => 'px',
+				),
+			)
+		);
+		if ( '' !== $pill_min_height_css ) {
+			$scoped_css[] = $pill_min_height_css;
+		}
+	}
+
+	// Hover and keyboard focus: the fill on the same ::after layer as the
+	// resting fill (created here when only a hover fill is set), and the label
+	// colour. Touch-safe through sgs_hover_state_rules().
+	$pill_bg_hover_paint = sgs_background_paint_decl(
+		(string) ( $attributes['pillBgColourHover'] ?? '' ),
+		(string) ( $attributes['pillBgColourHoverGradient'] ?? '' )
+	);
+	if ( '' !== $pill_bg_hover_paint ) {
+		if ( '' === $pill_bg_paint ) {
+			$scoped_css[] = $pill_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;}';
+		}
+		$scoped_css[] = $pill_sel . '::after{transition:background-color .25s ease;}';
+		$scoped_css[] = sgs_hover_state_rules( $pill_sel, $pill_bg_hover_paint, ':focus-visible', '::after' );
+	}
+	$pill_text_hover = sgs_resolve_text_colour_or_gradient(
+		(string) ( $attributes['pillTextColourHover'] ?? '' ),
+		(string) ( $attributes['pillTextColourHoverGradient'] ?? '' )
+	);
+	if ( '' !== $pill_text_hover ) {
+		$pill_text_hover_decl = sgs_text_colour_decl( $pill_text_hover );
+		if ( '' !== $pill_text_hover_decl ) {
+			$scoped_css[] = $pill_label_sel . '{transition:color .25s ease;}';
+			$scoped_css[] = sgs_hover_state_rules( $pill_sel, $pill_text_hover_decl, ':focus-visible', ' .sgs-cart__pill-label' );
+		}
+	}
+
 	if ( '' !== $pill_border_radius ) {
 		$pill_border_radius_safe = sgs_css_length_value( $pill_border_radius );
 		if ( '' !== $pill_border_radius_safe ) {
@@ -422,6 +473,9 @@ if ( $has_panel && class_exists( 'SGS_Media_Element' ) ) {
 
 // ── Wrapper classes ───────────────────────────────────────────────────────────
 $wrapper_classes = array( 'sgs-cart', $uid, 'sgs-cart--mode-' . $effective_mode, 'sgs-cart--trigger-' . $trigger_style );
+if ( 'pill' === $trigger_style && 'bubble' === ( $attributes['pillCountStyle'] ?? 'plain' ) ) {
+	$wrapper_classes[] = 'sgs-cart--pill-count-bubble';
+}
 if ( ! $wc_active ) {
 	$wrapper_classes[] = 'sgs-cart--wc-inactive';
 }

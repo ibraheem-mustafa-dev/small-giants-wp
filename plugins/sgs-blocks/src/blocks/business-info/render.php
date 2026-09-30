@@ -563,6 +563,32 @@ $root_sel = '.' . $uid;
 
 $scoped_css = array();
 
+// Icon size, icon-to-text gap and the link's height floor, per device (the
+// same tier-object shape as sgs/button's iconSize/iconGap). Each unset value
+// keeps style.css's default: 1em icon, 0.5em gap, 44px touch-target link.
+$sgs_bi_tier_specs = array(
+	array( "{$root_sel} .sgs-business-info__icon svg", $attributes['iconSize'] ?? null, array( 'width', 'height' ) ),
+	array( "{$root_sel} .sgs-business-info__link,{$root_sel} .sgs-business-phone,{$root_sel} .sgs-business-email", $attributes['iconGap'] ?? null, array( 'gap' ) ),
+	array( "{$root_sel} .sgs-business-info__link", $attributes['linkMinHeight'] ?? null, array( 'min-height' ) ),
+);
+foreach ( $sgs_bi_tier_specs as $sgs_bi_spec ) {
+	if ( ! is_array( $sgs_bi_spec[1] ) || array() === $sgs_bi_spec[1] ) {
+		continue;
+	}
+	$sgs_bi_props = array();
+	foreach ( $sgs_bi_spec[2] as $sgs_bi_prop ) {
+		$sgs_bi_props[] = array(
+			'value'        => $sgs_bi_spec[1],
+			'css'          => $sgs_bi_prop,
+			'unit_default' => 'px',
+		);
+	}
+	$sgs_bi_tier_css = sgs_emit_responsive_css( $sgs_bi_spec[0], $sgs_bi_props );
+	if ( '' !== $sgs_bi_tier_css ) {
+		$scoped_css[] = $sgs_bi_tier_css;
+	}
+}
+
 // --- Border — width/style on the wrapper, colour (flat or gradient, base +
 // hover) via the shared sgs_border_states_css() helper, radius via the
 // shared sgs_border_radius_tiers() + core style engine (base) plus

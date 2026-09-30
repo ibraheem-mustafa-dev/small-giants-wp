@@ -30,6 +30,9 @@
 	border-style: solid;
 	border-color: var(--sgs-card-border-color, transparent);
 	border-width: var(--sgs-card-border-width, 0);
+	/* The tile ground (cardBackground) likewise paints on every variant; unset it
+	   stays transparent. The card variant below keeps its own theme fallback. */
+	background-color: var(--sgs-card-background, transparent);
 }
 
 /* Card variant — elevated card style.

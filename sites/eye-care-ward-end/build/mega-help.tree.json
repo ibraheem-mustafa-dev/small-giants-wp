@@ -6,9 +6,31 @@
       "style": "columns",
       "colourScheme": "light",
       "maxWidth": {
-        "desktop": "1120px"
+        "desktop": "1440px"
       },
-      "panelBg": "surface-alt"
+      "panelPadding": {
+        "desktop": {
+          "top": "36px",
+          "right": "52px",
+          "bottom": "40px",
+          "left": "52px"
+        }
+      },
+      "groupGap": {
+        "desktop": "36px"
+      },
+      "panelBg": "surface-alt",
+      "borderRadius": "0px",
+      "borderStyle": "solid",
+      "borderWidth": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "1px",
+        "left": "0px"
+      },
+      "borderColour": "border",
+      "shadow": "0px 24px 48px",
+      "shadowColour": "text 12%"
     },
     "innerBlocks": [
       {
@@ -16,33 +38,170 @@
         "attributes": {},
         "innerBlocks": [
           {
-            "name": "sgs/heading",
+            "name": "sgs/container",
             "attributes": {
-              "level": "h3",
-              "content": "Buying here"
-            }
-          },
-          {
-            "name": "sgs/icon-list",
-            "attributes": {
-              "heading": "",
-              "markerType": "none",
-              "items": [
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Delivery & returns",
-                  "url": "/help/"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Frequently asked questions",
-                  "url": "/help/"
+              "tagName": "div",
+              "layout": "stack",
+              "flexDirection": "column",
+              "gap": {
+                "desktop": "0px"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "Buying here",
+                  "fontFamily": "body",
+                  "fontSize": {
+                    "desktop": 11.5
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "400",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase",
+                  "textColour": "text-label",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless",
+                  "margin": {
+                    "desktop": {
+                      "top": "0px",
+                      "bottom": "14px"
+                    }
+                  }
                 }
-              ],
-              "itemTextDecoration": "none"
-            }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "flexDirection": "column",
+                  "gap": {
+                    "desktop": "4px"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Delivery & returns",
+                      "url": "/help/",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Size guide",
+                      "url": "#size-guide",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Frequently asked questions",
+                      "url": "/help/",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -51,39 +210,170 @@
         "attributes": {},
         "innerBlocks": [
           {
-            "name": "sgs/heading",
+            "name": "sgs/container",
             "attributes": {
-              "level": "h3",
-              "content": "Prescriptions"
-            }
-          },
-          {
-            "name": "sgs/icon-list",
-            "attributes": {
-              "heading": "",
-              "markerType": "none",
-              "items": [
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "How lenses work",
-                  "url": "/prescription-lenses/"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Reading your prescription",
-                  "url": "/help/"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Measuring your PD",
-                  "url": "/help/"
+              "tagName": "div",
+              "layout": "stack",
+              "flexDirection": "column",
+              "gap": {
+                "desktop": "0px"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "Prescriptions",
+                  "fontFamily": "body",
+                  "fontSize": {
+                    "desktop": 11.5
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "400",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase",
+                  "textColour": "text-label",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless",
+                  "margin": {
+                    "desktop": {
+                      "top": "0px",
+                      "bottom": "14px"
+                    }
+                  }
                 }
-              ],
-              "itemTextDecoration": "none"
-            }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "flexDirection": "column",
+                  "gap": {
+                    "desktop": "4px"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "How lenses work",
+                      "url": "/prescription-lenses/",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Reading your prescription",
+                      "url": "/help/",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Measuring your PD",
+                      "url": "/help/",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -92,47 +382,173 @@
         "attributes": {},
         "innerBlocks": [
           {
-            "name": "sgs/heading",
+            "name": "sgs/container",
             "attributes": {
-              "level": "h3",
-              "content": "Talk to me"
-            }
-          },
-          {
-            "name": "sgs/icon-list",
-            "attributes": {
-              "heading": "",
-              "markerType": "none",
-              "items": [
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Contact & visit us",
-                  "url": "/contact/"
+              "tagName": "div",
+              "layout": "stack",
+              "flexDirection": "column",
+              "gap": {
+                "desktop": "0px"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "Talk to me",
+                  "fontFamily": "body",
+                  "fontSize": {
+                    "desktop": 11.5
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "400",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase",
+                  "textColour": "text-label",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless",
+                  "margin": {
+                    "desktop": {
+                      "top": "0px",
+                      "bottom": "14px"
+                    }
+                  }
                 }
-              ],
-              "itemTextDecoration": "none"
-            }
-          },
-          {
-            "name": "sgs/business-info",
-            "attributes": {
-              "displayType": "phone",
-              "showIcon": true
-            }
-          },
-          {
-            "name": "sgs/social-icons",
-            "attributes": {
-              "source": "site-info",
-              "colourMode": "brand",
-              "iconStyle": "plain",
-              "iconSize": 18,
-              "iconBackground": "surface-alt",
-              "iconBorderColour": "border",
-              "iconGlyphColour": "text",
-              "gap": "10"
-            }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "flexDirection": "column",
+                  "gap": {
+                    "desktop": "4px"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Contact & visit us",
+                      "url": "/contact/",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "0121 729 8233",
+                      "url": "tel:01217298233",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      },
+                      "linkSource": "phone"
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "WhatsApp me",
+                      "url": "https://wa.me/4479605978",
+                      "inheritStyle": "custom",
+                      "colourText": "success",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      },
+                      "linkTarget": "_blank",
+                      "rel": "noopener"
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       }

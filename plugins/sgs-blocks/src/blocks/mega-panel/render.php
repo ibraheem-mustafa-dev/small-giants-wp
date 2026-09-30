@@ -625,7 +625,12 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 // so the same flex-basis rule is extended to it — universal per-style rule,
 // not a per-variant carve-out. -----------------------------------------------
 $css .= $style_col . $rel_content . '{display:flex;flex-wrap:wrap;}';
-$css .= $style_col . $rel_group . ',' . $style_col . $rel_card_grid . '{flex:1 1 200px;min-width:0;}';
+// The even share is a DEFAULT: inside :where() (0,1,0) so a group's own Child
+// sizing setting (includes/child-sizing.php, 0,2,0) can give it a fixed or
+// fill-the-rest width, e.g. a wider promo column. The card-grid sibling keeps
+// the scoped rule (it has no sizing setting of its own to yield to).
+$css .= ':where(' . $style_col . ')' . $rel_group . '{flex:1 1 200px;min-width:0;}';
+$css .= $style_col . $rel_card_grid . '{flex:1 1 200px;min-width:0;}';
 $css .= $style_col . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:11px 12px;border-radius:13px;}';
 if ( '' !== $item_padding_shift ) {
 	$css .= sgs_hover_state_rules( $style_col . $rel_item, 'padding-inline-start:calc(12px + ' . $item_padding_shift . ')', ':focus-within' );
@@ -817,10 +822,17 @@ $css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;o
  *
  * Parent-paints-child is the mechanism for the mega presets (the same one the
  * columns/cards/minimal layouts use), because the panel owns the PRESET
- * appearance of its fixed template slots. Specificity: the id-scoped
- * $heading_sel (1,2,0) beats sgs/heading's own #uid rule (1,0,0), so the
- * preset wins by construction; `cards`/`minimal` still hide the heading
- * entirely via the heading-visibility rule above.
+ * appearance of its fixed template slots. The preset is a DEFAULT the heading's
+ * own settings override (a heading's font, size, spacing or colour set in its
+ * inspector must paint here like anywhere else): the panel scope sits inside
+ * :where() and the heading class is doubled, so the rule is (0,2,0). That beats
+ * the heading's unset baseline (`.wp-block-sgs-heading`, 0,1,0) and the theme's
+ * h1-h6 element rules, and ties the heading's own scoped rule
+ * (`.sgs-hdg-{md5}.wp-block-sgs-heading`, 0,2,0), which prints later (inside the
+ * content, after this panel's <style>) and so wins. Until 2026-09-29 the preset
+ * out-ranked the heading's own rule (1,2,0), so every heading control was dead
+ * inside a mega group. `cards`/`minimal` still hide the heading entirely via the
+ * heading-visibility rule above.
  *
  * The theme defines no `mono` font-family preset, so this uses a system
  * monospace stack.
@@ -839,11 +851,11 @@ $css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;o
  * file — so each branch is prefixed with the style scope exactly once, never
  * with $root_sel twice.
  */
-$eyebrow_scope    = $root_sel . '[data-mega-style="columns"]:not(.sgs-mega-panel--headings-off) ';
-$rel_heading_list = array( ' .sgs-mega-group > .sgs-heading', ' .sgs-mega-group > .wp-block-sgs-heading' );
+$eyebrow_scope    = $root_sel . '[data-mega-style="columns"]:not(.sgs-mega-panel--headings-off) .sgs-mega-group';
+$rel_heading_list = array( '.sgs-heading.sgs-heading', '.wp-block-sgs-heading.wp-block-sgs-heading' );
 $eyebrow_sel_list = array();
 foreach ( $rel_heading_list as $rel_heading_branch ) {
-	$eyebrow_sel_list[] = $eyebrow_scope . $rel_heading_branch;
+	$eyebrow_sel_list[] = ':where(' . $eyebrow_scope . ') > ' . $rel_heading_branch;
 }
 $css .= implode( ', ', $eyebrow_sel_list ) . '{'
 	. 'font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;'

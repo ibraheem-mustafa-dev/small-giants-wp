@@ -629,6 +629,21 @@ if ( '' !== $gr_preset_bg_slug ) {
 	$gr_extra_classes[] = 'has-' . $gr_preset_bg_slug . '-background-color';
 }
 
+// Cards per arrow click (arrowStep, a {desktop,tablet,mobile} tier object of whole
+// numbers). Each tier inherits the one above it, as every tier value does; the
+// script picks the tier for the viewport at click time with the framework's own
+// breakpoints, passed here so the two never drift apart. 1 = one card (the default).
+$gr_arrow_step_raw = sgs_responsive_normalise_object( $attributes['arrowStep'] ?? null );
+$gr_arrow_step     = array();
+$gr_arrow_prev     = 1;
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $gr_tier ) {
+	$gr_tier_val                = $gr_arrow_step_raw[ $gr_tier ] ?? null;
+	$gr_arrow_prev              = is_numeric( $gr_tier_val ) ? max( 1, min( 6, (int) $gr_tier_val ) ) : $gr_arrow_prev;
+	$gr_arrow_step[ $gr_tier ] = $gr_arrow_prev;
+}
+$gr_arrow_step['tabletMax'] = SGS_Breakpoints::TABLET_MAX;
+$gr_arrow_step['mobileMax'] = SGS_Breakpoints::MOBILE_MAX;
+
 // WP Interactivity attrs — carried verbatim so the store binds correctly.
 $gr_extra_attrs = array(
 	'data-wp-interactive' => 'sgs/google-reviews',
@@ -637,6 +652,7 @@ $gr_extra_attrs = array(
 			'autoplay'      => $autoplay,
 			'autoplaySpeed' => $autoplay_speed,
 			'currentSlide'  => 0,
+			'arrowStep'     => $gr_arrow_step,
 		)
 	),
 	'data-wp-init'        => 'callbacks.init',

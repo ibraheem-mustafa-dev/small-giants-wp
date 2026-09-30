@@ -50,6 +50,21 @@
 			"type": "boolean",
 			"default": true
 		},
+		"iconSize": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device icon size (CSS length) for the phone/email/address icon. Tier object {desktop,tablet,mobile}; empty keeps 1em (the text size)."
+		},
+		"iconGap": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device gap between the icon and the text (CSS length). Tier object; empty keeps 0.5em."
+		},
+		"linkMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device height floor of the phone/email link (CSS length). Empty keeps the 44px touch-target default."
+		},
 		"labelCollapse": {
 			"type": "string",
 			"default": "none",
@@ -550,6 +565,8 @@
 					"attrMap": {
 						"css:background-color": "native:color.background",
 						"css:padding": "padding",
+						"css:gap": "iconGap",
+						"css:min-height": "linkMinHeight",
 						"css:margin": "margin",
 						"css:font-size": "fontSize",
 						"css:font-family": "fontFamily",

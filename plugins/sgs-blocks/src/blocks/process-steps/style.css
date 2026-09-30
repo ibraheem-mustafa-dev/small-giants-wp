@@ -151,6 +151,10 @@
 	display: grid;
 	grid-template-columns: auto 1fr;
 	column-gap: var(--wp--preset--spacing--20);
+	/* The title's own bottom margin spaces it from the description; a row gap here
+	 * would only add an empty line under a step with no description. Set, not left
+	 * to the grid default, because the <768px block's `gap` shorthand would add one. */
+	row-gap: 0;
 	align-items: start;
 	text-align: left;
 	width: 100%;

@@ -304,6 +304,15 @@ export default {
 		{ pair: 'shapetile-oversized', reason: 'Off screen, nothing paints: the draft holds every tile at its start pose from load, the framework only once a tile is within 200px of view', when: ( d ) => 'opacity' === d.key || /^pre:/.test( d.key ) },
 		{ pair: 'shapetiles-see-all', kind: 'text', reason: 'Accepted (Bean 2026-09-27, as the shop\'s brand/style counts): live counts the real 6 photographed shapes; the draft counts a made-up catalogue of 12', when: ( d ) => /^all \d+ styles$/i.test( d.draft ) && /^all \d+ styles$/i.test( d.live ) },
 		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-27, as the shop\'s brand/style counts): live counts the real 6 photographed shapes; the draft counts a made-up catalogue of 12', when: ( d ) => ( ( d ) => /^text-(missing|extra) "all \d+ styles"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		// The brand marquee scrolls continuously on both sides, so where its words sit is only a matter of the
+		// moment each side was sampled; the strip itself matches (97 vs 96px tall at 1440/768/375, measured 2026-09-29).
+		{ pair: '(auto)', reason: 'The brand marquee is moving on both sides: its words sit wherever the scroll was at the moment of the sample (strip 97 vs 96px tall, measured 2026-09-29)', when: ( d ) => /^(moved|text-(missing|extra)) "[^"]*(moving fastest this month|ray-ban|gucci|oakley|prada|versace|balenciaga|dolce|&|michael|kors|polaroid|police|carrera|ferrari|emporio|armani|superdry)/.test( d.key.replace( / #\d+$/, '' ) ) && ! /\b(ago|reviews?|photos)\b/.test( d.key ) },
+		// The review stars: live draws five 15px icons 2px apart (the framework's fixed star gap), the draft five
+		// text glyphs; the star row is 7px wider, so the date beside it starts 7px further right. Bean 2026-09-29:
+		// not worth a star-spacing control.
+		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-29): icon stars sit 2px apart, 7px wider than the draft\'s text stars, so the date beside them starts up to 8px further right', when: ( d ) => /^moved "[^"]*(reviews|photos|review) → (a|\d+) (year|month|week)s? ago/.test( d.key ) && ( ( [ dx, dy ], [ lx, ly ] ) => Math.abs( lx - dx ) <= 8 && Math.abs( ly - dy ) <= 2 )( d.draft.split( ',' ).map( Number ), d.live.split( ',' ).map( Number ) ) },
+		// The shape tile title: "normal" against 18.2px, and both boxes measure 18px (measured 2026-09-29).
+		{ pair: 'shapetile-wayfarer-title', kind: 'style', key: 'line-height', reason: 'Both titles measure 18px tall (the draft\'s "normal" line at 14px resolves to the same box, measured 2026-09-29)', when: ( d ) => 'normal' === d.draft && /^18(\.\d+)?px$/.test( d.live ) },
 		// The Google reviews widget: live pulls the real Google feed (different reviewers, dates and counts
 		// than the draft's placeholder text), so only the card's look (box, colour, shape) is compared, not its words.
 		{ pair: 'review-card', kind: 'text', reason: 'Accepted (Bean 2026-09-28): live pulls the real Google review feed; the draft\'s reviewer names, dates and wording are placeholder copy' },

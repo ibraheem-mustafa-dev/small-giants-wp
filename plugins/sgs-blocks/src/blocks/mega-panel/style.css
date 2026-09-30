@@ -93,7 +93,8 @@
 	display: flex;
 	flex-wrap: wrap;
 }
-.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-panel__content > * {
+/* A default, so :where(): a group's own Child sizing setting (0,2,0) overrides it. */
+:where( .wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-panel__content ) > * {
 	flex: 1 1 200px;
 	min-width: 0;
 }

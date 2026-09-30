@@ -45,6 +45,9 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_parity_css' ) ) {
 		if ( '' !== $badge_css ) {
 			$css .= $scope . ' .sgs-nav-drawer-menu__badge{' . $badge_css . '}';
 		}
+		if ( function_exists( 'sgs_nav_item_badge_css' ) ) {
+			$css .= sgs_nav_item_badge_css( $scope . ' .sgs-nav-drawer-menu__badge', $attributes );
+		}
 
 		// Parity — disabled item/sublink text colour.
 		$disabled_decl = sgs_text_colour_decl( (string) ( $attributes['itemDisabledColour'] ?? 'text-muted' ) );

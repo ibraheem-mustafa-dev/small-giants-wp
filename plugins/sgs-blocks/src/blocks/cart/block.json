@@ -155,7 +155,18 @@
 						"css:border-color": "pillBorderColour",
 						"css:border-width": "pillBorderWidth",
 						"css:border-style": "pillBorderStyle",
-						"css:border-radius": "pillBorderRadius"
+						"css:border-radius": "pillBorderRadius",
+						"css:min-height": "pillMinHeight"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "pillBgColourHover",
+								"css:background-image": "pillBgColourHoverGradient",
+								"css:color": "pillTextColourHover",
+								"css:color-gradient": "pillTextColourHoverGradient"
+							}
+						}
 					},
 					"contentAttrs": [ "pillLabel" ],
 					"_note": "Wave B — triggerStyle:'pill' swaps the icon+badge trigger for a word (pillLabel) beside the live item count, in a pill (matches a 'Bag'/'Cart' text trigger draft shape). Only rendered/styled when triggerStyle is 'pill' — the icon element above stays the trigger for triggerStyle:'icon' (the default). HAND-BUILT ::after for the background (same reasoning as badge/panel above: .sgs-cart__trigger is already position:relative in style.css, and a text gradient's background-clip:text must not be clipped by the pill's own fill) — pillTextColour styles the LABEL only; the count beside it keeps using the existing badgeTextColour/badgeTextColourGradient attributes (same badge element, restyled inline for the pill via CSS, so one colour control governs the count in both trigger styles). Border (compliance correction, Spec 35 §14/§1 field 9f): pillBorderWidth (box object, base only) + pillBorderStyle (enum) + pillBorderColour (flat, no gradient sibling) mount through `SgsBorderControl`, mirroring sgs/whatsapp-cta's cardBorderWidth/cardBorderStyle/cardBorderColour (card-fields.js CardTypographyPanel) — no ad-hoc second colour mechanism. pillBorderRadius stays the one exception: a plain CSS-length STRING (default '' — CSS default of border-radius:999px in style.css governs), NOT a responsive 4-corner tier object, per Spec 32 §6.1's deliberate-keep for a single uniform pill radius (mirrors sgs/option-picker's pillBorderRadius) — `SgsBorderControl`'s `onRadiusChange` pairing is typed for that 4-corner tier shape, so pairing this scalar there would force the very object migration §6.1 exempts; it is mounted immediately alongside the composite instead (PillBorderControl.js). `layout` cluster added (compliance pass) purely so css:border-color/css:border-width/css:border-style/css:border-radius — all members of that cluster, per scripts/consistency/cluster-member-sets.json — resolve against this element's own attrMap instead of reporting ORPHAN:STYLE-DEFECT; no other `layout` member (padding/margin/gap/etc.) has an attrMap entry here, so none of them are newly claimed."
@@ -350,6 +361,57 @@
 		"pillLabel": {
 			"type": "string",
 			"default": "Cart"
+		},
+		"pillCountStyle": {
+			"type": "string",
+			"enum": [ "plain", "bubble" ],
+			"default": "plain",
+			"description": "How the pill shows its item count: plain text beside the label, or a round filled bubble (badgeColour fill, badgeTextColour text)."
+		},
+		"pillFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"pillFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pillFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"pillLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"pillLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"pillTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"pillMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Pill height floor per device (CSS length). Empty keeps the 44px touch-target default."
+		},
+		"pillBgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBgColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"pillBgColour": {
 			"type": "string",

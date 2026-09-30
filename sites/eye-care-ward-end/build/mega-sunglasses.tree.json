@@ -6,180 +6,938 @@
       "style": "columns",
       "colourScheme": "light",
       "maxWidth": {
-        "desktop": "1120px"
+        "desktop": "1440px"
+      },
+      "panelPadding": {
+        "desktop": {
+          "top": "36px",
+          "right": "52px",
+          "bottom": "40px",
+          "left": "52px"
+        }
       },
       "groupGap": {
         "desktop": "44px"
       },
-      "panelBg": "surface-alt"
+      "panelBg": "surface-alt",
+      "borderRadius": "0px",
+      "borderStyle": "solid",
+      "borderWidth": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "1px",
+        "left": "0px"
+      },
+      "borderColour": "border",
+      "shadow": "0px 24px 48px",
+      "shadowColour": "text 12%"
     },
     "innerBlocks": [
       {
         "name": "sgs/mega-group",
-        "attributes": {},
+        "attributes": {
+          "sgsChildSizing": {
+            "desktop": "fixed"
+          },
+          "sgsChildWidth": {
+            "desktop": "31.1%"
+          }
+        },
         "innerBlocks": [
           {
-            "name": "sgs/heading",
+            "name": "sgs/container",
             "attributes": {
-              "level": "h3",
-              "content": "By style"
-            }
-          },
-          {
-            "name": "sgs/icon-list",
-            "attributes": {
-              "heading": "",
-              "markerType": "none",
-              "items": [
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Pilot",
-                  "url": "/shop/?filter_shape=pilot&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Wayfarer",
-                  "url": "/shop/?filter_shape=wayfarer&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Square",
-                  "url": "/shop/?filter_shape=square&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Rectangle",
-                  "url": "/shop/?filter_shape=rectangle&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Round",
-                  "url": "/shop/?filter_shape=round&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Oval",
-                  "url": "/shop/?filter_shape=oval&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Cat-eye",
-                  "url": "/shop/?filter_shape=cat-eye&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Butterfly",
-                  "url": "/shop/?filter_shape=butterfly&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Browline",
-                  "url": "/shop/?filter_shape=browline&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Geometric",
-                  "url": "/shop/?filter_shape=geometric&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Shield",
-                  "url": "/shop/?filter_shape=shield&query_type_shape=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Oversized",
-                  "url": "/shop/?filter_shape=oversized&query_type_shape=or"
+              "tagName": "div",
+              "layout": "stack",
+              "flexDirection": "column",
+              "gap": {
+                "desktop": "0px"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "By style",
+                  "fontFamily": "body",
+                  "fontSize": {
+                    "desktop": 11.5
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "400",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase",
+                  "textColour": "text-label",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless",
+                  "margin": {
+                    "desktop": {
+                      "top": "0px",
+                      "bottom": "16px"
+                    }
+                  }
                 }
-              ],
-              "itemTextDecoration": "none"
-            }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "grid",
+                  "columns": {
+                    "desktop": 2
+                  },
+                  "gridTemplateColumns": {
+                    "desktop": "repeat(2,minmax(0,1fr))"
+                  },
+                  "gap": {
+                    "desktop": "4px 20px"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Pilot",
+                      "url": "/shop/?filter_shape=pilot&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Wayfarer",
+                      "url": "/shop/?filter_shape=wayfarer&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Square",
+                      "url": "/shop/?filter_shape=square&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Rectangle",
+                      "url": "/shop/?filter_shape=rectangle&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Round",
+                      "url": "/shop/?filter_shape=round&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Oval",
+                      "url": "/shop/?filter_shape=oval&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Cat-eye",
+                      "url": "/shop/?filter_shape=cat-eye&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Butterfly",
+                      "url": "/shop/?filter_shape=butterfly&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Browline",
+                      "url": "/shop/?filter_shape=browline&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Geometric",
+                      "url": "/shop/?filter_shape=geometric&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Shield",
+                      "url": "/shop/?filter_shape=shield&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Oversized",
+                      "url": "/shop/?filter_shape=oversized&query_type_shape=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
       {
         "name": "sgs/mega-group",
-        "attributes": {},
+        "attributes": {
+          "sgsChildSizing": {
+            "desktop": "fill"
+          }
+        },
         "innerBlocks": [
           {
-            "name": "sgs/heading",
+            "name": "sgs/container",
             "attributes": {
-              "level": "h3",
-              "content": "Shop by"
-            }
-          },
-          {
-            "name": "sgs/icon-list",
-            "attributes": {
-              "heading": "",
-              "markerType": "none",
-              "items": [
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Best sellers",
-                  "url": "/shop/"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Biggest savings",
-                  "url": "/shop/?orderby=sgs_biggest_saving"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Polarised",
-                  "url": "/shop/?tags=polarised"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Under \u00c2\u00a3100",
-                  "url": "/shop/?max_price=100"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Women's",
-                  "url": "/shop/?filter_gender=women&query_type_gender=or"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Men's",
-                  "url": "/shop/?filter_gender=men&query_type_gender=or"
+              "tagName": "div",
+              "layout": "stack",
+              "flexDirection": "column",
+              "gap": {
+                "desktop": "0px"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "Shop by",
+                  "fontFamily": "body",
+                  "fontSize": {
+                    "desktop": 11.5
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "400",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase",
+                  "textColour": "text-label",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless",
+                  "margin": {
+                    "desktop": {
+                      "top": "0px",
+                      "bottom": "16px"
+                    }
+                  }
                 }
-              ],
-              "itemTextDecoration": "none"
-            }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "flexDirection": "column",
+                  "gap": {
+                    "desktop": "4px"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Best sellers",
+                      "url": "/shop/",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Biggest savings",
+                      "url": "/shop/?orderby=sgs_biggest_saving",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Polarised",
+                      "url": "/shop/?tags=polarised",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Under £100",
+                      "url": "/shop/?max_price=100",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Women's",
+                      "url": "/shop/?filter_gender=women&query_type_gender=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Men's",
+                      "url": "/shop/?filter_gender=men&query_type_gender=or",
+                      "inheritStyle": "custom",
+                      "colourText": "text",
+                      "fontSize": {
+                        "desktop": 14.5
+                      },
+                      "fontSizeUnit": "px",
+                      "fontWeight": "400",
+                      "textTransform": "none",
+                      "letterSpacing": {
+                        "desktop": 0
+                      },
+                      "letterSpacingUnit": "px",
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "lineHeightUnit": "unitless",
+                      "padding": {
+                        "desktop": {
+                          "top": "6px",
+                          "right": "0px",
+                          "bottom": "6px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": 0
+                      },
+                      "contentAlign": {
+                        "desktop": "flex-start"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
       {
-        "name": "sgs/media",
+        "name": "sgs/mega-group",
         "attributes": {
-          "mediaType": "image",
-          "imageId": 160,
-          "imageAlt": "Prescription sunglasses",
-          "objectFit": "cover",
-          "aspectRatio": "16 / 10",
-          "caption": "Prescription sunglasses<br>Any frame here, from \u00c2\u00a359",
-          "captionColour": "text",
-          "linkUrl": "/prescription-lenses/"
-        }
+          "url": "/prescription-lenses/",
+          "sgsChildSizing": {
+            "desktop": "fixed"
+          },
+          "sgsChildWidth": {
+            "desktop": "34%"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "flexDirection": "column",
+              "justifyContent": "flex-end",
+              "boxAspectRatio": "16 / 10",
+              "backgroundColour": "surface-stage",
+              "backgroundImage": {
+                "id": 160,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/mega-sun.jpg",
+                "alt": "Prescription sunglasses"
+              },
+              "backgroundSize": "cover",
+              "backgroundPosition": "center 25%",
+              "overlayGradient": "linear-gradient(180deg,rgba(20,20,20,0) 40%,rgba(20,20,20,.8) 100%)",
+              "backgroundOverlayOpacity": {
+                "desktop": 100
+              },
+              "borderStyle": "solid",
+              "borderWidth": {
+                "top": "1px",
+                "right": "1px",
+                "bottom": "1px",
+                "left": "1px"
+              },
+              "borderColour": "border",
+              "padding": {
+                "desktop": {
+                  "top": "22px",
+                  "right": "22px",
+                  "bottom": "22px",
+                  "left": "22px"
+                }
+              },
+              "gap": {
+                "desktop": "0px"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "Prescription sunglasses",
+                  "fontFamily": "'Playfair Display',serif",
+                  "fontSize": {
+                    "desktop": 22
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "500",
+                  "textColour": "text-inverse",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless",
+                  "margin": {
+                    "desktop": {
+                      "top": "0px",
+                      "bottom": "0px"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Any frame here, from £59",
+                  "fontSize": {
+                    "desktop": 13.5
+                  },
+                  "fontSizeUnit": "px",
+                  "textColour": "#EDE7DC",
+                  "lineHeight": {
+                    "desktop": 1.5
+                  },
+                  "lineHeightUnit": "unitless",
+                  "margin": {
+                    "desktop": {
+                      "top": "4px",
+                      "bottom": "0px"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
       }
     ]
   }

@@ -42,6 +42,10 @@ export default function buildCartColourRows( {
 		pillBgColourGradient,
 		pillTextColour,
 		pillTextColourGradient,
+		pillBgColourHover,
+		pillBgColourHoverGradient,
+		pillTextColourHover,
+		pillTextColourHoverGradient,
 		freeDeliveryFillColour,
 		freeDeliveryTrackColour,
 	} = attributes;
@@ -97,6 +101,16 @@ export default function buildCartColourRows( {
 					onGradientChange: ( val ) =>
 						setAttributes( { pillBgColourGradient: val ?? '' } ),
 				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: pillBgColourHover,
+					onChange: ( val ) => setAttributes( { pillBgColourHover: val ?? '' } ),
+					linked: true,
+					gradientValue: pillBgColourHoverGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { pillBgColourHoverGradient: val ?? '' } ),
+				},
 			],
 		},
 		hasPill && {
@@ -113,6 +127,16 @@ export default function buildCartColourRows( {
 					gradientValue: pillTextColourGradient,
 					onGradientChange: ( val ) =>
 						setAttributes( { pillTextColourGradient: val ?? '' } ),
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: pillTextColourHover,
+					onChange: ( val ) => setAttributes( { pillTextColourHover: val ?? '' } ),
+					linked: true,
+					gradientValue: pillTextColourHoverGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { pillTextColourHoverGradient: val ?? '' } ),
 				},
 			],
 		},

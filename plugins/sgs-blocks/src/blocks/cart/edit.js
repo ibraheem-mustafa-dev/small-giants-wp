@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
-import { IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls } from '../../components';
+import { IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
 import { colourVar } from '../../utils';
 import MediaElementPanel from '../../components/MediaElementPanel';
@@ -143,6 +143,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					hideWhenEmpty={ hideWhenEmpty }
 					triggerStyle={ triggerStyle }
 					pillLabel={ pillLabel }
+					pillCountStyle={ attributes.pillCountStyle }
 					countPopAnimation={ countPopAnimation }
 					setAttributes={ setAttributes }
 				/>
@@ -194,6 +195,40 @@ export default function Edit( { attributes, setAttributes } ) {
 					}
 					setAttributes={ setAttributes }
 				/>
+
+				{ hasPill && (
+					<PanelBody
+						title={ __( 'Pill text and size', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="pill"
+							showWeight
+							showStyle={ false }
+							showLineHeight={ false }
+							showLetterSpacing
+							showTransform
+						/>
+						<ResponsiveOverride
+							label={ __( 'Minimum height', 'sgs-blocks' ) }
+							value={ attributes.pillMinHeight }
+							onChange={ ( obj ) => setAttributes( { pillMinHeight: obj } ) }
+						>
+							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								<SgsLengthControl
+									presets={ false }
+									label={ __( 'Minimum height', 'sgs-blocks' ) }
+									help={ __( 'Empty keeps the 44px touch-target height.', 'sgs-blocks' ) }
+									value={ ownValue || '' }
+									placeholder={ inherited ? effectiveValue : '44px' }
+									onChange={ ( val ) => setOwnValue( val || '' ) }
+								/>
+							) }
+						</ResponsiveOverride>
+					</PanelBody>
+				) }
 
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
