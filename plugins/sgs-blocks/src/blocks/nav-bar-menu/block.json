@@ -248,6 +248,18 @@
 					},
 					"_note": "Wave B. The optional per-item marker chip (\"SOON\", \"NEW\") rendered after an item's or sublink's label via includes/nav-menu-markup.php::sgs_nav_shared_badge_html(). Badge COPY is per-item (the operator's WordPress classic-menu-item Description field, repurposed -- see that function's own docblock); badge COLOUR is block-level, one Colour-panel row applying to every badge this bar renders, matching sgs/cart's badgeColour/badgeTextColour precedent (sgs-db.py: sgs/cart badgeColour default \"accent\", badgeTextColour default \"accent-text\"). No hover state -- a badge is never itself interactive. Zero-specificity `:where()` default in style.css paints a neutral accent-light/accent-text chip when an operator has not touched either attribute; render.php's own #uid-scoped rule (specificity 0,2,0) always wins over it."
 				},
+				"burger-bar": {
+					"label": "Burger bar",
+					"order": 9.6,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:height": "burgerBarThickness"
+					},
+					"_note": "Each bar of the default burger glyph (`.sgs-nav-bar-menu__burger-bar`). burgerBarThickness writes --sgs-nbm-bar-h on the icon box, which the bars read for their height and the bar-stack height and morph poses read for their geometry (includes/nav-menu-trigger-css.php)."
+				},
 				"burger-icon": {
 					"label": "Burger icon box",
 					"order": 7.5,
@@ -289,6 +301,7 @@
 						"css:font-weight": "burgerFontWeight",
 						"css:text-transform": "burgerTextTransform",
 						"css:letter-spacing": "burgerLetterSpacing",
+						"css:gap": "burgerTextGap",
 						"css:transition-duration": "burgerMorphDuration",
 						"css:transition-timing-function": "burgerMorphEasing"
 					},
@@ -731,6 +744,16 @@
 			"type": "string",
 			"default": "",
 			"description": "Menu button border colour: a palette slug or any colour. Unset follows the button's text colour (currentColor)."
+		},
+		"burgerBarThickness": {
+			"type": "object",
+			"default": {},
+			"description": "Thickness of the default glyph's bars, per device: a {desktop,tablet,mobile} tier object of CSS lengths. Written to --sgs-nbm-bar-h, which the bars, the bar-stack height and every morph pose read. Unset keeps 2px."
+		},
+		"burgerTextGap": {
+			"type": "object",
+			"default": {},
+			"description": "Space between the burger glyph and its text label (icon-and-text trigger), per device: a tier object of CSS lengths. Unset keeps no gap."
 		},
 		"burgerBarGap": {
 			"type": "object",

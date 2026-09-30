@@ -116,7 +116,7 @@ if ( ! function_exists( 'sgs_brand_strip_text_style_css' ) ) {
 		$divider_width = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['brandTextSeparatorWidth'] ?? '' ) : '';
 		if ( '' !== $divider_width ) {
 			$divider_colour = $attributes['brandTextSeparatorColour'] ?? '';
-			$rules[]        = "{$root_sel} .sgs-brand-strip__item--text{"
+			$rules[]        = "{$root_sel} .sgs-brand-strip__item--text,{$root_sel}.sgs-brand-strip--layout-row .sgs-brand-strip__item{"
 				. 'border-right-style:solid;'
 				. 'border-right-width:' . $divider_width . ';'
 				. 'border-right-color:' . ( '' !== $divider_colour && function_exists( 'sgs_colour_value' ) ? sgs_colour_value( $divider_colour ) : 'currentColor' ) . ';}';

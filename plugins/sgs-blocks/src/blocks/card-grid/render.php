@@ -848,6 +848,46 @@ $class_names  = array_merge(
 // multiple grids on one page can differ. Only set values are emitted.
 $sgs_grid_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_grid_uid . ' .sgs-card-grid__title' );
 $sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'subtitle', '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle' );
+// Space below the title (titleMarginBottom). Only a title followed by something
+// (a subtitle) takes it; a lone title keeps style.css's :last-child reset.
+// Space inside the image area, around the image (imagePadding), per device.
+if ( is_array( $attributes['imagePadding'] ?? null ) && array() !== $attributes['imagePadding'] ) {
+	$sgs_grid_typo_css .= sgs_emit_responsive_css(
+		'.' . $sgs_grid_uid . ' .sgs-card-grid__image-wrap',
+		array(
+			array(
+				'value'        => $attributes['imagePadding'],
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+// A fixed image-area height per device (imageHeight) replaces the aspect ratio.
+if ( is_array( $attributes['imageHeight'] ?? null ) && array() !== $attributes['imageHeight'] ) {
+	$sgs_grid_typo_css .= sgs_emit_responsive_css(
+		'.' . $sgs_grid_uid . ' .sgs-card-grid__image-wrap',
+		array(
+			array(
+				'value'        => $attributes['imageHeight'],
+				'css'          => 'height',
+				'unit_default' => 'px',
+			),
+			array(
+				'value'     => $attributes['imageHeight'],
+				'css'       => 'aspect-ratio',
+				'transform' => static function () {
+					return 'auto';
+				},
+			),
+		)
+	);
+}
+$sgs_grid_title_mb = sgs_css_length_value( (string) ( $attributes['titleMarginBottom'] ?? '' ) );
+if ( '' !== $sgs_grid_title_mb ) {
+	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__title:not(:last-child){margin-bottom:' . $sgs_grid_title_mb . ';}';
+}
 $sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label' );
 if ( '' !== (string) ( $attributes['noImageLabelColour'] ?? '' ) ) {
 	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label{color:' . sgs_colour_value( (string) $attributes['noImageLabelColour'] ) . ';}';

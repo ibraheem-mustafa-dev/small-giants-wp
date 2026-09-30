@@ -218,7 +218,13 @@
                 }
               },
               "itemBadgeBorderRadius": "0px",
-              "itemBadgeGap": "7px"
+              "itemBadgeGap": "7px",
+              "burgerBarThickness": {
+                "desktop": "1.5px"
+              },
+              "burgerTextGap": {
+                "desktop": "10px"
+              }
             }
           },
           {

@@ -274,8 +274,35 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 					'css'       => '--sgs-nbm-icon-h',
 					'transform' => static function ( $raw ) use ( $sgs_nm_bar_count ) {
 						$gap = sgs_css_length_value( is_numeric( $raw ) ? $raw . 'px' : (string) $raw );
-						return '' === $gap ? '' : 'calc(' . ( $sgs_nm_bar_count * 2 ) . 'px + ' . ( $sgs_nm_bar_count - 1 ) . ' * ' . $gap . ')';
+						return '' === $gap ? '' : 'calc(' . $sgs_nm_bar_count . ' * var(--sgs-nbm-bar-h, 2px) + ' . ( $sgs_nm_bar_count - 1 ) . ' * ' . $gap . ')';
 					},
+				),
+			)
+		);
+
+		/*
+		 * Bar thickness (burgerBarThickness) and the space between the icon and
+		 * its "Menu" label (burgerTextGap), per device. The thickness is a custom
+		 * property the bars, the stack height above and every morph pose read, so
+		 * a 1.5px bar still meets in a clean X.
+		 */
+		$css .= sgs_emit_responsive_css(
+			$uid_sel . ' .sgs-nav-bar-menu__burger-icon',
+			array(
+				array(
+					'value'        => $attributes['burgerBarThickness'] ?? array(),
+					'css'          => '--sgs-nbm-bar-h',
+					'unit_default' => 'px',
+				),
+			)
+		);
+		$css .= sgs_emit_responsive_css(
+			$burger_sel,
+			array(
+				array(
+					'value'        => $attributes['burgerTextGap'] ?? array(),
+					'css'          => 'gap',
+					'unit_default' => 'px',
 				),
 			)
 		);
