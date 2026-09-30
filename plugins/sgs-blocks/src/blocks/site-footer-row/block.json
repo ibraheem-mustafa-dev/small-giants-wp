@@ -222,6 +222,26 @@
 			"type": "string",
 			"default": ""
 		},
+		"rowShrinkPadding": {
+			"type": "object",
+			"default": {},
+			"description": "The row's padding while shrunk on scroll, per device ({desktop,tablet,mobile} of {top,right,bottom,left}). Set, it replaces the default (half the resting top and bottom padding) and may also change the sides. Shared with the other header/footer row via includes/helpers-row-behaviour.php."
+		},
+		"rowShrinkDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "How long the row takes to shrink and grow back, in ms. 0 keeps the default 200ms. The row publishes it as --sgs-row-shrink-duration, which the logo and headings inside read, so everything moves together."
+		},
+		"rowShrinkEasing": {
+			"type": "string",
+			"default": "",
+			"description": "The shrink's timing curve (a named easing, or custom). Empty keeps ease. Published as --sgs-row-shrink-easing."
+		},
+		"rowShrinkEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "The cubic-bezier() read when rowShrinkEasing is custom."
+		},
 		"alignContent": {
 			"type": "string",
 			"default": "stretch",

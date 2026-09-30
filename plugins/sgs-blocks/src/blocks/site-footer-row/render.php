@@ -198,10 +198,14 @@ if ( ! empty( $sfr_shrink_tiers ) ) {
 	// Proportional shrunk size from this row's OWN resting padding — identical
 	// mechanism to sgs/site-header-row, via the one shared helper so the twins
 	// cannot drift. A row with no padding emits nothing and does not resize.
-	$css .= sgs_row_shrink_css(
-		$root_sel . '.is-row-shrunk',
-		isset( $attributes['padding'] ) ? $attributes['padding'] : array()
-	);
+	// An explicit shrunk padding (rowShrinkPadding) replaces the halving.
+	if ( empty( $attributes['rowShrinkPadding'] ) ) {
+		$css .= sgs_row_shrink_css(
+			$root_sel . '.is-row-shrunk',
+			isset( $attributes['padding'] ) ? $attributes['padding'] : array()
+		);
+	}
+	$css .= sgs_row_shrink_settings_css( $root_sel, $attributes );
 
 	$sfr_hide_target = sgs_resolve_row_shrink_hide_target( $block, isset( $attributes['rowShrinkHideTarget'] ) ? $attributes['rowShrinkHideTarget'] : '' );
 	if ( '' !== $sfr_hide_target ) {

@@ -82,6 +82,11 @@
 						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
+						"shrunk": {
+							"attrMap": {
+								"css:font-size": "shrunkFontSize"
+							}
+						},
 						"hover": {
 							"attrMap": {
 								"css:color": "textColourHover",
@@ -180,6 +185,11 @@
 		"fontSize": {
 			"type": "object",
 			"default": {}
+		},
+		"shrunkFontSize": {
+			"type": "string",
+			"default": "",
+			"description": "Font size while the header row holding this heading is shrunk on scroll (CSS length, e.g. 15px) -- a wordmark that shrinks with the logo. Empty keeps the resting size. Moves at the row's shrink speed (--sgs-row-shrink-duration)."
 		},
 		"fontSizeUnit": {
 			"type": "string",
