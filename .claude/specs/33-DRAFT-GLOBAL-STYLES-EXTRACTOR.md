@@ -252,7 +252,9 @@ edit — nudging a brand colour) and silently overwrite it. A failed live fetch 
 backup ABORTS the push (`--force-no-backup` overrides; a genuinely fresh target still proceeds).
 Stripping an advisory palette entry (`push-theme-snapshot.py::apply_advisory_policy`) RESTORES its base colour
 (`_baseline_color`, or the framework `theme.json` value when none was saved) and deletes only a slug the framework
-does not have, so no push can empty the palette. A site with a `theme.json` but no `wp_global_styles` post yet is a
+does not have, so no push can empty the palette. The REST write replaces `settings` wholesale, so the push carries over
+every Font Library family active in the live layer that the snapshot does not define
+(`push-theme-snapshot.py::keep_font_library_families`); without that, each push deactivated the site's installed fonts. A site with a `theme.json` but no `wp_global_styles` post yet is a
 fresh site: nothing to back up in that layer, the push proceeds and exits 0. A failed read of either layer (network or
 SSH error) is NOT a fresh site and aborts unless `--force-no-backup` is given. REST credentials for any site come
 from the `.claude/secrets/*.env` file whose `WP_URL_*` host matches the target, with the two earlier hard-coded
