@@ -543,6 +543,73 @@ def strip_user_layer_presets(settings: dict) -> tuple[dict, list[str]]:
     return out, stripped
 
 
+def _rest_get_json(url: str, auth_header: str):
+    """GET a REST URL with the push's credentials; None on any failure."""
+    req = urllib.request.Request(
+        url,
+        headers={"Authorization": auth_header, "Accept": "application/json", "User-Agent": _REST_UA},
+    )
+    try:
+        with urlopen_tls(req, "push-theme-snapshot", timeout=30) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except (urllib.error.URLError, TimeoutError, ValueError):
+        return None
+
+
+def _font_family_list(node) -> list:
+    """A fontFamilies value as a flat list: the theme.json list, or a REST origin map's entries."""
+    if isinstance(node, list):
+        return node
+    if isinstance(node, dict):
+        out: list = []
+        for value in node.values():
+            if isinstance(value, list):
+                out.extend(value)
+        return out
+    return []
+
+
+def keep_font_library_families(target_domain: str, post_id: int, settings: dict, auth_header: str) -> list[str]:
+    """Carry the site's activated Font Library families into the POST body (mutates ``settings``).
+
+    The REST controller REPLACES ``settings`` wholesale, and a snapshot's
+    ``typography.fontFamilies`` lists only the client's own families, so every push dropped
+    the families an operator had activated from the Font Library (Appearance > Editor >
+    Styles > Typography > Manage fonts): still installed as wp_font_family posts, but no
+    longer in the active list, so WordPress stopped printing their @font-face. Found on the
+    sandybrown canary 2026-09-30: Plus Jakarta Sans, Sometype Mono, Geist Mono and
+    SuisseBPIntl installed, none active, so the Gate 3C header copies rendered in a
+    fallback font. A family is kept when it is in the live user layer, is a Font Library
+    install (matched by slug), and the snapshot does not define the same slug.
+
+    Returns the kept slugs. A failed read keeps nothing and says so; it never blocks the push.
+    """
+    base = f"https://{target_domain}/wp-json/wp/v2"
+    installed = _rest_get_json(f"{base}/font-families?per_page=100&_fields=font_family_settings", auth_header)
+    live = _rest_get_json(f"{base}/global-styles/{post_id}?context=edit", auth_header)
+    if not isinstance(installed, list) or not isinstance(live, dict):
+        print(
+            "[push-theme-snapshot] WARNING: could not read the Font Library or the live global styles; "
+            "activated Font Library families are not carried over this push.",
+            file=sys.stderr,
+        )
+        return []
+    installed_slugs = {
+        (f.get("font_family_settings") or {}).get("slug") for f in installed if isinstance(f, dict)
+    } - {None, ""}
+    typography = settings.setdefault("typography", {})
+    ours = _font_family_list(typography.get("fontFamilies"))
+    our_slugs = {f.get("slug") for f in ours if isinstance(f, dict)}
+    live_families = _font_family_list(((live.get("settings") or {}).get("typography") or {}).get("fontFamilies"))
+    kept = [
+        f for f in live_families
+        if isinstance(f, dict) and f.get("slug") in installed_slugs and f.get("slug") not in our_slugs
+    ]
+    if kept:
+        typography["fontFamilies"] = list(ours) + kept
+    return [f["slug"] for f in kept]
+
+
 def post_global_styles(
     target_domain: str,
     post_id: int,
@@ -570,6 +637,11 @@ def post_global_styles(
             + ", ".join(stripped)
             + " (already delivered by the disk theme.json at the `theme` origin — "
             "posting them here would duplicate the ladder)"
+        )
+    kept_fonts = keep_font_library_families(target_domain, post_id, settings, auth_header)
+    if kept_fonts:
+        print(
+            "[push-theme-snapshot] kept activated Font Library families: " + ", ".join(kept_fonts)
         )
     body: dict = {
         "styles": snapshot.get("styles") or {},
