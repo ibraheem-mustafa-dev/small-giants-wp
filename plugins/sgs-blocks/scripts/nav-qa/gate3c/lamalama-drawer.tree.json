@@ -87,7 +87,8 @@
           },
           "itemLetterSpacingUnit": "px",
           "itemBgHover": "rgba(249,244,235,0.1)",
-          "itemMotionDuration": 120,
+          "itemMotionDuration": 650,
+          "itemMotionEasing": "quart-out",
           "itemPadding": {
             "top": "13.3px",
             "right": "12px",
@@ -242,6 +243,8 @@
               },
               "scaleHover": 0.98,
               "scaleHoverTarget": "face",
+              "transitionDuration": 350,
+              "transitionEasing": "quart-out",
               "fx": "scramble",
               "fxTrigger": "hover"
             }
@@ -329,6 +332,8 @@
               },
               "scaleHover": 0.98,
               "scaleHoverTarget": "face",
+              "transitionDuration": 350,
+              "transitionEasing": "quart-out",
               "fx": "scramble",
               "fxTrigger": "hover"
             }
@@ -381,6 +386,8 @@
               },
               "scaleHover": 0.98,
               "scaleHoverTarget": "face",
+              "transitionDuration": 350,
+              "transitionEasing": "quart-out",
               "fx": "scramble",
               "fxTrigger": "hover"
             }

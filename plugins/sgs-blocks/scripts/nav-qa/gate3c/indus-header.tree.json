@@ -154,6 +154,7 @@
               "submenuCaretTurnDuration": 300,
               "submenuCaretTurnEasing": "drafts",
               "scrimFadeDuration": 300,
+              "scrimFadeEasing": "ease",
               "itemHoverScope": "with-submenu",
               "submenuItemStaggerScope": "rows",
               "submenuCloseGrace": 170,

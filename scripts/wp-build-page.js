@@ -241,13 +241,54 @@ async function main() {
 		...( cloudProxy ? { proxy: { server: process.env.HTTPS_PROXY } } : {} ),
 		...( process.env.PARITY_CHROMIUM ? { executablePath: process.env.PARITY_CHROMIUM } : {} ),
 	} );
-	const page = await ( await browser.newContext( { ignoreHTTPSErrors: true } ) ).newPage();
+	const context = await browser.newContext( { ignoreHTTPSErrors: true } );
+	if ( cloudProxy ) {
+		// The cloud proxy drops connections when the editor opens its ~600 assets at once
+		// (net::ERR_TOO_MANY_RETRIES, then every request stalls). Funnel them through Node,
+		// PARITY_MAX_REQUESTS (default 4) at a time, retrying a dropped fetch.
+		const max = Number( process.env.PARITY_MAX_REQUESTS || 4 );
+		let active = 0;
+		const waiting = [];
+		const acquire = () => new Promise( ( resolve ) => {
+			if ( active < max ) {
+				active++;
+				resolve();
+			} else {
+				waiting.push( resolve );
+			}
+		} );
+		const release = () => {
+			const next = waiting.shift();
+			if ( next ) next(); else active--;
+		};
+		await context.route( '**/*', async ( route ) => {
+			if ( /stats\.wp\.com|pixel\.wp\.com|gravatar\.com/.test( route.request().url() ) ) return route.abort();
+			await acquire();
+			try {
+				for ( let attempt = 0; ; attempt++ ) {
+					try {
+						await route.fulfill( { response: await route.fetch( { timeout: 60000, maxRedirects: 0 } ) } );
+						break;
+					} catch ( e ) {
+						if ( attempt >= 3 ) {
+							await route.abort().catch( () => {} );
+							break;
+						}
+						await new Promise( ( r ) => setTimeout( r, 1500 * ( attempt + 1 ) ) );
+					}
+				}
+			} finally {
+				release();
+			}
+		} );
+	}
+	const page = await context.newPage();
 	try {
 		try {
 			await page.goto( `${ url }/wp-login.php`, { waitUntil: 'domcontentloaded', timeout: 45000 } );
 			await page.fill( '#user_login', user );
 			await page.fill( '#user_pass', pwd );
-			await Promise.all( [ page.waitForURL( /wp-admin/, { timeout: 45000 } ), page.click( '#wp-submit' ) ] );
+			await Promise.all( [ page.waitForURL( /wp-admin/, { timeout: 90000, waitUntil: 'commit' } ), page.click( '#wp-submit' ) ] );
 		} catch ( e ) {
 			fail( 2, `login failed: ${ e.message }` );
 		}

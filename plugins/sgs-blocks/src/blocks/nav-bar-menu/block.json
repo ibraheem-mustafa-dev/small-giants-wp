@@ -69,7 +69,8 @@
 						"css:background-image": "scrimColourGradient",
 						"css:opacity": "scrimOpacity",
 						"css:backdrop-filter": "scrimBlur",
-						"css:transition-duration": "scrimFadeDuration"
+						"css:transition-duration": "scrimFadeDuration",
+						"css:transition-timing-function": "scrimFadeEasing"
 					},
 					"_note": "The shared viewport scrim (Wave 3C U-2, `includes/helpers-scrim.php::sgs_scrim_render`): the see-through layer printed at wp_footer that dims the page while this block's drawer, dialog or panel is open. Mapped here so the converter can route a draft's scrim colour, strength and blur to these attributes."
 				},
@@ -1588,6 +1589,16 @@
 			"type": "number",
 			"default": 0,
 			"description": "I-M4 (U-18). Fade time of the dimmed layer behind an open dropdown/mega panel, in milliseconds. 0 (default) fades it WITH the panel (submenuAnimationDuration/submenuExitDuration), matching today's behaviour. Mirrors sgs/nav-drawer's own scrimFadeDuration (FR-36-6) for the sibling case. Reference: Indus's scrim is #141923 at 25% opacity, 2px blur, 300ms ease."
+		},
+		"scrimFadeEasing": {
+			"type": "string",
+			"default": "",
+			"description": "Easing of the backdrop fade, a name from the shared motion list (includes/helpers-motion-easing.php::sgs_motion_easing_css, editor MotionEasingControl). Empty (default) follows the panel's own easing (submenuAnimationEasing). custom reads scrimFadeEasingCustom. Indus's scrim fades 300ms ease while its panel runs cubic-bezier(.16,.84,.32,1)."
+		},
+		"scrimFadeEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A cubic-bezier(x1, y1, x2, y2) curve, read when scrimFadeEasing is custom. Invalid falls back to ease."
 		},
 		"itemBadgeColour": {
 			"type": "string",

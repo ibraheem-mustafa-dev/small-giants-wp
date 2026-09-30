@@ -192,7 +192,8 @@
 					],
 					"attrMap": {
 						"css:font-size": "drawerCardTagSize",
-						"css:padding": "drawerCardTagPadding"
+						"css:padding": "drawerCardTagPadding",
+						"css:margin": "drawerCardTagMargin"
 					},
 					"_note": "The aside's second slot (tag label), in the compact card."
 				},
@@ -204,7 +205,8 @@
 						"text"
 					],
 					"attrMap": {
-						"css:font-size": "drawerCardTitleSize"
+						"css:font-size": "drawerCardTitleSize",
+						"css:line-height": "drawerCardTitleLineHeight"
 					},
 					"_note": "The aside's third slot, in the compact card."
 				},
@@ -653,6 +655,16 @@
 			"type": "string",
 			"default": "",
 			"description": "Font size of the compact card's title in the drawer."
+		},
+		"drawerCardTitleLineHeight": {
+			"type": "string",
+			"default": "",
+			"description": "Drawer form: the card title's line height, a CSS length (e.g. 22.5px). Empty keeps normal."
+		},
+		"drawerCardTagMargin": {
+			"type": "string",
+			"default": "",
+			"description": "Drawer form: the space around the card's tag, 1 to 4 lengths (e.g. 4px 0 6px). Empty keeps 0 0 6px."
 		},
 		"drawerCardLinkSize": {
 			"type": "string",

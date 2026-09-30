@@ -406,7 +406,13 @@
 		},
 		"transitionEasing": {
 			"type": "string",
-			"default": "ease"
+			"default": "ease",
+			"description": "Hover transition easing: a shared motion easing name (sgs_motion_easing_css), or custom with transitionEasingCustom."
+		},
+		"transitionEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A cubic-bezier(x1, y1, x2, y2) curve, read when transitionEasing is custom. An invalid curve falls back to ease."
 		},
 		"icon": {
 			"type": "string",

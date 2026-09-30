@@ -168,6 +168,10 @@
               "opacityHover": 0.75,
               "sgsChildSizing": {
                 "desktop": "fill"
+              },
+              "textAlign": "left",
+              "iconGap": {
+                "desktop": "8px"
               }
             }
           },
@@ -219,10 +223,11 @@
             "desktop": -0.2
           },
           "itemLetterSpacingUnit": "px",
-          "itemBorderColour": "#D8CA50",
-          "itemBorderWidth": {
-            "bottom": "1px"
-          },
+          "itemSeparatorWidth": "1px",
+          "itemSeparatorStyle": "solid",
+          "itemSeparatorColour": "#D8CA50",
+          "itemSeparatorPosition": "below",
+          "itemSeparatorHoverTreatment": "none",
           "itemPadding": {
             "top": "17px",
             "right": "4px",
@@ -240,6 +245,9 @@
           "itemLineHeight": 25,
           "itemLineHeightUnit": "px",
           "submenuCaretSize": "11px",
+          "gap": {
+            "desktop": "0px"
+          },
           "submenuBg": "transparent",
           "submenuPadding": {
             "desktop": {
@@ -266,7 +274,7 @@
           "iconStyle": "circle",
           "iconSize": 38,
           "circleGlyphSize": 15,
-          "gap": "12px",
+          "gap": "6px",
           "textAlign": "center",
           "margin": {
             "desktop": {

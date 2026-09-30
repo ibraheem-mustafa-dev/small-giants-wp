@@ -756,6 +756,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<RowSeparatorPanel
 					itemSeparatorWidth={ itemSeparatorWidth }
 					itemSeparatorStyle={ itemSeparatorStyle }
+					itemSeparatorPosition={ attributes.itemSeparatorPosition }
 					setAttributes={ setAttributes }
 				/>
 

@@ -19,11 +19,13 @@ import { PanelBody, TextControl, SelectControl } from '@wordpress/components';
  * @param {Object}   root0                    Props.
  * @param {string}   root0.itemSeparatorWidth `itemSeparatorWidth` — a CSS length, e.g. '1px'.
  * @param {string}   root0.itemSeparatorStyle `itemSeparatorStyle` — solid | dashed | dotted.
+ * @param {string}   root0.itemSeparatorPosition `itemSeparatorPosition` — between | below.
  * @param {Function} root0.setAttributes      The block's attribute setter.
  */
 export default function RowSeparatorPanel( {
 	itemSeparatorWidth,
 	itemSeparatorStyle,
+	itemSeparatorPosition,
 	setAttributes,
 } ) {
 	return (
@@ -52,6 +54,17 @@ export default function RowSeparatorPanel( {
 					{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
 				] }
 				onChange={ ( val ) => setAttributes( { itemSeparatorStyle: val } ) }
+			/>
+			<SelectControl
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+				label={ __( 'Position', 'sgs-blocks' ) }
+				value={ itemSeparatorPosition || 'between' }
+				options={ [
+					{ label: __( 'Between rows', 'sgs-blocks' ), value: 'between' },
+					{ label: __( 'Below every row (under its open section)', 'sgs-blocks' ), value: 'below' },
+				] }
+				onChange={ ( val ) => setAttributes( { itemSeparatorPosition: val } ) }
 			/>
 			<p className="components-base-control__help">
 				{ __(

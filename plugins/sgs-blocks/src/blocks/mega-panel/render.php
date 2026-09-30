@@ -1108,8 +1108,10 @@ if ( $sgs_mm_in_drawer ) {
 		);
 		// Slot 1 (media frame) is the thumbnail, spanning the tag, title and link rows.
 		$css .= $sgs_dv_aside . ' > :nth-child(1){grid-column:1;grid-row:1 / span 3;width:' . $sgs_dv_thumb . ';height:' . $sgs_dv_thumb . ';min-height:0;margin:0;overflow:hidden;}';
-		$css .= $sgs_dv_aside . ' > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:0 0 6px;}';
-		$css .= $sgs_dv_aside . ' > :nth-child(3){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:normal;}';
+		$sgs_dv_tag_margin  = $sgs_dv_box( 'drawerCardTagMargin' );
+		$sgs_dv_title_lh    = $sgs_dv_len( 'drawerCardTitleLineHeight' );
+		$css               .= $sgs_dv_aside . ' > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:' . ( '' !== $sgs_dv_tag_margin ? $sgs_dv_tag_margin : '0 0 6px' ) . ';}';
+		$css               .= $sgs_dv_aside . ' > :nth-child(3){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:' . ( '' !== $sgs_dv_title_lh ? $sgs_dv_title_lh : 'normal' ) . ';}';
 		$css .= $sgs_dv_aside . ' > :nth-child(4){display:none;}';
 		$css .= $sgs_dv_aside . ' > :nth-child(5){grid-column:2;grid-row:3;margin:6px 0 0;}';
 

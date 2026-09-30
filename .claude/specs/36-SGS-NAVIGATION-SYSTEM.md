@@ -229,7 +229,7 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `submenuCaretSize`, `submenuCaretGap`, `submenuCaretOpacity`/`submenuCaretOpacityHover` and its open turn
   `submenuCaretTurnDuration` + `submenuCaretTurnEasing`(`Custom`) (`includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css`,
   called by both blocks). The bar's
-  scrim fades over `scrimFadeDuration`, mirroring `sgs/nav-drawer`. `submenuItemStaggerScope` `columns` | `rows`
+  scrim fades over `scrimFadeDuration`, mirroring `sgs/nav-drawer`, on `scrimFadeEasing` (shared motion list plus `scrimFadeEasingCustom`; empty follows the panel's easing). `submenuItemStaggerScope` `columns` | `rows`
   staggers either a panel's columns or every link row and card inside them. With `triggerSurface` on, plain
   non-interactive content in the trigger row passes its tap to the menu trigger; links, buttons and inputs keep
   their own (`includes/nav-trigger-surface-css.php`).
@@ -248,7 +248,10 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
     either row it sits between repaints it, through the row's own link, expander or whole-row toggle (not the open
     section beneath it). Sweep needs a solid line, so a dashed or dotted style withdraws it to `swap`
     (`supports.sgs.sweepEligibility.itemSeparatorHoverTreatment`). The bar's vertical emitter skips the drawer
-    (`includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css`).
+    (`includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css`). `itemSeparatorPosition` `below`
+    instead gives every top-level row, the last included, the line as its own bottom border, under the row and its open
+    section and taking its width in layout (`sgs_nav_drawer_menu_separator_below_css`); its hover follows that row's own
+    head only, and a sweep falls back to `swap`.
   - **Hover scope, magnet, alignment.** `itemHoverScope` is read by the shared item emitters
     (`includes/nav-menu-css.php::sgs_nav_shared_item_state_css`). `itemMagnetStrength` (0.02 to 0.5, shown with
     `itemMagnetEnabled`) rides as `data-magnet-strength` on the list and is read by
@@ -608,7 +611,7 @@ content row. `drawerCardCompact` turns the aside into a horizontal card by its f
 tag, title, description, link): the frame becomes a square thumbnail (`drawerCardThumbSize`, default 64px)
 spanning the tag, title and link rows, the description is hidden, and `drawerCardBg`,
 `drawerCardBorderColour`, `drawerCardRadius`, `drawerCardPadding`, `drawerCardGap` (default 14px),
-`drawerCardTagSize`/`drawerCardTagPadding`, `drawerCardTitleSize`, `drawerCardLinkSize` and
+`drawerCardTagSize`/`drawerCardTagPadding`/`drawerCardTagMargin` (unset `0 0 6px`), `drawerCardTitleSize`/`drawerCardTitleLineHeight` (unset `normal`), `drawerCardLinkSize` and
 `drawerCardSpacing` (below the card when first, above when last) size it. The Indus About panel's values
 are set in `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-mega-about.tree.json`.
 Every drawer colour takes a gradient sibling (`drawerBgGradient`, `drawerLinkNumColourGradient`, `drawerLinkLabelColourGradient`, `drawerLinkDescColourGradient`, `drawerLinkDividerGradient`, `drawerCardBgGradient`, `drawerCardBorderColourGradient`; a gradient wins over its flat colour) and reaches the page through the shared helpers: the two grounds through `sgs_custom_property_gradient_decls()` (`--sgs-mm-drawer-bg`, `--sgs-mm-drawer-card-bg`), the three link text colours through `sgs_resolve_text_colour_or_gradient()` / `sgs_text_colour_decl()` / `sgs_text_colour_gradient_fallback_rule()`, the hairline and the card border through `sgs_border_states_css()`. The inspector's "Preview in the editor as" toggle (Desktop / Drawer, editor state only, never saved) makes the canvas paint the drawer copy: `mega-panel/edit.js` adds `sgs-mega-panel--in-drawer`, paints the ground on the wrapper, and renders `mega-panel/drawer-preview.js::drawerPreviewCss()`, the editor twin of the `$sgs_mm_in_drawer` rules (a gradient border previews as a `border-image`, not the front end's masked ring).

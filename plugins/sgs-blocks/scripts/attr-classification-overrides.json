@@ -6604,6 +6604,30 @@
 			"_why": "2026-09-25 (Wave 3C U-6). A hand-typed cubic-bezier() read only when itemMotionEasing is custom; same role as sgs/nav-bar-menu burgerMorphEasingCustom. The classifier records no role for free-text curve strings."
 		},
 		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemSeparatorPosition",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_why": "2026-09-30 (Gate 3C Indus drawer). Chooses WHERE the row divider draws (between rows, or as each row's own bottom border); a placement enum, same role as itemSeparatorHoverTreatment."
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "scrimFadeEasingCustom",
+			"fields": {
+				"role": "technical"
+			},
+			"_why": "2026-09-30 (Gate 3C Indus scrim). A hand-typed cubic-bezier() read only when scrimFadeEasing is custom; same role as burgerMorphEasingCustom."
+		},
+		{
+			"slug": "sgs/button",
+			"attr": "transitionEasingCustom",
+			"fields": {
+				"role": "technical"
+			},
+			"_why": "2026-09-30 (Gate 3C lamalama CTA). A hand-typed cubic-bezier() read only when transitionEasing is custom (the button now uses the shared sgs_motion_easing_css list); same role as sgs/nav-bar-menu burgerMorphEasingCustom. The classifier records no role for free-text curve strings."
+		},
+		{
 			"slug": "sgs/nav-bar-menu",
 			"attr": "itemMotionEasingCustom",
 			"fields": {

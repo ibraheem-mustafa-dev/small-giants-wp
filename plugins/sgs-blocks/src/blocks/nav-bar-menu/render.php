@@ -1043,6 +1043,11 @@ $css .= $uid_sel . '{' . $sgs_nm_panel_vars . '}';
 // 0 (default) keeps today's behaviour, fading the scrim WITH the panel's own
 // timing; a set value overrides both the enter and exit fade.
 $sgs_nm_scrim_fade = sgs_motion_ms( $attributes['scrimFadeDuration'] ?? 0, 0 );
+// scrimFadeEasing: empty follows the panel's easing; set, the backdrop has its own curve.
+$sgs_nm_scrim_ease_name = trim( (string) ( $attributes['scrimFadeEasing'] ?? '' ) );
+$sgs_nm_scrim_ease      = '' !== $sgs_nm_scrim_ease_name
+	? sgs_motion_easing_css( $sgs_nm_scrim_ease_name, (string) ( $attributes['scrimFadeEasingCustom'] ?? '' ), 'ease' )
+	: $sgs_nm_panel_ease;
 
 $css .= sgs_scrim_render(
 	$attributes,
@@ -1052,7 +1057,7 @@ $css .= sgs_scrim_render(
 		'z_index'  => 'calc(var(--sgs-header-z, 100) - 1)',
 		'enter_ms' => $sgs_nm_scrim_fade > 0 ? $sgs_nm_scrim_fade : $sgs_nm_panel_in,
 		'exit_ms'  => $sgs_nm_scrim_fade > 0 ? $sgs_nm_scrim_fade : $sgs_nm_panel_out,
-		'easing'   => $sgs_nm_panel_ease,
+		'easing'   => $sgs_nm_scrim_ease,
 	)
 );
 

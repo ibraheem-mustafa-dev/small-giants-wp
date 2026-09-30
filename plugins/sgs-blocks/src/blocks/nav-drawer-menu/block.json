@@ -667,6 +667,15 @@
 			"default": "solid",
 			"description": "Row divider line style: solid / dashed / dotted / none. PHP-validated, no JSON enum. Read with itemSeparatorWidth and itemSeparatorColour by includes/nav-drawer-menu-separator-css.php."
 		},
+		"itemSeparatorPosition": {
+			"type": "string",
+			"enum": [
+				"between",
+				"below"
+			],
+			"default": "between",
+			"description": "Where the row divider sits. between (default): a line above every top-level row except the first. below: every top-level row, the last included, carries the line as its own bottom border, under the row and its open section (a real border, so it takes the width in layout). below colours the line on its own row's hover only; a sweep treatment falls back to a colour swap there."
+		},
 		"itemSeparatorWidth": {
 			"type": "string",
 			"default": "",
