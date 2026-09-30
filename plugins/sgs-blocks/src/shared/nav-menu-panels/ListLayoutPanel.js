@@ -55,6 +55,10 @@ export default function ListLayoutPanel( {
 	padding,
 	showItemPadding = false,
 	itemPadding,
+	itemMinHeight,
+	itemBadgePadding,
+	itemBadgeBorderRadius,
+	itemBadgeGap,
 	showSubmenuLinkPadding = false,
 	submenuLinkPadding,
 	setAttributes,
@@ -66,7 +70,7 @@ export default function ListLayoutPanel( {
 				setAttributes( {
 					gap: { desktop: '8px' },
 					padding: {},
-					...( showItemPadding ? { itemPadding: {} } : {} ),
+					...( showItemPadding ? { itemPadding: {}, itemMinHeight: {}, itemBadgePadding: {}, itemBadgeBorderRadius: '', itemBadgeGap: '' } : {} ),
 					...( showSubmenuLinkPadding ? { submenuLinkPadding: {} } : {} ),
 				} )
 			}
@@ -187,6 +191,84 @@ export default function ListLayoutPanel( {
 							/>
 						) }
 					</ResponsiveOverride>
+				</ToolsPanelItem>
+			) }
+
+			{ showItemPadding && (
+				<ToolsPanelItem
+					hasValue={ () => Object.keys( itemMinHeight ?? {} ).length > 0 }
+					label={ __( 'Link minimum height', 'sgs-blocks' ) }
+					onDeselect={ () => setAttributes( { itemMinHeight: {} } ) }
+				>
+					<ResponsiveOverride
+						value={ itemMinHeight }
+						onChange={ ( obj ) => setAttributes( { itemMinHeight: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Link minimum height', 'sgs-blocks' ) }
+								help={ __( 'Empty keeps the 44px touch-target height.', 'sgs-blocks' ) }
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue : '44px' }
+								onChange={ ( val ) => setOwnValue( val || '' ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</ToolsPanelItem>
+			) }
+
+			{ showItemPadding && (
+				<ToolsPanelItem
+					hasValue={ () => Object.keys( itemBadgePadding ?? {} ).length > 0 }
+					label={ __( 'Badge padding', 'sgs-blocks' ) }
+					onDeselect={ () => setAttributes( { itemBadgePadding: {} } ) }
+				>
+					<ResponsiveOverride
+						value={ itemBadgePadding }
+						onChange={ ( obj ) => setAttributes( { itemBadgePadding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Badge padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</ToolsPanelItem>
+			) }
+
+			{ showItemPadding && (
+				<ToolsPanelItem
+					hasValue={ () => !! itemBadgeBorderRadius }
+					label={ __( 'Badge corner radius', 'sgs-blocks' ) }
+					onDeselect={ () => setAttributes( { itemBadgeBorderRadius: '' } ) }
+				>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Badge corner radius', 'sgs-blocks' ) }
+						value={ itemBadgeBorderRadius || '' }
+						onChange={ ( val ) => setAttributes( { itemBadgeBorderRadius: val || '' } ) }
+					/>
+				</ToolsPanelItem>
+			) }
+
+			{ showItemPadding && (
+				<ToolsPanelItem
+					hasValue={ () => !! itemBadgeGap }
+					label={ __( 'Space before badge', 'sgs-blocks' ) }
+					onDeselect={ () => setAttributes( { itemBadgeGap: '' } ) }
+				>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Space before badge', 'sgs-blocks' ) }
+						help={ __( 'The gap between a menu word and its badge (e.g. SOON).', 'sgs-blocks' ) }
+						value={ itemBadgeGap || '' }
+						onChange={ ( val ) => setAttributes( { itemBadgeGap: val || '' } ) }
+					/>
 				</ToolsPanelItem>
 			) }
 

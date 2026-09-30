@@ -785,6 +785,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					padding={ attributes.padding }
 					showItemPadding
 					itemPadding={ attributes.itemPadding }
+					itemMinHeight={ attributes.itemMinHeight }
+					itemBadgePadding={ attributes.itemBadgePadding }
+					itemBadgeBorderRadius={ attributes.itemBadgeBorderRadius }
+					itemBadgeGap={ attributes.itemBadgeGap }
 					showSubmenuLinkPadding
 					submenuLinkPadding={ attributes.submenuLinkPadding }
 					setAttributes={ setAttributes }
@@ -829,6 +833,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showTextIndent: false, // never emitted for nav links; attr kept
 								showWritingMode: true,
 								showHover: true,
+							},
+							{
+								key: 'itemBadge',
+								label: __( 'Item badge', 'sgs-blocks' ),
+								prefix: 'itemBadge',
+								showStyle: false,
+								showLineHeight: false,
+								showLetterSpacing: true,
+								showTransform: true,
 							},
 							...( triggerAnyTextBearing ? [ {
 								key: 'burger',

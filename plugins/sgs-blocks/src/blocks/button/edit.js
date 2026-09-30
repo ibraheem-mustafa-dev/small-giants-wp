@@ -232,7 +232,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// kept visible as a fallback the way the Site Info sources are.
 	const hidesUrlField = FIXED_DESTINATION_LINK_SOURCES.includes( linkSource );
 
-	const hasIcon = !! icon;
+	const hasIcon = !! icon || !! attributes.iconSvg;
 
 	// LINK contract popover (Spec 35 §2 / D609 row-opens-popover shape) — ONE
 	// popover (`LinkPopoverContent`, `../../components/LinkPopoverControl.js`),
@@ -624,8 +624,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>
 					<IconPicker
 						label={ __( 'Icon', 'sgs-blocks' ) }
-						value={ icon ? { source: 'lucide', name: icon } : null }
-						onChange={ ( val ) => setAttributes( { icon: val ? val.name : '' } ) }
+						sources={ [ 'lucide', 'custom' ] }
+						value={ attributes.iconSvg ? { source: 'custom', svg: attributes.iconSvg } : ( icon ? { source: 'lucide', name: icon } : null ) }
+						onChange={ ( val ) => {
+							if ( val && 'custom' === val.source ) {
+								setAttributes( { icon: '', iconSvg: val.svg || '' } );
+								return;
+							}
+							setAttributes( { icon: val ? val.name : '', iconSvg: '' } );
+						} }
 					/>
 					{ hasIcon && (
 						<>

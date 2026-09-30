@@ -131,7 +131,8 @@
 						"css:text-decoration": "itemTextDecoration",
 						"css:text-transform": "itemTextTransform",
 						"css:opacity": "itemOpacity",
-						"css:padding": "itemPadding"
+						"css:padding": "itemPadding",
+						"css:min-height": "itemMinHeight"
 					},
 					"states": {
 						"hover": {
@@ -386,12 +387,16 @@
 					"order": 6.5,
 					"clusters": [
 						"text",
-						"fill"
+						"fill",
+						"layout"
 					],
 					"prefix": "itemBadge",
 					"attrMap": {
 						"css:color": "itemBadgeTextColour",
-						"css:background-color": "itemBadgeColour"
+						"css:background-color": "itemBadgeColour",
+						"css:padding": "itemBadgePadding",
+						"css:border-radius": "itemBadgeBorderRadius",
+						"css:margin": "itemBadgeGap"
 					},
 					"_note": "Parity with sgs/nav-bar-menu, 2026-09-28. The optional per-item marker chip (\"SOON\", \"NEW\") rendered after an item's label via the SHARED includes/nav-menu-markup.php::sgs_nav_shared_badge_html() call already present in sgs_nav_drawer_menu_render_items(); this block previously declared no colour attributes for it. Badge COPY is per-item (the operator's classic-menu-item Description field); badge COLOUR is block-level, one Colour-panel row applying to every badge this drawer renders. No hover state — a badge is never itself interactive."
 				},
@@ -1498,6 +1503,50 @@
 			"type": "string",
 			"default": "accent-text",
 			"description": "Parity with sgs/nav-bar-menu (2026-09-28) — text colour of the optional per-item badge chip. See itemBadgeColour."
+		},
+		"itemMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Top-level link height floor per device (CSS length). Empty keeps the 44px touch-target default. Emitted by includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css(), shared with the other nav menu block."
+		},
+		"itemBadgeFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemBadgeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemBadgeFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBadgeLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"itemBadgeLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"itemBadgeTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBadgePadding": {
+			"type": "object",
+			"default": {},
+			"description": "Badge chip padding, a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Empty keeps the stylesheet's em-based default."
+		},
+		"itemBadgeBorderRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Badge chip corner radius (CSS length). Empty keeps the stylesheet default."
+		},
+		"itemBadgeGap": {
+			"type": "string",
+			"default": "",
+			"description": "Space between an item's label and its badge (CSS length). Empty keeps the stylesheet's em-based default."
 		},
 		"disabledItemIds": {
 			"type": "array",

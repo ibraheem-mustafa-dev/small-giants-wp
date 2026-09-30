@@ -49,6 +49,25 @@ if ( ! function_exists( 'sgs_nav_item_padding_css' ) ) {
 		 * attribute set it.
 		 */
 		$link_sel     = $uid_sel . ' .' . $bem_root . '__link';
+
+		/*
+		 * itemMinHeight — the top-level link's height floor per device. Unset
+		 * keeps the stylesheet's 44px touch-target default; a design with a
+		 * slimmer desktop bar sets it here (0,2,0 beats the 0,1,0 default).
+		 */
+		if ( is_array( $attributes['itemMinHeight'] ?? null ) && array() !== $attributes['itemMinHeight'] ) {
+			$css .= sgs_emit_responsive_css(
+				$link_sel,
+				array(
+					array(
+						'value'        => $attributes['itemMinHeight'],
+						'css'          => 'min-height',
+						'unit_default' => 'px',
+					),
+				)
+			);
+		}
+
 		$item_padding = $attributes['itemPadding'] ?? null;
 		if ( is_array( $item_padding ) && array() !== $item_padding ) {
 			$item_padding_start = array();
@@ -116,6 +135,52 @@ if ( ! function_exists( 'sgs_nav_item_padding_css' ) ) {
 			);
 		}
 
+		return $css;
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_item_badge_css' ) ) {
+	/**
+	 * The item badge chip's text and box ("SOON", "NEW"): size, weight, letter
+	 * spacing, capitals (the shared typography helper, prefix `itemBadge`),
+	 * padding per device, corner radius and the gap after the label. Shared by
+	 * sgs/nav-bar-menu and sgs/nav-drawer-menu; each unset value keeps its
+	 * block's stylesheet default (a :where() rule), which this scoped rule beats.
+	 *
+	 * @param string $badge_sel  The instance-scoped badge selector.
+	 * @param array  $attributes Block attributes.
+	 * @return string CSS text, or '' when nothing is set.
+	 */
+	function sgs_nav_item_badge_css( string $badge_sel, array $attributes ): string {
+		$css = sgs_typography_css_rule( $attributes, 'itemBadge', $badge_sel );
+
+		$padding = $attributes['itemBadgePadding'] ?? null;
+		if ( is_array( $padding ) && array() !== $padding ) {
+			$css .= sgs_emit_responsive_css(
+				$badge_sel,
+				array(
+					array(
+						'value'        => $padding,
+						'css'          => 'padding',
+						'box'          => true,
+						'unit_default' => 'px',
+					),
+				)
+			);
+		}
+
+		$decls  = '';
+		$radius = sgs_css_length_value( (string) ( $attributes['itemBadgeBorderRadius'] ?? '' ) );
+		if ( '' !== $radius ) {
+			$decls .= 'border-radius:' . $radius . ';';
+		}
+		$gap = sgs_css_length_value( (string) ( $attributes['itemBadgeGap'] ?? '' ) );
+		if ( '' !== $gap ) {
+			$decls .= 'margin-inline-start:' . $gap . ';';
+		}
+		if ( '' !== $decls ) {
+			$css .= $badge_sel . '{' . $decls . '}';
+		}
 		return $css;
 	}
 }
