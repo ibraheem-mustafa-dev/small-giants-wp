@@ -479,6 +479,22 @@
     },
     {
       "slug": "sgs/brand-strip",
+      "attr": "logoMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "logo"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "logoOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
       "attr": "maxHeight",
       "fields": {
         "css_property": "min-height",
@@ -1678,6 +1694,14 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "titleMarginBottom",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "titleTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -1842,10 +1866,42 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "pillFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "pillTextColour",
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "pill"
       }
     },
@@ -14882,6 +14938,23 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "iconGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "iconSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "labelColourGradient",
       "fields": {
         "css_property": "background-image",
@@ -14895,6 +14968,15 @@
         "css_property": "background-image",
         "css_element": "label",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "linkMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -15362,6 +15444,22 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "imageHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "image-wrap"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "imagePadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "image-wrap"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "overlayColour",
       "fields": {
         "css_property": "background-color",
@@ -15448,6 +15546,144 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "checkoutBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "checkout"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "checkoutBgHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "checkout",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "checkoutColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "checkout"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "checkoutColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "checkout",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "checkoutMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "checkout"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "checkoutRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "checkout"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyCtaBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "emptyCta"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyCtaColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "emptyCta"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyCtaPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "emptyCta"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyCtaRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "emptyCta"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyMessageColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "emptyMessage"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyMessageGap",
+      "fields": {
+        "css_property": "margin-bottom",
+        "css_element": "emptyMessage"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "freeDeliveryBarMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "freeDeliveryBar"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "freeDeliveryTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "freeDeliveryText"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "freeDeliveryTrackHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "freeDeliveryBar"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "freeDeliveryTrackRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "freeDeliveryBar"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "iconColourGradient",
       "fields": {
         "css_property": "stroke",
@@ -15467,6 +15703,103 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "itemActionBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "itemAction"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemActionColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemAction"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemBrandColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemBrand"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemDetailColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemDetail"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemDividerColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemRemoveBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "itemRemove"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemRemoveColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemRemove"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemThumbBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "itemThumb"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemThumbRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "itemThumb"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemThumbSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "itemThumb"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -15480,6 +15813,134 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelBodyGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "panelBody"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelBodyPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "panelBody"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelCloseColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "panelClose"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelCloseSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "panelClose"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelCountColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "panelCount"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelEmptyColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "panelEmpty"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelEmptyPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "panelEmpty"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelFooterBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "panelFooter"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelFooterBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "panelFooter"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelFooterPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "panelFooter"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelHeadBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "panelHead"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelHeadPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "panelHead"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "panelFrame"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelNoteColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "panelNote"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "panelFrame"
       }
     },
     {
@@ -15509,10 +15970,56 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "pillBgColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "pill",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillBgColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "pill",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "pillTextColourGradient",
       "fields": {
         "css_property": "color-gradient",
         "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillTextColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "pill",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillTextColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "pill",
+        "css_state": "hover"
       }
     },
     {
@@ -15546,6 +16053,15 @@
       "fields": {
         "css_property": "opacity",
         "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "subtotalLabelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "subtotal"
       }
     },
     {
@@ -17538,6 +18054,15 @@
     },
     {
       "slug": "sgs/heading",
+      "attr": "shrunkFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper",
+        "css_state": "shrunk"
+      }
+    },
+    {
+      "slug": "sgs/heading",
       "attr": "textColourGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -18931,6 +19456,14 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerBarThickness",
+      "fields": {
+        "css_property": "height",
+        "css_element": "burger-bar"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "burgerBg",
       "fields": {
         "css_property": "background-color",
@@ -19082,6 +19615,15 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerTextGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "burgerTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -19188,10 +19730,34 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "itemBadgeBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "itemBadgeColour",
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBadgeGap",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBadgePadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "badge"
       }
     },
@@ -19414,6 +19980,14 @@
       "attr": "itemLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemMinHeight",
+      "fields": {
+        "css_property": "min-height",
         "css_element": "item"
       }
     },
@@ -20495,10 +21069,34 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "itemBadgeBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBadgeColour",
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemBadgeGap",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemBadgePadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "badge"
       }
     },
@@ -20771,6 +21369,14 @@
       "fields": {
         "css_property": "width",
         "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "item"
       }
     },
     {
