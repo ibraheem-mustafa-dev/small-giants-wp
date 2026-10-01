@@ -77,7 +77,8 @@ export function contentBandPreview( { contentWidth, bandPadding = {}, style, lay
 	const gridOnInner = ( layout === 'grid' || layout === 'flex' || layout === 'stack' ) && hasBandProps;
 	if ( gridOnInner ) {
 		for ( const key of [ 'display', 'gridTemplateColumns', 'gridAutoRows', 'gap', 'alignItems',
-			'justifyItems', 'alignContent', 'flexWrap', 'flexDirection', 'justifyContent' ] ) {
+			'justifyItems', 'alignContent', 'flexWrap', 'flexDirection', 'justifyContent',
+			'rowRule', 'columnRule', 'ruleVisibilityItems' ] ) {
 			if ( style[ key ] !== undefined ) {
 				bandStyle[ key ] = style[ key ];
 				delete style[ key ];

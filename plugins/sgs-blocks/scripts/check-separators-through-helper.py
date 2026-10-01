@@ -44,7 +44,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 PLUGIN = Path(__file__).resolve().parents[1]
 BASELINE = Path(__file__).resolve().with_name("check-separators-through-helper-baseline.json")
-HELPER_FILES = re.compile(r"(?:^|/)(?:helpers-separators[^/]*\.php|separators(?:/[^/]+)?\.js|SgsSeparatorControl\.js|SeparatorAxisRow\.js)$")
+HELPER_FILES = re.compile(r"(?:^|/)(?:helpers-separators[^/]*\.php|separators(?:/[^/]+)?\.(?:js|css)|SgsSeparatorControl\.js|SeparatorAxisRow\.js)$")
 SKIP_DIRS = ("node_modules", "build", "vendor", "tests", "scripts", "stackable", "pipeline-state", "reports", "components")
 
 _SIDE = r"(?:top|left|inline-start|block-start)"

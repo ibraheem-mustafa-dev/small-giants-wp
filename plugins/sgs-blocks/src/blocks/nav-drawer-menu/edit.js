@@ -687,7 +687,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				   bar's between-item separator): the shared Separators setting. */ }
 				<SeparatorsPanel
 					title={ __( 'Row separators', 'sgs-blocks' ) }
-					label={ __( 'Between rows', 'sgs-blocks' ) }
 					value={ attributes.separators }
 					onChange={ ( next ) => setAttributes( { separators: next } ) }
 					axes={ [ 'row' ] }
@@ -715,7 +714,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<SeparatorsPanel
 					title={ __( 'Submenu row separators', 'sgs-blocks' ) }
-					label={ __( 'Between submenu rows', 'sgs-blocks' ) }
 					value={ attributes.submenuSeparators }
 					onChange={ ( next ) => setAttributes( { submenuSeparators: next } ) }
 					axes={ [ 'row' ] }

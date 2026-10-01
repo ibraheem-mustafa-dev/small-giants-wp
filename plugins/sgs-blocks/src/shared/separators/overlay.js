@@ -52,15 +52,16 @@ function axisDraws( overlay, axis ) {
  *
  * @param {HTMLElement} list    The list.
  * @param {HTMLElement} overlay The overlay (skipped).
+ * @param {Function}    isItem  Whether a child counts as an item.
  * @return {Array<{left:number,top:number,right:number,bottom:number}>} Boxes.
  */
-function itemBoxes( list, overlay ) {
+function itemBoxes( list, overlay, isItem ) {
 	const origin = list.getBoundingClientRect();
 	const x0 = origin.left + list.clientLeft - list.scrollLeft;
 	const y0 = origin.top + list.clientTop - list.scrollTop;
 	const boxes = [];
 	for ( const el of list.children ) {
-		if ( el === overlay ) {
+		if ( el === overlay || ! isItem( el ) ) {
 			continue;
 		}
 		const cs = getComputedStyle( el );
@@ -98,10 +99,11 @@ function buildLine( axis, seg ) {
  *
  * @param {HTMLElement} list    The list element.
  * @param {HTMLElement} overlay The list's overlay.
+ * @param {Function}    isItem  Whether a child counts as an item.
  */
-function paint( list, overlay ) {
+function paint( list, overlay, isItem ) {
 	const axes = { column: axisDraws( overlay, 'column' ), row: axisDraws( overlay, 'row' ) };
-	const segments = separatorSegments( axes.column || axes.row ? itemBoxes( list, overlay ) : [], axes );
+	const segments = separatorSegments( axes.column || axes.row ? itemBoxes( list, overlay, isItem ) : [], axes );
 	const lines = [];
 	for ( const axis of [ 'column', 'row' ] ) {
 		segments[ axis ].forEach( ( seg ) => lines.push( buildLine( axis, seg ) ) );
@@ -112,13 +114,21 @@ function paint( list, overlay ) {
 /**
  * Start drawing a list's lines, where the browser does not do it natively.
  *
- * @param {HTMLElement} list The list element (the grid / flex element).
+ * @param {HTMLElement} list    The list element (the grid / flex element).
+ * @param {Object}      [options]
+ * @param {Function}    [options.isItem] Whether a child counts as an item (the editor
+ *                                       excludes its inserter and drop markers).
  * @return {Function} Stops drawing and removes the overlay.
  */
-export function initSeparatorList( list ) {
-	if ( supportsGapDecorations() ) {
+export function initSeparatorList( list, options = {} ) {
+	const isItem = options.isItem || ( () => true );
+	// Each adopting block bundles its own copy of this module, so "already started"
+	// lives on the element, not in module memory: a list is painted once however
+	// many bundles ask.
+	if ( supportsGapDecorations() || list.hasAttribute( 'data-sgs-sep-active' ) ) {
 		return () => {};
 	}
+	list.setAttribute( 'data-sgs-sep-active', '' );
 	if ( 'static' === getComputedStyle( list ).position ) {
 		list.classList.add( 'sgs-sep-anchored' );
 	}
@@ -135,14 +145,14 @@ export function initSeparatorList( list ) {
 	let frame = 0;
 	const schedule = () => {
 		cancelAnimationFrame( frame );
-		frame = requestAnimationFrame( () => paint( list, overlay ) );
+		frame = requestAnimationFrame( () => paint( list, overlay, isItem ) );
 	};
 	const resize = new ResizeObserver( schedule );
 	const watchItems = () => {
 		resize.disconnect();
 		resize.observe( list );
 		for ( const el of list.children ) {
-			if ( el !== overlay ) {
+			if ( el !== overlay && isItem( el ) ) {
 				resize.observe( el );
 			}
 		}
@@ -167,5 +177,6 @@ export function initSeparatorList( list ) {
 		mutations.disconnect();
 		window.removeEventListener( 'load', schedule );
 		overlay.remove();
+		list.removeAttribute( 'data-sgs-sep-active' );
 	};
 }

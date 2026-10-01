@@ -11,6 +11,9 @@ import {
   TextControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
+import { useRef } from "@wordpress/element";
+import { useMergeRefs } from "@wordpress/compose";
+import { useSeparatorOverlay } from "../../shared/separators/useSeparatorOverlay";
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl, SgsSeparatorControl } from "../../components";
 import ScrollSidewaysPanel from "./components/ScrollSidewaysPanel";
 import { resolveOnTiers } from "../../utils/responsive";
@@ -447,6 +450,9 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
       : '';
 
   const blockProps = useBlockProps({ className: editorClassName, style });
+  // The list the separators' lines run along: the band when one renders, else the root.
+  const gridRef = useRef( null );
+  const rootRef = useMergeRefs( [ blockProps.ref, gridRef ] );
   // The children belong to the BAND when one renders, and to the root when one does not.
   // useInnerBlocksProps is called exactly once either way — branching the ARGUMENT, never
   // the hook, so this cannot trip the rules of hooks.
@@ -457,12 +463,21 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
             ? "sgs-container__inner sgs-container--scroll-row"
             : "sgs-container__inner",
           style: bandStyle,
+          ref: gridRef,
         }
-      : blockProps,
+      : { ...blockProps, ref: rootRef },
     {
       orientation: layout === "stack" ? "vertical" : undefined,
       templateLock: attributes.templateLock || undefined,
     }
+  );
+
+  // Lines between the items, in an editor without CSS gap decorations (a no-op in Chrome / Edge).
+  useSeparatorOverlay(
+    gridRef,
+    ( layout === "grid" || layout === "flex" || layout === "stack" ) && Object.keys( separatorsFlowPreview( attributes.separators, previewTier ) ).length
+      ? JSON.stringify( [ attributes.separators, previewTier, layout, attributes.columns, gap, hasBandProps ] )
+      : ""
   );
 
   // Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches the

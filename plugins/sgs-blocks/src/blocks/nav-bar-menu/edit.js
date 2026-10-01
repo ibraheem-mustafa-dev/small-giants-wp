@@ -792,7 +792,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   list has no "next item to the right"). The shared Separators setting. */ }
 				<SeparatorsPanel
 					title={ __( 'Item separators', 'sgs-blocks' ) }
-					label={ __( 'Between items', 'sgs-blocks' ) }
 					value={ attributes.separators }
 					onChange={ ( next ) => setAttributes( { separators: next } ) }
 					axes={ [ 'column' ] }
@@ -819,7 +818,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<SeparatorsPanel
 					title={ __( 'Submenu row separators', 'sgs-blocks' ) }
-					label={ __( 'Between submenu rows', 'sgs-blocks' ) }
 					value={ attributes.submenuSeparators }
 					onChange={ ( next ) => setAttributes( { submenuSeparators: next } ) }
 					axes={ [ 'row' ] }

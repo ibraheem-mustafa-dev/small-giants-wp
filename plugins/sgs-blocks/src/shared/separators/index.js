@@ -11,8 +11,6 @@
 
 import { initSeparatorList, supportsGapDecorations } from './overlay';
 
-const started = new WeakSet();
-
 /**
  * Start the overlay on every separators list inside a scope.
  *
@@ -26,10 +24,7 @@ export function initSeparators( scope = document ) {
 		const selector = root.getAttribute( 'data-sgs-sep-list' ) || 'self';
 		const lists = 'self' === selector ? [ root ] : root.querySelectorAll( `:scope ${ selector }` );
 		lists.forEach( ( list ) => {
-			if ( ! started.has( list ) ) {
-				started.add( list );
-				initSeparatorList( list );
-			}
+			initSeparatorList( list );
 		} );
 	} );
 }

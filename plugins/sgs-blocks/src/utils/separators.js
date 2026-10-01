@@ -87,8 +87,8 @@ export function separatorWidthAt( axis, device = 'desktop' ) {
 }
 
 /**
- * Canvas style for a `flow` list: native gap decorations for the active axes.
- * Spread into the list element's style in the editor.
+ * Canvas style for a `flow` list: native gap decorations for the active axes, plus the
+ * custom properties the editor overlay reads. Spread into the list element's style.
  *
  * @param {Object} value  The stored setting.
  * @param {string} device The previewed device tier.
@@ -101,7 +101,13 @@ export function separatorsFlowPreview( value, device = 'desktop' ) {
 		const width = separatorWidthAt( data, device );
 		if ( width ) {
 			const line = data.style && 'none' !== data.style ? data.style : 'solid';
-			style[ `${ axis }Rule` ] = `${ width } ${ line } ${ colourVar( data.colour ) || 'currentColor' }`;
+			const colour = colourVar( data.colour ) || 'currentColor';
+			style[ `${ axis }Rule` ] = `${ width } ${ line } ${ colour }`;
+			// The same values as custom properties: the editor's overlay (for browsers
+			// without gap decorations) reads them, exactly as the page's overlay does.
+			style[ `--sgs-sep-w-${ axis }` ] = width;
+			style[ `--sgs-sep-s-${ axis }` ] = line;
+			style[ `--sgs-sep-c-${ axis }` ] = colour;
 		}
 	} );
 	if ( Object.keys( style ).length ) {

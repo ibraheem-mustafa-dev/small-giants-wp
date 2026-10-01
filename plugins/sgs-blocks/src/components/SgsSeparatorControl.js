@@ -38,7 +38,7 @@ const EDGE_OPTIONS = [
 
 /**
  * @param {Object}   props
- * @param {string}   [props.label]   Heading above the control.
+ * @param {string}   [props.label]   Heading above the control. Omit it when the panel title already says it.
  * @param {Object}   props.value     The stored `separators` object.
  * @param {Function} props.onChange  Receives the whole next object.
  * @param {string[]} [props.axes]    The axes this list offers. Default both.
@@ -48,7 +48,7 @@ const EDGE_OPTIONS = [
  * @return {JSX.Element} The control.
  */
 export default function SgsSeparatorControl( {
-	label = __( 'Separators', 'sgs-blocks' ),
+	label,
 	value,
 	onChange,
 	axes = SEPARATOR_AXES,
@@ -81,9 +81,7 @@ export default function SgsSeparatorControl( {
 	return (
 		<div className="sgs-separator-control">
 			<Flex align="center" justify="space-between">
-				<FlexItem>
-					<strong>{ label }</strong>
-				</FlexItem>
+				<FlexItem>{ label && <strong>{ label }</strong> }</FlexItem>
 				{ both && (
 					<FlexItem>
 						<Button

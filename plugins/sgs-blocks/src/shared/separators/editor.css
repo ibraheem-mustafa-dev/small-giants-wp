@@ -1,0 +1,34 @@
+/**
+ * Separators — the editor canvas's overlay styles, for an editor without CSS gap
+ * decorations. The overlay (overlay.js) paints from custom properties the canvas sets
+ * on the list (src/utils/separators.js::separatorsFlowPreview).
+ */
+@supports not (row-rule-style: solid) {
+	.sgs-sep-anchored {
+		position: relative;
+	}
+
+	.sgs-sep-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 0;
+		height: 0;
+		pointer-events: none;
+	}
+
+	.sgs-sep-overlay > .sgs-sep-line {
+		position: absolute;
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+
+	.sgs-sep-overlay > .sgs-sep-line--column {
+		border-left: var(--sgs-sep-w-column) var(--sgs-sep-s-column) var(--sgs-sep-c-column);
+	}
+
+	.sgs-sep-overlay > .sgs-sep-line--row {
+		border-top: var(--sgs-sep-w-row) var(--sgs-sep-s-row) var(--sgs-sep-c-row);
+	}
+}
