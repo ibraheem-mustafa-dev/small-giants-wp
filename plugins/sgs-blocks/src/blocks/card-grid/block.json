@@ -152,11 +152,14 @@
           "label": "Image wrapper",
           "order": 4,
           "clusters": [
-            "fill"
+            "fill",
+            "layout"
           ],
           "prefix": "imageFallback",
           "attrMap": {
-            "css:background-color": "imageFallbackColour"
+            "css:background-color": "imageFallbackColour",
+            "css:height": "imageHeight",
+            "css:padding": "imagePadding"
           },
           "_note": "Split from 'card-media' 2026-08-15 — the wrapping `<div class=\"sgs-card-grid__image-wrap\">` (render.php:695) that sets aspect-ratio via the `--sgs-card-grid-aspect` custom property (aspectRatio attr; markup-fallback derivation already resolves it to css_element='image-wrap'). Mirrors sgs/gallery's own 'img-wrap' element (same split, same reasoning). `prefix: \"\"` opted this element out of orphan-candidate scanning while it had no style attrs to claim; `imageFallbackColour` (2026-09-24, Eye Care 'Shop by shape' gap) changed that, and the blanket opt-out ALSO hid the attrMap from check-element-manifest-conformance.js's cluster-resolution pass (an element's attrMap is only consulted for clusters it has actually declared) — with `clusters: []` the entry was inert, so `imageFallbackColour` was reported as an unrelated ORPHAN under the 'image' element instead, purely because its name happens to start with \"image\" (the same literal-prefix collision that element's own `imageZoomHover` deliberately tolerates as a BY-DESIGN orphan). Fixed by narrowing this element's `prefix` to `\"imageFallback\"` (still opts it out of the OTHER `image*`-named attrs it doesn't own, e.g. it never claims `imageZoomHover`) and declaring `clusters: [\"fill\"]` so the `css:background-color` attrMap member actually resolves and claims `imageFallbackColour` — once claimed here, the 'image' element's separate prefix scan sees it as already-claimed and stops reporting it. `imageFallback` (the boolean toggle) has no css: mapping and stays an honest BY-DESIGN orphan here, the same shape as `imageZoomHover` on 'image'."
         },
@@ -164,12 +167,14 @@
           "label": "Card title",
           "order": 2,
           "clusters": [
-            "text"
+            "text",
+            "layout"
           ],
           "prefix": "title",
           "attrMap": {
             "tag": "headingLevel",
-            "css:background-image": "titleColourGradient"
+            "css:background-image": "titleColourGradient",
+            "css:margin": "titleMarginBottom"
           },
           "states": {
             "hover": {
@@ -384,7 +389,9 @@
             "enum": [
               "cover",
               "contain",
-              "fill"
+              "fill",
+              "none",
+              "scale-down"
             ],
             "default": "cover"
           },
@@ -416,6 +423,16 @@
     "aspectRatio": {
       "type": "string",
       "default": "16 / 9"
+    },
+    "imagePadding": {
+      "type": "object",
+      "default": {},
+      "description": "Space inside each card's image area, around the image, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). Empty keeps none."
+    },
+    "imageHeight": {
+      "type": "object",
+      "default": {},
+      "description": "A fixed height for each card's image area, per device (CSS length). Set, it replaces the aspect ratio: every image area is this tall and the image sits in it by its object fit (scale-down keeps a small logo at its own size). Empty keeps the aspect ratio."
     },
     "effectHover": {
       "type": "string",
@@ -825,6 +842,11 @@
     "titleFontWeight": {
       "type": "string",
       "default": ""
+    },
+    "titleMarginBottom": {
+      "type": "string",
+      "default": "",
+      "description": "Space below the card title, before the subtitle (CSS length, e.g. 6px). Empty keeps the theme's spacing--10."
     },
     "titleFontFamily": {
       "type": "string",

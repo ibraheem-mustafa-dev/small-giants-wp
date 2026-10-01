@@ -121,11 +121,13 @@ export default function BurgerPanel( {
 				burgerBorderStyle: stored.burgerBorderStyle,
 				burgerBorderColour: stored.burgerBorderColour,
 				burgerBarGap: stored.burgerBarGap,
+				burgerBarThickness: stored.burgerBarThickness,
+				burgerTextGap: stored.burgerTextGap,
 			};
 		},
 		[ clientId ]
 	);
-	const { burgerPadding, burgerBorderRadius, burgerBorderWidth, burgerBorderStyle, burgerBorderColour, burgerBarGap } = burgerBox;
+	const { burgerPadding, burgerBorderRadius, burgerBorderWidth, burgerBorderStyle, burgerBorderColour, burgerBarGap, burgerBarThickness, burgerTextGap } = burgerBox;
 
 	// `triggerMode` is a TIER OBJECT. The icon picker, the
 	// Label field and the morph controls apply to EVERY tier at once (one
@@ -312,6 +314,47 @@ export default function BurgerPanel( {
 					/>
 				) }
 			</ResponsiveOverride>
+
+			{ showsIcon && (
+				<ResponsiveOverride
+					label={ __( 'Bar thickness', 'sgs-blocks' ) }
+					value={ burgerBarThickness }
+					onChange={ ( obj ) => setAttributes( { burgerBarThickness: obj } ) }
+				>
+					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						<SgsLengthControl
+							hideLabelFromVision
+							label={ __( 'Bar thickness', 'sgs-blocks' ) }
+							value={ ownValue || '' }
+							placeholder={ inherited ? effectiveValue || '2px' : '2px' }
+							units={ [ { value: 'px', label: 'px' } ] }
+							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							help={ __( 'How thick each bar of the menu icon is.', 'sgs-blocks' ) }
+							presets={ false }
+						/>
+					) }
+				</ResponsiveOverride>
+			) }
+
+			{ showsBoth && (
+				<ResponsiveOverride
+					label={ __( 'Space between icon and label', 'sgs-blocks' ) }
+					value={ burgerTextGap }
+					onChange={ ( obj ) => setAttributes( { burgerTextGap: obj } ) }
+				>
+					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						<SgsLengthControl
+							hideLabelFromVision
+							label={ __( 'Space between icon and label', 'sgs-blocks' ) }
+							value={ ownValue || '' }
+							placeholder={ inherited ? effectiveValue || '0px' : '0px' }
+							units={ [ { value: 'px', label: 'px' } ] }
+							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							presets={ false }
+						/>
+					) }
+				</ResponsiveOverride>
+			) }
 
 			{ /* Space between the default glyph's bars, per device. Writes the
 			   bar-stack height (bars x 2px + gaps) — see nav-menu-trigger-css.php. */ }

@@ -29,6 +29,7 @@ import {
 	Button,
 	Notice,
 	PanelBody,
+	RangeControl,
 	SelectControl,
 	ToggleControl,
 } from '@wordpress/components';
@@ -38,6 +39,10 @@ import { store as blocksStore } from '@wordpress/blocks';
 import ResponsiveTriStateControl from './ResponsiveTriStateControl';
 import { resolveTier, resolveOnTiers } from '../utils/responsive';
 import { ToolsPanel, ToolsPanelItem } from './primitives';
+import ResponsiveOverride from './ResponsiveOverride';
+import SgsBoxControl from './SgsBoxControl';
+import { BOX_UNITS, normaliseResponsiveBox } from './ResponsiveBoxControl';
+import MotionEasingControl from './MotionEasingControl';
 
 /**
  * Derive a stable, DOM-safe anchor id for a child that has none yet.
@@ -70,6 +75,10 @@ export default function RowScrollBehaviourControls( {
 		rowHideOnScroll,
 		rowShrink,
 		rowShrinkHideTarget,
+		rowShrinkPadding,
+		rowShrinkDuration,
+		rowShrinkEasing,
+		rowShrinkEasingCustom,
 		padding,
 	} = attributes;
 
@@ -222,6 +231,10 @@ export default function RowScrollBehaviourControls( {
 						rowHideOnScroll: {},
 						rowShrink: {},
 						rowShrinkHideTarget: '',
+						rowShrinkPadding: {},
+						rowShrinkDuration: 0,
+						rowShrinkEasing: '',
+						rowShrinkEasingCustom: '',
 					} )
 				}
 			>
@@ -287,6 +300,10 @@ export default function RowScrollBehaviourControls( {
 						setAttributes( {
 							rowShrink: {},
 							rowShrinkHideTarget: '',
+							rowShrinkPadding: {},
+							rowShrinkDuration: 0,
+							rowShrinkEasing: '',
+							rowShrinkEasingCustom: '',
 						} )
 					}
 					isShownByDefault
@@ -321,6 +338,47 @@ export default function RowScrollBehaviourControls( {
 								__nextHasNoMarginBottom
 							/>
 						) }
+
+					{ shrinkIsOn && (
+						<>
+							<ResponsiveOverride
+								value={ rowShrinkPadding }
+								onChange={ ( obj ) => setAttributes( { rowShrinkPadding: obj } ) }
+							>
+								{ ( { ownValue, setOwnValue } ) => (
+									<SgsBoxControl
+										label={ __( 'Padding when shrunk', 'sgs-blocks' ) }
+										values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+										units={ BOX_UNITS }
+										presets
+										onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+									/>
+								) }
+							</ResponsiveOverride>
+							<p className="components-base-control__help">
+								{ __( 'Empty halves the space above and below. Set it to choose the shrunk padding yourself, sides included.', 'sgs-blocks' ) }
+							</p>
+							<RangeControl
+								label={ __( 'Shrink speed (ms)', 'sgs-blocks' ) }
+								help={ __( 'How long the row takes to shrink and grow back. The logo and any heading set to shrink move at the same speed. 0 keeps 200ms.', 'sgs-blocks' ) }
+								value={ rowShrinkDuration ?? 0 }
+								onChange={ ( val ) => setAttributes( { rowShrinkDuration: val ?? 0 } ) }
+								min={ 0 }
+								max={ 3000 }
+								step={ 50 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<MotionEasingControl
+								label={ __( 'Shrink motion curve', 'sgs-blocks' ) }
+								value={ rowShrinkEasing }
+								custom={ rowShrinkEasingCustom }
+								fallback="ease"
+								onChange={ ( val ) => setAttributes( { rowShrinkEasing: val } ) }
+								onCustomChange={ ( val ) => setAttributes( { rowShrinkEasingCustom: val } ) }
+							/>
+						</>
+					) }
 
 					{ shrinkIsOn && ! hasVerticalPadding && (
 						<Notice status="warning" isDismissible={ false }>

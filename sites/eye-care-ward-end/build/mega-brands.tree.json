@@ -107,7 +107,7 @@
                       "cardRadius": "0",
                       "cardPadding": {
                         "desktop": {
-                          "top": "20px",
+                          "top": "6px",
                           "right": "14px",
                           "bottom": "20px",
                           "left": "14px"
@@ -138,59 +138,136 @@
                       "subtitleColour": "text-label",
                       "items": [
                         {
-                          "title": "Ray-Ban",
+                          "title": "",
                           "subtitle": "48 frames",
-                          "link": "/shop/?brands=ray-ban"
+                          "link": "/shop/?brands=ray-ban",
+                          "media": {
+                            "id": 571,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-ray-ban.jpg",
+                            "alt": "Ray-Ban",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
-                          "title": "Gucci",
+                          "title": "",
                           "subtitle": "44 frames",
-                          "link": "/shop/?brands=gucci"
+                          "link": "/shop/?brands=gucci",
+                          "media": {
+                            "id": 572,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-gucci.jpg",
+                            "alt": "Gucci",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
-                          "title": "Oakley",
+                          "title": "",
                           "subtitle": "17 frames",
-                          "link": "/shop/?brands=oakley"
+                          "link": "/shop/?brands=oakley",
+                          "media": {
+                            "id": 573,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-oakley.jpg",
+                            "alt": "Oakley",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
-                          "title": "Prada",
+                          "title": "",
                           "subtitle": "12 frames",
-                          "link": "/shop/?brands=prada"
+                          "link": "/shop/?brands=prada",
+                          "media": {
+                            "id": 574,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-prada.jpg",
+                            "alt": "Prada",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
-                          "title": "Versace",
+                          "title": "",
                           "subtitle": "11 frames",
-                          "link": "/shop/?brands=versace"
+                          "link": "/shop/?brands=versace",
+                          "media": {
+                            "id": 575,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-versace.jpg",
+                            "alt": "Versace",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
-                          "title": "Dolce & Gabbana",
+                          "title": "",
                           "subtitle": "9 frames",
-                          "link": "/shop/?brands=dolce-gabbana"
+                          "link": "/shop/?brands=dolce-gabbana",
+                          "media": {
+                            "id": 576,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-dolce-gabbana.jpg",
+                            "alt": "Dolce & Gabbana",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
-                          "title": "Balenciaga",
+                          "title": "",
                           "subtitle": "7 frames",
-                          "link": "/shop/?brands=balenciaga"
+                          "link": "/shop/?brands=balenciaga",
+                          "media": {
+                            "id": 577,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-balenciaga.jpg",
+                            "alt": "Balenciaga",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
-                          "title": "Michael Kors",
+                          "title": "",
                           "subtitle": "18 frames",
-                          "link": "/shop/?brands=michael-kors"
+                          "link": "/shop/?brands=michael-kors",
+                          "media": {
+                            "id": 578,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-michael-kors.jpg",
+                            "alt": "Michael Kors",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
-                          "title": "Polaroid",
+                          "title": "",
                           "subtitle": "12 frames",
-                          "link": "/shop/?brands=polaroid"
+                          "link": "/shop/?brands=polaroid",
+                          "media": {
+                            "id": 579,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-polaroid.jpg",
+                            "alt": "Polaroid",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
-                          "title": "Police",
+                          "title": "",
                           "subtitle": "10 frames",
-                          "link": "/shop/?brands=police"
+                          "link": "/shop/?brands=police",
+                          "media": {
+                            "id": 580,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-police.jpg",
+                            "alt": "Police",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
-                          "title": "Carrera",
+                          "title": "",
                           "subtitle": "9 frames",
-                          "link": "/shop/?brands=carrera"
+                          "link": "/shop/?brands=carrera",
+                          "media": {
+                            "id": 581,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-carrera.jpg",
+                            "alt": "Carrera",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         },
                         {
                           "title": "Ferrari Scuderia",
@@ -204,7 +281,19 @@
                         "desktop": "repeat(5,minmax(0,1fr))",
                         "tablet": "repeat(3,minmax(0,1fr))",
                         "mobile": "repeat(2,minmax(0,1fr))"
-                      }
+                      },
+                      "imageHeight": {
+                        "desktop": "52px"
+                      },
+                      "imagePadding": {
+                        "desktop": {
+                          "top": "20px",
+                          "right": "14px",
+                          "bottom": "0px",
+                          "left": "14px"
+                        }
+                      },
+                      "titleMarginBottom": "6px"
                     },
                     "innerBlocks": []
                   }

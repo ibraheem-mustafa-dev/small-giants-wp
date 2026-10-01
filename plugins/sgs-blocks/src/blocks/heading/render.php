@@ -553,6 +553,19 @@ if ( ! $inherit_style ) {
 	}
 }
 
+// Shrunk-header size (shrunkFontSize): while the header row holding this
+// heading is shrunk on scroll, e.g. a wordmark shrinking with its logo. Timed by
+// the row's own shrink speed and curve (--sgs-row-shrink-*).
+$sgs_hdg_shrunk_size = sgs_css_length_value( (string) ( $attributes['shrunkFontSize'] ?? '' ) );
+if ( '' !== $sgs_hdg_shrunk_size ) {
+	$scoped_css[] = ".is-header-shrunk {$root_sel},.is-row-shrunk {$root_sel}{font-size:{$sgs_hdg_shrunk_size};}";
+	// A hover effect already transitions `all` (above), font size included.
+	if ( ! ( $hover_rules || $has_scale ) ) {
+		$scoped_css[] = "{$root_sel}{transition:font-size var(--sgs-row-shrink-duration, 300ms) var(--sgs-row-shrink-easing, ease);}";
+		$scoped_css[] = "@media (prefers-reduced-motion: reduce){{$root_sel}{transition:none;}}";
+	}
+}
+
 // ---------------------------------------------------------------------------
 // 6. Build the root element's classes + attributes.
 //

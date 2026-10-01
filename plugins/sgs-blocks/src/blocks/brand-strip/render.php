@@ -235,6 +235,11 @@ if ( 'text' === $brand_display ) {
 	// Text-only strip sizes by its text, not the logo tile (style.css).
 	$classes[] = 'sgs-brand-strip--text';
 }
+// Row layout: every brand in a text-style slot, logos capped rather than tiled.
+$logo_layout_row = 'row' === ( $attributes['logoLayout'] ?? 'tiles' );
+if ( $logo_layout_row ) {
+	$classes[] = 'sgs-brand-strip--layout-row';
+}
 if ( 'none' !== $safe_image_effect ) {
 	$classes[] = 'sgs-brand-strip--effect-' . esc_attr( $safe_image_effect );
 }
@@ -287,6 +292,16 @@ $css_vars = array_merge(
 );
 if ( $fade_edges ) {
 	$css_vars[] = '--sgs-fade-width:' . absint( $fade_width ) . 'px';
+}
+if ( $logo_layout_row ) {
+	$logo_max_width = absint( $attributes['logoMaxWidth'] ?? 0 );
+	if ( $logo_max_width > 0 ) {
+		$css_vars[] = '--sgs-logo-max-width:' . $logo_max_width . 'px';
+	}
+	$logo_opacity = isset( $attributes['logoOpacity'] ) && is_numeric( $attributes['logoOpacity'] ) ? max( 0, min( 100, (float) $attributes['logoOpacity'] ) ) : 100;
+	if ( $logo_opacity < 100 ) {
+		$css_vars[] = '--sgs-logo-opacity:' . rtrim( rtrim( number_format( $logo_opacity / 100, 3, '.', '' ), '0' ), '.' );
+	}
 }
 if ( $hover_bg_colour ) {
 	$css_vars[] = '--sgs-tile-hover-bg:' . sgs_colour_value( $hover_bg_colour );
@@ -551,7 +566,8 @@ if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
 // text) — emitted only when the element can render (mirrors the caption
 // block's own "never emit CSS for an element that never renders" rule).
 // Helper lives in brand-display-render.php (see its own header for why). ---
-if ( 'logos' !== $brand_display ) {
+// The row layout also reads the slot's width floor and divider from here.
+if ( 'logos' !== $brand_display || $logo_layout_row ) {
 	$scoped_css = array_merge( $scoped_css, sgs_brand_strip_text_style_css( $attributes, $root_sel ) );
 }
 

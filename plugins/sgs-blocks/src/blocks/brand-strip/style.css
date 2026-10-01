@@ -279,6 +279,53 @@
 	color: currentColor;
 }
 
+/* ===== Row layout (logoLayout: row) =====
+ * Every brand, logo or name, sits in the same slot a text brand uses: sized by
+ * its content, at least the brandTextMinWidth wide, 44px tall (the touch-target
+ * floor), padded by tilePadding, divided by the brandTextSeparator line. A logo
+ * is capped at maxHeight tall and logoMaxWidth wide rather than filling a
+ * square tile, and each brand rests at logoOpacity, full on hover or focus. */
+.sgs-brand-strip--layout-row {
+	min-height: 0;
+	max-width: none;
+}
+
+.sgs-brand-strip--layout-row .sgs-brand-strip__item {
+	width: auto;
+	height: auto;
+	min-height: 44px;
+	min-width: var(--sgs-brand-text-min-width, 0px);
+	padding-block: 0;
+	padding-left: var(--sgs-tile-padding, 10px);
+	padding-right: var(--sgs-tile-padding, 10px);
+	background-color: transparent;
+	background-image: none;
+	border-width: 0;
+	border-color: transparent;
+	border-radius: 0;
+	box-shadow: none;
+	opacity: var(--sgs-logo-opacity, 1);
+	transition: opacity var(--sgs-transition-duration, 250ms) var(--sgs-transition-easing, ease);
+}
+
+.sgs-brand-strip--layout-row .sgs-brand-strip__item:hover,
+.sgs-brand-strip--layout-row .sgs-brand-strip__item:focus-within {
+	opacity: 1;
+}
+
+.sgs-brand-strip--layout-row .sgs-brand-strip__item a {
+	height: auto;
+	align-self: stretch;
+}
+
+.sgs-brand-strip--layout-row .sgs-brand-strip__logo,
+.sgs-brand-strip--layout-row .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
+	height: auto;
+	width: auto;
+	max-height: var(--sgs-logo-max-height, 180px);
+	max-width: var(--sgs-logo-max-width, 100%);
+}
+
 /* ===== Tile shape (none / square / circle) — Bean control ===== */
 /* Square (default) uses --sgs-tile-radius (rounded square). Circle forces a
  * full round; the tile is already square (width = height) so 50% is a circle.
