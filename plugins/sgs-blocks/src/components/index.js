@@ -92,5 +92,6 @@ export {
 	default as MotionEasingControl,
 	MOTION_EASING_OPTIONS,
 	isValidCubicBezier,
+	motionEasingCss,
 } from './MotionEasingControl';
 export { default as ShadowLiftControls } from './ShadowLiftControls';

@@ -21,6 +21,7 @@ import {
 	SpacingControl,
 	RowQuickInsertAppender,
 	RowScrollBehaviourControls,
+	motionEasingCss,
 	ColumnShapePicker,
 	fillRow,
 	textRow,
@@ -249,6 +250,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		fxEffect,
 		fxFooterStagger,
 		hidePromotedPlaceholder,
+		rowShrinkPadding,
+		rowShrinkDuration,
+		rowShrinkEasing,
+		rowShrinkEasingCustom,
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
@@ -274,47 +279,44 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Local UI state — never persisted, never rendered on the front end.
 	const [ previewShrunk, setPreviewShrunk ] = useState( false );
 
-	// Mirror the desktop tier here (the tier the editor canvas represents), and
-	// halve top/bottom while previewing — the same 0.5 ratio render.php emits.
+	// Mirror the desktop tier here (the tier the editor canvas represents).
+	// While previewing the shrunk size, an explicit shrunk padding
+	// (rowShrinkPadding) wins side by side; without one, top/bottom halve. The
+	// shrink speed and curve drive the preview's own transition. Same rules as
+	// includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css.
 	const previewPad =
 		( attributes.padding && attributes.padding.desktop ) || {};
+	const hasShrunkPad = Object.keys( rowShrinkPadding || {} ).length > 0;
+	const shrunkPad = ( rowShrinkPadding && rowShrinkPadding.desktop ) || {};
+	const withPx = ( value ) =>
+		/^-?\d*\.?\d+$/.test( String( value ?? '' ) ) ? `${ value }px` : value;
 	const halved = ( value ) => ( value ? `calc(${ value } / 2)` : value );
-	// "Padding when shrunk" (rowShrinkPadding), when set, replaces the halving
-	// on every side it names — the same rule render.php follows.
-	const shrunkPad =
-		( attributes.rowShrinkPadding && attributes.rowShrinkPadding.desktop ) ||
-		{};
-	const halveOnShrink = ! [ 'top', 'right', 'bottom', 'left' ].some(
-		( side ) => shrunkPad[ side ]
-	);
-	const paddingPreview = {
-		...( previewPad.top
-			? {
-					paddingTop: previewShrunk && halveOnShrink
-						? halved( previewPad.top )
-						: previewPad.top,
-			  }
-			: {} ),
-		...( previewPad.bottom
-			? {
-					paddingBottom: previewShrunk && halveOnShrink
-						? halved( previewPad.bottom )
-						: previewPad.bottom,
-			  }
-			: {} ),
-		...( previewPad.left ? { paddingLeft: previewPad.left } : {} ),
-		...( previewPad.right ? { paddingRight: previewPad.right } : {} ),
-		...( previewShrunk
-			? Object.fromEntries(
-					[ 'top', 'right', 'bottom', 'left' ]
-						.filter( ( side ) => shrunkPad[ side ] )
-						.map( ( side ) => [
-							`padding${ side[ 0 ].toUpperCase() }${ side.slice( 1 ) }`,
-							shrunkPad[ side ],
-						] )
-			  )
-			: {} ),
+	const sideValue = ( side ) => {
+		if ( ! previewShrunk ) {
+			return previewPad[ side ];
+		}
+		if ( hasShrunkPad ) {
+			return withPx( shrunkPad[ side ] ) || previewPad[ side ];
+		}
+		return 'top' === side || 'bottom' === side
+			? halved( previewPad[ side ] )
+			: previewPad[ side ];
 	};
+	const paddingPreview = {};
+	[ 'top', 'right', 'bottom', 'left' ].forEach( ( side ) => {
+		const value = sideValue( side );
+		if ( value ) {
+			paddingPreview[ `padding${ side[ 0 ].toUpperCase() }${ side.slice( 1 ) }` ] = value;
+		}
+	} );
+	if ( rowShrinkDuration > 0 || rowShrinkEasing ) {
+		const ms = rowShrinkDuration > 0 ? Math.min( 3000, rowShrinkDuration ) : 200;
+		paddingPreview.transition = `padding ${ ms }ms ${ motionEasingCss(
+			rowShrinkEasing || 'ease',
+			rowShrinkEasingCustom || '',
+			'ease'
+		) }`;
+	}
 
 	// Empty-row detection drives the promoted quick-insert placeholder — once
 	// the operator adds any block (promoted or otherwise), this reverts to

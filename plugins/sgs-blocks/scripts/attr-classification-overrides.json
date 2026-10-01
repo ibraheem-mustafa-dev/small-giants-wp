@@ -6604,6 +6604,38 @@
 			"_why": "2026-09-25 (Wave 3C U-6). A hand-typed cubic-bezier() read only when itemMotionEasing is custom; same role as sgs/nav-bar-menu burgerMorphEasingCustom. The classifier records no role for free-text curve strings."
 		},
 		{
+			"slug": "sgs/button",
+			"attr": "iconSvg",
+			"fields": {
+				"role": "svg"
+			},
+			"_why": "2026-09-30 (deploy gate, orphan_unclassified). A client-pasted inline SVG (the IconPicker Custom SVG source, re-sanitised with wp_kses); same role as sgs/icon iconSvg. Content, not a CSS value, so the classifier records none."
+		},
+		{
+			"slug": "sgs/cart",
+			"attr": "pillCountStyle",
+			"fields": {
+				"role": "select-from-enum"
+			},
+			"_why": "2026-09-30 (deploy gate, orphan_unclassified). plain | bubble: chooses how the pill shows its count (a markup/class variant), not a CSS value."
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "arrowStep",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_why": "2026-09-30 (deploy gate, orphan_unclassified). Cards moved per arrow click, a per-device whole number the slider script reads; no CSS property."
+		},
+		{
+			"slug": "sgs/brand-strip",
+			"attr": "logoLayout",
+			"fields": {
+				"role": "select-from-enum"
+			},
+			"_why": "2026-10-01 (deploy gate, orphan_unclassified). tiles | row: chooses how logo brands lay out (the sgs-brand-strip--layout-row class variant), not a CSS value."
+		},
+		{
 			"slug": "sgs/nav-drawer-menu",
 			"attr": "itemSeparatorPosition",
 			"fields": {

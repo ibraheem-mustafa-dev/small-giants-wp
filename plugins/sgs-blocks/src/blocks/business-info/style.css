@@ -38,8 +38,13 @@
 .sgs-business-email {
 	display: flex;
 	align-items: center;
-	gap: 0.5em;
 	margin: 0;
+}
+
+/* The icon-to-text gap defaults sit at zero specificity so iconGap
+   (render.php, scoped to the instance) always wins. */
+:where(.sgs-business-phone, .sgs-business-email) {
+	gap: 0.5em;
 }
 
 /* textBefore / textAfter set: the value flows inline inside a sentence. */
@@ -241,10 +246,13 @@
 
 /* ── Address ─────────────────────────────────────────────────────────────── */
 
+:where(.sgs-business-address) {
+	gap: 0.5em;
+}
+
 .sgs-business-address {
 	display: flex;
 	align-items: flex-start;
-	gap: 0.5em;
 	font-style: normal;
 	margin: 0;
 }
@@ -337,10 +345,13 @@
 
 /* ── Social Links ────────────────────────────────────────────────────────── */
 
+:where(.sgs-business-socials) {
+	gap: 0.75em;
+}
+
 .sgs-business-socials {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.75em;
 	list-style: none;
 	margin: 0;
 	padding: 0;

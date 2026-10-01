@@ -20,7 +20,7 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, MotionEasingControl } from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, MotionEasingControl, motionEasingCss } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
@@ -294,6 +294,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// scoped justify-content / gap on the button root.
 	if ( contentAlign?.desktop ) previewStyle.justifyContent = contentAlign.desktop;
 	if ( iconGap?.desktop ) previewStyle.gap = iconGap.desktop;
+	// The hover transition, as render.php emits it (transitionDuration, transitionEasing/Custom).
+	previewStyle.transition = `all ${ transitionDuration ?? 300 }ms ${ motionEasingCss( transitionEasing || 'ease', transitionEasingCustom || '', 'ease' ) }`;
 
 	// colourTextGradient/colourBackgroundGradient real mechanism (render.php,
 	// D636 + the button-specific "Real text gradient" precondition,

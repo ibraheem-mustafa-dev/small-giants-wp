@@ -645,7 +645,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						value={ attributes.logoLayout || 'tiles' }
-						onChange={ ( val ) => setAttributes( { logoLayout: val } ) }
+						onChange={ ( val ) => setAttributes( { logoLayout: val || 'tiles' } ) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
