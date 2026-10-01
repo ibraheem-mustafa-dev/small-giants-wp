@@ -15706,15 +15706,6 @@
     },
     {
       "slug": "sgs/cart",
-      "attr": "itemDividerColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "item"
-      }
-    },
-    {
-      "slug": "sgs/cart",
       "attr": "itemGap",
       "fields": {
         "css_property": "gap",
