@@ -1381,7 +1381,8 @@ plus scoped custom properties; per-block defaults from `supports.sgs.hoverDefaul
 - `sgsHoverDuration` (a duration token), `sgsHoverDurationMs` (exact ms, overrides the token), `sgsHoverEasing`
   (a token, or `custom` with `sgsHoverEasingCustom`, validated by `sgs_motion_easing_css()`)
 - `sgsHoverOpacity` (0 to 1, 0 = off) — the hover fade, touch-guarded like the transform
-- `sgsHoverIndent` (a length; the block's inline-start padding grows by it on hover and focus-within) and
+- `sgsHoverIndent` (a length; the block's inline-start padding grows by it on hover and focus-within, from each
+  device's own resting padding: `includes/hover-effects/vars.php::build_hover_indent_base_css`) and
   `sgsHoverShadow` `custom` + `sgsHoverShadowCustom` (a box-shadow, sanitised by `sgs_shadow_value()`)
 - `sgsChildSizing` / `sgsChildWidth` (opt-in `"childSizing"`) — how a block sizes as a child of a flex row, per device:
   `fit`, `fill` (takes the space the others leave) or `fixed` (with `sgsChildWidth`); `includes/child-sizing.php`

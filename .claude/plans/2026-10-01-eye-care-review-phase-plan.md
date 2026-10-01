@@ -148,7 +148,7 @@ QA Gate 1 — No live reference to a retired Eye Care doc
   Model:   inline
   Exec:    SEQUENTIAL
   Deps:    steps 2-3
-  Check:   `git grep -n -E "plans/2026-09-2[4-8]-eye-care|plans/2026-10-01-eye-care-cloud-handover" -- . ':!.claude/plans/archive/' ':!.claude/archive/'`
+  Check:   `git grep -n -E "plans/2026-09-2[4-8]-eye-care|plans/2026-10-01-eye-care-cloud-handover" -- . ':!.claude/plans/archive/' ':!.claude/archive/' ':!.claude/plans/2026-10-01-eye-care-review-phase-plan.md'`
   Pass:    no output; `python .claude/hooks/handoff-preflight.py --check` exits 0.
   Fail:    repoint each hit (dated reports → the archive path; live docs → the new doc), re-run.
   Marker:  QA
@@ -217,7 +217,7 @@ Step 5 — Walk every surface
 Step 6 — Bean's eye check at four widths
   Model:       inline + Bean
   Action:      Put each surface's contact sheet in front of Bean (SendUserFile), at 375, 768, 1440 and 1920, plus the
-               states the handover lists: the £ signs, full-width megas, the Lenses boxes, the mega fonts and grids,
+               these states: the £ signs, full-width megas, the Lenses boxes, the mega fonts and grids,
                the bag "0" bubble, the bag drawer empty and with an item, the shrunk header and its unshrink, the gap
                under the trust bar. Record what Bean flags per surface.
   Files:       the unified doc's Review sub-headings
@@ -339,8 +339,8 @@ Step 8 — Write the work plan, by surface
   `2026-09-24-eye-care-hand-build-design.md`, `2026-09-24-eye-care-findings-1-8-9-design.md`,
   `2026-09-25-eye-care-product-page.md`, `2026-09-25-eye-care-bag-checkout-prescription.md`,
   `2026-09-28-eye-care-product-page-parity.md` and `2026-10-01-eye-care-cloud-handover.md`.
-- **Decision:** The live files that cite them. **Flagged by:** sonnet. **Recommendation:** five, found by QA Gate 1's
-  command: `.claude/LEDGER.md`, `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md` (dated report: archive path),
+- **Decision:** The live files that cite them. **Flagged by:** sonnet. **Recommendation:** four, found by QA Gate 1's
+  command (plus LEDGER's Front F pointer): `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md` (dated report: archive path),
   `.claude/specs/43-SGS-CHOICE-FLOW.md`, `plugins/sgs-blocks/includes/choice-flow-chrome.php` and
   `plugins/sgs-blocks/src/blocks/choice-flow/block.json` (current truth: the unified doc). A code-file comment edit
   needs no deploy; say so in the commit.

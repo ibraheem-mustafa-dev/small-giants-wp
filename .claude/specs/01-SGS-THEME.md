@@ -544,7 +544,9 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 - **WebP/AVIF** via WordPress native image handling (6.1+)
 - **Lazy loading** via native `loading="lazy"` (WordPress adds this automatically)
 - **Explicit width/height** on all images to prevent CLS
-- **SVG support** — register SVG upload capability with sanitisation
+- **SVG support** (BUILT, in the blocks plugin: `plugins/sgs-blocks/includes/svg-upload.php`) — SVG uploads for any
+  user who can upload files, sanitised on both upload and sideload (`sgs_svg_upload_sanitise`: allowlisted elements,
+  no scripts or event handlers, no outside `href` or `url()`, the SVG's mixed-case attribute names kept)
 
 ### Fonts
 - **Two font files maximum** per site (heading + body)

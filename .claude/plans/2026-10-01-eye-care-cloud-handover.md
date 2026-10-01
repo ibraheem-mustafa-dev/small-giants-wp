@@ -16,56 +16,16 @@ the end so nothing is a surprise.
 - **This file replaces `archive/2026-09-28-eye-care-resume-tracker.md`.** Its open items are carried into the
   sections below.
 
-## 1. What you need to do first (on your PC)
+## 1. Landing on the PC (done 2026-10-01)
 
-The cloud container has no SSH key, so it cannot deploy. Everything below is committed and pushed to `main`.
-Several commits add block settings, so the framework DB reseed must run before the deploy, or the gates and
-role map go stale.
+Pulled, merged, reseeded and deployed to sandybrown and eye-care-test (every gate green, checksums verified). The
+trees are applied through the editor with no invalid blocks: header 199, mobile menu 203, megas 165, 176, 183, 186,
+home 208. All 40 brand logos are set; the Ferrari tile in `mega-brands.tree.json` uses attachment 625 (its SVG keeps
+its `viewBox`). The header tree first failed on six cart paddings the framework DB wrongly marked as single-value;
+the seeder now reads them as per-device (`orchestrator/object_attr_shape.py::_closure_dispatched_tier_attrs`).
 
-Times include a 50% pad.
-
-1. **Pull** (2 min). In VS Code's terminal, at the repo root, run `git pull`. Done when it says it is up to date
-   with `origin/main`.
-2. **Reseed the framework DB** (15-25 min). Use your usual reseed sequence:
-   - `sgs-update-v2.py --stage 1`
-   - `extract-signatures.py`
-   - copy the classifications file
-   - `generate-attr-role-map.py`
-   - `build-roster.py`
-
-   Then commit any regenerated script output with an explicit pathspec. Done when
-   `check-element-manifest-conformance` no longer reports "ROLE MAP STALE".
-3. **Deploy** (10-15 min). Run `python plugins/sgs-blocks/scripts/build-deploy.py --target eye-care-test` from
-   PowerShell. Done when it ends with its verify step green. Never use `--allow-dirty` or `--skip-verify`.
-4. **Apply the trees** through the editor (15-20 min), one command per tree from `plugins/sgs-blocks`:
-   `node scripts/wp-build-page.js --env-file ../../.claude/secrets/eye-care-test.env --env-key EYECARETEST --tree <tree> --post-id <id>`.
-
-   | Tree (`sites/eye-care-ward-end/build/`) | Post ID |
-   |---|---|
-   | `home.tree.json` | 208 (Home) |
-   | `header.tree.json` | 199 (`sgs_header`) |
-   | `mobile-menu.tree.json` | 203 (`sgs_drawer`, "Eye Care mobile menu") |
-   | `mega-sunglasses.tree.json` | 165 |
-   | `mega-brands.tree.json` | 176 |
-   | `mega-lenses.tree.json` | 183 |
-   | `mega-help.tree.json` | 186 |
-
-   Done when each run reports no invalid blocks.
-5. **Brand logos** (5 min). Run `python sites/eye-care-ward-end/build/apply_brand_logos.py --env-file .claude/secrets/eye-care-test.env --env-key EYECARETEST`.
-   - Done when it prints "40 brand logos set".
-   - Adidas and Ferrari are SVGs. They only upload once the deploy has added the plugin's SVG upload support
-     (`includes/svg-upload.php`).
-   - Then give the Ferrari tile in `mega-brands.tree.json` its media (the new attachment ID) and re-apply post 176.
-6. **Walk and check** (45-70 min). Run the `home`, `header` (mega and drawer modes) and `bag` walkers. Copy each
-   header report out of `out/header/` before the next header run (the runs overwrite one report). Then look at
-   these by eye, at 375, 768, 1440 and above 1440:
-   - the £ signs;
-   - full-width mega panels;
-   - the Lenses boxes, and the mega fonts and grids;
-   - the Bag "0" bubble;
-   - the bag drawer, empty and with an item;
-   - the scrolled (shrunk) header and its unshrink;
-   - the gap under the trust bar.
+The walk-and-check step (every surface, at 375, 768, 1440 and 1920, with the eye-check list) is steps 5 and 6 of
+`.claude/plans/2026-10-01-eye-care-review-phase-plan.md`.
 
 ## 2. The two items finished in this last round
 
@@ -210,7 +170,8 @@ it is universal: every value is a block setting with an editor control, and noth
 
 ## 4. Still open (in order of priority)
 
-1. **Deploy and verify everything above** (section 1). Nothing from this round is live yet.
+1. **Walk and check every surface**: `.claude/plans/2026-10-01-eye-care-review-phase-plan.md` steps 5-6 (the
+   deploy itself is done, section 1).
 2. **Footer.** Not started in code; the helper agent died on the usage limit before it wrote anything.
    - Gaps found by screenshots (`footer-{draft,live}-{1440,375}.png` in the old scratchpad; re-take them with the
      walker):
@@ -239,8 +200,6 @@ it is universal: every value is a block setting with an editor control, and noth
    - Real photos are needed of the clinic (Home) and of Fatima (About).
    - Owed splits: `buybox/render.php` (about 1,480 lines) and `assets/js/animation-observer.js`.
    - Lens height (C2) and frame diagrams wait for the frame-measurements data.
-6. **Docs:** run `/handoff` on the PC so `LEDGER.md` records what eye-care-test runs after this deploy. LEDGER is
-   near its 24,576-byte cap, so this session left it alone.
 
 ## 5. Bean's decisions recorded during these sessions
 
@@ -259,9 +218,9 @@ it is universal: every value is a block setting with an editor control, and noth
 
 ## 6. Checks and environment notes
 
-- **In the cloud**, 117 of 128 fast gates pass. The 11 failures need the framework DB or Python packages that
-  exist only on Bean's PC, or are the shadow-lift artefact of compiling without the prebuild generators. The PC
-  build runs the full set.
+- **On the PC** all 128 fast and 4 full-tier gates pass (2026-10-01). Landing it fixed what the cloud could not see:
+  13 unplaced cart settings, 6 duplicate inspector labels, and gate blind spots for loop-fed typography prefixes and
+  colour states that carry no colour.
 - **ESLint** cannot start in the cloud (a plugin version clash). JS was checked with the Babel parser and a full
   webpack build instead.
 - **Header walker:** runs overwrite one report. Copy `out/header/report.md` after each mode.

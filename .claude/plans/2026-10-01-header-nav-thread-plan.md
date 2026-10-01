@@ -14,7 +14,8 @@ header and footer, and the clone waves that prove them. The three earlier plans 
 
 ## 1. Where it stands (2026-10-01)
 
-- Waves 1, 2, 3A, 3B and 3C are built. Gate 3C items 1, 2, 3 and 5 pass.
+- Waves 1, 2, 3A, 3B and 3C are built; the items still owed from Waves 1-3 are in §3. Gate 3C items 1, 2, 3 and 5
+  pass.
 - **Gate 3C item 4** (the Indus and lamalama copies are 100% visual copies) is in its final pass. Every framework
   gap the walker found is built as a real control (the Indus and lamalama sessions, 2026-09-28 to 2026-10-01). The
   last walk's open rows are recorded in §2.3, each as accepted, a violation, or a foundational gap.
@@ -25,7 +26,7 @@ header and footer, and the clone waves that prove them. The three earlier plans 
 
 ## 2. Gate 3C item 4: close-out
 
-### 2.1 The definition (the only one; Spec 36, Spec 37 and the verify doc carry the same words)
+### 2.1 The definition (the only one; `.claude/verify/merged-spec36-37-track.md` carries the same words)
 
 Gate 3C passes when:
 
@@ -87,8 +88,7 @@ screen position) is G8, parked by Bean on 2026-09-27.
   `sgs/button::colourBackgroundHover` and `scaleHover` (target `face`) to the reference's values.
 
 **Jitter, for Bean:** the About, Sectors and Brands panels' opacity 30ms into opening reads 0.27/0.15/0.27 in one run
-and 0.39/0.28/0.28 in the next, against the draft's 1 (the draft opens instantly); plus the About link hover fade
-noted in the cloud handover.
+and 0.39/0.28/0.28 in the next, against the draft's 1 (the draft opens instantly).
 
 **Walker blind spots worth closing** (tooling, not the copies): the walker reads `transform` but not the independent
 `translate`/`scale` properties, so `sgs/button`'s hover lift reads as missing; and it cannot read script-driven motion
@@ -98,15 +98,15 @@ on either side.
 
 1. Write the dated accepts into `plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-indus.mjs` and
    `parity-lamalama.mjs` (`accept: []`) for every row §2.3 marks accepted.
-2. Show Bean the jitter rows: the About link hover fade, and the 30ms timeline samples (blur, drawer growth) that
-   move by up to 0.2 between runs on the same reference. Bean decides accept or fix.
+2. Show Bean the jitter rows (§2.3: the three panels' opacity 30ms into opening, which moves between runs).
+   Bean decides accept or fix.
 3. Close every §2.3 violation with a tree setting or a real control; rebuild the trees with `scripts/wp-build-page.js`.
 4. The final walk without `--no-review` (every state x width screenshot carries a review note), then Bean's eye.
    Done when `draft-live-walk.mjs` exits 0 for both copies.
 5. Bean's hPanel action: allow-list or switch off the canary's "Checking your browser" page for the test site, so
    walker states and console errors reflect the copies only (decided 2026-09-28; lamalama's own bot check passes
    after a reload in a real browser).
-6. Close Gate 3C in this plan, Spec 36/37's track note, `.claude/verify/merged-spec36-37-track.md` and `LEDGER.md`.
+6. Close Gate 3C in this plan, `.claude/verify/merged-spec36-37-track.md` and `LEDGER.md`.
 
 ### 2.5 Framework items still open from the copies (verify each against current code before building)
 
@@ -116,7 +116,8 @@ on either side.
 - lamalama's drawer menu: no hairline under the pill's top row, and no trailing glyph for a plain item.
 - D-5: `itemTextIndent` on drawer rows is a paragraph indent and cannot move a menu row.
 - Does the reference-capture method (`scripts/parity/draft-live-walk.mjs` with its header mode) generalise to the
-  cloning pipeline (`/sgs-clone`), so every future copy is captured this way? Shared with the Eye Care track.
+  cloning pipeline (`/sgs-clone`), so every future copy is captured this way? It serves W5-a (§6), whose clone
+  walker should reuse it; settle it in W5-a's design.
 
 ## 3. Owed from Waves 1 to 3
 

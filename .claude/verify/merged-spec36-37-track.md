@@ -131,13 +131,16 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
 - W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: under way (`plans/archive/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5,
+- STATUS: under way (`plans/2026-10-01-header-nav-thread-plan.md` §2; unit history in
+  `plans/archive/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5,
   U-3+U-8, U-6+U-7, U-4, U-10+U-14, with its batched QA pass), all of lane C (U-12, U-15, U-17), U-13 and U-16 are
   closed. Gate 3C items 1, 2, 3 and 5 pass: M-08's one open cell, lamalama's card pinned to the top-right corner, is
   accepted as DEC-18 (Bean, 2026-09-27; G8 stopped at NO GO, rebuild parked in
-  `plans/2026-10-01-header-nav-thread-plan.md` section 7). Item 4 FAILS on Bean's eye (2026-09-27): U-18 G1-G7, G10 and G11
-  are live, but `reports/visual-diff/u18-copy-parity-2026-09-27.md` (lamalama 75/76, Indus 23/23) measured geometry
-  only; type, hover, motion and element order were never compared. Next: `plans/2026-10-01-header-nav-thread-plan.md` section 2.
+  `plans/2026-10-01-header-nav-thread-plan.md` section 7). Item 4 is in its final pass: every gap the parity walker
+  found is built as a real control, and the 2026-10-01 walk (`reports/visual-diff/gate3c-copies-walk-2026-10-01.md`)
+  classifies every open row: Indus 10 violations and 3 jitter rows, lamalama 7 violations and 1 foundational gap
+  (G8, parked), the rest accepted (walker blind spots or same paint). No new foundational gap. Dated accepts, the
+  jitter decision, the final walk and Bean's eye are deferred (Bean, 2026-10-01): `plans/2026-10-01-header-nav-thread-plan.md` §2.3-2.4.
 - U-16 exit criteria (live report `reports/visual-diff/entrance-2026-09-26.md`, verdict PASS; sandybrown 2026-09-26, fixture `qa-item-markup-fixture.php entrance` on `/qa-entrance/`,
   restored to `two-bar`): the header's `fade-in` extra-slow rises from 0 to 1 over 713 to 761ms with no flash at
   375/768/1440; shrink (16px to 4px) and hide-on-scroll (slides away and back, pins) keep working; a dropdown opened
@@ -295,8 +298,8 @@ and on the keyboard-opened dropdown; keyboard order past the chip; reduced motio
 open); every new control's editor round-trip. Still owed from those units: Bean's eye on the screenshots and shapes, and
 the three starter patterns once they have imagery.
 
-Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
-strategic plan's Gate 3C entry):
+Gate 3C passes when (the one definition; the same words are in `plans/2026-10-01-header-nav-thread-plan.md`
+§2.1):
 
 1. Every family in the signed list is covered: its exit cells reachable and at least one reproduced
    live. Twelve families (M-01, M-02, M-05, M-06, M-12, M-23, M-26, M-29, M-41, M-42, M-50, M-51) are
