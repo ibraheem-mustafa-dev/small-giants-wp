@@ -1244,7 +1244,7 @@
 		"itemPaddingShiftHover": {
 			"type": "string",
 			"default": "",
-			"description": "M-21. On hover/focus, the item's own inline-start padding GROWS by this length: padding-inline-start:calc(<resting inline-start padding> + <value>). Applies to the top-level item link (style.css base 12px) and the accordion's nested submenu link (nav-menu-submenu-css.php base 16px, the same shared emitter the bar's dropdown uses) -- both read their own resting literal since neither exposes it as a single attribute. Validated through sgs_css_single_length_value(). Empty emits no shift. Reference: halcyon's mega minimal items 14 to 22px; indus-foods dropdown 6 to 12px (a per-site value, set alongside the item's own padding)."
+			"description": "M-21. On hover/focus, the item's own inline-start padding GROWS by this length: padding-inline-start:calc(<resting inline-start padding> + <value>). Applies to the top-level item link (style.css base 12px) and the accordion's nested submenu link (nav-menu-submenu-css.php base 16px, the same shared emitter the bar's dropdown uses) -- both read their own resting literal since neither exposes it as a single attribute. Validated through sgs_css_single_length_value(). Empty emits no shift. A per-site value, set alongside the item's own padding."
 		},
 		"submenuOpacity": {
 			"type": "number",

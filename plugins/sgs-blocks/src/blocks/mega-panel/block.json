@@ -492,7 +492,7 @@
 		"itemPaddingShiftHover": {
 			"type": "string",
 			"default": "",
-			"description": "M-21. On hover/focus-within, each group item's own inline-start padding GROWS by this length: padding-inline-start:calc(<resting inline-start padding> + <value>), where the resting value is each group style's own existing literal (columns 12px / cards 0px / minimal 14px). Validated through sgs_css_single_length_value(). Empty emits no shift. Reference: halcyon's mega minimal items 14 to 22px; indus-foods mega/dropdown 6 to 12px."
+			"description": "M-21. On hover/focus-within, each group item's own inline-start padding GROWS by this length: padding-inline-start:calc(<resting inline-start padding> + <value>), where the resting value is each group style's own existing literal (columns 12px / cards 0px / minimal 14px). Validated through sgs_css_single_length_value(). Empty emits no shift."
 		},
 		"asideSeparator": {
 			"type": "object",
