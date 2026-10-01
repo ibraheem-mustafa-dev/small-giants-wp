@@ -336,8 +336,9 @@ Step 8 — Write the work plan, by surface
   divider lines on home "Why buy", about, help, prescription-lenses and the product template are the container's
   `separators` setting (native gap decorations in Chromium, a small overlay script in Safari and Firefox; the
   walker reads `column-rule` there, not a background), so a background-colour row on those grids is expected, not a
-  violation. Those five trees were moved from the retired `gapColour` to `separators` on 2026-10-01
-  (`plans/2026-10-01-separators-plan.md`); step 8's work plan rebuilds the five pages from them.
+  violation. The five trees (`sites/eye-care-ward-end/build/` home, about, help, lenses, single-product) carry
+  `separators`, and the Eye Care test site's five pages were rebuilt from them on 2026-10-01
+  (`plans/2026-10-01-separators-plan.md`).
 
 - **Decision:** Which STALE verdicts to spot-check in step 3. **Flagged by:** haiku. **Recommendation:** the first
   STALE claim on each of header, bag, footer, home and product (one per checker group at least). **Why:** those

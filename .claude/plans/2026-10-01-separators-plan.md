@@ -1,15 +1,15 @@
 # Separators: one shared setting for lines between items
 
-**Status (2026-10-01):** designed, council-verified (grid-line mechanism measured in Chromium, Firefox, WebKit and Chrome 154); build in progress.
+**Status (2026-10-01):** built and live on the sandybrown canary and the Eye Care test site; the work below is the residue (remaining adoptions, the name sweep).
 **Standards:** Spec 35 + 35A (shared inspector primitives, one control per concept, labels), Spec 32 (no inline
 `style=""`; CSS through scoped rules), Spec 41 FR-41-37 (the nav bar's item separator, which this replaces).
 
 ## Why
 
 Gaps are spacing only. A line between items is its own feature, with its own style, thickness, colour and
-direction, drawn centred in the gap. Today about 20 places draw separators five different ways (inventory below),
-and `sgs/container` has a stop-gap `gapColour` (a gap that paints, as thick as the gap) added on 2026-10-01 to fix
-the Eye Care home "Why buy" grid. Separators replaces `gapColour` completely.
+direction, drawn centred in the gap. Before this work about 20 places drew separators five different ways
+(inventory below); `sgs/container`, both nav blocks, `sgs/icon-list` and `sgs/brand-strip` now share one setting, and
+`scripts/check-separators-through-helper.py` stops a new block drawing its own.
 
 ## The model
 
@@ -34,77 +34,72 @@ the Eye Care home "Why buy" grid. Separators replaces `gapColour` completely.
 
 ## How the line is drawn (council verdict, 2026-10-01, measured)
 
-Three drawing paths behind one helper; the block's render call names the list's layout and the helper picks:
+Two layouts behind one helper (`includes/helpers-separators-css.php::sgs_separators_css`); the block's render call names
+the list's layout:
 
-1. **Item-drawn CSS** (all browsers, no JS) for a list whose row starts are known: a single row, a single column,
-   or a grid with an exact column count per device (the nav bar's proven method, a pseudo-element on every item
-   except the first in its run, offset half a gap outward). Used by the nav bar items, drawer rows, dropdown rows,
-   icon-list, and the drawer's `listColumns` grid.
-2. **Native gap decorations** (`column-rule` / `row-rule` with `rule-visibility-items: between`, Chrome/Edge 149+)
-   for wrapping or auto-fit layouts: `sgs/container` grids and wrapping flex, brand-strip. Measured in Chrome 154:
-   lines land in the gap centres, shadows stay intact, and `between` stops the line dangling beside an empty last-row
-   cell.
-3. **Row-start tagging fallback** for those same layouts in browsers without gap decorations (Safari, Firefox):
-   a tiny view module, loaded only when such a list carries separators, exits at once where `CSS.supports(
-   'row-rule-style','solid')` is true, and otherwise tags each item `data-sgs-sep-start` / `data-sgs-sep-first-row`
-   (ResizeObserver, no layout change) so the same item-drawn CSS applies. No JS = spacing only. Measured in
-   Chromium, Firefox and WebKit: identical line positions, shadows intact.
+1. **`line`: item-drawn CSS** (all browsers, no JS) for a single row or a single column of items the block owns: a
+   pseudo-element on every item except the first, offset half a gap plus half the line outward (the nav bar's proven
+   method). Used by the nav bar's top-level items, the drawer's rows, both nav blocks' submenu rows, `sgs/icon-list`, and a
+   scrolling `sgs/brand-strip` (one line after every brand, so the clones and the seam between sets stay continuous).
+2. **`flow`: native gap decorations plus a runtime overlay** for anything that wraps, auto-fits, or whose items the block
+   does not own (`sgs/container` grids, flex and stack, a static brand strip, the drawer's multi-column list). Browsers with
+   gap decorations (Chrome and Edge 149+) draw `column-rule` / `row-rule` with `rule-visibility-items: between`, which
+   stops a line dangling beside an empty last-row cell. Elsewhere (Safari, Firefox) `src/shared/separators/` measures
+   the item boxes and paints the same lines as absolutely positioned elements in one overlay child per list
+   (`geometry.js` is the pure, tested line maths; `overlay.js` the DOM layer; it exits where decorations exist). No
+   JavaScript means spacing only. Measured on a live page in Chromium, Firefox, WebKit and Chrome 154: line positions
+   identical to the native result, item shadows intact. In the editor the same overlay runs in non-supporting browsers
+   for the container's canvas (`useSeparatorOverlay.js`).
 
 Rejected by measurement or code trace: item-drawn `nth-child` on `sgs/container` (its grids are always "up to N
-columns" via `supports.sgs.intrinsicColumns`, so the real count is unknown to CSS); a clipping wrapper with
-overshoot lines (clips item shadows, hover scale and entrance motion in every engine, and `overflow-clip-margin` is
-absent in WebKit); the gap-wide background fallback (ties thickness to the gap, against the ruling that gaps are
-spacing only).
+columns" via `supports.sgs.intrinsicColumns`, so the real count is unknown to CSS, and its children may use their own
+pseudo-elements); a clipping wrapper with overshoot lines (clips item shadows, hover scale and entrance motion in every
+engine, and `overflow-clip-margin` is absent in WebKit); the gap-wide background fallback (ties thickness to the gap,
+against the ruling that gaps are spacing only).
 
-`edges: 'all'` draws the outer lines only on single-line lists (icon-list); wrapping and grid layouts draw between
-items only. Nav extras: hover colour, `hoverTreatment` (swap / sweep) and `sweepAngle` ride the same object
-(`includes/sweep-css.php::sgs_directional_sweep_css`).
+`edges` ('all' above the first and below the last, 'end' below the last) applies to `line` lists only. Nav extras: hover
+colour, `hoverTreatment` (swap / sweep) and `sweepAngle` ride the same object
+(`includes/sweep-css.php::sgs_directional_sweep_css`). The runtime overlay sets each line's position through the CSS
+object model on elements it creates (never in markup), so Spec 32's no-inline-style contract holds.
 
-## Build steps
+## Remaining work
 
-1. Shared helper + editor control + utils twin + the row-start module, with a standalone PHP test (negative
-   control) and a gate that fails any block drawing a between-items line outside the helper.
-2. Adopt (each list gets its own `separators`-shaped attribute):
-   - `sgs/container` (grid, flex, stack): `separators`, native decorations + row-start fallback; **remove
-     `gapColour`**, `includes/helpers-gap-rule.php`, `src/components/GapColour.js` (and its `index.js` export),
-     `tests/php/run-gap-rule-standalone.php`, the container manifest's `css:column-rule-color` entry; move the five
-     Eye Care trees (`sites/eye-care-ward-end/build/` home, about, help, lenses, single-product) from `gapColour`
-     to `separators` and rebuild them.
-   - `sgs/nav-bar-menu`: `separators` (top-level items, columns axis, item-drawn) and `submenuSeparators` (dropdown
-     rows, rows axis, replacing `submenuLinkBorder*`). `sgs/nav-drawer-menu`: `separators` (top-level rows; a grid
-     with exact `listColumns` counts when columns are on) and `submenuSeparators` (sub-item rows). `itemSeparator*`
-     and the drawer's `itemSeparatorPosition` migrate in; rewrite Spec 41 FR-41-37 and FR-41-36.
-   - `sgs/icon-list` (`dividers`, `dividerColour`, `dividerEdges`; rows only, edges supported) and
-     `sgs/brand-strip` (`brandTextSeparator*`; wraps and has a marquee mode, so decorations + fallback in static
-     mode and no lines in marquee mode).
-3. Decide per block on the other gap layouts (see the inventory): accordion, pricing-table features,
-   business-info hours, cart items (stacked lists with their own borders), card-grid, feature-grid, post-grid
-   (grid layout only), gallery (grid only), multi-button, site-header-row / site-footer-row.
-4. Out of scope (they draw something gap lines and item lines cannot): timeline rail, process-steps connectors,
-   `sgs/separator` block, buybox hairline, text-glyph separators (breadcrumbs, language-switch, local-time,
-   business-info inline dot), mega-panel aside edge and `drawerLinkDivider`, google-reviews header rule,
-   carousel/masonry/marquee layouts.
-5. Reseed (`/sgs-update`), deploy both test sites, verify at 375/768/1440 in the editor canvas and on the page,
-   in Chromium AND WebKit (Playwright `webkit`, plus system Chrome via `channel:'chrome'` for native decorations:
-   Playwright's bundled Chromium can be older than 149) so every path is proven.
-
-6. Name sweep (Bean, 2026-10-01): framework code, docs, specs and file names carry no client names AND no
-   reference-site or inspiration names (for example the lamalama references: scripts under
-   `plugins/sgs-blocks/scripts/nav-qa/`, whose file names carry the name too, plus plans and specs). Client and
-   reference material lives in `sites/<client>/` or `reference/` only. Build the detector first (a script that
-   lists every such name in content and in file names outside those folders, rules at the top, ignoring
-   gitignored capture folders such as `.playwright-mcp/`), record the count, then delegate the mechanical edits
-   and renames to Sonnet subagents in batches and verify against the detector's zero. Run after the Separators
-   work is verified, as its own commits.
+1. **Adopt the hardcoded row lists** (pricing-table features, business-info hours, cart items), and decide
+   `sgs/account` (its `src/blocks/account/style.css` has an unexplained last-child border reset: read it, then adopt or
+   record why it stays). Done when each block's own between-row border is gone, it carries `separators` (rows axis,
+   `layout: 'line'`), its entry is deleted from `scripts/check-separators-through-helper-baseline.json` (pricing-table,
+   business-info and account have entries; the cart has none, because its border is emitted by
+   `includes/helpers-cart-panel-css.php`, so grep for it), and the lines show at 375 / 768 / 1440 in Chromium and WebKit.
+   The accordion's baseline entry stays, with the reason in the decisions table below.
+   The cart's rows are rendered by JavaScript (`item-row-template.js`), so its lines need the editor-twin CSS
+   (`src/utils/separators-line.js`) or a shared stylesheet rule, not a PHP rule.
+2. **Fan `separators` out to the wrapper-routed composites** (card-grid, feature-grid, post-grid grid layout, gallery grid
+   layout, multi-button, site-header-row, site-footer-row). Spec 31 §13.6 says a composite mirrors `sgs/container`'s
+   capabilities, and the wrapper (`includes/class-sgs-container-wrapper.php`) already reads `separators` through
+   `includes/helpers-container-separators.php`; the work is declaring the attribute and control per block through the
+   attribute fan-out generators, and marking the root. Open finding: `scripts/sync-container-wrapping-blocks.py
+   --write-block-json` (reseed Stage 10) currently fails its own roster validation (it reports blocks it detects but does not
+   expect, and the reverse), so find out why before relying on it. Done when each listed block draws lines from its own setting and
+   the gate baseline stays unchanged.
+3. **Name sweep.** Framework code, docs, specs and file names carry no client names and no reference-site or inspiration
+   names (for example the lamalama references: scripts under `plugins/sgs-blocks/scripts/nav-qa/`, whose file names carry the
+   name too, plus plans and specs). Client and reference material lives in `sites/<client>/` or `reference/` only. Build the
+   detector first (a script that lists every such name in content and in file names outside those folders, rules at the top,
+   ignoring gitignored capture folders such as `.playwright-mcp/`), record the count, then delegate the mechanical edits and
+   renames to Sonnet subagents in batches and verify against the detector's zero. Own commits.
+4. **Editor canvas overlay for the remaining flow lists** (optional polish; do it only if Bean reports a Safari or Firefox
+   editor missing the lines): the container's canvas runs the overlay in Safari and Firefox editors; the brand-strip canvas is
+   server-rendered and the drawer's multi-column list has none, so those show spacing only there. Done when the overlay runs
+   on those two canvases too and a WebKit editor check shows the lines.
 
 ## Progress and decisions (2026-10-01)
 
 **Built and verified on the sandybrown canary** (page `[QA] Separators`, 375 / 768 / 1440, native Chrome 154 plus
 the overlay in Chromium, Firefox and WebKit): the shared helper, editor control, runtime overlay and gate;
-adopted by `sgs/container` (`gapColour` removed), both nav blocks (top-level and submenu rows), `sgs/icon-list`
+adopted by `sgs/container`, both nav blocks (top-level and submenu rows), `sgs/icon-list`
 and `sgs/brand-strip`. The Eye Care trees moved from `gapColour` to `separators`.
 
-**Per-block decisions for the other gap layouts** (step 3):
+**Per-block decisions for the other gap layouts:**
 
 | Block | Decision | Why |
 |---|---|---|
@@ -114,10 +109,12 @@ and `sgs/brand-strip`. The Eye Care trees moved from `gapColour` to `separators`
 | process-steps, timeline, `sgs/separator`, breadcrumbs, mega-panel aside and drawer link divider, google-reviews header | out of scope | they draw connectors, glyphs or edges that gap lines cannot |
 
 **Known limits, accepted:** a wrapping `sgs/nav-bar-menu` draws a stray line at the start of a wrapped line (the
-bar collapses to the burger before it wraps in practice); a scrolling brand strip and carousel layouts draw no
+bar collapses to the burger before it wraps in practice); carousel and masonry layouts draw no
 lines; with JavaScript off, Safari and Firefox show spacing only on flow lists.
 
-## Inventory (2026-10-01, read from the code)
+## Inventory: what each list drew before this work (2026-10-01, read from the code)
+
+The container, nav bar and drawer (both lists), icon-list and brand-strip now use `separators`; the rest of the table is the work still open or decided out.
 
 | List | Item selector | Directions | Count known to CSS | Current line |
 |---|---|---|---|---|

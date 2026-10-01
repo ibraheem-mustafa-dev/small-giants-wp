@@ -281,8 +281,8 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   - **Section box.** `submenuBorderRadius` and `submenuShadow`/`submenuShadowColour` paint the open section's `<ul>`
     (`includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_box_css`); an untouched drawer section stays
     square and flat.
-  Inspector: the Colour panel's "Row divider colour" row (with the treatment and angle), Layout (justify, hover scope, split), "Row divider"
-  (width, style), "Row extras" (expander caret), "Submenu — Container" (radius, shadow), "Section motion" (animation, timing,
+  Inspector: Layout (justify, hover scope, split), "Row separators" and "Submenu row separators" (thickness, colour and style, hover
+  treatment and angle, outer lines), "Row extras" (expander caret), "Submenu — Container" (radius, shadow), "Section motion" (animation, timing,
   stagger) and "Effects" (magnet and its strength).
 - **Drawer row states and extras (U-18).** `sgs/nav-drawer-menu::itemColourOpen` paints a row's label while its own
   accordion section is open (distinct from Current, which is page identity). A top-level item with children and

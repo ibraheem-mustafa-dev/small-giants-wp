@@ -108,7 +108,7 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
    register the variant-selector attr name to the `blocks.variant_attr` DB column via
    `/sgs-update` (FR-31-20, Spec 31 §13).
 
-Border controls (`SgsBorderControl`), colour controls (`SgsColourPanel`,
+Border controls (`SgsBorderControl`), the lines between a list's items (`SgsSeparatorControl`), colour controls (`SgsColourPanel`,
 `supports.sgs.colourExemptions`), hover controls, the editor-canvas mirror pattern and grid-item
 qualification: `.claude/rules/block-editor-controls.md`. Colour-emission helpers, shadows, scrims
 and hover-guard build step: `.claude/rules/colour-emission.md`.

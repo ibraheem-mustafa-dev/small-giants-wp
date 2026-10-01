@@ -42,18 +42,21 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-01).** eye-care-test and sandybrown run the plugin and theme deployed at b28404df4 (code as of
-2809984b2; deploys verified by checksum). A border width now paints solid unless another style is chosen, on every block. The home "Why buy"
-grid's divider lines use the container's `gapColour` (no grey before the tiles animate in, none past the tracks);
-home 208, about 187, help 171, prescription-lenses 168 and the single-product template are rebuilt from their trees
-with no invalid blocks. Header 199, mobile menu 203, megas 165/176/183/186 applied; 40 brand logos set. Not yet
-re-walked. No blockers.
+**Now (2026-10-01).** eye-care-test and sandybrown run the plugin and theme deployed at c8e805e73 (deploys verified in
+real browsers; the deploy's own HTTP probe gets the host's 403 bot challenge, so check by browser or checksum). A border
+width paints solid unless another style is chosen, on every block. The home "Why buy" grid and the about, help and lenses
+grids draw their divider lines from the container's `separators` setting (home's scrolling brand strip draws its dividers
+on its own items); home 208, about 187, help 171, prescription-lenses 168 and the single-product template 423 were rebuilt
+from their trees with no invalid blocks. Header 199, mobile menu 203, megas 165/176/183/186 applied; 40 brand logos set. Not
+yet re-walked. No blockers.
 
 **Resume from:** `plans/2026-10-01-eye-care-review-phase-plan.md` step 1 (merge the six Eye Care plans into one,
 walk and eye-check every surface, classify, write the work plan by surface).
 
-**Next framework build:** `plans/2026-10-01-separators-plan.md` (one shared Separators setting; replaces
-`gapColour`; nav bar and drawer share it).
+**Separators.** The shared lines-between-items setting is built and live on sandybrown and eye-care-test. Remaining adoptions,
+the wrapper fan-out and the client and reference name sweep: `plans/2026-10-01-separators-plan.md` § Remaining work. Open
+finding for that plan's step 2: `scripts/sync-container-wrapping-blocks.py --write-block-json` (reseed Stage 10) fails its
+own roster validation, so check why before relying on it.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.
@@ -63,7 +66,7 @@ groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer 
 Plan: `plans/2026-10-01-header-nav-thread-plan.md` (the only plan for the thread; the wave-3C, strategic,
 reference-capture and G8 plans are archived). Proof: `verify/merged-spec36-37-track.md`.
 
-**Now (2026-10-01).** Waves 1-3C built and live on sandybrown (b28404df4); owed Wave 1-3 items in plan §3. Gate 3C items 1, 2, 3, 5 pass. Item 4: the
+**Now (2026-10-01).** Waves 1-3C built and live on sandybrown (c8e805e73); owed Wave 1-3 items in plan §3. Gate 3C items 1, 2, 3, 5 pass. Item 4: the
 walk after this session's deploy (`reports/visual-diff/gate3c-copies-walk-2026-10-01.md`) leaves Indus 10 violations
 and 3 jitter rows, lamalama 7 violations and 1 foundational gap (G8, parked); no new foundational gap. Header fixes
 this session: per-device values accepted for the nav, drawer and cart box settings; a mega panel no longer flashes at

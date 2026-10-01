@@ -140,3 +140,17 @@ the only qualifying block. A block whose children sit inside its own content wra
 (`sgs/cta-section`, `sgs/trust-bar`) matches none of it; declaring `gridItem*` attrs there ships
 controls that paint nothing. `block_composition.container_kind` is irrelevant to this
 qualification — check the selector, not the draft-layer model.
+
+## Separators — `SgsSeparatorControl` is the one control for lines between items
+
+A line between a list's items is the shared Separators setting, never a border on one item: one object
+attribute per list (`separators`, `submenuSeparators`), declared under `supports.sgs.separators.<attr>`
+(`axes`, `edges`, `hover`, `sweep`), edited with `<SgsSeparatorControl>` (`src/components/`), rendered by
+`includes/helpers-separators-css.php::sgs_separators_css` and mirrored in the editor by `src/utils/separators.js`
+(grid and flex lists) or `src/utils/separators-line.js` (single rows and columns). `layout: 'line'` is for a single row
+or column of items the block owns (the item draws the line, every browser, no script); `layout: 'flow'` is for anything
+that wraps, auto-fits, or whose items it does not own (native `column-rule` / `row-rule`, plus the overlay in
+`src/shared/separators/` where the browser lacks them). Never select a flow list's items by position. Gate:
+`scripts/check-separators-through-helper.py` fails a between-item line drawn outside the helper (ratcheted baseline in
+`scripts/check-separators-through-helper-baseline.json`; adopting a block deletes its entry). Design and measurements:
+`.claude/plans/2026-10-01-separators-plan.md`.

@@ -102,7 +102,7 @@ rendered once on that page load.
 `TypographyPanel.js`, `DropdownStylePanel.js`, `ColourRowExtras.js`, `ColourTreatment.js`,
 `EffectsPanel.js`, `FeaturedPanel.js`, `ListLayoutPanel.js`, `MegaDrawerPanel.js` …); bar-only
 panels sit in `plugins/sgs-blocks/src/blocks/nav-bar-menu/` (`BurgerPanel.js`,
-`ItemSeparatorPanel.js`, `BarColourRowExtras.js` …).
+`BarColourRowExtras.js` …); the separators panels are `src/shared/nav-menu-panels/SeparatorsPanel.js`.
 ⛔ **`colourRows` deliberately STAYS in each block's `edit.js`** — `plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js`
 resolves a row's state count only from a shape it can see in that file or in `plugins/sgs-blocks/src/components/`.
 
@@ -1480,9 +1480,9 @@ shorthand, on any selector a Sweep can paint.
 
 **Standing consequences, each still binding:**
 
-- **The item border is the ONE separator mechanism (FR-41-7).** No second hardcoded item separator
-  may sit beside it — on a different element it never competes by specificity, so both paint and
-  the operator gets two horizontal lines. Neither the drawer's item-row `border-top` nor its static
+- **The item border is the item's own edge or box (FR-41-7); the line BETWEEN items is the Separators setting
+  (FR-41-37).** No second hardcoded between-item line may sit beside either — on a different element it never competes
+  by specificity, so both paint and the operator gets two horizontal lines. Neither the drawer's item-row `border-top` nor its static
   `style.css` twin exists.
 - **The current-page state has no hardcoded tint or left rule.** Current colour, weight, background
   and border are the operator's `itemColourCurrent`, `itemFontWeightCurrent` (under FR-41-6's

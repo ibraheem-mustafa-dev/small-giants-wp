@@ -823,13 +823,16 @@ fields). Therefore:
    internally; it does not reuse `SgsColourPanel` or its `rows` shape, so it does not compete with or
    fragment the single-panel rule above.
 
-   **A general element-panel colour mechanism — so a second composite besides
-   `SgsBorderControl` could pair colour with non-colour controls on shared lines — is NOT built and
-   requires a design gate before any block adopts it.** `SgsColourPanel` hardcodes its own
+   **The second composite is `SgsSeparatorControl`** (the lines between a list's items; design-gated and
+   approved by Bean on 2026-10-01). It pairs a per-device thickness with one colour swatch whose popover holds
+   the Normal / Hover tabs and the line-style picker, built from `DesignTokenPicker` states plus
+   `borderStyle`, inside the consuming block's own panel, not `SgsColourPanel`.
+
+   **A general element-panel colour mechanism — so a further composite could pair colour with non-colour
+   controls on shared lines — is NOT built and requires a design gate before any block adopts it.** `SgsColourPanel` hardcodes its own
    `InspectorControls group="styles"` + `PanelBody title="Colour"`, and no block renders a colour
-   control directly inside an element panel outside `SgsBorderControl`. Do not build a second one ad
-   hoc per block on the strength of `SgsBorderControl` existing as precedent — get the design gate
-   first.
+   control directly inside an element panel outside `SgsBorderControl` and `SgsSeparatorControl`. Do not build
+   another one ad hoc per block on the strength of these precedents — get the design gate first.
 
 ### 2. LINK
 
