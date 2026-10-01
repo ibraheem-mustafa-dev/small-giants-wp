@@ -9,24 +9,16 @@ import {
 	normaliseResponsiveBox,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import LinkExtrasItems from './LinkExtrasItems';
 
 /**
  * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) —
  * Styles tab: "List layout" ToolsPanel (item gap, panel columns, padding).
  *
- * Reconciled from nav-menu/BarPanel.js (the bar's original name/panel) and
- * the drawer's own `ListLayoutPanel.js` (adapted independently from the same
- * source, D1059 split, 2026-09-14). Named `ListLayoutPanel` — chosen over
- * "BarPanel" because it now mounts on both blocks and "Bar" reads wrong on
- * the drawer. `gap`/`padding` are BOTH-classified and always render.
- *
- * `showColumnsControl` (drawer `true`, bar `false`) gates the "Columns"
- * `RangeControl` — `listColumns` is DRAWER-only (measured, classification
- * report): "a horizontal bar always stays one row" per the control's own
- * original help text, so rendering it on the bar wrote to an attribute the
- * bar's block.json never declares — the minor dead-control bug the plan's
- * Step 4 flagged, fixed here as part of this consolidation rather than as a
- * separate task.
+ * Mounts on both blocks. `gap`/`padding` always render. `showColumnsControl`
+ * (drawer `true`, bar `false`) gates the "Columns" control: `listColumns` is
+ * drawer-only, because a horizontal bar always stays one row. The bar's
+ * link extras come from LinkExtrasItems.js.
  *
  * @param {Object}   root0                     Props.
  * @param {Object}   root0.gap                 The block's `gap` attribute, a tier object
@@ -36,7 +28,8 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  * @param {Object}   [root0.listColumns]       The block's `listColumns` attribute — drawer only.
  * @param {Object}   root0.padding             The block's `padding` attribute.
  * @param {boolean}  [root0.showItemPadding]   True on `sgs/nav-bar-menu` only: shows
- *                                             "Link padding" (`itemPadding`).
+ *                                             "Link padding" (`itemPadding`) and the
+ *                                             LinkExtrasItems rows.
  * @param {Object}   [root0.itemPadding]       The bar's `itemPadding` attribute, a tier
  *                                             object of {top,right,bottom,left} boxes.
  * @param {boolean}  [root0.showSubmenuLinkPadding] Shows "Dropdown link padding"
@@ -195,81 +188,13 @@ export default function ListLayoutPanel( {
 			) }
 
 			{ showItemPadding && (
-				<ToolsPanelItem
-					hasValue={ () => Object.keys( itemMinHeight ?? {} ).length > 0 }
-					label={ __( 'Link minimum height', 'sgs-blocks' ) }
-					onDeselect={ () => setAttributes( { itemMinHeight: {} } ) }
-				>
-					<ResponsiveOverride
-						value={ itemMinHeight }
-						onChange={ ( obj ) => setAttributes( { itemMinHeight: obj } ) }
-					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<SgsLengthControl
-								presets={ false }
-								label={ __( 'Link minimum height', 'sgs-blocks' ) }
-								help={ __( 'Empty keeps the 44px touch-target height.', 'sgs-blocks' ) }
-								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue : '44px' }
-								onChange={ ( val ) => setOwnValue( val || '' ) }
-							/>
-						) }
-					</ResponsiveOverride>
-				</ToolsPanelItem>
-			) }
-
-			{ showItemPadding && (
-				<ToolsPanelItem
-					hasValue={ () => Object.keys( itemBadgePadding ?? {} ).length > 0 }
-					label={ __( 'Badge padding', 'sgs-blocks' ) }
-					onDeselect={ () => setAttributes( { itemBadgePadding: {} } ) }
-				>
-					<ResponsiveOverride
-						value={ itemBadgePadding }
-						onChange={ ( obj ) => setAttributes( { itemBadgePadding: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Badge padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-							/>
-						) }
-					</ResponsiveOverride>
-				</ToolsPanelItem>
-			) }
-
-			{ showItemPadding && (
-				<ToolsPanelItem
-					hasValue={ () => !! itemBadgeBorderRadius }
-					label={ __( 'Badge corner radius', 'sgs-blocks' ) }
-					onDeselect={ () => setAttributes( { itemBadgeBorderRadius: '' } ) }
-				>
-					<SgsLengthControl
-						presets={ false }
-						label={ __( 'Badge corner radius', 'sgs-blocks' ) }
-						value={ itemBadgeBorderRadius || '' }
-						onChange={ ( val ) => setAttributes( { itemBadgeBorderRadius: val || '' } ) }
-					/>
-				</ToolsPanelItem>
-			) }
-
-			{ showItemPadding && (
-				<ToolsPanelItem
-					hasValue={ () => !! itemBadgeGap }
-					label={ __( 'Space before badge', 'sgs-blocks' ) }
-					onDeselect={ () => setAttributes( { itemBadgeGap: '' } ) }
-				>
-					<SgsLengthControl
-						presets={ false }
-						label={ __( 'Space before badge', 'sgs-blocks' ) }
-						help={ __( 'The gap between a menu word and its badge (e.g. SOON).', 'sgs-blocks' ) }
-						value={ itemBadgeGap || '' }
-						onChange={ ( val ) => setAttributes( { itemBadgeGap: val || '' } ) }
-					/>
-				</ToolsPanelItem>
+				<LinkExtrasItems
+					itemMinHeight={ itemMinHeight }
+					itemBadgePadding={ itemBadgePadding }
+					itemBadgeBorderRadius={ itemBadgeBorderRadius }
+					itemBadgeGap={ itemBadgeGap }
+					setAttributes={ setAttributes }
+				/>
 			) }
 
 			{ showSubmenuLinkPadding && (

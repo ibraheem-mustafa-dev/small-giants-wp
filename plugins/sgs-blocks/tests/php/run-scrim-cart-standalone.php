@@ -140,7 +140,7 @@ $dialog_without_uid = sgs_cart_panel_wrapper_html(
 ok( false !== strpos( $dialog_without_uid, 'class="sgs-cart__panel sgs-cart__panel--drawer"' ), 'no uid arg: the class list has no dangling trailing space' );
 
 $flyout_html = sgs_cart_panel_wrapper_html( 'flyout', 'BODY', array( 'panel_id' => 'p1', 'drawer_id' => 'd1', 'uid' => 'sgs-cart-abcd1234' ) );
-ok( false === strpos( $flyout_html, 'sgs-cart-abcd1234' ), 'flyout mode never carries the uid class — the scrim only exists for the drawer' );
+ok( false !== strpos( $flyout_html, 'class="sgs-cart__panel sgs-cart__panel--flyout sgs-cart-abcd1234"' ), 'the flyout panel carries the uid class too, so its own per-instance panel rules match it' );
 
 // ── Spec 32: no inline style attribute is written by the extracted section ──────
 ok( false === strpos( $section, 'style="' ), 'the scrim section writes no inline style attribute (Spec 32)' );
@@ -165,8 +165,8 @@ $fn_start         = strpos( $panel_source, 'function sgs_cart_panel_wrapper_html
 ok( false !== $fn_start, 'sgs_cart_panel_wrapper_html() is found in the real helpers-cart-panel.php' );
 $fn_text          = substr( $panel_source, $fn_start );
 $bypass_uid_class = str_replace(
-	"'<dialog id=\"%1\$s\" class=\"sgs-cart__panel sgs-cart__panel--drawer%2\$s\" data-sgs-nav-drawer data-sgs-cart-panel data-sgs-cart-mode=\"drawer\" aria-labelledby=\"%3\$s-heading\"><button type=\"button\" class=\"sgs-cart__panel-close\" data-sgs-nav-close aria-label=\"%4\$s\">%5\$s</button>%6\$s</dialog>',",
-	"'<dialog id=\"%1\$s\" class=\"sgs-cart__panel sgs-cart__panel--drawer\" data-sgs-nav-drawer data-sgs-cart-panel data-sgs-cart-mode=\"drawer\" aria-labelledby=\"%3\$s-heading\"><button type=\"button\" class=\"sgs-cart__panel-close\" data-sgs-nav-close aria-label=\"%4\$s\">%5\$s</button>%6\$s</dialog>',",
+	"'<dialog id=\"%1\$s\" class=\"sgs-cart__panel sgs-cart__panel--drawer%2\$s\" data-sgs-nav-drawer data-sgs-cart-panel data-sgs-cart-mode=\"drawer\" aria-labelledby=\"%3\$s-heading\">%4\$s</dialog>',",
+	"'<dialog id=\"%1\$s\" class=\"sgs-cart__panel sgs-cart__panel--drawer\" data-sgs-nav-drawer data-sgs-cart-panel data-sgs-cart-mode=\"drawer\" aria-labelledby=\"%3\$s-heading\">%4\$s</dialog>',",
 	$fn_text
 );
 ok( $bypass_uid_class !== $fn_text, 'negative control B: the uid-class insertion was actually mutated' );

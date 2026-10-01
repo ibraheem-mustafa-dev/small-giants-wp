@@ -147,7 +147,7 @@
 						"css:letter-spacing": "addToCartLetterSpacing",
 						"css:min-height": "addToCartMinHeight"
 					},
-					"_note": "The add-to-cart button (.buybox__add-to-cart): its own look, distinct from the wrapper's border and the price's typography (Eye Care product page, 2026-09-28)."
+					"_note": "The add-to-cart button (.buybox__add-to-cart): its own look, distinct from the wrapper's border and the price's typography."
 				}
 			},
 			"fx": {
@@ -489,7 +489,7 @@
 		"priceLineHeight": {
 			"type": "object",
 			"default": {},
-			"description": "Line height for the current-price element (Eye Care F8 — the draft's price is 38px font on a 38px line; live had no line-height set, so it fell back to the UA default). Unitless ratio, same shape as every other TypographyControls-driven prefix."
+			"description": "Line height for the current-price element. Unitless ratio, same shape as every other TypographyControls-driven prefix."
 		},
 		"priceLineHeightUnit": {
 			"type": "string",
@@ -547,7 +547,7 @@
 		"pickerBandAxis": {
 			"type": "string",
 			"default": "",
-			"description": "Which axis's picker shows a band letter instead of its terms' raw names (Eye Care F1 — the shop's universal Small/Medium/Large lens-width bands). The taxonomy slug (e.g. \"pa_frame-size\"). Empty (default) = off, every picker shows its terms' own labels unchanged."
+			"description": "Which axis's picker shows a band letter instead of its terms' raw names (e.g. Small/Medium/Large size bands). The taxonomy slug (e.g. \"pa_frame-size\"). Empty (default) = off, every picker shows its terms' own labels unchanged."
 		},
 		"pickerBandScale": {
 			"type": "string",
@@ -557,7 +557,7 @@
 		"pickerLabelLinkAxis": {
 			"type": "string",
 			"default": "",
-			"description": "Which axis's picker label gets a text link at its right (Eye Care F2 — \"Which size am I?\" beside Size). The taxonomy slug (e.g. \"pa_frame-size\"). Empty (default) = off. Mutually exclusive with pickerShowSelectedValue on the SAME axis — the link wins for that one axis; every other axis is unaffected."
+			"description": "Which axis's picker label gets a text link at its right (e.g. \"Which size am I?\" beside Size). The taxonomy slug (e.g. \"pa_frame-size\"). Empty (default) = off. Mutually exclusive with pickerShowSelectedValue on the SAME axis — the link wins for that one axis; every other axis is unaffected."
 		},
 		"pickerLabelLinkText": {
 			"type": "string",
@@ -572,7 +572,7 @@
 		"pickerVariationSwatch": {
 			"type": "boolean",
 			"default": false,
-			"description": "A colour/swatch axis tile shows the matching variation's OWN photo when it genuinely differs from the product's main image (Eye Care F9); otherwise today's term-meta swatch tile (colour chip or the term's own shared image). Off (default) — every tile stays as it is today, byte-identical."
+			"description": "A colour/swatch axis tile shows the matching variation's OWN photo when it genuinely differs from the product's main image; otherwise today's term-meta swatch tile (colour chip or the term's own shared image). Off (default) — every tile stays as it is today, byte-identical."
 		},
 		"rrpShowPrice": {
 			"type": "boolean",
@@ -587,7 +587,7 @@
 		"gallerySavingBadge": {
 			"type": "boolean",
 			"default": false,
-			"description": "Show a saving badge on the gallery's main photo (Eye Care F6), using the SAME rrpMetaKey saving as the price row's pill. Hidden automatically when there is no genuine saving. Off (default) — no badge, byte-identical to today."
+			"description": "Show a saving badge on the gallery's main photo, using the SAME rrpMetaKey saving as the price row's pill. Hidden automatically when there is no genuine saving. Off (default) — no badge, byte-identical to today."
 		},
 		"gallerySavingBadgeFormat": {
 			"type": "string",
@@ -631,7 +631,7 @@
 				"lowercase",
 				"capitalize"
 			],
-			"description": "Letter case for the add-to-cart button's label (Eye Care F4). Empty = today's look."
+			"description": "Letter case for the add-to-cart button's label. Empty = today's look."
 		},
 		"addToCartLetterSpacing": {
 			"type": "object",
@@ -659,7 +659,7 @@
 		"addToCartBorderColour": {
 			"type": "string",
 			"default": "",
-			"description": "Border colour for the add-to-cart button (a palette slug or raw CSS colour, resolved via sgs_colour_value()). Empty = the active addToCartStyle preset's own border (today's look). Eye Care's outline preset carries a translucent border correctly extracted from a light-on-dark hero button; this override lets a different add-to-cart instance (e.g. a white-fill button beside it) paint a solid border instead, without changing the shared preset for every other outline button on the site."
+			"description": "Border colour for the add-to-cart button (a palette slug or raw CSS colour, resolved via sgs_colour_value()). Empty = the active addToCartStyle preset's own border (today's look). An outline preset may carry a translucent border; this override lets a different add-to-cart instance (e.g. a white-fill button beside it) paint a solid border instead, without changing the shared preset for every other outline button on the site."
 		},
 		"addToCartBackgroundColour": {
 			"type": "string",
@@ -693,7 +693,7 @@
 				"below",
 				"above"
 			],
-			"description": "Where the stock line renders relative to the axis pickers (Eye Care F5). 'below' (default, today's position) — after the pickers. 'above' — between the price row and the pickers, matching the draft's price / hairline / stock / colour order."
+			"description": "Where the stock line renders relative to the axis pickers. 'below' (default, today's position) — after the pickers. 'above' — between the price row and the pickers."
 		},
 		"stockLineHairline": {
 			"type": "boolean",

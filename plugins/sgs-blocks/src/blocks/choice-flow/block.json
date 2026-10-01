@@ -70,7 +70,7 @@
 							}
 						}
 					},
-					"_note": "Rendered via the shared sgs_button_element_style_css() helper (includes/helpers-button-style.php), the same mechanism sgs/product-card's built-in CTA uses. Colour defaults deliberately do NOT match the theme's 'primary' button preset — real evidence read from the client's own real lens-configurator source (sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html:1531) shows its Back/Close controls use a NEUTRAL ink/paper pair (background:none, border light, hover border darkens to near-black) — the brand accent colour is reserved there for progress-fill/price/badge highlights only, never the nav buttons. Defaults here mirror that: transparent background, `text`/`border` at rest, border darkens to `text` on hover, matching this codebase's own theme tokens for the same roles (2026-09-15)."
+					"_note": "Rendered via the shared sgs_button_element_style_css() helper (includes/helpers-button-style.php), the same mechanism sgs/product-card's built-in CTA uses. Colour defaults deliberately do NOT match the theme's 'primary' button preset: the Back/Close controls use a NEUTRAL ink/paper pair (background:none, border light, hover border darkens to near-black), and the brand accent colour is reserved for progress-fill/price/badge highlights only, never the nav buttons. Defaults here mirror that: transparent background, `text`/`border` at rest, border darkens to `text` on hover, matching this codebase's own theme tokens for the same roles (2026-09-15)."
 				}
 			}
 		}
@@ -94,7 +94,7 @@
 			"type": "string",
 			"enum": [ "compact", "showcase" ],
 			"default": "compact",
-			"description": "FR-43-24 (v1.8.0): 'compact' (default) is the single column for a flow inline on a page. 'showcase' spends a full screen the way the Eye Care draft's lens flow does — a header bar, a full-width progress line, a sticky stage (the finished product, running lines, a big total) beside large image-led option cards. Set on the saved flow, never per placement (FR-43-25)."
+			"description": "FR-43-24 (v1.8.0): 'compact' (default) is the single column for a flow inline on a page. 'showcase' spends a full screen: a header bar, a full-width progress line, a sticky stage (the finished product, running lines, a big total) beside large image-led option cards. Set on the saved flow, never per placement (FR-43-25)."
 		},
 		"maxWidth": {
 			"type": "string",
@@ -179,7 +179,7 @@
 		"summaryBaseLabel": {
 			"type": "string",
 			"default": "Base price",
-			"description": "FIXES item 4 (2026-09-26 Eye Care/showcase pass): the summary panel's running-lines base row label — default 'Base price'; Eye Care sets 'Frame'. showPricePanel still gates the whole panel."
+			"description": "The summary panel's running-lines base row label — default 'Base price'. showPricePanel still gates the whole panel."
 		},
 		"stageNote": {
 			"type": "string",
@@ -194,7 +194,7 @@
 		"progressColour": {
 			"type": "string",
 			"default": "",
-			"description": "Root polish (Eye Care hand-build design gap): the progress bar fill's colour, a palette slug or hex. Empty = the existing default (the 'primary' token, unchanged from before this control existed)."
+			"description": "The progress bar fill's colour, a palette slug or hex. Empty = the existing default (the 'primary' token, unchanged from before this control existed)."
 		},
 		"showHeader": {
 			"type": "boolean",
@@ -219,7 +219,7 @@
 			"type": "string",
 			"enum": [ "icon", "text" ],
 			"default": "icon",
-			"description": "FIXES item 3 (2026-09-26 Eye Care/showcase pass): 'icon' (default, unchanged) is the round 44px Close button. 'text' is the draft's bordered rectangular button (label then a decorative ×, hover brightens the border)."
+			"description": "'icon' (default, unchanged) is the round 44px Close button. 'text' is a bordered rectangular button (label then a decorative ×, hover brightens the border)."
 		},
 		"stickyFooter": {
 			"type": "boolean",
@@ -241,7 +241,7 @@
 			"type": "string",
 			"enum": [ "finished", "current" ],
 			"default": "finished",
-			"description": "FR-43-24: what the progress line counts. 'finished' (D8): questions already answered, empty on question 1. 'current': the question being shown, so question 1 of 4 fills a quarter (the Eye Care draft)."
+			"description": "FR-43-24: what the progress line counts. 'finished' (D8): questions already answered, empty on question 1. 'current': the question being shown, so question 1 of 4 fills a quarter."
 		},
 		"stepCountLabel": {
 			"type": "string",

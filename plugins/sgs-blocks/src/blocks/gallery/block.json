@@ -288,7 +288,7 @@
 		"scrimColour": {
 			"type": "string",
 			"default": "#000000",
-			"description": "The lightbox scrim's tint (U-2 Addendum A, 2026-09-24). Default black (Bean, 2026-09-24: a brand primary-dark tinted the lightbox pink on Mama's; a photo viewer dims to black, as the drawer and cart scrims already do). Strength stays scrimOpacity's 0.9."
+			"description": "The lightbox scrim's tint (U-2 Addendum A, 2026-09-24). Default black: a photo viewer dims to black, as the drawer and cart scrims do, rather than taking a brand tint. Strength stays scrimOpacity's 0.9."
 		},
 		"scrimColourGradient": {
 			"type": "string",

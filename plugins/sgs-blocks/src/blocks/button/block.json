@@ -398,7 +398,7 @@
 			"type": "string",
 			"enum": [ "whole", "face" ],
 			"default": "whole",
-			"description": "What the hover scale above applies to. 'whole' scales the entire button (border, fill and label together) — the existing behaviour. 'face' scales only the inner label/icon face (a `.sgs-button__face` wrapper), leaving the border and background fill in place — the lamalama-style effect."
+			"description": "What the hover scale above applies to. 'whole' scales the entire button (border, fill and label together) — the existing behaviour. 'face' scales only the inner label/icon face (a `.sgs-button__face` wrapper), leaving the border and background fill in place — an inset-face effect."
 		},
 		"transitionDuration": {
 			"type": "number",

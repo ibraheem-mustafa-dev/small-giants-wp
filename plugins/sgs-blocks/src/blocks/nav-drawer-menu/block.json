@@ -1262,7 +1262,7 @@
 		"submenuColourCurrent": {
 			"type": "string",
 			"default": "text",
-			"description": "Current-page ('you are here') submenu row text colour. Defaults to the `text` token: `text` against `submenuLinkBgCurrent`'s `surface-alt` default measures 14.31:1 on the framework's default palette and 12.55:1 on Mama's Munches (both WCAG AA, verified via wcag-contrast.js maths). A fixed default token, not a runtime contrast computation, so the default does not depend on a contrast-check mechanism."
+			"description": "Current-page ('you are here') submenu row text colour. Defaults to the `text` token: `text` against `submenuLinkBgCurrent`'s `surface-alt` default measures 14.31:1 on the framework's default palette (WCAG AA, verified via wcag-contrast.js maths). A fixed default token, not a runtime contrast computation, so the default does not depend on a contrast-check mechanism."
 		},
 		"submenuLinkBg": {
 			"type": "string",
@@ -1277,7 +1277,7 @@
 		"submenuLinkBgCurrent": {
 			"type": "string",
 			"default": "surface-alt",
-			"description": "Current-page ('you are here') submenu row background. Defaults to `surface-alt`, a real framework token every theme.json defines — a subtly raised/alt surface, the same convention a 'currently selected row' uses in an ordinary list. Visually distinct from both the cream Normal row (`surface`) and the solid `primary` Hover fill, while staying closer in tone to Normal than Hover — the standard 'you are here, but not being pointed at' affordance. Paired with `submenuColourCurrent`'s `text` default: 14.31:1 on the framework's default palette, 12.55:1 on Mama's Munches (both WCAG AA, verified via wcag-contrast.js maths)."
+			"description": "Current-page ('you are here') submenu row background. Defaults to `surface-alt`, a real framework token every theme.json defines — a subtly raised/alt surface, the same convention a 'currently selected row' uses in an ordinary list. Visually distinct from both the cream Normal row (`surface`) and the solid `primary` Hover fill, while staying closer in tone to Normal than Hover — the standard 'you are here, but not being pointed at' affordance. Paired with `submenuColourCurrent`'s `text` default: 14.31:1 on the framework's default palette (WCAG AA, verified via wcag-contrast.js maths)."
 		},
 		"submenuLinkBgGradient": {
 			"type": "string",

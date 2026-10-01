@@ -718,7 +718,7 @@
 		"burgerWidth": {
 			"type": "object",
 			"default": {},
-			"description": "FR-U18-G1. Per-tier {desktop,tablet,mobile} CSS length overriding the burger button's WIDTH only (burgerSize keeps height/min-height), so the button can be a genuinely non-square touch target (e.g. 30px wide x 36px tall, lamalama.com). A tier left unset inherits the tier above (sgs_resolve_tier() cascade), and an empty object falls all the way back to burgerSize -- byte-identical to pre-G1 output."
+			"description": "FR-U18-G1. Per-tier {desktop,tablet,mobile} CSS length overriding the burger button's WIDTH only (burgerSize keeps height/min-height), so the button can be a genuinely non-square touch target (e.g. 30px wide x 36px tall). A tier left unset inherits the tier above (sgs_resolve_tier() cascade), and an empty object falls all the way back to burgerSize -- byte-identical to pre-G1 output."
 		},
 		"burgerPadding": {
 			"type": "object",
@@ -764,12 +764,12 @@
 		"burgerIconWidth": {
 			"type": "object",
 			"default": {},
-			"description": "FR-U18-G6. Per-tier {desktop,tablet,mobile} CSS length overriding the width of the default glyph's bar-stack BOX (`.sgs-nav-bar-menu__burger-icon`) -- distinct from burgerWidth (the BUTTON's width). A tier left unset inherits the tier above (sgs_resolve_tier() cascade), and an empty object falls all the way back to today's 24px -- byte-identical to pre-G6 output. Reference: lamalama.com's bars are 16px long."
+			"description": "FR-U18-G6. Per-tier {desktop,tablet,mobile} CSS length overriding the width of the default glyph's bar-stack BOX (`.sgs-nav-bar-menu__burger-icon`) -- distinct from burgerWidth (the BUTTON's width). A tier left unset inherits the tier above (sgs_resolve_tier() cascade), and an empty object falls all the way back to today's 24px -- byte-identical to pre-G6 output."
 		},
 		"burgerIconHeight": {
 			"type": "object",
 			"default": {},
-			"description": "FR-U18-G6. Per-tier {desktop,tablet,mobile} CSS length overriding the height of the default glyph's bar-stack BOX (`.sgs-nav-bar-menu__burger-icon`) -- the stack's own travel distance, published as --sgs-nbm-icon-h and read by every morph pose's calc(). A tier left unset inherits the tier above, and an empty object falls all the way back to today's 18px (8.5px when burgerBarCount is 2) -- byte-identical to pre-G6 output. Reference: lamalama.com's 12px-tall stack collapses to a single line with 5px of travel on open."
+			"description": "FR-U18-G6. Per-tier {desktop,tablet,mobile} CSS length overriding the height of the default glyph's bar-stack BOX (`.sgs-nav-bar-menu__burger-icon`) -- the stack's own travel distance, published as --sgs-nbm-icon-h and read by every morph pose's calc(). A tier left unset inherits the tier above, and an empty object falls all the way back to today's 18px (8.5px when burgerBarCount is 2) -- byte-identical to pre-G6 output."
 		},
 		"burgerFontSize": {
 			"type": "string",
@@ -890,11 +890,11 @@
 		"submenuCaretSize": {
 			"type": "string",
 			"default": "",
-			"description": "I-B6 (U-18). A CSS length overriding the caret glyph's width/height, which otherwise rides `1em` off the item's own font-size (nav-menu-submenu-link-css.php). Empty keeps that `1em` default. Reference: Indus's dropdown caret is 11px."
+			"description": "I-B6 (U-18). A CSS length overriding the caret glyph's width/height, which otherwise rides `1em` off the item's own font-size (nav-menu-submenu-link-css.php). Empty keeps that `1em` default."
 		},
 		"submenuCaretOpacity": {
 			"type": "number",
-			"description": "I-B6 (U-18). Resting opacity (0 to 1) of the caret glyph, independent of the item's own itemOpacity. No default -- unset emits no opacity rule (fully opaque). Reference: Indus rests at 0.6."
+			"description": "I-B6 (U-18). Resting opacity (0 to 1) of the caret glyph, independent of the item's own itemOpacity. No default -- unset emits no opacity rule (fully opaque)."
 		},
 		"submenuCaretOpacityHover": {
 			"type": "number",
@@ -903,17 +903,17 @@
 		"submenuCaretGap": {
 			"type": "string",
 			"default": "",
-			"description": "I-B6 (U-18). Gap between the item label and its caret glyph, on `.{bem}__link` (also covers the mega trigger, which shares that class). Empty keeps the browser's default flex spacing (0). Reference: Indus sets 6px."
+			"description": "I-B6 (U-18). Gap between the item label and its caret glyph, on `.{bem}__link` (also covers the mega trigger, which shares that class). Empty keeps the browser's default flex spacing (0)."
 		},
 		"submenuCaretTurnDuration": {
 			"type": "number",
-			"description": "I-B6 (U-18). Milliseconds the caret takes to turn 180 degrees while its panel is open (nav-menu-submenu-css.php's `[aria-expanded=\"true\"] .{bem}__caret{transform:rotate(180deg)}`). No default -- unset keeps today's instant (untransitioned) turn. Reference: Indus turns over 300ms."
+			"description": "I-B6 (U-18). Milliseconds the caret takes to turn 180 degrees while its panel is open (nav-menu-submenu-css.php's `[aria-expanded=\"true\"] .{bem}__caret{transform:rotate(180deg)}`). No default -- unset keeps today's instant (untransitioned) turn."
 		},
 		"submenuCaretTurnEasing": {
 			"type": "string",
 			"default": "",
 			"enum": [ "", "ease", "ease-out-css", "ease-in-out", "default", "ease-out", "quart-out", "standard", "drafts", "ease-in", "spring", "linear", "custom" ],
-			"description": "I-B6 (U-18). Easing curve for the caret's turn, from the shared motion easing list. Empty falls back to 'ease' once a turn duration is set. Reference: Indus uses 'drafts' (cubic-bezier(0.16, 0.84, 0.32, 1))."
+			"description": "I-B6 (U-18). Easing curve for the caret's turn, from the shared motion easing list. Empty falls back to 'ease' once a turn duration is set."
 		},
 		"submenuCaretTurnEasingCustom": {
 			"type": "string",
@@ -1156,7 +1156,7 @@
 			"type": "string",
 			"enum": [ "all", "with-submenu" ],
 			"default": "all",
-			"description": "U-18 gap G-13. 'all' (default): every top-level item takes the configured hover text/background paint, as today. 'with-submenu': only items that actually open a dropdown or mega panel (`.{bem}__item--has-submenu`, `.{bem}__item--mega`) take that hover paint -- a plain link (Indus's Home, Blog) stays visually inert on hover, since it opens nothing. Scopes the item's own resting-to-hover TEXT COLOUR and BACKGROUND FILL transitions only (nav-menu-css.php); the FR-41-13 parent-keeps-hover-while-submenu-open rules and the item BORDER hover (nav-menu-item-border-featured-css.php) are unaffected by this setting -- both are already submenu-scoped or out of this pass's reach."
+			"description": "U-18 gap G-13. 'all' (default): every top-level item takes the configured hover text/background paint, as today. 'with-submenu': only items that actually open a dropdown or mega panel (`.{bem}__item--has-submenu`, `.{bem}__item--mega`) take that hover paint -- a plain link (e.g. Home, Blog) stays visually inert on hover, since it opens nothing. Scopes the item's own resting-to-hover TEXT COLOUR and BACKGROUND FILL transitions only (nav-menu-css.php); the FR-41-13 parent-keeps-hover-while-submenu-open rules and the item BORDER hover (nav-menu-item-border-featured-css.php) are unaffected by this setting -- both are already submenu-scoped or out of this pass's reach."
 		},
 		"itemBorderHoverTreatment": {
 			"type": "string",
@@ -1222,7 +1222,7 @@
 		"submenuColourCurrent": {
 			"type": "string",
 			"default": "text",
-			"description": "Current-page ('you are here') submenu row text colour. Defaults to the `text` token: `text` against `submenuLinkBgCurrent`'s `surface-alt` default measures 14.31:1 on the framework's default palette and 12.55:1 on Mama's Munches (both WCAG AA, verified via wcag-contrast.js maths). A fixed default token, not a runtime contrast computation, so the default does not depend on a contrast-check mechanism."
+			"description": "Current-page ('you are here') submenu row text colour. Defaults to the `text` token: `text` against `submenuLinkBgCurrent`'s `surface-alt` default measures 14.31:1 on the framework's default palette (WCAG AA, verified via wcag-contrast.js maths). A fixed default token, not a runtime contrast computation, so the default does not depend on a contrast-check mechanism."
 		},
 		"submenuLinkBg": {
 			"type": "string",
@@ -1237,7 +1237,7 @@
 		"submenuLinkBgCurrent": {
 			"type": "string",
 			"default": "surface-alt",
-			"description": "Current-page ('you are here') submenu row background. Defaults to `surface-alt`, a real framework token every theme.json defines — a subtly raised/alt surface, the same convention a 'currently selected row' uses in an ordinary list. Visually distinct from both the cream Normal row (`surface`) and the solid `primary` Hover fill, while staying closer in tone to Normal than Hover — the standard 'you are here, but not being pointed at' affordance. Paired with `submenuColourCurrent`'s `text` default: 14.31:1 on the framework's default palette, 12.55:1 on Mama's Munches (both WCAG AA, verified via wcag-contrast.js maths)."
+			"description": "Current-page ('you are here') submenu row background. Defaults to `surface-alt`, a real framework token every theme.json defines — a subtly raised/alt surface, the same convention a 'currently selected row' uses in an ordinary list. Visually distinct from both the cream Normal row (`surface`) and the solid `primary` Hover fill, while staying closer in tone to Normal than Hover — the standard 'you are here, but not being pointed at' affordance. Paired with `submenuColourCurrent`'s `text` default: 14.31:1 on the framework's default palette (WCAG AA, verified via wcag-contrast.js maths)."
 		},
 		"submenuLinkBgGradient": {
 			"type": "string",
@@ -1616,12 +1616,12 @@
 		"scrimFadeDuration": {
 			"type": "number",
 			"default": 0,
-			"description": "I-M4 (U-18). Fade time of the dimmed layer behind an open dropdown/mega panel, in milliseconds. 0 (default) fades it WITH the panel (submenuAnimationDuration/submenuExitDuration), matching today's behaviour. Mirrors sgs/nav-drawer's own scrimFadeDuration (FR-36-6) for the sibling case. Reference: Indus's scrim is #141923 at 25% opacity, 2px blur, 300ms ease."
+			"description": "I-M4 (U-18). Fade time of the dimmed layer behind an open dropdown/mega panel, in milliseconds. 0 (default) fades it WITH the panel (submenuAnimationDuration/submenuExitDuration), matching today's behaviour. Mirrors sgs/nav-drawer's own scrimFadeDuration (FR-36-6) for the sibling case."
 		},
 		"scrimFadeEasing": {
 			"type": "string",
 			"default": "",
-			"description": "Easing of the backdrop fade, a name from the shared motion list (includes/helpers-motion-easing.php::sgs_motion_easing_css, editor MotionEasingControl). Empty (default) follows the panel's own easing (submenuAnimationEasing). custom reads scrimFadeEasingCustom. Indus's scrim fades 300ms ease while its panel runs cubic-bezier(.16,.84,.32,1)."
+			"description": "Easing of the backdrop fade, a name from the shared motion list (includes/helpers-motion-easing.php::sgs_motion_easing_css, editor MotionEasingControl). Empty (default) follows the panel's own easing (submenuAnimationEasing). custom reads scrimFadeEasingCustom."
 		},
 		"scrimFadeEasingCustom": {
 			"type": "string",
