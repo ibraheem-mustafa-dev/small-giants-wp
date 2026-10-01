@@ -272,7 +272,14 @@
                         {
                           "title": "Ferrari Scuderia",
                           "subtitle": "6 frames",
-                          "link": "/shop/?brands=ferrari-scuderia"
+                          "link": "/shop/?brands=ferrari-scuderia",
+                          "media": {
+                            "id": 625,
+                            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/brand-logo-ferrari-scuderia.svg",
+                            "alt": "Ferrari Scuderia",
+                            "type": "image"
+                          },
+                          "objectFit": "scale-down"
                         }
                       ],
                       "transitionDuration": "250",

@@ -15,6 +15,7 @@ import json
 import mimetypes
 import os
 import re
+import ssl
 import sys
 import urllib.error
 import urllib.parse
@@ -37,9 +38,22 @@ def read_env(path, key):
         sys.exit(f'{path} has no {missing.args[0]}')
 
 
+def ssl_context():
+    """Trust certifi's CA bundle, not the Windows store, which holds an expired root
+    (the same fix as sgs-update-v2.py's _ssl_context). Verification stays on."""
+    try:
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        return ssl.create_default_context()
+
+
 class Api:
     def __init__(self, url, user, password):
+        if not url.startswith('https://'):
+            sys.exit(f'{url} is not https: refusing to send the application password')
         self.url = url
+        self.context = ssl_context()
         self.auth = 'Basic ' + base64.b64encode(f'{user}:{password}'.encode()).decode()
 
     def call(self, method, route, body=None, raw=None, headers=None):
@@ -52,7 +66,7 @@ class Api:
         for name, value in (headers or {}).items():
             request.add_header(name, value)
         try:
-            with urllib.request.urlopen(request, data=data, timeout=60) as response:
+            with urllib.request.urlopen(request, data=data, timeout=60, context=self.context) as response:
                 return json.loads(response.read().decode() or 'null')
         except urllib.error.HTTPError as error:
             sys.exit(f'{method} {route} failed ({error.code}): {error.read().decode()[:300]}')
