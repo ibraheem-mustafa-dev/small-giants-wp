@@ -320,6 +320,100 @@ def tier_object_attrs_from_php(path: Path) -> set:
         var_name, attr_name = m.group(1), m.group(2)
         if re.search(r"'value'\s*=>\s*\$" + re.escape(var_name) + r"\b", text):
             found.add(attr_name)
+    found |= _closure_dispatched_tier_attrs(text)
+    return found
+
+
+def _split_args(arg_text: str) -> list:
+    """Split a PHP argument list on its top-level commas (not inside brackets or quotes)."""
+    args, depth, current, quote = [], 0, '', ''
+    for char in arg_text:
+        if quote:
+            quote = '' if char == quote else quote
+        elif char in '\'"':
+            quote = char
+        elif char in '([':
+            depth += 1
+        elif char in ')]':
+            depth -= 1
+        if char == ',' and depth == 0 and not quote:
+            args.append(current.strip())
+            current = ''
+        else:
+            current += char
+    if current.strip():
+        args.append(current.strip())
+    return args
+
+
+def _balanced(text: str, start: int) -> str:
+    """The text from `start` (just after an opening parenthesis) to its match."""
+    depth, i = 1, start
+    while i < len(text) and depth:
+        depth += {'(': 1, ')': -1}.get(text[i], 0)
+        i += 1
+    return text[start:i - 1]
+
+
+def _call_arg_lists(text: str, callee: str) -> list:
+    """The argument text of every `$callee( ... )` call, parentheses balanced."""
+    return [_balanced(text, m.end()) for m in re.finditer(r"\$" + re.escape(callee) + r"\s*\(", text)]
+
+
+def _closure_dispatched_tier_attrs(text: str) -> set:
+    """The same call shape behind a closure: `$tier = static function ( $sel,
+    $key, ... ) use ( $attributes ) { ... 'value' => $attributes[ $key ] ... }`,
+    called as `$tier( ..., 'attrName', ... )` or, inside `foreach ( $rows as
+    $row )`, as `$tier( ..., $row[1], ... )` over a literal `$rows = array(
+    array( ..., 'attrName', ... ), ... )` (sgs/cart's mini-cart panel boxes).
+    Only literal strings at the closure's key position count."""
+    found = set()
+    for key in re.finditer(r"'value'\s*=>\s*\$attributes\[\s*\$([A-Za-z_][A-Za-z0-9_]*)\s*\]", text):
+        key_var = key.group(1)
+        closure_re = re.compile(
+            r"\$([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:static\s+)?function\s*\(([^)]*)\)"
+        )
+        for closure in closure_re.finditer(text, 0, key.start()):
+            params = [re.sub(r"=.*$", '', p).split()[-1] for p in _split_args(closure.group(2)) if p.split()]
+            if '$' + key_var not in params:
+                continue
+            # The emission must sit inside THIS closure's body, not a sibling's.
+            body_open = text.find('{', closure.end())
+            depth, body_end = 1, body_open + 1
+            while body_open != -1 and body_end < len(text) and depth:
+                depth += {'{': 1, '}': -1}.get(text[body_end], 0)
+                body_end += 1
+            if body_open == -1 or not body_open < key.start() < body_end:
+                continue
+            position = params.index('$' + key_var)
+            for arg_text in _call_arg_lists(text, closure.group(1)):
+                args = _split_args(arg_text)
+                if position >= len(args):
+                    continue
+                arg = args[position]
+                literal = re.fullmatch(r"['\"]([A-Za-z0-9_]+)['\"]", arg)
+                if literal:
+                    found.add(literal.group(1))
+                    continue
+                row_ref = re.fullmatch(r"\$([A-Za-z_][A-Za-z0-9_]*)\[\s*(\d+)\s*\]", arg)
+                if not row_ref:
+                    continue
+                row_var, index = row_ref.group(1), int(row_ref.group(2))
+                for loop in re.finditer(
+                    r"foreach\s*\(\s*\$([A-Za-z_][A-Za-z0-9_]*)\s+as\s+\$" + re.escape(row_var) + r"\s*\)", text
+                ):
+                    rows_def = re.search(r"\$" + re.escape(loop.group(1)) + r"\s*=\s*array\s*\(", text)
+                    if not rows_def:
+                        continue
+                    for row_text in _split_args(_balanced(text, rows_def.end())):
+                        row = re.fullmatch(r"array\s*\((.*)\)", row_text, re.DOTALL)
+                        if not row:
+                            continue
+                        cells = _split_args(row.group(1))
+                        if index < len(cells):
+                            cell = re.fullmatch(r"['\"]([A-Za-z0-9_]+)['\"]", cells[index])
+                            if cell:
+                                found.add(cell.group(1))
     return found
 
 
