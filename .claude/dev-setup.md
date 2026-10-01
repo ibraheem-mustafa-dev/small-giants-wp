@@ -2585,12 +2585,19 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|
 | `sgs_button_element_style_css` | `function sgs_button_element_style_css( array $attrs, string $prefix, string $selector, bool $bg_layer =…` | Build a scoped CSS string (base rule + hover/focus rule) for a built-in button-like element, reading a prefixed attribute set. |
 
-#### `includes/helpers-cart-panel.php` — 3 function(s)
+#### `includes/helpers-cart-panel-css.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_cart_panel_css` | `function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): array` | Scoped CSS for the mini-cart panel's own settings (typography, colours, per-device lengths, padding boxes, shadow, motion), for flyout and… |
+
+#### `includes/helpers-cart-panel.php` — 4 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_cart_trigger_html` | `function sgs_cart_trigger_html( string $mode, string $inner_html, array $args ): string` | Build the cart trigger for the given display mode. |
 | `sgs_cart_panel_body_html` | `function sgs_cart_panel_body_html( array $args ): string` | Build the shared mini-cart panel body. |
+| `sgs_cart_close_button_html` | `function sgs_cart_close_button_html(): string` | The drawer's close button. It sits in the panel head row (built into `sgs_cart_panel_body_html()` through `$args['close_html']`), so the… |
 | `sgs_cart_panel_wrapper_html` | `function sgs_cart_panel_wrapper_html( string $mode, string $body_html, array $args ): string` | Wrap the panel body in the element the display mode's ARIA pattern requires. |
 
 #### `includes/helpers-colour-parse.php` — 3 function(s)
@@ -2823,13 +2830,14 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_reviews_resolve` | `function sgs_reviews_resolve( array $attributes, string $place_id, ?callable $fetcher = null ): ?array` | Decide what `sgs/google-reviews` may show, in order: written, live Google, sample, or nothing. |
 | `sgs_reviews_may_emit_schema` | `function sgs_reviews_may_emit_schema( string $source, array $data ): bool` | Whether `LocalBusiness` + `AggregateRating` JSON-LD may be printed for this data. |
 
-#### `includes/helpers-row-behaviour.php` — 3 function(s)
+#### `includes/helpers-row-behaviour.php` — 4 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_row_shrink_css` | `function sgs_row_shrink_css( $selector, $padding )` | Build the per-instance "shrunk" vertical-padding CSS for one row. |
 | `sgs_block_is_header_essential` | `function sgs_block_is_header_essential( $block_name )` | Is this block type flagged as essential header furniture? |
 | `sgs_resolve_row_shrink_hide_target` | `function sgs_resolve_row_shrink_hide_target( $block, $raw_target )` | Validate the stored shrink-hide target against this row's actual children. |
+| `sgs_row_shrink_settings_css` | `function sgs_row_shrink_settings_css( $root_sel, array $attributes )` | The row's own shrink settings: an explicit shrunk padding (rowShrinkPadding, per device, all four sides) in place of the proportional… |
 
 #### `includes/helpers-scoped-instance-vars.php` — 3 function(s)
 
@@ -3044,7 +3052,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_saving_display` | `function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_pence, string $framing_mode, bool…` | Plain-text saving label for one row of the comparative value ladder (Spec 28 P1). |
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 28 P1). |
 
-**50 files, 241 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**51 files, 244 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -3059,6 +3067,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `CursorFieldRowControls.js` | `CursorFieldRowControls` | CursorFieldRowControls — shared cursor-reactive-field (FR-38-25) controls for blocks that are NOT on the shared fx ToolsPanel… |
 | `DateTimePickerField.js` | `DateTimePickerField (default)` | DateTimePickerField — the SGS standard DATE control (golden-controls.json goldens/input.json `date` row, Bean-approved live… |
 | `DesignTokenPicker.js` | `DesignTokenPicker (default)`, `resolveColourToken` | Colour picker that reads the active theme.json palette. |
+| `EntranceStaggerControls.js` | `EntranceStaggerControls (default)` | EntranceStaggerControls — when an entrance starts and how blocks cascade. |
 | `FieldLabelLayoutPanel.js` | `FieldLabelLayoutPanel (default)` | "Label and headings" panel for SGS form fields: whether the field's label shows or is read only by screen readers, and (for boxes… |
 | `FlowingGradientRowControls.js` | `isCssOnlyFlowingGradientVariant`, `FlowingGradientRowControls` | FlowingGradientRowControls — shared "flowing gradient" (`wave-gradient`) controls for blocks that reach the effect via a… |
 | `FocalPositionField.js` | `FocalPositionField (default)` | FocalPositionField — the SGS wrapper around WP-native `FocalPointPicker` |
@@ -3072,7 +3081,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `MediaGalleryPicker.js` | `MediaGalleryPicker (default)` | MediaGalleryPicker — shared bulk multi-select media component for SGS blocks. |
 | `MediaPicker.js` | `MediaPicker (default)` | MediaPicker — shared media-slot component for SGS blocks. |
 | `MediaSizingPanel.js` | `MediaSizingPanel (default)`, `RATIO_OPTIONS` | MediaSizingPanel — the shared "media size & crop" panel (C19, 2026-08-27). |
-| `MotionEasingControl.js` | `MotionEasingControl (default)`, `isValidCubicBezier`, `MOTION_EASING_OPTIONS` | MotionEasingControl: the shared named-easing picker for nav motion (Wave 3C U-5). One list read by the burger morph, the drawer… |
+| `MotionEasingControl.js` | `MotionEasingControl (default)`, `isValidCubicBezier`, `motionEasingCss`… | MotionEasingControl: the shared named-easing picker for nav motion (Wave 3C U-5). One list read by the burger morph, the drawer… |
 | `ParticleTrailRowControls.js` | `ParticleTrailRowControls` | ParticleTrailRowControls — shared particle-trail (FR-38-32) controls for blocks that reach the effect via a block-private escape… |
 | `ResponsiveBoxControl.js` | `ResponsiveBoxControl (default)`, `ResponsiveBorderRadiusControl`, `BOX_UNITS`… | ResponsiveBoxControl / ResponsiveBorderRadiusControl — shared responsive box-family editor controls (Box-object interface… |
 | `ResponsiveBoxControls.js` | `ResponsiveBoxControls (default)` | ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel. |
@@ -3101,7 +3110,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SurfaceTreatmentPanel.js` | `isSimpleBackgroundImage`, `SurfaceTreatmentPanel` | SurfaceTreatmentPanel — shared surface-treatment (grain/halftone/duotone) controls for blocks that reach the effect via… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**48 files.**
+**49 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 

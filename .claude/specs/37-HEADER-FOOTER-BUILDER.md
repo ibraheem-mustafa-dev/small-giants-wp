@@ -1539,7 +1539,7 @@ against whatever is behind (`mix-blend-mode: difference`, ink white), with no sc
   `canvas`, `iframe` or a background image without a tone class) means unknown; otherwise an opaque
   computed background colour is judged with `sgs_wcag_white_wins_for_luminance()`'s rule
   (`plugins/sgs-blocks/src/header-behaviours/header-ink-tone.js`). Unknown leaves the header's own colour.
-- **Only where the header is see-through.** `plugins/sgs-blocks/includes/sgs-header-ink-css.php::sgs_header_ink_live_state`
+- **Only where the header is see-through.** `plugins/sgs-blocks/includes/sgs-header-ink-helpers.php::sgs_header_ink_live_state`
   publishes, per tier, when the tone classes may be set (`data-sgs-header-ink`: `always` with no own fill or
   with a tone fill, `rest` or `scrolled` for Transparent's see-through state); outside it view.js sets no
   class, so an opaque header reads its own fill. With Transparent on, a tone fill paints only in the solid
