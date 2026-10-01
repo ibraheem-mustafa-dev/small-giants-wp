@@ -42,8 +42,8 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-01).** `main` at the handoff commit; eye-care-test and sandybrown run the plugin and theme as of
-35c6c2dbd (deploys verified by checksum; later commits touch scripts and site files only). Applied with no invalid
+**Now (2026-10-01).** eye-care-test and sandybrown run the plugin and theme as of 454c965bd (deploys verified by
+checksum; later commits touch docs only). Applied with no invalid
 blocks: header 199, mobile menu 203, megas 165/176/183/186, home 208; 40 brand logos set. Not yet re-walked. No
 blockers.
 
@@ -58,7 +58,7 @@ groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer 
 Plan: `plans/2026-10-01-header-nav-thread-plan.md` (the only plan for the thread; the wave-3C, strategic,
 reference-capture and G8 plans are archived). Proof: `verify/merged-spec36-37-track.md`.
 
-**Now (2026-10-01).** Waves 1-3C built and live on sandybrown (35c6c2dbd); owed Wave 1-3 items in plan §3. Gate 3C items 1, 2, 3, 5 pass. Item 4: the
+**Now (2026-10-01).** Waves 1-3C built and live on sandybrown (454c965bd); owed Wave 1-3 items in plan §3. Gate 3C items 1, 2, 3, 5 pass. Item 4: the
 walk after this session's deploy (`reports/visual-diff/gate3c-copies-walk-2026-10-01.md`) leaves Indus 10 violations
 and 3 jitter rows, lamalama 7 violations and 1 foundational gap (G8, parked); no new foundational gap. Header fixes
 this session: per-device values accepted for the nav, drawer and cart box settings; a mega panel no longer flashes at
