@@ -455,6 +455,8 @@
     "wc_get_account_menu_items",
     "wc_get_order_status_name",
     "get_privacy_policy_url",
-    "wp_print_inline_script_tag"
+    "wp_print_inline_script_tag",
+    "_wp_relative_upload_path",
+    "woocommerce_store_api_register_endpoint_data"
   ]
 }
