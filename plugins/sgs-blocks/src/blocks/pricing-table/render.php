@@ -711,13 +711,13 @@ if ( 'none' !== $border_style ) {
 	// class default) would otherwise keep painting even though the
 	// operator picked "no border". Cause-agnostic: harmless when no
 	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+	$responsive_css .= $root_sel . '{border-style:none;border-width:0;}';
 }
 
 // Lines between each plan's features: the shared Separators setting, drawn by the
 // features themselves (includes/helpers-separators-line-css.php). The tick owns
 // ::before, so the line sits on ::after.
-$scoped_css[] = sgs_separators_css(
+$responsive_css .= sgs_separators_css(
 	$attributes['separators'] ?? array(),
 	array(
 		'list'      => $root_sel . ' .sgs-pricing-table__features',
