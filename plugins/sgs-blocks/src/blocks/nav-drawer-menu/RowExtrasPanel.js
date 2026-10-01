@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { Button, PanelBody, RangeControl, ToggleControl } from '@wordpress/components';
-import { IconPicker, SgsLengthControl } from '../../components';
+import { IconPicker, ResponsiveLengthControl, SgsLengthControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import OrnamentFramesControls from './OrnamentFramesControls';
 import ExpanderCaretControls from './ExpanderCaretControls';
@@ -8,7 +8,6 @@ import {
 	ORNAMENT_OPTIONS,
 	ORNAMENT_REVEAL_MODE_OPTIONS,
 	REVEAL_OPTIONS,
-	TierLength,
 	TierToggle,
 	tierObject,
 } from './row-extras-tier-controls';
@@ -81,7 +80,7 @@ export default function RowExtrasPanel( { attributes, setAttributes } ) {
 			) }
 			{ usesOrnament && (
 				<>
-					<TierLength
+					<ResponsiveLengthControl
 						label={ __( 'Ornament size', 'sgs-blocks' ) }
 						help={ __( 'The icon box, or the number’s text size.', 'sgs-blocks' ) }
 						value={ itemOrnamentSize }
@@ -160,12 +159,12 @@ export default function RowExtrasPanel( { attributes, setAttributes } ) {
 						options={ REVEAL_OPTIONS }
 						onChange={ ( obj ) => setAttributes( { itemMediaReveal: obj } ) }
 					/>
-					<TierLength
+					<ResponsiveLengthControl
 						label={ __( 'Image width', 'sgs-blocks' ) }
 						value={ itemMediaWidth }
 						onChange={ ( obj ) => setAttributes( { itemMediaWidth: obj } ) }
 					/>
-					<TierLength
+					<ResponsiveLengthControl
 						label={ __( 'Image height', 'sgs-blocks' ) }
 						value={ itemMediaHeight }
 						onChange={ ( obj ) => setAttributes( { itemMediaHeight: obj } ) }

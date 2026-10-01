@@ -7,7 +7,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { ResponsiveOverride, SgsLengthControl } from '../../components';
+import { ResponsiveOverride } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 export const ORNAMENT_OPTIONS = [
@@ -57,33 +57,6 @@ export function TierToggle( { label, help, value, options, onChange } ) {
 						<ToggleGroupControlOption key={ option.value } value={ option.value } label={ option.label } />
 					) ) }
 				</ToggleGroupControl>
-			) }
-		</ResponsiveOverride>
-	);
-}
-
-/**
- * A per-device length under the global device toggle.
- *
- * @param {Object}   root0          Props.
- * @param {string}   root0.label    Control label.
- * @param {string}   root0.help     Help text.
- * @param {Object}   root0.value    The tier object.
- * @param {Function} root0.onChange Receives the next tier object.
- */
-export function TierLength( { label, help, value, onChange } ) {
-	return (
-		<ResponsiveOverride label={ label } value={ tierObject( value ) } onChange={ onChange }>
-			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-				<SgsLengthControl
-					label={ label }
-					hideLabelFromVision
-					help={ help }
-					value={ ownValue || '' }
-					placeholder={ inherited ? effectiveValue : '' }
-					onChange={ ( val ) => setOwnValue( val || undefined ) }
-					presets={ false }
-				/>
 			) }
 		</ResponsiveOverride>
 	);

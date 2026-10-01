@@ -1,9 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import { RangeControl } from '@wordpress/components';
 import {
-	SgsLengthControl,
 	ResponsiveControl,
 	ResponsiveOverride,
+	ResponsiveLengthControl,
 	SgsBoxControl,
 	BOX_UNITS,
 	normaliseResponsiveBox,
@@ -80,26 +80,15 @@ export default function ListLayoutPanel( {
 				onDeselect={ () => setAttributes( { gap: { desktop: '8px' } } ) }
 				isShownByDefault
 			>
-				<ResponsiveOverride
+				<ResponsiveLengthControl
 					label={ __( 'Item gap', 'sgs-blocks' ) }
-					value={ gap && typeof gap === 'object' ? gap : {} }
-					onChange={ ( obj ) => setAttributes( { gap: obj } ) }
-				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-						<SgsLengthControl
-							label={ __( 'Item gap', 'sgs-blocks' ) }
-							hideLabelFromVision
-							help={ __(
-								'Space between menu items at this device. Tablet and mobile follow desktop until set.',
-								'sgs-blocks'
-							) }
-							value={ ownValue || '' }
-							placeholder={ inherited ? effectiveValue : '' }
-							onChange={ ( val ) => setOwnValue( val || undefined ) }
-							presets={ false }
-						/>
+					help={ __(
+						'Space between menu items at this device. Tablet and mobile follow desktop until set.',
+						'sgs-blocks'
 					) }
-				</ResponsiveOverride>
+					value={ gap }
+					onChange={ ( obj ) => setAttributes( { gap: obj } ) }
+				/>
 			</ToolsPanelItem>
 
 			{ showColumnsControl && (

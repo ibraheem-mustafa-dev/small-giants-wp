@@ -11,8 +11,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { RangeControl } from '@wordpress/components';
-import { SgsBorderControl, ResponsiveBoxControl } from '../../components';
-import { TierLength } from './chrome-tier-controls';
+import { SgsBorderControl, ResponsiveBoxControl, ResponsiveLengthControl } from '../../components';
 
 /**
  * @param {Object}   props               Props.
@@ -36,7 +35,7 @@ export default function CloseBoxControls( { attributes, setAttributes } ) {
 				onColourChange={ ( value ) => setAttributes( { closeBorderColour: value ?? '' } ) }
 				colourLinked
 			/>
-			<TierLength
+			<ResponsiveLengthControl
 				label={ __( 'Close icon size', 'sgs-blocks' ) }
 				value={ closeIconSize }
 				onChange={ ( obj ) => setAttributes( { closeIconSize: obj } ) }

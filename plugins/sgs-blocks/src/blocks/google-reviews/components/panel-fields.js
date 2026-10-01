@@ -2,7 +2,7 @@
  * Google Reviews — the field controls the styling sections share.
  *
  * Each is a thin composition of a control the other blocks already mount
- * (ResponsiveOverride + SgsLengthControl / SgsBoxControl, SgsBorderControl, TypographyControls);
+ * (ResponsiveLengthControl, ResponsiveOverride + SgsBoxControl, SgsBorderControl, TypographyControls);
  * nothing here is a new control. The section shell and reset logic are in panel-kit.js.
  *
  * @package SGS\Blocks
@@ -11,7 +11,7 @@
 import { __ } from '@wordpress/i18n';
 import {
 	ResponsiveOverride,
-	SgsLengthControl,
+	ResponsiveLengthControl,
 	SgsBoxControl,
 	SgsBorderControl,
 	TypographyControls,
@@ -23,23 +23,12 @@ import { Row, borderStyleValue, typographyAttrs } from './panel-kit';
 /** A tier object of CSS lengths ({desktop, tablet, mobile}), one length per device. */
 export function TierLength( { label, attr, attributes, setAttributes } ) {
 	return (
-		<ResponsiveOverride
+		<ResponsiveLengthControl
 			label={ label }
+			units={ BOX_UNITS }
 			value={ attributes[ attr ] }
 			onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
-		>
-			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-				<SgsLengthControl
-					presets={ false }
-					label={ label }
-					hideLabelFromVision
-					units={ BOX_UNITS }
-					value={ ownValue || '' }
-					placeholder={ inherited ? effectiveValue : '' }
-					onChange={ ( val ) => setOwnValue( val || '' ) }
-				/>
-			) }
-		</ResponsiveOverride>
+		/>
 	);
 }
 

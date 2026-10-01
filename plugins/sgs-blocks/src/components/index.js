@@ -1,6 +1,7 @@
 export { default as ResponsiveControl } from './ResponsiveControl';
 export { default as BooleanResponsiveControl } from './BooleanResponsiveControl';
 export { default as ResponsiveOverride } from './ResponsiveOverride';
+export { default as ResponsiveLengthControl } from './ResponsiveLengthControl';
 export { default as ResponsiveTriStateControl } from './ResponsiveTriStateControl';
 export {
 	default as ResponsiveBoxControl,
@@ -88,6 +89,7 @@ export { default as StarterLookPresetControl } from './StarterLookPresetControl'
 export { default as SsrPreviewGuard } from './SsrPreviewGuard';
 export { default as SurfaceGroundControls } from './SurfaceGroundControls';
 export { default as ScrimControls, scrimColourRow } from './ScrimControls';
+export { gapColourRow, gapColourPreview } from './GapColour';
 export {
 	default as MotionEasingControl,
 	MOTION_EASING_OPTIONS,

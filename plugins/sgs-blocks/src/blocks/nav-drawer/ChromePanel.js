@@ -10,8 +10,8 @@
 import { __ } from '@wordpress/i18n';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { BaseControl, Button, PanelBody, TextControl, ToggleControl } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel, fillRow } from '../../components';
-import { TierLength, TierShow } from './chrome-tier-controls';
+import { ResponsiveBoxControl, ResponsiveLengthControl, SgsColourPanel, fillRow } from '../../components';
+import { TierShow } from './chrome-tier-controls';
 import ChromeSlotControls from './ChromeSlotControls';
 import CloseBoxControls from './CloseBoxControls';
 
@@ -107,7 +107,7 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { chromeLogoLink: value } ) }
 						__nextHasNoMarginBottom
 					/>
-					<TierLength
+					<ResponsiveLengthControl
 						label={ __( 'Logo width', 'sgs-blocks' ) }
 						value={ chromeLogoWidth }
 						onChange={ ( obj ) => setAttributes( { chromeLogoWidth: obj } ) }
@@ -133,12 +133,12 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 					} ),
 				] }
 			/>
-			<TierLength
+			<ResponsiveLengthControl
 				label={ __( 'Top row height', 'sgs-blocks' ) }
 				value={ chromeRowHeight }
 				onChange={ ( obj ) => setAttributes( { chromeRowHeight: obj } ) }
 			/>
-			<TierLength
+			<ResponsiveLengthControl
 				label={ __( 'Space between items', 'sgs-blocks' ) }
 				value={ chromeRowGap }
 				onChange={ ( obj ) => setAttributes( { chromeRowGap: obj } ) }
