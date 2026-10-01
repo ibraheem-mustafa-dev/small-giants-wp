@@ -6636,6 +6636,22 @@
 			"_why": "2026-10-01 (deploy gate, orphan_unclassified). tiles | row: chooses how logo brands lay out (the sgs-brand-strip--layout-row class variant), not a CSS value."
 		},
 		{
+			"slug": "sgs/cart",
+			"attr": "panelSlideEasingCustom",
+			"fields": {
+				"role": "technical"
+			},
+			"_why": "2026-10-01 (deploy gate, orphan_unclassified). A hand-typed cubic-bezier() read only when panelSlideEasing is custom; same role as sgs/nav-bar-menu scrimFadeEasingCustom."
+		},
+		{
+			"slug": "sgs/cart",
+			"attr": "panelInstalmentsCount",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_why": "2026-10-01 (deploy gate, orphan_unclassified). How many instalments the mini-cart note divides the total by; a whole number the render reads, no CSS property."
+		},
+		{
 			"slug": "sgs/nav-drawer-menu",
 			"attr": "itemSeparatorPosition",
 			"fields": {

@@ -15945,6 +15945,22 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "panelSlideDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "panelFrame"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelSlideEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "panelFrame"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "panelTextColourGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -16062,6 +16078,15 @@
         "css_property": "color",
         "role": "color",
         "css_element": "subtotal"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "subtotalValueColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "subtotalValue"
       }
     },
     {

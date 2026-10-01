@@ -197,14 +197,17 @@
 					"order": 9,
 					"clusters": [
 						"layout",
-						"fill"
+						"fill",
+						"motion"
 					],
 					"prefix": "panel",
 					"attrMap": {
 						"css:max-width": "panelMaxWidth",
-						"css:box-shadow": "panelShadow"
+						"css:box-shadow": "panelShadow",
+						"css:transition-duration": "panelSlideDuration",
+						"css:transition-timing-function": "panelSlideEasing"
 					},
-					"_note": "Drawer surface geometry. The dialog carries the block uid class itself because the shared nav store re-parents it to <body> on open, so every panel rule is scoped to `.{uid}.sgs-cart__panel`, never the block wrapper. panelShadowColour pairs with panelShadow through ShadowControl; panelSlideDuration/panelSlideEasing drive the slide-in animation (a plain number and easing string, not a css property member)."
+					"_note": "Drawer surface geometry. The dialog carries the block uid class itself because the shared nav store re-parents it to <body> on open, so every panel rule is scoped to `.{uid}.sgs-cart__panel`, never the block wrapper. panelShadowColour pairs with panelShadow through ShadowControl; panelSlideDuration/panelSlideEasing are the slide-in transition's duration and curve (panelSlideEasingCustom holds a hand-typed curve)."
 				},
 				"panelHead": {
 					"label": "Panel head row",
@@ -376,7 +379,8 @@
 					"label": "Item action link",
 					"order": 24,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "itemAction",
 					"attrMap": {
@@ -388,7 +392,8 @@
 					"label": "Item remove link",
 					"order": 25,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "itemRemove",
 					"attrMap": {
@@ -420,7 +425,18 @@
 					"attrMap": {
 						"css:color": "subtotalLabelColour"
 					},
-					"_note": "subtotalLabelColour colours the label and row; subtotalValueColour colours the amount on the right."
+					"_note": "subtotalLabelColour colours the label and row; the amount on the right is its own element (subtotalValue)."
+				},
+				"subtotalValue": {
+					"label": "Subtotal amount",
+					"order": 32,
+					"clusters": [
+						"text"
+					],
+					"prefix": "subtotalValue",
+					"attrMap": {
+						"css:color": "subtotalValueColour"
+					}
 				},
 				"freeDeliveryText": {
 					"label": "Free-delivery message",
