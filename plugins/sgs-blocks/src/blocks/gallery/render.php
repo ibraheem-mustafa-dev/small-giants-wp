@@ -875,6 +875,33 @@ if ( $enable_lightbox ) {
 	$gallery_responsive_css .= sgs_scrim_render( $attributes, $uid, array( 'open' => '.' . $uid . '.sgs-gallery__lightbox:modal' ) );
 }
 
+// Lines between the grid layout's items: the shared Separators setting
+// (includes/helpers-separators.php), flow path. The gallery's grid is the child
+// `.sgs-gallery__grid`, not the wrapper's own element, so the block names that list and
+// marks its own root, and the wrapper is handed no `separators` (it would mark and style
+// an element that is not the grid). Masonry and carousel draw none.
+$sgs_wrapper_attributes = $attributes;
+unset( $sgs_wrapper_attributes['separators'] );
+if ( 'grid' === $layout ) {
+	$sgs_gal_sep_css = sgs_separators_css(
+		$attributes['separators'] ?? array(),
+		array(
+			'list'     => $root_sel . ' .sgs-gallery__grid',
+			'layout'   => 'flow',
+			'gap_expr' => array(
+				'row'    => 'var(--sgs-gap, 16px)',
+				'column' => 'var(--sgs-gap, 16px)',
+			),
+		),
+		sgs_container_separators_caps()
+	);
+	if ( '' !== $sgs_gal_sep_css ) {
+		$gallery_responsive_css           .= $sgs_gal_sep_css;
+		$wrapper_classes                  .= ' ' . sgs_separators_root_attrs( '.sgs-gallery__grid' )['class'];
+		$extra_attrs['data-sgs-sep-list']  = '.sgs-gallery__grid';
+	}
+}
+
 // CSS combinators like `>` intact. Every value reaching $gallery_responsive_css
 // is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles),
 // so no un-sanitised value survives to here.
@@ -885,7 +912,7 @@ if ( $gallery_responsive_css ) {
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes all output internally; variables are pre-sanitised above.
 echo SGS_Container_Wrapper::render(
-	$attributes,
+	$sgs_wrapper_attributes,
 	$block,
 	$inner_html,
 	'layout',
