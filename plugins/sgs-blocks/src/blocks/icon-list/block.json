@@ -28,6 +28,16 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"separators": {
+				"separators": {
+					"axes": [
+						"row"
+					],
+					"edges": true,
+					"hover": false,
+					"sweep": false
+				}
+			},
 			"collection": true,
 			"iconPicker": true,
 			"arrayContentLift": true,
@@ -196,6 +206,11 @@
 		"root": ".wp-block-sgs-icon-list"
 	},
 	"attributes": {
+		"separators": {
+			"type": "object",
+			"default": {},
+			"description": "The lines drawn between the list's items (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, edges: between | all | end }. A horizontal line centred in the gap between stacked items, drawn by the items; edges `all` also draws the line above the first item and below the last, `end` only below the last. No thickness (the default) draws nothing; no colour inherits the text colour."
+		},
 		"padding": {
 			"type": "object",
 			"default": {
@@ -299,20 +314,6 @@
 		"iconSize": {
 			"type": "string",
 			"default": "medium"
-		},
-		"dividers": {
-			"type": "boolean",
-			"default": false
-		},
-		"dividerColour": {
-			"type": "string",
-			"default": "",
-			"description": "Colour of the divider lines drawn between items when `dividers` is on. Empty keeps today's default border-colour token."
-		},
-		"dividerEdges": {
-			"type": "boolean",
-			"default": false,
-			"description": "With `dividers` on, also draw a line above the first item and below the last, boxing the list."
 		},
 		"iconBackgroundColour": {
 			"type": "string",

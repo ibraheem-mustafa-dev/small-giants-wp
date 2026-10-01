@@ -65,11 +65,10 @@ import DisabledItemsPanel from './DisabledItemsPanel';
 import OrnamentHiddenItemsPanel from './OrnamentHiddenItemsPanel';
 import SubmenuLinkPaddingPanel from './SubmenuLinkPaddingPanel';
 import MegaBodyPaddingPanel from './MegaBodyPaddingPanel';
-import RowSeparatorPanel from './RowSeparatorPanel';
+import SeparatorsPanel from '../../shared/nav-menu-panels/SeparatorsPanel';
 import SectionMotionPanel from './SectionMotionPanel';
 // The bar's own treatment node (none / swap / sweep + angle) for its separator
 // colour row, reused as-is: it names nothing bar-specific.
-import { ItemSeparatorTreatment } from '../nav-bar-menu/BarColourRowExtras';
 import TrailingIconPanel from './TrailingIconPanel';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
 // rather than inside the shared ColourRowExtras/ColourTreatment modules,
@@ -115,12 +114,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		itemFontWeightCurrent,
 		itemMagnetEnabled,
 		itemMagnetStrength,
-		itemSeparatorWidth,
-		itemSeparatorStyle,
-		itemSeparatorColour,
-		itemSeparatorColourHover,
-		itemSeparatorHoverTreatment,
-		itemSeparatorSweepAngle,
 		itemHoverScope,
 		justifyContent,
 		submenuBorderRadius,
@@ -128,10 +121,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		submenuShadowColour,
 		submenuBorderColour,
 		submenuBorderColourGradient,
-		submenuLinkBorderWidth,
-		submenuLinkBorderStyle,
-		submenuLinkBorderColour,
-		submenuLinkBorderColourHover,
 		sublinkMarkerIcon,
 		submenuPadding,
 		submenuBorderWidth,
@@ -367,43 +356,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				/>
 			),
 		},
-		// The independent horizontal rule between stacked top-level rows — the
-		// drawer's counterpart of the bar's between-item divider (FR-41-37). No
-		// Current state: a rule between rows is not itself a page.
-		{
-			key: 'item-separator',
-			label: __( 'Row divider colour', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: itemSeparatorColour,
-					onChange: ( val ) =>
-						setAttributes( { itemSeparatorColour: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: itemSeparatorColourHover,
-					onChange: ( val ) =>
-						setAttributes( { itemSeparatorColourHover: val ?? '' } ),
-					linked: true,
-				},
-			],
-			after: (
-				<ItemSeparatorTreatment
-					value={ itemSeparatorHoverTreatment }
-					onChange={ ( val ) =>
-						setAttributes( { itemSeparatorHoverTreatment: val } )
-					}
-					angle={ itemSeparatorSweepAngle }
-					onAngleChange={ ( val ) =>
-						setAttributes( { itemSeparatorSweepAngle: val } )
-					}
-				/>
-			),
-		},
 		fillRow( {
 			key: 'submenu-bg',
 			heading: __( 'Submenu', 'sgs-blocks' ),
@@ -472,39 +424,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				/>
 			),
 		} ),
-		// The SUBLINK's own border colour — distinct from "Panel border colour"
-		// above (that row is `submenuBorderColour`, the `submenu-panel`
-		// element; this one is `submenuLinkBorderColour`, the `sublink`
-		// element). Normal + Hover only — no Current, per block.json's
-		// `sublink.attrMap` (no `submenuLinkBorderColourCurrent` declared).
-		// Shape (width/style) is `DropdownStylePanel`'s new "Link border"
-		// control, matching the panel-border split above. render.php consumes
-		// both attrs (`includes/nav-menu-submenu-link-css.php`).
-		{
-			key: 'submenu-link-border',
-			label: __( 'Link border colour', 'sgs-blocks' ),
-			...( itemSurface
-				? { contrastAgainst: itemSurface, contrastLargeText: true }
-				: {} ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: submenuLinkBorderColour,
-					onChange: ( val ) =>
-						setAttributes( { submenuLinkBorderColour: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: submenuLinkBorderColourHover,
-					onChange: ( val ) =>
-						setAttributes( { submenuLinkBorderColourHover: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
 		// OMITTED (not disabled) unless `sublinkMarkerIcon` differs from its
 		// declared chevron-right default, or mega items show their panels in
 		// the drawer (the row then also colours the panel's list markers).
@@ -764,13 +683,16 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				{ /* The row divider: a horizontal rule between stacked rows, the
-				   drawer's counterpart of the bar's between-item separator. */ }
-				<RowSeparatorPanel
-					itemSeparatorWidth={ itemSeparatorWidth }
-					itemSeparatorStyle={ itemSeparatorStyle }
-					itemSeparatorPosition={ attributes.itemSeparatorPosition }
-					setAttributes={ setAttributes }
+				{ /* The lines between stacked top-level rows (the drawer's counterpart of the
+				   bar's between-item separator): the shared Separators setting. */ }
+				<SeparatorsPanel
+					title={ __( 'Row separators', 'sgs-blocks' ) }
+					label={ __( 'Between rows', 'sgs-blocks' ) }
+					value={ attributes.separators }
+					onChange={ ( next ) => setAttributes( { separators: next } ) }
+					axes={ [ 'row' ] }
+					edges
+					sweep
 				/>
 
 				<SubmenuItemsPanel
@@ -788,9 +710,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					submenuPadding={ submenuPadding }
 					submenuBorderWidth={ submenuBorderWidth }
 					submenuBorderStyle={ submenuBorderStyle }
-					submenuLinkBorderWidth={ submenuLinkBorderWidth }
-					submenuLinkBorderStyle={ submenuLinkBorderStyle }
 					setAttributes={ setAttributes }
+				/>
+
+				<SeparatorsPanel
+					title={ __( 'Submenu row separators', 'sgs-blocks' ) }
+					label={ __( 'Between submenu rows', 'sgs-blocks' ) }
+					value={ attributes.submenuSeparators }
+					onChange={ ( next ) => setAttributes( { submenuSeparators: next } ) }
+					axes={ [ 'row' ] }
 				/>
 
 				<SectionMotionPanel attributes={ attributes } setAttributes={ setAttributes } />

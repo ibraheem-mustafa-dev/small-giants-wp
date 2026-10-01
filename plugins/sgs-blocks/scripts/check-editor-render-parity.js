@@ -716,13 +716,6 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// way and with zero CSS/visual signature on any variant. Same shape as
 	// `thumbnailDecorative` above — not a desync, a false positive.
 	'splitMediaDecorative',
-	// `sgs/icon-list.dividers` (2026-09-05) — render.php adds the
-	// `.sgs-icon-list--dividers` class, but no CSS rule anywhere in the
-	// codebase (style.css or elsewhere) consumes it — dead on the FRONTEND,
-	// not just the editor. Real bug (missing divider CSS), tracked separately;
-	// faking a canvas preview for an effect the frontend never paints would be
-	// the same inverted-CHECK-A mistake as hero's grid attrs above.
-	'dividers',
 	// `sgs/form.prevColourBackgroundHover`/`prevColourBackgroundHoverGradient`
 	// (2026-09-05) — client-set hover VALUES, same doctrine as every other
 	// hover entry above: render.php's `sgs_button_element_style_css()` paints

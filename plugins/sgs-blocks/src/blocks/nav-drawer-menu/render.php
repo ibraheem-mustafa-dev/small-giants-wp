@@ -74,7 +74,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-link-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-menu-parity-css.php';
 // Row divider, row alignment, section box and section motion (Spec 36 "Drawer
 // item-level parity"), plus the shared caret helper the bar also calls.
-require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-menu-separator-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-drawer-menu-section-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-caret-css.php';
 // nav-menu-trigger-css.php is deliberately NOT required — this block never
@@ -631,9 +630,9 @@ $css .= $sgs_nm_marker_css;
 // Wave 3C U-6 + U-7: ornament, expander rotation, media, sibling dim, roll.
 $css .= sgs_nav_drawer_menu_extras_css( $attributes, '.sgs-nav-drawer-menu' . $uid_sel );
 // Item-level parity with sgs/nav-bar-menu (Spec 36 "Drawer item-level parity"):
-// row divider, row alignment, the open section's box, and its open/close motion
-// and row stagger. Empty attributes emit nothing.
-$css .= sgs_nav_drawer_menu_separator_css( $attributes, $uid_sel );
+// row alignment, the open section's box, and its open/close motion and row
+// stagger. Empty attributes emit nothing. (The row dividers are the shared
+// Separators setting, emitted with the item border CSS.)
 $css .= sgs_nav_drawer_menu_row_layout_css( $attributes, $uid_sel );
 $css .= sgs_nav_drawer_menu_section_box_css( $attributes, $uid_sel );
 // megaBodyPadding: the padding around a mega item's panel in its accordion
@@ -696,6 +695,12 @@ if ( '' !== $css ) {
 // above is a silent render no-op. `sgs-nav-drawer-menu` is this block's own
 // BEM root; `$uid` is the per-instance scope.
 $nav_root_classes = array_merge( array( 'sgs-nav-drawer-menu', $uid ), $sgs_nm_section_motion['classes'] );
+// A multi-column list with lines between its rows: the root carries the marker the
+// runtime fallback looks for (includes/nav-menu-separators.php).
+$sgs_nm_sep_root = sgs_nav_menu_separators_root( $attributes, 'sgs-nav-drawer-menu' );
+if ( '' !== $sgs_nm_sep_root['class'] ) {
+	$nav_root_classes[] = $sgs_nm_sep_root['class'];
+}
 
 // This <nav> IS the navigation landmark, so the accessible name belongs here
 // — on the element carrying the role. Exactly one <nav> per instance and
@@ -711,6 +716,7 @@ $nav_root_attrs = array(
 if ( '' !== $anchor_val ) {
 	$nav_root_attrs['id'] = $anchor_val;
 }
+$nav_root_attrs = array_merge( $nav_root_attrs, $sgs_nm_sep_root['attrs'] );
 
 printf(
 	'<nav %1$s>%2$s</nav>',

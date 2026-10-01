@@ -13,7 +13,7 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsSeparatorControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
@@ -268,7 +268,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		brandTextColour,
 		brandTextColourGradient,
 		brandTextColourHover,
-		brandTextSeparatorColour,
 		scrolling,
 		scrollSpeed,
 		scrollDuration,
@@ -538,27 +537,22 @@ export default function Edit( { attributes, setAttributes } ) {
 								},
 						  ]
 						: [] ),
-					...( 'text' === brandDisplay
-						? [
-								{
-									key: 'brandTextSeparator',
-									label: __( 'Brand divider colour', 'sgs-blocks' ),
-									states: [
-										{
-											key: 'normal',
-											label: __( 'Normal', 'sgs-blocks' ),
-											value: brandTextSeparatorColour,
-											onChange: ( val ) => setAttributes( { brandTextSeparatorColour: val ?? '' } ),
-										},
-									],
-								},
-						  ]
-						: [] ),
 				] }
 			/>
 			{ /* ── SETTINGS tab — behaviour / configuration ── */ }
 			<InspectorControls>
 				<SourcePanel attributes={ attributes } setAttributes={ setAttributes } />
+
+				{ /* The lines between brands (not drawn while the strip scrolls). */ }
+				{ ! attributes.scrolling && (
+					<PanelBody title={ __( 'Separators', 'sgs-blocks' ) } initialOpen={ false }>
+						<SgsSeparatorControl
+							label={ __( 'Lines between brands', 'sgs-blocks' ) }
+							value={ attributes.separators }
+							onChange={ ( next ) => setAttributes( { separators: next } ) }
+						/>
+					</PanelBody>
+				) }
 
 				{ /* Manual-entry UI only makes sense for the manual source —
 				   hidden (not merely disabled) once Product brands is picked

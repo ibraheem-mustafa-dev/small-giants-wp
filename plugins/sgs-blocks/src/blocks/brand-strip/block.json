@@ -19,6 +19,17 @@
 	"icon": "images-alt2",
 	"supports": {
 		"sgs": {
+			"separators": {
+				"separators": {
+					"axes": [
+						"row",
+						"column"
+					],
+					"edges": false,
+					"hover": false,
+					"sweep": false
+				}
+			},
 			"collection": true,
 			"arrayContentLift": true,
 			"containerMirror": false,
@@ -156,8 +167,6 @@
 				"_note": "Text fallback shown when Display is 'Text only', or on a per-item basis under 'Logo, else text' when that item's source has no image (chiefly the Product-brands source, where a WooCommerce brand term commonly has no thumbnail set). A DIFFERENT element from 'caption' above — caption is an optional label UNDER a logo image; this IS the visible content when there is no image, rendered on .sgs-brand-strip__brand-text (render.php + brand-display-render.php).",
 				"attrMap": {
 					"css:min-width": "brandTextMinWidth",
-					"css:border-right-width": "brandTextSeparatorWidth",
-					"css:border-right-color": "brandTextSeparatorColour",
 					"css:font-size": "brandTextFontSize",
 					"css:font-family": "brandTextFontFamily",
 					"css:font-weight": "brandTextFontWeight",
@@ -228,6 +237,11 @@
 		}
 	},
 	"attributes": {
+		"separators": {
+			"type": "object",
+			"default": {},
+			"description": "The lines between the brands of a static strip (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `column` is the vertical line between brands side by side, `row` the horizontal line between wrapped rows. Drawn centred in the gap by CSS gap decorations where the browser has them and by a small script elsewhere. Not drawn while the strip scrolls. No thickness (the default) draws nothing."
+		},
 		"shadowLiftOnHover": {
 			"type": "boolean",
 			"default": true
@@ -354,16 +368,6 @@
 			"type": "string",
 			"default": "",
 			"description": "Text-only display: minimum width of each brand item (CSS length). Empty sizes to the text."
-		},
-		"brandTextSeparatorWidth": {
-			"type": "string",
-			"default": "",
-			"description": "Text-only display: width of the divider on each brand item's inline-end edge (CSS length). Empty = no divider."
-		},
-		"brandTextSeparatorColour": {
-			"type": "string",
-			"default": "",
-			"description": "Text-only display: colour of the inline-end divider. Empty uses the current text colour."
 		},
 		"brandTextFontSize": {
 			"type": "number",

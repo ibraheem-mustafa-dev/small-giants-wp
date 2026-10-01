@@ -24,9 +24,10 @@ import {
   SgsBoxControl,
   GradientCapableColourControl,
   SgsLengthControl,
+  SgsSeparatorControl,
 } from "../../components";
 import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
-import { colourVar, spacingVar } from "../../utils";
+import { colourVar, spacingVar, separatorsLineCss, usePreviewTier } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
 import { resolveBorderStyle } from '../../utils/border-style';
 
@@ -186,7 +187,8 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
   );
 }
 
-export default function Edit({ attributes, setAttributes }) {
+export default function Edit({ attributes, setAttributes, clientId }) {
+  const previewTier = usePreviewTier();
   const { padding, margin,
     items,
     icon: defaultIconName,
@@ -200,9 +202,7 @@ export default function Edit({ attributes, setAttributes }) {
     iconSize,
     iconBackgroundColour,
     iconBoxSize,
-    dividers,
-    dividerColour,
-    dividerEdges,
+    separators,
     itemPaddingBlock,
     textColour,
     gap,
@@ -275,11 +275,6 @@ export default function Edit({ attributes, setAttributes }) {
     if (numberFontSize) previewStyle["--sgs-ilist-num-size"] = numberFontSize;
     if (numberFontWeight) previewStyle["--sgs-ilist-num-weight"] = numberFontWeight;
   }
-  // Divider colour override — a custom-property VALUE (matches render.php's
-  // scoped rule); style.css's divider rules read it via a var() fallback.
-  if (dividers && dividerColour) {
-    previewStyle["--sgs-icon-list-divider-colour"] = colourVar(dividerColour);
-  }
   const paddingPreview = boxShorthand(padding?.desktop, ["top", "right", "bottom", "left"]);
   if (paddingPreview) previewStyle.padding = paddingPreview;
   const marginPreview = boxShorthand(margin?.desktop, ["top", "right", "bottom", "left"]);
@@ -310,8 +305,7 @@ export default function Edit({ attributes, setAttributes }) {
       "sgs-icon-list",
       `sgs-icon-list--icon-${iconSize}`,
       `sgs-icon-list--marker-${resolvedMarkerType}`,
-      dividers && "sgs-icon-list--dividers",
-      dividers && dividerEdges && "sgs-icon-list--divider-edges",
+      `sgs-ed-sep-${clientId}`,
     ]
       .filter(Boolean)
       .join(" "),
@@ -427,6 +421,19 @@ export default function Edit({ attributes, setAttributes }) {
     canvasPreview = <ListTag {...blockProps}>{listItemNodes}</ListTag>;
   }
 
+  // Lines between items: the canvas mirrors render.php's item-drawn rules for the
+  // previewed device (includes/helpers-separators-line-css.php).
+  const separatorsCss = separatorsLineCss(
+    separators,
+    {
+      item: `.sgs-ed-sep-${clientId} > .sgs-icon-list__item`,
+      direction: "column",
+      gap: "var(--wp--preset--spacing--" + (gap || "20") + ")",
+    },
+    previewTier,
+    separators?.edges
+  );
+
   const showIconColourRow = ["icon", "emoji"].includes(resolvedMarkerType);
 
   return (
@@ -503,15 +510,6 @@ export default function Edit({ attributes, setAttributes }) {
             attributes,
             setAttributes,
           }),
-          // Colour of the lines drawn between items (omitted when dividers are off).
-          dividers &&
-            fillRow({
-              key: "divider",
-              label: __("Divider colour", "sgs-blocks"),
-              attrs: { base: "dividerColour" },
-              attributes,
-              setAttributes,
-            }),
           // Wave 3C U-7: numbers of a numbered list (omitted otherwise).
           "numbered" === markerType &&
             textRow({
@@ -733,20 +731,13 @@ export default function Edit({ attributes, setAttributes }) {
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
           />
-          <ToggleControl
-            label={__("Dividers between items", "sgs-blocks")}
-            checked={!!dividers}
-            onChange={(val) => setAttributes({ dividers: val })}
-            __nextHasNoMarginBottom
+          <SgsSeparatorControl
+            label={__("Lines between items", "sgs-blocks")}
+            value={separators}
+            onChange={(next) => setAttributes({ separators: next })}
+            axes={["row"]}
+            edges
           />
-          {dividers && (
-            <ToggleControl
-              label={__("Also box the list (line above first, below last)", "sgs-blocks")}
-              checked={!!dividerEdges}
-              onChange={(val) => setAttributes({ dividerEdges: val })}
-              __nextHasNoMarginBottom
-            />
-          )}
         </PanelBody>
 
       </InspectorControls>
@@ -927,6 +918,7 @@ export default function Edit({ attributes, setAttributes }) {
         />
       </InspectorControls>
 
+      {separatorsCss && <style>{separatorsCss}</style>}
       {canvasPreview}
     </>
   );

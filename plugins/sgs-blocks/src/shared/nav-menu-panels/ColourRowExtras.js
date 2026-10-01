@@ -6,10 +6,10 @@
  *
  * Consolidated from nav-menu/ColourRowExtras.js + nav-menu/SubmenuBurgerTreatments.js
  * (D1059 split, 2026-09-14 reconciliation) — the BAR-only pair
- * (`ItemSeparatorTreatment`, `BurgerIconTreatment`/`BurgerBgTreatment`) is
+ * (`BurgerIconTreatment`/`BurgerBgTreatment`) is
  * NOT here; it lives in `src/blocks/nav-bar-menu/BarColourRowExtras.js`,
- * which imports `sweepableOptions` / `TREATMENT_NONE` / `TREATMENT_SWAP` /
- * `SweepAngleControl` from this file rather than duplicating them.
+ * which imports `sweepableOptions` / `TREATMENT_NONE` / `TREATMENT_SWAP` from
+ * this file rather than duplicating them.
  *
  * ⚠ `sweepableOptions()` used to read `supports.sgs.sweepEligibility` via a
  * static `import metadata from './block.json'` INSIDE this file. That only
@@ -69,8 +69,6 @@ const SMART_CONTRAST_NOTE = __(
 	'Automatic readable-text checking for these colours is switched on under General → Accessibility.',
 	'sgs-blocks'
 );
-
-export { SweepAngleControl };
 
 /**
  * @param {Object}   root0                    Props.

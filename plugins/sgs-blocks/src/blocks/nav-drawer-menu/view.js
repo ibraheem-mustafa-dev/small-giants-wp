@@ -23,6 +23,9 @@
  * Every link is already a real, crawlable server-rendered <a href> — this is
  * progressive enhancement only.
  *
+ * Lines between a multi-column list's rows (src/shared/separators/), in a browser
+ * without CSS gap decorations.
+ *
  * A 4th responsibility: reset the two opt-in motion effects on a
  * back/forward-cache RESTORE (`pageshow` with `event.persisted === true`).
  *
@@ -32,6 +35,7 @@
 import { initNavIndicator } from '../../shared/effects/nav-indicator';
 import { initMagnet } from '../../shared/effects/magnet';
 import { initDrillDown } from '../../shared/effects/nav-drilldown';
+import { initSeparators } from '../../shared/separators';
 
 /**
  * Normalise a path the same way render.php's items do: no trailing slash,
@@ -127,6 +131,9 @@ function init() {
 		markCurrentPage( root );
 		initBarEffects( root );
 	} );
+	// A multi-column list with lines between its rows: the fallback overlay for
+	// browsers without CSS gap decorations (a no-op elsewhere).
+	initSeparators();
 }
 
 /**

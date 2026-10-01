@@ -52,30 +52,9 @@
 	transition: var(--wp--custom--transition--fast, 0.15s ease);
 }
 
-/* Dividers (`dividers` attr) — a line BETWEEN items only.
- * `item + item` (matches sgs/accordion's `--bordered` variant + sgs/product-faq's
- * item-spacing rule) never matches the first item, so a single-item list gets no
- * stray divider. `padding-top` composes with the existing flex `gap` rather than
- * adding a competing margin: half the item gap sits above the border, half below
- * (contributed by the column gap itself), so the divider lands centred in the
- * existing rhythm instead of doubling it. */
-.sgs-icon-list--dividers .sgs-icon-list__item + .sgs-icon-list__item {
-	border-top: 1px solid var(--sgs-icon-list-divider-colour, var(--wp--preset--color--border, #e0e0e0));
-	padding-top: calc(var(--sgs-icon-list-gap, var(--wp--preset--spacing--20)) / 2);
-}
-
-/* dividerEdges (`dividerEdges` attr, requires `dividers`) — boxes the list:
- * a line above the first item and below the last, in addition to the
- * between-item lines above. Shares the same colour custom property. */
-.sgs-icon-list--dividers.sgs-icon-list--divider-edges .sgs-icon-list__item:first-child {
-	border-top: 1px solid var(--sgs-icon-list-divider-colour, var(--wp--preset--color--border, #e0e0e0));
-	padding-top: calc(var(--sgs-icon-list-gap, var(--wp--preset--spacing--20)) / 2);
-}
-
-.sgs-icon-list--dividers.sgs-icon-list--divider-edges .sgs-icon-list__item:last-child {
-	border-bottom: 1px solid var(--sgs-icon-list-divider-colour, var(--wp--preset--color--border, #e0e0e0));
-	padding-bottom: calc(var(--sgs-icon-list-gap, var(--wp--preset--spacing--20)) / 2);
-}
+/* The lines between items are the shared Separators setting (`separators`),
+ * drawn by the items from scoped rules emitted in render.php
+ * (includes/helpers-separators-line-css.php). */
 
 /* Icon container */
 .sgs-icon-list__icon {

@@ -252,8 +252,15 @@
           "brandOrder": "term_order",
           "brandMaxItems": 16,
           "brandTextMinWidth": "174px",
-          "brandTextSeparatorWidth": "1px",
-          "brandTextSeparatorColour": "#EFEAE2",
+          "separators": {
+            "column": {
+              "style": "solid",
+              "width": {
+                "desktop": "1px"
+              },
+              "colour": "#EFEAE2"
+            }
+          },
           "tilePadding": 26,
           "logoGap": 0,
           "brandHideEmpty": false,

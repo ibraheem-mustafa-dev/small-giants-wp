@@ -122,9 +122,14 @@ export function initSeparatorList( list ) {
 	if ( 'static' === getComputedStyle( list ).position ) {
 		list.classList.add( 'sgs-sep-anchored' );
 	}
-	const overlay = document.createElement( 'div' );
+	// A list may only hold list items, so an overlay inside a <ul>/<ol> is an inert <li>.
+	const inList = /^(UL|OL)$/.test( list.tagName );
+	const overlay = document.createElement( inList ? 'li' : 'div' );
 	overlay.className = OVERLAY_CLASS;
 	overlay.setAttribute( 'aria-hidden', 'true' );
+	if ( inList ) {
+		overlay.setAttribute( 'role', 'presentation' );
+	}
 	list.appendChild( overlay );
 
 	let frame = 0;

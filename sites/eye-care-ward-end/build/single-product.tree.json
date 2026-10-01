@@ -274,9 +274,16 @@
                   "iconBackgroundColour": "accent-light",
                   "iconBoxSize": "26px",
                   "iconSize": "small",
-                  "dividers": true,
-                  "dividerEdges": true,
-                  "dividerColour": "border",
+                  "separators": {
+                    "row": {
+                      "style": "solid",
+                      "width": {
+                        "desktop": "1px"
+                      },
+                      "colour": "border"
+                    },
+                    "edges": "all"
+                  },
                   "itemPaddingBlock": "16px",
                   "itemFontSize": {
                     "desktop": 14.5

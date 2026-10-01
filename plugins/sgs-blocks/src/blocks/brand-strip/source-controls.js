@@ -177,13 +177,6 @@ export function BrandTextStylePanel( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { brandTextMinWidth: val ?? '' } ) }
 						presets={ false }
 					/>
-					<SgsLengthControl
-						label={ __( 'Divider width', 'sgs-blocks' ) }
-						help={ __( 'A line on the right edge of each brand. Empty = no divider. Set its colour in the Colour panel.', 'sgs-blocks' ) }
-						value={ attributes.brandTextSeparatorWidth || '' }
-						onChange={ ( val ) => setAttributes( { brandTextSeparatorWidth: val ?? '' } ) }
-						presets={ false }
-					/>
 				</>
 			) }
 		</PanelBody>

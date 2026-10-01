@@ -248,7 +248,7 @@ tree = [
                                            cardSublineColour="text-muted", margin={"desktop": {"top": "22px"}})),
                 B("sgs/icon-list", dict(source="typed", markerType="icon", icon="check", iconColour="accent-text",
                                         iconBackgroundColour="accent-light", iconBoxSize="26px", iconSize="small",
-                                        dividers=True, dividerEdges=True, dividerColour="border", itemPaddingBlock="16px",
+                                        separators={"row": {"style": "solid", "width": {"desktop": "1px"}, "colour": "border"}, "edges": "all"}, itemPaddingBlock="16px",
                                         itemFontSize={"desktop": 14.5}, margin={"desktop": {"top": "24px"}}, items=[
                     {"text": "Genuine and boxed with the brand's own case, cloth and two-year guarantee."},
                     {"text": "Free UK delivery over £75, or collect in Birmingham and I'll adjust them to fit while you wait."},

@@ -16,6 +16,11 @@
  * Loaded as a viewScriptModule (ES module, frontend only).
  */
 
+import { initSeparators } from '../../shared/separators';
+
+// Lines between brands on a static strip, in a browser without CSS gap decorations.
+initSeparators();
+
 const strips = document.querySelectorAll( '.sgs-brand-strip--scrolling' );
 
 strips.forEach( ( strip ) => {

@@ -137,9 +137,6 @@ $icon_colour    = $attributes['iconColour'] ?? '';
 $icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
 $icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
 $icon_size                  = $attributes['iconSize'] ?? 'medium';
-$dividers                   = ! empty( $attributes['dividers'] );
-$divider_colour             = $attributes['dividerColour'] ?? '';
-$divider_edges              = ! empty( $attributes['dividerEdges'] );
 // Icon background circle — empty colour keeps today's output (no circle,
 // no size override). Sanitised as a single CSS length (shared sanitiser).
 $icon_bg_colour     = trim( (string) ( $attributes['iconBackgroundColour'] ?? '' ) );
@@ -400,8 +397,7 @@ if ( '' !== $icon_bg_colour ) {
 	$scoped_css[]        = "{$icon_sel}{background-color:" . sgs_colour_value( $icon_bg_colour ) . ";border-radius:50%;width:{$icon_box_size_value};height:{$icon_box_size_value};}";
 }
 // --- Item vertical padding (top and bottom) — scoped to the item row, e.g.
-// so a divided list gets breathing room. Independent of the dividers'
-// own padding-top; this block's own <style> is emitted after the compiled
+// so a divided list gets breathing room. This block's own <style> is emitted after the compiled
 // stylesheet so equal-or-greater specificity wins by source order (matches
 // option-picker's precedent for overriding a static default). ---
 if ( '' !== $item_padding_block ) {
@@ -601,22 +597,6 @@ if ( $mobile_decls ) {
 // the wp-block root (the list itself when there is no heading; the wrapping
 // `<div>` when there is — see step 8).
 $list_visual_classes = 'sgs-icon-list sgs-icon-list--icon-' . esc_attr( $icon_size ) . ' sgs-icon-list--marker-' . esc_attr( $marker_type );
-if ( $dividers ) {
-	$list_visual_classes .= ' sgs-icon-list--dividers';
-	// dividerEdges only makes sense with dividers on — boxes the list with a
-	// line above the first item and below the last, in addition to the
-	// between-item lines.
-	if ( $divider_edges ) {
-		$list_visual_classes .= ' sgs-icon-list--divider-edges';
-	}
-	// Divider colour override — a custom-property VALUE (contract-permitted,
-	// same pattern as the gap var below), read by style.css's divider rules
-	// via a var() fallback chain. Empty keeps today's default border-colour token.
-	if ( '' !== $divider_colour ) {
-		$scoped_css[] = "{$root_sel}{--sgs-icon-list-divider-colour:" . sgs_colour_value( $divider_colour ) . ';}';
-	}
-}
-
 $wrapper_only_classes = $uid;
 
 // Spec 32 FR-32-1/FR-32-4 (enforced by
@@ -657,6 +637,24 @@ $render_marker_icon = in_array( $marker_type, array( 'icon', 'emoji' ), true );
 // list is the root element or sits inside a wrapper, so it is matched both ways.
 $sgs_ilist_roll     = sgs_label_roll_value( $attributes['labelRoll'] ?? '' );
 $sgs_ilist_list_sel = ':is(' . $root_sel . '.sgs-icon-list, ' . $root_sel . ' .sgs-icon-list)';
+// Lines between the items: the shared Separators setting, drawn by the items
+// (includes/helpers-separators-line-css.php). Rows only; `edges` boxes the list.
+$scoped_css[]       = sgs_separators_css(
+	$attributes['separators'] ?? array(),
+	array(
+		'list'      => $sgs_ilist_list_sel,
+		'layout'    => 'line',
+		'item'      => $sgs_ilist_list_sel . ' > .sgs-icon-list__item',
+		'direction' => 'column',
+		'gap_expr'  => array( 'row' => 'var(--sgs-icon-list-gap, var(--wp--preset--spacing--20))' ),
+	),
+	array(
+		'axes'  => array( 'row' ),
+		'edges' => true,
+		'hover' => false,
+		'sweep' => false,
+	)
+);
 $scoped_css[]       = sgs_sibling_dim_css( $sgs_ilist_list_sel, '.sgs-icon-list__item', ' :is(.sgs-icon-list__text, .sgs-icon-list__item-link)', $attributes );
 $scoped_css[]       = sgs_label_roll_css( $root_sel, ' .sgs-icon-list__item', '', $attributes );
 if ( 'numbered' === $marker_type ) {

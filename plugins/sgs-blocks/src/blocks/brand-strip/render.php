@@ -631,9 +631,26 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // carries ZERO inline style attribute (Spec 32 intent: nothing inline).
 // ---------------------------------------------------------------------------
 
+// Lines between the brands: the shared Separators setting (flow path: the strip
+// wraps). A scrolling strip draws none; its clones are measured by view.js.
+$sgs_bs_sep_active = ! $scrolling && sgs_separators_active( sgs_separators_normalise( $attributes['separators'] ?? array(), array( 'axes' => array( 'row', 'column' ) ) ) );
+if ( $sgs_bs_sep_active ) {
+	$scoped_css[] = sgs_separators_css(
+		$attributes['separators'],
+		array(
+			'list'   => $root_sel . ' .sgs-brand-strip__set',
+			'layout' => 'flow',
+		),
+		array( 'axes' => array( 'row', 'column' ) )
+	);
+}
+
 $wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => implode( ' ', array_merge( $classes, array( $uid ) ) ),
+	array_merge(
+		array(
+			'class' => implode( ' ', array_merge( $classes, array( $uid ), $sgs_bs_sep_active ? array( sgs_separators_marker_class() ) : array() ) ),
+		),
+		$sgs_bs_sep_active ? array( 'data-sgs-sep-list' => '.sgs-brand-strip__set' ) : array()
 	)
 );
 

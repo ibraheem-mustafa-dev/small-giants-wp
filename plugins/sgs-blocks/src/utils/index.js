@@ -18,6 +18,8 @@ export * from './patch-tier';
 export * from './typography-preview';
 export * from './shadow-hover';
 export * from './separators';
+export * from './separators-line';
+export * from './usePreviewTier';
 
 // Editor SVG sanitiser - mirrors the server's wp_kses() allowlist so
 // operator-supplied SVG is never mounted raw in the editor.

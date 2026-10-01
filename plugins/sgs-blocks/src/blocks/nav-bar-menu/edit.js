@@ -11,7 +11,7 @@
  * `src/shared/nav-menu-panels/` and are imported from there by both blocks —
  * do not fork these; edit the shared copy (and re-check the sibling block
  * still needs the unchanged parts). Panels that are genuinely BAR-only
- * (BurgerPanel, ItemSeparatorPanel, MenuSettingsPanel, DropdownSettingsPanel,
+ * (BurgerPanel, MenuSettingsPanel, DropdownSettingsPanel,
  * NavMenuNotices, useDrawerNotice, and the bar-only treatments in
  * `./BarColourRowExtras.js`) live in THIS directory, not shared.
  * `ListLayoutPanel` and `DropdownStylePanel` are shared components that take
@@ -72,7 +72,6 @@ import {
 	SubmenuLinkBgTreatment,
 } from '../../shared/nav-menu-panels/ColourRowExtras';
 import {
-	ItemSeparatorTreatment,
 	BurgerIconTreatment,
 	BurgerBgTreatment,
 } from './BarColourRowExtras';
@@ -89,7 +88,7 @@ import SplitPanel from './SplitPanel';
 import ListLayoutPanel from '../../shared/nav-menu-panels/ListLayoutPanel';
 import TypographyPanel from '../../shared/nav-menu-panels/TypographyPanel';
 import ItemsPanel from '../../shared/nav-menu-panels/ItemsPanel';
-import ItemSeparatorPanel from './ItemSeparatorPanel';
+import SeparatorsPanel from '../../shared/nav-menu-panels/SeparatorsPanel';
 import DropdownStylePanel from '../../shared/nav-menu-panels/DropdownStylePanel';
 import PanelMotionPanel from './PanelMotionPanel';
 import EffectsPanel from '../../shared/nav-menu-panels/EffectsPanel';
@@ -112,12 +111,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		navLabel,
 		itemSmartContrast,
 		itemColourHover,
-		itemSeparatorWidth,
-		itemSeparatorStyle,
-		itemSeparatorColour,
-		itemSeparatorColourHover,
-		itemSeparatorHoverTreatment,
-		itemSeparatorSweepAngle,
 		featuredItemIds,
 		disabledItemIds,
 		gap,
@@ -152,10 +145,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		itemMagnetStrength,
 		submenuBorderColour,
 		submenuBorderColourGradient,
-		submenuLinkBorderWidth,
-		submenuLinkBorderStyle,
-		submenuLinkBorderColour,
-		submenuLinkBorderColourHover,
 		burgerSize,
 		triggerMode,
 		triggerLabel,
@@ -434,44 +423,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			),
 		},
-		// FR-41-37 — the independent vertical divider between adjacent
-		// TOP-LEVEL BAR items. Unconditional (bar-only block — a vertical
-		// list has no "next item to the right", so that concept never
-		// reaches this block's edit.js).
-		{
-			key: 'item-separator',
-			label: __( 'Item separator colour', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: itemSeparatorColour,
-					onChange: ( val ) =>
-						setAttributes( { itemSeparatorColour: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: itemSeparatorColourHover,
-					onChange: ( val ) =>
-						setAttributes( { itemSeparatorColourHover: val ?? '' } ),
-					linked: true,
-				},
-			],
-			after: (
-				<ItemSeparatorTreatment
-					value={ itemSeparatorHoverTreatment }
-					onChange={ ( val ) =>
-						setAttributes( { itemSeparatorHoverTreatment: val } )
-					}
-					angle={ itemSeparatorSweepAngle }
-					onAngleChange={ ( val ) =>
-						setAttributes( { itemSeparatorSweepAngle: val } )
-					}
-				/>
-			),
-		},
 		fillRow( {
 			key: 'submenu-bg',
 			heading: __( 'Submenu', 'sgs-blocks' ),
@@ -539,39 +490,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			),
 		} ),
-		// The SUBLINK's own border colour — distinct from "Panel border colour"
-		// above (that row is `submenuBorderColour`, the `submenu-panel`
-		// element; this one is `submenuLinkBorderColour`, the `sublink`
-		// element). Normal + Hover only — no Current, per block.json's
-		// `sublink.attrMap` (no `submenuLinkBorderColourCurrent` declared).
-		// Shape (width/style) is `DropdownStylePanel`'s new "Link border"
-		// control, matching the panel-border split above. render.php consumes
-		// both attrs (`includes/nav-menu-submenu-link-css.php`).
-		{
-			key: 'submenu-link-border',
-			label: __( 'Link border colour', 'sgs-blocks' ),
-			...( itemSurface
-				? { contrastAgainst: itemSurface, contrastLargeText: true }
-				: {} ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: submenuLinkBorderColour,
-					onChange: ( val ) =>
-						setAttributes( { submenuLinkBorderColour: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: submenuLinkBorderColourHover,
-					onChange: ( val ) =>
-						setAttributes( { submenuLinkBorderColourHover: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
 		// There is no sublink-marker colour row here (DRAWER-only — its CSS is
 		// scoped `.sgs-nav-drawer …`, so it never paints the bar's own
 		// dropdown). `sublinkMarkerIcon` and its colour family are not declared
@@ -870,11 +788,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				{ /* FR-41-37 — always mounted (bar-only block). */ }
-				<ItemSeparatorPanel
-					itemSeparatorWidth={ itemSeparatorWidth }
-					itemSeparatorStyle={ itemSeparatorStyle }
-					setAttributes={ setAttributes }
+				{ /* FR-41-37 — the lines between the top-level items (bar-only: a vertical
+				   list has no "next item to the right"). The shared Separators setting. */ }
+				<SeparatorsPanel
+					title={ __( 'Item separators', 'sgs-blocks' ) }
+					label={ __( 'Between items', 'sgs-blocks' ) }
+					value={ attributes.separators }
+					onChange={ ( next ) => setAttributes( { separators: next } ) }
+					axes={ [ 'column' ] }
+					sweep
 				/>
 
 				{ /* SubmenuItemsPanel (sublink marker icon) is NOT mounted —
@@ -889,12 +811,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					submenuBorderWidth={ submenuBorderWidth }
 					submenuBorderStyle={ submenuBorderStyle }
 					submenuBorderRadius={ submenuBorderRadius }
-					submenuLinkBorderWidth={ submenuLinkBorderWidth }
-					submenuLinkBorderStyle={ submenuLinkBorderStyle }
 					submenuShadow={ submenuShadow }
 					submenuShadowColour={ submenuShadowColour }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
+				/>
+
+				<SeparatorsPanel
+					title={ __( 'Submenu row separators', 'sgs-blocks' ) }
+					label={ __( 'Between submenu rows', 'sgs-blocks' ) }
+					value={ attributes.submenuSeparators }
+					onChange={ ( next ) => setAttributes( { submenuSeparators: next } ) }
+					axes={ [ 'row' ] }
 				/>
 
 				<PanelMotionPanel attributes={ attributes } setAttributes={ setAttributes } />

@@ -33,6 +33,24 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"separators": {
+				"separators": {
+					"axes": [
+						"row"
+					],
+					"edges": true,
+					"hover": true,
+					"sweep": true
+				},
+				"submenuSeparators": {
+					"axes": [
+						"row"
+					],
+					"edges": false,
+					"hover": true,
+					"sweep": false
+				}
+			},
 			"shadowLift": false,
 			"enabledExtensions": [ "childSizing" ],
 			"colourExemptions": {
@@ -205,7 +223,6 @@
 					"clusters": [
 						"text",
 						"fill",
-						"border",
 						"layout"
 					],
 					"prefix": "",
@@ -225,9 +242,6 @@
 						"css:text-align": "submenuTextAlign",
 						"css:fill": "sublinkMarkerColour",
 						"css:fill-gradient": "sublinkMarkerColourGradient",
-						"css:border-color": "submenuLinkBorderColour",
-						"css:border-width": "submenuLinkBorderWidth",
-						"css:border-style": "submenuLinkBorderStyle",
 						"css:opacity": "submenuOpacity",
 						"css:padding": "submenuLinkPadding"
 					},
@@ -241,7 +255,6 @@
 								"css:text-transform": "submenuTextTransformHover",
 								"css:fill": "sublinkMarkerColourHover",
 								"css:fill-gradient": "sublinkMarkerColourHoverGradient",
-								"css:border-color": "submenuLinkBorderColourHover",
 								"css:padding-inline-start": "itemPaddingShiftHover",
 								"css:opacity": "submenuOpacityHover"
 							},
@@ -279,27 +292,6 @@
 						"css:box-shadow-color": "submenuShadowColour"
 					},
 					"_note": "The open accordion SECTION — <ul class=\"sgs-nav-drawer-menu__submenu\"> — as distinct from the links inside it, which are the `sublink` element (Spec 41 FR-41-9). Base only: NO `states` key at all, because the panel has neither a hover nor a current state for any property. Its visibility is a binary open/closed disclosure toggled by the trigger; once open the pointer is always over an interactive CHILD, so a pointer-driven change on the panel surface itself is never perceivable — the hoverable surface inside the panel is the LINK background (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent on `sublink`). Recorded as `supports.sgs.colourExemptions.submenu-bg` and `.submenu-border`. `\"prefix\": \"\"` for the same reason `sublink` carries it: a `submenu` prefix would claim submenuColour* and the submenu typography family, which belong to the LINK. Every member is therefore explicit. submenuBorderRadius, submenuShadow and submenuShadowColour paint the section's own box (includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_box_css). submenuMinWidth is not declared here: a section is exactly as wide as the drawer, so a minimum width has nothing to protect against."
-				},
-				"item-separator": {
-					"label": "Row divider",
-					"order": 5.5,
-					"clusters": [
-						"border"
-					],
-					"prefix": "itemSeparator",
-					"attrMap": {
-						"css:border-top-color": "itemSeparatorColour",
-						"css:border-top-width": "itemSeparatorWidth",
-						"css:border-top-style": "itemSeparatorStyle"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:border-top-color": "itemSeparatorColourHover"
-							}
-						}
-					},
-					"_note": "The independent horizontal rule between stacked top-level rows, drawn as a `::before` on every `.sgs-nav-drawer-menu__item` except the first (includes/nav-drawer-menu-separator-css.php). A GENUINELY SEPARATE element from `item`: it never reads itemBorderColour/itemBorderWidth (the row's own border edge), so both can run at once in different colours. `itemSeparatorHoverTreatment`/`itemSeparatorSweepAngle` are control-selector/parameter attrs (role:behaviour), not paintable CSS values."
 				},
 				"item-dimmed": {
 					"label": "Dimmed sibling item",
@@ -491,17 +483,6 @@
 							"outset"
 						]
 					}
-				},
-				"itemSeparatorHoverTreatment": {
-					"blockingBackgroundAttrs": [],
-					"blockingGradientAttrs": [],
-					"glyphGuard": {
-						"attr": "itemSeparatorStyle",
-						"disallowedValues": [
-							"dashed",
-							"dotted"
-						]
-					}
 				}
 			},
 			"imageControls": false,
@@ -509,6 +490,34 @@
 		}
 	},
 	"attributes": {
+		"separators": {
+			"type": "object",
+			"default": {
+				"row": {
+					"style": "solid",
+					"colour": "text-muted",
+					"colourHover": "accent"
+				},
+				"edges": "between",
+				"hoverTreatment": "swap"
+			},
+			"description": "The lines between the TOP-LEVEL rows of the drawer list (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour, colourHover }, edges: between | all | end, hoverTreatment: swap | sweep | none, sweepAngle }. A horizontal line centred in the gap between stacked rows, drawn by the rows; edges end draws a line under the last row too. With listColumns on, the lines are drawn as a grid instead. No thickness (the default) draws nothing."
+		},
+		"submenuSeparators": {
+			"type": "object",
+			"default": {
+				"row": {
+					"style": "solid",
+					"width": {
+						"desktop": "1px"
+					},
+					"colour": "border-light",
+					"colourHover": "accent"
+				},
+				"hoverTreatment": "swap"
+			},
+			"description": "The lines between the rows of an open submenu (a dropdown panel on the bar, a nested section in the drawer): the shared Separators setting, rows only, replacing the old per-row link border. Defaults to a 1px line in the border-light token with an accent hover."
+		},
 		"padding": {
 			"type": "object",
 			"default": {
@@ -666,45 +675,6 @@
 			"type": "number",
 			"default": 180,
 			"description": "Degrees the expander glyph turns while its accordion is open (-360 to 360). 45 turns a plus into a cross."
-		},
-		"itemSeparatorStyle": {
-			"type": "string",
-			"default": "solid",
-			"description": "Row divider line style: solid / dashed / dotted / none. PHP-validated, no JSON enum. Read with itemSeparatorWidth and itemSeparatorColour by includes/nav-drawer-menu-separator-css.php."
-		},
-		"itemSeparatorPosition": {
-			"type": "string",
-			"enum": [
-				"between",
-				"below"
-			],
-			"default": "between",
-			"description": "Where the row divider sits. between (default): a line above every top-level row except the first. below: every top-level row, the last included, carries the line as its own bottom border, under the row and its open section (a real border, so it takes the width in layout). below colours the line on its own row's hover only; a sweep treatment falls back to a colour swap there."
-		},
-		"itemSeparatorWidth": {
-			"type": "string",
-			"default": "",
-			"description": "Thickness of the independent horizontal divider drawn ABOVE every top-level row except the first (the rule between stacked rows), as a CSS length such as '1px'. Separate from itemBorderWidth (the row's own border edge) so the two can be styled apart. '' (default) draws nothing: includes/nav-drawer-menu-separator-css.php gates the whole rule on a width AND a colour, so an untouched drawer emits no divider. No Current state: a rule between rows is not itself a page."
-		},
-		"itemSeparatorColour": {
-			"type": "string",
-			"default": "text-muted",
-			"description": "Resting colour of the row divider. Default 'text-muted' measures a real WCAG non-text contrast pass on a light drawer surface while staying quieter than the accent hover colour."
-		},
-		"itemSeparatorColourHover": {
-			"type": "string",
-			"default": "accent",
-			"description": "Hover/focus colour of the row divider, shared by the row below it and the row above it (the rule belongs to both). Touch-guarded."
-		},
-		"itemSeparatorHoverTreatment": {
-			"type": "string",
-			"default": "swap",
-			"description": "How the row divider changes on hover: none / swap / sweep. Sweep is offered and emitted only when supports.sgs.sweepEligibility.itemSeparatorHoverTreatment passes (a solid line). PHP-validated, no JSON enum."
-		},
-		"itemSeparatorSweepAngle": {
-			"type": "number",
-			"default": 90,
-			"description": "Directional sweep angle for the row divider (CSS gradient-angle degrees). Default 90 (left to right) suits a horizontal rule between stacked rows; the bar's default is 180 because its divider is vertical. Shown only when itemSeparatorHoverTreatment is 'sweep'."
 		},
 		"itemHoverScope": {
 			"type": "string",
@@ -1187,7 +1157,7 @@
 		"itemBorderWidth": {
 			"type": "object",
 			"default": {},
-			"description": "Default is OFF (empty object, no border painted) until the operator sets a width. On a vertical list (this block, rendered inside a nav-drawer, or a submenu-root stacked in-drawer) the bottom edge is geometrically a ROW SEPARATOR between two adjacent rows; on the horizontal bar (sgs/nav-bar-menu's copy of this attribute family) the identical bottom edge is the ITEM UNDERLINE. See nav-menu-css.php's item-border comment for the full reasoning. Not to be confused with the bar block's itemSeparatorWidth, the independent vertical divider between top-level bar items (FR-41-37)."
+			"description": "Default is OFF (empty object, no border painted) until the operator sets a width. On a vertical list (this block, rendered inside a nav-drawer, or a submenu-root stacked in-drawer) the bottom edge is geometrically a ROW SEPARATOR between two adjacent rows; on the horizontal bar (sgs/nav-bar-menu's copy of this attribute family) the identical bottom edge is the ITEM UNDERLINE. See nav-menu-css.php's item-border comment for the full reasoning. Not to be confused with `separators`, the independent line between top-level rows (FR-41-37)."
 		},
 		"itemBorderStyle": {
 			"type": "string",
@@ -1283,27 +1253,6 @@
 			"type": "string",
 			"default": "",
 			"description": "Normal-state gradient sibling of submenuLinkBg; non-empty wins over the flat colour."
-		},
-		"submenuLinkBorderWidth": {
-			"type": "object",
-			"default": {
-				"bottom": "1px"
-			},
-			"description": "FR-41-36 — the submenu ROW's own row-separator border (a horizontal line between two adjacent rows, both in the bar's dropdown panel AND a drawer's nested/accordion-expanded submenu — same mechanism, same selector), distinct from submenuBorderWidth (the PANEL's outer border). Defaults to a bottom-only 1px so an untouched dropdown/drawer-nested row shows the universal always-visible separator."
-		},
-		"submenuLinkBorderStyle": {
-			"type": "string",
-			"default": "solid"
-		},
-		"submenuLinkBorderColour": {
-			"type": "string",
-			"default": "border-light",
-			"description": "FR-41-36 (C1) — Normal-state row-separator colour token, locked by Spec 41 §FR-41-36's colour table."
-		},
-		"submenuLinkBorderColourHover": {
-			"type": "string",
-			"default": "accent",
-			"description": "FR-41-36 (C1) — Hover/Current-state row-separator colour token, locked by Spec 41 §FR-41-36's colour table. No separate Current colour: the spec's table gives this row only Normal/Hover language for the separator."
 		},
 		"submenuColourHoverTreatment": {
 			"type": "string",

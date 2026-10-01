@@ -1,7 +1,7 @@
 <?php
 /**
- * SGS Nav Bar Menu / Nav Drawer Menu — scoped CSS, part 1b: item border/separator +
- * featured-item styling.
+ * SGS Nav Bar Menu / Nav Drawer Menu — scoped CSS, part 1b: item border (+ the
+ * separators call) and featured-item styling.
  *
  * Holds the two sections that are fully self-contained — no shared derived
  * state with the rest of `sgs_nav_shared_item_state_css()` beyond `$attributes`,
@@ -21,11 +21,12 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-border-style.php';
+require_once __DIR__ . '/nav-menu-separators.php';
 
 if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 	/**
-	 * Build the item BORDER (three states + directional Sweep band) and the
-	 * independent item SEPARATOR (between-item vertical rule) CSS.
+	 * Build the item BORDER (three states + directional Sweep band) CSS, then the
+	 * lines between items (the shared Separators setting).
 	 *
 	 * @param array  $attributes Block attributes (verbatim render.php param).
 	 * @param string $link_sel   `.{bem}__link` selector for this instance.
@@ -55,14 +56,10 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		 * two mechanisms answering the SAME question (which edge does
 		 * itemBorderWidth paint, and what colour) produce a double line.
 		 *
-		 * ⚠ `itemSeparatorWidth/Style/
-		 * Colour(Hover)` (FR-41-37) is a genuinely SEPARATE, purpose-built attribute family
-		 * for a between-item vertical rule on the horizontal bar only — see its
-		 * own emission block further down. It answers a DIFFERENT question
-		 * (draw a line between item N and item N+1) from this one (style item
-		 * N's own edge), so it is not the "Item Divider" this comment rules out —
-		 * it does not let an operator style the SAME right-edge-of-itemBorderWidth
-		 * line two different ways from two different controls.
+		 * ⚠ The line BETWEEN item N and item N+1 is a different question from this one
+		 * (style item N's own edge): it is the shared Separators setting (`separators`,
+		 * includes/nav-menu-separators.php, called at the end of this function), so it
+		 * never competes with this family for the same edge.
 		 *
 		 * Width is BASE-ONLY by the control's own design: there is no per-device
 		 * border width.
@@ -180,127 +177,9 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 			}
 		}
 
-		/*
-		 * ── ITEM SEPARATOR — independent vertical divider between adjacent
-		 * TOP-LEVEL BAR items (FR-41-37). ────────────────────────────────────
-		 *
-		 * Genuinely separate from the item border/underline family above: that
-		 * family's `right` option ALREADY lets an operator draw a vertical line
-		 * (FR-41-7), but it shares itemBorderColour/Hover/Current with the SAME
-		 * family's bottom-edge underline — one colour set, two edges — so it
-		 * cannot be styled independently of the underline. This is its own
-		 * attribute family (itemSeparatorWidth/Style/Colour(Hover)) precisely so
-		 * an operator can run both at once with different colours, or run this
-		 * one alone.
-		 *
-		 * BAR-ONLY BY CONSTRUCTION: gated on `.{bem}__bar` NOT carrying the
-		 * `--drawer` modifier (see nav-menu-submenu-css.php's own use of the same
-		 * modifier class to fork bar/drawer CSS). A vertical list has no
-		 * "adjacent item" on this axis, so the drawer's own instance of this
-		 * block never renders the rule at all — not suppressed after the fact,
-		 * never emitted for that context.
-		 *
-		 * GEOMETRY: the separator is centred in the flex `gap` between the two
-		 * items either side of it, not painted flush against one item's own box
-		 * (a plain `border-right` on the LINK would read as belonging to only one
-		 * neighbour).
-		 *
-		 * It is an empty `::before` pseudo-element on every item EXCEPT THE
-		 * FIRST (`:not(:first-child)`), positioned via `left: calc(<gap>/-2)`.
-		 * A flex `gap` is split evenly between two adjacent siblings, so
-		 * shifting a zero-width box half the gap to the LEFT of an item's own
-		 * left edge lands it exactly in the middle of the gap that precedes it
-		 * — no JS measurement, no hardcoded pixel value, and it tracks whatever
-		 * `gap` the operator has set (falls back to block.json's own "8px"
-		 * default when the attribute is genuinely absent).
-		 *
-		 * This also settles the "both sides" requirement for free: exactly ONE
-		 * separator paints per gap (n-1 for n items), and
-		 * because it sits centred rather than flush, it visually reads as
-		 * belonging to BOTH the item before it and the item after it — not
-		 * "owned" by either. The first item has nothing before it
-		 * (`:not(:first-child)` excludes it) and the last item's rightmost edge
-		 * was never a paint target to begin with, so neither outer edge of the
-		 * bar gets a stray separator.
-		 *
-		 * `border-left-*` (not `background-color`) so `itemSeparatorStyle`'s
-		 * dashed/dotted options keep working — a filled box can't do a dash
-		 * pattern, a border can.
-		 *
-		 * ⚠ SWEEP (FR-41-37): `sgs_directional_sweep_css()` supplies the
-		 * any-angle background-position maths (includes/sweep-css.php). The
-		 * band lives on this SAME `::before` (not a second pseudo) — the item's
-		 * `::after` is still reserved for the item border-bottom sweep above
-		 * whenever BOTH treatments are 'sweep' on the same row. No Current
-		 * state: a between-item rule is not itself "the current page".
-		 *
-		 * Hover/focus triggers on the item that OWNS the pseudo (the one to the
-		 * divider's right) — matches this file's existing LI-scoped hover
-		 * pattern (`:focus-within`, not `:focus-visible`, since the interactive
-		 * element a user actually focuses is the `<a>` inside the `<li>`).
-		 */
-		$item_separator_width     = sgs_css_length_value( (string) ( $attributes['itemSeparatorWidth'] ?? '' ) );
-		$item_separator_style     = sgs_css_keyword_sanitise( (string) ( $attributes['itemSeparatorStyle'] ?? '' ) );
-		$item_separator_colour    = sgs_colour_value( (string) ( $attributes['itemSeparatorColour'] ?? '' ) );
-		$item_separator_hover     = sgs_colour_value( (string) ( $attributes['itemSeparatorColourHover'] ?? '' ) );
-		$item_separator_treatment = (string) ( $attributes['itemSeparatorHoverTreatment'] ?? 'swap' );
-		// The item gap is a tier object written per tier as `--sgs-nm-gap`
-		// (nav-menu-submenu-link-css.php), so the separator centres at every
-		// tier; 8px matches the attribute's own default.
-		$item_separator_gap       = 'var(--sgs-nm-gap, 8px)';
-		// `sgs/nav-drawer-menu` reads the same attributes but draws a horizontal rule
-		// between stacked rows (includes/nav-drawer-menu-separator-css.php), so this
-		// bar-fork selector, which its always-`--drawer` list never matches, is skipped.
-		if ( '' !== $item_separator_width && '' !== $item_separator_colour && 'sgs-nav-drawer-menu' !== $bem_root ) {
-			$item_separator_item_sel = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item:not(:first-child)';
-
-			/*
-			 * ⚑ SHARED-EDGE HOVER. `$item_separator_item_sel` is the item that OWNS
-			 * the pseudo (the one to the divider's right), so hovering/focusing THAT
-			 * item repaints it; hovering the item on the OTHER side of the same gap
-			 * (the preceding sibling) must repaint it too, since the line visually
-			 * reads as shared between both. Adjacent-sibling selector
-			 * below: an `<li>` is a plain sibling of the next `<li>` (`nav-menu-markup.php`
-			 * — no per-item wrapper), so `:hover + .item` / `:focus-within + .item` from
-			 * the PRECEDING item reaches the FOLLOWING item's own `::before` directly — no
-			 * new pseudo, no duplicate paint, just a second trigger for the same rule.
-			 * `sgs_hover_state_rules()` cannot express this (it always appends the
-			 * hover/focus pseudo to the tail of the selector it's given, immediately
-			 * before the suffix) so this reverse pair is built with the same touch-safe
-			 * primitives (`sgs_hover_guarded_rule()` for the media+touch-guarded `:hover`
-			 * half, an unguarded `:focus-within` rule alongside it) rather than a third,
-			 * competing hover mechanism.
-			 */
-			$item_separator_prev_sel = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item';
-
-			$css .= $item_separator_item_sel . '{position:relative;}';
-
-			if ( 'sweep' === $item_separator_treatment && '' !== $item_separator_hover ) {
-				// The static line is suppressed (transparent) and repainted by the
-				// sweep gradient on the SAME pseudo — "one paint, no double line".
-				$item_separator_angle = isset( $attributes['itemSeparatorSweepAngle'] ) ? (float) $attributes['itemSeparatorSweepAngle'] : 180.0;
-				$item_separator_sweep = sgs_directional_sweep_css( $item_separator_angle, $item_separator_colour, $item_separator_hover );
-
-				$css .= $item_separator_item_sel . '::before{content:"";position:absolute;top:0;bottom:0;left:calc(' . $item_separator_gap . ' / -2);'
-					. 'border-left-width:' . $item_separator_width . ';border-left-style:' . ( '' !== $item_separator_style ? $item_separator_style : 'solid' ) . ';border-left-color:transparent;'
-					. 'background-image:' . $item_separator_sweep['gradient'] . ';'
-					. 'background-size:' . $item_separator_sweep['background_size'] . ';background-position:' . $item_separator_sweep['rest_position'] . ';background-repeat:no-repeat;'
-					. 'transition:background-position 300ms ease;pointer-events:none;}';
-				$css .= sgs_hover_state_rules( $item_separator_item_sel, 'background-position:' . $item_separator_sweep['hover_position'], ':focus-within', '::before' );
-				$css .= sgs_hover_guarded_rule( $item_separator_prev_sel . ':hover + .' . $bem_root . '__item::before', 'background-position:' . $item_separator_sweep['hover_position'] );
-				$css .= $item_separator_prev_sel . ':focus-within + .' . $bem_root . '__item::before{background-position:' . $item_separator_sweep['hover_position'] . ';}';
-				$css .= '@media (prefers-reduced-motion:reduce){' . $item_separator_item_sel . '::before{transition:none;}}';
-			} else {
-				$css .= $item_separator_item_sel . '::before{content:"";position:absolute;top:0;bottom:0;left:calc(' . $item_separator_gap . ' / -2);'
-					. 'border-left-width:' . $item_separator_width . ';border-left-style:' . ( '' !== $item_separator_style ? $item_separator_style : 'solid' )
-					. ';border-left-color:' . $item_separator_colour . ';pointer-events:none;}';
-				if ( '' !== $item_separator_hover ) {
-					$css .= sgs_hover_state_rules( $item_separator_item_sel, 'border-left-color:' . $item_separator_hover, ':focus-within', '::before' );
-					$css .= sgs_hover_guarded_rule( $item_separator_prev_sel . ':hover + .' . $bem_root . '__item::before', 'border-left-color:' . $item_separator_hover );
-					$css .= $item_separator_prev_sel . ':focus-within + .' . $bem_root . '__item::before{border-left-color:' . $item_separator_hover . ';}';
-				}
-			}
-		}
+		// The lines between items (top-level items and submenu rows) are the shared
+		// Separators setting: includes/nav-menu-separators.php.
+		$css .= sgs_nav_menu_separators_css( $attributes, $uid_sel, $bem_root );
 
 		return $css;
 	}

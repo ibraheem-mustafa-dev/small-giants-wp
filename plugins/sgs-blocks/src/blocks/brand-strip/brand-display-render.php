@@ -100,27 +100,14 @@ if ( ! function_exists( 'sgs_brand_strip_text_style_css' ) ) {
 		}
 
 		// Text-item box: minimum width per brand (custom property read by the
-		// `--text` rule in style.css) and an inline-end divider. Both emit
-		// nothing when empty. Selector carries the root scope so it wins over
-		// style.css's `border-color: transparent` on the text item.
+		// `--text` rule in style.css). Emits nothing when empty.
 		$min_width = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['brandTextMinWidth'] ?? '' ) : '';
 		if ( '' !== $min_width ) {
 			$rules[] = "{$root_sel}{--sgs-brand-text-min-width:{$min_width};}";
 		}
 
-		// A between-item divider on the right edge, as sgs/nav-menu's itemSeparator*
-		// (same registry keys, css:border-right-width/color). Longhands, each value straight from its attribute, so the framework's
-		// signature scanner (behavioural-analyser/extract-signatures.py) can map
-		// every attribute to its CSS property; a `border-inline-end` shorthand
-		// hid the colour from it.
-		$divider_width = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['brandTextSeparatorWidth'] ?? '' ) : '';
-		if ( '' !== $divider_width ) {
-			$divider_colour = $attributes['brandTextSeparatorColour'] ?? '';
-			$rules[]        = "{$root_sel} .sgs-brand-strip__item--text,{$root_sel}.sgs-brand-strip--layout-row .sgs-brand-strip__item{"
-				. 'border-right-style:solid;'
-				. 'border-right-width:' . $divider_width . ';'
-				. 'border-right-color:' . ( '' !== $divider_colour && function_exists( 'sgs_colour_value' ) ? sgs_colour_value( $divider_colour ) : 'currentColor' ) . ';}';
-		}
+		// The lines between brands are the shared Separators setting (`separators`,
+		// emitted in render.php), not a border on each text item.
 
 		return $rules;
 	}

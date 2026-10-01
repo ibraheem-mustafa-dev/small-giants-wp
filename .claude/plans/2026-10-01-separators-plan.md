@@ -88,6 +88,15 @@ items only. Nav extras: hover colour, `hoverTreatment` (swap / sweep) and `sweep
    in Chromium AND WebKit (Playwright `webkit`, plus system Chrome via `channel:'chrome'` for native decorations:
    Playwright's bundled Chromium can be older than 149) so every path is proven.
 
+6. Name sweep (Bean, 2026-10-01): framework code, docs, specs and file names carry no client names AND no
+   reference-site or inspiration names (for example the lamalama references: scripts under
+   `plugins/sgs-blocks/scripts/nav-qa/`, whose file names carry the name too, plus plans and specs). Client and
+   reference material lives in `sites/<client>/` or `reference/` only. Build the detector first (a script that
+   lists every such name in content and in file names outside those folders, rules at the top, ignoring
+   gitignored capture folders such as `.playwright-mcp/`), record the count, then delegate the mechanical edits
+   and renames to Sonnet subagents in batches and verify against the detector's zero. Run after the Separators
+   work is verified, as its own commits.
+
 ## Inventory (2026-10-01, read from the code)
 
 | List | Item selector | Directions | Count known to CSS | Current line |

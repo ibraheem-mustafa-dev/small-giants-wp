@@ -131,7 +131,7 @@ if ( ! function_exists( 'sgs_separators_flow_css' ) ) {
 		return $list . '{' . $native . 'rule-visibility-items:between;}'
 			. '@supports not (row-rule-style:solid){'
 			. $list . '.sgs-sep-anchored{position:relative;}'
-			. $list . '>.sgs-sep-overlay{position:absolute;top:0;left:0;width:0;height:0;pointer-events:none;}'
+			. $list . '>.sgs-sep-overlay{position:absolute;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}'
 			. $list . '>.sgs-sep-overlay>.sgs-sep-line{position:absolute;box-sizing:border-box;margin:0;padding:0;}'
 			. $lines
 			. '}';

@@ -103,42 +103,8 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 			$css .= sgs_hover_state_rules( $sublink_sel, $sublink_bg_hover, ':focus-visible' );
 		}
 
-		/*
-		 * FR-41-36 — submenu-row SEPARATOR: a genuine between-row line (UNDERLINE is
-		 * the bar's own text-indicator, SEPARATOR is anything geometrically between
-		 * two rows/items). This SAME family paints BOTH the bar's dropdown panel
-		 * rows and a drawer's nested/accordion-expanded submenu rows — one
-		 * mechanism, one selector ($sublink_sel is not bar/drawer-forked).
-		 * `submenuBorderColour` etc. above are the PANEL's own OUTER border
-		 * (Normal-only, wraps the whole dropdown) — reusing that prefix for a
-		 * per-ROW separator would repeat the "two elements, one attribute prefix"
-		 * conflation the submenu background split above already avoids. Named
-		 * `submenuLinkBorder*` to match the established row-vs-panel split
-		 * (`submenuLinkBg*` = row, `submenuBg*` = panel). Mirrors
-		 * `itemBorderColour`'s own emission shape in nav-menu-css.php: a width with
-		 * no style implies solid. No Current colour — the spec's separator table
-		 * gives this row only Normal/Hover language.
-		 */
-		$sublink_border_box          = is_array( $attributes['submenuLinkBorderWidth'] ?? null ) ? $attributes['submenuLinkBorderWidth'] : array();
-		$sublink_border_width        = $sublink_border_box ? sgs_box_object_shorthand( $sublink_border_box ) : null;
-		$sublink_border_style        = sgs_border_style_keyword( $attributes['submenuLinkBorderStyle'] ?? '' );
-		$sublink_border_colour       = (string) ( $attributes['submenuLinkBorderColour'] ?? '' );
-		$sublink_border_colour_hover = (string) ( $attributes['submenuLinkBorderColourHover'] ?? '' );
-
-		if ( null !== $sublink_border_width && '' !== $sublink_border_width ) {
-			$css .= $sublink_sel . '{border-width:' . $sublink_border_width . ';border-style:'
-				. $sublink_border_style . ';}';
-		}
-		if ( '' !== $sublink_border_colour ) {
-			$css .= $sublink_sel . '{border-color:' . sgs_colour_value( $sublink_border_colour ) . ';}';
-		}
-		if ( '' !== $sublink_border_colour_hover ) {
-			$css .= sgs_hover_state_rules(
-				$sublink_sel,
-				'border-color:' . sgs_colour_value( $sublink_border_colour_hover ),
-				':focus-visible'
-			);
-		}
+		// The lines between submenu rows are the shared Separators setting
+		// (`submenuSeparators`, includes/nav-menu-separators.php), not a link border.
 
 		// FR-41-22(b) — submenu typography. ⛔ Without this line every one of the
 		// `submenu*` typography attributes is a dead control and the build fails

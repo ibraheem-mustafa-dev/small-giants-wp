@@ -223,11 +223,17 @@
             "desktop": -0.2
           },
           "itemLetterSpacingUnit": "px",
-          "itemSeparatorWidth": "1px",
-          "itemSeparatorStyle": "solid",
-          "itemSeparatorColour": "#D8CA50",
-          "itemSeparatorPosition": "below",
-          "itemSeparatorHoverTreatment": "none",
+          "separators": {
+            "row": {
+              "style": "solid",
+              "width": {
+                "desktop": "1px"
+              },
+              "colour": "#D8CA50"
+            },
+            "edges": "end",
+            "hoverTreatment": "none"
+          },
           "itemPadding": {
             "top": "17px",
             "right": "4px",
