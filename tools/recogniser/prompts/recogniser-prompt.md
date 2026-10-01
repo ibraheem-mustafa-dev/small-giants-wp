@@ -13,7 +13,7 @@ SECTION_ID:       {section_id}
 SEMANTIC_ROLE:    {semantic_role}      # header | main | aside | footer
 HTML_FRAGMENT:    {html_fragment}
 CLASS_SIGNATURE:  {class_signature}
-ACTIVE_VARIATION: {variation_slug}     # e.g. <client-slug>
+ACTIVE_VARIATION: {variation_slug}     # e.g. mamas-munches
 
 FINGERPRINT_CATALOGUE: {fingerprint_json}
 ```
@@ -90,7 +90,7 @@ Examples:
     "gap": {
       "missing_features": ["section-label-above-h1", "mobile-portrait-stack"],
       "classification": "client-css",
-      "recommended_path": "extend the client's variation file with .sgs-hero__label rule + 375px media query"
+      "recommended_path": "extend mamas-munches.json with .sgs-hero__label rule + 375px media query"
     }
   }
 }
@@ -267,7 +267,7 @@ Output:
    patterns to `sgs/notice-banner`, `sgs/feature-grid`, or
    `sgs/icon-block`.
 
-## Quick reference -- common SGS blocks for bakery-style mockups
+## Quick reference -- common SGS blocks for Mama's-style mockups
 
 - `sgs/header` -- any page-level <header>
 - `sgs/footer` -- any page-level <footer> with link columns + tagline

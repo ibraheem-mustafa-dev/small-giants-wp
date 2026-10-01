@@ -1,16 +1,16 @@
-# The optician client findings 1, 8 and 9: converter design (2026-09-24)
+# Eye Care findings 1, 8 and 9: converter design (2026-09-24)
 
 Status: C1 to C4 approved by Bean 2026-09-24. C2 BUILT (0deb3b10b). C1, C3, C4, C5 PAUSED by D1149: they
-resume in Phase 7 of `plans/2026-09-24-optician-hand-build-design.md`, tested against the hand-built site.
+resume in Phase 7 of `plans/2026-09-24-eye-care-hand-build-design.md`, tested against the hand-built site.
 The sections below are the design as approved; read the two review sections at the end before building.
 Audit: `reports/visual-diff/eye-care-home-audit-2026-09-24.md`. Evidence run:
-`pipeline-state/eye-care-ward-end-<draft-name>-2026-09-24-000044` (v2 draft).
+`pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-24-000044` (v2 draft).
 
 ## What the visitor loses today, and why (each cause reproduced on the real draft node)
 
 | # | Loss on the live page | Proven cause |
 |---|---|---|
-| 1 | The hero is an empty dark band: no photo, no headline, no buttons | `converter/services/extraction.py::run_mechanism_b` routes a composite's direct children by their BEM `__element` class. The optician client hero's four children have no class, so each becomes a "composite-interior column has no BEM __element" gap and nothing is emitted. |
+| 1 | The hero is an empty dark band: no photo, no headline, no buttons | `converter/services/extraction.py::run_mechanism_b` routes a composite's direct children by their BEM `__element` class. The Eye Care hero's four children have no class, so each becomes a "composite-interior column has no BEM __element" gap and nothing is emitted. |
 | 2 | The "Any pair here" photo is missing | The `<img>` is tag-swapped to `sgs/media` (atomic) and its styling transfers, but the image never lifts. `converter/walk.py::run_universal_content_walk` only runs the element-self lift (`run_mechanism_leaf`) when the block has ONE unambiguous primary content attribute. `sgs/media` has several (image, video, caption), so `primary_content_attr` returns None and the lift is skipped. Run directly on the node, the lift returns the correct URL and alt. |
 | 3 | The three numbered steps show the block's placeholder rows ("First list item…") | `converter/resolvers/array_content.py::_find_item_nodes` finds list items only as sibling elements sharing a BEM class. Plain `<li>` rows have none, so it finds 0 items and the block keeps its default items. |
 | 4 | "How lenses work here", "Message me on WhatsApp" and "My qualifications" are plain text, not buttons | `converter/services/text_leaf.py::node_is_text_leaf` treats a `<div>` as a text paragraph unless a child's tag is on a fixed block-level list. `<button>` and `<a>` are not on it, so a `<div>` holding only buttons becomes one `sgs/text`. (The `<button>` on its own already converts to `sgs/button` correctly.) |
@@ -68,7 +68,7 @@ text blocks.
   image focus and content padding. These need the draft-script evaluator (plan Track A1). Until then
   the hero is only as tall as its content, and the overlay is the section's dark background alone.
 - **Button destinations:** the draft's buttons navigate with script handlers (`goLenses`, `goAbout`),
-  not links. The manifest records links per screen, not per button, and there are no the optician client pages yet
+  not links. The manifest records links per screen, not per button, and there are no Eye Care pages yet
   to link to. Each such button is emitted without a URL and reported with its handler name (Track D).
 - **Hero photo zoom and parallax, the button hover styles** (`style-hover`, plan Track A item).
 - **The optician panel's 4:5 shape:** `sgs/container` has no aspect-ratio setting, so this is reported
@@ -84,7 +84,7 @@ text blocks.
    - C2: a bare `<img>` fills `imageUrl` and `imageAlt`.
    - C3: `<ol><li>` gives three items and `numbered`; a `<ul>` of BEM items is unchanged.
    - C4: `<div><button>` gives a button; `<p>text <a>link</a></p>` stays one paragraph.
-2. **Regression control:** convert the bakery client's draft before and after. The markup should be identical;
+2. **Regression control:** convert the Mama's draft before and after. The markup should be identical;
    any difference is listed and explained before commit.
 3. **`/qc-council`** (two models) on the diff before each converter commit.
 4. **Live, per the draft-vs-live method:**
@@ -142,11 +142,11 @@ Order: C2, then C4, C3, C1 (smallest first; C1 is the largest). One commit each,
 - **Aspect ratio: nothing was lost.** Evidence:
   - `git log -S AspectRatio` over the container block, the wrapper includes and the shared components
     shows no container aspect-ratio ever added or removed;
-  - the bakery client's homepage clone artefacts carry no aspect value;
+  - the Mama's homepage clone artefacts carry no aspect value;
   - the aspect settings that exist are on image-bearing blocks: `sgs/card-grid.aspectRatio`, which
     sets the card image's ratio and has a live editor control, plus `sgs/media`, `sgs/gallery`,
     `sgs/post-grid` and hero split-media.
-  the bakery client's draft puts `aspect-ratio` on image wrappers (`.product-card-image` 4/3, `.story-image` 4/5).
+  Mama's draft puts `aspect-ratio` on image wrappers (`.product-card-image` 4/3, `.story-image` 4/5).
   The optician panel is the same shape: a stand-in for "Photo of the clinic".
 
 ## Questions for Bean (original)

@@ -154,7 +154,7 @@ SGS is one custom WP 7.0 block theme serving many client sites. Two problems are
 
 ### Group D — Urgent fixes (low-risk; do before the deferred migration)
 
-**FR-26-D1 — Canary contamination — RESOLVED/MOOT (verified 2026-06-03). Do NOT clear `wp_global_styles` post 7** — its tokens already match `theme.json` (the bakery client brand palette + WCAG CSS byte-for-byte), so clearing would lose the render with no benefit; the cloning pixel-diff is not colour-contaminated. This sync is coincidental (both layers were hand-written the same session) and will RE-DIVERGE on the next `push-theme-snapshot` or Site-Editor edit — FR-26-D2 is the durable fix.
+**FR-26-D1 — Canary contamination — RESOLVED/MOOT (verified 2026-06-03). Do NOT clear `wp_global_styles` post 7** — its tokens already match `theme.json` (Mama's brand palette + WCAG CSS byte-for-byte), so clearing would lose the render with no benefit; the cloning pixel-diff is not colour-contaminated. This sync is coincidental (both layers were hand-written the same session) and will RE-DIVERGE on the next `push-theme-snapshot` or Site-Editor edit — FR-26-D2 is the durable fix.
 - *Done when:* (verified) `GET /wp/v2/global-styles/themes/sgs-theme` shows `theme:*` Mama slugs + the WCAG css; post 7 mirrors them. No action.
 - *Residual risk this leaves:* the two layers are synced ONLY because both were hand-written this session; without FR-26-D2 they will RE-DIVERGE on the next `push-theme-snapshot` (disk-only) or any Site-Editor edit. FR-26-D2 is the durable fix.
 - *Model:* n/a.
@@ -185,7 +185,7 @@ the `theme` origin. Omitting rather than nulling is sufficient and correct: the 
 (**replace, not merge** — read on the canary's own WP 7.0.2 core via `ssh … grep -n 'settings' wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php`, 2026-08-07; cite the assignment, not the line number — it moves between releases), so omission also CLEARS a stale user-layer copy.
 
 - **NOT stripped, deliberately:** `color.palette` / `color.gradients` / `typography.fontSizes` /
-  `typography.fontFamilies` — these genuinely differ per client (the optician client and the four `sgs-*`
+  `typography.fontFamilies` — these genuinely differ per client (eye-care and the four `sgs-*`
   template snapshots carry a 6-slug `clamp()` scale whose largest step the framework has no slug
   for), and the user layer is the only place a Site-Editor edit to them can live. `color.duotone`
   exists in neither the framework theme.json nor any snapshot, so it is omitted from the strip list

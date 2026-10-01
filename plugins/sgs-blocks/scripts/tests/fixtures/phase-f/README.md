@@ -62,7 +62,7 @@ The fixtures in this corpus are designed to be idempotency-safe: no fixture emit
 
 ## E. Blocks absent from page 8 — coverage note
 
-Page 8 (the bakery client's canary) does NOT contain all 31 blocks × variants. The following are absent and require this fixture corpus for any COVERED verdict (§7b MF-7 single-canary blind-spot guard):
+Page 8 (Mama's Munches canary) does NOT contain all 31 blocks × variants. The following are absent and require this fixture corpus for any COVERED verdict (§7b MF-7 single-canary blind-spot guard):
 
 - `sgs/media` (entire family E — atomic-media shape) → `sgs-media.draft.html`
 - `sgs/tabs` + `sgs/tab` → covered by `../conformance/sgs-tabs.html` + `../conformance/sgs-tab.html`

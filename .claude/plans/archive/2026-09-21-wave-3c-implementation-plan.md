@@ -28,7 +28,8 @@ inputs: .claude/reports/reference-requirements/FAMILIES-MASTER.md, .claude/repor
   Spec 37 sections 1 and 2 before any drawer unit. The unit's own reference JSON rows before
   its design gate.
 - **Bean's answers** (section 1): force-solid gets a solid resting colour, the drawer clamp is
-  dropped, full scope, three accepted divergences, no file splits, sandybrown only, the wholesale-food client draft is the capped-header exemplar, and a Lottie player is built from a researched model.
+  dropped, full scope, three accepted divergences, no file splits, sandybrown only, the Indus
+  Foods draft is the capped-header exemplar, and a Lottie player is built from a researched model.
 
 ## 1. Bean's answers (2026-09-21)
 
@@ -52,7 +53,7 @@ time runs out, but nothing is dropped or parked.
 **(d) Divergences from a reference: accepted, all three.** The only places a clone will differ from
 its reference on purpose: (1) DEC-01, resn's WebGL scene approximated with a Tier V effect or an
 existing fx field, with real DOM text for its labels; (2) DEC-02, accessible defaults kept where a
-reference ships an accessibility defect, with one carve-out, close-on-scroll for the reference site; (3) DEC-07,
+reference ships an accessibility defect, with one carve-out, close-on-scroll for lamalama; (3) DEC-07,
 buck's random fill frozen to one colour, because a new colour per page load is a content choice.
 Each is recorded in the clone's report so it never reads as a defect.
 
@@ -66,20 +67,20 @@ or drawer is needed, switch the active header and drawer CPTs on sandybrown
 (`wp sgs header set-active <id>` and `wp sgs drawer set-active <id>`, Spec 19 section 4.14)
 instead of deploying to `indus-test` or `eye-care-test`. Those two targets are used only if Bean asks.
 
-**(g) The second composed header at Gate 3C: the wholesale-food client draft.** Bean did not follow the
+**(g) The second composed header at Gate 3C: the Indus Foods draft.** Bean did not follow the
 question, so plainly: at the end of Wave 3C one finished header is checked against a reference. The
-floating-pill header has one (the reference site). An ordinary capped-width header needs a yardstick too. The
-default, unless Bean names another, is Bean's own the wholesale-food client Mega Menu draft: a full-width bar with
+floating-pill header has one (lamalama). An ordinary capped-width header needs a yardstick too. The
+default, unless Bean names another, is Bean's own Indus Foods Mega Menu draft: a full-width bar with
 its content capped at 1240px, dropdown and mega panels, and a mobile overlay.
 
-**(h) Lottie: build a Lottie player, and leave the reference site's canvas mark as a still.** Moving SVG
+**(h) Lottie: build a Lottie player, and leave lamalama's canvas mark as a still.** Moving SVG
 logos already exist (`sgs/responsive-logo` `animationStyle` and `svgAnimationSource`, .svg from the
 media library only); Lottie exists nowhere in the tree. Bean's instruction: be efficient and
 delegate the design to a subagent that uses `/gh-research` to find a proven implementation to model.
 That research is `.claude/reports/2026-09-21-lottie-player-research.md`. U-17 is the Lottie player
 unit: a Tier H admission through Spec 38 section 1.2a (with a decision entry), a substrate value
 on `sgs/responsive-logo` that accepts a media-library .json, and a reusable media-slot attribute. It
-runs in parallel with the nav chain. The reference site's live canvas mark stays a still and is recorded as a
+runs in parallel with the nav chain. lamalama's live canvas mark stays a still and is recorded as a
 divergence.
 
 Built (U-17, design `.claude/reports/2026-09-26-u17-lottie-design.md`): `lottie-web` 5.13.0 light build (SVG renderer, npm-bundled, no CDN, no `eval`), admitted to Spec 38 section 1.2a Tier H as D1151 with a named 60 KB allowance for Lottie pages (Bean granted part (iv) on 2026-09-21). Bean widened the scope on 2026-09-26: Lottie is the fourth value of the shared media-type atom (the Media block and the hero split media), a background on the shared wrapper (`bgLottie`), and a substrate on `sgs/responsive-logo` (`animationSubstrate`); the poster is the no-JS, print and reduced-motion state, and the player loads only after its trigger.
@@ -91,7 +92,7 @@ and `::engineering_notes`. Do not restate them elsewhere. What they change here:
 
 | ID | What it means for the build |
 |---|---|
-| DEC-02 | SGS's accessible default is kept on every block. Exactly one carve-out: a close-on-scroll attribute for the reference site, in U-9. No other accessibility opt-out |
+| DEC-02 | SGS's accessible default is kept on every block. Exactly one carve-out: a close-on-scroll attribute for lamalama, in U-9. No other accessibility opt-out |
 | DEC-03 | Away is the UK storefront; its copy cells are not cloned verbatim and Away is re-read on the UK site before Wave 4 |
 | DEC-04 | Step 0c. DEC-05: Step 0d. DEC-11: the drafts' 768 rows are mobile, so they have no tablet row |
 | DEC-09 | The drawer closes when the viewport crosses `collapsePoint` while open; otherwise it stays open and reflows. One rule, no attribute. In U-9 |
@@ -99,8 +100,8 @@ and `::engineering_notes`. Do not restate them elsewhere. What they change here:
 | DEC-14 | "The row's own surface is the trigger", built in U-14 as a SEPARATE tier on/off attribute, `sgs/nav-bar-menu::triggerSurface`, not a fourth `triggerMode` value (Bean, with both council members, 2026-09-25): `triggerMode` chooses what the button shows, the surface its hit area, so every presentation keeps it. Full text: `families-master.json::decisions` DEC-14 `resolution` |
 | DEC-15 | Amend FR-36-6: the drawer's own × becomes optional per `closeStyle` and per tier. Written into Spec 36 at Step 0b, before U-11 builds |
 | DEC-16, DEC-17 | NOT accepted as written. Their scope floor and four-of-eight split were not accepted; the plan builds every family and all eight furniture blocks (section 1c), smallest-support family last inside each unit |
-| DEC-01, DEC-02, DEC-07 | The three accepted divergences (section 1d). Nothing is built for them. M-08's trigger case is built, in U-14; its non-trigger card (the reference site) is DEC-18. DEC-13: the Lottie player is built as U-17 (section 1h) |
-| DEC-18 | The reference site's GET IN TOUCH card pinned to the top-right corner: accepted difference (Bean, 2026-09-27). Not built in Wave 3C; M-08 is covered by acceptance. Rebuild parked in `.claude/plans/2026-09-27-g8-screen-corner-pin-plan.md` |
+| DEC-01, DEC-02, DEC-07 | The three accepted divergences (section 1d). Nothing is built for them. M-08's trigger case is built, in U-14; its non-trigger card (lamalama) is DEC-18. DEC-13: the Lottie player is built as U-17 (section 1h) |
+| DEC-18 | lamalama's GET IN TOUCH card pinned to the top-right corner: accepted difference (Bean, 2026-09-27). Not built in Wave 3C; M-08 is covered by acceptance. Rebuild parked in `.claude/plans/2026-09-27-g8-screen-corner-pin-plan.md` |
 | ENG-01 | z-index becomes a per-tier attribute defaulting to 100. Inside U-1 |
 | ENG-02 | `accordionExclusive` boolean, default true. Inside U-9 |
 | ENG-03 | Six `sgs/site-header` attributes are in `block.json` and rendered but missing from the framework DB. Step 0a |
@@ -201,12 +202,12 @@ visually. `none` means neither.
 | 6 | U-3 — **DONE** (paired with U-8) | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
 | 7 | U-6 — **DONE** (paired with U-7) | Item hover parity: opacity and padding-shift hover (M-21, delivered by U-1 — see its row), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
 | 8 | U-7 — **DONE** (paired with U-6) | Per-item ornament (M-22) and per-item media slot (M-15) | M-22, M-15 | none | medium | `nav-menu-markup.php`, `nav-drawer-menu/block.json`, `mega-group/`, `nav-menu-submenu-css.php` |
-| 9 | U-10 — **DONE** (paired with U-14) | Role migration: move a non-menu header block into the drawer per tier. Crosses the Spec 37 boundary. First design question (Bean, 2026-09-25): the composition route, a copy of the block in the drawer body plus the header copy hidden at that tier with the existing device-visibility extension (`includes/device-visibility.php`, `sgsHideOnMobile/Tablet/Desktop`); Bean calls it the right use of those settings. The optician client does this today with Additional CSS, which that route replaces. Blocks reading Site Info carry no duplicate data | M-19 | design | medium | `site-header-row/block.json`, `nav-drawer/render.php`, `nav-menu-markup.php` |
+| 9 | U-10 — **DONE** (paired with U-14) | Role migration: move a non-menu header block into the drawer per tier. Crosses the Spec 37 boundary. First design question (Bean, 2026-09-25): the composition route, a copy of the block in the drawer body plus the header copy hidden at that tier with the existing device-visibility extension (`includes/device-visibility.php`, `sgsHideOnMobile/Tablet/Desktop`); Bean calls it the right use of those settings. Eye Care does this today with Additional CSS, which that route replaces. Blocks reading Site Info carry no duplicate data | M-19 | design | medium | `site-header-row/block.json`, `nav-drawer/render.php`, `nav-menu-markup.php` |
 | 10 | U-4 — **DONE** (cut to `vw`/`vh` units, Bean) | Type scaling mode: a formula unit, per-tier line-height; includes `business-info` for the footer half | M-45 | none | medium | `nav-bar-menu/block.json`, `nav-drawer-menu/block.json`, `nav-menu-submenu-css.php`, `business-info/block.json` |
 | 11 | U-8 — **DONE** (paired with U-3) | Panel geometry: anchor enum and mega top offset (M-16). "Panel follows the pill" is a covered value of M-16, already built. Then Away's callout row (M-20), the aside or callout column count, which comes last on one reference | M-16, M-20 | none | medium | `nav-menu-submenu-css.php`, `mega-panel/{block.json,render.php}`, `mega-aside/render.php` |
 | 12 | U-14 — **DONE** (paired with U-10) | Band pass-through, a zero-height shell (M-52); the surface trigger (M-39, DEC-14, built as the separate `triggerSurface` attribute); then a trigger that outlives its header, the detaching chip (M-08, buck and resn), last on two references. Do not reuse `class-sgs-floating-ui-renderer.php` as is: its container is `aria-hidden`, and FR-36-8's priority-plus-More text contradicts it | M-52, M-39, M-08 | design | medium | `site-header/{render.php,block.json,style.css}`, `site-header-row/block.json`, `nav-bar-menu/block.json` |
 | 13 | U-13 — **DONE** | Header scroll intelligence: section-adaptive ink (M-04), then direction-keyed restyle (M-03, one reference, last) | M-04, M-03 | design | high | `src/header-behaviours/view.js`, `includes/class-sgs-header-behaviours.php`, `site-header/*` |
-| 14 | U-16 — DONE (2026-09-26) | Header and footer entrance animation. The entrance is its own layer on every block: `animation-observer.js` plays it as a script animation (`element.animate()`), so it never shares a block's own transition, CSS animation or transform (the header's shrink and hide-on-scroll keep working); distance presets 15/30/50/100px, delays up to 800ms, a head flag that holds entrances until their start pose is placed (no flash at 375), a header failsafe and first-appearance notice (design `.claude/reports/2026-09-26-u16-entrance-design.md`, council three rounds GO WITH FIXES). Live report `reports/visual-diff/entrance-2026-09-26.md` (verdict: PASS, axe included). Live PASS on sandybrown at 375/768/1440, twice: `node plugins/sgs-blocks/scripts/nav-qa/u16-entrance-probe.mjs` (15 failures on the pre-U-16 build) and `node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs` (18 pass; 7 failures on the pre-U-16 build). Divergence recorded: the preloader-gated start (the reference site, studionamma). Eye check waived by Bean (2026-09-26): the wave's goal is a visual copy of the references, so the motion's feel is not judged here. | M-11 | eye (waived) | medium | `assets/js/animation-observer.js`, `src/components/AnimationControl.js`, `src/blocks/extensions/animation.js`, `includes/animation-attributes.php`, `assets/css/extensions.css`, `scripts/dbschema/seed-motion-shape-signatures.py` |
+| 14 | U-16 — DONE (2026-09-26) | Header and footer entrance animation. The entrance is its own layer on every block: `animation-observer.js` plays it as a script animation (`element.animate()`), so it never shares a block's own transition, CSS animation or transform (the header's shrink and hide-on-scroll keep working); distance presets 15/30/50/100px, delays up to 800ms, a head flag that holds entrances until their start pose is placed (no flash at 375), a header failsafe and first-appearance notice (design `.claude/reports/2026-09-26-u16-entrance-design.md`, council three rounds GO WITH FIXES). Live report `reports/visual-diff/entrance-2026-09-26.md` (verdict: PASS, axe included). Live PASS on sandybrown at 375/768/1440, twice: `node plugins/sgs-blocks/scripts/nav-qa/u16-entrance-probe.mjs` (15 failures on the pre-U-16 build) and `node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs` (18 pass; 7 failures on the pre-U-16 build). Divergence recorded: the preloader-gated start (lamalama, studionamma). Eye check waived by Bean (2026-09-26): the wave's goal is a visual copy of the references, so the motion's feel is not judged here. | M-11 | eye (waived) | medium | `assets/js/animation-observer.js`, `src/components/AnimationControl.js`, `src/blocks/extensions/animation.js`, `includes/animation-attributes.php`, `assets/css/extensions.css`, `scripts/dbschema/seed-motion-shape-signatures.py` |
 | ‖ | U-12 — **DONE** | Header and footer furniture: local-time clock, language switch, store selector, wishlist (link, saved-items panel, Save for later), theme toggle with an automatic dark palette, back-to-top and account as `sgs/button` link sources, sound mute as an `sgs/audio` style (Bean, 2026-09-25). `headerEssential` on `product-search` only | M-18 | none | high | six new directories (`local-time/`, `language-switch/`, `store-selector/`, `theme-toggle/`, `wishlist-link/`, `wishlist-panel/`), plus `button/`, `audio/`, `product-card/`, `cart/`, `product-search/block.json`, `includes/wishlist/`, `includes/helpers-link-source.php`, `scripts/derive-dark-palette.py` and the theme's dark-mode files |
 | ‖ | U-15 — **DONE** | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*`, new `notice-message/` |
 | ‖ | U-17 — **DONE** | The Lottie player (DEC-13, section 1h): Spec 38 Tier H, the fourth media type, the wrapper background and the logo substrate | M-33 | design | high | `includes/lottie-*.php`, `src/shared/effects/{fx-lottie,lottie-adapter}.js`, `src/vendor-modules/lottie-light.js`, the media atoms, `media/`, `hero/`, `responsive-logo/`, `class-sgs-container-wrapper.php` |
@@ -225,7 +226,7 @@ header's own gradient fill (`backgroundColourGradient`, resolved by `sgs_backgro
 scrolled, `sgs_css_gradient_value()`), live-verified on sandybrown (`/qa-scrim/`, fixture
 `scripts/nav-qa/qa-u1-owed-fixture.php`, probe `scripts/nav-qa/u1-owed-probe.mjs`: top pixel 129, bottom 254
 over white, no mask on the header, dropdown still clickable). The same probe live-verified the card lift and
-the submenu opacity pair: fantasy's submenu link opacity 0.6 at rest to 1 hovered; the wholesale-food client' 6px card lift
+the submenu opacity pair: fantasy's submenu link opacity 0.6 at rest to 1 hovered; indus-foods' 6px card lift
 with a negative control (an empty lift does not move the card; fixed in ae50c7626, mega-panel `style.css`'s
 fallback was -3px). Exit cells: M-43 moves to `covered` in `families-master.json` (residual: rabbit's open
 state never reproduced live). M-09 moves to `covered` (buck's `auto` z-index is an accepted divergence,
@@ -243,10 +244,10 @@ passes `useSettings('color.gradients')` via `flattenPresetSetting()`.
 Shipped as ONE shared scrim (Bean widened the scope): `includes/helpers-scrim.php` plus `scrimColour`,
 `scrimColourGradient`, per-device `scrimOpacity` and `scrimBlur` on nav-drawer and nav-bar-menu (the owner of every
 dropdown and mega panel, not mega-panel: three references dim for plain dropdowns too) and on modal, cart, gallery and
-product-search. Exit cells: halcyon and the wholesale-food client panel cells, away's drawer and panel cells, butcherbox's drawer cell,
-The reference site's drawer cells and lusion's 1440 gradient cell are all reachable per tier; halcyon, the reference site and away's drawer
+product-search. Exit cells: halcyon and indus-foods panel cells, away's drawer and panel cells, butcherbox's drawer cell,
+lamalama's drawer cells and lusion's 1440 gradient cell are all reachable per tier; halcyon, lamalama and away's drawer
 cells were measured live within tolerance (exact values). Residue, named: butcherbox's dropdown strength was never
-captured as a number (measure at its Wave 4 clone); the reference site's click-through is an accepted divergence; the scrim fade
+captured as a number (measure at its Wave 4 clone); lamalama's click-through is an accepted divergence; the scrim fade
 stays 0.2s until U-5's motion vocabulary; lusion's phone and tablet blue is the full-screen drawer's own fill, and its
 card inset is U-3 (M-46). M-14 moves to `covered`.
 
@@ -258,7 +259,7 @@ patterns); `closePlacement`, `closeOffset`, `closeRadius` added; the DEC-09 resi
 `closeOnScrollDistance` is DEC-02's one carve-out (pointer scrolling only, never touch); `accordionExclusive` (ENG-02);
 `burgerMorph`, `burgerMorphDuration`, `burgerMorphEasing`; `itemMagnetStrength`. A Spec 32/35 audit found seven Spec 35
 must-fixes, all fixed before commit. M-36, M-34, M-35, M-40, M-47, M-27 and M-10 move to `covered`. Residue, named:
-wearecollins' two-bar burger belongs to U-6; away's and rabbit's icon swap and the wholesale-food client' 38px × are recorded
+wearecollins' two-bar burger belongs to U-6; away's and rabbit's icon swap and indus-foods' 38px × are recorded
 divergences; the `m` hotkey and history-back stay outside the wave (section 2). Bean's review then closed seven
 defects, all live-checked: the hidden × releases its top row and stays hidden through the close animation; the
 `trigger` and `centred` cards and a non-modal full-screen drawer (now starting under the burger's own header row) paint
@@ -317,7 +318,7 @@ linked page's featured image, GIF/WebP full size) are new settings (Spec 41 FR-4
 lists gain a number format. Row separators needed no new setting. Exit cells measured live: halcyon's separator,
 wearecollins' dim, lusion's roll and MENU to CLOSE, dogstudio's index at desktop only, a 45 degree expander turn,
 studionamma's 160 x 112 hover thumbnail, and a mega panel inside the drawer at mobile. M-30, M-24, M-25, M-22 and
-M-15 move to `covered`. Correction to U-3 + U-8's row 14: the wholesale-food client' "More" is a compact-links panel (its rows carry
+M-15 move to `covered`. Correction to U-3 + U-8's row 14: indus-foods' "More" is a compact-links panel (its rows carry
 descriptions and numbers). Residue and follow-ups, named: studionamma's up-scale origin (never captured); the hovered
 item's faster return in wearecollins (one duration both ways); resn's canvas dissolve (DEC-01); buck's per-link
 glyphs if they differ (Wave 4 buck clone); studionamma's DARK MODE roll (U-12) and its button's hover word (Wave 4
@@ -336,7 +337,8 @@ serialised from the saved post; its rows needed a new per-item `description` on 
 live: a real `<ol>`, `decimal-leading-zero`, 12px 700 numbers, the description a block line inside the link);
 `sgs/mega-panel`'s opaque default fill (Bean, option a, 2026-09-25): an empty `panelBg` paints the
 surface token and the dark scheme's own fill is opaque `rgb(20,20,25)`; translucency comes only from `surfaceOpacity`,
-the reading the tone logic already used (`render.php::$panel_bg_value`, `::$dark_panel_bg`); `sgs/nav-bar-menu` link padding as a setting (`itemPadding`, 4cf0b9069 and f06b7133f; handed over by the optician client build; live: 14px 24px read back on the fixture, and the hover shift adds to the custom left padding, 24px + 8px
+the reading the tone logic already used (`render.php::$panel_bg_value`, `::$dark_panel_bg`); `sgs/nav-bar-menu` link padding as a setting (`itemPadding`, 4cf0b9069 and f06b7133f; handed over by the Eye
+Care build; live: 14px 24px read back on the fixture, and the hover shift adds to the custom left padding, 24px + 8px
 = 32px) and a per-run upload name, theme.json payload name and unpacking folder in `build-deploy.py` (7c61b7d16; live:
 the sandybrown deploy used `sgs-deploy-<pid>-<time>` and left nothing in the SSH home). Also fixed after Bean's review: the drawer scrollbar (thin, tinted, no arrows, clear of the rounded corners) and a wheel over an open drawer no longer scrolls the page and closes it (Lenis `prevent` on open dialogs); live `reports/visual-diff/nav-drawer-2026-09-25.md` F1, F2. The lane A QA pass
 (d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass") closed axe with the drawer open, reduced motion and the editor round-trip, and fixed keyboard
@@ -356,7 +358,7 @@ FIXES, Bean sign-off; commit 0fbe085f1, then DB rows and gate fixes 96b375e53, d
 5781740e7; live `reports/visual-diff/nav-drawer-2026-09-25.md` section "U-10 + U-14"). U-10 (M-19) is composition: a
 copy in the drawer body, the header copy hidden by tier or, new, exactly while the menu shows its burger
 (`sgsCollapseVisibility`, a universal extension attribute whose rules the header writes at its burger-owning menu's
-`collapsePoint`). The optician client's phone keeps its 1160px rule in Additional CSS (Bean: a rare one-off; that width is where its bar stops fitting,
+`collapsePoint`). Eye Care's phone keeps its 1160px rule in Additional CSS (Bean: a rare one-off; that width is where its bar stops fitting,
 not the collapse point). U-14: `headerPassThrough` (M-52, fixed with structural pointer-events), `triggerSurface`
 (M-39; DEC-14 amended to a separate attribute) and the detaching chip (`triggerDetach*`, M-08, buck; a second copy of
 the burger printed on `wp_footer`, one open state per drawer in the store). All four families move to `covered`.
@@ -371,7 +373,8 @@ an empty chip background now paints the opaque surface token (Bean, option a: bu
 `TypographyControls.js::isTieredValue` read the editor's `[]` default as a flat value, so a custom font size, line
 height or letter spacing on a fresh block was lost on reload. Fixture cases `header-row` and
 `detach-chip` in `scripts/nav-qa/qa-item-markup-fixture.php` set the U-10/U-14 settings up on `/qa-scrim/`.
-Close-out (6962dd0e6, live on sandybrown): bar dropdown links default to the palette's `text`, not `primary` (the bakery client pink on cream read 2.24:1); the brand colour stays as the Hover row fill. axe on the keyboard-opened dropdown
+Close-out (6962dd0e6, live on sandybrown): bar dropdown links default to the palette's `text`, not `primary` (Mama's
+Munches pink on cream read 2.24:1); the brand colour stays as the Hover row fill. axe on the keyboard-opened dropdown
 at 1440 with the `exit-cells` geometry fixture: 0 violations.
 
 **U-13 — done** (design `.claude/reports/2026-09-26-u13-header-ink-design.md`, two-model council GO WITH FIXES,
@@ -403,17 +406,17 @@ flat `gap`, so the editor preview failed with "Error loading block" (31c2ed4c5);
 states are not measurable live; the ink colours carry no `css_state`, so the converter cannot route a draft's CSS
 to them.
 
-**Lane C — U-12, U-15 and U-17 done** (designs `.claude/reports/2026-09-26-u12-furniture-design.md`, `.claude/reports/2026-09-26-u15-notice-message-design.md`, `.claude/reports/2026-09-26-u17-lottie-design.md` (two-model council GO WITH FIXES, Bean sign-off); live checks on sandybrown fixture pages 4070 `/qa-furniture/`, 4072 `/qa-notice/`, 4074 `/qa-wishlist/`, 4087 `/qa-lottie/`, trees in `plugins/sgs-blocks/scripts/nav-qa/lane-c/`; live reports `reports/visual-diff/furniture-2026-09-26.md` (U-12), `notice-banner-2026-09-26.md` (U-15) and `lottie-2026-09-26.md` (U-17), each `verdict: PASS`). M-18, M-07 and M-33 move to `covered` (M-33 keeps the reference site's canvas mark as the accepted still). Researched with /research-buddies and /gh-research before building (Bean): the automatic dark palette (derived at snapshot push time, minimum-change rule, every colour checked against every ground it is used on, failing closed) and the two-tier wishlist (browser list merged into the account on log-in). The live check found and fixed: every media upload fatalling (a typed hook parameter; 039bd248d), the Lottie player never built (vendor list) and unstyled, the Media block's Lottie pause control unbound, `sgs/media` missing `lottie` in its enum, wishlist rows not refreshing and Move to basket failing for products with options, a 21px icon-only toggle, unpadded 24-hour clocks, and brand-pink links at 2.24:1. Existing backgrounds proved byte-identical before and after the wrapper change (23 of 23 elements on three live pages). Residue, named: Polylang/WPML as a language-list source; the customer account area and saved-item alerts (price drops, share by link) shipped as Spec 30 FR-30-14 and FR-30-15 (2026-09-26); per-item icons in nav menus; Lottie in the cloning pipeline (Lottie in `sgs/before-after` dropped, Bean 2026-09-26: a drag-compared animation has no real use); `extract-signatures.py` missing bracket-index and local-variable reads (`sgs/whatsapp-cta.showOn`); Bean's eye on U-15 (seen 2026-09-26: good; its rounded corners were the inline card style, now a full-width strip mode, c2737bd34).
+**Lane C — U-12, U-15 and U-17 done** (designs `.claude/reports/2026-09-26-u12-furniture-design.md`, `.claude/reports/2026-09-26-u15-notice-message-design.md`, `.claude/reports/2026-09-26-u17-lottie-design.md` (two-model council GO WITH FIXES, Bean sign-off); live checks on sandybrown fixture pages 4070 `/qa-furniture/`, 4072 `/qa-notice/`, 4074 `/qa-wishlist/`, 4087 `/qa-lottie/`, trees in `plugins/sgs-blocks/scripts/nav-qa/lane-c/`; live reports `reports/visual-diff/furniture-2026-09-26.md` (U-12), `notice-banner-2026-09-26.md` (U-15) and `lottie-2026-09-26.md` (U-17), each `verdict: PASS`). M-18, M-07 and M-33 move to `covered` (M-33 keeps lamalama's canvas mark as the accepted still). Researched with /research-buddies and /gh-research before building (Bean): the automatic dark palette (derived at snapshot push time, minimum-change rule, every colour checked against every ground it is used on, failing closed) and the two-tier wishlist (browser list merged into the account on log-in). The live check found and fixed: every media upload fatalling (a typed hook parameter; 039bd248d), the Lottie player never built (vendor list) and unstyled, the Media block's Lottie pause control unbound, `sgs/media` missing `lottie` in its enum, wishlist rows not refreshing and Move to basket failing for products with options, a 21px icon-only toggle, unpadded 24-hour clocks, and brand-pink links at 2.24:1. Existing backgrounds proved byte-identical before and after the wrapper change (23 of 23 elements on three live pages). Residue, named: Polylang/WPML as a language-list source; the customer account area and saved-item alerts (price drops, share by link) shipped as Spec 30 FR-30-14 and FR-30-15 (2026-09-26); per-item icons in nav menus; Lottie in the cloning pipeline (Lottie in `sgs/before-after` dropped, Bean 2026-09-26: a drag-compared animation has no real use); `extract-signatures.py` missing bracket-index and local-variable reads (`sgs/whatsapp-cta.showOn`); Bean's eye on U-15 (seen 2026-09-26: good; its rounded corners were the inline card style, now a full-width strip mode, c2737bd34).
 
-**Dark palette, the bakery client refusal (fixed 2026-09-26).** Of the four refused colours, three were framework false alarms: `text-inverse`, `primary-text` and `accent-text` were paired with a fill by NAME, and those pairs already fail in light mode (cream on pink 2.4:1, olive on yellow 3.8:1). The real conflict was Mama's yellow `accent` buttons labelled in body `text`, which must turn light on the dark page. Fixed in the framework (Spec 33 FR-33-20): a name-guessed pair counts only when it reads in light mode (else a light-mode warning), and fill-scoped ink keeps a readable label inside the scope that paints text on a fill (`settings.custom.darkInk`, printed by `theme/sgs-theme/functions.php::dark_mode_ink_css`). Mama's now derives with no failures and no hand-set colours. Proved live on sandybrown with a temporary dark push (rolled back): the yellow button's label 8.77:1, page text 6.55:1; the same colours outside the button's scope measured 1.92:1 (the control). The same check found that a missing `settings.custom` key read as the whole settings array, which loaded dark mode on every site without a palette; fixed with `includes/helpers-global-settings.php::sgs_global_custom_setting` and gated by `scripts/check-nested-global-settings.py`. The notice banner also gained a full-width strip display mode and an icon size plus a trust-bar-style icon badge (`iconStyle`, `iconCircle*`).
+**Dark palette, the Mama's Munches refusal (fixed 2026-09-26).** Of the four refused colours, three were framework false alarms: `text-inverse`, `primary-text` and `accent-text` were paired with a fill by NAME, and those pairs already fail in light mode (cream on pink 2.4:1, olive on yellow 3.8:1). The real conflict was Mama's yellow `accent` buttons labelled in body `text`, which must turn light on the dark page. Fixed in the framework (Spec 33 FR-33-20): a name-guessed pair counts only when it reads in light mode (else a light-mode warning), and fill-scoped ink keeps a readable label inside the scope that paints text on a fill (`settings.custom.darkInk`, printed by `theme/sgs-theme/functions.php::dark_mode_ink_css`). Mama's now derives with no failures and no hand-set colours. Proved live on sandybrown with a temporary dark push (rolled back): the yellow button's label 8.77:1, page text 6.55:1; the same colours outside the button's scope measured 1.92:1 (the control). The same check found that a missing `settings.custom` key read as the whole settings array, which loaded dark mode on every site without a palette; fixed with `includes/helpers-global-settings.php::sgs_global_custom_setting` and gated by `scripts/check-nested-global-settings.py`. The notice banner also gained a full-width strip display mode and an icon size plus a trust-bar-style icon badge (`iconStyle`, `iconCircle*`).
 
 **U-18 — copy-parity gaps from Gate 3C item 4 (open).** Two composed copies on sandybrown, built only through
-`scripts/wp-build-page.js` from trees in `plugins/sgs-blocks/scripts/nav-qa/gate3c/`: the reference site's pill, page 4446
-`/qa-copy-reference-site/` (`sgs_header` 4435, `sgs_drawer` 4428, menus 130/131, logo still 4415, Sometype Mono 4411), and
-the wholesale-food client draft, page 4465 `/qa-copy-wholesale-food-client/` (`sgs_header` 4461, `sgs_drawer` 4456, menu 132, `sgs_mega_menu` 4426
+`scripts/wp-build-page.js` from trees in `plugins/sgs-blocks/scripts/nav-qa/gate3c/`: lamalama's pill, page 4446
+`/qa-copy-lamalama/` (`sgs_header` 4435, `sgs_drawer` 4428, menus 130/131, logo still 4415, Sometype Mono 4411), and
+the Indus draft, page 4465 `/qa-copy-indus/` (`sgs_header` 4461, `sgs_drawer` 4456, menu 132, `sgs_mega_menu` 4426
 About, 4430 Trade, 4433 More, 4443 Sectors, 4440 Brands, logo 4509, Plus Jakarta Sans 4414 with faces 4484/4485).
 Measure a copy only as the ACTIVE header (in-page copies sit in a lower stacking layer and mislead, as G9 showed):
-`plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs <url> --copy the reference site|the wholesale-food client --out <dir>` inside one trapped
+`plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs <url> --copy lamalama|indus --out <dir>` inside one trapped
 command that swaps `wp sgs header set-active 4435|4461` and always restores 3777 plus `qa-item-markup-fixture.php
 two-bar`.
 
@@ -427,10 +430,10 @@ WITH FIXES, Bean go):
   --menu 132` repeats it through real WordPress: 540 PASS, 0 dropped, 306 unreachable without content).
 - G1 `sgs/nav-bar-menu::burgerWidth` (per tier) with a 44x44 `::after` tap area; G2 `sgs/nav-drawer::anchor`
   `header-box`; G4 `mega-disclosure.js::repositionPanel` + `panel-bounds.js::placePanel` centre the panel's own
-  width. Probe: the reference site burger 30x36 and card top/left/width = the pill at 375/768/1440; the wholesale-food client panels at x
+  width. Probe: lamalama burger 30x36 and card top/left/width = the pill at 375/768/1440; Indus panels at x
   410/180/180/410/570 at 1440, all PASS.
-- G5 by composition: Sectors as four `sgs/container` cards; every the wholesale-food client panel, the logo, Request Catalogue (hidden
-  while the menu is a burger) and the scrim (#141923 at 25%, 2px) rebuilt to the draft; the reference site's card contents
+- G5 by composition: Sectors as four `sgs/container` cards; every Indus panel, the logo, Request Catalogue (hidden
+  while the menu is a burger) and the scrim (#141923 at 25%, 2px) rebuilt to the draft; lamalama's card contents
   (436 tall, rows 66-316, CTAs at 329/389, black text on the filled CTAs as the reference paints).
 - G9 (scrim over the panel) measured as not a defect with the copy active; a hard-coded `z-index:101` on the
   fixed-panel path is folded into G10's commit as hardening.
@@ -440,43 +443,43 @@ Live and measured 2026-09-27 (design `.claude/reports/2026-09-27-u18-g6-g8-desig
 - G6 `sgs/nav-bar-menu::burgerIconWidth`/`::burgerIconHeight` per tier, both writing `--sgs-nbm-icon-w`/
   `--sgs-nbm-icon-h` on a uid-scoped rule so they beat `--two-bar`'s own (0,1,0) height; the `x` and `x-rotate`
   poses hard-coded `translateY(8px)` and now derive travel from the property like `line` already did (9697d30d4).
-  Exit: the reference site bars 16 long, 3px gaps, single line open with 5px travel.
+  Exit: lamalama bars 16 long, 3px gaps, single line open with 5px travel.
 - G7 `drawerAlign` `stretch` ("Full width"), with `$allowed_aligns`, `$align_items_map` and `$text_align_map` all
-  extended together — both maps are indexed unguarded (adab2705a). Exit: the reference site's two CTAs 156.5 (375) / 204
+  extended together — both maps are indexed unguarded (adab2705a). Exit: lamalama's two CTAs 156.5 (375) / 204
   (768, 1440) wide.
 - G10 all FOUR `@container` emissions in `mega-panel/render.php` gated on `$sgs_mm_in_drawer`, not just the 640px
   stack rule: the panel root is its own unnamed query container, so a 620px desktop panel also self-matched the
-  tablet and mobile tiers of max-width, padding and group-gap. `@media` twins unchanged (c598d260f). Exit: the wholesale-food client
+  tablet and mobile tiers of max-width, padding and group-gap. `@media` twins unchanged (c598d260f). Exit: Indus
   About and Trade aside 300px beside the links at 1440, still stacked in the 375 drawer.
 - G11 `$heading_sel` and the `style.css` rule go direct-child, and the eyebrow preset is rebuilt from a relative
   fragment prefixed once per branch: `$heading_sel` is a comma-separated LIST whose every branch already carried
   `$root_sel`, so the old concatenation left branch 1 self-nested (matching nothing) and branch 2 with no style
   scope and no headings-off gate, painting the 11px mono eyebrow on every heading in every group under every style
   (c598d260f). `style.css` lists a direct-child form for the frontend and a one-level-down form for the editor's
-  block-list wrapper. Exit: the wholesale-food client row labels move back from `sgs/text` to `sgs/heading` with their own styles.
+  block-list wrapper. Exit: the Indus row labels move back from `sgs/text` to `sgs/heading` with their own styles.
 
 **G8 STOPPED at NO GO (2026-09-27), then accepted as DEC-18 (Bean, 2026-09-27).** The design lifted an in-page
 `sgs/container` to `wp_footer`; two reviewers returned NO GO (no editor branch, so `position:fixed` covers the canvas;
-several `<style>` tags stranded from the CSS collector; design report §8-§9). The reference site's corner card is an accepted
+several `<style>` tags stranded from the CSS collector; design report §8-§9). lamalama's corner card is an accepted
 difference for Wave 3C and the rebuild brief is parked in `.claude/plans/2026-09-27-g8-screen-corner-pin-plan.md`.
 - Copies composed 2026-09-27 (trees in `plugins/sgs-blocks/scripts/nav-qa/gate3c/`). The live report
-  `reports/visual-diff/u18-copy-parity-2026-09-27.md` (the reference site 75/76, the wholesale-food client 23/23, axe 0) measured box positions and
+  `reports/visual-diff/u18-copy-parity-2026-09-27.md` (lamalama 75/76, Indus 23/23, axe 0) measured box positions and
   widths only, so it is a geometry check, never a copy verdict. It still proves G6, G7, G10, G11 and the `sgs/button`
   focus-colour fix (076279a31, `button/style.css`). M-13, M-16, M-17, M-39 are `covered`; M-08 is covered by DEC-18.
-- **Both copies FAIL Bean's eye (2026-09-27, R-31-13).** the reference site: wrong and missing item glyphs, the missing
+- **Both copies FAIL Bean's eye (2026-09-27, R-31-13).** lamalama: wrong and missing item glyphs, the missing
   "This is Us" media circle, hover markers, hover colours, button text scramble, item fade-in, the slide-open drawer,
   a pill that is too small and does not scale with the viewport, pill text that blocks the click, and middle text
-  hidden at 375 (L1-L10). The wholesale-food client: text sizes, every hover colour and motion, mega-panel spacing and order, and the
+  hidden at 375 (L1-L10). Indus: text sizes, every hover colour and motion, mega-panel spacing and order, and the
   drawer's order and contents (I-1 to I-3). The cause is proven: `u18-copy-probe.mjs` reads no type, hover, motion
   or order, and the draft's stylesheet was never parsed. Full list and the method questions:
   `.claude/plans/2026-09-27-reference-capture-method-plan.md`. Its steps 1-6 are done (2026-09-28): the
   hand-read diff and walker reports are in `reports/visual-diff/u18-*`, every row is sorted, and every framework gap
   is built as a real control (Specs 36, 37, 02). **Resume at that plan's "Build status" open list.**
 - Residue, named (not built): `widthType: fit` and a label's `fullWidth: false` do not hold inside a stretching flex
-  column, and `sgs/mega-aside` has no alignment control (worked around with flex-row wrappers); the wholesale-food client drawer's
-  fourth social is Twitter because no block draws the draft's flat white Google G; the reference site's drawer menu has no
+  column, and `sgs/mega-aside` has no alignment control (worked around with flex-row wrappers); the Indus drawer's
+  fourth social is Twitter because no block draws the draft's flat white Google G; lamalama's drawer menu has no
   item side-padding setting (text 20px nearer the edge), no hairline under the pill's top row and no trailing glyph
-  for a plain item; small the wholesale-food client offsets (nav about 9px left, heavier chevrons, arrow spacing, Sectors cards 4px
+  for a plain item; small Indus offsets (nav about 9px left, heavier chevrons, arrow spacing, Sectors cards 4px
   inset, placeholder boxes without their icon).
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
@@ -668,18 +671,18 @@ Gate 3C passes when:
    `python plugins/sgs-blocks/scripts/no-inline/check-no-inline.py` passes against a
    reachable canary.
 4. Two composed headers are 100% visual copies of their references, at 375, 768 and 1440: a
-   copy of the reference site's floating pill and a copy of the wholesale-food client Mega Menu draft (section 1g).
-   Every panel's position and width match the reference's measured cells (the wholesale-food client draft
+   copy of lamalama's floating pill and a copy of the Indus Foods Mega Menu draft (section 1g).
+   Every panel's position and width match the reference's measured cells (the Indus draft
    centres each panel on the page: mega 1080px, About and Trade 620px, More 300px; Bean
    2026-09-26), and the header's left and right gaps are equal at 1440px. The structural
    fixtures 3733 and 3734 are test rigs on Mama's content, not these copies. Bean's eye is
    co-authoritative (R-31-13).
 5. Spec 36, Spec 37, the verify doc and `LEDGER.md` state the model.
 
-**Status 2026-09-28.** Items 2, 3 and 5 pass. Item 1 passes: M-08's one uncovered cell, the reference site's corner card,
+**Status 2026-09-28.** Items 2, 3 and 5 pass. Item 1 passes: M-08's one uncovered cell, lamalama's corner card,
 is accepted as DEC-18 (Bean, 2026-09-27). Item 4 FAILS on Bean's eye: both copies are far from visual copies, and
-the 75/76 and 23/23 counts measured geometry only. The capabilities are built (2026-09-28); the walker reads the reference site
-295 open and the wholesale-food client 692 open, closing in `.claude/plans/2026-09-27-reference-capture-method-plan.md` "Build status".
+the 75/76 and 23/23 counts measured geometry only. The capabilities are built (2026-09-28); the walker reads lamalama
+295 open and Indus 692 open, closing in `.claude/plans/2026-09-27-reference-capture-method-plan.md` "Build status".
 
 ## 8. Wave 4 preconditions
 

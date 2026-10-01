@@ -594,7 +594,7 @@ For wrapper/container/layout/content-routing commits, the acceptance metric is *
 
 A **class-section composite** is a registered block with `tier='class-section'` AND `block_composition.wraps_block='sgs/container'` — i.e. its render.php provides a fixed shell (named column divs like `.sgs-X__content` / `.sgs-X__media`) and consumes `$content` for one column while rendering the other column(s) from **scalar attrs with a rich own pipeline** (art-direction, srcset, object-fit, bleed, border, responsive show/hide CSS authored in render.php). Current render.php-interior-slot routing roster (4 blocks): `sgs/hero`, `sgs/cta-section`, `sgs/modal`, `sgs/quote`. Note: this 4-block roster is DISTINCT from the 31-block container-mirror roster in §FR-22-21 (all blocks with `block_composition.wraps_block='sgs/container'` across all 3 KINDs — section, layout, content). The composite-mirror rule in §FR-22-21 names `hero, cta-section, modal, trust-bar` as `container_kind='section'` examples; `sgs/quote` is `container_kind='content'` and is also in the 31-block roster. The FR-22-19 routing applies specifically to blocks that render fixed named interior columns via render.php.
 
-**The problem.** When the walker resolves such a block, §FR-22-4.1 emits each of its mockup direct-descendant wrapper columns as a generic `sgs/container` (the `__content` container + the `__media` container with child `sgs/media`). The block's render.php then ALSO wraps `$content` in its own `.sgs-X__content` shell and renders its own scalar media column — producing a **double `.sgs-X__content`** and a media column the converter filled with classless `sgs/media` children that the block's art-direction CSS cannot target. Verified on the bakery client hero canary 2026-05-31/06-01 (R-22-11). render.php is correct; the converter emits the wrong interior shape for these blocks.
+**The problem.** When the walker resolves such a block, §FR-22-4.1 emits each of its mockup direct-descendant wrapper columns as a generic `sgs/container` (the `__content` container + the `__media` container with child `sgs/media`). The block's render.php then ALSO wraps `$content` in its own `.sgs-X__content` shell and renders its own scalar media column — producing a **double `.sgs-X__content`** and a media column the converter filled with classless `sgs/media` children that the block's art-direction CSS cannot target. Verified on Mama's hero canary 2026-05-31/06-01 (R-22-11). render.php is correct; the converter emits the wrong interior shape for these blocks.
 
 **The mechanism (FR-22-19).** When the walker resolves a class-section composite, it routes the node's children per the block's declared slots rather than emitting generic containers:
 - **Content-column children** (the mockup column whose BEM element maps to the block's InnerBlocks content-slot) → emitted as **bare InnerBlocks into `$content`** (no `__content` container — render.php provides it).
@@ -892,7 +892,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 
 **Commit 0.2 — wp-blocks.py extension.** Add 6 new subcommands per FR-22-8 (~150 LoC). Adversarial test corpus per F-RA-3: positive cases (block-equivalent attrs return correct slug) + negative cases (behavioural attrs return null) + edge cases (hyphen-compound BEM elements).
 
-**Commit 0.3 — Phase 0 measurement-methodology hardening.** Patch `scripts/pixel-diff.py` to fix the 60px vertical-anchor offset identified in hero-clone-poc validation: detect sticky/fixed WP chrome (admin bar + framework template-part header) on the SGS page and apply `visibility:hidden` BEFORE `el.screenshot()` so the chrome's `position:sticky;top:0` re-anchoring during scroll-into-view does not paint over the captured element. **Post-screenshot crop-by-detected-height was tried and rejected (D87 2026-05-27, /qc-council Task 5 Rater B): empirically over-crops by `chrome_height − target_viewport_offset` (the bleed on `el.screenshot()` is `tph_bottom − target_top` ≈ 66px at 1440, NOT the full 247px chrome height; cropping by the full height produced 57% > 54.5% baseline).** Retain post-screenshot crop ONLY for full-page captures where no target offset exists. Add `--wait-fonts` flag to wait for `document.fonts.ready` (default OFF; `/sgs-clone` orchestrator passes ON automatically for Spec-22-gated runs per P-SGS-CLONE-WAIT-FONTS-ORCHESTRATION). Add `--keep-chrome` debug-override flag (skip chrome detection + hide; for observability use cases). Empirical result: hero-clone-poc 1440 went 54.5% → 10.3% (−44.2pp); the bakery client hero 1440 IMPROVED 69.6% → 60.8% (−8.8pp; honest new baseline since chrome was contaminating prior measurement). Without this work the Phase 1 ≤5% gate is measured against a script with known noise; with it the gate has empirical foundation.
+**Commit 0.3 — Phase 0 measurement-methodology hardening.** Patch `scripts/pixel-diff.py` to fix the 60px vertical-anchor offset identified in hero-clone-poc validation: detect sticky/fixed WP chrome (admin bar + framework template-part header) on the SGS page and apply `visibility:hidden` BEFORE `el.screenshot()` so the chrome's `position:sticky;top:0` re-anchoring during scroll-into-view does not paint over the captured element. **Post-screenshot crop-by-detected-height was tried and rejected (D87 2026-05-27, /qc-council Task 5 Rater B): empirically over-crops by `chrome_height − target_viewport_offset` (the bleed on `el.screenshot()` is `tph_bottom − target_top` ≈ 66px at 1440, NOT the full 247px chrome height; cropping by the full height produced 57% > 54.5% baseline).** Retain post-screenshot crop ONLY for full-page captures where no target offset exists. Add `--wait-fonts` flag to wait for `document.fonts.ready` (default OFF; `/sgs-clone` orchestrator passes ON automatically for Spec-22-gated runs per P-SGS-CLONE-WAIT-FONTS-ORCHESTRATION). Add `--keep-chrome` debug-override flag (skip chrome detection + hide; for observability use cases). Empirical result: hero-clone-poc 1440 went 54.5% → 10.3% (−44.2pp); Mama's hero 1440 IMPROVED 69.6% → 60.8% (−8.8pp; honest new baseline since chrome was contaminating prior measurement). Without this work the Phase 1 ≤5% gate is measured against a script with known noise; with it the gate has empirical foundation.
 
 **Commit 0.4 — Hybrid-block audit.** Query `equivalent_block_for()` against every block × every attr. Filter via FR-22-2.2 role-exclusion. Produce roster at `.claude/reports/2026-05-27-hybrid-block-roster.md`. **Actual count 2026-05-27: 61 hybrid blocks across 77 SGS blocks audited (1,740 block_attributes rows).** Mean hybrid_attr_count = 3.08; median = 2. Top blocks: sgs/hero (11), sgs/media (8), sgs/icon-list (7), sgs/cta-section (6), sgs/form-field-number (6). The earlier "8-15 estimate" was a guess at the count of "true high-content composites"; the canonical roster criterion (any block with ≥1 content-bearing attr per FR-22-6) is wider — 61 is the empirical result and IS the Phase 2 scope. Phase 2 dispatchers prioritise by hybrid_attr_count descending (hero first, single-attr blocks last).
 
@@ -913,7 +913,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 Per FR-22-6 + FR-22-6.1. One commit per block in the Phase 0.4 audit roster. Sonnet agents dispatched in parallel where independent; main session sequentially handles any shared-helper additions.
 
 **Commit 2.1 — Roster from Phase 0.4 audit.** Each block in roster gets its own commit per FR-22-6 procedure.
-**Commit 2.N — Continues until roster empty.** Cross-client validation (the wholesale-food client homepage) AFTER the bakery client roster closes — surfaces additional hybrid blocks per FR-22-9. New synonyms added as DB rows, not per-client code branches.
+**Commit 2.N — Continues until roster empty.** Cross-client validation (Indus Foods homepage) AFTER Mama's roster closes — surfaces additional hybrid blocks per FR-22-9. New synonyms added as DB rows, not per-client code branches.
 
 ### Phase 3 — Legacy cleanup (sequential AFTER Phase 2 closes per FR-22-6.1)
 
@@ -925,9 +925,9 @@ Per FR-22-6 + FR-22-6.1. One commit per block in the Phase 0.4 audit roster. Son
 
 ### Phase 4 — Acceptance gate
 
-**Commit 4.1 — the bakery client full-page acceptance.** `/sgs-clone --auto-section`. Every body section measured. Phase 4 closes when every body section ≤5% × 3 viewports per FR-22-7 AND Bean visual sign-off accepted.
+**Commit 4.1 — Mama's full-page acceptance.** `/sgs-clone --auto-section`. Every body section measured. Phase 4 closes when every body section ≤5% × 3 viewports per FR-22-7 AND Bean visual sign-off accepted.
 
-**Commit 4.2 — Cross-client validation.** Same acceptance gate on the wholesale-food client homepage AND the charity client if available. Any new `slots` (scope='element') / `naming_conventions` rows added are checked against the bakery client pipeline run to verify no bakery client regression.
+**Commit 4.2 — Cross-client validation.** Same acceptance gate on Indus Foods homepage AND helping-doctors if available. Any new `slots` (scope='element') / `naming_conventions` rows added are checked against Mama's pipeline run to verify no Mama's regression.
 
 **Commit 4.3 — Phase 4 close `/qc-council` Stage 5 + `/handoff`.** Cross-doc updates per §8.
 
@@ -978,7 +978,7 @@ Phase 1.5 work is empirically scoped after Phase 1 measurements arrive. May be i
 | Phase 0.1 `canonical_slot` backfill wrongly tags behavioural attr as block-equivalent | LOW (scope-corrected 2026-05-27 — D84) | Walker mis-emits child block for what should be scalar attr | **Structural guardrail**: assign-canonical.py refuses to operate on rows where `derived_selector IS NULL`. Risk surface reduced from 1,214 rows to ≤72 Tier B candidates. Dry-run JSON diff (one screen) reviewed by Bean before any DB write. 1,142 triple-NULL behavioural attrs untouched by construction. Golden corpus regression test DROPPED — diff IS the review surface. |
 | Phase 1 walker rewrite drops sections that legacy walker handled via essence-match | MEDIUM | Pixel-diff regression on specific section | **Pre-rewrite DB snapshot** (Commit 0.1) enables true rollback (legacy code + legacy DB state). Stage 11 measurement at Commit 1.4 catches the regression immediately. |
 | Hybrid block render.php migration breaks existing posts | MEDIUM | "Unexpected content" warnings; clients see broken blocks | deprecated.js shim per FR-22-6 step 4; tested in editor before deploy. |
-| Cross-client validation surfaces new naming gaps | LIKELY (feature, not risk) | Slot_synonyms / naming_conventions rows added | Validated against the bakery client pipeline run AFTER each addition; rollback if the bakery client regresses. |
+| Cross-client validation surfaces new naming gaps | LIKELY (feature, not risk) | Slot_synonyms / naming_conventions rows added | Validated against Mama's pipeline run AFTER each addition; rollback if Mama's regresses. |
 | Performance regression — walker DB queries per node | LOW | Slow `/sgs-clone` runs | `converter_v2/db_lookup.py` LRU cache; performance threshold committed in FR-22-8 (≤2ms cache-warm, ≤20ms cold). |
 | `recognition_log` writes (75k+ rows already) become bottleneck | LOW | Slow `/sgs-clone` runs | Buffered append-only writes; uimax compaction job already exists. |
 | `wp-blocks.py` unified CLI is single point of failure | MEDIUM | All walker emits depend on one function correctness | **Adversarial test corpus** (Commit 0.2) per F-RA-3. Positive + negative + edge cases. |
@@ -991,9 +991,9 @@ Phase 1.5 work is empirically scoped after Phase 1 measurements arrive. May be i
 
 After Spec 22 Phase 4.3 closes:
 
-- Every body section on the bakery client homepage measures ≤5% pixel-diff × 3 viewports
+- Every body section on Mama's homepage measures ≤5% pixel-diff × 3 viewports
 - Bean visual sign-off captured on cropped-pair artefacts for every section
-- Cross-client validation gate met on at least one other client (the wholesale-food client or the charity client)
+- Cross-client validation gate met on at least one other client (Indus Foods or helping-doctors)
 - `convert.py` reduced substantially in LoC (target ~50-60% reduction)
 - `wp-blocks.py` unified CLI deployed; converter calls one tool not two
 - Hybrid-block roster (Phase 0.4) empty of unresolved blocks (every hybrid has migrated render.php)
@@ -1022,7 +1022,7 @@ Per F-PE-13 the previous greenfield-assumption gave 31-41 hours. With the correc
 | 1.5 (Phase 1 measurement) | Full-page run + decide | ~1 hour |
 | 2.N (hybrid migrations, 8-15 blocks) | Parallel dispatch, sequential helper additions | ~6-10 hours |
 | 3.1-3.3 (legacy cleanup) | Subprocess removal, archive moves, bulk delete | ~2 hours |
-| 4.1-4.3 (acceptance gate) | the bakery client + cross-client + handoff | ~2-3 hours |
+| 4.1-4.3 (acceptance gate) | Mama's + cross-client + handoff | ~2-3 hours |
 | 5.1-5.2 (doc pruning) | decisions.md + mistakes.md walks | ~1-2 hours |
 | **Total** | | **~32-40 hours** |
 
@@ -1110,7 +1110,7 @@ Example seed (live-derived at startup, not hardcoded):
 | F-AP-7 — Stage 2 bypass behaviour underspecified | MED | FR-22-12 added — Stage 2 still produces artefact even when walker bypasses top_pick |
 | F-AP-8 / F-RA-6 — Commit 1.2 packed; Phase 2/3 sequencing | MED | Phase 1 split into 1.1/1.2/1.3/1.4/1.5; FR-22-6.1 sequences Phase 2 → Phase 3 |
 | F-RA-7 — decisions.md / mistakes.md pruning safeguards | MED | Phase 5 explicit "modernised, not deleted when lesson applies"; git preserves |
-| F-RA-8 — Cross-client validation re-opens accepted gate | MED | Cross-client added per FR-22-9 with regression check against the bakery client pipeline |
+| F-RA-8 — Cross-client validation re-opens accepted gate | MED | Cross-client added per FR-22-9 with regression check against Mama's pipeline |
 | F-RA-9 — assign-canonical.py golden corpus | MED → DROPPED (D84, 2026-05-27) | Golden corpus made obsolete by structural guardrail (script refuses `derived_selector IS NULL` input). See F-RA-1 row above. |
 | F-RA-10 — "Preserved" claims need verification | MED | §5 Survives + FR-22-12 (Stage 2 artefact production guaranteed) |
 | F-SC-9 — Parallel-session statement is planning note | MED | Moved from FR-22-6 body to FR-22-6.1 (operational protocol) + §7 Phase 2 implementation notes |

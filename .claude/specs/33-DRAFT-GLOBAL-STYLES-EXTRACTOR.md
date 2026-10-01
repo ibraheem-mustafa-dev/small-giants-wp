@@ -15,7 +15,7 @@ references:
   - 31-UNIVERSAL-CLONING-PIPELINE.md (the block pipeline; §3.A token-snap ΔE reused; the converter reads the snapshot this generates → bootstrap ordering FR-33-12)
   - ../archive/parking.md P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE (the parked continuation: the other-5-client rollout behind per-client reclone, FR-33-11)
   - ../archive/parking.md P-DRAFT-CSSVAR-COLOUR-RESOLUTION + P-DRAFT-CSSVAR-SEED-READD (consume this extractor's token map, FR-33-13)
-corpus_basis: the bakery client, the wholesale-food client and dogfood authored draft mockups under sites/ (8 files, 3 design systems) — full union inventory in §Appendix A
+corpus_basis: sites/{mamas-munches,indus-foods,_dogfood} authored draft mockups (8 files, 3 design systems) — full union inventory in §Appendix A
 absorbs: null
 absorbed_by: null
 ---
@@ -49,7 +49,7 @@ absorbed_by: null
 
 Without this extractor a clone run READS a hand-maintained `theme-snapshot.json` that nothing GENERATES
 from the draft — the drift source. A hand-maintained snapshot carries values no draft ever declared (a
-fabricated `h1: 1.15` line-height + `-0.022em`/`-0.015em` letter-spacing, where the real bakery client draft says
+fabricated `h1: 1.15` line-height + `-0.022em`/`-0.015em` letter-spacing, where the real Mama's draft says
 `h1,h2,h3{line-height:1.2}` and has zero letter-spacing). Because the theme base ≠ the draft base, every
 cloned block inherits the wrong base — e.g. the brand quote renders 16→18px (a `<p>` with no explicit
 font-size inherits the theme base 18px, not the draft base 16px).
@@ -127,7 +127,7 @@ Each mapping carries a **confidence score**; below the floor → `custom` (conse
 mis-slugged guess. Colours dedupe at **ΔE≤1 (CIEDE2000, sRGB→Lab); ALPHA is a separate axis (never
 dedup across alpha)**; on a merge the **`declared` token beats `derived`; among equals, first
 source-order wins**; the loser's name is logged as an ALIAS (not silently vanished). **`surface-alt` fallback:** if no real draft evidence or name-tiebreak already claimed `surface-alt`, `palette.py::_synthesise_surface_alt()` (runs AFTER both assignment passes) derives one from the resolved `surface` colour, tinted 6% toward black (light surface) or white (dark surface), tagged `_source:"derived"`. The content-bg signal stays at 0.70 confidence because raising it to claim the slug directly would silently rename a client's own named large-surface token (e.g. `--surface-pink`) to the generic slug.
-**Done when:** The bakery client role-named + the wholesale-food client literal-colour-named + dogfood tokens each map to correct
+**Done when:** Mama's role-named + Indus literal-colour-named + dogfood tokens each map to correct
 roles via the table (not names); `success=#2E7D4F` lands `success` whether named `--success` or
 `--green`; a colour used as BOTH border and heading resolves by the higher-priority property or falls
 to `custom` with a logged ambiguity; `rgba(x,1)` and `rgba(x,0.1)` do NOT dedup.
@@ -144,7 +144,7 @@ STACK (`Fraunces, Georgia, serif`) AND ensure the primary family is actually loa
 `@font-face`/Google-fonts link into the theme (an extracted-but-unloaded family renders as fallback).
 A value the draft NEVER declared (e.g. the fabricated `1.15`/letter-spacing) MUST NOT be synthesised
 into the output.
-**Done when:** re-cloning the bakery client with the generated snapshot renders the brand quote at the draft base
+**Done when:** re-cloning Mama's with the generated snapshot renders the brand quote at the draft base
 **16px** (the 18px inheritance drift gone), heading line-height **1.2** (not 1.15), letter-spacing absent; a fixture with
 `html{font-size:62.5%}` resolves rem correctly (not ×1.6 wrong); the heading font actually loads.
 
@@ -159,8 +159,8 @@ token (scan BEYOND `:root`), superseded by the rendered content box when the cen
 string** (theme.json accepts it), never recomputed. Button presets are an **OPEN property bag** — the
 DIFF between rest-state and `:hover`-state declarations, verbatim (NOT an "idiom A vs B" enum), so a
 hover that changes colour AND transform is captured whole; `!important` stripped, value kept.
-**Done when:** dogfood spacing tokens + the bakery client `.container` contentSize + button `border-radius:10px`
-+ both hover shapes (the bakery client colour-invert, the wholesale-food client transform-lift) each land in the correct slot with
+**Done when:** dogfood spacing tokens + Mama's `.container` contentSize + button `border-radius:10px`
++ both hover shapes (Mama's colour-invert, Indus transform-lift) each land in the correct slot with
 no `!important`; a declared `clamp()` size is emitted verbatim.
 
 ### FR-33-5 — Pass B derivation is PROVISIONAL/advisory (never auto-live); token-less → baseline+skip
@@ -233,12 +233,12 @@ fallback handling). The EXISTING `converter/services/styling_helpers.py::build_d
 (hex-only, feeding the LIVE converter's exact-hex snap + the `_theme_palette_slugs()` guard) MUST
 stay BYTE-IDENTICAL — widening its return would feed the converter unresolvable entries and risk
 re-opening the ghost-border bug. A golden asserts the hex-only map's output is unchanged for
-The bakery client draft.
-**Done when:** `build_draft_root_colour_map`'s output is byte-identical for the bakery client (golden guard); the
+the Mama's draft.
+**Done when:** `build_draft_root_colour_map`'s output is byte-identical for Mama's (golden guard); the
 extractor consumes the new composed token map; no converter regression.
 
-### FR-33-11 — Deploy safety: prove on the bakery client; backup + rollback; diff-approve; drift-detect
-v1 proves on **the bakery client ONLY** (it carries the wrong-base drift + is the canary). The other 5 client snapshots
+### FR-33-11 — Deploy safety: prove on Mama's; backup + rollback; diff-approve; drift-detect
+v1 proves on **Mama's ONLY** (it carries the wrong-base drift + is the canary). The other 5 client snapshots
 are DEFERRED, each behind its own re-clone + a per-client visual/computed-parity (Stage 11.6) pass —
 NO snapshot-only push of a regenerated palette to a client whose pages aren't re-cloned in the same
 change. Before every `wp_global_styles` push, the pusher MUST fetch-and-back-up the CURRENT live
@@ -259,7 +259,7 @@ fresh site: nothing to back up in that layer, the push proceeds and exits 0. A f
 SSH error) is NOT a fresh site and aborts unless `--force-no-backup` is given. REST credentials for any site come
 from the `.claude/secrets/*.env` file whose `WP_URL_*` host matches the target, with the two earlier hard-coded
 sites as fallback.
-**Done when:** The bakery client regenerates + passes the FR-33-3 reclone + Bean's eye BEFORE any other client;
+**Done when:** Mama's regenerates + passes the FR-33-3 reclone + Bean's eye BEFORE any other client;
 a `--rollback` restores the prior live payload; a hand-edited live layer triggers a warning pre-push.
 
 ### FR-33-12 — Bootstrap ordering (extractor is a hard prerequisite of ANY block clone)
@@ -341,12 +341,12 @@ remote write path into the Site Info store (reads stay server-side + escaped). C
 side by the `sgs/business-info` block (per-type inserter variations) + `Org_Website_Schema`
 (`sameAs`/`contactPoint`).
 
-**Acceptance (met live on sandybrown):** the bakery client draft yields email + copyright (socials are `#`
+**Acceptance (met live on sandybrown):** the Mama's draft yields email + copyright (socials are `#`
 placeholders → skipped; phone/hours/address absent → not touched); fill-if-empty skips an existing
 value; a forced write persists the full copyright string. The standalone script is proven end-to-end; the
-`upload_and_patch` wiring is statically verified (the draft glob resolves the bakery client mockup); a full-pipeline
+`upload_and_patch` wiring is statically verified (the draft glob resolves the Mama's mockup); a full-pipeline
 integration run is PARTIAL — pending a real `/sgs-clone` run.
-**Acceptance (met live on the optician client test site):** 13 settings written and read back from `sgs_site_info`
+**Acceptance (met live on the Eye Care test site):** 13 settings written and read back from `sgs_site_info`
 (phone, email, address, copyright, WhatsApp, Instagram, Google link, Monday to Saturday hours); a map link, which has
 no Site Info key, is reported as unmapped. Phone is stored as the display form (`0121 729 8233`);
 `Sgs_Site_Info_Binding::prefix_url_for_key` strips everything but digits and a leading `+` for the `tel:` link, as the
@@ -372,23 +372,23 @@ The pipeline inserting the saved values in place of the bindings is NOT built (S
 - A role the phrase table cannot place gets an ADVISORY proposal from usage rank (`usage_roles.py`), never a firm entry.
 - Vocabulary (role words, column words, variant key names) lives in data tables (`palette_vocab.py`, `declared_sources.py`, `variant_sets.py`). Extending one is a one-line change; a role missing from every table is proposed from usage or logged, not lost.
 
-**Done when (met on the optician client test site).** All 22 palette custom properties on the live page equal the snapshot at 1440px and 375px; no element paints the framework's old teal or amber; a README with different column and role wording yields a usable overlay (three wordings tested); the bakery client and the wholesale-food client snapshots are byte-identical.
+**Done when (met on the Eye Care test site).** All 22 palette custom properties on the live page equal the snapshot at 1440px and 375px; no element paints the framework's old teal or amber; a README with different column and role wording yields a usable overlay (three wordings tested); Mama's Munches and Indus snapshots are byte-identical.
 
 ### FR-33-16 — Site palette overlay — BUILT
 
 **Behaviour.** The palette is the base SGS palette (21 slugs, base order), overridden in place by declared and validated colours, plus a role-named addition only where no base slug fits (`text-label`, the small-label grey). It is never replaced or emptied, and it is generated once per site from the whole draft, never per page clone. Not palette: placeholder-tier README roles (faint, placeholder, disabled), third-party widget colours, and colours that drift between elements. They stay literal hex on the blocks that use them. Alternative accent sets are saved under `settings.custom.accentSets` (CSS variables, not picker swatches); the active set fills `accent`, `accent-text` and `accent-light`. `primary-dark` is derived from the final `primary`. Global defaults only: corner radius (square `0`, or an explicit pixel value into `borderRadius.medium`), `contentSize` and `wideSize` (wide never narrower than content), the measured heading weight (`heading_weight.py`), and button presets from measured buttons, including buttons that carry only runtime-generated classes (`GENERATED_CLASS_RE` in `measure.js`).
 
-**Done when (met).** The optician client snapshot has the 21 base slugs plus `text-label`; none of the placeholder or drifting greys appears in it; nothing per element appears in it.
+**Done when (met).** The Eye Care snapshot has the 21 base slugs plus `text-label`; none of the placeholder or drifting greys appears in it; nothing per element appears in it.
 
 ### FR-33-17 — Variable-font faces — BUILT
 
-**Behaviour.** A self-hosted variable font declares a weight RANGE and uses the latin subset (`font_weights.py`). The weight probe tries `100..900`, then the range the draft's own font link requests, then `400..900`, then `300..700`; the family is static only if all are refused. The draft's font link is parsed as a URL, so multi-word family names match. An already-bundled face (the bakery client's Fraunces) is untouched.
+**Behaviour.** A self-hosted variable font declares a weight RANGE and uses the latin subset (`font_weights.py`). The weight probe tries `100..900`, then the range the draft's own font link requests, then `400..900`, then `300..700`; the family is static only if all are refused. The draft's font link is parsed as a URL, so multi-word family names match. An already-bundled face (Mama's Fraunces) is untouched.
 
-**Done when (met).** On the optician client test site Outfit loads as `100 900` and Playfair Display as `500 700`; the H1 renders in Playfair Display at weight 500.
+**Done when (met).** On the Eye Care test site Outfit loads as `100 900` and Playfair Display as `500 700`; the H1 renders in Playfair Display at weight 500.
 
 ### FR-33-18 — Every loaded-and-rendered font family is captured — BUILT
 
-**Problem.** The three role slots (`body`, `heading`, `display`) say which family sets the body text and the headings. They cannot say which families the design needs on the site. The optician client's draft loads Roboto for its Google-reviews widget and paints it on 87 elements; no role slot names it, so the snapshot dropped it.
+**Problem.** The three role slots (`body`, `heading`, `display`) say which family sets the body text and the headings. They cannot say which families the design needs on the site. Eye Care's draft loads Roboto for its Google-reviews widget and paints it on 87 elements; no role slot names it, so the snapshot dropped it.
 
 **Behaviour.** `measure.js` runs a font census (`plugins/sgs-blocks/scripts/theme-extractor/font-usage.js::FONT_USAGE_SRC`): for every rendered element that paints its own text, the computed font-family stack, weight and style, plus `document.fonts` with each face's load status. `used_fonts.py::add_rendered_families` then adds one `settings.typography.fontFamilies[]` entry per family that passes BOTH tests:
 
@@ -399,11 +399,11 @@ Each entry carries `slug`, `name`, `fontFamily` (the stack the draft writes, mos
 
 **Runtime companion (plugin).** `Google_Fonts_Self_Host` (sgs-blocks) reads `google: true` entries at render time. If an entry's family has no face served from the site, it downloads the recorded weights and styles server-side into `wp-content/uploads/fonts/sgs-google/<slug>/`, using WP-Cron or `wp sgs google-fonts sync`. It then injects local `fontFace` entries and strips any remote `src`, so visitors never contact Google. It does nothing when the extractor has already self-hosted the family.
 
-**Done when (met 2026-09-23).** On the optician client draft the census and `document.fonts` agree: Outfit 400/500, Playfair Display 500, Roboto 400/500. The snapshot gains `outfit`, `playfair-display` and `roboto` entries with those weights, and Roboto is self-hosted as `assets/fonts/roboto/roboto-variable-latin.woff2`. The draft's link also requests Outfit 300/600 and Playfair 600/700, which nothing renders, so those weights are not recorded. Tests (`tests/test_used_fonts.py`) cover a family that is loaded but never rendered (not added), one that is rendered but never loaded (not added), and one listed after a generic (does not paint). They also confirm that removing Roboto's census rows removes Roboto. A mutation run confirmed these controls fail when the rendered check is broken.
+**Done when (met 2026-09-23).** On the Eye Care draft the census and `document.fonts` agree: Outfit 400/500, Playfair Display 500, Roboto 400/500. The snapshot gains `outfit`, `playfair-display` and `roboto` entries with those weights, and Roboto is self-hosted as `assets/fonts/roboto/roboto-variable-latin.woff2`. The draft's link also requests Outfit 300/600 and Playfair 600/700, which nothing renders, so those weights are not recorded. Tests (`tests/test_used_fonts.py`) cover a family that is loaded but never rendered (not added), one that is rendered but never loaded (not added), and one listed after a generic (does not paint). They also confirm that removing Roboto's census rows removes Roboto. A mutation run confirmed these controls fail when the rendered check is broken.
 
 ### FR-33-19 — Content width and wide width come from the rendered layout — BUILT
 
-**Problem.** A client's content and wide widths are per-site settings (`settings.layout.contentSize` and `wideSize`), but the extractor took them from a declared number: a `.container` max-width or the README's "max width". A declared max-width is usually the PADDED box. The optician client's README says 1440px; its sections are `max-width:1440px` with 52px side padding, so the content is 1336px wide. Written as contentSize, 1440 made every normal-width container 104px wider than the draft.
+**Problem.** A client's content and wide widths are per-site settings (`settings.layout.contentSize` and `wideSize`), but the extractor took them from a declared number: a `.container` max-width or the README's "max width". A declared max-width is usually the PADDED box. Eye Care's README says 1440px; its sections are `max-width:1440px` with 52px side padding, so the content is 1336px wide. Written as contentSize, 1440 made every normal-width container 104px wider than the draft.
 
 **How the value is applied (the reason for the rule).** `SGS_Container_Wrapper` resolves `contentWidth: "normal"` to `var(--wp--style--global--content-size)` and `"wide"` to `var(--wp--style--global--wide-size)`, as the `max-width` of `.sgs-container__inner` with `margin-inline:auto`, under `box-sizing:border-box`, and the section's side padding sits on the OUTER element. The inner band has no padding by default. So contentSize must equal the draft's CONTENT box (inside padding and border), not the box the max-width was declared on. The rendered content box of a clone is then `min(viewport − outer side padding, contentSize)`, centred. With the draft's side padding on the outer element, that equals the draft's content box both where the draft's cap binds and where the viewport is narrower than it.
 
@@ -414,9 +414,9 @@ Each entry carries `slug`, `name`, `fontFamily` (the stack the draft writes, mos
 3. `contentSize` is the most common band width (a tie goes to the narrower). `wideSize` is the most common width wider than it that at least two bands use. With no such width, wideSize is not derived: the existing value stays, raised to contentSize if narrower.
 4. No constrained band: nothing is written and the trace says so. A value is never invented; the declared or framework value stays.
 
-The rendered value wins over the declared `.container` width (FR-33-4) and the README width (FR-33-16), per FR-33-1; the trace row records the values it superseded, the tally, and per band the cap element, its max-width, box-sizing, padding and the content box at both viewports. Facts from an older `measure.js` carry no census: a gap row is logged and nothing changes, so the bakery client and the wholesale-food client goldens are unchanged. `python used_layout.py --facts <facts.json> --snapshot <snapshot> --write` updates only `settings.layout` of an existing snapshot.
+The rendered value wins over the declared `.container` width (FR-33-4) and the README width (FR-33-16), per FR-33-1; the trace row records the values it superseded, the tally, and per band the cap element, its max-width, box-sizing, padding and the content box at both viewports. Facts from an older `measure.js` carry no census: a gap row is logged and nothing changes, so the Mama's and Indus goldens are unchanged. `python used_layout.py --facts <facts.json> --snapshot <snapshot> --write` updates only `settings.layout` of an existing snapshot.
 
-**Done when (met 2026-09-23).** The optician client's home screen: four bands (hero, best sellers, "not sure what suits you", about strip) have a 1336px content box at x=52 (1440) and x=292 (1920); three (why buy, Google reviews, optician) have 1440px at x=240 (1920) and 1336px at x=52 (1440); the trust ticker has 1392px once. Result: `contentSize 1336px`, `wideSize 1440px`, replacing `1440px`/`1440px`. Tests (`tests/test_used_layout.py`, 16) include a real-browser run on three fixture drafts: two widths, no max-width at all (nothing written) and a draft whose only max-width is on a card (nothing written). A mutation run confirmed each rule (floor, text-element skip, binding, chrome, uncapped row, two-band wide minimum, most-common) is caught by a failing test.
+**Done when (met 2026-09-23).** Eye Care's home screen: four bands (hero, best sellers, "not sure what suits you", about strip) have a 1336px content box at x=52 (1440) and x=292 (1920); three (why buy, Google reviews, optician) have 1440px at x=240 (1920) and 1336px at x=52 (1440); the trust ticker has 1392px once. Result: `contentSize 1336px`, `wideSize 1440px`, replacing `1440px`/`1440px`. Tests (`tests/test_used_layout.py`, 16) include a real-browser run on three fixture drafts: two widths, no max-width at all (nothing written) and a draft whose only max-width is on a card (nothing written). A mutation run confirmed each rule (floor, text-element skip, binding, chrome, uncapped row, two-band wide minimum, most-common) is caught by a failing test.
 
 ### FR-33-20 — Automatic dark palette from the client's own colours — BUILT
 
@@ -424,15 +424,15 @@ The rendered value wins over the declared `.container` width (FR-33-4) and the R
 
 **Rules.** Each slug's role comes from its name unless `roles` sets it. Light surfaces move onto a dark band (hue kept); surfaces already dark in light mode keep their value. Every other colour follows the minimum-change rule: it is kept byte-identical if it already reaches its target against every ground it is used on (4.5:1 text, 3:1 borders and brand), otherwise its OKLCH lightness moves the shortest distance that passes them all. Grounds are every surface plus the text/background pairs the snapshot declares (`styles.color`, `styles.elements` with states, `styles.blocks`, preset references in template parts). Locked colours (WhatsApp green) are checked, never changed; hand-set `palette` values win and are checked the same way. A text slug paired with a fill only by its NAME (`text-inverse` with `primary`, `<fill>-text` with `<fill>`) is checked against that fill only when the pair already reads in light mode; otherwise it is a light-mode warning in the push note (`derive-dark-palette.py::_guessed_fill`), since the site cannot be using it. **Fill-scoped ink:** a text colour declared on a fill that stays light in dark mode, inside one style scope (a theme.json element such as the button, a block, or a markup `has-<fill>-background-color` element), keeps its own value in that scope only: the light-mode value when it still reaches 4.5:1 on the fill's dark value, else the shortest lightness move that does. It ships as `settings.custom.darkInk.<kind>.<name>.<state>.<slug>` and `theme/sgs-theme/functions.php::dark_mode_ink_css` prints it (both theme reads go through `functions.php::global_custom_setting`: core returns the whole settings array for a missing `custom` path, which once loaded dark mode on every site without a palette) as `--wp--preset--color--<slug>` on that scope's selector (element selectors from `WP_Theme_JSON::ELEMENTS`, block selectors from `wp_get_block_css_selector()`), so page text inverts while a bright button keeps a readable label. When no value satisfies every ground, the push stops and names each pair and ratio (`DarkPaletteContrastError`), so a client never ships an unreadable dark page; a hand-set `palette` or `roles` entry settles the conflict.
 
-**Status.** The bakery client derives with no failures and no hand-set colours: page text lightens, the yellow button keeps its dark label through fill-scoped ink, and three light-mode warnings are reported (`text-inverse` and `primary-text` on `primary` at 2.4:1, `accent-text` on `accent` at 3.8:1). Tests: `plugins/sgs-blocks/scripts/tests/test_derive_dark_palette.py`, `test_push_theme_snapshot.py`, `plugins/sgs-blocks/tests/php/run-dark-mode-ink-standalone.php`.
+**Status.** Mama's Munches derives with no failures and no hand-set colours: page text lightens, the yellow button keeps its dark label through fill-scoped ink, and three light-mode warnings are reported (`text-inverse` and `primary-text` on `primary` at 2.4:1, `accent-text` on `accent` at 3.8:1). Tests: `plugins/sgs-blocks/scripts/tests/test_derive_dark_palette.py`, `test_push_theme_snapshot.py`, `plugins/sgs-blocks/tests/php/run-dark-mode-ink-standalone.php`.
 
 ## Known limits
 
-- **Only the screen that renders on load is measured.** A multi-screen Claude Design draft switches screens in its script. The optician client's other screens were surveyed by hand on 2026-09-23: Shop matches the home screen (1336px); Lenses, About, Help and Contact use a `main` of `max-width:1100px` with 52px padding (996px content), and Checkout declares 1200px. Those pages need a literal `contentWidth` on their containers; the site has no third width slot.
+- **Only the screen that renders on load is measured.** A multi-screen Claude Design draft switches screens in its script. Eye Care's other screens were surveyed by hand on 2026-09-23: Shop matches the home screen (1336px); Lenses, About, Help and Contact use a `main` of `max-width:1100px` with 52px padding (996px content), and Checkout declares 1200px. Those pages need a literal `contentWidth` on their containers; the site has no third width slot.
 
 - **Saved values are not yet inserted.** The placeholder map is written but the pipeline does not yet replace `{{ phone }}`-style bindings with the saved Site Info values; that is the runtime-binding stage of Spec 31 (FR-31-26.6).
 - **Primary hover text.** The button hover diff omits keys equal to the rest state and the merge keeps the framework value, so the primary button's hover text is the framework's `#ffffff`, not the draft's off-white.
-- **README versus script.** They can disagree (the optician client's navy accent); the script is what renders and wins. A README value is cross-checked against the render only for `surface`, `text` and `primary`.
+- **README versus script.** They can disagree (Eye Care's navy accent); the script is what renders and wins. A README value is cross-checked against the render only for `surface`, `text` and `primary`.
 - **`text-label` is a new slug.** No framework block reads it; it serves the converter's colour snap and the colour picker.
 - **Vocabulary is data but finite.** A role no table names is proposed from usage (advisory) or logged.
 - **Draft-facing gaps outside this spec.** A cloned page still paints its template buttons transparent and shows raw `{{ }}` text; both belong to the cloning pipeline (Spec 31, Spec 44), not to global-styles extraction.
@@ -445,7 +445,7 @@ The rendered value wins over the declared `.container` width (FR-33-4) and the R
 |----|---------------------|------------------------|-------------|------------------|
 | FR-33-1 | every token has `_source`; grep: no raw-declaration emit for values | fixture declared≠computed → computed wins + logged | vs golden | dead-token → gap-log |
 | FR-33-2 | role table present; ΔE=CIEDE2000; alpha-axis asserted | 3 systems → roles by table not name | vs the 3 verbatim token sets | rgba alpha not deduped; ambiguous → custom |
-| FR-33-3 | rem resolves vs computed root; no fabricated values | reclone the bakery client → quote 16px, lh 1.2, font loads | vs live computed-style | 62.5%-root fixture; wrong-base guard |
+| FR-33-3 | rem resolves vs computed root; no fabricated values | reclone Mama's → quote 16px, lh 1.2, font loads | vs live computed-style | 62.5%-root fixture; wrong-base guard |
 | FR-33-4 | clamp verbatim; `!important` stripped; hover = open bag | all declared types + both hover shapes land | vs §App A §D | fixture per value type |
 | FR-33-5 | derived tagged `advisory`; relative-share threshold | token-less → advisory + no auto-live; nothing usable → baseline+skip | vs Pass-B-inverts-palette | parser-fail → halt |
 | FR-33-6 | positive preview signal required | dark shell ignored; legit dark theme KEPT | vs the shell fixture | legit-dark-theme fixture |
@@ -453,14 +453,14 @@ The rendered value wins over the declared `.container` width (FR-33-4) and the R
 | FR-33-8 | deterministic sort keys | run twice → byte-identical | git diff clean | idempotence hard gate |
 | FR-33-9 | grep no client literal; decorative→trace | every decl → slot or gap | conservation count | picker-not-flooded fixture |
 | FR-33-10 | hex-map byte-identical golden | extractor uses composed map | vs converter output | no converter regression |
-| FR-33-11 | backup-before-write + `--rollback`; diff-approve | the bakery client only; rollback restores; drift warns | vs live payload | other-5 deferred behind reclone |
+| FR-33-11 | backup-before-write + `--rollback`; diff-approve | Mama's only; rollback restores; drift warns | vs live payload | other-5 deferred behind reclone |
 | FR-33-12 | orchestrator fail-closed gate | stale snapshot → fail; fresh → proceed; changed inline colour or script accent → fail | vs `(client,hash)` and `draft_source_sha256` | static drafts carry no second key |
 | FR-33-13 | header/footer namespace reserved; token map = service | — | vs Spec 26/17 | colour-var entries re-pointed |
-| FR-33-15 | vocabulary in data tables; gate `_declared_design`; unreadable table gap-logged | the optician client live page = snapshot; 3 README wordings | vs the rendered body and primary button | the bakery client and the wholesale-food client byte-identical |
+| FR-33-15 | vocabulary in data tables; gate `_declared_design`; unreadable table gap-logged | Eye Care live page = snapshot; 3 README wordings | vs the rendered body and primary button | Mama's and Indus byte-identical |
 | FR-33-16 | overlay keeps all base slugs; only `text-label` added | placeholder and drifting greys absent | vs live custom properties | base-slug set unchanged |
-| FR-33-17 | probe order tested with a faked network | live faces `100 900` and `500 700` | vs Google's declared range | the bakery client's Fraunces face equals its golden |
-| FR-33-18 | loaded AND rendered both required; exact-host link parse | the optician client: Roboto + Outfit + Playfair entries with rendered weights | vs census + `document.fonts` | loaded-unused, rendered-unloaded and after-generic families not added |
-| FR-33-19 | content box, not padded box; binding + floor + text-element rules | the optician client: 1336 / 1440 from 7 voting bands | vs content boxes at 1440 and 1920 | no-width and card-only drafts write nothing; mutation run |
+| FR-33-17 | probe order tested with a faked network | live faces `100 900` and `500 700` | vs Google's declared range | Mama's Fraunces face equals its golden |
+| FR-33-18 | loaded AND rendered both required; exact-host link parse | Eye Care: Roboto + Outfit + Playfair entries with rendered weights | vs census + `document.fonts` | loaded-unused, rendered-unloaded and after-generic families not added |
+| FR-33-19 | content box, not padded box; binding + floor + text-element rules | Eye Care: 1336 / 1440 from 7 voting bands | vs content boxes at 1440 and 1920 | no-width and card-only drafts write nothing; mutation run |
 
 ## Website-credit recognition (Part 2 — header/footer pipeline)
 
@@ -472,17 +472,17 @@ Neither draft is recognisable without the classifier. Draft facts:
 
 | Draft | Bottom-bar markup | Credit present? |
 |---|---|---|
-| The wholesale-food client (its food-service draft, `.footer-bottom`) | `<div class="footer-bottom"><p>© …</p><p>Website by Small Giants Studio</p></div>` | Yes — but a **bare `<p>`: no class, and NOT EVEN A LINK** |
-| The bakery client (`mockups/homepage/index.html`) | `<div class="sgs-footer__bottom"><span>© …</span><span>Made with love for breastfeeding mums 🍪</span></div>` | **NO — the 2nd slot is a TAGLINE** |
+| Indus (`Indus-Foods-Food-Service-V3-With-Images.html`, `.footer-bottom`) | `<div class="footer-bottom"><p>© …</p><p>Website by Small Giants Studio</p></div>` | Yes — but a **bare `<p>`: no class, and NOT EVEN A LINK** |
+| Mama's (`mockups/homepage/index.html`) | `<div class="sgs-footer__bottom"><span>© …</span><span>Made with love for breastfeeding mums 🍪</span></div>` | **NO — the 2nd slot is a TAGLINE** |
 
-So there is nothing to match on, and the two drafts disagree on what the second slot even means. **A positional rule ("2nd child of the bottom bar = attribution") is therefore FORBIDDEN** — it would map the bakery client's tagline onto the agency backlink.
+So there is nothing to match on, and the two drafts disagree on what the second slot even means. **A positional rule ("2nd child of the bottom bar = attribution") is therefore FORBIDDEN** — it would map Mama's tagline onto the agency backlink.
 
 ### The fix is at the DRAFT source, not in the converter
 
 Per the standing rule (memory `fix-a11y-at-draft-source-not-the-clone`): a draft-inherited gap is fixed by editing the draft and re-cloning — **never** a converter carve-out. Two prerequisite draft edits:
 
 1. **Add the classifier** `class="sgs-footer__credit"` to the credit element in every Bean-controlled draft. SGS-BEM per **Spec 00 §3 / §3.1**.
-2. **Add the missing credit to the bakery client draft** — it has none. Its existing tagline span stays as a tagline and must map to `business-info displayType="description"`, not to attribution.
+2. **Add the missing credit to the Mama's draft** — it has none. Its existing tagline span stays as a tagline and must map to `business-info displayType="description"`, not to attribution.
 
 ### Recognition — two independent recognisers (belt and braces)
 
@@ -497,23 +497,23 @@ Per the standing rule (memory `fix-a11y-at-draft-source-not-the-clone`): a draft
 
 ### Acceptance
 
-- Both drafts carry `.sgs-footer__credit`; the bakery client has a credit at all; the bakery client's tagline maps to `description`, NOT attribution (the exact false-positive a positional rule would produce).
+- Both drafts carry `.sgs-footer__credit`; Mama's has a credit at all; Mama's tagline maps to `description`, NOT attribution (the exact false-positive a positional rule would produce).
 - A draft with the classifier but no matching text → R1 fires. A draft with the text but no classifier → R2 fires. Neither double-emits.
 - The emitted block renders `.sgs-business-attribution` with the framework URL — never the draft's stale LinkedIn href.
 - `/ui-ux-pro-max` enforces the classifier on every NEW draft it generates, so R2 stays a fallback rather than the norm.
 
 ## Appendix A — Corpus union inventory (the acceptance coverage set)
 Full empirical inventory of every global declared default/preset/variable across the real draft corpus
-(the bakery client, the wholesale-food client and dogfood folders under `sites/`, 8 authored mockups, 3 design systems).
+(`sites/{mamas-munches,indus-foods,_dogfood}`, 8 authored mockups, 3 design systems).
 The extractor's acceptance = correctly handling every row (via a golden per draft, FR-33-7).
 KEY COVERAGE ANCHORS:
 - **Colour roles + naming range (two philosophies):** role-named (`--primary`/`--surface-*`/`--text*`,
-  the bakery client and dogfood) vs literal-colour-named (`--navy`/`--gold`/`--green`/`--white`, the wholesale-food client). Same role,
+  Mama's+dogfood) vs literal-colour-named (`--navy`/`--gold`/`--green`/`--white`, Indus). Same role,
   different name (success `#2E7D4F` = `--success`/`--green`). Intra-brand drift (`--border` vs
-  `--border-subtle`; `--accent-dark`/`--cookie-brown` present/absent across the bakery client's 4 files). One-offs
+  `--border-subtle`; `--accent-dark`/`--cookie-brown` present/absent across Mama's 4 files). One-offs
   `--cookie-brown`/`--whatsapp`/`--red`. Value types: 6-hex, `rgba()`, `var()`-ref, `clamp()` token,
   gradient (in rules).
-- **Typography:** Fraunces+Inter (the bakery client, px), DM Serif Display+DM Sans (the wholesale-food client, **rem**), system-ui+
+- **Typography:** Fraunces+Inter (Mama's, px), DM Serif Display+DM Sans (Indus, **rem**), system-ui+
   Georgia (dogfood, **clamp**). 7/8 hardcode the family (no `--font` token → synthesise from base
   rules). 0/8 tokenise sizes/lh/tracking (derive from base+heading+preset). Unit variety (px vs rem;
   px vs em tracking). Three font-loading mechanisms (`<link>`, `@import`, system/none).

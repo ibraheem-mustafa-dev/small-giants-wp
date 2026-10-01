@@ -36,7 +36,7 @@ dispatch, so no per-step model-routing cost beyond the session already in progre
       `representative_item()` unchanged.
 - [x] `measure-classless-baseline.py` and `measure-classless-frame-card.py` are untouched —
       their `sc_for.parent`-shaped calls to `representative_item()` still work exactly as before.
-- [x] Live pipeline re-run against the optician client Birmingham, SAME flags as the documented 50/74
+- [x] Live pipeline re-run against Eye Care Birmingham, SAME flags as the documented 50/74
       baseline, shows b32 (ticker) getting a real item (not `None`) and b40 (reasons card)
       getting its full 3-field content (not just the number badge) in `classless-decisions.json`.
 - [x] `.claude/decisions.md` carries a new D-number (next after D1107) recording root cause + fix
@@ -62,7 +62,7 @@ dispatch, so no per-step model-routing cost beyond the session already in progre
 - `.claude/memory/learning/2026-09-18-regression-comparison-must-match-baseline-invocation-flags.md`
   — governs Step 4's verification: baseline flags must match exactly or the comparison is
   meaningless.
-- `pipeline-state/eye-care-ward-end-optician-client-birmingham-2026-09-18-165137/` — the documented
+- `pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-18-165137/` — the documented
   50/74 baseline run (flags: `--sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0` +
   classless-match flags), the one Step 4 must reproduce exactly before comparing.
 
@@ -170,14 +170,14 @@ Step 3 — Live pipeline re-run, correct baseline invocation
   Action:      Re-run `sgs-clone-orchestrator.py` against
                `sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html`
                with the EXACT SAME flags used to produce the documented 50/74 baseline in
-               `pipeline-state/eye-care-ward-end-optician-client-birmingham-2026-09-18-165137/`
+               `pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-18-165137/`
                (`--sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0` +
                `--classless-match --classless-auto-complete`). Per this session's own captured
                lesson (`regression-comparison-must-match-baseline-invocation-flags`), grep the
                baseline run's own invocation record before running — do not reconstruct the flag
                list from memory.
   Files:       (none edited — this is a pipeline run, output to a new
-               `pipeline-state/eye-care-ward-end-optician-client-birmingham-<timestamp>/` directory)
+               `pipeline-state/eye-care-ward-end-eye-care-birmingham-<timestamp>/` directory)
   Inputs:      Step 1+2's code changes; the baseline run directory's recorded invocation.
   Outcome:     A new pipeline-state run directory with `classless-decisions.json` and
                `stage-4.json` reflecting post-fix behaviour.

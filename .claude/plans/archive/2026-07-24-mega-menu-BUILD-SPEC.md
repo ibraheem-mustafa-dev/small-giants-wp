@@ -322,7 +322,7 @@ Forced `light` = the default light props (no dark selector matches). The mega SU
 READS `[data-theme]`/`prefers-color-scheme`, so it works whether or not the theme dark-mode is enabled.
 Contrast: every text-on-surface pairing run through
 `sgs_wcag_preferred_text_colour_for_bg()` where the surface is operator-set (the accent-as-ground rule —
-never accent-as-text). The wholesale-food client: gold = `accent`, fixed brand blue = `primary` (both exact snapshot matches).
+never accent-as-text). Indus: gold = `accent`, fixed brand blue = `primary` (both exact snapshot matches).
 
 ---
 

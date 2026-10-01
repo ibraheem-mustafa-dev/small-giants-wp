@@ -11,7 +11,7 @@ approved_by: Bean (2026-09-19, scope and the palette-overlay widening, both appr
 
 ## Why
 
-Spec 33 was built for drafts that declare tokens in a `<style>` `:root` block. A Claude Design handoff declares its design system in three other places (a README token table, script data, inline styles) and Spec 33 read none of them. On the optician client Birmingham test site that left the framework's teal `primary`, 8px-rounded buttons and a 1200/1400 layout, a scrollbar-hover grey as `surface-alt`, and no business details in the Site Info store.
+Spec 33 was built for drafts that declare tokens in a `<style>` `:root` block. A Claude Design handoff declares its design system in three other places (a README token table, script data, inline styles) and Spec 33 read none of them. On the Eye Care Birmingham test site that left the framework's teal `primary`, 8px-rounded buttons and a 1200/1400 layout, a scrollbar-hover grey as `surface-alt`, and no business details in the Site Info store.
 
 ## Scope (approved)
 
@@ -24,7 +24,7 @@ Parts 1 to 3 now; part 4 (the pipeline inserting saved values in place of `{{ }}
 
 ## Guards
 
-- The bakery client: byte-identical snapshot before and after (`test_matches_golden_snapshot`, `test_determinism_byte_identical`).
+- Mama's Munches: byte-identical snapshot before and after (`test_matches_golden_snapshot`, `test_determinism_byte_identical`).
 - Universal: no client literals in code; vocabulary in data tables.
 - Global defaults only; no per-element values.
 
@@ -38,10 +38,10 @@ Parts 1 to 3 now; part 4 (the pipeline inserting saved values in place of `{{ }}
 | A4 | `usage_census.py`: three-source usage count and promotion rule | subagent | new module and tests | tests green; rule verified on real draft |
 | A5 | `measure.js` and `presets.py`: classless buttons, custom properties | subagent | `measure.js`, `presets.py`, new tests | Mama's presets unchanged; classless captured |
 | A2 | `push-theme-snapshot.py`: strip restores base colour; fresh-site backup; exit code | subagent | that script and its tests | strip never empties the palette |
-| A6 | Business details: script data object and labelled text, any draft path, right site, placeholder map | subagent | `sync-business-info.py`, business block of `upload_and_patch.py`, one orchestrator argument | extractor finds all the optician client settings |
-| A7 | Integration: wire A1 to A5 into `build_snapshot` (palette overlay by role, accentSets, layout, heading weight, buttons) | subagent | `extract.py`, new mapping module, tests | The optician client snapshot correct; Mama's identical |
+| A6 | Business details: script data object and labelled text, any draft path, right site, placeholder map | subagent | `sync-business-info.py`, business block of `upload_and_patch.py`, one orchestrator argument | extractor finds all Eye Care settings |
+| A7 | Integration: wire A1 to A5 into `build_snapshot` (palette overlay by role, accentSets, layout, heading weight, buttons) | subagent | `extract.py`, new mapping module, tests | Eye Care snapshot correct; Mama's identical |
 | R | Independent review per wave (different model family) | reviewer | read-only | no Critical or Important open |
-| V | Real-page verification on the optician client test site (palette, buttons, Site Info values) | controller | live test site | Playwright and `wp` reads match |
+| V | Real-page verification on the Eye Care test site (palette, buttons, Site Info values) | controller | live test site | Playwright and `wp` reads match |
 | Q | `/qc-council`, then spec, decisions, ledger and plan updates | controller | docs | preflight passes |
 
 ## Risks
@@ -55,7 +55,7 @@ Parts 1 to 3 now; part 4 (the pipeline inserting saved values in place of `{{ }}
 
 ## Result
 
-Built, reviewed twice (implementer reviews plus a three-rater QC council), fixed and verified on the optician client test site: decision D1120 and Spec 33 FR-33-15 to FR-33-17 hold the detail. Steps 0, A1 to A8, F1 to F6 and R done; V (live verification) and Q (council and docs) done. Two steps grew beyond the plan and are recorded in D1120: a freshness key for Claude Design drafts, and variable-font faces.
+Built, reviewed twice (implementer reviews plus a three-rater QC council), fixed and verified on the Eye Care test site: decision D1120 and Spec 33 FR-33-15 to FR-33-17 hold the detail. Steps 0, A1 to A8, F1 to F6 and R done; V (live verification) and Q (council and docs) done. Two steps grew beyond the plan and are recorded in D1120: a freshness key for Claude Design drafts, and variable-font faces.
 
 ## Open items carried out of this plan
 

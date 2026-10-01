@@ -39,7 +39,7 @@ plan_label: "[PLAN: opus] — orchestrator; Sonnet subagents build the serialise
 - `.claude/plans/archive/2026-06-04-method2-converter-lift-design.md` — the 5 fix-shapes + council verdict (the path-split)
 - `.claude/specs/22-...md` §FR-22-21 (6-step procedure) + §FR-22-4.1 (wrapper resolution) + §FR-22-5 (CSS routing) + §FR-22-19 (composite interiors)
 - `.claude/reports/2026-06-02-container-wrapper-converter-gap-analysis.md` — file:line evidence
-- run `pipeline-state/bakery-client-homepage-2026-06-04-134425` — the baseline artefacts
+- run `pipeline-state/mamas-munches-homepage-2026-06-04-134425` — the baseline artefacts
 - memories: `universal-lift-was-premature-not-falsified`, `pipeline-transfers-draft-css-not-converter-detection-hacks`, `composite-mirror-is-separate-from-cloning-fidelity`
 
 **Tooling Index:**
@@ -82,7 +82,7 @@ Verified: `db_lookup.py:2461 emit_sgs_container_wrapping` wraps **every top-leve
 ### BUILD EXECUTION PLAYBOOK — skills / commands / tools / dispatch per step (fly-through)
 
 **Cross-cutting (EVERY step, in order):**
-1. **`/qc-council`** — pre-build gate on every converter/block/DB change (blub.db 255 + STOP #50): confirm the target CSS reaches the targeted code path on the canary BEFORE building. For Phase A read `pipeline-state/bakery-client-homepage-2026-06-04-134425/convert-trace-b*.jsonl` to confirm the emit path per section.
+1. **`/qc-council`** — pre-build gate on every converter/block/DB change (blub.db 255 + STOP #50): confirm the target CSS reaches the targeted code path on the canary BEFORE building. For Phase A read `pipeline-state/mamas-munches-homepage-2026-06-04-134425/convert-trace-b*.jsonl` to confirm the emit path per section.
 2. **`/delegate`** — pick the model per dispatch (Sonnet = build/design; Haiku = mechanical trace/grep). Announce the pick.
 3. **`/subagent-prompt`** — write the cold prompt: embed the validated fix-shape + the contract verbatim — *edit ONLY the named files · return UNCOMMITTED · NO `git stash`/`reset`/`restore`/`checkout` · self-test (`npm run build` / `php -l` / `python -c "import convert"`) · manual undefined-var grep for converter edits*.
 4. **`/dispatching-parallel-agents`** (Phase B, disjoint files) OR one serial Sonnet subagent (Phase A, shared convert.py). Per `dont-fan-out-many-heavy-agents-at-once`: 2-3 per batch, verify each before the next.

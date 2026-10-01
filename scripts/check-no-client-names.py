@@ -75,6 +75,7 @@ EXEMPT_PREFIXES: Tuple[str, ...] = (
     # Dated historical records and generated output: they record what happened to a specific
     # client on a specific date, so they are not framework code, docs or specs.
     "reports/",
+    ".claude/",  # docs, specs and plans keep their client names (Bean, 2026-10-02: the names add specificity)
     ".claude/reports/",
     ".claude/backups/",
     ".claude/verify/",
@@ -168,6 +169,8 @@ def tracked_files(root: Path) -> List[str]:
 
 def is_exempt(rel: str) -> bool:
     name = rel.rsplit("/", 1)[-1]
+    if name.endswith(".md"):
+        return True  # prose docs may name clients; the rule covers code and file names
     if name.startswith("test_") or name.endswith(("_test.py", ".test.mjs", ".test.js", "Test.php")):
         return True  # test code (see EXEMPT_PREFIXES)
     return any(rel.startswith(prefix) for prefix in EXEMPT_PREFIXES)
@@ -295,11 +298,11 @@ def self_test() -> int:
         (root / "sites" / "x").mkdir(parents=True)
         (root / "plugins" / "a.php").write_text("// the Indus Foods header", encoding="utf-8")
         (root / "plugins" / "clean.php").write_text("// a wholesale client's header", encoding="utf-8")
-        (root / "plugins" / "eye-care-note.md").write_text("generic", encoding="utf-8")
+        (root / "plugins" / "eye-care-note.php").write_text("generic", encoding="utf-8")
         (root / "sites" / "x" / "b.md").write_text("Indus Foods and lamalama", encoding="utf-8")
         live, _ = collect(root)
         got = {(k, rel) for k, rel, _, _ in live}
-        expected = {("content", "plugins/a.php"), ("filename", "plugins/eye-care-note.md")}
+        expected = {("content", "plugins/a.php"), ("filename", "plugins/eye-care-note.php")}
         if got != expected:
             print(f"[self-test] FAIL: expected {sorted(expected)}, got {sorted(got)}")
             return 1

@@ -25,7 +25,7 @@ authors: Bean + Claude (Opus 4.7)
 status_history:
   - 2026-05-14: v0.2 ACCEPTED, Phase 1 prototype shipped, Phases 2-6 queued
   - 2026-05-15: v0.3 PARTIAL CLOSURE — Phase 7 architectural work shipped (commits 06eca194 + 19c89f0f on feat/spec-16-converter-v2-rollout, pushed not merged); visual gate redefined as PER-SECTION (not full-page) per binding methodology rule (blub.db row 256); legacy extract.py retirement deferred to Phase 8 + visual-gate-close; heritage-strip block retired in favour of Brand Story PATTERN (Bean's 2026-05-15 redirect, completed in P-PHASE8-1 commit 9a32a164)
-  - 2026-05-18: Phase 9 PRE-WORK shipped — evidence infrastructure for section-by-section walkdown (commits 8b69bc0a + 10a93d87 + 397295c3 on main). Three new layers behind --debug-trace flag: per-section convert-trace-<boundary>.jsonl (walker decisions + attr skips + DB lookup misses), per-section expected-rules-<boundary>.jsonl baseline (parse_css + soupsieve), split-metric pixel-diff (suffix-anchored attribute-coverage% via property_suffixes DB). Trace lifetime discipline: convert_section wraps v3.set_trace() in try/finally so the module-level _TRACE singleton resets at exit. Provably side-effect-free (Step 4 shakeout: byte-identical extraction with trace on/off across all 10 bakery client sections). 4-rater /qc panel ratified post-fix.
+  - 2026-05-18: Phase 9 PRE-WORK shipped — evidence infrastructure for section-by-section walkdown (commits 8b69bc0a + 10a93d87 + 397295c3 on main). Three new layers behind --debug-trace flag: per-section convert-trace-<boundary>.jsonl (walker decisions + attr skips + DB lookup misses), per-section expected-rules-<boundary>.jsonl baseline (parse_css + soupsieve), split-metric pixel-diff (suffix-anchored attribute-coverage% via property_suffixes DB). Trace lifetime discipline: convert_section wraps v3.set_trace() in try/finally so the module-level _TRACE singleton resets at exit. Provably side-effect-free (Step 4 shakeout: byte-identical extraction with trace on/off across all 10 Mama's sections). 4-rater /qc panel ratified post-fix.
 closure_gate_definition_v0_3:
   rule: "Closure unit is the SECTION, NOT the page. Each section closes independently at <= 1% pixel diff across 375 / 768 / 1440 viewports via `scripts/pixel-diff.py --selector .sgs-{section}`. The page closes when ALL sections close."
   rationale: |
@@ -166,7 +166,7 @@ The converter writes one row per (block_slug, css_property, raw_value, source_cl
 
 | Route | When it fires | Emit shape |
 |---|---|---|
-| **FR1 (fast path)** | Section class matches EITHER (a) a registered composite block slug (sgs/hero, sgs/trust-bar, sgs/card-grid) — status=built filter passes; OR (b) a registered pattern slug (sgs/featured-product, sgs/gift-section, sgs/footer-<client>, etc.) — pattern file exists in `theme/sgs-theme/patterns/<slug>.php` AND the `patterns` table has a row. | Emit the matched block / pattern directly with attrs lifted from descendants. `_lift_inner_blocks` handles nested children per Decision 12. Skip element-by-element walk. |
+| **FR1 (fast path)** | Section class matches EITHER (a) a registered composite block slug (sgs/hero, sgs/trust-bar, sgs/card-grid) — status=built filter passes; OR (b) a registered pattern slug (sgs/featured-product, sgs/gift-section, sgs/footer-indus-foods, etc.) — pattern file exists in `theme/sgs-theme/patterns/<slug>.php` AND the `patterns` table has a row. | Emit the matched block / pattern directly with attrs lifted from descendants. `_lift_inner_blocks` handles nested children per Decision 12. Skip element-by-element walk. |
 | **Normal route (default)** | No FR1 match — neither a registered composite block nor a registered pattern has the section's exact slug. This is the DEFAULT path — every section that isn't FR1-matched takes it. | **Start with `sgs/container` as the base of the section** (per FR4). Then the universal walker (per FR2 + FR3 + FR6 + §15 steps 1-3) walks every inner element, building up the block tree element-by-element via tag-fallback, canonical-slot resolution, and CSS-driven attribute lift. |
 
 The fast path is an OPTIMISATION for sections that are exact matches against an existing block OR an existing pattern. The normal route is the ARCHITECTURAL PRIMITIVE that handles everything else. Sections taking the normal route are NOT defective; they're correctly using the build-up path. Over time, as more patterns get registered (e.g. via `+REGISTER` autonomy chain in Stage 9b), more sections will hit FR1 fast-path naturally — but the normal route must always work as a sound fallback for anything not yet pattern-registered.
@@ -247,7 +247,7 @@ When the rule targets a class on a descendant inside a block-root, AND the CSS p
 When the rule targets a class on a wrapper that has NO typed-attr destination (block doesn't expose a matching attr, OR the wrapper isn't inside any block-root):
 - Emit a markup wrapper for that node (`sgs/container` or `core/group` depending on layout needs) carrying the className
 - Lift the rule into the variation CSS buffer; orchestrator writes it to `pipeline-state/<run>/variation-d0-d2.css` (scoped via `.page-id-N`). <!-- Updated 2026-05-23 — Phase 5a retired the `.json` overlay system (commit 43a93df9); the `.css` output path relocated to pipeline-state today (Q3 commit shipping 2026-05-23); no longer writes to `theme/sgs-theme/styles/<client>.json` -->
-- **Stage 10 deploy** (`upload_and_patch.py`) reads `variation-d0-d2.css` and prepends it as an inline `<style id="sgs-cv2-page-css">` block to the page's `post_content`, wrapped in `wp:html` so Gutenberg preserves it across edits. Per-page scoping via `.page-id-N` selector prefix (already written by router) prevents cross-page cascade leak. Added 2026-05-25 (D70) — without this, the router's D2 output sat on-disk and never reached the live page. <!-- 2026-05-25 D70 — closed extract-but-don't-deploy gap; the bakery client homepage Stage 11 mean 74.1% → 68.4% with body-section localised drops -15 to -41pp -->
+- **Stage 10 deploy** (`upload_and_patch.py`) reads `variation-d0-d2.css` and prepends it as an inline `<style id="sgs-cv2-page-css">` block to the page's `post_content`, wrapped in `wp:html` so Gutenberg preserves it across edits. Per-page scoping via `.page-id-N` selector prefix (already written by router) prevents cross-page cascade leak. Added 2026-05-25 (D70) — without this, the router's D2 output sat on-disk and never reached the live page. <!-- 2026-05-25 D70 — closed extract-but-don't-deploy gap; Mama's homepage Stage 11 mean 74.1% → 68.4% with body-section localised drops -15 to -41pp -->
 - The class on the emitted wrapper is the anchor for the CSS rule
 
 **Destination 3 — Attribute gap candidate:**
@@ -270,7 +270,7 @@ When the rule's class IS inside a block-root AND the CSS property logically belo
 ### FR7 — Visual QA verification (the closure gate)
 
 Spec 16 is not closed until end-to-end visual QA passes:
-- Run `/sgs-clone --converter` on a target page (the bakery client homepage is the canary)
+- Run `/sgs-clone --converter` on a target page (Mama's homepage is the canary)
 - Deploy resulting block markup + variation CSS to staging
 - Run `/visual-qa` against the deployed URL at 375 / 768 / 1440 viewports
 - **Pixel diff ≤ 1% per section** (not full-page — full-page has ~30-45% irreducible structural noise floor). Use `scripts/pixel-diff.py --selector .sgs-{section}`. Each section closes independently. Page closes when ALL sections close. (Binding rule blub.db row 256.)
@@ -296,10 +296,10 @@ Until FR7 verifies, "is it visually correct?" remains unanswered.
 Spec 15 §7.2 originally authorised this deletion "after Phase 3 of this spec lands (canonical-slot data populated in sgs-db)". That data IS now populated. Spec 16 narrows the gate to three concrete preconditions:
 
 1. **Spec 16 Phase 3 (orchestrator wiring) tests green** — the converter is the live Stage-4 path for SGS-BEM-canonical sections; legacy extract.py is reachable only as fallback for non-SGS-BEM input
-2. **At least one client (the bakery client homepage) passes the converter end-to-end** through deploy + Stage 8 visual QA
+2. **At least one client (Mama's homepage) passes the converter end-to-end** through deploy + Stage 8 visual QA
 3. **Grep audit of the orchestrator codebase confirms no Python imports of `extract.py` / `extract_strategies.py` / `overrides/*` outside `tools/recogniser-v2/__init__.py`**
 
-If (3) finds external imports, those get rewired to the converter BEFORE the deletion. Two-client validation (the bakery client + the wholesale-food client or the charity client) is DESIRABLE but is the criterion for full Spec 16 closure (§9 item 7), not for FR8 specifically. Single-client visual QA pass is sufficient to retire the legacy code.
+If (3) finds external imports, those get rewired to the converter BEFORE the deletion. Two-client validation (Mama's + Indus Foods or helping-doctors) is DESIRABLE but is the criterion for full Spec 16 closure (§9 item 7), not for FR8 specifically. Single-client visual QA pass is sufficient to retire the legacy code.
 
 Deletion steps:
 - `rm tools/recogniser-v2/extract.py`
@@ -337,7 +337,7 @@ Build a new composite block `sgs/heading` that packages the section-heading thre
 **Converter integration:**
 - When the converter encounters any element whose class matches a block-root pattern for `sgs/heading` (e.g. `<div class="sgs-section-heading">` or `<header class="sgs-heading">`), lift the entire subtree into one `sgs/heading` block instead of emitting children as separate atomic blocks. This uses the same FR1 block-root slot-harvest path as `sgs/product-card`.
 - **Detection rule (corrected per Sonnet QC 2026-05-14):** trigger on the block-root class (`sgs-section-heading` or `sgs-heading`). The three sub-elements (`__label`, the `<hN>` heading, `__sub`) are then harvested from descendants regardless of sibling position, order, or wrapping. This matches how every other composite block (product-card, hero) already works.
-- **Source drafts may not use a wrapping block-root class today.** For backwards compatibility with the bakery client mockup pattern (label + h2 + sub as bare siblings in section content), the converter ALSO recognises a contiguous sibling run matching the three-element template as a heading composite — but Spec 15-conformant new drafts SHOULD wrap them in `<div class="sgs-section-heading">` to be unambiguous.
+- **Source drafts may not use a wrapping block-root class today.** For backwards compatibility with the Mama's mockup pattern (label + h2 + sub as bare siblings in section content), the converter ALSO recognises a contiguous sibling run matching the three-element template as a heading composite — but Spec 15-conformant new drafts SHOULD wrap them in `<div class="sgs-section-heading">` to be unambiguous.
 - Fallback: if only some elements present (e.g. label + h2 but no sub), still emit sgs/heading with the missing slots disabled. The block.json sets `labelEnabled` / `subheadingEnabled` so absent sections don't render.
 
 ## 4. The 6 phases (all next-session work — none deferred per Bean 2026-05-14)
@@ -386,7 +386,7 @@ The pixel-diff comparison is **WP-rendered output (with active style variation) 
 The Phase 8 visual_qa_capture.py module already supports rendering BOTH the mockup-as-WP-post AND the converter-output-as-WP-post and diffing them. Phase 4 reuses that exact path — no new render comparator needed.
 
 **Steps:**
-- Build the bakery client homepage via `/sgs-clone --converter-v2 sites/mamas-munches/mockups/homepage/index.html`
+- Build Mama's homepage via `/sgs-clone --converter-v2 sites/mamas-munches/mockups/homepage/index.html`
 - Deploy to sandybrown-nightingale-600381.hostingersite.com (staging)
 - Render the SAME mockup as a WP post on the same staging site (the baseline)
 - Run `/visual-qa` against both URLs at 3 viewports (375, 768, 1440)
@@ -536,13 +536,13 @@ Cross-references to `.claude/skills-commands-map.md`, `.claude/tooling-map.md`, 
 
 Bean's stated end goal: a script that converts any SGS-BEM draft into a working WP site with zero AI or Bean intervention. Spec 16 closure requires ALL of:
 
-1. ✓ Phase 1 — prototype produces clean block markup on the bakery client mockup (single-page test)
+1. ✓ Phase 1 — prototype produces clean block markup on the Mama's mockup (single-page test)
 2. ⏳ Phase 2 — sgs/heading + sgs/divider blocks exist; converter routes to them
 3. ⏳ Phase 3 — converter wired into orchestrator; `/sgs-clone --converter-v2` runs end-to-end
-4. ⏳ Phase 4 — the bakery client homepage deployed via converter passes `/visual-qa` at ≤ 1% pixel diff (THIS is the closure gate)
+4. ⏳ Phase 4 — Mama's homepage deployed via converter passes `/visual-qa` at ≤ 1% pixel diff (THIS is the closure gate)
 5. ⏳ Phase 5 — /sgs-update Stage 4 canonical data complete for all new blocks
 6. ⏳ Phase 6 — legacy extract.py + overrides retired
-7. ⏳ End-to-end run on a SECOND client (the wholesale-food client or the charity client) without code changes — confirms the architecture generalises
+7. ⏳ End-to-end run on a SECOND client (Indus Foods or helping-doctors) without code changes — confirms the architecture generalises
 
 Items 1-6 are next-session work. Item 7 is the production validation that happens after the first client ships.
 
@@ -748,7 +748,7 @@ Added 2026-05-19 alongside the deploy-skill consolidation. `sgs-clone-orchestrat
 
 **Relationship to `/wp-sgs-deploy`:**
 - Stage 10 = PER-PAGE deploy (cv2 output → one client staging page). Per-clone-run cadence.
-- `/wp-sgs-deploy` = FRAMEWORK deploy (sgs-blocks + sgs-theme → the campaign-site client's production site). Per-framework-change cadence.
+- `/wp-sgs-deploy` = FRAMEWORK deploy (sgs-blocks + sgs-theme → palestine-lives.org). Per-framework-change cadence.
 - Different scopes; different skills. Each pipeline has exactly one canonical deploy path; no overlap.
 
 See orchestrator Stage 10 entry in `.claude/cloning-pipeline-flow.md` for the per-stage diagram. Acceptance verified by /qc 5/5 with live evidence: `[stage-10] deploy: patched page 144` in stdout.
@@ -759,7 +759,7 @@ See orchestrator Stage 10 entry in `.claude/cloning-pipeline-flow.md` for the pe
 
 Added 2026-05-23 (commit 1331f23a). Runs AFTER Stage 10 succeeds; parses the target page URL from Stage 10's `link=` stdout token. Captures per-section screenshots from the live deployed page and runs `pixel-diff.py --selector .sgs-{section}` against the mockup baseline. Output written to `pipeline-state/<run>/stage-11-pixel-diff.json`. Source-of-truth: commit 1331f23a.
 
-**Canonical empirical pixel-diff numbers (2026-05-23, page 144, the bakery client post-fix):**
+**Canonical empirical pixel-diff numbers (2026-05-23, page 144, Mama's Munches post-fix):**
 
 | Section | Pixel-diff |
 |---|---|

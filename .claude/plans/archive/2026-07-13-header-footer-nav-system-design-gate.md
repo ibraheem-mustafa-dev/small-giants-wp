@@ -12,7 +12,7 @@ governing_specs:
   - specs/31-UNIVERSAL-CLONING-PIPELINE.md §13.6 (composite-mirror), R-31-1 (DB-first)
   - specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md (no-inline / token contract)
 enforced_constraint_being_evolved: .claude/hooks/no-header-footer-block.py + memory header-footer-are-template-parts-not-blocks
-research_basis: 5 documented systems (Bricks, Elementor, Blocksy, Material 3, GOV.UK) + the wholesale-food client live reference + research-council (per-breakpoint model) + SGS nav code analysis + live drawer-bug root-cause
+research_basis: 5 documented systems (Bricks, Elementor, Blocksy, Material 3, GOV.UK) + Indus Foods live reference + research-council (per-breakpoint model) + SGS nav code analysis + live drawer-bug root-cause
 ---
 
 # Design-gate — Header + Footer + Navigation system
@@ -21,7 +21,7 @@ research_basis: 5 documented systems (Bricks, Elementor, Blocksy, Material 3, GO
 
 We are building the SGS **header, footer, and navigation** as a proper, best-in-class **system** — not a monolithic "header block" (still forbidden), but a set of **specialised container blocks + an adaptive nav + an accessible drawer**, all living inside the existing template-part architecture. It fixes a live WCAG overflow bug and a live unclickable-drawer bug, and makes header/footer/nav fully responsive and client-editable per device.
 
-Grounded in a holistic study of how the leading systems actually work (read from their real docs, per Bean's steer): **Bricks, Elementor, Blocksy** (WP builders), **Material 3 + GOV.UK** (design-system rigour), plus the **the wholesale-food client** live reference and a **research-council** on the responsive model.
+Grounded in a holistic study of how the leading systems actually work (read from their real docs, per Bean's steer): **Bricks, Elementor, Blocksy** (WP builders), **Material 3 + GOV.UK** (design-system rigour), plus the **Indus Foods** live reference and a **research-council** on the responsive model.
 
 ## 2. Rule evolution (conscious, Bean-directed)
 
@@ -85,13 +85,13 @@ Every element/setting in **both** `sgs/site-header` and `sgs/site-footer` (and `
 - Configurable screen-reader labels (`menuButtonLabel`/`navigationLabel`), not hardcoded English.
 - Keyboard contract published (Tab / Space-Enter / ESC; focus lands on the first interactive element — Material's rule). 44px touch targets.
 
-## 7. Per-device content adaptation (the wholesale-food client ground-truth + Blocksy)
+## 7. Per-device content adaptation (Indus ground-truth + Blocksy)
 
 No system has a magic "swap content per device" primitive — all use **place element + toggle per device**. So:
 - **Every element:** per-tier **visibility** toggle (show desktop / hide mobile, etc.).
 - **Nav/CTA/contact elements:** a `showLabel` / `iconOnly` boolean (Blocksy's Trigger pattern) — e.g. email text → email icon with `mailto:`.
 - **Move-to-drawer:** the drawer is a separate drop-zone; items placed there render only in the drawer.
-- **The wholesale-food client real pattern (reference):** at ≤1024 both header rows merge to a slim bar (logo + one "Call" **button** — text→button, not icon); email/social **drop from the header into the drawer**; footer columns 3→1 at 768. This is the template: one clean tier flips header+footer to mobile; secondary items move to the drawer; a primary contact becomes a button.
+- **Indus real pattern (reference):** at ≤1024 both header rows merge to a slim bar (logo + one "Call" **button** — text→button, not icon); email/social **drop from the header into the drawer**; footer columns 3→1 at 768. This is the template: one clean tier flips header+footer to mobile; secondary items move to the drawer; a primary contact becomes a button.
 
 ## 8. Per-breakpoint responsive override model (research-council decided, Bean-adjusted)
 
@@ -127,7 +127,7 @@ Deploy → OPcache + `wp litespeed-purge all` + Hostinger CDN clear + version bu
 - **C. WCAG 2.2 AA:** axe-core; keyboard-only full traversal (nav → drawer → mega-menu → close); `aria-current`/`aria-expanded` correct; 3:1 non-text contrast; published keyboard contract honoured; screen-reader labels present.
 - **D. No-inline:** wrapper carries no inline `style=""`; values in the scoped `<style id="uid">`; computed values match the defaults per tier.
 - **E. Per-device:** each breakpoint's overrides apply; inherited-vs-overridden indicators correct; reset resumes inheritance; uid stable on re-save.
-- **F. Universality (R-31-9):** verified on **the bakery client AND the wholesale-food client** (+ the wholesale-food client per-breakpoint pattern reproduced); no hardcoded client value (grep clean).
+- **F. Universality (R-31-9):** verified on **mamas-munches AND indus-foods** (+ the Indus per-breakpoint pattern reproduced); no hardcoded client value (grep clean).
 - **G. Behaviour-layer non-regression:** sticky/transparent/scroll + `--sgs-header-height` + anchor-offset intact; dark mode ok.
 - **H. Editor/operator:** blocks show inspector controls; no "Invalid block"; Site Editor Replace still lists patterns; a **3-5 person usability sanity-check** on the per-device indicator UI (council's ask).
 - **Gate tooling:** `/visual-qa` + `/qc` + `/a11y-audit` + `/gap-analysis` (grade vs WCAG + this spec) + a pre-build `/adversarial-council`. Visual-diff report at `reports/visual-diff/` per changed block (STOP-67).

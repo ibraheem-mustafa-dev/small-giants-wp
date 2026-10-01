@@ -26,13 +26,13 @@ SGS Theme ◄──── SGS Blocks (reads design tokens from theme.json)
 
 ### Phase 1 — Foundation (SGS Theme + SGS Blocks Core)
 
-**Goal:** A working block theme with enough blocks to build a complete page. Deploy the wholesale-food client as the first site.
+**Goal:** A working block theme with enough blocks to build a complete page. Deploy Indus Foods as the first site.
 
 #### 1a. SGS Theme — Minimum Viable Theme
 
 Build in this order:
 
-1. `style.css` + `theme.json` — design tokens, typography, spacing, colour palette (the wholesale-food client as default, but structured for override)
+1. `style.css` + `theme.json` — design tokens, typography, spacing, colour palette (Indus Foods as default, but structured for override)
 2. `functions.php` — theme setup, font preloading, script/style enqueuing
 3. `templates/index.html` + `templates/page.html` — basic page templates
 4. `parts/header.html` — site header with logo + nav + CTA
@@ -64,7 +64,7 @@ Build in this order (each block is independently testable):
 15. **Notice Banner** (`sgs/notice-banner`) — inline informational banner (MOV, delivery terms)
 16. **WhatsApp CTA** (`sgs/whatsapp-cta`) — floating + inline WhatsApp
 
-**Core form blocks** (pulled forward from Phase 2 — needed for the wholesale-food client trade application):
+**Core form blocks** (pulled forward from Phase 2 — needed for Indus Foods trade application):
 
 17. **Form** (`sgs/form`) — form wrapper with multi-step logic, progress bar, submission flow
 18. **Form Step** (`sgs/form-step`) — step container for multi-step forms
@@ -91,9 +91,9 @@ Plus shared infrastructure:
 
 **Done when:** All 16 layout/content blocks + 13 form blocks register without errors, render in the editor, produce correct frontend output, and respect theme.json design tokens. Responsive behaviour verified at all three breakpoints. Form submissions stored and N8N webhooks fire.
 
-#### 1c. Deploy the wholesale-food client
+#### 1c. Deploy Indus Foods
 
-Using SGS Theme + SGS Blocks (including core form blocks), build the wholesale-food client pages on the Hostinger test site. This is both the deliverable for the client and the real-world validation of Phase 1.
+Using SGS Theme + SGS Blocks (including core form blocks), build the Indus Foods pages on the Hostinger test site. This is both the deliverable for the client and the real-world validation of Phase 1.
 
 Pages to build:
 1. Food Service page (template for all four — matches V3 mockup exactly)
@@ -109,7 +109,7 @@ Pages to build:
 
 ### Phase 2 — Forms Advanced (SGS Forms)
 
-**Goal:** Advanced form features that weren't needed for the basic the wholesale-food client trade application (core form blocks already built in Phase 1b).
+**Goal:** Advanced form features that weren't needed for the basic Indus Foods trade application (core form blocks already built in Phase 1b).
 
 Build in this order:
 
@@ -159,7 +159,7 @@ Build in this order:
 5. Modal block
 6. Announcement bar block
 7. SVG background container block
-8. Additional style variations for other client sites (Dream Wedding, a retail client, etc.)
+8. Additional style variations for other client sites (Dream Wedding, Workwear Now, etc.)
 9. Performance audit and optimisation across all components
 
 ---
@@ -236,7 +236,7 @@ The bottleneck is Phase 1a — everything needs the theme to exist first. After 
 ### Integration
 
 - Deploy SGS Theme + SGS Blocks + SGS Forms on Hostinger test site
-- Build the wholesale-food client pages — verify everything works together
+- Build Indus Foods pages — verify everything works together
 - Run PageSpeed Insights — verify green Core Web Vitals
 - Run WAVE accessibility checker — verify WCAG 2.2 AA compliance
 - Test on real devices: iPhone, Android, iPad, desktop
@@ -263,9 +263,9 @@ Each component is independently deployable via SFTP but developed in a shared re
 
 ---
 
-## First Milestone: the wholesale-food client Live
+## First Milestone: Indus Foods Live
 
-**What's needed to launch the wholesale-food client site:**
+**What's needed to launch the Indus Foods site:**
 
 1. SGS Theme (Phase 1a) — fully built
 2. SGS Blocks: 16 layout/content blocks + 13 core form blocks (Phase 1b) — includes card-grid, notice-banner, and all form fields needed for the trade application
@@ -273,10 +273,10 @@ Each component is independently deployable via SFTP but developed in a shared re
 4. Rank Math Free — installed and configured
 5. Real content: images, testimonials, certification logos from client
 
-**Not needed for the wholesale-food client launch:**
+**Not needed for Indus Foods launch:**
 - SGS Booking (no booking functionality on this site)
 - SGS Client Notes (useful but not launch-blocking)
-- Style variations for other sites (the wholesale-food client is the default)
+- Style variations for other sites (Indus Foods is the default)
 - Advanced form features (conditional logic, address lookup, payment, GDPR hooks) — Phase 2
 - SGS Forms admin submissions viewer — Phase 2
 

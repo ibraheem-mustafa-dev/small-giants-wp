@@ -125,7 +125,7 @@ Step 1 — Re-verify Stage B's data foundation
   Model:       sonnet
   Action:      Query `array_item_schema` for the real current role-population rate (row count,
                rows-with-role, distinct blocks with any coverage) via `/sgs-db`. Separately,
-               re-run Spec 44's own narrowing measurement against the real the optician client Birmingham
+               re-run Spec 44's own narrowing measurement against the real Eye Care Birmingham
                fixture (§5.1's "6 of 8 groups" claim) and write BOTH figures to a new file —
                `.claude/reports/2026-09-1X-spec44-stage-b-data-verification.md` — with the exact
                SQL/command used, not just the resulting numbers. Decide (state explicitly, don't
@@ -155,7 +155,7 @@ Step 1 — Re-verify Stage B's data foundation
        `/wp-blocks dump`). Use `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "..."`
        — read-only, do not write anything to the DB.
 
-    2. Re-run Spec 44's own group-narrowing measurement against the real the optician client Birmingham
+    2. Re-run Spec 44's own group-narrowing measurement against the real Eye Care Birmingham
        draft (sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html)
        using the existing recogniser modules in plugins/sgs-blocks/scripts/recogniser/ (read
        render_repeater_recogniser.py and array_schema_eliminator.py to understand the existing
@@ -243,7 +243,7 @@ Step 2 — Design + validate the per-group/per-member consistency check (Stage B
 Step 3 — Run Spec 44's full pipeline against a second draft
   Model:       sonnet
   Action:      Run Stage A + Stage B + the trust gate against `Frame Card.dc.html` (confirmed
-               to exist, never previously tested — every prior run used only the optician client
+               to exist, never previously tested — every prior run used only Eye Care
                Birmingham). ⚠ CONFIRMED real, then RE-VERIFIED and corrected by `/qc-council`
                (structural-diff rater, 2026-09-17): `measure-classless-baseline.py` is NOT
                read-only — it calls `recognise_classless_group(..., auto_complete_enabled=True,
@@ -254,7 +254,7 @@ Step 3 — Run Spec 44's full pipeline against a second draft
                `measure-classless-baseline.py:64`, threaded straight into
                `recognise_classless_group(sa_group, sb_group, CLIENT_SLUG, precedent, ...)`
                (lines 113-115). Running it unmodified against Frame Card would write real
-               precedent under the SAME client slug as the existing the optician client Birmingham
+               precedent under the SAME client slug as the existing Eye Care Birmingham
                precedent — risking Frame Card itself tripping FR-44-1(b)'s same-client
                second-occurrence auto-complete clause for real, contaminating the precedent
                history Step 8's live run depends on being clean. **Do not run the script
@@ -277,10 +277,10 @@ Step 3 — Run Spec 44's full pipeline against a second draft
   Inputs:      D1074's own recommendation (test against a second, independently-generated
                draft); the existing baseline script's approach (D1094)
   Outcome:     A report recording: group count, auto-complete count, review count, no-match
-               count for Frame Card.dc.html — structured the same way as D1094's the optician client
+               count for Frame Card.dc.html — structured the same way as D1094's Eye Care
                figures, so the two are directly comparable. Note: confirmed live 2026-09-17
                (`grep -c "sc-for"` returns 2) — expect a thin sample, likely 1 repeater group,
-               not a rich multi-group draft like the optician client's 39; a small proof of generalisation
+               not a rich multi-group draft like Eye Care's 39; a small proof of generalisation
                is still the correct, honest outcome here, not a sign the step failed
   Exec:        PARALLEL with steps 1, 2, 5, 6
   Deps:        none
@@ -288,7 +288,7 @@ Step 3 — Run Spec 44's full pipeline against a second draft
   Time:        25 min
   Tooling:     the existing recogniser pipeline modules, pytest (if any new fixture tests are
                warranted)
-  On-Fail:     If `measure-classless-baseline.py` is hardcoded to the optician client path in a way
+  On-Fail:     If `measure-classless-baseline.py` is hardcoded to the Eye Care path in a way
                that resists parameterisation cleanly, extend it with a `--draft` CLI arg rather
                than duplicating the script — this project's own code-quality rule bans
                unnecessary duplication. If the audit-log/client-slug isolation (see Action
@@ -305,9 +305,9 @@ Step 3 — Run Spec 44's full pipeline against a second draft
     verified live: it calls `recognise_classless_group(..., auto_complete_enabled=True,
     conn=conn)` then `gate.append_decision(decision)`, writing REAL rows to the git-tracked
     audit log (`classless-recognition-log.jsonl`), under a hardcoded `CLIENT_SLUG =
-    "eye-care-ward-end"`. Frame Card.dc.html sits in the SAME client directory as the optician client
+    "eye-care-ward-end"`. Frame Card.dc.html sits in the SAME client directory as Eye Care
     Birmingham. If you run the script unmodified, Frame Card's groups get written under the
-    IDENTICAL client slug as the existing the optician client precedent — which could trip FR-44-1(b)'s
+    IDENTICAL client slug as the existing Eye Care precedent — which could trip FR-44-1(b)'s
     same-client second-occurrence auto-complete clause for real, contaminating the precedent
     history this phase's later live-flagged run (Step 8 of the plan) depends on being clean.
 
@@ -328,17 +328,17 @@ Step 3 — Run Spec 44's full pipeline against a second draft
 
     Read plugins/sgs-blocks/scripts/recogniser/measure-classless-baseline.py in full — it
     already implements the real Stage A -> Stage B -> trust-gate pipeline measurement for the
-    the optician client Birmingham draft (used for D1094's baseline: 39 groups, 0 auto-completed, 2 review,
+    Eye Care Birmingham draft (used for D1094's baseline: 39 groups, 0 auto-completed, 2 review,
     37 no-match). Extend it with a draft-path parameter AND the isolation fix above (don't
     duplicate the script — this project bans unnecessary duplication; do isolate the audit-log
     write path, that's not duplication, it's correctness).
 
     Run it against Frame Card.dc.html and record: total repeated-group count, auto-completed
-    count, review-queue count, no-match count — in the same shape as the optician client figures so
+    count, review-queue count, no-match count — in the same shape as the Eye Care figures so
     the two drafts are directly comparable. Write the result to a report file
     (.claude/reports/2026-09-1X-spec44-frame-card-second-draft-measurement.md) and note any
     STRUCTURAL differences you observe between how the two drafts' groups resolve (e.g. does
-    Frame Card have any groups the optician client draft's shape never exercised — a different block,
+    Frame Card have any groups the Eye Care draft's shape never exercised — a different block,
     a different nesting depth) — that's the real point of testing a second, independently-
     generated draft: proving the design generalises, not just re-confirming the first result.
 
@@ -490,7 +490,7 @@ Step 6 — Integrate + commit Wave 1's changes
 
 Step 7 — DONE 2026-09-18 (D1104) — Tier A integration measurement
   Model:       sonnet
-  Action:      COMPLETED. Measured against the optician client Birmingham only (Frame Card's own Stage A/B
+  Action:      COMPLETED. Measured against Eye Care Birmingham only (Frame Card's own Stage A/B
                baseline is item 3, still not done, so this ran against the one draft that had a
                real baseline to compare against — matches this plan's own On-Fail guidance to
                record findings honestly rather than force a premature both-drafts answer).
@@ -503,7 +503,7 @@ Step 7 — DONE 2026-09-18 (D1104) — Tier A integration measurement
   Files:       plugins/sgs-blocks/scripts/recogniser/sc_var_classifier.py (read-only at this
                step — decision only, no further code change unless the measurement clearly
                calls for wiring it in)
-  Inputs:      Step 4's fix; step 3's Frame Card baseline; D1094's the optician client baseline
+  Inputs:      Step 4's fix; step 3's Frame Card baseline; D1094's Eye Care baseline
   Outcome:     A written decision (in Spec 44 §11, replacing the current "measure, don't assume
                additive" open bullet): Tier A is either (a) wired in as a third Stage B signal,
                with the specific integration point named, or (b) recorded as superseded/
@@ -568,7 +568,7 @@ Step 8 — Live run with both rollout flags ON
   Model:       sonnet
   Action:      Run the real gated pipeline path (not the dry-run measurement script) against a
                real client draft with `--classless-match --classless-auto-complete` both set.
-               Use the optician client Birmingham draft (the one with the fullest existing baseline
+               Use the Eye Care Birmingham draft (the one with the fullest existing baseline
                history, so any deviation from D1094's dry-run figures is immediately
                interpretable). Confirm: (a) real completions or honest review-queue entries are
                produced, matching or explicably differing from D1094's dry-run figures; (b) the
@@ -606,7 +606,7 @@ Step 8 — Live run with both rollout flags ON
   Cold-Entry:  n/a (not a SESSION-START step, but functions as the plan's true finish line)
   Prompt: |
     Run Spec 44's REAL gated pipeline (not measure-classless-baseline.py's dry-run measurement)
-    against the optician client Birmingham draft with both rollout flags on:
+    against the Eye Care Birmingham draft with both rollout flags on:
     `--classless-match --classless-auto-complete`, via the real
     plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py entry point (read its `--help` and the
     surrounding orchestrator flow first to confirm the exact invocation — do not guess the CLI
@@ -730,7 +730,7 @@ Step 9 — Close out: decisions.md, LEDGER.md, handoff gate
 
 - **Decision:** `measure-classless-baseline.py` is not read-only — running it unmodified
   against Frame Card would write real audit-log precedent under the same `CLIENT_SLUG` as the
-  existing the optician client Birmingham run, risking a real FR-44-1(b) second-occurrence trip that
+  existing Eye Care Birmingham run, risking a real FR-44-1(b) second-occurrence trip that
   contaminates the precedent history Step 8's live run depends on.
   - **Flagged by:** sonnet-reviewer (verified against the real script's source before being
     written up, not just asserted)
@@ -753,7 +753,7 @@ Step 9 — Close out: decisions.md, LEDGER.md, handoff gate
   - **Flagged by:** sonnet-reviewer
   - **Recommendation:** Checked live 2026-09-17: `grep -c "sc-for" "Frame Card.dc.html"` returns
     2 — genuine `<sc-for>` markup exists but the sample is small (likely 1 repeater group, not a
-    rich multi-group draft like the optician client Birmingham's 39). Step 3's executor should expect a
+    rich multi-group draft like Eye Care Birmingham's 39). Step 3's executor should expect a
     thin, not degenerate-but-not-rich result, and the "structural differences" writeup should be
     read accordingly — a small draft still proves the design generalises, it just won't surface
     much variety.
@@ -802,7 +802,7 @@ Step 9 — Close out: decisions.md, LEDGER.md, handoff gate
     7 non-negotiables) requires checking blast radius for first.
 
 - **Decision:** Step 3's second-draft test may surface a genuinely NEW block/shape Frame Card
-  uses that the optician client Birmingham never exercised — is fixing that gap in scope for THIS phase, or
+  uses that Eye Care Birmingham never exercised — is fixing that gap in scope for THIS phase, or
   is it a new Spec 44 §11 item for a future phase?
   - **Flagged by:** both
   - **Recommendation:** Record it as a new, explicit Spec 44 §11 item (don't silently build a

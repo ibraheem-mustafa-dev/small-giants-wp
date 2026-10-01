@@ -412,11 +412,11 @@ per-site storage removes the cause. Two-client verification is retained only whe
 `parts/header.html` is a one-line shell, `<!-- wp:pattern {"slug":"sgs/framework-header-default"} /-->`,
 and `parts/footer.html` is its footer equivalent. Both reference **framework** patterns that carry
 no client data (`framework-header-default.php`, `framework-footer-default.php`). Verify with
-`python scripts/check-no-client-names.py --survey --files`
-(expect no hits under `theme/sgs-theme/parts` or `theme/sgs-theme/patterns/framework-*.php`).
+`git grep -n -i "indus" -- theme/sgs-theme/parts theme/sgs-theme/patterns/framework-*.php`
+(expect 0 hits).
 
 Per-site header and footer content lives in each live site's CPT posts. Every live site (the
-sandybrown canary and the wholesale-food client test site) renders its header and footer from CPT posts set
+sandybrown canary and the Indus test site) renders its header and footer from CPT posts set
 active. A plain theme deploy therefore never pushes one client's header onto
 another site.
 
@@ -536,7 +536,7 @@ clear-active` reverts the binding.
 A row action + editor action on each CPT writes a global option: `sgs_active_header_cpt_id` /
 `sgs_active_footer_cpt_id` / `sgs_active_drawer_cpt_id`. Setting a new active post clears the
 previous one (single active per type). The pointers are single global options, so one install has
-one Active header; a second client's header needs its own site (the wholesale-food client test site).
+one Active header; a second client's header needs its own site (the Indus test site).
 **Status:** `BUILT` — `plugins/sgs-blocks/includes/class-sgs-active-layout.php::set_active` /
 `::clear_active` (single-active enforced structurally by one option holding one id) +
 `class-sgs-active-layout-admin.php` ("Set as active" row action, nonce + `edit_theme_options`
@@ -606,7 +606,7 @@ the list table.
 `parts/header.html` and `parts/footer.html` contain only what is needed for WP's template
 system to resolve the area. Authored block content lives in the CPT, never in the part.
 **Status:** `BUILT` — both part files are one-line shells referencing client-free framework
-patterns (§3.9a), and every live site (the sandybrown canary and the wholesale-food client test site) renders its
+patterns (§3.9a), and every live site (the sandybrown canary and the Indus test site) renders its
 header and footer from CPT posts set active.
 **Done when:** neither part file contains authored content, and every live site renders from CPTs. ✅ met.
 
@@ -774,12 +774,12 @@ reading the saved post content, not the editor state. ✅ met.
 **Status:** `PARTIAL`. Both the header row (`reports/visual-diff/site-header-row-2026-08-01.md`) and
 the footer row (`reports/visual-diff/site-footer-row-2026-08-01.md`) have a real 1400→320px,
 ≤10px-step `row-fit-sweep.mjs` sweep with **0 of 109 widths overflowing**, each including negative
-controls and a WebKit re-run. **Open:** sweeping the wholesale-food client test site's own header and footer content
+controls and a WebKit re-run. **Open:** sweeping the Indus test site's own header and footer content
 (different content and `theme-snapshot.json` tokens can shift the transition widths; the footer
 report flags that real footer copy will move its 860px/1160px cliffs).
 **Done when:** `scrollWidth <= innerWidth` **swept 1400px → 320px in ≤10px steps**
 (`plugins/sgs-blocks/scripts/row-fit-sweep.mjs`) on the sandybrown canary's own header/footer
-content — met — **and** on the wholesale-food client test site's header/footer — not yet done.
+content — met — **and** on the Indus test site's header/footer — not yet done.
 
 ### Behaviours
 
@@ -876,7 +876,7 @@ structure passes clicks: the header root, `.sgs-site-header-row`, `.sgs-containe
 (`.sgs-nav-bar-menu`, `__bar`) get `pointer-events:none`; every other row child, and the menu's items, toggle and
 open panels, get `pointer-events:auto`. So any block a client drops in keeps its whole box and only the empty band
 and the gaps between menu items reach the page (dogstudio's "none on the band, auto on logo and burger";
-The reference site's zero-height shell). It is the first entry in the merged writer
+lamalama's zero-height shell). It is the first entry in the merged writer
 (`plugins/sgs-blocks/includes/sgs-header-pass-through.php::sgs_header_pass_through_entry`); the pointer pair is
 `::sgs_header_pass_through_css`. `view.js`'s broken-ancestor advisory covers it (`data-sgs-header-pass-through`),
 and "Shrink on scroll" shows for it, since it pins.
@@ -902,7 +902,7 @@ The header's Animation panel warns that an entrance delays the header's first ap
 3s failsafe shows the header if the observer never plays it. A footer row with
 `fxFooterStagger` on gives its own entrance way to the scroll reveal
 (`plugins/sgs-blocks/includes/animation-attributes.php::sgs_fx_owns_scroll_transform`); blocks inside it keep theirs.
-A reference whose header waits for its own preloader (the reference site, studionamma) is a recorded
+A reference whose header waits for its own preloader (lamalama, studionamma) is a recorded
 divergence: SGS has no preloader, so the entrance starts at load.
 **Status:** `BUILT + LIVE-VERIFIED` (U-16, 2026-09-26): `node plugins/sgs-blocks/scripts/nav-qa/u16-entrance-probe.mjs`
 on `/qa-entrance/` (fixture `qa-item-markup-fixture.php entrance`) and
@@ -1080,7 +1080,7 @@ shown only inside an `sgs/site-header`) adds `sgs-hide-collapsed` / `sgs-only-co
 those rules at the collapse point of the `sgs/nav-bar-menu` that owns its burger
 (`plugins/sgs-blocks/includes/sgs-header-pass-through.php::sgs_header_collapse_visibility_css`), so the two can never disagree at a
 collapse point that is not a tier edge. No burger-owning menu: no rule, everything shows. A width set by content
-fit rather than by the burger (the optician client's phone at 1160px) is a rare one-off and stays in the site's Additional CSS.
+fit rather than by the burger (Eye Care's phone at 1160px) is a rare one-off and stays in the site's Additional CSS.
 
 **HIDE, not REMOVE.** The cascade hides via CSS; it never forks the block tree per tier.
 `device-visibility.php` generates `display:none` media queries and states *"Content remains in the
@@ -1774,7 +1774,7 @@ routes); `sgs_form` and `sgs_choice_flow` use `edit_sgs_forms`.
 | `sgs_form`, `sgs_choice_flow` | Forms, Choice Flows | Form / branching-quiz definitions | None | No | None — owned by Specs 42 and 43; they use their own capability (`edit_sgs_forms`) |
 
 The Active pointers are single global options: one install has one Active header, footer and drawer,
-so a second client's header needs its own site (the wholesale-food client test site is separate from the sandybrown
+so a second client's header needs its own site (the Indus test site is separate from the sandybrown
 canary). The pointers are read through `Sgs_Active_Layout`, never with a raw option write.
 
 ### 5.2 Shared admin machinery

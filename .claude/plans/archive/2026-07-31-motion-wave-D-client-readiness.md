@@ -17,7 +17,7 @@ Invoke /autopilot before doing anything else.
 > below. This wave-D register is now fully closed bar Step U's ongoing, non-blocking debt-tracking.
 
 > **Closed since the prune:** Step 8 (FR-38-27, 2026-08-02) · Step Y (both loop arms measured, `216508ce`) · Step W/X/Z earlier · and
-> M3 (the wholesale-food client snapshot push — DELETED by Bean, not parked; see `LEDGER.md`).
+> M3 (indus-foods snapshot push — DELETED by Bean, not parked; see `LEDGER.md`).
 
 ## Where this stands
 

@@ -14,7 +14,7 @@ primary_goal: "Close the structural pixel-diff blockers via Spec 22 (Universal B
 > **Progress 2026-05-30 — D107-D113 architectural cleanup batch shipped (Stream A continuation):**
 > - **Phase 2 hybrid migration:** Stream A continuation landed — XS-2 voter tier column (D107), `block_composition` table 188 rows (D108, walker consumption deferred), XS-4 canonical_slot backfill 2.5% → 33.4% + role 5.3% → 33.2% (D110), XS-5 retired 12 wrong/dead section-scope slot rows (D111), D6 inheritance script (D112), D113 methodology STOP catalogue extensions. XS-3 walker recursion REVERTED (D109) post-regression — refined trigger deferred. Pixel-diff trajectory **58.6% → 56.40%** (−2.20pp aggregate this session).
 > - **Phase 3 parking sweep:** no movement; parking entries net-added (XS-3 trigger refinement, D6 threshold re-tune, 3 XS-4 follow-ups) minus 1 retired (P-UTF8-MOJIBAKE-IN-CONVERTER resolved via announcement-bar block.json fix).
-> - **Phase 4 skill optimisation:** 2 new operator scripts shipped — `build-deploy.py` (D3, sandybrown canary fast-cycle complement to `/wp-sgs-deploy`) + `sync-container-wrapping-blocks.py` (D6 expansion); 1 ported (`assign-canonical.py` D99 port). `/wp-sgs-deploy` remains canonical for the campaign-site client's live domain deploys.
+> - **Phase 4 skill optimisation:** 2 new operator scripts shipped — `build-deploy.py` (D3, sandybrown canary fast-cycle complement to `/wp-sgs-deploy`) + `sync-container-wrapping-blocks.py` (D6 expansion); 1 ported (`assign-canonical.py` D99 port). `/wp-sgs-deploy` remains canonical for palestine-lives.org deploys.
 > - **Next session:** refined XS-3 walker trigger + D6 threshold re-tune (4 → 20-30 blocks) + block_attributes NULL canonical_slot vocabulary work.
 
 > **Revision 2026-05-26 — Phase 1 superseded by Spec 22.** The "Universal walker + G1+G3+G5 closure" framing below is retired. Phase 1 implementation is now defined by **Spec 22 (Universal Block-Equivalent Extraction)** at `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` and its Phase 1 plan at `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Acceptance gate softened from "G1+G3+G5 closed per Spec 16 §14" to "per-section ≤5% × 3 viewports + Bean visual sign-off" (Phase 1) with ≤1% Phase 1.5 stretch. Phases 2-4 (header/footer cloner, parking sweep, skill optimisation) remain valid scope; sequencing unchanged.
@@ -39,7 +39,7 @@ Explicit "No-Gos" for this plan — anything not here is implicitly out:
 
 - **Block library expansion** — no new SGS blocks built during this plan (Phase 4 audits existing skills only).
 - **Performance optimisation** — pixel-diff measurement only; no Core Web Vitals work.
-- **New client onboarding** — the bakery client is the canary; no other clients added.
+- **New client onboarding** — Mama's Munches is the canary; no other clients added.
 - **Spec rewrites** — Spec 22 is the canonical pipeline spec (Spec 16 retired + archived 2026-05-26). Spec 22 itself may receive amendments via its §16 ratification mechanism; other specs (17 header/footer, 18 floating UI, 19 CLI, 20 log surfacing, 21 pipeline-state, 02 SGS blocks) frozen for the duration unless a Phase touches them directly. Revisions go through new spec_version + status_history.
 - **`/sgs-clone` UX overhaul** — orchestrator API + output format stable; only bug fixes.
 - **Cross-platform emit paths (M9+)** — deferred per parking entries.
@@ -60,7 +60,7 @@ Same content as Phase summary table below — re-presented here as the canonical
 | Phase | Scope | Est | Sessions | Critical gate |
 |---|---|---|---|---|
 | **1** Spec 22 universal walker rewrite + acceptance gate | Spec 22 implementation per `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Phase 0 foundation (DB enrichment Tier B ≤72-row backfill per D84 + wp-blocks.py extension + pixel-diff.py hardening + hybrid-block audit), then Phase 1 walker rewrite (5 commits: snapshot, atomic-tag, ARRAY_LIFT_PATTERNS retirement, universal walker, measurement), then Phase 2 hybrid render.php migrations, Phase 3 legacy cleanup, Phase 4 acceptance, Phase 5 decisions/mistakes pruning. | ~31-38 hrs (D84 scope correction shaved ~1.5h off Phase 0.1) | 6-10 | Per-section ≤5% × 3 viewports for all 7 body sections + Bean visual sign-off (R-22-13). Phase 1.5 stretch ≤1% via measurement-script hardening. Header/footer excluded — Phase 2 scope. |
-| **2** Header + footer cloner | Separate one-shot script → Spec 17 architecture (template parts + Site Info + Customiser) | to be set by `/phase-planner` | 1-2 | The bakery client header + footer parity ≥ defined per-element thresholds at 375/768/1440 (header sticky behaviour exact match) |
+| **2** Header + footer cloner | Separate one-shot script → Spec 17 architecture (template parts + Site Info + Customiser) | to be set by `/phase-planner` | 1-2 | Mama's Munches header + footer parity ≥ defined per-element thresholds at 375/768/1440 (header sticky behaviour exact match) |
 | **3** Parking close-out | ~22 STILL-OPEN entries (no skills) | 6-8 hrs | 2-3 | parking.md "Open" section contains zero entries beyond P-BATCH-GA-14-SKILLS |
 | **4** Skill optimisation | /skill-optimiser mode 2 on 14 WP/SGS skills + /batch-gap-analysis | 3-4 hrs | 1 (dedicated) | 14 per-skill JSON evaluations + 1 review report + S-grade confirmations queued |
 
@@ -137,13 +137,13 @@ Phase 4 (Skill optimisation) — dedicated session
 2. `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` — active Phase 1 phase-plan (5-commit cadence + per-commit model routing)
 3. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map (read BEFORE conjecturing about pipeline failures)
 4. `.claude/cloning-pipeline-flow.md` + `.claude/cloning-pipeline-stages.md` — pipeline flow with Stage 11 + per-stage R/W tables
-5. `pipeline-state/bakery-client-144-2026-05-26-122349/` — pre-walker-rewrite Wave B baseline (**`mean_mismatch_percent: 63.61%`** per file — corrected 2026-05-27 post-handoff audit; the earlier "58.91%" claim was unverifiable drift); also `pipeline-state/bakery-client-homepage-2026-05-26-012625/` for the pre-chrome-hide reference per D88
+5. `pipeline-state/mamas-munches-144-2026-05-26-122349/` — pre-walker-rewrite Wave B baseline (**`mean_mismatch_percent: 63.61%`** per file — corrected 2026-05-27 post-handoff audit; the earlier "58.91%" claim was unverifiable drift); also `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` for the pre-chrome-hide reference per D88
 6. `.claude/decisions.md` D78-D88 — Spec 22 ratification chain + Phase 0 lessons (D84 scope correction, D85 role-exclusion fix, D86 Tier C delete, D87 pixel-diff divergence, D88 baseline staleness)
 
 **Mandatory before Phase 2:**
 1. `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` — full theme-side architecture (template parts + CPTs + Customiser + Site Info store + rules engines)
 2. `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` — Phase 2 detailed plan (generated via `/phase-planner`)
-3. `pipeline-state/bakery-client-homepage-2026-05-23-145045/stage-11-pixel-diff.json` — current header (44.9% mean) + footer (96.3% mean) baseline for delta measurement
+3. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json` — current header (44.9% mean) + footer (96.3% mean) baseline for delta measurement
 4. `sites/mamas-munches/mockups/homepage/index.html` — canonical source mockup header + footer DOM
 
 **Mandatory before Phase 3:**

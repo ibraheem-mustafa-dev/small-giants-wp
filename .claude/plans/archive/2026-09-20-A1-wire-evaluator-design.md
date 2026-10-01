@@ -4,7 +4,7 @@ Parent plan: `.claude/plans/2026-09-20-draft-standardisation-plan.md` (step A1).
 
 ## Problem, effect, solution
 
-**Problem.** The optician client draft's script states its layout per screen width (`secPad: mobile ? '56px 20px' : '104px 52px'`). An evaluator that reads those rules is built and proven (75 of 140 names, 0 mismatches against a real render) but nothing calls it, so the converter drops every such value.
+**Problem.** The Eye Care draft's script states its layout per screen width (`secPad: mobile ? '56px 20px' : '104px 52px'`). An evaluator that reads those rules is built and proven (75 of 140 names, 0 mismatches against a real render) but nothing calls it, so the converter drops every such value.
 **Effect.** Live page: section padding 0px instead of 104px 52px, one-column grids where the draft has two or four, 48 dropped declarations in the last run.
 **Solution.** Call the evaluator once per run, hand its per-device values to the converter at the single place it reads inline styles, and stop dropping what can be resolved.
 

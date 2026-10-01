@@ -1,7 +1,7 @@
-# The optician client Wave C task 1: the shared product card (the draft's Frame Card)
+# Eye Care Wave C task 1: the shared product card (the draft's Frame Card)
 
 **Status:** DONE 2026-09-25 (framework 62a13e4e6 → 193a365a8, live on eye-care-test; Home tree rebuilt to page 208).
-Parent plan: `2026-09-24-optician-hand-build-design.md` (Wave C).
+Parent plan: `2026-09-24-eye-care-hand-build-design.md` (Wave C).
 
 **Verified live** (`scratchpad` best-sellers probe, draft vs live, side by side looked at): card widths 321 / 323 / 163
 at 1440 / 768 / 375 on both; brand Playfair 12.5px/500, title Outfit 16px/400, price Outfit 18px/500, RRP 13px struck

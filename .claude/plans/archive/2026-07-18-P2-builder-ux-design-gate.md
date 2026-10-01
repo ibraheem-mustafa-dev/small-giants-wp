@@ -541,7 +541,7 @@ shrink would silently switch OFF in production on the reshaping deploy**, and de
   old boolean's ToolsPanel item** rather than leaving it dual-wired, so a stale `headerSticky:true` can't
   be re-surfaced and cause a future regression.
 - **Re-clone / re-author** the live header instances onto the new attrs via the CPT admin screen /
-  block-editor recovery (WP-CLI `post_content` edits are forbidden) as part of P3; **canary-first (sandybrown → the campaign-site client)**
+  block-editor recovery (WP-CLI `post_content` edits are forbidden) as part of P3; **canary-first (sandybrown → palestine-lives)**
   with a **live before/after computed-value check that sticky/transparent/shrink are preserved** on
   both sites before close. This is P3 work; named here so P3 cannot skip it.
 
@@ -930,7 +930,7 @@ salvage posture). This is NOT decided by assumption — it is the convergent rea
   `mega-menu` trio **already covers the structural demands** (one-source, crawlable, Spec-34 disclosure
   drawer, mega-panels, overflow-More, configurable collapse) — it is "capable with a defined gap list,"
   not "rotten." The clients bracket the space: **Mama's** = flat 5-item bar + 1 featured item + cart
-  badge; **the wholesale-food client** = 7-item bar, 4 expandable (3 dropdowns + 1 mega "Brands"), **5 fully-built rich mega
+  badge; **Indus** = 7-item bar, 4 expandable (3 dropdowns + 1 mega "Brands"), **5 fully-built rich mega
   panels** (photo-grid / split-with-aside-CTA / logo-grid / info-box), a two-row header (utility bar +
   nav), accordion/drill-down collapse.
 
@@ -954,7 +954,7 @@ foundation). **"Keep-and-modify" is BANNED** — anything you'd edit is REBUILD.
 | Crawlable server-render | **KEEP-VERBATIM** | Progressive-enhancement contract, sound. |
 | Configurable collapse tier + overflow-More | **KEEP-VERBATIM** | Working, tested. |
 | The Spec-34 disclosure drawer (view.js ~248 drawer lines) | **KEEP-VERBATIM — LEAVE IT ALONE** | Ship-PM + WP-Platform: rewriting working, tested a11y JS onto Interactivity gives ZERO user benefit + the levers don't even exist (below). |
-| `sgs/mega-menu` | **REBUILD-FROM-SPEC** | Converter+Salvage-Sceptic, code-verified: it's THREE disconnected stores (wp_navigation + duplicated label/url + slug-matched `wp_template_part`) with a **live ordering bug — it can only render mega items LAST**, so it can't place the wholesale-food client's "Brands" at position 4/7. Plus its panels use core blocks (Spec 32 violation). This is the defining the wholesale-food client requirement and it's broken. |
+| `sgs/mega-menu` | **REBUILD-FROM-SPEC** | Converter+Salvage-Sceptic, code-verified: it's THREE disconnected stores (wp_navigation + duplicated label/url + slug-matched `wp_template_part`) with a **live ordering bug — it can only render mega items LAST**, so it can't place Indus's "Brands" at position 4/7. Plus its panels use core blocks (Spec 32 violation). This is the defining Indus requirement and it's broken. |
 
 **"Adopt WP-native levers" was FALSE — reframed (WP-Platform Realist, verified vs core source).** 4 of 5
 named mechanisms (`get_nav_element_directives`, `overlayOpenedBy`, `block_core_navigation_render_inner_
@@ -998,11 +998,11 @@ demoable, touches no working code) is a **prove-the-cause slice:**
 
 1. **Reproduce the Mama's flat bar LIVE** on the existing trio (near-free — Stream C says it's within
    current coverage). Smallest first action.
-2. **Build ONE the wholesale-food client mega panel** (the photo-grid — most representative of the 5) end-to-end on the
+2. **Build ONE Indus mega panel** (the photo-grid — most representative of the 5) end-to-end on the
    **current `sgs/mega-menu` as it stands** — this exercises the *rich* path (the hard, motivating
    capability) and will surface the real defects (the always-last ordering bug, the 3-store shape).
 3. **A converter schema-conformance test (DP6 for the nav, Converter MF2):** assert a converter *could*
-   write (a) a `wp_navigation` post of 7 items/3 submenus, (b) one mega InnerBlock with the real the wholesale-food client
+   write (a) a `wp_navigation` post of 7 items/3 submenus, (b) one mega InnerBlock with the real Indus
    label/url, (c) one `wp_template_part` whose content is the actual `mega-menu-brands.html` tree — run on
    fixtures NOW, not "whenever Spec 33 Part 2 lands" (that deferral is the exact
    `requirement-used-to-justify-not-made-a-constraint` trap P1's DP6 already corrected once).
@@ -1049,7 +1049,7 @@ of the rebuild.
   (the cloning pipeline can clone a scraped nav INTO it — §9) · **Spec 17 §S9** (FR-S9-4 one-menu-source,
   FR-S9-5 drawer a11y) · **Spec 33 Part 2** (header/footer clone) · **Spec 01** · the **css-mistakes /
   common-wp-styling-errors** doc · §0c constraints (no-inline, no banned core blocks).
-- Reproduces the wholesale-food client + Mama's menus + generalises (R-31-9 universality).
+- Reproduces Indus + Mama's menus + generalises (R-31-9 universality).
 - Mega-menu, drawer (Spec 34 disclosure model), collapse-to-drawer breakpoint, one menu source
   (adaptive-nav ↔ nav-menu context) — all working, not patched.
 
@@ -1084,7 +1084,7 @@ one-primitive→shared-plumbing; prove-the-cause slice + exit condition).
   `contain` on a header ancestor (a hide-on-scroll header uses `transform: translateY()`), via `<body>`
   portal. First-class + tested, not a buried comment.
 - **§15.3 add — the reproduce-both-menus LIVE baseline** IS the acceptance gate: Mama's (flat 5 + featured
-  + cart badge) and the wholesale-food client (7 items, 3 dropdowns, 1 mega at position 4, 5 rich panels, 2-row header,
+  + cart badge) and Indus (7 items, 3 dropdowns, 1 mega at position 4, 5 rich panels, 2-row header,
   accordion collapse) both reproduced live + Bean's eye. Cart badge + 2-row utility header get mapped to
   blocks/attrs (currently unassigned — Ship-PM/Converter MISSING).
 

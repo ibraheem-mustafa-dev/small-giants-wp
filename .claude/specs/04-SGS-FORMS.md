@@ -119,7 +119,7 @@ Example: Show "VAT Registration Number" field only when "Business Type" is not "
 
 ### Visual Tile Selector (`sgs/form-field-tiles`)
 
-The visual tile selector inspired by the wholesale-food client's V2 trade application mockup — used for product categories, cuisines, services, etc.
+The visual tile selector inspired by the Indus Foods V2 trade application mockup — used for product categories, cuisines, services, etc.
 
 **Additional attributes:**
 - `tiles` — array of { value, label, icon, image } objects
@@ -251,10 +251,10 @@ The choice-flow email terminal (Spec 43 FR-43-4) goes through the same path. PEC
 
 ```json
 {
-  "form_id": "trade-application",
+  "form_id": "indus-trade-application",
   "submission_id": 42,
   "submitted_at": "2026-02-12T14:30:00Z",
-  "site_url": "https://wholesaler.example.co.uk",
+  "site_url": "https://indusfoods.co.uk",
   "fields": { "name": "Priya Sharma", "email": "priya@bombaykitchen.co.uk", "business_type": "Restaurant" },
   "files": [ { "name": "fhrs-certificate.pdf" } ]
 }
@@ -264,12 +264,12 @@ The choice-flow email terminal (Spec 43 FR-43-4) goes through the same path. PEC
 
 ---
 
-## Wholesale Trade Application — Example Implementation
+## Indus Foods Trade Application — Example Implementation
 
-The wholesale-food client's V2 trade application form maps directly to this system:
+The Indus Foods V2 trade application form maps directly to this system:
 
 ```
-sgs/form (formId: "trade-application")
+sgs/form (formId: "indus-trade-application")
 ├── sgs/form-step (label: "About You")
 │   ├── sgs/form-field-radio (fieldName: "account_for", options: ["I'm the account holder", "I'm requesting on behalf of someone"])
 │   ├── sgs/form-field-text (fieldName: "name", label: "Your Name", required: true)
@@ -293,13 +293,13 @@ sgs/form (formId: "trade-application")
 │   ├── sgs/form-field-select (fieldName: "monthly_spend", options: [Under £500, £500-£1000, ...])
 │   ├── sgs/form-field-select (fieldName: "delivery_days", options: [Mon-Wed, Thu-Fri, Any weekday, Specific day])
 │   ├── sgs/form-field-select (fieldName: "payment_terms", helpText: "First orders are proforma.")
-│   └── sgs/form-field-select (fieldName: "how_heard", options: [Google, Referral, Already know the company, ...])
+│   └── sgs/form-field-select (fieldName: "how_heard", options: [Google, Referral, Already know Indus Foods, ...])
 │
 ├── sgs/form-review (label: "Review & Submit")
 │   ├── (auto-generated summary of all fields with edit buttons)
 │   ├── sgs/form-field-file (fieldName: "fhrs_certificate", allowedTypes: [image/*, application/pdf], maxSize: 10)
 │   ├── sgs/form-field-consent (consentType: "terms", consentText: "I agree to the Terms & Conditions")
-│   └── sgs/form-field-consent (consentType: "gdpr", consentText: "I consent to the company storing...")
+│   └── sgs/form-field-consent (consentType: "gdpr", consentText: "I consent to Indus Foods storing...")
 ```
 
 This produces the exact form designed in the V2 mockup — with proper multi-step flow, progress bar, visual tile selector, and review step — using standard Gutenberg blocks rather than SureForms.

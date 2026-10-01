@@ -1472,7 +1472,7 @@ seeder (`scripts/dbschema/seed-motion-shape-signatures.py::_extract_entrance_row
   `supports.sgs.animationItems` hands a block's entrance to its repeated items (`sgs/card-grid`
   tiles), staggered by its declared `anim:stagger` attribute.
 - **When it plays.** An entrance plays once 1% of the block has passed its "Start when" line,
-  `sgsAnimationTrigger` % of the screen height above the bottom edge (default 6, the optician client
+  `sgsAnimationTrigger` % of the screen height above the bottom edge (default 6, the Eye Care
   draft's reveal: threshold 0.01, rootMargin `0px 0px -6% 0px`); one IntersectionObserver per line.
   Past its line at load: at once. Otherwise the animation is created paused (start pose) within
   200px of the viewport and plays at its line; it plays once (a script animation does not replay

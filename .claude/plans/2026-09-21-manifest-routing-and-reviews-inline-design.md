@@ -4,12 +4,12 @@ Status: the written mode in `sgs/google-reviews` is BUILT and live-verified (D11
 
 ## Facts (verified 2026-09-20/21)
 
-- The optician client ticker is the dark strip above the header with 4 trust messages and icons. It never became a section: `recogniser/per-section-convention-voter.py::auto_detect_sections` emits only `section, header, footer, main, aside, nav` tags (`SECTION_TAGS`); the ticker is a `<div>` with no such descendant.
+- The Eye Care ticker is the dark strip above the header with 4 trust messages and icons. It never became a section: `recogniser/per-section-convention-voter.py::auto_detect_sections` emits only `section, header, footer, main, aside, nav` tags (`SECTION_TAGS`); the ticker is a `<div>` with no such descendant.
 - Only 4 blocks may claim a section root from a class (`blocks.tier='class-section'`: hero, trust-bar, cta-section, notice-banner). Any other block named by a section root class is demoted to `sgs/container` and its children route separately (`converter/recognition.py::recognise_section`, the R1 gate, 2026-08-04).
-- The bakery client routed its reviews to `sgs/testimonial-slider` because the draft named the block on an INNER element (`.sgs-testimonial-slider`, `.sgs-testimonial`). The section stayed a container; the gate never applies to nested elements.
+- Mama's routed its reviews to `sgs/testimonial-slider` because the draft named the block on an INNER element (`.sgs-testimonial-slider`, `.sgs-testimonial`). The section stayed a container; the gate never applies to nested elements.
 - The draft manifest already lists the sections, a suggested block per section and the data source of each repeated group; nothing in the pipeline reads it.
 - `sgs/google-reviews` today: reviews come from Google (`Google_Reviews_Settings::fetch_reviews`, which needs a place ID AND an API key, and Google returns at most 5 reviews); with no place ID, no key or any API error it shows three dummy reviews, and it emits `LocalBusiness` + `AggregateRating` schema unconditionally, with the dummy 4.9 / 47 when there is no live data. That is live behaviour now, independent of anything in this design.
-- The optician client Google place ID (from Bean, 2026-09-21): `ChIJ2exjouG7cEgR8GMcMRmpX9k` (the optician client's practice, 644 Washwood Heath Rd, Birmingham B8 2HQ). Finder: developers.google.com/maps/documentation/javascript/examples/places-placeid-finder.
+- Eye Care Google place ID (from Bean, 2026-09-21): `ChIJ2exjouG7cEgR8GMcMRmpX9k` (Ward End Eye Care Birmingham, 644 Washwood Heath Rd, Birmingham B8 2HQ). Finder: developers.google.com/maps/documentation/javascript/examples/places-placeid-finder.
 
 ## What the council decided
 
@@ -26,9 +26,9 @@ Status: the written mode in `sgs/google-reviews` is BUILT and live-verified (D11
 The manifest supplies BEM NAMES; recognition stays BEM-only (R-31-2 holds, no 4th walker exception, the converter is unchanged). A deterministic stage, run beside A1 and A2 on the run copy, reads the draft's `data-sgs-manifest` and adds classes:
 
 1. A declared block on a class-section block (trust-bar): the root gets `sgs-trust-bar`; declared item and field elements get `sgs-trust-bar__item` / `__label`. **Proved on the real converter** (`qc2` probe, scratch): the ticker annotated this way emits `sgs/trust-bar` with `items:[4 labels]`, `100% genuine` present, 472 characters. Not yet proved: icons (`resolve_icon` returns no slug for these SVG paths; the raw `iconSvg` lifts) and `autoScroll` (never set by any run).
-2. A declared block that is NOT a class-section block (reviews, brand strip, cards): the manifest names the INNER element that is the block (the rail), so the section stays `sgs/container` with its heading and aggregate, exactly the the bakery client pattern. **Proved:** the rail annotated `sgs-testimonial-slider` with `sgs-testimonial` cards emits `testimonial-slider` + `testimonial` blocks inside the container, 11,973 characters; author and rating elements need their `__author` / `__rating` names from the same declaration.
+2. A declared block that is NOT a class-section block (reviews, brand strip, cards): the manifest names the INNER element that is the block (the rail), so the section stays `sgs/container` with its heading and aggregate, exactly the Mama's pattern. **Proved:** the rail annotated `sgs-testimonial-slider` with `sgs-testimonial` cards emits `testimonial-slider` + `testimonial` blocks inside the container, 11,973 characters; author and rating elements need their `__author` / `__rating` names from the same declaration.
 3. Boundary (G1) as above.
-4. Each declaration is checked: block in the DB, class found in the draft, block section-capable where a section root is claimed. A failure is a report row, never silent (rule 4). A draft with no manifest is byte-identical (the bakery client in place).
+4. Each declaration is checked: block in the DB, class found in the draft, block section-capable where a section root is claimed. A failure is a report row, never silent (rule 4). A draft with no manifest is byte-identical (Mama's in place).
 5. Confidence: high accepted, medium and low queued through Spec 44's review queue; the decision is stored in the jsonl above.
 
 Spec change: one new FR under Spec 31 §13.2 ("a declared class-to-block map is an authorised INPUT that becomes BEM class names in the run copy; recognition still reads BEM only") and a pointer under R-31-2.
@@ -42,14 +42,14 @@ Field names follow the `sgs/trustpilot-reviews` precedent, one shared normaliser
 3. Rows with no rating are not dropped by `minRating` (today every draft review would be filtered out silently), and the block has an empty state.
 4. Schema: no `Review` / `AggregateRating` in `inline` or `placeholder` mode and no switch to turn it on. Google's review-snippet guidance makes reviews an entity controls about itself ineligible.
 5. Editor: a repeater for every field; avatar colour by custom property (Spec 32, no inline style).
-6. `/sgs-update` registration; canary and the optician client live checks; all six variants render from written reviews.
+6. `/sgs-update` registration; canary and Eye Care live checks; all six variants render from written reviews.
 
 **Fix now, separately (small, independent of the rest):** the dummy reviews and the unconditional `LocalBusiness` / `AggregateRating` schema must not reach a visitor when there is no live data. Gate the dummy behind `dataSource:'placeholder'` and emit schema only from live synced data.
 
 ## Order (each its own commit, each proved on the real page)
 
 1. Gate the dummy reviews and the schema (small, standalone; canary check).
-2. Annotation stage plus the boundary rule, proved on the ticker: `100% genuine` in `block_markup` and on the live page at 375 and 1440; the bakery client byte-identical in place; planted-violation controls (unknown block, class not found, block not section-capable). Then icons and `autoScroll` as a stated follow-up, not assumed.
+2. Annotation stage plus the boundary rule, proved on the ticker: `100% genuine` in `block_markup` and on the live page at 375 and 1440; Mama's byte-identical in place; planted-violation controls (unknown block, class not found, block not section-capable). Then icons and `autoScroll` as a stated follow-up, not assumed.
 3. Written mode in the block and the shared normaliser.
 4. Reviews: the manifest declares the rail as `google-reviews` (or `testimonial-slider` if written mode is not ready), 13 reviews in the block, no dummy on the page.
 5. Spec FR + the Spec 44 jsonl write-back.

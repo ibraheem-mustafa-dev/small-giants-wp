@@ -60,7 +60,7 @@ SGS card blocks (`sgs/product-card`, `sgs/testimonial`, team/case-study patterns
 3. A query/collection block that selects items by taxonomy, hand-pick, or named condition.
 4. A variable-product configurator that wraps WooCommerce (WC = single source of truth; SGS adds accessible UI, cross-attribute availability past the 30-variation cliff, and the presentation WC cannot model).
 
-SGS clients sell variable products (the bakery client: 48 SKUs). The current card shows pills from `_sgs_variation_sets` meta, but the pill-to-price/image swap was dormant and knew nothing of stock, sale pricing, or which combinations are valid. This spec closes that gap, shipped MVP-first.
+SGS clients sell variable products (Mama's: 48 SKUs). The current card shows pills from `_sgs_variation_sets` meta, but the pill-to-price/image swap was dormant and knew nothing of stock, sale pricing, or which combinations are valid. This spec closes that gap, shipped MVP-first.
 
 ---
 
@@ -75,7 +75,7 @@ SGS clients sell variable products (the bakery client: 48 SKUs). The current car
 
 **Card/query layer (2026-05-31):** The gold-standard reference is WooCommerce's Product Collection block (GA Nov 2024) - it does query-by-condition natively via `WC_Product_Query`. But it requires WooCommerce and its inner "Product Template" is developer-locked in many contexts. The decoupled path (custom CPT + Block Bindings API) is the consensus for non-store sites. Block Bindings (WP 6.7 UI, mature 6.8, Pattern Overrides in 7.0) bind a heading/image/paragraph to post meta via `core/post-meta` or a custom `register_block_bindings_source()`. Sort-by-meta is not in the Query Loop inspector UI (GitHub gutenberg #40170, open since 2022) so a dedicated collection block owns its own `WP_Query`. Verdict: build ONE card that is the render template, fed two ways. Custom CPT, not WooCommerce, not both.
 
-**Variable-product configurator (2026-06-03):** WooCommerce natively exposes, per variation, via `wc_get_product()` and the public Store API: regular/sale price (+schedule), stock qty/status, variation image, SKU, GTIN (`global_unique_id`, WC 9.3+), description, attributes, combination validity, and the inputs for "% off". WC leaves open: (1) the 30-variation cliff (`find_matching_variations` works only at or below `woocommerce_ajax_variation_threshold`, default 30; the bakery client's 48 already exceed it); (2) brutal authoring (block product editor removed in WC 11.0, 28 July 2026); (3) accessibility (no competitor claims WCAG 2.2 AA); (4) freemium bait-and-switch; (5) no per-unit pricing, cross-attribute availability, multi-image variation gallery, AI setup, or agency templating. Architecture verdict: never mirror WC variation data. Presentation-only metadata on existing WC objects; WC owns all commerce truth; the speed win comes from not loading WC's React bundle.
+**Variable-product configurator (2026-06-03):** WooCommerce natively exposes, per variation, via `wc_get_product()` and the public Store API: regular/sale price (+schedule), stock qty/status, variation image, SKU, GTIN (`global_unique_id`, WC 9.3+), description, attributes, combination validity, and the inputs for "% off". WC leaves open: (1) the 30-variation cliff (`find_matching_variations` works only at or below `woocommerce_ajax_variation_threshold`, default 30; Mama's 48 already exceed it); (2) brutal authoring (block product editor removed in WC 11.0, 28 July 2026); (3) accessibility (no competitor claims WCAG 2.2 AA); (4) freemium bait-and-switch; (5) no per-unit pricing, cross-attribute availability, multi-image variation gallery, AI setup, or agency templating. Architecture verdict: never mirror WC variation data. Presentation-only metadata on existing WC objects; WC owns all commerce truth; the speed win comes from not loading WC's React bundle.
 
 Provenance: five research agents + two qc-council rounds (5 + 6 personas), 2026-06-03. Full citations in the Research evidence section.
 
@@ -427,7 +427,7 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 
 > **Decision (Bean, 2026-06-03, D-pending):** the SGS card + option-picker become a variable-product configurator that wraps WooCommerce (WC = single source of truth; SGS adds the UI, the availability logic WC breaks above 30 variations, and the presentation WC cannot model). No commerce data is mirrored into custom storage.
 >
-> **Scope (Bean call, round-2 re-scope):** ship a small, real read-through configurator first (Phase 1, makes the bakery client sell, approximately 1-2 weeks). Friendly authoring + the AI-builder are an explicit roadmap (Phase R), built when a 2nd shop client lands. The brutal qc-council flagged AI-builder-as-headline as the OC-Protector stall trap.
+> **Scope (Bean call, round-2 re-scope):** ship a small, real read-through configurator first (Phase 1, makes Mama's sell, approximately 1-2 weeks). Friendly authoring + the AI-builder are an explicit roadmap (Phase R), built when a 2nd shop client lands. The brutal qc-council flagged AI-builder-as-headline as the OC-Protector stall trap.
 >
 > **Moat (re-aimed):** the durable advantage is the end-to-end closed loop (SGS builds the shop AND it renders accessibly with SEO, no plugin-stitching) plus a first-mover WCAG 2.2 AA claim shipped loud now. The "no-React performance" edge is real but expiring (WooCommerce is migrating to the same lean approach), so we ride it, not bank on it. The AI-builder is a roadmap ambition, not a moat we can defend as uncopyable.
 >
@@ -435,7 +435,7 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 
 ### Goals (MVP-first order)
 
-1. **(MVP)** A configurator where pills swap price/image/sale/stock, reading WooCommerce live. The bakery client sells.
+1. **(MVP)** A configurator where pills swap price/image/sale/stock, reading WooCommerce live. Mama's sells.
 2. **(MVP)** Secure, no-oversell add-to-cart; WC server-authoritative on price + stock.
 3. **(MVP)** WCAG 2.2 AA whole card; the first-mover accessibility claim, shipped + evidenced now.
 4. **(MVP)** Cross-attribute availability past the 30-variation cliff.
@@ -446,7 +446,7 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 ### Non-goals (configurator)
 
 - Rebuilding WC cart/checkout/payments/tax/shipping; mirroring WC commerce data; a combinatorial `_sgs_sku_matrix` in custom meta; per-instance content migration (clean slate).
-- B2B/wholesale role pricing (the wholesale-food client), subscriptions/bundles, configurator analytics, multi-currency. These are sibling specs.
+- B2B/wholesale role pricing (Indus Foods), subscriptions/bundles, configurator analytics, multi-currency. These are sibling specs.
 
 ### Hard constraints (configurator)
 
@@ -462,7 +462,7 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 
 Each FR carries a build-model recommendation and a holistic test strategy.
 
-#### Phase 1 -- MVP (the read-through configurator that makes the bakery client sell)
+#### Phase 1 -- MVP (the read-through configurator that makes Mama's sell)
 
 **FR-27-A1 -- Resolver reads WC variations live.** `sgs-product/field` resolves the WC variation set (price via `wc_get_price_to_display()`, regular/sale, stock, image, GTIN, attributes) via `wc_get_product()`. No `_sgs_variation_sets` commerce read on the WC path (static test asserts zero such reads in the WC branch). A WC simple product degrades to a plain card.
 - Done when: a Bound WC variable product renders real values; a simple product renders a plain card; grep confirms no `_sgs_variation_sets` commerce read on the WC branch. Model: sonnet. Test: 48-SKU + simple fixtures vs `get_available_variations()`.
@@ -570,7 +570,7 @@ Each FR carries a build-model recommendation and a holistic test strategy.
 
 ## Phasing + honest effort (configurator; smallest-plausible, AI-built + Bean QC)
 
-- **Phase 1 -- MVP — SHIPPED (D165, Bean R-31-13 signed).** FR-27-A1, A2, A3, A5, B1, C1, G1, G2, G3, G6, H1, H2, H3, I-MVP. The bakery client sells: live WC swap, secure no-oversell add-to-cart, accessible card, availability past the cliff, cacheable + tax-correct, lab-INP budget.
+- **Phase 1 -- MVP — SHIPPED (D165, Bean R-31-13 signed).** FR-27-A1, A2, A3, A5, B1, C1, G1, G2, G3, G6, H1, H2, H3, I-MVP. Mama's sells: live WC swap, secure no-oversell add-to-cart, accessible card, availability past the cliff, cacheable + tax-correct, lab-INP budget.
 - **Phase 2 -- Display + SEO + authoring + go-live — COMPLETE (2026-06-05, Bean R-31-13 signed each cluster).** Cluster A (D171): FR-27-B2, B3, C2, A4, I2, H3, Step-7. Cluster B SEO (D173): FR-27-E1, E2, E3, F1. Cluster C authoring/go-live (pulled forward from Phase R): FR-27-R1, R2, R3, PREFLIGHT. (FR-27-I3 = Spec 24/25 doc-fold, done.) Image-sitemap clause of E3 descoped.
 - **Cluster D — R4 + F2 SHIPPED 2026-06-10 (D202); only FR-27-R5 (AI-builder) remains DECISION-GATED.** Does NOT block a first client shop; R5 designs via /brainstorming only (the OC-Protector stall trap).
 - Each phase: /qc-council per configurator/converter commit; design-reviewer + performance-auditor + a11y pass; Bean visual sign-off. (All Phase 1 + 2 gates passed.)
@@ -610,8 +610,8 @@ Not a plugin for sale. This is the commerce engine of the SGS AI website builder
 1. **AI-builder LLM surface (FR-27-R5)** -- model + on-device-vs-API + per-shop cost guard. Phase-R planning.
 2. **Merchant feed (FR-27-F2)** -- SGS-generated vs align to a plugin. Phase-R planning.
 3. **Configurator analytics** -- which combos shoppers try-but-can't-buy (an inventory + agency-upsell goldmine the competitor red-team flagged as a deal-winner). Sibling spec; prioritise early.
-4. **B2B/wholesale quantity-break + role pricing (the wholesale-food client)** -- sibling spec.
-5. **Subscriptions/bundles (the bakery client roadmap)** -- sibling spec; note bundles break the no-mirror axiom and need their own architecture decision.
+4. **B2B/wholesale quantity-break + role pricing (Indus Foods)** -- sibling spec.
+5. **Subscriptions/bundles (Mama's roadmap)** -- sibling spec; note bundles break the no-mirror axiom and need their own architecture decision.
 6. **Multi-currency manifest** -- sibling spec.
 7. **Bound-mode field resolution (FR-24-2/3)** -- confirm Block Bindings cover image + repeatable pack-options, or fall back to a custom `get_value_callback` source for those.
 8. **Popularity signal source (FR-24-7)** -- simple view counter vs a privacy-safe interaction signal. Decide in Phase G.

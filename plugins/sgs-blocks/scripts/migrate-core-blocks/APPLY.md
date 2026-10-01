@@ -129,7 +129,7 @@ stored HTML (which has one) — they don't match.
 whose `save.js` returns bare `<InnerBlocks.Content />` with no wrapper (check the block's
 `src/blocks/<name>/save.js`). The block's own `style`/`contentWidth`/colour attributes already
 carry the visual information — render.php reads them directly. This was caught and fixed live
-2026-07-17 while proving this path end-to-end on the wholesale-food client's homepage final CTA section
+2026-07-17 while proving this path end-to-end on Indus Foods homepage's final CTA section
 (`sgs/container > sgs/heading + sgs/text + sgs/multi-button > 2× sgs/button`); this is a bug in the
 migrated-markup shape that `lint-page.py`'s group→container pairing emits, not a one-off — any
 future migration involving a `core/group` → `sgs/container` swap should check for it.

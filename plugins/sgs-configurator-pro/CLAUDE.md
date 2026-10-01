@@ -6,7 +6,7 @@ Unrelated to Spec 27 (`.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md`), 
 
 ## What This Is
 
-A premium WordPress plugin that adds 3D product configuration with AR to any SGS website. Sold as a paid add-on (annual licence). First client: the sleep-product client.
+A premium WordPress plugin that adds 3D product configuration with AR to any SGS website. Sold as a paid add-on (annual licence). First client: Snooza Chair by Ophir Solutions.
 
 This is a long-term competitive investment for SGS, not a one-off project.
 
@@ -133,7 +133,7 @@ sgs-configurator-pro/
 }
 ```
 
-## v1 Scope (sleep-product client MVP)
+## v1 Scope (Snooza Chair MVP)
 
 | Feature | Included |
 |---------|---------|
@@ -151,11 +151,11 @@ sgs-configurator-pro/
 | Configure-and-share links | No — v2 |
 | WebGPU cloth simulation | No — v3 |
 
-## Sleep-Product Client Product Details
+## Snooza Chair Product Details
 
 - **6 colours:** Mandarin Orange, Royal Blue, Apple (green), Grey, Hot Pink, Black
 - **4 sizes:** Size 1-4 (12 months to adult)
-- **10 accessories:** Rocker Base, Mobile Base, Pommel, Leg Rest, Profile Headrest, Padded Tray, Side Infill Pads, Base Wedge, Back Rest Adjustment, the Lite chair
+- **10 accessories:** Rocker Base, Mobile Base, Pommel, Leg Rest, Profile Headrest, Padded Tray, Side Infill Pads, Base Wedge, Back Rest Adjustment, Snooza Lite
 - **Base price:** From £1,164.71 (ex VAT)
 - **Reference images:** Product photos in `sites/snooza-chair/assets/product-images/`
 - **Client:** Ophir Solutions (ophirsolutions.co.uk)

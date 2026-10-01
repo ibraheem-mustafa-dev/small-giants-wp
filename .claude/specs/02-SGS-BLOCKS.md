@@ -327,7 +327,7 @@ tier-migration upgrade lands.
 - `standard` — Full-width, text over background image/gradient
 - `split` — Two columns (text left, image/media right)
 - `video` — Background video with text overlay
-- `svg-animated` — SVG animation background (solves the wholesale-food client's SVG problem)
+- `svg-animated` — SVG animation background (solves the Indus Foods SVG problem)
 
 **Attributes:**
 - `variant` — standard | split | video | svg-animated
@@ -444,7 +444,7 @@ The icon circle has an overridable default border; a title placeholder never lea
 
 **Responsive:** Columns reduce per breakpoint settings. Cards stack to full-width on mobile.
 
-**Wholesale-food client usage:** The Products section uses `card` variant with 4 columns, 16:10 aspect ratio, `success` badge variant for price hints, and zoom + lift hover effect.
+**Indus Foods usage:** The Products section uses `card` variant with 4 columns, 16:10 aspect ratio, `success` badge variant for price hints, and zoom + lift hover effect.
 
 ---
 
@@ -623,7 +623,7 @@ The icon circle has an overridable default border; a title placeholder never lea
 - `text` — RichText (supports inline bold, links)
 - `variant` — info | success | warning | accent
   - `info` — light blue background
-  - `success` — light green background, green border (used for MOV banners on the wholesale-food client's site)
+  - `success` — light green background, green border (used for MOV banners in Indus Foods)
   - `warning` — light amber background
   - `accent` — light gold background
   - Variant bg/border/colour are overridable via `:where()` (E9)
@@ -635,7 +635,7 @@ The icon circle has an overridable default border; a title placeholder never lea
 
 **Self-changing messages (Wave 3C U-15):** with two or more `sgs/notice-message` children, `messageMode` `rotate` advances every `rotateInterval` seconds (default 5) with a `messageTransition` (`none`, `fade`, `slide-up`, `slide-left`; instant under reduced motion), an always-visible 44px pause button (WCAG 2.2.2), optional previous/next arrows (`showMessageArrows`) and pause on hover and focus (`pauseOnHover`); the messages region is `aria-live="off"` while playing and `polite` while paused. `random` shows one message per page load, chosen in the browser so the page cache cannot freeze it. Each message's colour pair repaints the whole bar through one `:has()` rule. Without JavaScript every message shows, stacked. `static`, or fewer than two messages, renders exactly as before. A live clock is an `sgs/local-time` inside a message.
 
-**Wholesale-food client usage:** The MOV banner ("Minimum order just £75 — lower than most wholesalers...") uses `success` variant with truck icon and centred text.
+**Indus Foods usage:** The MOV banner ("Minimum order just £75 — lower than most wholesalers...") uses `success` variant with truck icon and centred text.
 
 ---
 
@@ -791,7 +791,7 @@ Output as `<script type="application/ld+json">` in render.php — enables Google
 
 **Competitive edge over Elementor:** Elementor's "Motion Effects" allow floating elements but generate heavy JS and deeply nested DOM. CSS-native absolute positioning with percentage offsets is lighter, more predictable, and produces cleaner markup. Static positioning needs no JavaScript at all; parallax and fade-on-scroll are optional.
 
-**Use case — the wholesale-food client's homepage:** Food photography (samosas, spice bowls, rice bags, chilli peppers) scattered organically across the homepage. Each image floats over its parent section's background colour without affecting the layout of headings, text, or other blocks. Desktop shows 4-6 images at varied positions and rotations. Mobile shows fewer, smaller images, or hides them entirely.
+**Use case — Indus Foods homepage:** Food photography (samosas, spice bowls, rice bags, chilli peppers) scattered organically across the homepage. Each image floats over its parent section's background colour without affecting the layout of headings, text, or other blocks. Desktop shows 4-6 images at varied positions and rotations. Mobile shows fewer, smaller images, or hides them entirely.
 
 **Parent block:** Works inside any block that establishes a containing block. `plugins/sgs-blocks/src/blocks/decorative-image/style.css::.wp-block-sgs-container` and `plugins/sgs-blocks/src/blocks/decorative-image/style.css::.wp-block-group` both set `position: relative`, so `sgs/container` and `core/group` need no extra setup. The image positions itself against that ancestor using percentage offsets.
 
@@ -1034,7 +1034,7 @@ Same as Google Reviews — emits `LocalBusiness` with `aggregateRating` + nested
 8. Click Sync now -> wp_options populates in ~3 seconds.
 9. Insert the block anywhere with `dataSource: synced`.
 
-**Visual proof:** Live on sandybrown at `/trustpilot-smoke-test-2/`. The bakery client's 4 reviews (TrustScore 4.0 "Great") render via the synced path. Visual diff reports: `reports/visual-diff/trustpilot-reviews-2026-05-11.md` (block) + `reports/visual-diff/trustpilot-sync-2026-05-11.md` (sync infrastructure).
+**Visual proof:** Live on sandybrown at `/trustpilot-smoke-test-2/`. Mama's 4 reviews (TrustScore 4.0 "Great") render via the synced path. Visual diff reports: `reports/visual-diff/trustpilot-reviews-2026-05-11.md` (block) + `reports/visual-diff/trustpilot-sync-2026-05-11.md` (sync infrastructure).
 
 ---
 
@@ -1089,7 +1089,7 @@ Cross-references: the voter's tier-driven recognition; the `block_composition` t
 - `textColour` (default: **resolved**, see below) · `linkHoverColour` (default `#d4a73c`)
 - font family / size / weight / style / line-height via the shared `TypographyControls` component + `sgs_typography_css_rule()` — **never** hand-rolled controls. Default = inherit, so it matches the site's base paragraph font/size out of the box.
 
-**Default colour is COMPUTED, not assumed.** `textColour` unset ⇒ resolve the surrounding background to hex via `sgs_colour_hex_for_contrast()` (`includes/helpers-colour-parse.php`; a palette slug or any colour the client picked — `sgs_resolve_palette_hex()` alone returns '' for a custom colour, and `scripts/check-custom-colour-survives.py` rejects it on an attribute) and pick the readable foreground via `sgs_wcag_text_colour_for_bg()` (`includes/helpers-colour-wcag.php`; do NOT build a second resolver). Never assume a token NAME implies luminance — `primary-dark` is a **pink** on the bakery client. Where the background cannot be resolved, fall back to `currentColor` (inherit), never to a literal.
+**Default colour is COMPUTED, not assumed.** `textColour` unset ⇒ resolve the surrounding background to hex via `sgs_colour_hex_for_contrast()` (`includes/helpers-colour-parse.php`; a palette slug or any colour the client picked — `sgs_resolve_palette_hex()` alone returns '' for a custom colour, and `scripts/check-custom-colour-survives.py` rejects it on an attribute) and pick the readable foreground via `sgs_wcag_text_colour_for_bg()` (`includes/helpers-colour-wcag.php`; do NOT build a second resolver). Never assume a token NAME implies luminance — `primary-dark` is a **pink** on mamas-munches. Where the background cannot be resolved, fall back to `currentColor` (inherit), never to a literal.
 
 **Hover — colour fade to `#d4a73c` plus a left-to-right underline that grows from zero width.** Bean's reference behaviour is muslimsinconstruction.uk. Implement the underline as a pseudo-element, NOT `text-decoration` — only a box can be animated from zero to full width:
 ```css

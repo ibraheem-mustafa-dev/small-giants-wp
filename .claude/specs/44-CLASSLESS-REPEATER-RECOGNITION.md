@@ -7,7 +7,7 @@
 the orchestrator behind `--classless-match` / `--classless-auto-complete`, both OFF by default
 (`grep -n 'classless-match' plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`). Front C closed
 7 of 8 (D1088-D1107); the one open item, the AI-fallback tier (§11), is deliberately parked as
-Bean's call. Live picture on the optician client (flags ON): 0
+Bean's call. Live picture on Eye Care Birmingham (flags ON): 0
 auto-completed, 15 fell to operator review, remaining boundaries unaffected. Page routing/per-client
 template design (formerly "Pass 2") is OUT OF SCOPE, see §0.3, §4.5.
 **Changelog v2.4.0:** status corrected from "DESIGNED, not yet built" (it had been
@@ -143,7 +143,7 @@ measured scope — this is a real slice of the classless problem, not the whole 
 - **Trust policy: auto-complete only on a real correctness signal, with a forced
   first-look on anything genuinely new** (FR-44-1, §3).
 
-**Measured scope, on the real optician client draft (2,220 lines, 815 inline
+**Measured scope, on the real Eye Care Birmingham draft (2,220 lines, 815 inline
 styles, 39 `sc-for` blocks over 34 distinct repeated groups) — stated plainly so
 nobody assumes this covers more than it does:** roughly 19% of the draft's styled
 elements sit inside a repeated group this spec addresses; the remaining ~81% are
@@ -241,7 +241,7 @@ plus two computed, non-field attributes: `data-index` (the loop index) and
 UNCONDITIONAL inside this loop — there is no per-item image-or-fallback branch
 here; the block's no-image SVG state belongs to the separate main-image element
 above the strip, not to any individual thumbnail. The draft's `thumbs` group
-(the optician client's `.dc.html` draft, `thumbs = views.map(...)`) has a click action
+(`Eye Care Birmingham.dc.html`, `thumbs = views.map(...)`) has a click action
 (`t.pick`), a label (`t.label`), and an image-or-text-fallback conditional
 (`t.hasImg`/`t.img`/`t.noImg`).
 
@@ -377,7 +377,7 @@ compared against the winning candidate's singleton rows, via the same `match_lea
 this spec's leaf comparison already uses. Read Spec 31 §13.10's own "consumer BUILT"
 note for the mechanism and its measured result: **deliberately informational only**
 (never affects FR-44-1(a) — proven by `test_static_leaf_never_changes_clause_a_or_
-the_outcome`), and a real live measurement against the optician client draft found
+the_outcome`), and a real live measurement against the Eye Care Birmingham draft found
 **0 of 39 real groups** currently carry a corroboration signal — an honest null result
 for this specific draft, not evidence the mechanism is dead (see Spec 31 §13.10 for the
 full reasoning and the positive-control tests proving it detects a real match when one
@@ -519,7 +519,7 @@ numbers (2026-09-18, D1105)
 
 The "6 of 8 groups narrowed" figure was never real — conversation-derived,
 never verified against a fixture. The real, live-run-verified picture (36
-boundaries walked on the optician client, 2026-09-18, reconciling exactly with
+boundaries walked on Eye Care Birmingham, 2026-09-18, reconciling exactly with
 `.claude/reports/2026-09-18-spec44-live-flagged-run.md`'s 36/0/3/33):
 
 | Stage | Outcome | Count |
@@ -565,7 +565,7 @@ no framework gap here.
 
 **Corrected again 2026-09-18 — `sgs/brand-strip` is the wrong TARGET block for
 this specific content group, independent of the "count" question.** The
-concrete draft instance (the optician client's nav "Brands" mega-menu, "Most
+concrete draft instance (Eye Care Birmingham's nav "Brands" mega-menu, "Most
 asked for" tile grid — `megaTopBrands`) is a clickable logo-tile picker with a
 per-item count label, not a decorative logo strip. The framework already has a
 purpose-built precedent for exactly this shape: `theme/sgs-theme/patterns/mega-brands-1.php`
@@ -657,7 +657,7 @@ A third writer uses this same log: the manifest annotation stage. When a draft c
 Rules that follow:
 - A row is written once per (`client_slug`, `run_id`, `boundary_id`, `outcome`); a re-run of the same run does not duplicate it.
 - **The FR-44-1(b) scan already ignores these rows:** it filters to `source == "spec44"` and to `kind == "approval"`, so a manifest row can never satisfy a client's first-look gate.
-- **Manifest rows are NOT on `operator-review.html`.** `recogniser/simple_html_review_report.py` builds that page from the run's own match records and never reads this log or `manifest-annotation-report.json` (checked on the optician client run `2026-09-21-134838`: the page has no manifest row). A `queued` or `rejected` manifest row, with its reason, is in exactly two places: the run's `manifest-annotation-report.json` and this jsonl log (`source: "manifest"`). `applied` and `partial` rows are audit history in the same two places. Wiring manifest rows into the review page is not built; the log is the durable store. (The report's `skipped_fields`, `header_fields` and `climbed` keys are not copied into the log row; the log row carries `fields`, `target` and `items` as above.)
+- **Manifest rows are NOT on `operator-review.html`.** `recogniser/simple_html_review_report.py` builds that page from the run's own match records and never reads this log or `manifest-annotation-report.json` (checked on the Eye Care run `2026-09-21-134838`: the page has no manifest row). A `queued` or `rejected` manifest row, with its reason, is in exactly two places: the run's `manifest-annotation-report.json` and this jsonl log (`source: "manifest"`). `applied` and `partial` rows are audit history in the same two places. Wiring manifest rows into the review page is not built; the log is the durable store. (The report's `skipped_fields`, `header_fields` and `climbed` keys are not copied into the log row; the log row carries `fields`, `target` and `items` as above.)
 
 **The review surface is real and already exists — name it, don't invent a new
 one.** This pipeline already generates `pipeline-state/<run>/operator-review.html`
@@ -735,7 +735,8 @@ off is the rollback path if a real run misbehaves — no code revert needed.
   pattern; assert it is forced to review once regardless of match quality, and
   that a second occurrence for the SAME client auto-completes under clause (a)
   alone.
-- Live verification (this project's hard rule): re-run against the real optician client draft, confirm the previously-admitted-but-failed boundaries (the
+- Live verification (this project's hard rule): re-run against the real Eye Care
+  Birmingham draft, confirm the previously-admitted-but-failed boundaries (the
   actual command + run-id that produced this session's 13-admitted/0-completed
   figure is recorded in `pipeline-state/` under this session's run directories —
   cite the specific run at build time rather than the bare number) now show real
@@ -746,7 +747,7 @@ off is the rollback path if a real run misbehaves — no code revert needed.
 
 ## 11. Explicitly deferred (tracked, not built here)
 
-- **The "14 non-BEM-compliant" boundaries: A and B BUILT (Spec 31 FR-31-28); C partly.** On the optician client the
+- **The "14 non-BEM-compliant" boundaries: A and B BUILT (Spec 31 FR-31-28); C partly.** On Eye Care Birmingham the
   draft has ONE `class=` in the whole file and Stage 0.1 passes; the halts came from the Stage 4 permission check in
   `sgs-clone-orchestrator.py::stage_4_5_6_7_8_extract`, which admitted a classless section only if a hint
   (`dom_shape_hint` / `sc_var_hint`) happened to attach. (A) A classless top-level section on the screen the run clones is
@@ -756,7 +757,7 @@ off is the rollback path if a real run misbehaves — no code revert needed.
   The three homepage sections still in the review queue (b3, b4, b6) are this spec's FR-44-1 gate, not the halt.
   Evidence: `.claude/reports/2026-09-19-inv-non-bem-sections.md`.
 - **A repeated group whose content is JS-array-sourced, not DOM text — NOT this spec's job,
-  covered by Spec 31 FR-31-26 (2026-09-19).** Investigating b32 (the optician client's ticker)
+  covered by Spec 31 FR-31-26 (2026-09-19).** Investigating b32 (Eye Care Birmingham's ticker)
   found its content lives only in a draft `static TICKER = [...]` JS class property, invisible to
   Stage A/B (and every other extraction signal) because they operate purely on DOM text. This is
   an upstream content-availability precondition, not a Stage A/B matching defect — Spec 31's new
@@ -789,7 +790,7 @@ off is the rollback path if a real run misbehaves — no code revert needed.
   session's primary draft and has not yet been checked against this design.
 - ~~**Tier A (`sc_var_classifier.py`) integration**~~ — **RESOLVED 2026-09-18
   (D1104): superseded, not wired in.** Measured for real against all 39 repeated
-  groups in the optician client's `.dc.html` draft (Stage A/B baseline: D1094's 2026-09-17
+  groups in Eye Care Birmingham.dc.html (Stage A/B baseline: D1094's 2026-09-17
   re-measurement — 0 auto-completed, 2 review, 37 no-match), post the D1103
   alias-bug fix. Result: 0 groups where Tier A agrees with Stage A/B (redundant),
   4 groups where Tier A resolves correctly where Stage A/B are silent (genuinely

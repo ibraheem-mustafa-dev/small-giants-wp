@@ -11,7 +11,7 @@ element exists, or the heading outside the card, and I never looked at the two s
 | # | Failure | Proven cause |
 |---|---|---|
 | 1 | Heading and eyebrow start at x=120, card at x=52 (draft: both at 52) | The heading's container stops at the theme's 1200px content width; the draft's content is full width (1336). The draft declares no max-width, and absence is not being transferred for this container. |
-| 2 | The "7" has a curved foot | Roboto is **not loaded** on the site (0 faces; the draft loads 4). The browser falls back to Arial. Same for the heading: Playfair Display is in the optician client theme snapshot but is not loaded live either, so it shows a fallback serif. |
+| 2 | The "7" has a curved foot | Roboto is **not loaded** on the site (0 faces; the draft loads 4). The browser falls back to Arial. Same for the heading: Playfair Display is in the Eye Care theme snapshot but is not loaded live either, so it shows a fallback serif. |
 | 3 | G is 60px and on the right | `logoSize`/`logoPosition` exist but nothing reads the draft's 30px leading G; the block's own default (trailing, 60px) shows. |
 | 4 | No G on each review card | `showCardLogo` exists, default off; nothing reads the draft's per-card G. |
 | 5 | Arrows float over the cards | `navPosition` default is `overlay`, absolute over the rail. The draft puts them below, on the right. Overlay covering content is a bad default whatever the draft says. |
@@ -26,7 +26,7 @@ And the old defaults are the old design.
 
 ## 2. Target
 
-The optician client Google widget is the block's **baseline**: a new block with no settings touched looks like it. Every
+The Eye Care Google widget is the block's **baseline**: a new block with no settings touched looks like it. Every
 other look and layout is an option on top. Nothing is removed; the old looks (flat, bordered, elevated) and the other
 display types (grid, list, wall, badges) stay, redeveloped to share the new structure.
 

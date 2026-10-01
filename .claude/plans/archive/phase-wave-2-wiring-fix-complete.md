@@ -71,7 +71,7 @@ This is the same pattern the `pass_through`, `top_level_container`, and `sgs/con
 | Caller (unchanged) | Lines 3684, 3756, 3811 — three FR1 / parent / standalone branches already read this dict |
 | Scope | Add entries for hero (primary target — G1), plus card-grid and testimonial-slider |
 
-**Why this replaces the original `block_compositions` design:** Stage 5 council found that `block_compositions` is a recognition-side pattern blueprint catalogue (37 rows of `composition_name` + `block_slugs` JSON arrays for known compositions like "About — Image Left", "Footer — the wholesale-food client"). It is NOT a parent-child runtime emit graph. The Spec 16 §15 conjecture that cv2 should read `block_compositions` for parent-child relations was wrong about the table's role.
+**Why this replaces the original `block_compositions` design:** Stage 5 council found that `block_compositions` is a recognition-side pattern blueprint catalogue (37 rows of `composition_name` + `block_slugs` JSON arrays for known compositions like "About — Image Left", "Footer — Indus Foods"). It is NOT a parent-child runtime emit graph. The Spec 16 §15 conjecture that cv2 should read `block_compositions` for parent-child relations was wrong about the table's role.
 
 The actual runtime emit source for inner blocks is `INNER_BLOCK_PATTERNS` — a hardcoded dict in convert.py with exactly ONE entry today (`sgs/feature-grid` → `sgs/info-box`). When hero ships self-closing (G1's visible symptom — empty CTAs on the live page), it's because hero has no entry in this dict. The fix is to add the entry, not to wire a new DB read.
 

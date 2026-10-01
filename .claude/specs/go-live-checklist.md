@@ -57,7 +57,7 @@ Example URL used in probes: `https://sandybrown-nightingale-600381.hostingersite
 | PD-1 | No published products are missing a SKU | SSH: `wp post list --post_type=product --post_status=publish --field=ID --format=ids \| xargs -n1 wp post meta get --key=_sku` — look for any empty/blank lines | All published products return a non-empty SKU. Missing SKUs cause Google to silently downgrade merchant listings. Record any gaps and fill or consciously accept. | ☐ |
 | PD-2 | No published products are missing a GTIN / barcode | SSH: `wp post list --post_type=product --post_status=publish --field=ID --format=ids \| xargs -n1 -I{} bash -c 'echo "Product {}: $(wp post meta get {} _global_unique_id)"'` | All products have a `_global_unique_id` value, **or** the absence is consciously accepted (e.g. handmade items without a barcode — record the reason). | ☐ |
 | PD-3 | Per-unit denomination strings contain no placeholder text | Open every variable product's PDP on the live site; inspect the buybox `perUnitDenomination` display (e.g. "per 100g", "per kg"). | No string reads "placeholder", "TBC", "TODO", or similar. Real denominations are present for every variable product. | ☐ |
-| PD-4 | Statutory content present for the client's vertical | **Food clients (e.g. the bakery client):** manual — open each published product's PDP and confirm allergen information appears in the FR-30-2 content slot (the designated statutory content area). **Other verticals:** confirm equivalent regulatory content is in place (e.g. returns/delivery info for general retail). | Content confirmed present and readable on the live site, or a recorded reason why it is N/A for this vertical. | ☐ |
+| PD-4 | Statutory content present for the client's vertical | **Food clients (e.g. Mama's Munches):** manual — open each published product's PDP and confirm allergen information appears in the FR-30-2 content slot (the designated statutory content area). **Other verticals:** confirm equivalent regulatory content is in place (e.g. returns/delivery info for general retail). | Content confirmed present and readable on the live site, or a recorded reason why it is N/A for this vertical. | ☐ |
 | PD-5 | Per-variation gallery images and alt text populated | Open a PDP for each variable product; select each variation and confirm: (a) the main gallery image swaps, (b) the image `alt` attribute is non-empty (inspect the DOM: `document.querySelector('.wc-block-product-image img').alt`). | Gallery swaps on variation selection; all displayed images have a non-empty `alt` (the framework falls back to the product name automatically, but client-supplied alt is preferred for SEO). | ☐ |
 | PD-6 | Review source connected with real content or empty-state deliberate | Open the PDP reviews section on the live site. Check Trustpilot sync status in WP Admin → SGS Settings → Reviews. | Either ≥1 genuine synced review is visible **or** the empty-state inspector toggle is deliberately set to "hidden"/"Reviews coming soon" (not a broken layout gap). Static/baked review text must be absent everywhere (UK DMCC Act — displaying trader is liable). | ☐ |
 
@@ -100,7 +100,7 @@ Example URL used in probes: `https://sandybrown-nightingale-600381.hostingersite
 
 | Client | Live domain | Launch date | Run by | Result | Notes / blocked items |
 |--------|-------------|-------------|--------|--------|-----------------------|
-| The bakery client | _(to be confirmed)_ | ☐ TBC | ☐ TBC | ☐ PASS / BLOCKED | — |
+| Mama's Munches | _(to be confirmed)_ | ☐ TBC | ☐ TBC | ☐ PASS / BLOCKED | — |
 
 ---
 

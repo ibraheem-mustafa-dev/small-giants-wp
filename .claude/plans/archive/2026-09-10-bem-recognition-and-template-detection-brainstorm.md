@@ -201,7 +201,7 @@ Tier 2 — there is currently zero evidence it's needed.
 **Superseded 2026-09-14 (Bean-directed, deliberate override, not an oversight):** Tier 1 AND
 Tier 2 were both built the same session, explicitly skipping the "measure Tier 0 first" gate
 above. **The overdue measurement step this section calls for is STILL not done** — running
-Tier 0 against a real non-BEM source (e.g. the bakery client PRODUCT draft's non-BEM hard-halt,
+Tier 0 against a real non-BEM source (e.g. the Mama's Munches PRODUCT draft's non-BEM hard-halt,
 carried in `LEDGER.md`'s "Prior work" section) remains open. Tier 3 is still correctly out of
 scope — nobody asked for it, zero evidenced need, unchanged from this recommendation.
 

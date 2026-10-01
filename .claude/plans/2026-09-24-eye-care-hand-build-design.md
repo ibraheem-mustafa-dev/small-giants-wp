@@ -1,4 +1,4 @@
-# The optician client: build the real site first, then use it to test the pipeline
+# Eye Care Birmingham: build the real site first, then use it to test the pipeline
 
 **Status:** APPROVED by Bean 2026-09-24 (D1149). **Wave A DONE 2026-09-24.** **Wave B framework part DONE
 2026-09-24.** **Wave B DONE 2026-09-25** (pages built 2026-09-24; close-out items 1-9 and part 2 done and live
@@ -21,7 +21,7 @@ key), with the owed Wave C polish alongside.
   or listed as accepted by Bean. Tool: `scripts/parity/draft-live-walk.mjs` with a config per page in
   `sites/eye-care-ward-end/build/qa/parity/`, run to the method in `scripts/parity/GAP-CHECKLIST.md` (a page
   passes only when the walker exits 0: config lint, 0 open, every state x width shot reviewed with a note, 0 console
-  errors). Progress: shop archive DONE 2026-09-28 (`plans/archive/2026-09-26-optician-shop-parity.md`); lens pop-up DONE 2026-09-28
+  errors). Progress: shop archive DONE 2026-09-28 (`plans/archive/2026-09-26-eye-care-shop-parity.md`); lens pop-up DONE 2026-09-28
   (`plans/archive/2026-09-27-choice-flow-inline-next-step.md`: the last question opens the chosen way under the options,
   as the draft). Both may reopen: another session is making the walker's header-mode checks the default for every
   page. Product page, bag drawer, checkout, order confirmation, home, lenses, about, help, contact to do.
@@ -49,12 +49,12 @@ key), with the owed Wave C polish alongside.
     dots taking their own line (Bean accepted 2026-09-27); (11) the stage price column is the pennies' width.
   - **The shop and lens tail: closed 2026-09-28** (ca0079b8f, cf827970e; walker exit 0 on both). Fixed and live:
     the desktop filter column's gap under the header is a new Customizer setting ("Space between the header and the
-    desktop filter column", `sgs_shop_filter_sticky_gap`; the optician client 33px, so it pins 110px from the top as the draft's);
+    desktop filter column", `sgs_shop_filter_sticky_gap`; Eye Care 33px, so it pins 110px from the top as the draft's);
     the "Every pair is genuine" note sits in the products column (it started under the filter column, which read as
     the last card in another column); the lens text cards share their row's height and the title-to-price gap is the
     draft's 10px; the typed prescription table uses the draft's 56px R/L column, 15px numbers 10px in, 11.5px
     headings and a note 14px under the boxes (`--sgs-form-row-heading-gutter`, 32px elsewhere); an empty form error
-    line no longer adds 4px under every field in every form; the optician client has a site icon (the draft's glasses mark,
+    line no longer adds 4px under every field in every form; Eye Care has a site icon (the draft's glasses mark,
     `build/apply_site_icon.py`; the walker's one console error was the missing /favicon.ico). Accepted with the
     decision each follows: the 375 card after a tagged card and FZ6001's price (tag, 2026-09-27); brand chips at the
     fold (reveal timing: live's page sits 21px lower under the taller nav-track header); the pinned column (same
@@ -83,7 +83,7 @@ key), with the owed Wave C polish alongside.
   `scripts/wp-build-page.js` now also refuses wrong-typed, off-enum and per-device-on-flat values (six borders were
   invisible because of the last one).
 - **Wave B close-out items 1-9: DONE 2026-09-25, live on eye-care-test** (Bean's decisions 2026-09-24).
-  1. Header phone hidden below 1160px: the one Additional CSS rule on the optician client site (snapshot `styles.css`). Per-size hiding that
+  1. Header phone hidden below 1160px: the one Eye Care Additional CSS rule (snapshot `styles.css`). Per-size hiding that
      lines up with the 768/1024 tiers uses `sgsHideOnMobile/Tablet/Desktop` instead; hiding a header block exactly where its menu becomes a burger
      uses `sgsCollapseVisibility` (nav track U-10, done). The 1160px phone rule stays in Additional CSS (Bean).
   2. `sgs/button` `linkSource` (url | phone | email | whatsapp from Site Info, typed URL as fallback); Help's Call is an
@@ -93,7 +93,7 @@ key), with the owed Wave C polish alongside.
      it ignored before; `fontWeight` defaults to unset so the preset's weight applies. Palette gains `primary-hover`
      #2A2A2A and `whatsapp-hover` #1EBE5A (the draft's hovers).
   4. Shop setting "Hide .00 on whole-pound savings and product-card prices" (Customizer > Shop Filters, theme mod
-     `sgs_shop_hide_zero_decimals`), on for the optician client: "Save £32" and card prices "£139" (Bean 2026-09-27); £59.50 keeps
+     `sgs_shop_hide_zero_decimals`), on for Eye Care: "Save £32" and card prices "£139" (Bean 2026-09-27); £59.50 keeps
      its pennies, and the product page, lens pop-up, cart and checkout always show them (Bean 2026-09-25). It feeds the
      plugin's `sgs_saving_trim_zeros` (`includes/product-rrp.php`) and `sgs_card_price_trim_zeros`
      (`includes/product-card-price-trim.php`) filters.
@@ -113,7 +113,7 @@ key), with the owed Wave C polish alongside.
 - **Wave B close-out part 2: DONE 2026-09-25, live on eye-care-test (framework at 35f25de0b, trees 2004930f6).**
   Framework (all deployed):
   - `sgs/business-info` `copyrightPrefix` (empty omits the word) and `textBefore`/`textAfter` (text around a value
-    inside its line; the line switches to inline flow). Footer: "© 2026 <client name>…"; Help: "Call the
+    inside its line; the line switches to inline flow). Footer: "© 2026 Eye Care Birmingham…"; Help: "Call the
     clinic on {phone}, or send me a message…" is one block.
   - `sgs/mega-group` `url`/`opensInNewTab`/`rel`: the whole card is one link (Lenses panel, 4 cards to
     /prescription-lenses/).
@@ -133,7 +133,7 @@ key), with the owed Wave C polish alongside.
   (`panelBg: surface-alt`, plain links, Brands 5-column tile grid, Lenses linked cards, Sunglasses plain promo image),
   Contact labelled 2x2 grid, Help sentence, footer copyright and boxed icons.
   Routed to the Wave 3C plan's lane A (nav track owns those blocks): `sgs/nav-bar-menu` link padding is now a
-  setting, `itemPadding` ("Link padding" in the List layout panel; 4cf0b9069, live on sandybrown), so the optician client
+  setting, `itemPadding` ("Link padding" in the List layout panel; 4cf0b9069, live on sandybrown), so the Eye Care
   header can set its own; `sgs/mega-panel` is now opaque by default (an empty `panelBg` paints the surface token,
   f70687138), so an untouched panel no longer shows the page through it.
   Decided not to build: `scripts/wp-build-page.js` reading PHP allow-lists. Of about 285 `in_array` checks in block
@@ -142,7 +142,7 @@ key), with the owed Wave C polish alongside.
   purpose (WordPress coerces an off-enum value to the default). A PHP registry of allow-lists exposed over REST is
   the viable design if off-list values keep slipping through.
   Decided not to build: the shape tiles' "Photo to come" note (a draft artefact; real photos replace it).
-- **Wave B residuals (small, the optician client surfaces):**
+- **Wave B residuals (small, Eye Care surfaces):**
   1. `sgs/media` inside a grid/flex row: an agent reported that the aspect ratio applies to the `<img>` only, so the
      `<figure class="sgs-media-box">` stretched to the row height (669px) and a caption overlay painted over the whole
      stretched box (Sunglasses mega promo). Unproven: verify on the live Sunglasses panel first; if true, fix in the
@@ -154,15 +154,15 @@ key), with the owed Wave C polish alongside.
   4. Mobile menu Sunglasses and Brands link to /shop/ until category pages exist (Wave C).
 - Known follow-up, not blocking: the social-icons glyph gradient paints strokes only, so it has no effect on the four
   filled brand marks (Google, WhatsApp, TikTok, X).
-- **Wave C progress (2026-09-25):** (1) shared product card DONE (`plans/archive/2026-09-25-optician-product-card.md`); (2)
-  product page, zero-reviews state, DONE (`plans/2026-09-25-optician-product-page.md`; real frame sizes from
+- **Wave C progress (2026-09-25):** (1) shared product card DONE (`plans/archive/2026-09-25-eye-care-product-card.md`); (2)
+  product page, zero-reviews state, DONE (`plans/2026-09-25-eye-care-product-page.md`; real frame sizes from
   jpopticians.com, Bean 2026-09-25); (3) shop archive DONE: the site's own `archive-product` template from
   `build/archive-product.tree.json` (generator `build/gen_archive_product.py`), shop page titled Sunglasses (`/shop/`
   unchanged), theme Shop Filters settings (card minimum 250px, gap 18px, narrow grid, plain panel), phone drawer built
   by `sgs-shop-filters.js` (WordPress 7.1 saves editor-made Custom HTML empty). Brand filter PROVEN: WooCommerce 11's
   parameter is `?brands=ray-ban` (not `filter_product_brand`), 3 Ray-Bans, survives reload. The shop's parity with
   the draft (toolbar, swatches, Gender and Size, brand search, open groups, Featured order, and the theme debt) is
-  `plans/archive/2026-09-26-optician-shop-parity.md`.
+  `plans/archive/2026-09-26-eye-care-shop-parity.md`.
 - **Wave C task 4 (lens configurator) DONE and live (2026-09-25):** Spec 43 v1.5.0. The add-on price list
   (`includes/addon-price-list/`, WooCommerce > Add-on prices, seeded on eye-care-test with `wp sgs addon-prices
   seed`: lens-use, lens-thickness, lens-finish) is the only price authority. The flow is the Choice Flow
@@ -208,7 +208,7 @@ key), with the owed Wave C polish alongside.
     per-colour tint on its one photo (it fakes colour variants; the site shows each variation's own image); the
     size line reads "Frame size 55" where the draft says "Size M" (Bean, 2026-09-25); pennies on every price (Bean,
     2026-09-25); Close keeps the 44px touch target (the draft's is 42px, so the header is 2px taller); the product
-    page button lifts 3px (the optician client's button preset) where the draft's lifts 2px.
+    page button lifts 3px (Eye Care's button preset) where the draft's lifts 2px.
   - Option pictures: `sgs/choice-flow` `optionMediaSize` (Bean 2026-09-26: one proportion per device, each set so
     the picture matches the draft's 140px plate at that device's width): 76 / 156 / 96.7%.
   - **Re-verified 2026-09-26 with the parity tool** (`scripts/parity/draft-live-walk.mjs`, config
@@ -230,7 +230,7 @@ key), with the owed Wave C polish alongside.
   (default `true`, f9af77509) steps the floating WhatsApp bubble aside while the product page's "Need advice?"
   card is on screen at 1440, and brings it back once scrolled past; live-verified on eye-care-test, including
   the shop page (no inline CTA), which keeps the bubble visible throughout.
-- **Wave C task 6 (bag, checkout, prescription): BUILT and proven (see the task 6 plan's Outcome)**, `plans/2026-09-25-optician-bag-checkout-prescription.md`
+- **Wave C task 6 (bag, checkout, prescription): BUILT and proven (see the task 6 plan's Outcome)**, `plans/2026-09-25-eye-care-bag-checkout-prescription.md`
   (Bean 2026-09-25: the prescription is the configurator's 4th question, per pair, as Glasses Direct does; pennies
   on every price, only savings drop ".00").
 - Wave B framework part: all 22 items from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md`
@@ -267,7 +267,7 @@ key), with the owed Wave C polish alongside.
   `#E8ECE6`, navy `#3A4A6B` / `#2B3A55` / `#E4E7EE` (accent / accent-text / soft). The draft's default and its
   live render are taupe (`data-props` `accent` default `taupe`); Bean confirmed taupe (2026-09-24), which is what the snapshot already uses.
 - Re-extraction risk: `theme-extractor/extract.py --merge-onto` carries `styles.css` forward but not
-  `styles.spacing`, so re-extracting the optician client snapshot would reset the 52px side padding. Re-apply it after
+  `styles.spacing`, so re-extracting the Eye Care snapshot would reset the 52px side padding. Re-apply it after
   any re-extraction.
 - Phase 2: `sites/eye-care-ward-end/woo-seed/` (repeatable; re-run with `wp eval-file`). 16 products, 49 colour
   variations, 40 brands, 6 attributes, UK shipping (£3.95, free over £75, local pickup). Colour is a `select`
@@ -278,7 +278,7 @@ key), with the owed Wave C polish alongside.
 
 **Source of truth for the build:** the draft bundle in
 `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/`:
-- The draft's storefront `.dc.html` file: the whole storefront. Its `<script type="application/json" data-sgs-manifest>`
+- `Eye Care Birmingham.dc.html`: the whole storefront. Its `<script type="application/json" data-sgs-manifest>`
   block lists pages, routes, sections in order, repeated groups, breakpoints and behavioural rules. Its
   `<script data-dc-script>` class holds the data: `PRODUCTS` (16), `BRANDS`, `REVIEWS` (13), `FAQS` (8),
   `REASONS`, `SHAPES`, `TICKER`, filter lists (`COLS`, `STYLE_LIST`, `MATERIALS`, `FTYPES`, `HINGES`, `NOSES`),
@@ -291,7 +291,7 @@ key), with the owed Wave C polish alongside.
 The same draft runs live at https://mintcream-lyrebird-224487.hostingersite.com/ (use it for draft-vs-live
 comparisons).
 
-Do not confuse this bundle with the older v2 design-handoff folder, which the clone
+Do not confuse this bundle with the older `design_handoff_ward_end_eye_care_v2/` folder, which the clone
 command in the LEDGER uses. The two drafts differ. Build from the Gap Handoff bundle.
 
 ## 1. The decision
@@ -302,7 +302,7 @@ against a draft, never against a known-right WordPress page, so each one needs a
 **Solution (Bean, 2026-09-24).**
 1. Claude Design maps every visible or interactive part of the draft to a block or theme feature, with a
    gap grade and a best fix. Done: the gap map.
-2. We build the optician client site by hand on WordPress, closing each gap as a general framework feature,
+2. We build the Eye Care site by hand on WordPress, closing each gap as a general framework feature,
    until it is ready for the paying client.
 3. The client pays.
 4. The finished site becomes the pipeline's answer key (section 7).
@@ -314,12 +314,13 @@ Content the client supplies is out of scope: real photography, the ninth FAQ, th
 "Placeholder review" entry. The draft's WhatsApp number (`wa.me/4479605978`) is correct as drafted;
 ignore the gap map row and the manifest `openItems` entry that call it "one digit short".
 
-**Why this also helps the pipeline.** Many pipeline gaps are settings no block has. Example: the optician client hero sets `height`, and `sgs/hero` has only `minHeight`. Building the real site adds those
+**Why this also helps the pipeline.** Many pipeline gaps are settings no block has. Example: the Eye
+Care hero sets `height`, and `sgs/hero` has only `minHeight`. Building the real site adds those
 settings, so the pipeline then has somewhere to put each value.
 
 ## 2. What happens to the in-flight pipeline work
 
-- `plans/2026-09-24-optician-findings-1-8-9-design.md`: C2 shipped (commit 0deb3b10b). C1, C3, C4 and C5
+- `plans/2026-09-24-eye-care-findings-1-8-9-design.md`: C2 shipped (commit 0deb3b10b). C1, C3, C4 and C5
   are PAUSED, with nothing half-done. They return in Phase 7 as the first test cases.
 - The clone on test page 11 stays as it is. It becomes the clone side of the Phase 7 comparison.
 
@@ -361,7 +362,7 @@ colours and interactions, then look at the screenshots side by side. The check r
 | Phase | Work | Needs Bean |
 |---|---|---|
 | 0 | Re-check every gap map row graded 1, 2, 3 or 4 against the code on `main`. For each row, record: the row's claim is true or false, the evidence (file and symbol, or the command run), and the corrected grade and fix. Write the result to `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md`: one table per area, then a final list of every block extension and new build still needed, each with the block it touches. Read-only: no code changes. | no |
-| 1 | Theme: the gap map's "Global & chrome" rows graded 2 and the "Cross-cutting" rows graded 2. That means: button presets square, 52px tall, uppercase, 13px with 0.1em letter spacing, and a 2 to 3px lift on hover; section padding per device from the draft's `secPad` values; one `prefers-reduced-motion` rule set stopping marquees, Ken Burns, parallax and reveals; touch targets at least 44px; the 1280 and 620 breakpoints as container queries. The taupe accent is the live palette. Add sage and navy (from the draft's `ACC`) as two extra style variations the client can switch to. Everything goes into the optician client snapshot (`sites/eye-care-ward-end/theme-snapshot.json`), never the framework `theme.json`. Other grade-2 rows belong to their page in Phase 4. | no |
+| 1 | Theme: the gap map's "Global & chrome" rows graded 2 and the "Cross-cutting" rows graded 2. That means: button presets square, 52px tall, uppercase, 13px with 0.1em letter spacing, and a 2 to 3px lift on hover; section padding per device from the draft's `secPad` values; one `prefers-reduced-motion` rule set stopping marquees, Ken Burns, parallax and reveals; touch targets at least 44px; the 1280 and 620 breakpoints as container queries. The taupe accent is the live palette. Add sage and navy (from the draft's `ACC`) as two extra style variations the client can switch to. Everything goes into the Eye Care snapshot (`sites/eye-care-ward-end/theme-snapshot.json`), never the framework `theme.json`. Other grade-2 rows belong to their page in Phase 4. | no |
 | 2 | WooCommerce data on the test site, entered over WP-CLI: the Brands taxonomy from `BRANDS`; Colour as a Colour/Image attribute (test it on the installed WooCommerce version first, because a critical error is reported on 11.0.1); shape, material, frame type, hinge and nose-pad attributes from the draft's lists; the 16 `PRODUCTS` as products with their variations, measurements (`eye`, `bridge`, `temple`) as variation meta, and `rrp` as its own product meta; Local Pickup; a £3.95 flat rate; free shipping over £75. The draft's products are test data; the client's real catalogue replaces them later. | no |
 | 3 | Framework features used across pages: open a modal from any link; an inner-block slot in `sgs/buybox`; a `card` variant on `sgs/whatsapp-cta`; a "current product has reviews" visibility condition; private file storage (section 6). | no |
 | 4 | Pages and templates: header, footer, mega panels, mobile menu; home; lenses, about, help (with FAQ), contact; shop archive; product page; bag drawer; checkout; order confirmation; size-guide modal. Detail per item is in the gap map rows for that area. | no |
@@ -379,7 +380,7 @@ reviews section's block markup across from page 11, then build every other secti
 untouched as the clone.
 
 **Framework rule for every extension.** Close each gap as a general setting that makes sense for any
-client (a restaurant, a law firm). Never put the optician client code in the framework. The optician client copy, content and
+client (a restaurant, a law firm). Never put Eye Care code in the framework. Eye Care copy, content and
 tokens live in `sites/eye-care-ward-end/` and on the test site. These rules still apply:
 - the no-inline-styling contract (Spec 32);
 - the block customisation standard: every setting has an editor control;
@@ -449,15 +450,15 @@ Prescription fields accept images only: jpeg, png and webp, set through the fiel
 
 ### Clone run notes (Phase 7)
 
-These use the older v2 design-handoff draft and test page 11. They matter only when the clone is
+These use the older `design_handoff_ward_end_eye_care_v2` draft and test page 11. They matter only when the clone is
 re-run against the finished site.
 
-**Test site:** the optician test site's home page (page 11; WP 7.1.1 +
+**Test site:** https://darkcyan-grouse-898606.hostingersite.com/eye-care-birmingham/ (page 11; WP 7.1.1 +
 WooCommerce; creds `.claude/secrets/eye-care-test.env`). Run a clone: `SGS_DEPLOY_SITE=eye-care-test`, `SSL_CERT_FILE`
 and `NODE_EXTRA_CA_CERTS` = the certifi `cacert.pem` (Python's Windows TLS store rejects every hostingersite.com host),
 `--mockup "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html"` (v2 is the
 current SGS-BEM draft; v1 is old and classless), `--deploy-target page:11`, `--skip-freshness-gate` (the snapshot is
-extracted from v1, and a v2 extraction wrongly picks Google blue as primary; fix that before re-extracting), plus `--client eye-care-ward-end --page <page-slug>
+extracted from v1, and a v2 extraction wrongly picks Google blue as primary; fix that before re-extracting), plus `--client eye-care-ward-end --page eye-care-birmingham
 --auto-section --mode draft --skip-register --no-scaffold-new-blocks --sc-var-cache
 sites/eye-care-ward-end/sc-var-hints.json --sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0 --classless-match
 --classless-auto-complete` (add `--resolve-js-content` for the flag-ON comparison). Verify "what a visitor sees" with
@@ -474,17 +475,17 @@ values: `sync-business-info.py --draft "<draft>" --target-domain <host> --push -
 sites/eye-care-ward-end/site-info-placeholder-map.json`. A Claude Design snapshot from before the second freshness key
 will halt a clone until re-extracted (intended). Scope (D1121): Spec 33 runs on a client's source draft only (the snapshot
 records `_sgsExtractor.source_draft`); any other draft inherits the saved snapshot, and re-extracting from a different draft
-needs `--replace-source`. the bakery client's snapshot has no `source_draft` until it is next regenerated.
+needs `--replace-source`. Mama's snapshot has no `source_draft` until it is next regenerated.
 
 **Screen route (D1124, built).** A multi-screen Claude Design draft now clones ONE screen: `--screen <label>`, else the
 README's route `/` checked against the draft's default marker; other screens are skipped and reported (`other-route-view`),
-and a classless top-level section on the cloned screen is admitted as the container. Live test page for the optician client: 5 of 8
+and a classless top-level section on the cloned screen is admitted as the container. Live Eye Care test page: 5 of 8
 homepage sections (was 1), no other-screen text, raw `{ }` text 53 (was 93). Still missing: b3, b4, b6 (the FR-44-1 review
 queue) and the raw layout bindings in attributes (`padding` `{ secPad }`; the README's Spacing section can resolve them).
-The bakery client is untouched (identical markup route on/off). Draft manifest (D1123, read-only): `scripts/draft-manifest/manifest.py`
+Mama's is untouched (identical markup route on/off). Draft manifest (D1123, read-only): `scripts/draft-manifest/manifest.py`
 lists screens, kinds, entities, references and a build order; report `reports/2026-09-20-eye-care-draft-manifest.md`. Next:
-the per-client entity registry, then clone About, Help and Contact with `--screen`. the bakery client's clones currently halt at the
-freshness gate because another session's uncommitted the bakery client's snapshot carries a different draft's hash.
+the per-client entity registry, then clone About, Help and Contact with `--screen`. Mama's clones currently halt at the
+freshness gate because another session's uncommitted Mama's snapshot carries a different draft's hash.
 
 **Layout bindings (D1128).** Guard BUILT: a style value that is an unresolved `{{ }}` binding is dropped and reported, so the
 homepage sections no longer carry junk attributes (18 to 0). Evaluator BUILT and WIRED (A1, D1132, `faaf79f0d`): `orchestrator/script_bindings.py` turns the draft's own width rules into mobile, tablet and desktop values
@@ -501,7 +502,7 @@ original. Not done: 7 names whose breakpoint stays inside a device tier (logged 
 1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE
    `class=`): 4 homepage sections (b5, b7, b8, b9), 8 other routed views, 2 chrome. Spec 44 §11: proposed (A) admit any
    classless boundary as the container default, (B) only the default routed view goes on the page, (C) fix the halt
-   message and report lost text. NOT designed; needs a design gate; must not change the bakery client. Not proven: that the large
+   message and report lost text. NOT designed; needs a design gate; must not change Mama's. Not proven: that the large
    sections convert cleanly. Reports: `reports/2026-09-19-inv-non-bem-sections.md`.
 2. *Runtime `{{ }}` bindings (Stage 2) and the last part of the Spec 33 plan.* Kinds: site settings (`{{ phone }}`), page
    copy, cart/checkout state, styling values. Keeping the `<sc-for>` lands only item 0 of N. The saved-settings half is the
@@ -552,7 +553,7 @@ The phases are a dependency order, not a queue. Independent work runs at the sam
 |---|---|
 | More gap map rows are wrong | Phase 0 re-checks every row graded 1 to 4 before building |
 | Hand-built pages drift from the draft | The 3-width check per phase, then Bean's eye |
-| The optician client shortcuts leak into the framework | The "any client" test and the prebuild gates on every extension |
+| Eye Care shortcuts leak into the framework | The "any client" test and the prebuild gates on every extension |
 | The answer key is only one valid layout | Phase 7 compares rendered output, not markup |
 | The WooCommerce Colour/Image attribute errors on the installed version | Tested first in Phase 2 |
 | Health data is exposed | Private storage ships before any prescription field goes live |

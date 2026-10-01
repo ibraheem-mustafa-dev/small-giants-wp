@@ -19,7 +19,7 @@ HTML mockup
 ```bash
 python tools/recogniser/recogniser.py \
   --html sites/mamas-munches/mockups/homepage/index.html \
-  --variation <client-slug> \
+  --variation mamas-munches \
   --output reports/recogniser-run-$(date +%F).md
 ```
 

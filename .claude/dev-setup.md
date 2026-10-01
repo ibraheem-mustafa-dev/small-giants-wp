@@ -46,7 +46,7 @@ small-giants-wp/
 │       ├── css/                 # core-blocks.css, dark-mode.css, utilities.css, etc.
 │       ├── js/                  # dark-mode.js, smooth-scroll.js, nav-accessibility.js, etc.
 │       ├── fonts/               # Self-hosted WOFF2 files
-│       └── decorative-foods/    # the wholesale-food client decorative PNG images
+│       └── decorative-foods/    # Indus Foods decorative PNG images
 │
 ├── plugins/sgs-blocks/
 │   ├── sgs-blocks.php           # Plugin entry point
@@ -442,15 +442,15 @@ extensions/
 
 | Target | Site | Purpose |
 |---|---|---|
-| `sandybrown` (default) | `https://sandybrown-nightingale-600381.hostingersite.com` | The canary — pipeline canary (the bakery client) and framework verification. WP 7.1 |
-| `indus-test` | `https://lavender-dinosaur-183533.hostingersite.com` | Dedicated the wholesale-food client test site. Opt-in: deploys only when named with `--target indus-test` |
-| `eye-care-test` | `https://darkcyan-grouse-898606.hostingersite.com` | Dedicated the optician client test site (client `eye-care-ward-end`). Opt-in: `--target eye-care-test` |
+| `sandybrown` (default) | `https://sandybrown-nightingale-600381.hostingersite.com` | The canary — pipeline canary (Mama's Munches) and framework verification. WP 7.1 |
+| `indus-test` | `https://lavender-dinosaur-183533.hostingersite.com` | Dedicated Indus Foods test site. Opt-in: deploys only when named with `--target indus-test` |
+| `eye-care-test` | `https://darkcyan-grouse-898606.hostingersite.com` | Dedicated Eye Care Birmingham test site (client `eye-care-ward-end`). Opt-in: `--target eye-care-test` |
 
 **Why each client has its own site.** The active header, footer, drawer and theme-snapshot pointers are
 single global options per WordPress site (`sgs_active_header_cpt_id`,
 `sgs_active_footer_cpt_id`, `sgs_active_drawer_cpt_id`, and the theme snapshot). Two clients
-cannot hold different active layouts on one site: activating the wholesale-food client's header on the canary would
-replace the bakery client's header sitewide. The wholesale-food client therefore builds on its own site. Another
+cannot hold different active layouts on one site: activating an Indus header on the canary would
+replace the Mama's Munches header sitewide. Indus Foods therefore builds on its own site. Another
 client target is one `TARGETS` entry with `explicit_opt_in_required: True` (enforced in code).
 
 **Reference site (READ ONLY):** `https://lightsalmon-tarsier-683012.hostingersite.com`
@@ -464,7 +464,7 @@ Gitignored; never committed.
 | Path | What | Keys / loader |
 |---|---|---|
 | `.claude/secrets/sandybrown.env` | Canary (sandybrown-nightingale-600381.hostingersite.com) logins — ALWAYS available | `WP_USER_SANDYBROWN` + `WP_PWD_SANDYBROWN` (browser/admin login); `WP_APP_PWD_SANDYBROWN` (REST + WC Store-API Basic auth); `WP_URL_SANDYBROWN`. Use for Playwright editor login + REST verification: `grep KEY .claude/secrets/sandybrown.env` |
-| `.claude/secrets/indus-test.env` | The wholesale-food client test site (lavender-dinosaur-183533.hostingersite.com) logins | `WP_USER_INDUSTEST` + `WP_PWD_INDUSTEST` (browser/admin login); `WP_APP_PWD_INDUSTEST` (REST Basic auth); `WP_URL_INDUSTEST` |
+| `.claude/secrets/indus-test.env` | Indus test site (lavender-dinosaur-183533.hostingersite.com) logins | `WP_USER_INDUSTEST` + `WP_PWD_INDUSTEST` (browser/admin login); `WP_APP_PWD_INDUSTEST` (REST Basic auth); `WP_URL_INDUSTEST` |
 | `.claude/secrets/credentials.yml` | General project credentials (YAML) | `import yaml; yaml.safe_load(open('.claude/secrets/credentials.yml'))` |
 
 > **LiteSpeed:** LiteSpeed Cache is active on sandybrown (check any other target with `wp plugin list --status=active | grep -i litespeed`). `build-deploy.py` purges three cache layers after a deploy — OPcache (compiled PHP) through an HTTPS probe, because the CLI pool has its own OPcache, the LiteSpeed page cache (rendered HTML) through wp-cli, and the theme pattern cache (a pattern file added by a deploy registers only after it clears); clearing one does nothing for the others. For a manual purge after a CSS/render change run `wp litespeed-purge all`, reset OPcache (snippet below), and clear the Hostinger CDN (`hosting_clearWebsiteCacheV1`). Since 2026-09-27 sandybrown's bot challenge answers the deploy's HTTPS probes with a 403 "Just a moment" page, so the OPcache purge and the post-deploy GET report ERROR while the files are live: verify by checksum over SSH and run `wp litespeed-purge all` by hand; a CSS-only change needs no OPcache reset.
@@ -488,7 +488,7 @@ Gitignored; never committed.
 # Canary (default — sandybrown)
 python plugins/sgs-blocks/scripts/build-deploy.py
 
-# The wholesale-food client test site
+# Indus Foods test site
 python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test
 ```
 
@@ -574,13 +574,13 @@ curl -s -o /dev/null -w '%{http_code}\n' "https://<host>/?cachebust=$RANDOM"   #
 
 ```bash
 # Canary (default domain)
-python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <client-slug> --target u945238940@141.136.39.73
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client mamas-munches --target u945238940@141.136.39.73
 
-# The wholesale-food client test site
-python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <client-slug> --target u945238940@141.136.39.73 \
+# Indus test site
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73 \
   --target-domain lavender-dinosaur-183533.hostingersite.com
 
-# The optician client test site
+# Eye Care test site
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client eye-care-ward-end --target u945238940@141.136.39.73 \
   --target-domain darkcyan-grouse-898606.hostingersite.com
 
@@ -733,7 +733,7 @@ The API key is `N8N_API_KEY` in `.claude/secrets/ai-agent-credentials-and-info/a
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats          # Framework health
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/hero  # Block details
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing" # Find best block
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context <client-slug> # Load client
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Load client
 ```
 
 ### DB schema notes
@@ -2189,8 +2189,8 @@ for the verb you happen to have in mind.
 | `nav-qa/crawl-assert.mjs` | manifest | bar+dropdown+mega link AND mega content must be present in the PRE-JS HTML (what a crawler / no-JS user gets), never injected client-side. |
 | `nav-qa/elementfrompoint-sweep.mjs` | manifest+script-call | occlusion sweep, carried verbatim from Spec 34 FR-S9-5 / FR-34-7. |
 | `nav-qa/extended-probe.mjs` | — | Extended open-drawer measurement probe (measurement-vs-eye rule). |
-| `nav-qa/gate3c/parity-indus.mjs` | — | Parity config: Bean's mega-menu draft for the wholesale-food client against its copy on sandybrown (page 4465, header 4461). |
-| `nav-qa/gate3c/parity-lamalama.mjs` | — | Parity config: the reference site's floating pill against its copy on sandybrown (page 4446, header 4435). |
+| `nav-qa/gate3c/parity-indus.mjs` | — | Parity config: Bean's Indus Foods mega-menu draft against its copy on sandybrown (page 4465, header 4461). |
+| `nav-qa/gate3c/parity-lamalama.mjs` | — | Parity config: lamalama.com's floating pill against its copy on sandybrown (page 4446, header 4435). |
 | `nav-qa/lib/elementfrompoint-sweep-selftest.mjs` | script-call | `elementFromPoint` occlusion sweep. |
 | `nav-qa/lib/openness-guard.mjs` | manifest+script-call | for every nav-qa script that measures or captures an interactive surface. |
 | `nav-qa/lib/shoot-drawer-pairs-selftest.mjs` | script-call | WHY |
@@ -2348,8 +2348,8 @@ for the verb you happen to have in mind.
 | `recogniser/functionality-gap-detector.py` | manifest+script-call+skill | - Spec 31 Phase 5a.3 (FR8 functionality leg). |
 | `recogniser/gap-review-report.py` | manifest+script-call+skill | - Spec 31 Phase 5a.5 operator-review surface. |
 | `recogniser/leftover-bucket-router.py` | manifest+script-call+skill | - Stage 9 leftover routing. |
-| `sites/eye-care-ward-end/measure/measure-classless-baseline.py` | script-call | Front C Task 3 — re-measure Spec 44's safety baseline against the real the optician client |
-| `sites/eye-care-ward-end/measure/measure-classless-frame-card.py` | — | Spec 44 completion register item 3 — generalisation check: run the real Stage A -> |
+| `recogniser/measure-classless-baseline.py` | script-call | Front C Task 3 — re-measure Spec 44's safety baseline against the real Eye Care |
+| `recogniser/measure-classless-frame-card.py` | — | Spec 44 completion register item 3 — generalisation check: run the real Stage A -> |
 | `recogniser/per-section-convention-voter.py` | manifest+script-call+skill | - Stage 1 of /sgs-clone pipeline. |
 | `recogniser/render_repeater_recogniser.py` | script-call | Stage A recognition for a repeated, classless draft group — Spec 44 §3.1/§4.1/§4.3/§4.4. |
 | `recogniser/render_repeater_seeder.py` | script-call | Seed `block_render_repeaters` — Spec 44 §4.2/§4.3 Steps 1-2 (2026-09-17). |
@@ -2490,7 +2490,7 @@ for the verb you happen to have in mind.
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
-| `apply-block-attrs-batch.js` | — | One-off companion to wp-update-block-attrs.js for the wholesale-food client homepage attribute-mirror task (2026-07-16). Handles the case wp-update-block-attrs.js… |
+| `apply-block-attrs-batch.js` | — | One-off companion to wp-update-block-attrs.js for the Indus homepage attribute-mirror task (2026-07-16). Handles the case wp-update-block-attrs.js… |
 | `brand-palette-sampler.py` | — |  |
 | `colour-parity-audit.js` | — | Colour Parity Audit — automated comparison between mockup HTML brief and SGS variation JSON. |
 | `css-pattern-audit.js` | — | CSS pattern audit — static analysis for risky patterns in deployed/built CSS. |
@@ -2499,7 +2499,7 @@ for the verb you happen to have in mind.
 | `lib/oldshape-mappings.js` | script-call | wp-migrate-oldshape-blocks.js (Track B content restore, 2026-07-15). |
 | `lint-naming-conventions.py` | manifest | CI linter for the SGS WordPress Framework naming conventions. |
 | `lint-patterns-for-personal-data.py` | manifest+npm | Lint SGS pattern PHP files for hardcoded personal data. |
-| `parity/benchmark/cases.mjs` | manifest+script-call | The walker's catch-rate benchmark: six the optician client gaps the walker passed and Bean found by eye |
+| `parity/benchmark/cases.mjs` | manifest+script-call | The walker's catch-rate benchmark: six Eye Care gaps the walker passed and Bean found by eye |
 | `parity/benchmark/score.mjs` | manifest+script-call+skill | Scores a catch-rate benchmark run from its recorded walker reports (<out>/<config>-control and <out>/case-<id>): benchmark.mjs calls it after the… |
 | `parity/benchmark.mjs` | script-call+skill | The walker's catch-rate benchmark. For each page config it runs the walker once as a control |
 | `parity/draft-live-walk.mjs` | script-call | Draft-versus-live parity walker. Drives the design draft and the live site through the same states (tabs, steps, open panels, filters, modals) at… |

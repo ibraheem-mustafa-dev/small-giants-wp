@@ -10,12 +10,12 @@ parent_plan: .claude/plans/2026-09-21-wave-3c-implementation-plan.md (U-18 G8)
 
 ## Status
 
-Parked (Bean, 2026-09-27). The reference site's "GET IN TOUCH" card is an accepted difference for Wave 3C (DEC-18 in
+Parked (Bean, 2026-09-27). lamalama's "GET IN TOUCH" card is an accepted difference for Wave 3C (DEC-18 in
 `.claude/reports/reference-requirements/families-master.json::decisions`), so `M-08` counts as covered by
 acceptance and this build no longer blocks Gate 3C.
 
 **Reopen when** either: the reference-capture method in `.claude/plans/2026-09-27-reference-capture-method-plan.md`
-has landed and the reference site copy is rebuilt on it; or a client build needs a card pinned to a screen corner.
+has landed and the lamalama copy is rebuilt on it; or a client build needs a card pinned to a screen corner.
 
 ## Why the first attempt stopped
 
@@ -46,7 +46,7 @@ away from the CSS collector. Full verdicts and the spec a rebuild needs: `.claud
 
 ## Exit
 
-The reference site's card is 160x326 at top 16 / right 16 at 1440 and absent at 375 and 768, measured by
+lamalama's card is 160x326 at top 16 / right 16 at 1440 and absent at 375 and 768, measured by
 `plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs` (its `card` cell) and by the walker the capture-method plan
 settles on; then DEC-18 is closed as built and `M-08`'s note says so.
 

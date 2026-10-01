@@ -14,17 +14,17 @@ written into the draft by Claude Design; (C) a deterministic checker as the seco
 evaluator is wired in. A2 DONE (D1134): the draft's links and loop copy fill in from its own script. Ticker and reviews card
 equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3, Track D). Detail: D1132-D1145.
 
-**The optician client: now built by hand first (D1149, 2026-09-24).** The optician client site is built by hand to client-ready from
+**Eye Care: now built by hand first (D1149, 2026-09-24).** The Eye Care site is built by hand to client-ready from
 Claude Design's gap map; the finished site becomes the pipeline's answer key. All the cloud-session work (bag drawer,
 scrolled header, brand logos, nav controls) is landed, gated and live on eye-care-test as of 2026-10-01. Next: one
-unified the optician client plan and a parity review of every surface (Front F).
+unified Eye Care plan and a parity review of every surface (Front F).
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
-The wholesale-food client and the reference site copies) has every open row classified with no new foundational gap, and its last mile is deferred
+Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
 by Bean (2026-10-01). Waves 4 and 5 (the reference clones and the clone walker) have not started. One plan for the
 whole thread: `plans/2026-10-01-header-nav-thread-plan.md`.
 
-**The wholesale-food client** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
+**Indus Foods** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
 deploy target `indus-test`) because the active header/footer/theme-snapshot pointers are single
 GLOBAL `wp_options` rows per site. Its content build is documented in `sites/indus-foods/CLAUDE.md`.
 
@@ -37,7 +37,7 @@ Bean's-eye check.
 
 ## THE FRONT — what to pick up next
 
-### Front F — the optician client, built by hand (Bean-directed, D1149)
+### Front F — Eye Care Birmingham, built by hand (Bean-directed, D1149)
 
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
@@ -50,7 +50,7 @@ on its own items); home 208, about 187, help 171, prescription-lenses 168 and th
 from their trees with no invalid blocks. Header 199, mobile menu 203, megas 165/176/183/186 applied; 40 brand logos set. Not
 yet re-walked. No blockers.
 
-**Resume from:** `plans/2026-10-01-optician-review-phase-plan.md` step 1 (merge the six the optician client plans into one,
+**Resume from:** `plans/2026-10-01-eye-care-review-phase-plan.md` step 1 (merge the six Eye Care plans into one,
 walk and eye-check every surface, classify, write the work plan by surface).
 
 **Separators.** The shared lines-between-items setting is built and live on sandybrown and eye-care-test. Remaining adoptions,
@@ -58,7 +58,7 @@ the wrapper fan-out and the client and reference name sweep: `plans/2026-10-01-s
 finding for that plan's step 2: `scripts/sync-container-wrapping-blocks.py --write-block-json` (reseed Stage 10) fails its
 own roster validation, so check why before relying on it.
 
-**Parked (detail in the plans):** the bakery client needs a site copy of the shop template for its Flavour and Size
+**Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.
 
 ### Spec 36+37 merged track (after Front F)
@@ -67,8 +67,8 @@ Plan: `plans/2026-10-01-header-nav-thread-plan.md` (the only plan for the thread
 reference-capture and G8 plans are archived). Proof: `verify/merged-spec36-37-track.md`.
 
 **Now (2026-10-01).** Waves 1-3C built and live on sandybrown (c8e805e73); owed Wave 1-3 items in plan §3. Gate 3C items 1, 2, 3, 5 pass. Item 4: the
-walk after this session's deploy (`reports/visual-diff/gate3c-copies-walk-2026-10-01.md`) leaves the wholesale-food client 10 violations
-and 3 jitter rows, the reference site 7 violations and 1 foundational gap (G8, parked); no new foundational gap. Header fixes
+walk after this session's deploy (`reports/visual-diff/gate3c-copies-walk-2026-10-01.md`) leaves Indus 10 violations
+and 3 jitter rows, lamalama 7 violations and 1 foundational gap (G8, parked); no new foundational gap. Header fixes
 this session: per-device values accepted for the nav, drawer and cart box settings; a mega panel no longer flashes at
 its default spot when switching panels; the hover indent grows from each device's own padding. Waves 4 and 5 not
 started. Bean's hPanel action (allow-list the canary's "Checking your browser" page) blocks only Gate 3C's final
@@ -179,7 +179,7 @@ does not produce real matches on real data for it to consume.
   `grep -oE '^## D[0-9]+' .claude/archive/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1` — never
   trust a cached number.
 - **Canary:** sandybrown, WP 7.1. Production homepage page **2742**. Fresh-clone verification
-  page **3448** for cloning-pipeline work. **The wholesale-food client test site:** its own dedicated site
+  page **3448** for cloning-pipeline work. **Indus test site:** its own dedicated site
   (`lavender-dinosaur-183533.hostingersite.com`, `indus-test` deploy target).
 - **Visual-diff coverage:** `reports/visual-diff/nav-bar-menu-*.md` (latest 2026-09-23) and the files below.
   `sgs/nav-drawer-menu` has `reports/visual-diff/nav-drawer-menu-2026-09-24.md` and `-25.md`.
@@ -197,15 +197,15 @@ does not produce real matches on real data for it to consume.
 | For | Read |
 |---|---|
 | **Header/footer + nav system (next front after Front F)** | `plans/2026-10-01-header-nav-thread-plan.md` + `verify/merged-spec36-37-track.md`; `specs/36-SGS-NAVIGATION-SYSTEM.md`; `specs/37-HEADER-FOOTER-BUILDER.md` |
-| **The wholesale-food client test site — header/footer/nav/mega-menu build** | `sites/indus-foods/CLAUDE.md`; deploy target `indus-test` in `build-deploy.py` |
-| The optician client draft audit + CPT inventory | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
+| **Indus Foods test site — header/footer/nav/mega-menu build** | `sites/indus-foods/CLAUDE.md`; deploy target `indus-test` in `build-deploy.py` |
+| Ward End Eye Care draft audit + CPT inventory | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
 | **JS-array content resolver — built, `{{ }}` binding substitution OPEN** | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` §15 |
 | **Classless recognition (Spec 44) — built; AI-fallback tier parked** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md`; `.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md` |
 | **Structural-facts trio (repeaters + composition + singletons)** — built and validated, consumer wiring open | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` §13.9-§13.10 |
 | **Classless FIELD resolution (Spec 45)** — all 4 tiers built, no real input yet | `specs/45-CLASSLESS-FIELD-RESOLUTION.md` |
 | **Form CPT + choice-flow** — COMPLETE: Phases 0-5 and the v1.8.0 follow-up live on sandybrown, eye-care-test and indus-test (all at 31c2ed4c5; Phase 5: in-use forms and flows can't be trashed or deleted from any surface; outside a saved form, `sgs/form` only picks, creates or converts to a saved form). Parked: cloning-pipeline gap and analytics in `plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` | `specs/42-SGS-FORM-CPT-AND-PRICING.md` + `specs/43-SGS-CHOICE-FLOW.md` + `plans/archive/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Nav menu colour/state system | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` |
-| **The sleep-product client product configurator — planned, not started** | `plans/2026-08-03-sleep-product-configurator-build-plan.md` |
+| **Snooza product configurator — planned, not started** | `plans/2026-08-03-snooza-configurator-build-plan.md` |
 | **Page-conversion routing (manifest routing, annotation stage) — designed, not started** (its reviews written mode is built) | `plans/2026-09-21-manifest-routing-and-reviews-inline-design.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
 | Cloning pipeline spec + binding rules | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |

@@ -2,7 +2,7 @@
 
 **Status:** Active blocker
 **Captured:** 2026-05-04 (session 2)
-**Affects:** Fix 1 (the bakery client's variation buttonPresets text colours)
+**Affects:** Fix 1 (Mama's variation buttonPresets text colours)
 
 ## Problem
 
@@ -33,7 +33,7 @@ Two layers of stale cache:
 ## Why I couldn't fix it this session
 
 - **No SSH credentials for sandybrown.** The repo has SSH for
-  the campaign-site client's site (u945238940@141.136.39.73) but no equivalent for
+  `palestine-lives.org` (u945238940@141.136.39.73) but no equivalent for
   the sandybrown Hostinger account.
 - **WP REST API global-styles endpoint returns 404** — this WP version
   doesn't support the modern global-styles routes that would let me trigger
@@ -73,7 +73,7 @@ from `"#ffffff"` to `"var(--wp--preset--color--text-inverse)"`. This is a
 framework-level change. It would mean:
 - For SGS default palette: text-inverse is `#C0D5D6` — not pure white but
   close enough on teal background
-- For the bakery client: text-inverse can be set in the variation to charcoal
+- For Mama's: text-inverse can be set in the variation to charcoal
 - For all clients: the colour adapts per palette automatically
 
 This is the most architecturally correct fix because hardcoding `#ffffff`

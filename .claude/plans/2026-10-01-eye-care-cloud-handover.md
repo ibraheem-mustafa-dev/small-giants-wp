@@ -1,19 +1,19 @@
-# The optician client: cloud-session handover (2026-09-28 to 2026-10-01)
+# Eye Care: cloud-session handover (2026-09-28 to 2026-10-01)
 
 **For:** Bean, and the Claude Code session in VS Code that picks this up.
 **Covers:** everything the cloud session `session_0159maT2pzryLXAEgNqT6jFh` opened, closed and changed while
-working on the optician client clone. A second cloud session (`session_015nP9vshSFMxfKXqmQy28YK`, nav and
-drawer framework for the wholesale-food client and the reference site) also committed to `main` in the same days; its commits are listed at
+working on the Eye Care Birmingham clone. A second cloud session (`session_015nP9vshSFMxfKXqmQy28YK`, nav and
+drawer framework for Indus and lamalama) also committed to `main` in the same days; its commits are listed at
 the end so nothing is a surprise.
 
 - **Sites:**
   - Draft: `mintcream-lyrebird-224487.hostingersite.com`.
   - Live clone: `eye-care-test` (`darkcyan-grouse-898606.hostingersite.com`).
 - **Governing plans** (still current):
-  - `2026-09-24-optician-hand-build-design.md`;
-  - `2026-09-28-optician-product-page-parity.md`;
-  - `2026-09-25-optician-bag-checkout-prescription.md`.
-- **This file replaces `archive/2026-09-28-optician-resume-tracker.md`.** Its open items are carried into the
+  - `2026-09-24-eye-care-hand-build-design.md`;
+  - `2026-09-28-eye-care-product-page-parity.md`;
+  - `2026-09-25-eye-care-bag-checkout-prescription.md`.
+- **This file replaces `archive/2026-09-28-eye-care-resume-tracker.md`.** Its open items are carried into the
   sections below.
 
 ## 1. Landing on the PC (done 2026-10-01)
@@ -25,7 +25,7 @@ its `viewBox`). The header tree first failed on six cart paddings the framework 
 the seeder now reads them as per-device (`orchestrator/object_attr_shape.py::_closure_dispatched_tier_attrs`).
 
 The walk-and-check step (every surface, at 375, 768, 1440 and 1920, with the eye-check list) is steps 5 and 6 of
-`.claude/plans/2026-10-01-optician-review-phase-plan.md`.
+`.claude/plans/2026-10-01-eye-care-review-phase-plan.md`.
 
 ## 2. The two items finished in this last round
 
@@ -43,8 +43,8 @@ The walk-and-check step (every surface, at 375, 768, 1440 and 1920, with the eye
 
 ### Bag drawer matches the draft's bag panel
 
-Mapped from the draft markup (the draft's storefront `.dc.html` file, the `bagOpen` block) onto `sgs/cart` settings. All of
-it is universal: every value is a block setting with an editor control, and nothing is specific to the optician client in code.
+Mapped from the draft markup (`Eye Care Birmingham.dc.html`, the `bagOpen` block) onto `sgs/cart` settings. All of
+it is universal: every value is a block setting with an editor control, and nothing is Eye Care specific in code.
 
 - **A real bug fixed on the way.**
   - The nav store moves the drawer `<dialog>` to `<body>` when it opens. Every panel rule was scoped through the
@@ -72,7 +72,7 @@ it is universal: every value is a block setting with an editor control, and noth
     - "Mini-cart sizes and spacing": per-device widths and gaps, the padding of each band, corners.
     - "Mini-cart shadow and motion": shadow, slide-in time and curve.
   - Colour panel: 23 new colour rows, with a hover state on Checkout.
-- **The optician client values** set in `header.tree.json`'s cart:
+- **Eye Care values** set in `header.tree.json`'s cart:
   - Panel: 460px wide, cream panel, white footer.
   - Heading: "Bag (0)" in Playfair 22px, with the count in Outfit 13px.
   - Empty state: "Nothing in here yet." (Playfair 26px), centred above "SHOP SUNGLASSES".
@@ -170,7 +170,7 @@ it is universal: every value is a block setting with an editor control, and noth
 
 ## 4. Still open (in order of priority)
 
-1. **Walk and check every surface**: `.claude/plans/2026-10-01-optician-review-phase-plan.md` steps 5-6 (the
+1. **Walk and check every surface**: `.claude/plans/2026-10-01-eye-care-review-phase-plan.md` steps 5-6 (the
    deploy itself is done, section 1).
 2. **Footer.** Not started in code; the helper agent died on the usage limit before it wrote anything.
    - Gaps found by screenshots (`footer-{draft,live}-{1440,375}.png` in the old scratchpad; re-take them with the
@@ -179,7 +179,7 @@ it is universal: every value is a block setting with an editor control, and noth
      - Column headings: small grey Outfit in letter-spaced capitals (ours use Playfair).
      - Links: about 31px apart.
      - Brand block: a gap between the wordmark and the tagline.
-     - "About <client name>" is not underlined.
+     - "About Eye Care" is not underlined.
      - The address sits on two lines, and the hours on one grey line.
      - Social boxes: 40px with a grey border and brand-coloured icons, ordered Instagram, Google, WhatsApp.
      - Bottom bar: a full-width hairline, with Privacy and Terms on the right.
@@ -227,7 +227,7 @@ it is universal: every value is a block setting with an editor control, and noth
 
 ## 7. The other cloud session's commits (nav and drawer framework, `session_015nP9…`)
 
-All on `main`, all framework, mainly for the wholesale-food client and the reference site:
+All on `main`, all framework, mainly for Indus and lamalama:
 
 - 65dcf47: social icons circle style and sizes.
 - 9dcd9e8, 3dd9a81, d9fe0e8: nav drawer menu ornament frames, item parity, mega body padding.

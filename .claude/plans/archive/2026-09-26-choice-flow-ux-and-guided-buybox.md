@@ -11,7 +11,7 @@ date: 2026-09-26
 **Status (2026-09-26): DONE.** Every wave is built, live on sandybrown and eye-care-test, and QA'd.
 - **Commits:** 60bde4b0a (the wave), 1d5071b4c, 03e5c1a33, 74e6546a9 (showcase fixes against the draft),
   5c17a44d0 (answer-row fix, guided unchosen start, flow opener label); close-out f6da8fc09, f26c23146, 84c6fc505.
-- **The optician client:** the lens configurator runs the showcase layout (post 463, `gen_lens_configurator.py`). Draft compared
+- **Eye Care:** the lens configurator runs the showcase layout (post 463, `gen_lens_configurator.py`). Draft compared
   at 1440, 768 and 375; six differences found and fixed in 74e6546a9. The £268 path, cart rows and Buy now to
   checkout are proven. The draft is also hosted at mintcream-lyrebird-224487.hostingersite.com.
 - **Mama's (sandybrown):**
@@ -27,7 +27,7 @@ date: 2026-09-26
   - Two panel names collided in the shared component map (now `FlowLayoutPanel` / `FlowNavigationPanel`).
 
 **Close-out (2026-09-26):**
-- The optician client: `summaryBaseLabel` "Frame" and `closeStyle` "text" set; post 463 rebuilt (invalid [], no drift) and
+- Eye Care: `summaryBaseLabel` "Frame" and `closeStyle` "text" set; post 463 rebuilt (invalid [], no drift) and
   compared with the draft at 1440, 768 and 375. The one structural difference was a second, round Close from the
   popup itself; a flow's header Close now hides it (f26c23146). Accepted difference: the draft advances on tap at
   step 1; the flow shows Continue on every step (D1).
@@ -39,7 +39,7 @@ date: 2026-09-26
     returned early when that group was already showing)
   - editor round trips pass for every new setting: no invalid-content notice, values persist, the frontend follows.
     `requireChoice` and `showTermDetails` were proven on a temporary page, deleted afterwards
-  - the optician client £268 path: one line at £268 with "Options: Thin · 1.6 · Distance · Polarised" and "Your
+  - the Eye Care £268 path: one line at £268 with "Options: Thin · 1.6 · Distance · Polarised" and "Your
     prescription: Send it later"
 - Next: Phase 5 of `2026-09-14-spec42-43-form-choiceflow-phase-plan.md`, in a fresh session.
 
@@ -50,7 +50,7 @@ date: 2026-09-26
 - Close is ugly
 - step titles are weak
 
-Bean also proposed building the flow into the buybox itself. The optician client draft's side panel (frame photo plus a
+Bean also proposed building the flow into the buybox itself. The Eye Care draft's side panel (frame photo plus a
 running list of choices) is the same "show the finished product" feature and closes the lens-flow visual gap.
 
 **Scope rule:** this track builds choice-flow capability. Client follow-ups are out of scope (memory:
@@ -64,7 +64,7 @@ this plan is clear.
 | D1 | **Continue model is the default.** Picking an option selects it and does not advance; a footer "Continue" moves on. A flow setting `advanceMode` keeps "advance on tap" for quick quizzes. | Bean's structural fix; quizzes still benefit from tap-to-advance. |
 | D2 | **The "Continue" button is muted, not hidden, until an option is chosen.** It uses `aria-disabled` (still focusable) with muted colours. Pressing it early shows "Choose an option to continue". A default option makes it active at once. | The layout doesn't jump and keyboard and screen-reader users still find it ([Kitty Giraudel](https://kittygiraudel.com/2024/03/29/on-disabled-and-aria-disabled-attributes/), [a11y-101](https://a11y-101.com/development/aria-disabled)). |
 | D3 | **Final step: footer right holds "Add to basket" and "Buy now".** Each can be switched on or off and its label edited. "Buy now" adds the item, then goes to checkout. The final step's body becomes a summary, not a button. | Back on the left, actions on the right, as Bean described. |
-| D4 | **Summary panel ("your box").** It shows the product image (the chosen variation's image once resolved, else the product's), one row per choice made, and the running total. It sits in a left column on desktop (as in the optician client draft) and is collapsible above the steps on mobile. It extends the existing price panel rather than adding a second one. | "Show the finished product" and the lens draft's side panel; [Baymard: keep the summary visible, collapsed on mobile](https://baymard.com/blog/payment-ux). |
+| D4 | **Summary panel ("your box").** It shows the product image (the chosen variation's image once resolved, else the product's), one row per choice made, and the running total. It sits in a left column on desktop (as in the Eye Care draft) and is collapsible above the steps on mobile. It extends the existing price panel rather than adding a second one. | "Show the finished product" and the lens draft's side panel; [Baymard: keep the summary visible, collapsed on mobile](https://baymard.com/blog/payment-ux). |
 | D5 | **Option images.** Each option keeps its own `image`. For product-option steps, an option with no own image uses the term's swatch image (`_sgs_swatch_image_id`, the same meta the buybox pills read), so an image set once on a term shows everywhere. | One source of truth per term. |
 | D6 | **Close is a round 44px icon button.** It shows × in an SVG, is labelled "Close" for screen readers, and brightens on hover. | Replaces the text-plus-× pill. |
 | D7 | **Step titles default to bold (700), with a font-weight control.** | Bean: titles need more weight. |
@@ -72,7 +72,7 @@ this plan is clear.
 | D9 | **Price-changing choices sit either all in the flow or all on the page.** The editor warns when a flow asks some but not all of its product's variation-forming attributes. Add-ons and non-priced options are free either way. | Bean, point 5. |
 | D10 | **Guided buybox.** `sgs/buybox` gets a "Guided" layout that shows one option group at a time: variation attributes plus the product's non-priced attributes, which travel as answer rows. It has a progress meter and Back / Next beneath. Adding to the basket with groups unfinished (and no default to fill them) shows "Finish choosing: Flavour, Topping" and jumps to the first unfinished group. Design gate first (below). | Bean's idea: the flow inside the buybox. |
 
-| D11 | **Full-screen flows get a showcase layout** (Spec 43 FR-43-24), modelled on the optician client draft's lens flow: a header bar, a full-width progress line, a sticky stage (the finished product, running lines, a big total) beside large image-led option cards, and a footer bar. The compact layout stays for inline flows and the guided buybox. | Bean, 2026-09-26: the compact flows are "weak and underwhelming" full screen and should use the space like the lens draft. |
+| D11 | **Full-screen flows get a showcase layout** (Spec 43 FR-43-24), modelled on the Eye Care draft's lens flow: a header bar, a full-width progress line, a sticky stage (the finished product, running lines, a big total) beside large image-led option cards, and a footer bar. The compact layout stays for inline flows and the guided buybox. | Bean, 2026-09-26: the compact flows are "weak and underwhelming" full screen and should use the space like the lens draft. |
 
 | D12 | **Architecture (Spec 43 FR-43-25, Bean 2026-09-26).** The saved flow owns content and look (layout chosen on the flow, no per-placement overrides). Any purchasable product can link a flow, and its buybox then renders the popup and opener itself. The guided buybox stays product-options-only, with term-level image, badge and description plus buybox-level styling of its peripherals. | "Saved flow only"; "Product setting, buybox auto-wires"; "keep them separate". |
 
@@ -95,10 +95,10 @@ write the design into Spec 43 as FR-43-23 before Wave 2.
 ## Wave 1.5: showcase layout (one agent, after Wave 1 lands, about 20 min)
 The main thread wires Wave 1 first. One agent then owns FR-43-24 on top of it: the root `flowLayout` setting, the frame and body grid CSS, the stage (extending Wave 1's summary panel), the question `intro` attribute, the large option-card styling and the narrow-container collapse.
 
-**Reference build: the optician client lens flow** (Bean, 2026-09-26: cloning it faithfully establishes the showcase layout
+**Reference build: the Eye Care lens flow** (Bean, 2026-09-26: cloning it faithfully establishes the showcase layout
 and closes the lens-flow gap in one step).
 - The agent builds the showcase against the draft's `lensOpen` dialog.
-- It applies the layout to the optician client configurator (post 463).
+- It applies the layout to the Eye Care configurator (post 463).
 - Acceptance is the draft beside the live flow at 1440, 768 and 375, compared in screenshots with the differences
   listed. It is not done while a structural difference remains.
 - Mama's full-screen journeys then inherit the proven layout; only their content differs.
@@ -127,7 +127,7 @@ and closes the lens-flow gap in one step).
   - Journey B (pack on the page, flow for the rest), rebuilt on the product link; the per-product template
     `single-product-classic-lactation-cookies` is deleted
   - Journey C: product 3990's page with the guided buybox
-- **The optician client:** the lens configurator with the summary panel as the draft's left aside, compared with the draft at
+- **Eye Care:** the lens configurator with the summary panel as the draft's left aside, compared with the draft at
   1440, 768 and 375 (this closes the lens-flow visual clone).
 - **One batched QA pass:**
   - every journey at 1440 and 375
@@ -137,7 +137,7 @@ and closes the lens-flow gap in one step).
   - the progress bar empty at the start
   - keyboard and focus
   - an editor round trip for each new setting
-  - the optician client £268 path, as a regression check
+  - the Eye Care £268 path, as a regression check
 
 ## Verification commands
 - `npm run build` (all fast gates); the deploy's full gates.
@@ -148,4 +148,4 @@ and closes the lens-flow gap in one step).
 - Spec 43 v1.8.0: FR-43-23 (guided buybox), plus D1 to D9 folded into FR-43-1 / 2 / 3 / 15 / 19.
 - This plan's status.
 - The LEDGER row.
-- The optician client plan's lens-configurator gap closed.
+- The Eye Care plan's lens-configurator gap closed.

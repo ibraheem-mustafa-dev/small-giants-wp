@@ -1,7 +1,7 @@
 ---
 doc_type: implementation-plan
-plan_id: optician-review-phase
-phase_name: The optician client - one plan, every surface reviewed, a work plan by surface
+plan_id: eye-care-review-phase
+phase_name: Eye Care - one plan, every surface reviewed, a work plan by surface
 project: small-giants-wp
 spec_id: client build (Front F, D1149)
 status: READY (next session)
@@ -10,9 +10,9 @@ cost_estimate: "about 1 session; up to 9 Sonnet subagent runs (3 checkers, 1 con
 docscore_grade: see Phase Header
 ---
 
-# The optician client phase: one plan, every surface reviewed, a work plan by surface
+# Eye Care phase: one plan, every surface reviewed, a work plan by surface
 
-**USP:** the optician client is the first client site built end to end on SGS. This phase turns six active plan docs, three archived ones and a
+**USP:** Eye Care is the first client site built end to end on SGS. This phase turns six active plan docs, three archived ones and a
 cloud handover into one accurate picture, then measures every surface against the draft, so the build that follows
 is a straight list of fixes instead of rediscovery.
 **Plan label:** [PLAN: opus] (the classification and the work plan are judgement; the runs are delegated)
@@ -21,7 +21,7 @@ is a straight list of fixes instead of rediscovery.
 row classifiers, the rest inline.
 
 **Phase success criteria (done when):**
-- [ ] One unified the optician client doc exists in `.claude/plans/`, with a section per surface, every claim in it checked
+- [ ] One unified Eye Care doc exists in `.claude/plans/`, with a section per surface, every claim in it checked
       against code or the live site; the nine source docs are in `plans/archive/` and no live doc cites their old path
       (`git grep` command in QA Gate 1 returns nothing).
 - [ ] Every surface has a fresh walker report (`sites/eye-care-ward-end/build/qa/parity/out/<surface>/report.md`)
@@ -31,8 +31,8 @@ row classifiers, the rest inline.
 - [ ] The work plan (in the unified doc) orders the fixes by surface, and Bean has approved it.
 
 **Entry context (read before starting):**
-- `.claude/plans/2026-10-01-optician-cloud-handover.md`: what the cloud session built and what is still open (§4).
-- `.claude/plans/2026-09-24-optician-hand-build-design.md` Status block: the governing build plan (D1149).
+- `.claude/plans/2026-10-01-eye-care-cloud-handover.md`: what the cloud session built and what is still open (§4).
+- `.claude/plans/2026-09-24-eye-care-hand-build-design.md` Status block: the governing build plan (D1149).
 - `sites/eye-care-ward-end/CLAUDE.md`: the client, the positioning, what the draft must feel like.
 - `scripts/parity/GAP-CHECKLIST.md`: the walker method (exit 0 = lint, 0 open, every shot reviewed).
 - `.claude/plans/2026-10-01-header-nav-thread-plan.md` §2.2: the four-way row classification this phase reuses.
@@ -67,7 +67,7 @@ Step 1 — Read the map and the four decisions below
                "known small accepted differences" (drawer stagger brings the four Shop links in together; review
                stars 2px apart) and KJC 3 (test order for the confirmation page).
   Files:       none
-  Inputs:      this plan; `.claude/plans/2026-10-01-optician-cloud-handover.md` §4
+  Inputs:      this plan; `.claude/plans/2026-10-01-eye-care-cloud-handover.md` §4
   Outcome:     Bean's answers recorded in this plan's KJC section.
   Exec:        SEQUENTIAL
   Deps:        none
@@ -82,13 +82,13 @@ Step 1 — Read the map and the four decisions below
     Fail:        Contradicts a doc → the doc is wrong; note it for step 3.
     Integration: standalone
 
-Step 2 — Check every the optician client plan doc for accuracy (3 checkers in parallel)
+Step 2 — Check every Eye Care plan doc for accuracy (3 checkers in parallel)
   Model:       sonnet (x3)
   Action:      Dispatch the three prompts below in one message. Each checker reads its docs, lists every claim of
                "built / done / live / open / parked", and verifies each against the code (grep by symbol) and, where
                the claim is about the live page, by fetching the test site. Output: a claim table per doc with
                TRUE / STALE (with the current truth) / OPEN.
-  Files:       writes only `C:\Users\Bean\AppData\Local\Temp\plan-doc-check-{a,b,c}.md` (scratch)
+  Files:       writes only `C:\Users\Bean\AppData\Local\Temp\eye-care-doc-check-{a,b,c}.md` (scratch)
   Inputs:      the nine docs (split below)
   Outcome:     three claim tables; every STALE row carries the evidence (command or URL) that shows the current truth.
   Exec:        PARALLEL (three agents; no shared files)
@@ -98,31 +98,31 @@ Step 2 — Check every the optician client plan doc for accuracy (3 checkers in 
   Tooling:     Agent (sonnet), Grep, curl
   On-Fail:     A checker that cannot reach the site marks those rows UNVERIFIED and continues.
   Prompt (template; fill DOCS and OUT per checker):
-    > Read-only. Repo C:\Users\Bean\Projects\small-giants-wp. Check these the optician client plan docs for accuracy: DOCS.
+    > Read-only. Repo C:\Users\Bean\Projects\small-giants-wp. Check these Eye Care plan docs for accuracy: DOCS.
     > For every claim that something is built, done, live, deployed, open, parked or decided, verify it: code claims
     > by grepping the named symbol or file (cite as path::symbol, never line numbers); live claims by fetching
     > https://darkcyan-grouse-898606.hostingersite.com (pages are public; use a browser user agent). Mark each claim
     > TRUE, STALE (give the current truth and the evidence) or OPEN (still to do). Note any two docs that disagree.
     > Do not edit any repo file. Write the result to OUT as one table per doc: claim | doc section | verdict |
     > evidence. Under 1,200 words. Final reply: counts per verdict per doc, and the list of disagreements.
-    - Checker A: DOCS = `.claude/plans/2026-09-24-optician-hand-build-design.md`,
-      `.claude/plans/2026-09-24-optician-findings-1-8-9-design.md`; OUT = `...\plan-doc-check-a.md`
-    - Checker B: DOCS = `.claude/plans/2026-09-25-optician-product-page.md`,
-      `.claude/plans/2026-09-28-optician-product-page-parity.md`, `.claude/plans/archive/2026-09-25-optician-product-card.md`,
-      `.claude/plans/archive/2026-09-26-optician-shop-parity.md`; OUT = `...\plan-doc-check-b.md`
-    - Checker C: DOCS = `.claude/plans/2026-09-25-optician-bag-checkout-prescription.md`,
-      `.claude/plans/2026-10-01-optician-cloud-handover.md`, `.claude/plans/archive/2026-09-28-optician-resume-tracker.md`;
-      OUT = `...\plan-doc-check-c.md`
+    - Checker A: DOCS = `.claude/plans/2026-09-24-eye-care-hand-build-design.md`,
+      `.claude/plans/2026-09-24-eye-care-findings-1-8-9-design.md`; OUT = `...\eye-care-doc-check-a.md`
+    - Checker B: DOCS = `.claude/plans/2026-09-25-eye-care-product-page.md`,
+      `.claude/plans/2026-09-28-eye-care-product-page-parity.md`, `.claude/plans/archive/2026-09-25-eye-care-product-card.md`,
+      `.claude/plans/archive/2026-09-26-eye-care-shop-parity.md`; OUT = `...\eye-care-doc-check-b.md`
+    - Checker C: DOCS = `.claude/plans/2026-09-25-eye-care-bag-checkout-prescription.md`,
+      `.claude/plans/2026-10-01-eye-care-cloud-handover.md`, `.claude/plans/archive/2026-09-28-eye-care-resume-tracker.md`;
+      OUT = `...\eye-care-doc-check-c.md`
   Test:
     Happy:       three files, every claim with a verdict.
     Edge:        a claim about a page the site serves from cache → re-fetch with `?cb=<random>`.
     Fail:        a checker returns verdicts without evidence → send it back for the evidence column.
     Integration: feeds step 3.
 
-Step 3 — Write the one unified the optician client doc and retire the nine
+Step 3 — Write the one unified Eye Care doc and retire the nine
   Model:       inline
   Action:      Spot-check five STALE verdicts from step 2 yourself (re-run the evidence). Then write
-               `.claude/plans/<today>-optician-plan.md` with: Status; Decisions (Bean's, from every doc and the
+               `.claude/plans/<today>-eye-care-plan.md` with: Status; Decisions (Bean's, from every doc and the
                handover §5); Surfaces, one section each: header, mega menus (Sunglasses, Brands, Lenses, Help), phone
                drawer, the two nav menu blocks, bag drawer, footer, home, shop, product, lens configurator, lenses,
                about, help, contact, checkout, confirmation. Each section: what is built (TRUE claims only), what is
@@ -144,11 +144,11 @@ Step 3 — Write the one unified the optician client doc and retire the nine
     Fail:        a claim with no evidence → it goes under "open: unverified", never under built.
     Integration: LEDGER Front F points at the new doc.
 
-QA Gate 1 — No live reference to a retired the optician client doc
+QA Gate 1 — No live reference to a retired Eye Care doc
   Model:   inline
   Exec:    SEQUENTIAL
   Deps:    steps 2-3
-  Check:   `git grep -n -E "plans/2026-09-2[4-8]-optician|plans/2026-10-01-optician-cloud-handover" -- . ':!.claude/plans/archive/' ':!.claude/archive/' ':!.claude/plans/2026-10-01-optician-review-phase-plan.md'`
+  Check:   `git grep -n -E "plans/2026-09-2[4-8]-eye-care|plans/2026-10-01-eye-care-cloud-handover" -- . ':!.claude/plans/archive/' ':!.claude/archive/' ':!.claude/plans/2026-10-01-eye-care-review-phase-plan.md'`
   Pass:    no output; `python .claude/hooks/handoff-preflight.py --check` exits 0.
   Fail:    repoint each hit (dated reports → the archive path; live docs → the new doc), re-run.
   Marker:  QA
@@ -160,7 +160,7 @@ Step 4 — Write the footer walker config
                `dc.html`, the `<footer>` block) with its live counterpart: the brand block (wordmark and tagline),
                each column heading, each link, the address, the hours line, the three social boxes, the bottom bar,
                its hairline and the Privacy and Terms links. The draft footer is the `<footer class="sgs-footer">` in
-               The draft's storefront `.dc.html` file (not the line range the handover
+               `Ward End Eye Care - SGS Gap Handoff/Eye Care Birmingham.dc.html` (not the line range the handover
                gives). Run `--self draft` to prove the config reads 0 against itself.
   Files:       `sites/eye-care-ward-end/build/qa/parity/footer.mjs` only
   Inputs:      `home.mjs` (pattern), the draft's footer markup, the live footer (`sgs_footer` post; find its ID with
@@ -175,10 +175,10 @@ Step 4 — Write the footer walker config
                the rest as presence rows (that is the finding, not a config error).
   Prompt:
     > Repo C:\Users\Bean\Projects\small-giants-wp. Write ONE new file:
-    > sites/eye-care-ward-end/build/qa/parity/footer.mjs, a parity-walker config for the optician client footer. Copy the
+    > sites/eye-care-ward-end/build/qa/parity/footer.mjs, a parity-walker config for the Eye Care footer. Copy the
     > structure of sites/eye-care-ward-end/build/qa/parity/home.mjs (draft URL, live URL, states, pairs, review,
     > accept) and read scripts/parity/GAP-CHECKLIST.md for the pair options. The draft footer is the <footer> in the
-    > The optician client draft (the <footer class="sgs-footer"> in sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/Eye Care Birmingham.dc.html); the live
+    > Eye Care draft (the <footer class="sgs-footer"> in sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/Eye Care Birmingham.dc.html); the live
     > footer is on https://darkcyan-grouse-898606.hostingersite.com/. Pair: the brand block (wordmark, tagline), each
     > column heading, each column's links, the address, the hours line, each social box, the bottom bar, its
     > hairline, and the Privacy and Terms links; include hover on links and social boxes. Then run
@@ -251,7 +251,7 @@ Step 7 — Classify every open row, per surface
   Tooling:     Agent (sonnet), sgs-db.py
   On-Fail:     counts that do not add up to the row total → send back.
   Prompt (template; the one used for Gate 3C on 2026-10-01, with SURFACES and paths filled):
-    > Read-only. Classify every open parity row in ROWS_FILES (the optician client draft vs the SGS copy on eye-care-test) into
+    > Read-only. Classify every open parity row in ROWS_FILES (Eye Care draft vs the SGS copy on eye-care-test) into
     > exactly one of: ACCEPT-BLIND (the walker cannot judge it: script-driven motion, timeline samples, host
     > console errors); ACCEPT-SAME-PAINT (structure differs, a visitor sees the same, nothing hardcoded: inner vs
     > outer padding, transition shorthand naming, display variants with the same layout, a transition on a property
@@ -303,7 +303,7 @@ Step 8 — Write the work plan, by surface
 ### Primary decisions (surfaced during planning)
 
 - **Decision:** Where the unified doc lives and what it replaces.
-  - **Options:** A) a new dated `optician-plan.md` that replaces all nine; B) extend the hand-build design plan.
+  - **Options:** A) a new dated `eye-care-plan.md` that replaces all nine; B) extend the hand-build design plan.
   - **Recommendation:** A.
   - **Why:** the hand-build plan's Status block has grown into a history log; a fresh doc states current truth only.
   - **Cost of wrong choice:** B keeps stale history in the governing doc and the next reader trusts it.
@@ -337,16 +337,16 @@ Step 8 — Write the work plan, by surface
   `separators` setting (native gap decorations in Chromium, a small overlay script in Safari and Firefox; the
   walker reads `column-rule` there, not a background), so a background-colour row on those grids is expected, not a
   violation. The five trees (`sites/eye-care-ward-end/build/` home, about, help, lenses, single-product) carry
-  `separators`, and the optician client test site's five pages were rebuilt from them on 2026-10-01
+  `separators`, and the Eye Care test site's five pages were rebuilt from them on 2026-10-01
   (`plans/2026-10-01-separators-plan.md`).
 
 - **Decision:** Which STALE verdicts to spot-check in step 3. **Flagged by:** haiku. **Recommendation:** the first
   STALE claim on each of header, bag, footer, home and product (one per checker group at least). **Why:** those
   surfaces carry the most build work next.
 - **Decision:** The six docs to move. **Flagged by:** both. **Recommendation:** exactly
-  `2026-09-24-optician-hand-build-design.md`, `2026-09-24-optician-findings-1-8-9-design.md`,
-  `2026-09-25-optician-product-page.md`, `2026-09-25-optician-bag-checkout-prescription.md`,
-  `2026-09-28-optician-product-page-parity.md` and `2026-10-01-optician-cloud-handover.md`.
+  `2026-09-24-eye-care-hand-build-design.md`, `2026-09-24-eye-care-findings-1-8-9-design.md`,
+  `2026-09-25-eye-care-product-page.md`, `2026-09-25-eye-care-bag-checkout-prescription.md`,
+  `2026-09-28-eye-care-product-page-parity.md` and `2026-10-01-eye-care-cloud-handover.md`.
 - **Decision:** The live files that cite them. **Flagged by:** sonnet. **Recommendation:** four, found by QA Gate 1's
   command (plus LEDGER's Front F pointer): `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md` (dated report: archive path),
   `.claude/specs/43-SGS-CHOICE-FLOW.md`, `plugins/sgs-blocks/includes/choice-flow-chrome.php` and

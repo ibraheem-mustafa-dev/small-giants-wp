@@ -131,7 +131,7 @@ binding_rules_invoked:
 - [ ] Fix 2b shipped: section-internal BEM wrapper rows in slot_synonyms (`__content`, `__media`, `__inner`, `__products`, `__pill-group`, `__price-row`, `__cards`, `__card-inner` → sgs/container; alias extensions to text/label for `disclaimer`, `card-tag`, `card-description`, `card-price`) — applied via canonical seed-slot-synonyms.py flow, both DBs verified, per-row measurement gating
 - [ ] Top 10 hybrid blocks migrated to FR-22-6 InnerBlocks pattern (hero, media, icon-list, cta-section, form-field-number, plus next 5 by hybrid_attr_count)
 - [ ] Remaining 51 blocks migrated (long-tail; single-attr blocks)
-- [ ] WP-CLI batch existing-post migration script shipped + tested on the campaign-site client staging
+- [ ] WP-CLI batch existing-post migration script shipped + tested on palestine-lives staging
 - [ ] Mama's canary Stage 11 pixel-diff per-section ≤5% × 3 viewports (Phase 1 acceptance gate per Spec 22 FR-22-7)
 - [ ] R-22-13 Bean visual sign-off on cropped-pair PNGs per section
 - [ ] TEMP header-hide CSS override removed (commit `9a1bb252` reverted when header/footer migrate)
@@ -186,7 +186,7 @@ binding_rules_invoked:
 
 Before Stream A starts:
 - Fix 1 (walker FR-22-3 #3 ordering) shipped on origin/main as commit `5731dc36`. Verified by: `git log --oneline | grep 5731dc36`.
-- Post-Fix-1 baseline measurement captured at `pipeline-state/bakery-client-homepage-2026-05-27-193804/stage-11-pixel-diff.json` (mean 58.6%). Stream A's Step A5 compares against this.
+- Post-Fix-1 baseline measurement captured at `pipeline-state/mamas-munches-homepage-2026-05-27-193804/stage-11-pixel-diff.json` (mean 58.6%). Stream A's Step A5 compares against this.
 - **Post-D107-D113 baseline (2026-05-30):** mean **56.40%** (−2.20pp from post-Fix-1 baseline). Stream A continuation shipped: XS-2 voter tier column (D107), block_composition data layer (D108, walker consumption deferred), XS-4 canonical_slot backfill 2.5% → 33.4% (D110), XS-5 slot row retirements (D111), D6 inheritance script expansion (D112). XS-3 walker recursion REVERTED (D109) after +13.07pp regression on featured-product / +10.40pp on social-proof — refined trigger queued for next session at parking entry P-XS-3-TRIGGER-REFINEMENT.
 - R-22-14 binding rule active in Spec 22 §6 (commit `37dd2c79`).
 - 4 captured lessons indexed in MEMORY.md.
@@ -314,7 +314,7 @@ Step A4 — /sgs-update downstream stage refresh
 ```
 Step A5 — Re-baseline /sgs-clone post-Fix-2b
   Model:       inline
-  Action:      Run `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --converter-v2 --debug-trace --spec-22-acceptance --deploy-target page:144`. Capture stage-11-pixel-diff.json. Compare per-cell vs post-Fix-1 baseline (58.65% mean; run dir `pipeline-state/bakery-client-homepage-2026-05-27-193804/`).
+  Action:      Run `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --converter-v2 --debug-trace --spec-22-acceptance --deploy-target page:144`. Capture stage-11-pixel-diff.json. Compare per-cell vs post-Fix-1 baseline (58.65% mean; run dir `pipeline-state/mamas-munches-homepage-2026-05-27-193804/`).
   Files:       New pipeline-state/<run-id>/ artefacts
   Inputs:      Live walker with Fix 1 + Fix 2b rows in place
   Outcome:     Per-cell pixel-diff captured; per-section deltas computed. **Hero 1440 in particular: did it drop now that __content/__media wrappers preserve?** Featured-product, gift-section, ingredients-section also expected to improve from internal-wrapper resolution.
@@ -561,14 +561,14 @@ Step C1 — WP-CLI migration script design
     Integration: feeds C2.
 ```
 
-### Step C2 — Test on the campaign-site client staging
+### Step C2 — Test on palestine-lives staging
 
 ```
-Step C2 — Test WP-CLI script on the campaign-site client staging
+Step C2 — Test WP-CLI script on palestine-lives staging
   Model:       inline
-  Action:      Take a backup of the campaign-site client DB. Run script in `--dry-run` mode first (logs would-migrate posts without writing). Then run live on 1-2 test posts. Verify frontend renders correctly before + after via Playwright.
+  Action:      Take a backup of palestine-lives DB. Run script in `--dry-run` mode first (logs would-migrate posts without writing). Then run live on 1-2 test posts. Verify frontend renders correctly before + after via Playwright.
   Files:       (none; runs against live WP)
-  Inputs:      C1 script + the campaign-site client's live domain SSH access
+  Inputs:      C1 script + palestine-lives.org SSH access
   Outcome:     Script verified safe; ready for production sweep.
   Exec:        SEQUENTIAL
   Deps:        C1
@@ -588,7 +588,7 @@ Step C2 — Test WP-CLI script on the campaign-site client staging
 ```
 Step C3 — Production sweep
   Model:       inline (Bean-gated per site)
-  Action:      For each production client site (the campaign-site client's live domain, the bakery client site if live, the wholesale-food client, the charity client): backup DB, run dry-run, present queue to Bean for approval, run live migration. Per blub.db 213 (Rosetta Stone discipline) — log migrations to recognition_log.
+  Action:      For each production client site (palestine-lives.org, mamas-munches client site if live, indus-foods, helping-doctors): backup DB, run dry-run, present queue to Bean for approval, run live migration. Per blub.db 213 (Rosetta Stone discipline) — log migrations to recognition_log.
   Files:       (per-site; backups stored in pipeline-state/)
   Inputs:      C2 verified script
   Outcome:     All production sites' legacy hybrid-block posts migrated to v(N+1) shape.
@@ -719,7 +719,7 @@ The formal Hidden Decisions pass (gemini-flash + cerebras parallel peer review p
 | Risk | Likelihood × Impact | Mitigation |
 |---|---|---|
 | Wave-1 parallel implementers produce inconsistent migration shapes | M × H | Detailed migration template in B0; council per block in B2 |
-| WP-CLI batch script fails on edge-case post shapes | M × H | C2 staging test on the campaign-site client before C3 production sweep |
+| WP-CLI batch script fails on edge-case post shapes | M × H | C2 staging test on palestine-lives before C3 production sweep |
 | Wave-2 parallel dispatch overwhelms /qc-council bandwidth | M × M | Batch size of 8-12; sequential between batches |
 | Production site regression during sweep | L × H | Per-site DB backup; Bean-gated approval per site |
 | Some blocks have content-bearing attrs that don't map to any existing primitive (need new InnerBlock target) | L × M | DB-quality pre-pass (A1) catches this; surface as parking entry |

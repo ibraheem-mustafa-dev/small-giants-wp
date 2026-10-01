@@ -39,5 +39,5 @@ mapped / dropped-with-reason / flagged as a gap — a loud failure, never a quie
    savePost` sequence, the backup-first rule, and the one-section-at-a-time guidance.
 
 ## Status
-Proven on the wholesale-food client's page 13: 26/26 auto-migrate, 0 refused; editor-apply proven live on the CTA
+Proven on Indus page 13: 26/26 auto-migrate, 0 refused; editor-apply proven live on the CTA
 section (renders identically, no invalid-block warnings). /qc-inline: 92/100 (ship).

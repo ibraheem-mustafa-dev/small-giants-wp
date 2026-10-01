@@ -22,7 +22,7 @@
 
 ## 0. Context & primary outcome
 
-**Problem:** Five client projects are all urgent/high-value, but two of them (the bakery client ecom + the sleep-product client 3D configurator) depend on framework features that don't exist yet. Sequential delivery leaves revenue on the table; parallel delivery requires clear tracks so nothing collides.
+**Problem:** Five client projects are all urgent/high-value, but two of them (Mama's Munches ecom + Snooza 3D configurator) depend on framework features that don't exist yet. Sequential delivery leaves revenue on the table; parallel delivery requires clear tracks so nothing collides.
 
 **Effect if we don't plan:** Framework half-built during first major client launch; bespoke code leaks into client sites; ecommerce/3D features get built ad-hoc for one client and then have to be re-extracted into the framework later (more work, more risk).
 
@@ -36,7 +36,7 @@
 
 Order fixed per Bean's call (2026-04-21). Blockers noted; unblocker dates drive Track B scheduling.
 
-### 1.1 the bakery client — small ecom rebuild
+### 1.1 Mama's Munches — small ecom rebuild
 - **Current state:** Live site decent on desktop, awful on mobile. Only logo is set.
 - **Scope:** Full ecom rebuild. Fresh design (brand TBD during discovery). Mobile-first.
 - **Deliverables:** Homepage, product catalogue, product page, cart, checkout, order confirmation, account, basic CMS pages.
@@ -44,7 +44,7 @@ Order fixed per Bean's call (2026-04-21). Blockers noted; unblocker dates drive 
 - **Kick-off gate:** SGS Ecommerce Plugin Phase 1 (catalogue + single-product page + Stripe one-off checkout) shippable.
 - **End state / QC success:** Bean reviews design once at mockup stage, once at pre-launch. Between those: zero human QC required. Orders flow into WP → Stripe → email confirmation → admin order list. No manual data entry.
 
-### 1.2 the wholesale-food client — Phase 2 + pricing
+### 1.2 Indus Foods — Phase 2 + pricing
 - **Current state:** Homepage live on test site (Hostinger). Core template built. Phase 1 close-out committed (`bfe0e4e`). Client brief at `sites/indus-foods/CLAUDE.md`; outstanding issues at `sites/indus-foods/outstanding-issues.md`.
 - **Scope — Phase 2:** Complete the 4 service-audience pages (using shared template), trade application form (4-step), product catalogue display, content migration, SEO pass, launch.
 - **Pricing:** **Separate deliverable** — produce quote for Phase 2 + roadmap for Phase 3+. Requires `/quoter` (rebuild per tooling audit) + `/sales-intelligence-advisor` 6-lens material (extracted into `/quoter`).
@@ -61,12 +61,12 @@ Order fixed per Bean's call (2026-04-21). Blockers noted; unblocker dates drive 
 - **Required first step:** Set up `sites/cmx-group/CLAUDE.md` + folder with client brief, feedback notes, competitor URLs.
 - **End state / QC success:** Bean sends quote + mockup link; CMX signs off or gives redirection; if sign-off, project moves to build phase (out of Step 2 scope).
 
-### 1.4 the sleep-product client Chair / Ophir Solutions — 3D demo + colour picker
+### 1.4 Snooza Chair / Ophir Solutions — 3D demo + colour picker
 - **Current state:** 3D model present in `sites/snooza-chair/` (GLB/model files); Wix original site; brief in `sites/snooza-chair/CLAUDE.md`. Commit `d0a3e79` added 3D assets.
 - **Scope — demo deliverable (for pitching):** A single product-page demo showing the chair rotating in 3D (Google `<model-viewer>`) with:
   - Colour picker: 6 colours (Mandarin Orange, Royal Blue, Apple Green, Grey, Hot Pink, Black)
   - Size picker: 4 sizes (Size 1 → Size 4)
-  - Accessory toggles: rocker base, the sleep-product client Lite, mobile base, pommel, leg rest (add-in/add-out components in preset places)
+  - Accessory toggles: rocker base, Snooza Lite, mobile base, pommel, leg rest (add-in/add-out components in preset places)
   - Variant swap = swap GLB model OR material/texture for colour
   - AR "view in your room" button (model-viewer built-in for iOS/Android)
 - **Blocker:** **3D Configurator block + product page block + colour/variant picker block** (§3.2, 3.3).
@@ -124,13 +124,13 @@ Shape dividers, progress bar, before/after image slider, timeline, logo carousel
 
 ### 2.4 Success criteria for §2
 
-All P1 items in 2.1 shipped, committed, verified on the campaign-site client's live domain, captured in `/sgs-update` KB refresh. `/wp-theme-check` clean. `/visual-qa` passes on all existing SGS blocks after the responsive extension lands.
+All P1 items in 2.1 shipped, committed, verified on palestine-lives.org, captured in `/sgs-update` KB refresh. `/wp-theme-check` clean. `/visual-qa` passes on all existing SGS blocks after the responsive extension lands.
 
 ---
 
 ## 3. New framework features required for §1 clients
 
-### 3.1 SGS Ecommerce Plugin (§1.1 the bakery client blocker)
+### 3.1 SGS Ecommerce Plugin (§1.1 Mama's Munches blocker)
 
 **Scope (Phase 1 — minimum to ship Mama's):**
 - Product CPT with price, SKU, stock, images, short/long description, category/tag taxonomy
@@ -151,7 +151,7 @@ All P1 items in 2.1 shipped, committed, verified on the campaign-site client's l
 
 **Spec doc:** Create `specs/10-SGS-ECOMMERCE.md` before build starts.
 
-### 3.2 3D Configurator Block (§1.4 the sleep-product client blocker)
+### 3.2 3D Configurator Block (§1.4 Snooza blocker)
 
 **Scope:**
 - Block: `sgs/3d-configurator`
@@ -174,7 +174,7 @@ All P1 items in 2.1 shipped, committed, verified on the campaign-site client's l
 
 **Spec doc:** Create `specs/11-SGS-3D-CONFIGURATOR.md`.
 
-### 3.3 Product page + variant/colour picker block (§1.4 the sleep-product client + §1.1 Mama's shared)
+### 3.3 Product page + variant/colour picker block (§1.4 Snooza + §1.1 Mama's shared)
 
 **Scope:**
 - Block: `sgs/product-page` (or extend existing product blocks from §3.1)
@@ -214,23 +214,23 @@ Sequence (earliest first):
 1. **Step 3 + Step 4 of master plan** — toolset gap analysis + per-tool improvement. **Precedes all framework work** (tooling has to be reliable before `/wp-sgs-developer` carries the load).
 2. **Responsive Extension** (§2.1 #29/32/34/37/157/163 consolidated) — unlocks responsive controls on all blocks.
 3. **Hover Extension completion** (§2.1 #101/102/104/106/125) — lifts gallery/post-grid-only behaviours into universal extension.
-4. **`/quoter` rebuild** (§3.4) — unblocks the wholesale-food client pricing + CMX quote.
+4. **`/quoter` rebuild** (§3.4) — unblocks Indus pricing + CMX quote.
 5. **Dark-mode extension** (§2.3) — unblocks SGS Studio rebuild.
-6. **SGS Ecommerce Plugin Phase 1** (§3.1) — unblocks the bakery client.
+6. **SGS Ecommerce Plugin Phase 1** (§3.1) — unblocks Mama's Munches.
 7. **Variant/Colour Picker block** (§3.3) — shared component for §3.1 + §3.2.
-8. **3D Configurator block** (§3.2) — unblocks the sleep-product client demo.
+8. **3D Configurator block** (§3.2) — unblocks Snooza demo.
 9. **Block style variations registration** (§2.1 #99) — polish before SGS Studio rebuild.
 
 ### Track B — Client builds (start when blocker clears)
 
 | Client | Start when | Overlaps with |
 |--------|-----------|---------------|
-| **The wholesale-food client Phase 2 (build)** | Immediately (uses existing blocks) | Track A runs in parallel |
-| **The wholesale-food client pricing doc** | A4 done | — |
+| **Indus Foods Phase 2 (build)** | Immediately (uses existing blocks) | Track A runs in parallel |
+| **Indus Foods pricing doc** | A4 done | — |
 | **CMX Group proposal (design)** | Immediately | Track A parallel |
 | **CMX Group quote doc** | A4 done | — |
-| **The sleep-product client demo** | A7 + A8 done | — |
-| **The bakery client build** | A6 shipped | Product page (A7) can land mid-build |
+| **Snooza demo** | A7 + A8 done | — |
+| **Mama's Munches build** | A6 shipped | Product page (A7) can land mid-build |
 | **SGS Studio rebuild** | A5 + responsive extension (A2) done | Other track-A work continues |
 
 ### Dependency graph (text form)
@@ -243,16 +243,16 @@ Toolset (Steps 3+4)
     │                       │    (+ A5 Dark-mode)
     ├── A3 Hover Ext        │
     │                       │
-    ├── A4 /quoter rebuild ─┼──→ the wholesale-food client pricing (1.2) + CMX quote (1.3)
+    ├── A4 /quoter rebuild ─┼──→ Indus pricing (1.2) + CMX quote (1.3)
     │                       │
-    ├── A6 Ecommerce Plugin ┼──→ the bakery client (1.1)
+    ├── A6 Ecommerce Plugin ┼──→ Mama's Munches (1.1)
     │         ↓             │
     ├── A7 Variant Picker ──┤
     │         ↓             │
-    └── A8 3D Configurator ─┴──→ the sleep-product client demo (1.4)
+    └── A8 3D Configurator ─┴──→ Snooza demo (1.4)
 ```
 
-The wholesale-food client Phase 2 build and CMX proposal design kick off in parallel to Track A from day one — neither has a framework blocker for the build itself.
+Indus Phase 2 build and CMX proposal design kick off in parallel to Track A from day one — neither has a framework blocker for the build itself.
 
 ---
 
@@ -262,10 +262,10 @@ For each client, what "zero human intervention" means concretely:
 
 | Client | Bean's QC touchpoints | Everything else by toolset |
 |--------|----------------------|----------------------------|
-| The bakery client | (1) brand/design sign-off on mockup, (2) pre-launch review | Content migration, product data entry, image optimisation, cart/checkout testing, Stripe setup, DNS cutover, post-launch monitoring — all automated or agent-driven |
-| The wholesale-food client Phase 2 | (1) mockup sign-off per page, (2) form copy review, (3) pricing doc approval, (4) pre-launch | All page assembly, content migration, form wiring, N8N webhook config, visual QA loop |
+| Mama's Munches | (1) brand/design sign-off on mockup, (2) pre-launch review | Content migration, product data entry, image optimisation, cart/checkout testing, Stripe setup, DNS cutover, post-launch monitoring — all automated or agent-driven |
+| Indus Foods Phase 2 | (1) mockup sign-off per page, (2) form copy review, (3) pricing doc approval, (4) pre-launch | All page assembly, content migration, form wiring, N8N webhook config, visual QA loop |
 | CMX Group | (1) proposal design sign-off, (2) quote approval | Competitor research, mockup generation, schema setup, quote build |
-| The sleep-product client Chair | (1) configurator fidelity sign-off, (2) demo link review | 3D model processing, variant setup, AR testing cross-device, copy drafting |
+| Snooza Chair | (1) configurator fidelity sign-off, (2) demo link review | 3D model processing, variant setup, AR testing cross-device, copy drafting |
 | SGS Studio | (1) design-language preservation check, (2) content parity review, (3) cutover | Content migration from Next.js, block mapping, dark-mode toggle, DNS cutover |
 
 **If Bean has to intervene beyond these touchpoints, the toolset has failed** → correction captured by lifecycle system → fed back into per-tool gap analysis → tool improved for the next client.
@@ -282,11 +282,11 @@ These are the gaps most likely to require human intervention unless closed by th
 2. **Ecom scope creep** — the Phase 1 checklist is aggressive. **Gap 3 action:** verify each block in §3.1 is genuinely Phase 1; defer anything that only Mama's specifically needs to Phase 2.
 3. **Stripe integration pattern** — Checkout session (redirect) vs Elements (in-page) is a UX/tax/compliance decision. **Gap 3 action:** decide during §3.1 kick-off.
 4. **CMX competitor research depth** — client gave competitors + feedback; is `/sgs-discover` + `/design-ref` enough to produce a credible reference-matched proposal? **Gap 3 action:** confirm tool coverage.
-5. **The wholesale-food client Phase 2 pricing data** — no market/competitor pricing intel captured yet. **Gap 3 action:** check if `/sales-intelligence-advisor` 6-lens output applies to web-agency pricing (it was built for wholesale).
+5. **Indus Phase 2 pricing data** — no market/competitor pricing intel captured yet. **Gap 3 action:** check if `/sales-intelligence-advisor` 6-lens output applies to web-agency pricing (it was built for wholesale).
 6. **SGS Studio content migration** — Next.js pages → WP blocks is not a trivial port. **Gap 3 action:** assess `/sgs-extraction` + `/design-ref` for Next.js sources (not just WP sites).
 7. **Toolset readiness** — the TOOLING-REFERENCE workbook has ~80% `[audit needed]` blocks. Step 4 populates these before Step 5 executes. **Do not start Track A framework work before Step 4 lands** — risk of shipping code the toolset can't maintain.
-8. **Client dir setup** — the bakery client + CMX Group don't have `sites/<client>/` dirs. Setup per client = SGS pipeline #5 (client onboarding) from TOOLING-REFERENCE. **Gap 3 action:** is this pipeline productised or ad-hoc?
-9. **Brand/design for the bakery client** — only logo is set; everything else is TBD. Design discovery needed before build.
+8. **Client dir setup** — Mama's Munches + CMX Group don't have `sites/<client>/` dirs. Setup per client = SGS pipeline #5 (client onboarding) from TOOLING-REFERENCE. **Gap 3 action:** is this pipeline productised or ad-hoc?
+9. **Brand/design for Mama's Munches** — only logo is set; everything else is TBD. Design discovery needed before build.
 10. **Continuous-improvement loop** — the correction-ledger system works in CC, but is it surfaced to `/wp-sgs-developer` mid-build so the agent doesn't repeat errors? **Gap 3 action:** verify.
 
 ---
@@ -313,9 +313,9 @@ This plan is DONE when:
 
 - Does not set dates. All estimates are relative. Real scheduling happens post-Step 3 when the toolset's actual throughput is measured.
 - Does not pick Stripe integration pattern (redirect vs Elements) — deferred to §3.1 kick-off.
-- Does not size the CMX/bakery-client discovery time — varies by brand depth. Captured as Step 5 input.
+- Does not size the CMX/Mama's Munches discovery time — varies by brand depth. Captured as Step 5 input.
 - Does not over-specify the configurator accessory anchor-point system — that's a §3.2 design decision.
-- Does not decide whether to migrate the wholesale-food client from test site to live domain during Phase 2 or defer to Phase 3 — Amir decides.
+- Does not decide whether to migrate Indus Foods from test site to live domain during Phase 2 or defer to Phase 3 — Amir decides.
 
 ---
 
@@ -323,7 +323,7 @@ This plan is DONE when:
 
 | Decision | Made | Captured |
 |---------|------|----------|
-| Client order = Bean's listed order (Mama's → the wholesale-food client → CMX → the sleep-product client → SGS) | 2026-04-21 | §1 |
+| Client order = Bean's listed order (Mama's → Indus → CMX → Snooza → SGS) | 2026-04-21 | §1 |
 | Ecom scope = full shop with cart/checkout/Stripe/variants | 2026-04-21 | §3.1 |
 | 3D renderer = Google `<model-viewer>` (fallback three.js) | 2026-04-21 | §3.2 |
 | `/quoter` path = rebuild + extract 6 lenses + challenge library from sales-intel; DELETE sales-intel | 2026-04-21 | §3.4 |

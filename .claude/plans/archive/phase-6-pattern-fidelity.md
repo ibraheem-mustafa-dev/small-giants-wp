@@ -55,7 +55,7 @@ recommended_model: opus
 - `theme/sgs-theme/patterns/about-image-left.php` — reference for canonical pattern PHP shape (uses `wp:columns` + `wp:column` for grid layouts)
 - `theme/sgs-theme/templates/page.html` — current page template (read so the new `clone-page.html` knows what to omit)
 - `sites/mamas-munches/mockups/homepage/index.html` — source mockup, walk it to identify BEM child classes the composer must preserve
-- Live E2E from prior session: `pipeline-state/sgs-clone/bakery-client-homepage-2026-05-13-105351/deliverable.md` — current parity baseline (64.9% / 43.7% / 36.5%)
+- Live E2E from prior session: `pipeline-state/sgs-clone/mamas-munches-homepage-2026-05-13-105351/deliverable.md` — current parity baseline (64.9% / 43.7% / 36.5%)
 
 ## References
 
@@ -114,7 +114,7 @@ Step 2 — Extend compose_atomic_pattern() to preserve BEM child class hierarchy
   Model:       sonnet
   Action:      Modify plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py:compose_atomic_pattern to walk the source section DOM and emit wp:core/group {"className":"sgs-X__Y"} wrappers around groups of descendants that share a BEM child class. Inner atomic blocks (core/heading, core/paragraph, sgs/button, sgs/decorative-image) are nested inside these wp:core/group wrappers so the lifted CSS targeting .sgs-X__grid / .sgs-X__card binds correctly at render.
   Files:       plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py
-  Inputs:      sites/mamas-munches/mockups/homepage/index.html (source DOM walk), theme/sgs-theme/styles/bakery-client.css (verify which BEM children have rules - those are the load-bearing ones)
+  Inputs:      sites/mamas-munches/mockups/homepage/index.html (source DOM walk), theme/sgs-theme/styles/mamas-munches.css (verify which BEM children have rules - those are the load-bearing ones)
   Outcome:     compose_atomic_pattern emits the composition with at least one wp:core/group wrapper per detected BEM child class in the source section.
   Exec:        SEQUENTIAL
   Deps:        Step 1 green
@@ -341,7 +341,7 @@ child class hierarchy from the source DOM.
 Read first (in order):
 1. c:/Users/Bean/Projects/small-giants-wp/plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py - the current compose_atomic_pattern() implementation (find the function, ~lines 250-350)
 2. c:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/homepage/index.html - the inline `<style>` block + the source DOM. Note which BEM child classes have CSS rules: `.sgs-featured-product__grid`, `.sgs-featured-product__card`, `.sgs-ingredients-section__list`, `.sgs-gift-section__cards`, `.sgs-social-proof__testimonial`, `.sgs-footer__column`.
-3. c:/Users/Bean/Projects/small-giants-wp/theme/sgs-theme/styles/bakery-client.css - confirm which BEM children carry layout-bearing rules (grid-template-columns, display: grid/flex)
+3. c:/Users/Bean/Projects/small-giants-wp/theme/sgs-theme/styles/mamas-munches.css - confirm which BEM children carry layout-bearing rules (grid-template-columns, display: grid/flex)
 4. c:/Users/Bean/Projects/small-giants-wp/theme/sgs-theme/patterns/about-image-left.php - reference for canonical pattern PHP composition shape using wp:columns + wp:column (note: we'll use wp:core/group not wp:columns because the mockup uses CSS Grid not WP columns)
 5. c:/Users/Bean/Projects/small-giants-wp/plugins/sgs-blocks/scripts/orchestrator/test_register_patterns.py - the existing pytest suite (must stay 22/22 green; you'll add 1+ new tests)
 

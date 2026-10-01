@@ -4,7 +4,7 @@ Status: BUILT (D1134); approved by Bean 2026-09-20. Follows A1 (D1132). Two chan
 
 ## Measured starting point
 
-Run `eye-care-ward-end-optician-client-birmingham-2026-09-20-201202` (v2 bundle, A1 on): 116 raw `{{ }}` occurrences, 33 names, all in text and labels.
+Run `eye-care-ward-end-eye-care-birmingham-2026-09-20-201202` (v2 bundle, A1 on): 116 raw `{{ }}` occurrences, 33 names, all in text and labels.
 Command: parse `stage-4.json`, collect every `block_markup`, regex `\{\{\s*([^}]*?)\s*\}\}`.
 
 | Group | Names (occurrences) | Where the value lives |
@@ -19,7 +19,7 @@ Command: parse `stage-4.json`, collect every `block_markup`, regex `\{\{\s*([^}]
 
 ## Design
 
-**A2a. Site link values (small, no converter change).** New string-level pass in the orchestrator, next to Stage -1.4. For every name in the client's saved placeholder map, read the value with the existing `business_info` extractor (same call that built the map; a value only counts if it passes its shape check) and replace `{{ name }}` in the template part of the run copy with it. No map or no name in the map: byte-identical. Where a whole block attribute is one such name, `metadata.bindings` with the `sgs/site-info` source is the right emit (source exists: `includes/class-sgs-site-info-binding.php`); the optician client has no such instance today, so it is NOT built now.
+**A2a. Site link values (small, no converter change).** New string-level pass in the orchestrator, next to Stage -1.4. For every name in the client's saved placeholder map, read the value with the existing `business_info` extractor (same call that built the map; a value only counts if it passes its shape check) and replace `{{ name }}` in the template part of the run copy with it. No map or no name in the map: byte-identical. Where a whole block attribute is one such name, `metadata.bindings` with the `sgs/site-info` source is the right emit (source exists: `includes/class-sgs-site-info-binding.php`); Eye Care has no such instance today, so it is NOT built now.
 
 **A2b. Multi-field loop items (extend the existing resolver, default on).**
 1. Eligibility: any `<sc-for>` with at least one item-variable mustache in text or in an attribute. Drop the "no literal text" and "one field" gates. Loops that render zero items at load (empty bag, nothing selected) are skipped WITH a gap row saying so.
@@ -34,7 +34,7 @@ Command: parse `stage-4.json`, collect every `block_markup`, regex `\{\{\s*([^}]
 - Ticker container detection (which block holds the repeated items): its own design gate, next.
 - `<sc-if>` branch choice, `style-hover`, overlays and flow entities: A3, A4 and Track D. The overlay and flow names above stay gap rows until then.
 
-## Done means (each checked on the live the optician client page, rule 5)
+## Done means (each checked on the live Eye Care page, rule 5)
 1. `gmbHref` occurrences in emitted markup: 8 to 0; link value equals the draft's.
 2. Each REASONS title, each of the 13 REVIEWS names, each SHAPES name, each brand name and every ticker text is in `block_markup` and in the live page's `innerText`; item counts equal the arrays' lengths.
 3. Raw `{{ }}` in emitted markup drops from 116 to the overlay and flow set only; every remaining one has a gap row.

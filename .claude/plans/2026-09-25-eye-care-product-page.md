@@ -1,4 +1,4 @@
-# The optician client Wave C task 2: the product page (zero-reviews state first)
+# Eye Care Wave C task 2: the product page (zero-reviews state first)
 
 **Status:** DONE 2026-09-25 (zero-reviews state), live on eye-care-test, framework through f632eebda.
 Verified draft vs live at 1440 / 768 / 375 for product 71 (`scratchpad` pdp3 captures, side by side, looked at):
@@ -11,7 +11,7 @@ Owed polish (small, recorded here): picker labels in the draft's small uppercase
 setting on that button); the gallery's "Save £32 off RRP" badge; sizes 3-across below 480px (the buybox's 2-column
 phone rule). Parked to their tasks: "Which size am I?" (task 5), "from +£59" on the prescription button and opening the
 configurator (task 4), the Klarna/wallets line (parent plan phase 6, payments), the reviews-present state.
-Parent plan: `2026-09-24-optician-hand-build-design.md` (Wave C).
+Parent plan: `2026-09-24-eye-care-hand-build-design.md` (Wave C).
 Built and live on eye-care-test: framework items 1–5 below, plus buybox draft-parity settings (picker styles and
 measurement sub-line, price typography, "RRP £171" and "You save", add-to-cart style and price, blocks above the
 add-to-cart, stock wording, stackBelow, no height cap on the sticky column), breadcrumbs showArchiveCrumb /
@@ -25,7 +25,7 @@ the prescription button (tasks 5 and 4); the Sizing tab's frame diagrams (bound 
 diagrams are deferred to the frame-measurements build in the parent plan); gallery view thumbnails need real photos.
 **Written for:** Bean and any session picking up Wave C.
 
-**Goal:** a product page matching the draft (the draft's storefront `.dc.html` file, sections `sgs-breadcrumb`,
+**Goal:** a product page matching the draft (`Eye Care Birmingham.dc.html`, sections `sgs-breadcrumb`,
 `sgs-product-main`, `sgs-product-tabs`, `sgs-product-no-reviews`, `sgs-product-more-from-brand`, `sgs-product-similar`)
 at 1440, 768 and 375, for a product with no reviews. Reviews with content (the `sgs-product-reviews` state) follow.
 
@@ -35,7 +35,7 @@ at 1440, 768 and 375, for a product with no reviews. Reviews with content (the `
   one editable starting layout, then edited in the Site Editor. It is WooCommerce's own model (the blockified Product
   Details block, edited once in the single-product template) and the market leaders' (Kadence Shop Kit, Barn2). In
   WordPress terms: the theme's `sgs-pdp-content` part is the neutral starting layout; a site's own edit saves a
-  site-level copy that overrides it. The optician client's copy is built through the editor from a tree in
+  site-level copy that overrides it. Eye Care's copy is built through the editor from a tree in
   `sites/eye-care-ward-end/build/`. Tabs, not an accordion (the draft shows tabs). A tab whose content renders empty
   for a product hides itself (WooCommerce does the same for its sections). Per-category display rules (the
   Kadence/Barn2 extra) are deferred to a later client that needs them.
@@ -67,7 +67,7 @@ variant; the "current product has reviews" visibility condition (`includes/condi
    (same `pa_shape`), excluding the current product, as a `woocommerce/product-collection` filter keyed on a class or
    a registered collection (research the WooCommerce collection API before building).
 
-## Content (the optician client, through the editor)
+## Content (Eye Care, through the editor)
 
 - Data: every product in a "Sunglasses" category (breadcrumb Home / Sunglasses / Ray-Ban).
 - `single-product` / `sgs-pdp-*` site copies: breadcrumb (category + brand); buybox with the gallery, brand, h1, code,

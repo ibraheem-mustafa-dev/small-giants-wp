@@ -40,7 +40,7 @@ the capability roster + FR-S9-6 work and are being handled separately. Touching 
 
 **File: `plugins/sgs-blocks/src/blocks/site-footer/edit.js`** (the TEMPLATE, ~lines 21-94)
 
-The docblock at :15 says *"Three rows matching the draft `.mm-footer`"* — `mm` = the bakery client.
+The docblock at :15 says *"Three rows matching the draft `.mm-footer`"* — `mm` = Mama's Munches.
 The framework's default footer is a copy of ONE client's draft.
 
 | # | Line | Current | Replace with |
@@ -62,12 +62,12 @@ The framework's default footer is a copy of ONE client's draft.
 | A10 | ~114-115 | `<a href="https://smallgiantsstudio.co.uk/">Website by Small Giants Studio</a>` in a raw `core/paragraph` | `sgs/business-info` `displayType="attribution"` reading Site Info. **If that displayType does not exist, STOP and report — do not invent one and do not leave the hardcoded URL.** |
 | A11 | ~53, ~89, ~99 | `"fontSize":"medium"` on footer column headings | **RESOLVED 2026-09-17, won't-fix (Bean).** Both drafts render these as 11px/0.82rem uppercase micro-labels, but baking that literal px value in as the block's default would itself be the R-31-1 hardcode this whole register exists to remove — a framework default has to stay a real theme.json-resolvable token (`medium`), not a client draft's one-off computed value. `medium` stays; a client wanting the 11px look sets it per-instance via the block's own font-size control. |
 
-**File: `theme/sgs-theme/patterns/footer-wholesale-food-client.php` — BROKEN, silently**
+**File: `theme/sgs-theme/patterns/footer-indus-foods.php` — BROKEN, silently**
 
 | # | Line | Current | Replace with |
 |---|---|---|---|
 | A12 | 24, 26, 64, 65, 71, 78, 84 | `"type":"..."` (7 instances) | `"displayType":"..."` — `business-info/block.json:22` declares `displayType`, default `"phone"`. Unknown attrs are discarded, so **all 7 currently render a phone number** (description, socials, hours, map, address). |
-| A13 | ~88 | `href="https://maps.google.com/?cid=7952814055868010143"` — the wholesale-food client's literal Google Place CID | Site Info. If no field exists, **STOP and report**. |
+| A13 | ~88 | `href="https://maps.google.com/?cid=7952814055868010143"` — Indus's literal Google Place CID | Site Info. If no field exists, **STOP and report**. |
 | A14 | ~106 | Duplicate hardcoded `Website by Small Giants Studio` + URL | Same as A10 |
 
 ---
@@ -76,8 +76,8 @@ The framework's default footer is a copy of ONE client's draft.
 
 | # | File | Current | Replace with |
 |---|---|---|---|
-| B1 | `plugins/sgs-blocks/src/blocks/cart/render.php` | Renders regardless of WooCommerce | **Return early (render nothing) when WooCommerce is inactive** — `if ( ! class_exists( 'WooCommerce' ) ) { return ''; }`. **This is the universal fix (R-31-9)**: it fixes the cart appearing on the wholesale-food client (no ecommerce, Bean flagged repeatedly) BY CONSTRUCTION, keeps Mama's working, and needs no per-client carve-out. **Do NOT remove `sgs/cart` from the patterns** — that would break Mama's and is a carve-out. |
-| B2 | `theme/sgs-theme/parts/header.html` ~24 AND `patterns/framework-header-default.php` ~40 | `sgs/business-info` `displayType:phone` `className:"is-style-button"` `sgsHideOnDesktop:true` | **REPORT ONLY — do not edit.** This is the wholesale-food client's "Call button" pattern baked into the FRAMEWORK default. Removing it changes the live the wholesale-food client header, which is Goal 1's target. Opus decides. |
+| B1 | `plugins/sgs-blocks/src/blocks/cart/render.php` | Renders regardless of WooCommerce | **Return early (render nothing) when WooCommerce is inactive** — `if ( ! class_exists( 'WooCommerce' ) ) { return ''; }`. **This is the universal fix (R-31-9)**: it fixes the cart appearing on Indus (no ecommerce, Bean flagged repeatedly) BY CONSTRUCTION, keeps Mama's working, and needs no per-client carve-out. **Do NOT remove `sgs/cart` from the patterns** — that would break Mama's and is a carve-out. |
+| B2 | `theme/sgs-theme/parts/header.html` ~24 AND `patterns/framework-header-default.php` ~40 | `sgs/business-info` `displayType:phone` `className:"is-style-button"` `sgsHideOnDesktop:true` | **REPORT ONLY — do not edit.** This is Indus's "Call button" pattern baked into the FRAMEWORK default. Removing it changes the live Indus header, which is Goal 1's target. Opus decides. |
 | B3 | `theme/sgs-theme/parts/header.html` | Inlines the full pattern markup | **REPORT ONLY.** `parts/footer.html` is a 1-line `wp:pattern` reference; the header inlines a byte-identical duplicate. Known drift vector (already drifted). Opus decides. |
 
 ---
@@ -87,9 +87,9 @@ The framework's default footer is a copy of ONE client's draft.
 1. `cd plugins/sgs-blocks && npm run build` — must pass (runs dead-control + hardcoded-defaults gates).
 2. `git diff --stat` — ONLY the files named above. Nothing else.
 3. `diff <(sed -n '/site-header/,/\/site-header/p' theme/sgs-theme/parts/header.html) ...` — prove header.html and the pattern still match byte-for-byte in the shared region.
-4. **Opus:** deploy canary → the wholesale-food client, full cache clear incl. Hostinger CDN, live-verify.
-5. **Opus:** the wholesale-food client header shows NO cart (WooCommerce inactive). Mama's header STILL shows the cart.
-6. **Opus:** the wholesale-food client footer renders description/socials/hours/address correctly — NOT 7 phone numbers.
+4. **Opus:** deploy canary → Indus, full cache clear incl. Hostinger CDN, live-verify.
+5. **Opus:** Indus header shows NO cart (WooCommerce inactive). Mama's header STILL shows the cart.
+6. **Opus:** Indus footer renders description/socials/hours/address correctly — NOT 7 phone numbers.
 
 ## Known-failing baseline (do not chase)
 
