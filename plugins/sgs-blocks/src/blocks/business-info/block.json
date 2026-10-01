@@ -19,6 +19,17 @@
 	"textdomain": "sgs-blocks",
 	"icon": "building",
 	"attributes": {
+		"separators": {
+			"type": "object",
+			"default": {
+				"row": {
+					"style": "solid",
+					"width": { "desktop": "1px" },
+					"colour": "border"
+				}
+			},
+			"description": "The line between the rows of the opening hours (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour } }. Read only when displayType is hours and the rows are stacked (not the one-line condensed layout). A horizontal line centred between rows, drawn by the rows themselves. No thickness draws nothing; no colour inherits the text colour."
+		},
 		"padding": {
 			"type": "object",
 			"default": {
@@ -532,6 +543,16 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"separators": {
+				"separators": {
+					"axes": [
+						"row"
+					],
+					"edges": false,
+					"hover": false,
+					"sweep": false
+				}
+			},
 			"colourExemptions": {
 				"hover-colour-older-browsers": {
 					"rule": "gradient",

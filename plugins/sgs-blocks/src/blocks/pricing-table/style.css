@@ -171,13 +171,12 @@
 .sgs-pricing-table__feature {
 	position: relative;
 	padding: 0.75rem 0 0.75rem 2rem;
-	border-bottom: 1px solid var(--wp--preset--color--border-light, #f5f5f5);
 	color: var(--wp--preset--color--text, #333);
 }
 
-.sgs-pricing-table__feature:last-child {
-	border-bottom: none;
-}
+/* The line between features is the shared Separators setting (`separators`),
+ * drawn on each feature's ::after by includes/helpers-separators-line-css.php;
+ * ::before is the tick. */
 
 /* Checkmark icon — decorative, rendered via CSS ::before.
    The list item text is the accessible content; the pseudo-element is

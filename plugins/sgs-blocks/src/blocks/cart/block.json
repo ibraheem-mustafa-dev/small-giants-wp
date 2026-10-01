@@ -29,6 +29,16 @@
 			"text": false
 		},
 		"sgs": {
+			"separators": {
+				"separators": {
+					"axes": [
+						"row"
+					],
+					"edges": false,
+					"hover": false,
+					"sweep": false
+				}
+			},
 			"shadowLift": false,
 			"iconPicker": true,
 			"headerEssential": true,
@@ -331,8 +341,7 @@
 					],
 					"prefix": "item",
 					"attrMap": {
-						"css:gap": "itemGap",
-						"css:border-color": "itemDividerColour"
+						"css:gap": "itemGap"
 					}
 				},
 				"itemBrand": {
@@ -1040,9 +1049,10 @@
 			"type": "string",
 			"default": ""
 		},
-		"itemDividerColour": {
-			"type": "string",
-			"default": ""
+		"separators": {
+			"type": "object",
+			"default": {},
+			"description": "The line between the mini-cart panel's item rows (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour } }. A horizontal line centred in the space between items (`panelBodyGap`), drawn by the rows themselves. No thickness (the default) draws nothing; no colour inherits the text colour."
 		},
 		"subtotalLabelColour": {
 			"type": "string",

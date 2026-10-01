@@ -31,7 +31,6 @@ export default function buildPanelColourRows( { attributes, setAttributes, hasPa
 		[ 'itemActionBorderColour', __( 'Save for later underline', 'sgs-blocks' ) ],
 		[ 'itemRemoveColour', __( 'Remove link', 'sgs-blocks' ) ],
 		[ 'itemRemoveBorderColour', __( 'Remove link underline', 'sgs-blocks' ) ],
-		[ 'itemDividerColour', __( 'Divider between items', 'sgs-blocks' ) ],
 		[ 'panelFooterBg', __( 'Panel footer background', 'sgs-blocks' ) ],
 		[ 'panelFooterBorderColour', __( 'Panel footer divider', 'sgs-blocks' ) ],
 		[ 'subtotalLabelColour', __( 'Subtotal label', 'sgs-blocks' ) ],

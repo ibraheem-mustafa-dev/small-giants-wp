@@ -17,10 +17,11 @@ import {
 import { Icon, plus, close } from '@wordpress/icons';
 import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolveColourToken,
 	SgsBorderControl,
+	SgsSeparatorControl,
 	TypographyControls,
 	fillRow,
 } from '../../components';
-import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
+import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle, separatorsLineCss, usePreviewTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 // ⛔ `templateMode` (the container-family allowed-children preset) was
@@ -112,8 +113,10 @@ function normaliseFeature( f ) {
 	};
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
+	const previewTier = usePreviewTier();
 	const {
+		separators,
 		columns,
 		billingToggle: billingToggleRaw,
 		toggleStyle,
@@ -175,9 +178,23 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-pricing-table',
 		`sgs-pricing-table--columns-${ columnsDesktop }`,
 		`sgs-pricing-table--${ style }`,
+		`sgs-ed-sep-${ clientId }`,
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
+
+	// Lines between each plan's features: the canvas mirrors render.php's item-drawn
+	// rules for the previewed device (includes/helpers-separators-line-css.php).
+	const separatorsCss = separatorsLineCss(
+		separators,
+		{
+			item: `.sgs-ed-sep-${ clientId } .sgs-pricing-table__features > .sgs-pricing-table__feature`,
+			direction: 'column',
+			gap: '0px',
+			pseudo: '::after',
+		},
+		previewTier
+	);
 
 	// D649 — heading level is an identity control (document-outline
 	// placement), not a style control; mirrors render.php's own fallback.
@@ -575,6 +592,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<SgsSeparatorControl
+						label={ __( 'Lines between features', 'sgs-blocks' ) }
+						value={ separators }
+						onChange={ ( next ) => setAttributes( { separators: next } ) }
+						axes={ [ 'row' ] }
+					/>
 				</PanelBody>
 				{ /* Typography — replaces the old WP-native supports.typography (fontSize/
 				   lineHeight only, mis-scoped onto the block root) with the shared
@@ -677,6 +700,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ separatorsCss && <style>{ separatorsCss }</style> }
 				{ showToggle && (
 					<div
 						className={ `sgs-pricing-table__billing-toggle sgs-pricing-table__billing-toggle--style-${ toggleStyle }` }

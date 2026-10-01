@@ -279,12 +279,10 @@
 	justify-content: space-between;
 	gap: 1em;
 	padding: 0.35em 0;
-	border-bottom: 1px solid var(--wp--preset--color--border, rgba(0,0,0,0.1));
 }
 
-.sgs-business-hours__row:last-child {
-	border-bottom: none;
-}
+/* The line between rows is the shared Separators setting (`separators`), drawn on
+ * each row's ::before by includes/helpers-separators-line-css.php. */
 
 .sgs-business-hours__day {
 	font-weight: 600;
@@ -326,7 +324,6 @@
 	align-items: baseline;
 	gap: 0.35em;
 	padding: 0;
-	border-bottom: none;
 }
 
 .sgs-business-hours--condensed-inline .sgs-business-hours__row:not(:first-child)::before {

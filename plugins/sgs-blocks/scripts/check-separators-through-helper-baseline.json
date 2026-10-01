@@ -5,12 +5,6 @@
     },
     "src/blocks/account/style.css": {
       "last-child-reset": 1
-    },
-    "src/blocks/business-info/style.css": {
-      "last-child-reset": 1
-    },
-    "src/blocks/pricing-table/style.css": {
-      "last-child-reset": 1
     }
   }
 }

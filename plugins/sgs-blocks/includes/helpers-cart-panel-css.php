@@ -106,11 +106,25 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 			$css[] = $p . ' ' . $target[0] . '{' . $target[1] . ':' . $value . ';}';
 		}
 	}
-	// A divider under each item row: the colour switches on the rule and its spacing.
-	$divider = $colour( 'itemDividerColour' );
-	if ( '' !== $divider ) {
-		$css[] = $p . ' .sgs-cart__item{padding-bottom:12px;border-bottom:1px solid ' . $divider . ';}';
-	}
+	// The line between item rows: the shared Separators setting, drawn by the rows
+	// themselves (helpers-separators-line-css.php) in the space `panelBodyGap` sets.
+	$css[] = sgs_separators_css(
+		$attributes['separators'] ?? array(),
+		array(
+			'list'      => $p . ' .sgs-cart__panel-items',
+			'layout'    => 'line',
+			'item'      => $p . ' .sgs-cart__panel-items > .sgs-cart__item',
+			'direction' => 'column',
+			'gap'       => is_array( $attributes['panelBodyGap'] ?? null ) && $attributes['panelBodyGap'] ? $attributes['panelBodyGap'] : array(),
+			'gap_expr'  => is_array( $attributes['panelBodyGap'] ?? null ) && $attributes['panelBodyGap'] ? array() : array( 'row' => '16px' ),
+		),
+		array(
+			'axes'  => array( 'row' ),
+			'edges' => false,
+			'hover' => false,
+			'sweep' => false,
+		)
+	);
 	// Checkout hover and keyboard focus (touch-safe pair).
 	$hover = array_filter(
 		array(

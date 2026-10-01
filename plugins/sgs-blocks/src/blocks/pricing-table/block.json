@@ -35,6 +35,16 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"separators": {
+				"separators": {
+					"axes": [
+						"row"
+					],
+					"edges": false,
+					"hover": false,
+					"sweep": false
+				}
+			},
 			"colourExemptions": {
 				"toggle-label-hover": {
 					"rule": "states",
@@ -256,6 +266,17 @@
 		"root": ".wp-block-sgs-pricing-table"
 	},
 	"attributes": {
+		"separators": {
+			"type": "object",
+			"default": {
+				"row": {
+					"style": "solid",
+					"width": { "desktop": "1px" },
+					"colour": "border-light"
+				}
+			},
+			"description": "The line between each plan's features (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour } }. A horizontal line centred between stacked features, drawn by the features themselves. No thickness draws nothing; no colour inherits the text colour."
+		},
 		"columns": {
 			"type": "object",
 			"default": {

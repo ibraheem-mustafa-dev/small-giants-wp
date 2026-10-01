@@ -714,6 +714,27 @@ if ( 'none' !== $border_style ) {
 	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
 }
 
+// Lines between each plan's features: the shared Separators setting, drawn by the
+// features themselves (includes/helpers-separators-line-css.php). The tick owns
+// ::before, so the line sits on ::after.
+$scoped_css[] = sgs_separators_css(
+	$attributes['separators'] ?? array(),
+	array(
+		'list'      => $root_sel . ' .sgs-pricing-table__features',
+		'layout'    => 'line',
+		'item'      => $root_sel . ' .sgs-pricing-table__features > .sgs-pricing-table__feature',
+		'direction' => 'column',
+		'pseudo'    => '::after',
+		'gap_expr'  => array( 'row' => '0px' ),
+	),
+	array(
+		'axes'  => array( 'row' ),
+		'edges' => false,
+		'hover' => false,
+		'sweep' => false,
+	)
+);
+
 // ── Block-private border-radius (radius is no longer native -- Shape B now
 // covers all four legs). Same wp_style_engine_get_styles() route already
 // proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile

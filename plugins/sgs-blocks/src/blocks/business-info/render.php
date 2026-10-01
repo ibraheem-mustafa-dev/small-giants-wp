@@ -563,6 +563,28 @@ $root_sel = '.' . $uid;
 
 $scoped_css = array();
 
+// Lines between the opening-hours rows: the shared Separators setting, drawn by the
+// rows themselves (includes/helpers-separators-line-css.php). The one-line condensed
+// layout separates its rows with a " · " glyph on ::before instead, so it draws none.
+if ( 'hours' === $display_type && ! ( 'condensed' === ( $attributes['hoursLayout'] ?? 'rows' ) && ! empty( $attributes['hoursCondensedInline'] ) ) ) {
+	$scoped_css[] = sgs_separators_css(
+		$attributes['separators'] ?? array(),
+		array(
+			'list'      => $root_sel . ' .sgs-business-hours',
+			'layout'    => 'line',
+			'item'      => $root_sel . ' .sgs-business-hours > .sgs-business-hours__row',
+			'direction' => 'column',
+			'gap_expr'  => array( 'row' => '0px' ),
+		),
+		array(
+			'axes'  => array( 'row' ),
+			'edges' => false,
+			'hover' => false,
+			'sweep' => false,
+		)
+	);
+}
+
 // Icon size, icon-to-text gap and the link's height floor, per device (the
 // same tier-object shape as sgs/button's iconSize/iconGap). Each unset value
 // keeps style.css's default: 1em icon, 0.5em gap, 44px touch-target link.
