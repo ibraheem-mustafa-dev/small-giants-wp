@@ -125,6 +125,8 @@ function initWidgetPanel( widget ) {
 		threshold: widget.dataset.freeDeliveryThreshold || '',
 		message: widget.dataset.freeDeliveryMessage || '',
 		successMessage: widget.dataset.freeDeliverySuccessMessage || '',
+		placement: widget.dataset.freeDeliveryPlacement || 'above-items',
+		hideWhenEmpty: widget.dataset.freeDeliveryHideEmpty === '1',
 	};
 
 	if ( 'flyout' === mode ) {

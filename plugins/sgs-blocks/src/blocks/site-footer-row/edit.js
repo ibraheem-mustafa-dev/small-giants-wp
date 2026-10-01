@@ -279,23 +279,41 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewPad =
 		( attributes.padding && attributes.padding.desktop ) || {};
 	const halved = ( value ) => ( value ? `calc(${ value } / 2)` : value );
+	// "Padding when shrunk" (rowShrinkPadding), when set, replaces the halving
+	// on every side it names — the same rule render.php follows.
+	const shrunkPad =
+		( attributes.rowShrinkPadding && attributes.rowShrinkPadding.desktop ) ||
+		{};
+	const halveOnShrink = ! [ 'top', 'right', 'bottom', 'left' ].some(
+		( side ) => shrunkPad[ side ]
+	);
 	const paddingPreview = {
 		...( previewPad.top
 			? {
-					paddingTop: previewShrunk
+					paddingTop: previewShrunk && halveOnShrink
 						? halved( previewPad.top )
 						: previewPad.top,
 			  }
 			: {} ),
 		...( previewPad.bottom
 			? {
-					paddingBottom: previewShrunk
+					paddingBottom: previewShrunk && halveOnShrink
 						? halved( previewPad.bottom )
 						: previewPad.bottom,
 			  }
 			: {} ),
 		...( previewPad.left ? { paddingLeft: previewPad.left } : {} ),
 		...( previewPad.right ? { paddingRight: previewPad.right } : {} ),
+		...( previewShrunk
+			? Object.fromEntries(
+					[ 'top', 'right', 'bottom', 'left' ]
+						.filter( ( side ) => shrunkPad[ side ] )
+						.map( ( side ) => [
+							`padding${ side[ 0 ].toUpperCase() }${ side.slice( 1 ) }`,
+							shrunkPad[ side ],
+						] )
+			  )
+			: {} ),
 	};
 
 	// Empty-row detection drives the promoted quick-insert placeholder — once

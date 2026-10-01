@@ -20,7 +20,7 @@ import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { ShadowControl, shadowAttrKeys, TypographyControls, ResponsiveBoxControl, LinkPopoverField, SgsLengthControl, MEDIA_SIZING_RATIO_OPTIONS,
+import { ShadowControl, shadowAttrKeys, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, SgsBoxControl, BOX_UNITS, normaliseResponsiveBox, LinkPopoverField, SgsLengthControl, MEDIA_SIZING_RATIO_OPTIONS,
 	SgsBorderControl,
 	resolveColourToken,
 	DesignTokenPicker,
@@ -210,6 +210,8 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 							{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
 							{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
 							{ label: __( 'Fill (stretch)', 'sgs-blocks' ), value: 'fill' },
+							{ label: __( 'Scale down (never enlarged)', 'sgs-blocks' ), value: 'scale-down' },
+							{ label: __( 'Natural size', 'sgs-blocks' ), value: 'none' },
 						] }
 						onChange={ ( val ) => update( 'objectFit', val ) }
 						__nextHasNoMarginBottom
@@ -1239,6 +1241,36 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ResponsiveOverride
+						label={ __( 'Image height', 'sgs-blocks' ) }
+						value={ attributes.imageHeight }
+						onChange={ ( obj ) => setAttributes( { imageHeight: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Image height', 'sgs-blocks' ) }
+								help={ __( 'A fixed height for every image area, instead of the aspect ratio (e.g. a row of logos). Empty keeps the aspect ratio.', 'sgs-blocks' ) }
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue : '' }
+								onChange={ ( val ) => setOwnValue( val || '' ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.imagePadding }
+						onChange={ ( obj ) => setAttributes( { imagePadding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Image padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
 						value={ effectHover }
@@ -1415,6 +1447,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTransform: true,
 							},
 						].filter( Boolean ) }
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Card spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Space below title', 'sgs-blocks' ) }
+						help={ __( 'The gap between a card title and its subtitle. Empty keeps the theme spacing.', 'sgs-blocks' ) }
+						value={ attributes.titleMarginBottom || '' }
+						onChange={ ( val ) => setAttributes( { titleMarginBottom: val || '' } ) }
 					/>
 				</PanelBody>
 

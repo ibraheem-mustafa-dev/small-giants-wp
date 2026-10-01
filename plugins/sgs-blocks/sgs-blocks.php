@@ -126,6 +126,7 @@ require_once SGS_BLOCKS_PATH . 'includes/helpers-slider-nav.php';
 
 // SGS Cart — dequeue wc-cart-fragments on pages using sgs/cart + inject REST config.
 require_once SGS_BLOCKS_PATH . 'includes/wc-cart-fragments.php';
+require_once SGS_BLOCKS_PATH . 'includes/cart-item-brand.php';
 
 // Configurator — dequeue the redundant WooCommerce jQuery frontend stack on
 // pages with a bound (wc-product) sgs/product-card (FR-27-H1 JS budget).
@@ -215,6 +216,10 @@ Account_Pages::register();
 // Lottie media type (Spec 38 §1.2a Tier H, D1151): the upload validator for
 // .json animation files and the shared render helper.
 require_once SGS_BLOCKS_PATH . 'includes/lottie-upload.php';
+// SVG uploads to the media library, sanitised on the way in (client logos and
+// brand marks are SVGs). Needs the SVG allowlist loaded first.
+require_once SGS_BLOCKS_PATH . 'includes/helpers-svg-kses.php';
+require_once SGS_BLOCKS_PATH . 'includes/svg-upload.php';
 require_once SGS_BLOCKS_PATH . 'includes/lottie-render.php';
 
 // Configurator — swatch fields on WooCommerce attribute term screens (FR-27-B2 authoring UI).

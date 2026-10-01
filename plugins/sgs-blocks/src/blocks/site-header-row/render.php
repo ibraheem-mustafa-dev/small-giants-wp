@@ -197,10 +197,14 @@ if ( ! empty( $shr_shrink_tiers ) ) {
 	// per instance because a shared stylesheet cannot know the resting value;
 	// an absolute rule there would make an unpadded row GROW.
 	// A row with no padding emits nothing and simply does not resize.
-	$css .= sgs_row_shrink_css(
-		$root_sel . '.is-row-shrunk',
-		isset( $attributes['padding'] ) ? $attributes['padding'] : array()
-	);
+	// An explicit shrunk padding (rowShrinkPadding) replaces the halving.
+	if ( empty( $attributes['rowShrinkPadding'] ) ) {
+		$css .= sgs_row_shrink_css(
+			$root_sel . '.is-row-shrunk',
+			isset( $attributes['padding'] ) ? $attributes['padding'] : array()
+		);
+	}
+	$css .= sgs_row_shrink_settings_css( $root_sel, $attributes );
 
 	$shr_hide_target = sgs_resolve_row_shrink_hide_target( $block, isset( $attributes['rowShrinkHideTarget'] ) ? $attributes['rowShrinkHideTarget'] : '' );
 	if ( '' !== $shr_hide_target ) {

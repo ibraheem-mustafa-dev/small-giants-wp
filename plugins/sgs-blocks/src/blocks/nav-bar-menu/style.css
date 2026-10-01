@@ -346,7 +346,8 @@
 :where(.sgs-nav-bar-menu__burger-bar) {
 	background: currentColor;
 	border-radius: 1px;
-	height: 2px;
+	/* burgerBarThickness sets --sgs-nbm-bar-h per device (nav-menu-trigger-css.php). */
+	height: var(--sgs-nbm-bar-h, 2px);
 }
 
 /*
@@ -365,7 +366,7 @@
 	   height), exactly as `line` and the two-bar poses below derive theirs, so
 	   every pose follows `burgerIconWidth`/`burgerIconHeight`. At the 18px
 	   default this computes to 8px. */
-	transform: translateY(calc((var(--sgs-nbm-icon-h, 18px) - 2px) / 2)) rotate(45deg);
+	transform: translateY(calc((var(--sgs-nbm-icon-h, 18px) - var(--sgs-nbm-bar-h, 2px)) / 2)) rotate(45deg);
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(2) {
@@ -373,7 +374,7 @@
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(3) {
-	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 18px) - 2px) / 2)) rotate(-45deg);
+	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 18px) - var(--sgs-nbm-bar-h, 2px)) / 2)) rotate(-45deg);
 }
 
 /*
@@ -384,7 +385,7 @@
  */
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(1) {
 	/* Same derivation as the `x` pose above: travel from `--sgs-nbm-icon-h`. */
-	transform: translateY(calc((var(--sgs-nbm-icon-h, 18px) - 2px) / 2)) rotate(45deg);
+	transform: translateY(calc((var(--sgs-nbm-icon-h, 18px) - var(--sgs-nbm-bar-h, 2px)) / 2)) rotate(45deg);
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(2) {
@@ -392,7 +393,7 @@
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(3) {
-	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 18px) - 2px) / 2)) rotate(-45deg);
+	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 18px) - var(--sgs-nbm-bar-h, 2px)) / 2)) rotate(-45deg);
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon:has(.sgs-nav-bar-menu__burger-bar) {
@@ -410,11 +411,11 @@
  * one line, not two bars vanishing into one).
  */
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="line"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(1) {
-	transform: translateY(calc((var(--sgs-nbm-icon-h, 18px) - 2px) / 2));
+	transform: translateY(calc((var(--sgs-nbm-icon-h, 18px) - var(--sgs-nbm-bar-h, 2px)) / 2));
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="line"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(3) {
-	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 18px) - 2px) / 2));
+	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 18px) - var(--sgs-nbm-bar-h, 2px)) / 2));
 }
 
 /*
@@ -431,17 +432,17 @@
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(1),
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(1) {
-	transform: translateY(calc((var(--sgs-nbm-icon-h, 8.5px) - 2px) / 2)) rotate(45deg);
+	transform: translateY(calc((var(--sgs-nbm-icon-h, 8.5px) - var(--sgs-nbm-bar-h, 2px)) / 2)) rotate(45deg);
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(2),
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(2) {
 	opacity: 1;
-	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 8.5px) - 2px) / 2)) rotate(-45deg);
+	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 8.5px) - var(--sgs-nbm-bar-h, 2px)) / 2)) rotate(-45deg);
 }
 
 .sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="line"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(2) {
-	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 8.5px) - 2px) / 2));
+	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 8.5px) - var(--sgs-nbm-bar-h, 2px)) / 2));
 }
 
 /*

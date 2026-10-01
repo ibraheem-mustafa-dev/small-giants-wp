@@ -191,6 +191,296 @@
 						"css:background-color": "freeDeliveryFillColour"
 					},
 					"_note": "Wave B — the filled portion of the free-delivery progress bar, width driven live by a --sgs-cart-free-delivery-pct custom property (panel-render.js element.style.setProperty()) — a custom-property VALUE, never a raw style=\"width:...\" declaration (Spec 32 FR-32-4; mirrors sgs/audio's --sgs-progress and sgs/before-after's --sgs-before-after-position)."
+				},
+				"panelFrame": {
+					"label": "Panel frame",
+					"order": 9,
+					"clusters": [
+						"layout",
+						"fill"
+					],
+					"prefix": "panel",
+					"attrMap": {
+						"css:max-width": "panelMaxWidth",
+						"css:box-shadow": "panelShadow"
+					},
+					"_note": "Drawer surface geometry. The dialog carries the block uid class itself because the shared nav store re-parents it to <body> on open, so every panel rule is scoped to `.{uid}.sgs-cart__panel`, never the block wrapper. panelShadowColour pairs with panelShadow through ShadowControl; panelSlideDuration/panelSlideEasing drive the slide-in animation (a plain number and easing string, not a css property member)."
+				},
+				"panelHead": {
+					"label": "Panel head row",
+					"order": 10,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "panelHead",
+					"attrMap": {
+						"css:padding": "panelHeadPadding",
+						"css:border-color": "panelHeadBorderColour"
+					}
+				},
+				"panelTitle": {
+					"label": "Panel heading",
+					"order": 11,
+					"clusters": [
+						"text"
+					],
+					"prefix": "panelTitle",
+					"attrMap": {}
+				},
+				"panelCount": {
+					"label": "Panel heading count",
+					"order": 12,
+					"clusters": [
+						"text"
+					],
+					"prefix": "panelCount",
+					"attrMap": {
+						"css:color": "panelCountColour"
+					},
+					"_note": "The bracketed live item count after the heading; shown when panelShowCount is on."
+				},
+				"panelClose": {
+					"label": "Panel close button",
+					"order": 13,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "panelClose",
+					"attrMap": {
+						"css:color": "panelCloseColour",
+						"css:width": "panelCloseSize"
+					}
+				},
+				"panelBody": {
+					"label": "Panel body",
+					"order": 14,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "panelBody",
+					"attrMap": {
+						"css:padding": "panelBodyPadding",
+						"css:gap": "panelBodyGap"
+					}
+				},
+				"panelEmpty": {
+					"label": "Empty-cart block",
+					"order": 15,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "panelEmpty",
+					"attrMap": {
+						"css:color": "panelEmptyColour",
+						"css:padding": "panelEmptyPadding"
+					}
+				},
+				"emptyMessage": {
+					"label": "Empty-cart message",
+					"order": 16,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "emptyMessage",
+					"attrMap": {
+						"css:color": "emptyMessageColour",
+						"css:margin-bottom": "emptyMessageGap"
+					}
+				},
+				"emptyCta": {
+					"label": "Empty-cart button",
+					"order": 17,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "emptyCta",
+					"attrMap": {
+						"css:color": "emptyCtaColour",
+						"css:background-color": "emptyCtaBg",
+						"css:padding": "emptyCtaPadding",
+						"css:border-radius": "emptyCtaRadius"
+					}
+				},
+				"itemThumb": {
+					"label": "Item image",
+					"order": 18,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "itemThumb",
+					"attrMap": {
+						"css:background-color": "itemThumbBg",
+						"css:width": "itemThumbSize",
+						"css:border-radius": "itemThumbRadius"
+					}
+				},
+				"item": {
+					"label": "Item row",
+					"order": 19,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "item",
+					"attrMap": {
+						"css:gap": "itemGap",
+						"css:border-color": "itemDividerColour"
+					}
+				},
+				"itemBrand": {
+					"label": "Item brand",
+					"order": 20,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemBrand",
+					"attrMap": {
+						"css:color": "itemBrandColour"
+					}
+				},
+				"itemName": {
+					"label": "Item name",
+					"order": 21,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemName",
+					"attrMap": {}
+				},
+				"itemDetail": {
+					"label": "Item details (lens line)",
+					"order": 22,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemDetail",
+					"attrMap": {
+						"css:color": "itemDetailColour"
+					}
+				},
+				"itemPrice": {
+					"label": "Item line price",
+					"order": 23,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemPrice",
+					"attrMap": {}
+				},
+				"itemAction": {
+					"label": "Item action link",
+					"order": 24,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemAction",
+					"attrMap": {
+						"css:color": "itemActionColour",
+						"css:border-color": "itemActionBorderColour"
+					}
+				},
+				"itemRemove": {
+					"label": "Item remove link",
+					"order": 25,
+					"clusters": [
+						"text"
+					],
+					"prefix": "itemRemove",
+					"attrMap": {
+						"css:color": "itemRemoveColour",
+						"css:border-color": "itemRemoveBorderColour"
+					}
+				},
+				"panelFooter": {
+					"label": "Panel footer",
+					"order": 26,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "panelFooter",
+					"attrMap": {
+						"css:background-color": "panelFooterBg",
+						"css:padding": "panelFooterPadding",
+						"css:border-color": "panelFooterBorderColour"
+					}
+				},
+				"subtotal": {
+					"label": "Subtotal row",
+					"order": 27,
+					"clusters": [
+						"text"
+					],
+					"prefix": "subtotal",
+					"attrMap": {
+						"css:color": "subtotalLabelColour"
+					},
+					"_note": "subtotalLabelColour colours the label and row; subtotalValueColour colours the amount on the right."
+				},
+				"freeDeliveryText": {
+					"label": "Free-delivery message",
+					"order": 28,
+					"clusters": [
+						"text"
+					],
+					"prefix": "freeDeliveryText",
+					"attrMap": {
+						"css:color": "freeDeliveryTextColour"
+					}
+				},
+				"freeDeliveryBar": {
+					"label": "Free-delivery bar geometry",
+					"order": 29,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "freeDelivery",
+					"attrMap": {
+						"css:height": "freeDeliveryTrackHeight",
+						"css:margin": "freeDeliveryBarMargin",
+						"css:border-radius": "freeDeliveryTrackRadius"
+					}
+				},
+				"checkout": {
+					"label": "Checkout button",
+					"order": 30,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "checkout",
+					"attrMap": {
+						"css:color": "checkoutColour",
+						"css:background-color": "checkoutBg",
+						"css:min-height": "checkoutMinHeight",
+						"css:border-radius": "checkoutRadius"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "checkoutColourHover",
+								"css:background-color": "checkoutBgHover"
+							}
+						}
+					},
+					"_note": "Hover: checkoutBgHover / checkoutColourHover."
+				},
+				"panelNote": {
+					"label": "Note under checkout",
+					"order": 31,
+					"clusters": [
+						"text"
+					],
+					"prefix": "panelNote",
+					"attrMap": {
+						"css:color": "panelNoteColour"
+					}
 				}
 			}
 		}
@@ -481,6 +771,466 @@
 		"freeDeliveryTrackColour": {
 			"type": "string",
 			"default": ""
+		},
+		"panelTitleFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"panelTitleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"panelTitleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"panelTitleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"panelCountFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"panelCountFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"panelCountFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"emptyMessageFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyMessageFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"emptyMessageFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"emptyMessageFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyCtaFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"emptyCtaFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"emptyCtaFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyCtaLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"emptyCtaLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"emptyCtaTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBrandFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemBrandFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemBrandLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"itemBrandLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"itemBrandTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"itemNameFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemNameFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemNameFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"itemDetailFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemDetailFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemPriceFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemPriceFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemPriceFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"itemActionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemActionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"subtotalFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"subtotalFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"subtotalFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"freeDeliveryTextFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"freeDeliveryTextFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"checkoutFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"checkoutFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"checkoutFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"checkoutLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"checkoutTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"panelNoteFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"panelNoteFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"panelNoteTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"panelEmptyTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"panelHeadBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelCountColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelCloseColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelFooterBg": {
+			"type": "string",
+			"default": ""
+		},
+		"panelFooterBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelEmptyColour": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyMessageColour": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyCtaBg": {
+			"type": "string",
+			"default": ""
+		},
+		"emptyCtaColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemThumbBg": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBrandColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemDetailColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemRemoveColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemRemoveBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemActionColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemActionBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemDividerColour": {
+			"type": "string",
+			"default": ""
+		},
+		"subtotalLabelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"subtotalValueColour": {
+			"type": "string",
+			"default": ""
+		},
+		"freeDeliveryTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutBg": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutBgHover": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutColour": {
+			"type": "string",
+			"default": ""
+		},
+		"checkoutColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"panelNoteColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelMaxWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Drawer maximum width per device (CSS length). Empty keeps the 400px default."
+		},
+		"panelBodyGap": {
+			"type": "object",
+			"default": {},
+			"description": "Gap between item rows in the panel body, per device (CSS length). Empty keeps 18px."
+		},
+		"panelCloseSize": {
+			"type": "object",
+			"default": {},
+			"description": "Close (x) icon size per device (CSS length). Empty keeps 24px."
+		},
+		"itemThumbSize": {
+			"type": "object",
+			"default": {},
+			"description": "Item image column width per device (CSS length); the image stays square. Empty keeps 96px."
+		},
+		"itemGap": {
+			"type": "object",
+			"default": {},
+			"description": "Gap between an item image and its text per device (CSS length). Empty keeps 16px."
+		},
+		"emptyMessageGap": {
+			"type": "object",
+			"default": {},
+			"description": "Space under the empty-cart message, per device (CSS length). Empty keeps 8px."
+		},
+		"freeDeliveryTrackHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Free-delivery progress track height per device (CSS length). Empty keeps 6px."
+		},
+		"checkoutMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Checkout button height floor per device (CSS length). Empty keeps 44px."
+		},
+		"panelHeadPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Panel head row padding: tier object of boxes {desktop,tablet,mobile}."
+		},
+		"panelBodyPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Panel body (item list) padding: tier object of boxes."
+		},
+		"panelFooterPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Panel footer padding: tier object of boxes."
+		},
+		"panelEmptyPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Empty-cart block padding: tier object of boxes."
+		},
+		"emptyCtaPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Empty-cart button padding: tier object of boxes."
+		},
+		"freeDeliveryBarMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin around the free-delivery progress track: tier object of boxes."
+		},
+		"itemThumbRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Item image corner radius (CSS length). Empty keeps 4px."
+		},
+		"emptyCtaRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Empty-cart button corner radius (CSS length). Empty keeps 4px."
+		},
+		"checkoutRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Checkout and View cart button corner radius (CSS length). Empty keeps 4px."
+		},
+		"freeDeliveryTrackRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Free-delivery track corner radius (CSS length). Empty keeps fully rounded."
+		},
+		"panelShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Drawer/flyout box-shadow shape (ShadowControl)."
+		},
+		"panelShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Drawer/flyout box-shadow colour (ShadowControl)."
+		},
+		"panelSlideDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "Drawer slide-in duration in milliseconds. 0 keeps the 250ms default."
+		},
+		"panelSlideEasing": {
+			"type": "string",
+			"default": "",
+			"description": "Drawer slide-in easing, a named easing from MotionEasingControl. Empty keeps ease-out."
+		},
+		"panelSlideEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "Custom cubic-bezier curve, read when panelSlideEasing is custom."
+		},
+		"panelShowCount": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show the live item count in brackets after the panel heading, e.g. \"Bag (2)\"."
+		},
+		"panelShowViewCart": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the View cart button in the panel footer."
+		},
+		"itemShowQty": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the quantity input on each item row."
+		},
+		"itemShowSaveForLater": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the Save for later action on each item row."
+		},
+		"itemRemoveStyle": {
+			"type": "string",
+			"default": "icon",
+			"enum": ["icon", "text"],
+			"description": "'icon' is the x button in its own column; 'text' is an underlined text link under the item details."
+		},
+		"itemRemoveLabel": {
+			"type": "string",
+			"default": "Remove",
+			"description": "Label of the text-style remove link."
+		},
+		"freeDeliveryHideWhenEmpty": {
+			"type": "boolean",
+			"default": false,
+			"description": "Hide the free-delivery message and bar while the bag is empty (placement above-items; the footer placement is already hidden when empty)."
+		},
+		"freeDeliveryPlacement": {
+			"type": "string",
+			"default": "above-items",
+			"enum": ["above-items", "footer"],
+			"description": "'above-items' shows the message and bar above the item list; 'footer' places them in the panel footer under the subtotal."
+		},
+		"panelTaxNote": {
+			"type": "string",
+			"default": "Shipping and taxes calculated at checkout.",
+			"description": "Small note under the subtotal. Empty hides it."
+		},
+		"panelInstalmentsNote": {
+			"type": "string",
+			"default": "",
+			"description": "Optional note under the checkout button; %s is replaced by the subtotal divided by panelInstalmentsCount. Empty hides it."
+		},
+		"panelInstalmentsCount": {
+			"type": "number",
+			"default": 3,
+			"description": "Number of instalments used to compute the amount in panelInstalmentsNote."
 		}
 	},
 	"editorScript": "file:./index.js",

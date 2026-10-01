@@ -9,6 +9,9 @@ import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
 import PillBorderControl from './PillBorderControl';
 import buildCartColourRows from './colourPanelRows';
+import buildPanelColourRows from './panelColourRows';
+import PanelContentControls from './PanelContentControls';
+import PanelDesignControls from './PanelDesignControls';
 
 // Box-object interface contract §5: base-tier canvas preview shorthand
 // (mirrors sgs/buybox + sgs/whatsapp-cta). Tablet/mobile tiers live in
@@ -112,12 +115,15 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<SgsColourPanel
-				rows={ buildCartColourRows( {
-					attributes,
-					setAttributes,
-					hasPanel,
-					hasDrawer,
-				} ) }
+				rows={ [
+					...buildCartColourRows( {
+						attributes,
+						setAttributes,
+						hasPanel,
+						hasDrawer,
+					} ),
+					...buildPanelColourRows( { attributes, setAttributes, hasPanel } ),
+				] }
 			/>
 			<InspectorControls>
 				<PanelSettingsControls
@@ -134,6 +140,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					freeDeliveryMessage={ freeDeliveryMessage }
 					freeDeliverySuccessMessage={ freeDeliverySuccessMessage }
 					setAttributes={ setAttributes }
+				/>
+
+				<PanelContentControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					hasPanel={ hasPanel }
 				/>
 
 				<TriggerSettingsControls
@@ -170,6 +182,12 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
+				<PanelDesignControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					hasPanel={ hasPanel }
+					hasDrawer={ hasDrawer }
+				/>
 				{ hasPanel && (
 					<MediaElementPanel
 						attributes={ attributes }

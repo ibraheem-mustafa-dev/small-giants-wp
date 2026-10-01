@@ -309,7 +309,9 @@ if ( $shrink_width_explicit ) {
 	// properties are not natively animatable, but a `width` declaration that
 	// RESOLVES via var() still transitions smoothly when the variable's value
 	// changes, so no `@property` registration is needed.
-	$scoped_css[] = $sel . '{transition:width 300ms ease;}';
+	// Timed by the shrinking row when it publishes its own speed and curve
+	// (--sgs-row-shrink-*, sgs_row_shrink_settings_css()), so logo and row move as one.
+	$scoped_css[] = $sel . '{transition:width var(--sgs-row-shrink-duration, 300ms) var(--sgs-row-shrink-easing, ease);}';
 	// Self-contained prefers-reduced-motion reset (mirrors sgs/site-header's
 	// own instance-scoped reset, render.php) -- this is per-instance CSS, so
 	// the shared stylesheet has no equivalent rule to fall back on.

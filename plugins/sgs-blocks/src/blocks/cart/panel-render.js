@@ -22,6 +22,7 @@ import {
 	updateFreeDeliveryProgress,
 } from './free-delivery';
 import { addWishlistId } from '../../shared/wishlist-store';
+import { updatePanelExtras } from './panel-extras';
 
 /**
  * Wire one panel instance against the Store API.
@@ -57,6 +58,12 @@ export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
 	const emptyMessage = itemsEl.dataset.emptyMessage || 'Your cart is empty';
 	const emptyCtaLabel = itemsEl.dataset.emptyCtaLabel || 'Continue shopping';
 	const shopUrl = itemsEl.dataset.shopUrl || '/';
+	const itemOpts = {
+		removeStyle: itemsEl.dataset.removeStyle || 'icon',
+		removeLabel: itemsEl.dataset.removeLabel || '',
+		showQty: '0' !== itemsEl.dataset.showQty,
+		showSave: '0' !== itemsEl.dataset.showSave,
+	};
 
 	/**
 	 * Announce a mutation result via the panel's OWN status live region —
@@ -118,7 +125,7 @@ export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
 	function renderItems( cart ) {
 		itemsEl.removeAttribute( 'aria-busy' );
 		itemsEl.innerHTML = cart.items
-			.map( ( item ) => itemRowHtml( item, cart.totals ) )
+			.map( ( item ) => itemRowHtml( item, cart.totals, itemOpts ) )
 			.join( '' );
 
 		if ( subtotalEl ) {
@@ -148,6 +155,7 @@ export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
 			renderItems( cart );
 		}
 		updateFreeDeliveryProgress( freeDeliveryEl, cart, freeDelivery );
+		updatePanelExtras( panelRoot, cart );
 		if ( 'function' === typeof onCartUpdated ) {
 			onCartUpdated( cart );
 		}

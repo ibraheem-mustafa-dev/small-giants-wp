@@ -225,7 +225,7 @@
         "name": "sgs/brand-strip",
         "attributes": {
           "source": "product-brands",
-          "brandDisplay": "text",
+          "brandDisplay": "logo-else-text",
           "scrolling": true,
           "scrollSpeed": "slow",
           "pauseOnHover": true,
@@ -256,7 +256,14 @@
           "brandTextSeparatorColour": "#EFEAE2",
           "tilePadding": 26,
           "logoGap": 0,
-          "brandHideEmpty": false
+          "brandHideEmpty": false,
+          "logoLayout": "row",
+          "maxHeight": 22,
+          "logoMaxWidth": 120,
+          "logoOpacity": 75,
+          "logoFit": "contain",
+          "transitionDuration": "250",
+          "transitionEasing": "ease"
         }
       }
     ]

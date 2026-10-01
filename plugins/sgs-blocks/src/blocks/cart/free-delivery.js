@@ -32,7 +32,7 @@ import { formatMoney } from './store-api';
  *
  * @param {HTMLElement} panelRoot     The `[data-sgs-cart-panel]` element.
  * @param {HTMLElement} itemsEl       The `[data-sgs-cart-items]` element (insertion anchor).
- * @param {Object}      [freeDelivery] `{ threshold, message, successMessage }` from view.js.
+ * @param {Object}      [freeDelivery] `{ threshold, message, successMessage, placement, hideWhenEmpty }` from view.js.
  * @return {HTMLElement|null} The inserted element, or null when no threshold is configured.
  */
 export function initFreeDeliveryElement( panelRoot, itemsEl, freeDelivery ) {
@@ -51,7 +51,15 @@ export function initFreeDeliveryElement( panelRoot, itemsEl, freeDelivery ) {
 		'<div class="sgs-cart__free-delivery-fill" data-sgs-cart-free-delivery-fill></div>' +
 		'</div>';
 
-	itemsEl.insertAdjacentElement( 'beforebegin', el );
+	// 'footer' sits under the subtotal (and so hides with the footer while the
+	// cart is empty); the default sits above the item list.
+	const subtotalEl = panelRoot.querySelector( '.sgs-cart__panel-subtotal' );
+	if ( 'footer' === freeDelivery.placement && subtotalEl ) {
+		el.classList.add( 'sgs-cart__free-delivery--footer' );
+		subtotalEl.insertAdjacentElement( 'afterend', el );
+	} else {
+		itemsEl.insertAdjacentElement( 'beforebegin', el );
+	}
 	return el;
 }
 
@@ -69,7 +77,12 @@ export function updateFreeDeliveryProgress( el, cart, freeDelivery ) {
 	}
 
 	const threshold = Number( freeDelivery?.threshold );
-	if ( ! Number.isFinite( threshold ) || threshold <= 0 ) {
+	const isEmpty = ! cart?.items?.length;
+	if (
+		! Number.isFinite( threshold ) ||
+		threshold <= 0 ||
+		( freeDelivery?.hideWhenEmpty && isEmpty )
+	) {
 		el.hidden = true;
 		return;
 	}

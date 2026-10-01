@@ -24,6 +24,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-motion-easing.php';
+
 if ( ! function_exists( 'sgs_row_shrink_css' ) ) {
 	/**
 	 * Build the per-instance "shrunk" vertical-padding CSS for one row.
@@ -156,5 +158,54 @@ if ( ! function_exists( 'sgs_resolve_row_shrink_hide_target' ) ) {
 
 		// Orphaned reference (element deleted) — hide nothing, raise nothing.
 		return '';
+	}
+}
+
+if ( ! function_exists( 'sgs_row_shrink_settings_css' ) ) {
+	/**
+	 * The row's own shrink settings: an explicit shrunk padding (rowShrinkPadding,
+	 * per device, all four sides) in place of the proportional halving, and the
+	 * shrink's duration and curve (rowShrinkDuration / rowShrinkEasing). The timing
+	 * is also published on the row as --sgs-row-shrink-duration and
+	 * --sgs-row-shrink-easing, which a shrinking child (the logo's width, a
+	 * heading's shrunk size) reads, so the whole row moves as one.
+	 *
+	 * Shared by sgs/site-header-row and sgs/site-footer-row, like sgs_row_shrink_css().
+	 *
+	 * @param string $root_sel   The row's scoped root selector.
+	 * @param array  $attributes The row's attributes.
+	 * @return string CSS text; '' when nothing is set.
+	 */
+	function sgs_row_shrink_settings_css( $root_sel, array $attributes ) {
+		$css     = '';
+		$padding = $attributes['rowShrinkPadding'] ?? null;
+		if ( is_array( $padding ) && array() !== $padding && function_exists( 'sgs_emit_responsive_css' ) ) {
+			$css .= sgs_emit_responsive_css(
+				$root_sel . '.is-row-shrunk',
+				array(
+					array(
+						'value'        => $padding,
+						'css'          => 'padding',
+						'box'          => true,
+						'unit_default' => 'px',
+					),
+				)
+			);
+		}
+
+		$duration = (int) ( $attributes['rowShrinkDuration'] ?? 0 );
+		$easing   = (string) ( $attributes['rowShrinkEasing'] ?? '' );
+		if ( $duration > 0 || '' !== $easing ) {
+			$ms   = $duration > 0 ? min( 3000, $duration ) : 200;
+			$ease = function_exists( 'sgs_motion_easing_css' )
+				? sgs_motion_easing_css( '' === $easing ? 'ease' : $easing, (string) ( $attributes['rowShrinkEasingCustom'] ?? '' ), 'ease' )
+				: 'ease';
+			$t    = $ms . 'ms ' . $ease;
+			$css .= $root_sel . '{--sgs-row-shrink-duration:' . $ms . 'ms;--sgs-row-shrink-easing:' . $ease . ';}';
+			$css .= $root_sel . '.is-row-shrink-active{transition:background-color ' . $t . ',transform ' . $t
+				. ',padding-top ' . $t . ',padding-bottom ' . $t . ',padding-left ' . $t . ',padding-right ' . $t . ';}';
+			$css .= '@media (prefers-reduced-motion: reduce){' . $root_sel . '.is-row-shrink-active{transition:none;}}';
+		}
+		return $css;
 	}
 }

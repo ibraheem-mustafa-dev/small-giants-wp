@@ -527,6 +527,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						showTextWrap={ true }
 						showWritingMode={ true }
 					/>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Size when the header shrinks', 'sgs-blocks' ) }
+						help={ __( 'In a header row that shrinks on scroll, this heading changes to this size, e.g. a wordmark shrinking with its logo. Empty keeps its size.', 'sgs-blocks' ) }
+						value={ attributes.shrunkFontSize || '' }
+						onChange={ ( val ) => setAttributes( { shrunkFontSize: val || '' } ) }
+					/>
 				</PanelBody>
 
 				{ /* ── Layout panel ── */ }

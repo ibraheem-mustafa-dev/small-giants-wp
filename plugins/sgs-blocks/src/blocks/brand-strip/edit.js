@@ -16,7 +16,7 @@ import {
 import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, generateItemKey, withStableItemKeys } from '../../utils';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { SourcePanel, BrandTextStylePanel } from './source-controls';
 
 const LOGO_OBJECT_FIT_OPTIONS = [
@@ -362,6 +362,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const className = [
 		'sgs-brand-strip',
 		'none' !== imageEffect ? `sgs-brand-strip--effect-${ imageEffect }` : '',
+		'row' === attributes.logoLayout ? 'sgs-brand-strip--layout-row' : '',
 		scrolling ? 'sgs-brand-strip--scrolling' : '',
 		scrollDirection === 'right' ? 'sgs-brand-strip--reverse' : '',
 		fadeEdges ? 'sgs-brand-strip--fade' : '',
@@ -380,6 +381,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const trackStyle = {
 		'--sgs-logo-max-height': `${ maxHeight }px`,
+		'--sgs-logo-max-width': 'row' === attributes.logoLayout && attributes.logoMaxWidth > 0 ? `${ attributes.logoMaxWidth }px` : undefined,
+		'--sgs-logo-opacity': 'row' === attributes.logoLayout && ( attributes.logoOpacity ?? 100 ) < 100 ? ( attributes.logoOpacity ?? 100 ) / 100 : undefined,
 		'--sgs-columns-desktop': columns?.desktop ?? 8,
 		'--sgs-columns-tablet': columns?.tablet ?? 4,
 		'--sgs-columns-mobile': columns?.mobile ?? 2,
@@ -630,11 +633,50 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { maxHeight: val } )
 						}
-						min={ 24 }
+						min={ 12 }
 						max={ 260 }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ToggleGroupControl
+						label={ __( 'Logo layout', 'sgs-blocks' ) }
+						help={ __(
+							'Tiles: square tiles that grow with the strip. Row: every brand in a slim slot like a text brand (minimum width, padding and divider from the text settings), the logo no taller than the cap above.',
+							'sgs-blocks'
+						) }
+						value={ attributes.logoLayout || 'tiles' }
+						onChange={ ( val ) => setAttributes( { logoLayout: val } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="tiles" label={ __( 'Tiles', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="row" label={ __( 'Row', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
+					{ 'row' === attributes.logoLayout && (
+						<>
+							<RangeControl
+								label={ __( 'Logo max width (px)', 'sgs-blocks' ) }
+								help={ __( '0 lets a logo be as wide as its slot.', 'sgs-blocks' ) }
+								value={ attributes.logoMaxWidth ?? 0 }
+								onChange={ ( val ) => setAttributes( { logoMaxWidth: val ?? 0 } ) }
+								min={ 0 }
+								max={ 400 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<RangeControl
+								label={ __( 'Resting opacity (%)', 'sgs-blocks' ) }
+								help={ __( 'Each brand rises to full strength on hover or keyboard focus.', 'sgs-blocks' ) }
+								value={ attributes.logoOpacity ?? 100 }
+								onChange={ ( val ) => setAttributes( { logoOpacity: val ?? 100 } ) }
+								min={ 0 }
+								max={ 100 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</>
+					) }
 				</PanelBody>
 
 				<PanelBody
