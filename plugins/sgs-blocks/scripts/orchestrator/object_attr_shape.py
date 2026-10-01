@@ -306,6 +306,20 @@ def tier_object_attrs_from_php(path: Path) -> set:
         name = m.group(1) or m.group(2)
         if name:
             found.add(name)
+    # The same call shape through a local variable that holds the attribute
+    # unchanged (`$item_padding = $attributes['itemPadding'] ?? null;` then
+    # `'value' => $item_padding`), as `attr_tier_consumer_evidence` already
+    # accepts. A variable built by a transform (`= sgs_x( $attributes[...] )`)
+    # does not match: the assignment must be the bare attribute, optionally
+    # with a `??` default.
+    var_assign_re = re.compile(
+        r"\$([A-Za-z_][A-Za-z0-9_]*)\s*=\s*\$attributes\[\s*['\"]([A-Za-z0-9_]+)['\"]\s*\]"
+        r"\s*(?:\?\?[^;]*)?;"
+    )
+    for m in var_assign_re.finditer(text):
+        var_name, attr_name = m.group(1), m.group(2)
+        if re.search(r"'value'\s*=>\s*\$" + re.escape(var_name) + r"\b", text):
+            found.add(attr_name)
     return found
 
 

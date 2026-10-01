@@ -591,16 +591,27 @@ _WRAPPER_TIER_OBJECT_ATTRS = _tier_object_attrs_from_php(_CONTAINER_WRAPPER_PHP_
 # tier-wrapped value for it (its own per-device shape check reads this same
 # DB column). Fixed by also scanning every includes/*.php file the block's
 # render.php require_once's, not by hand-editing the DB row.
+#
+# The scan follows the require chain to any depth: a helper can load the file
+# that holds the emission (sgs/nav-drawer: render.php -> nav-drawer-chrome.php
+# -> nav-drawer-chrome-css.php, where chromeRowPadding and closePadding are
+# emitted per device). render.php names an include as `.../includes/x.php`; an
+# include names its sibling as `__DIR__ . '/x.php'`. Both shapes resolve inside
+# includes/.
 _INCLUDES_DIR = Path(__file__).resolve().parent.parent / "includes"
 _REQUIRE_INCLUDES_RE = re.compile(
     r"require(?:_once)?\s*\(?[^;]*?['\"]/includes/([A-Za-z0-9_-]+\.php)['\"]"
+)
+_REQUIRE_SIBLING_RE = re.compile(
+    r"require(?:_once)?\s*\(?\s*__DIR__\s*\.\s*['\"]/([A-Za-z0-9_-]+\.php)['\"]"
 )
 
 
 def _render_tier_attrs_for_block(render_path: Path) -> set:
     """Tier-object evidence for one block: its own render.php PLUS every
-    includes/*.php file that render.php require_once's. See the module-level
-    comment above `_INCLUDES_DIR` for why render.php alone under-detects.
+    includes/*.php file reachable from it through require/require_once, at
+    any depth. See the module-level comment above `_INCLUDES_DIR` for why
+    render.php alone under-detects.
     """
     found = set(_tier_object_attrs_from_php(render_path))
     if not render_path.is_file():
@@ -609,8 +620,23 @@ def _render_tier_attrs_for_block(render_path: Path) -> set:
         text = render_path.read_text(encoding="utf-8")
     except OSError:
         return found
-    for m in _REQUIRE_INCLUDES_RE.finditer(text):
-        found |= _tier_object_attrs_from_php(_INCLUDES_DIR / m.group(1))
+    queue = [m.group(1) for m in _REQUIRE_INCLUDES_RE.finditer(text)]
+    seen = set()
+    while queue:
+        name = queue.pop()
+        if name in seen:
+            continue
+        seen.add(name)
+        include_path = _INCLUDES_DIR / name
+        found |= _tier_object_attrs_from_php(include_path)
+        if not include_path.is_file():
+            continue
+        try:
+            include_text = include_path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        queue.extend(m.group(1) for m in _REQUIRE_INCLUDES_RE.finditer(include_text))
+        queue.extend(m.group(1) for m in _REQUIRE_SIBLING_RE.finditer(include_text))
     return found
 
 # MINOR (task-review 2nd pass): both `raise RuntimeError` calls below fire at
