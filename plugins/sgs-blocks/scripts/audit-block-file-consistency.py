@@ -694,12 +694,33 @@ def collect_js_attr_refs(src):
     return collect_read_attrs(src)
 
 
+def _loop_prefixes(corpus, var_name):
+    """Prefixes a helper receives through a loop variable: `foreach ( $map as
+    $prefix => $sel )` over a literal `$map = array( 'title' => ..., ... )`
+    (sgs/cart's mini-cart panel types fourteen text elements this way). Only
+    the literal string keys of that array count."""
+    prefixes = set()
+    loop_re = re.compile(
+        r"foreach\s*\(\s*\$([A-Za-z_][A-Za-z0-9_]*)\s+as\s+\$" + re.escape(var_name) + r"\s*=>"
+    )
+    for loop in loop_re.finditer(corpus):
+        array_re = re.compile(
+            r"\$" + re.escape(loop.group(1)) + r"\s*=\s*(?:array\s*\(|\[)(.*?)(?:\)|\])\s*;", re.DOTALL
+        )
+        for arr in array_re.finditer(corpus):
+            prefixes.update(re.findall(r"['\"]([A-Za-z0-9_]+)['\"]\s*=>", arr.group(1)))
+    return prefixes
+
+
 def collect_prefixed_helper_consumed(corpus):
     consumed = set()
     for fn_name, suffixes in PREFIXED_HELPER_SUFFIXES.items():
         pattern = re.compile(re.escape(fn_name) + r"\s*\(\s*[^,]+,\s*['\"]([A-Za-z0-9_]*)['\"]")
-        for m in pattern.finditer(corpus):
-            prefix = m.group(1)
+        prefixes = [m.group(1) for m in pattern.finditer(corpus)]
+        var_pattern = re.compile(re.escape(fn_name) + r"\s*\(\s*[^,]+,\s*\$([A-Za-z_][A-Za-z0-9_]*)\s*[,)]")
+        for m in var_pattern.finditer(corpus):
+            prefixes.extend(_loop_prefixes(corpus, m.group(1)))
+        for prefix in prefixes:
             for suffix in suffixes:
                 if prefix:
                     consumed.add(prefix + suffix)
