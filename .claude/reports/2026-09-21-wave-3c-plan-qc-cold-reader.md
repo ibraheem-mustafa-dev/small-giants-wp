@@ -3,7 +3,7 @@ doc_type: cold-reader-audit
 audit_date: 2026-09-21
 docs_reviewed:
   - .claude/prompts/2026-09-21-wave-3c-start.md
-  - .claude/plans/2026-09-21-wave-3c-implementation-plan.md
+  - .claude/plans/archive/2026-09-21-wave-3c-implementation-plan.md
 scope: ambiguities, unresolved terms, unclear steps, conflicts, invalid pointers
 finding_count: 27
 ---

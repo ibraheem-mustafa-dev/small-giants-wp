@@ -1,6 +1,6 @@
 # U-17 design: the Lottie player (Wave 3C lane C)
 
-Status: design, awaiting /qc-council and Bean's sign-off. Governing: `.claude/plans/2026-09-21-wave-3c-implementation-plan.md` §1h; research `.claude/reports/2026-09-21-lottie-player-research.md`; Spec 38 §1.2a.
+Status: design, awaiting /qc-council and Bean's sign-off. Governing: `.claude/plans/archive/2026-09-21-wave-3c-implementation-plan.md` §1h; research `.claude/reports/2026-09-21-lottie-player-research.md`; Spec 38 §1.2a.
 
 ## 1. Problem
 

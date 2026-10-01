@@ -14,7 +14,7 @@ WooCommerce already renders an accepted-payment-methods row on the cart page (`t
 | Footer starter patterns | Same grep over `theme/sgs-theme/patterns` | 0 hits. The 7 `patterns/footer-*.php` carry no payment row, and neither does `framework-footer-default.php`. So the only accepted-methods row is WooCommerce's, on the cart page. There is no SGS host in the footer or header. |
 | Plugin blocks | same Grep over `plugins/sgs-blocks/src` | Only `choice-flow` (its own "payment" question wording), not marks. |
 | Framework DB | `sgs-db.py sql "SELECT slug FROM blocks WHERE slug LIKE '%pay%'"` | No results |
-| Plan row | `.claude/plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` W2-o | "No payment-brand SVGs in the repo". No consumer named. |
+| Plan row | `.claude/plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md` W2-o | "No payment-brand SVGs in the repo". No consumer named. |
 | Inventory | `.claude/reports/2026-07-28-spec36-37-remaining-work-inventory.md` A2 | "teardown gap 4, narrowed; new, unspecced; trust-bar covers generic already". The only hint at a host, and it is a hint, not a requirement. |
 | LEDGER | `.claude/LEDGER.md` | Lists "payment icons" as not done. No design. |
 

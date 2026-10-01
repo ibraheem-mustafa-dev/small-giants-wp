@@ -1,0 +1,767 @@
+---
+doc_type: implementation-plan
+project: small-giants-wp
+spec_id: 36+37 (merged execution track)
+status: READY TO EXECUTE
+parent_plan: .claude/plans/2026-07-29-merged-spec36-37-track-strategic-plan.md (Wave 3C)
+inputs: .claude/reports/reference-requirements/FAMILIES-MASTER.md, .claude/reports/reference-requirements/families-master.json, .claude/reports/reference-requirements/FAMILIES-REVIEW.md
+---
+
+# Wave 3C implementation plan
+
+## Read this first
+
+- **What this is.** Wave 3C of the merged Spec 36 + Spec 37 nav, header, footer and drawer
+  track. Thirteen reference sites were measured, clustered into 46 capability families and
+  signed by Bean. This plan turns that signed list into build work.
+- **The state.** Nothing in Wave 3C is built yet. The families are signed and the units below
+  are the build order. Scope is FULL: every signed family is built. Nothing is parked,
+  deferred or dropped. Bean answered the eight open questions on 2026-09-21 (section 1).
+  Bean is on a time crunch: be token-efficient, run the loop as written and add no extra reviews.
+- **The four things to do first.**
+  1. Read section 1 (Bean's answers). Nothing there needs asking again.
+  2. Read section 9 (commands, fixtures, gotchas, lessons) so you do not rediscover them.
+  3. Run Step 0a and Step 0b (section 3). 0a needs plan mode exited because it writes
+     to the shared framework database.
+  4. Start U-1 through the per-unit loop in section 5.
+- **What else to read.** Section 9's lessons before anything. Spec 36 in full before U-1.
+  Spec 37 sections 1 and 2 before any drawer unit. The unit's own reference JSON rows before
+  its design gate.
+- **Bean's answers** (section 1): force-solid gets a solid resting colour, the drawer clamp is
+  dropped, full scope, three accepted divergences, no file splits, sandybrown only, the Indus
+  Foods draft is the capped-header exemplar, and a Lottie player is built from a researched model.
+
+## 1. Bean's answers (2026-09-21)
+
+Nothing here is open. Where an answer needs work, the step is named.
+
+**(a) Force-solid header background: build it.** The header already has a transparent mode. The
+"force solid" setting at a tier must give a solid resting colour: the header's own resting
+background (its surface token). Built in U-1 for every header, with or without the pill.
+
+**(b) Trigger-anchored drawer overhang: dropped.** Canary page 3699 was a loose test page, so
+there is nothing to clamp; the clamp and its Spec 36 wording are not built. Page 3699 is in the trash
+(Bean approved). Pages 3692 to 3695 are the same kind of loose page and stay until
+Bean says otherwise; none of them is evidence. Testing uses real CPTs: Step 0f creates a test
+`sgs_header` and a test `sgs_drawer` post and activates them.
+
+**(c) Full scope: confirmed.** Every signed family is built: U-6 includes M-24 and M-25, U-8
+includes M-20, U-14 includes M-08, U-12 builds all eight furniture blocks, and M-10 and M-47 stay
+in. Inside each unit the family with the fewest references is built last, so a cut is easy if
+time runs out, but nothing is dropped or parked.
+
+**(d) Divergences from a reference: accepted, all three.** The only places a clone will differ from
+its reference on purpose: (1) DEC-01, resn's WebGL scene approximated with a Tier V effect or an
+existing fx field, with real DOM text for its labels; (2) DEC-02, accessible defaults kept where a
+reference ships an accessibility defect, with one carve-out, close-on-scroll for lamalama; (3) DEC-07,
+buck's random fill frozen to one colour, because a new colour per page load is a content choice.
+Each is recorded in the clone's report so it never reads as a defect.
+
+**(e) The over-length files: leave them.** `nav-menu-markup.php`, `nav-menu-submenu-css.php`,
+`nav-drawer/render.php`, `site-header/render.php`, `store.js` and `header-behaviours/view.js` are
+two to three times the length limit. Do not split them in Wave 3C. Disclose each commit that adds
+to one with `[gates-ok:pre-existing file length]`. Bean has ruled this not worth the tokens.
+
+**(f) Deploy: sandybrown only.** Deploy every unit to sandybrown. When a different client's header
+or drawer is needed, switch the active header and drawer CPTs on sandybrown
+(`wp sgs header set-active <id>` and `wp sgs drawer set-active <id>`, Spec 19 section 4.14)
+instead of deploying to `indus-test` or `eye-care-test`. Those two targets are used only if Bean asks.
+
+**(g) The second composed header at Gate 3C: the Indus Foods draft.** Bean did not follow the
+question, so plainly: at the end of Wave 3C one finished header is checked against a reference. The
+floating-pill header has one (lamalama). An ordinary capped-width header needs a yardstick too. The
+default, unless Bean names another, is Bean's own Indus Foods Mega Menu draft: a full-width bar with
+its content capped at 1240px, dropdown and mega panels, and a mobile overlay.
+
+**(h) Lottie: build a Lottie player, and leave lamalama's canvas mark as a still.** Moving SVG
+logos already exist (`sgs/responsive-logo` `animationStyle` and `svgAnimationSource`, .svg from the
+media library only); Lottie exists nowhere in the tree. Bean's instruction: be efficient and
+delegate the design to a subagent that uses `/gh-research` to find a proven implementation to model.
+That research is `.claude/reports/2026-09-21-lottie-player-research.md`. U-17 is the Lottie player
+unit: a Tier H admission through Spec 38 section 1.2a (with a decision entry), a substrate value
+on `sgs/responsive-logo` that accepts a media-library .json, and a reusable media-slot attribute. It
+runs in parallel with the nav chain. lamalama's live canvas mark stays a still and is recorded as a
+divergence.
+
+Built (U-17, design `.claude/reports/2026-09-26-u17-lottie-design.md`): `lottie-web` 5.13.0 light build (SVG renderer, npm-bundled, no CDN, no `eval`), admitted to Spec 38 section 1.2a Tier H as D1151 with a named 60 KB allowance for Lottie pages (Bean granted part (iv) on 2026-09-21). Bean widened the scope on 2026-09-26: Lottie is the fourth value of the shared media-type atom (the Media block and the hero split media), a background on the shared wrapper (`bgLottie`), and a substrate on `sgs/responsive-logo` (`animationSubstrate`); the poster is the no-JS, print and reduced-motion state, and the player loads only after its trigger.
+
+## 2. Decisions already signed
+
+Full text lives in `.claude/reports/reference-requirements/families-master.json::decisions`
+and `::engineering_notes`. Do not restate them elsewhere. What they change here:
+
+| ID | What it means for the build |
+|---|---|
+| DEC-02 | SGS's accessible default is kept on every block. Exactly one carve-out: a close-on-scroll attribute for lamalama, in U-9. No other accessibility opt-out |
+| DEC-03 | Away is the UK storefront; its copy cells are not cloned verbatim and Away is re-read on the UK site before Wave 4 |
+| DEC-04 | Step 0c. DEC-05: Step 0d. DEC-11: the drafts' 768 rows are mobile, so they have no tablet row |
+| DEC-09 | The drawer closes when the viewport crosses `collapsePoint` while open; otherwise it stays open and reflows. One rule, no attribute. In U-9 |
+| DEC-10 | Clone what Bean's two drafts intend, not what their runtime does wrong. Where the draft's own rendering mis-clusters a panel entry, cluster it correctly. The panel-entry row shape in U-5 is a real requirement, not a draft artefact |
+| DEC-14 | "The row's own surface is the trigger", built in U-14 as a SEPARATE tier on/off attribute, `sgs/nav-bar-menu::triggerSurface`, not a fourth `triggerMode` value (Bean, with both council members, 2026-09-25): `triggerMode` chooses what the button shows, the surface its hit area, so every presentation keeps it. Full text: `families-master.json::decisions` DEC-14 `resolution` |
+| DEC-15 | Amend FR-36-6: the drawer's own × becomes optional per `closeStyle` and per tier. Written into Spec 36 at Step 0b, before U-11 builds |
+| DEC-16, DEC-17 | NOT accepted as written. Their scope floor and four-of-eight split were not accepted; the plan builds every family and all eight furniture blocks (section 1c), smallest-support family last inside each unit |
+| DEC-01, DEC-02, DEC-07 | The three accepted divergences (section 1d). Nothing is built for them. M-08's trigger case is built, in U-14; its non-trigger card (lamalama) is DEC-18. DEC-13: the Lottie player is built as U-17 (section 1h) |
+| DEC-18 | lamalama's GET IN TOUCH card pinned to the top-right corner: accepted difference (Bean, 2026-09-27). Not built in Wave 3C; M-08 is covered by acceptance. Rebuild parked in `.claude/plans/2026-09-27-g8-screen-corner-pin-plan.md` |
+| ENG-01 | z-index becomes a per-tier attribute defaulting to 100. Inside U-1 |
+| ENG-02 | `accordionExclusive` boolean, default true. Inside U-9 |
+| ENG-03 | Six `sgs/site-header` attributes are in `block.json` and rendered but missing from the framework DB. Step 0a |
+
+**Nothing in Wave 3C is parked, deferred or dropped.** A reference is never trimmed to fit the
+framework: a row with no covering attribute is a gap unit. Three items sit outside this wave
+for a stated reason rather than by parking. wearecollins' `m` hotkey and resn's history-back closer, because
+both are alternative routes to a dismissal U-9 already builds. If Bean wants any of the three,
+each becomes a unit of its own.
+
+**Divergences are recorded at clone time**: one line each under a "Recorded divergences"
+heading in the clone's `reports/visual-diff/<clone>` report, so Bean's eye does not read them
+as defects.
+
+## 3. Step 0, and the order it runs in
+
+- **0a and 0b run before U-1.**
+- **0c runs before Wave 4**, and before U-8 or U-2 read rabbit's dropdown cells.
+- **0d — done** (2026-09-26, f839facc7): measured cells in the six M-11 references' JSON; summary in `.claude/reports/2026-09-26-u16-entrance-design.md` §3.
+- **0e is optional and blocks nothing.**
+- **0f runs before U-1's live check:** create and activate a test header and drawer.
+
+**0f, real test CPTs.** Canary page 3699 is already in the trash (Bean approved). Create a test `sgs_header` post and a test `sgs_drawer` post (start from the
+seeded framework header and drawer: `wp sgs header seed-starter` and `wp sgs drawer seed-starter`,
+Spec 19 section 4.14), and activate them with `wp sgs header set-active <id>` and
+`wp sgs drawer set-active <id>`. Record the ids in the LEDGER line. Live checks in the per-unit
+loop run against the activated CPTs and the `qa-hdr-*` fixtures.
+
+**0a, reseed the framework DB.** `python plugins/sgs-blocks/scripts/sgs-update-v2.py`
+(the stage map is in its module docstring; 13 stages, several pull from upstream sources).
+Budget 20 to 40 minutes and run it in the background; poll its exit before reading the DB.
+It writes to the shared framework DB, so plan mode must be exited and Bean must have said go.
+Then confirm all six ENG-03 attributes landed:
+
+```
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT attr_name FROM block_attributes WHERE block_slug='sgs/site-header' AND attr_name IN ('headerFloat','headerFloatInset','headerFloatCollapse','backdropBlur','shadowScrolled','shadowScrolledColour')"
+```
+
+Six rows expected. Fewer means the seed is incomplete: name the missing attributes to Bean
+and stop. `block.json` is ground truth until this passes.
+
+**0b, spec amendments, as their own commit before any unit builds.** Spec 36 FR-36-6 gets the
+optional × as a testable predicate, not prose: the × may be omitted at a tier only when
+`modality` is `non-modal` AND the bar's burger is rendered at that tier (`collapsePoint` puts
+it in the DOM) AND `closeStyle` at that tier is `burger-morph`; in every other combination
+`render.php` forces it on. PHP tests in the same commit: modal plus burger-morph gives ×;
+non-modal plus separate-x gives ×; non-modal plus burger-morph with the burger hidden gives ×;
+non-modal plus burger-morph with the burger live gives no ×.
+
+Spec 37's boundary rule (section 1): a change crossing the line between nav and the container
+or CPT side edits BOTH specs in the same commit. U-10, U-11, U-14 and U-16 cross it. Per-unit
+doc updates ship with the unit's code; only these amendments ship first, alone.
+
+**0c, headed capture pass (DEC-04).** ButcherBox and rabbit.tech at 768, plus rabbit's open
+dropdown and both footers; Away re-read on the UK storefront. Method:
+`.claude/reports/reference-requirements/CAPTURE-PROTOCOL.md`, one headed Chrome window, page
+fully loaded before measuring. The new measurements REPLACE the existing rows in
+`butcherbox.json`, `rabbit.json` and `away.json`; they do not append.
+
+**0d, footer hover and one footer reveal** measured on the references that have footers
+(DEC-05), same method. **0e, optional**: a 1000px tablet capture of the two drafts. DEC-11
+already rules their 768 rows mobile, so 0e is for completeness and blocks nothing.
+
+0c and 0d run headed, so they flash a Chrome window on Bean's screen. Tell him before
+starting and run both in one browser session.
+
+## 4. Units, in execution order
+
+The 14 nav units form one connected file-overlap component (`nav-menu-markup.php` and
+`site-header/*` are the hot files), so they run ONE AT A TIME in this order. U-12 and U-15
+are disjoint from everything and run in parallel with the chain from unit 1. U-17 (the Lottie
+player, section 1h) runs in parallel with the chain.
+
+**This table is the execution surface and it supersedes the unit table in FAMILIES-MASTER,
+which is pre-decision.** Take scope from here; take full file lists from
+`families-master.json::units[].files`.
+
+**Exit cells.** A unit's exit cells are, for each of its families, every reference in
+`families-master.json::families[<id>].uncovered_references`, read as that reference's
+`<ref>.json::rows[surface,tier].cells[<column>]` (each cell carries `value`, `method` and
+`evidence`). Read the values from the JSON; never hand-copy them into a doc.
+
+**Family order inside a unit.** The families column is the build order within the unit:
+largest reference support first, smallest last, counted from `uncovered_references`. If time
+bites, the tail is the cheap thing to defer to a later session, but nothing is dropped.
+
+**Bean column.** `design` means the design report goes to him as a three-line ask with one
+recommendation and the build waits on his reply. `eye` means he judges the built output
+visually. `none` means neither.
+
+| Order | Unit | Scope after the decisions | Families (exit cells) | Bean | Size | Lock files |
+|---|---|---|---|---|---|---|
+| 1 | U-1 — **DONE** | De-hardcode the nav surfaces. FIRST COMMIT wires the mega fork's `closeGrace` to `submenuCloseGrace` (`nav-menu-markup.php` builds it with a literal 170 while the non-mega fork reads the attribute); lift or parameterise `mega-disclosure.js::MAX_INTENT_DELAY_MS = 80`, which clamps a markup-declared 300; per-tier z-index (ENG-01); align the surface-ground vocabulary (fill, blur, radius and shadow diverge by name and type across site-header, mega-panel and nav-drawer). The force-solid tier emits the header's resting background (section 1a) | M-09 (covered), M-13 (covered), M-43 (covered), M-21 (covered) | design | medium | `nav-menu-markup.php`, `site-header/{render.php,style.css,block.json}`, `mega-panel/{render.php,style.css,block.json}`, `nav-drawer/block.json` |
+| 2 | U-9 — **DONE** (paired with U-11) | Dismissal routes, modality, trigger semantics, the resize rule (DEC-09), `accordionExclusive` (ENG-02), close-on-scroll (DEC-02) | M-36, M-34, M-35, M-40, M-47 | design | medium | `nav-bar-menu/block.json`, `nav-drawer/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/{store.js,mega-disclosure.js}` |
+| 3 | U-11 — **DONE** (paired with U-9) | Close-control presence, placement (`same-slot` / `top-row-start` / `top-row-end` plus an offset pair) and morph motion (DEC-15); magnet strength (M-10). Includes the `closeStyle` string to tier-object migration via `migrate-tier-object.py --property closeStyle`, with the fallthrough check that a stored flat string still resolves, and `$sgs_nd_allowed_close_styles` kept equal to the JSON enum | M-27, M-10 | eye | medium | `nav-drawer/{block.json,render.php,style.css}`, `nav-bar-menu/{block.json,style.css}` |
+| 4 | U-5 — **DONE** | Entry and exit animation vocabulary and item stagger. The mega fork has no entry-animation attribute today, so the animation must reach the mega interactivity context | M-31, M-32 | eye | high | `nav-drawer/{style.css,render.php,block.json}`, `mega-panel/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/` |
+| 5 | U-2 — **DONE** | Surface scrim, colour, alpha and blur per tier. The drawer hardcodes `rgba(0, 0, 0, 0.55)` twice in `style.css`; the panel fork has no scrim element at all, so U-2 adds one | M-14 (covered) | design | medium | `mega-panel/{render.php,block.json}`, `nav-drawer/{style.css,render.php,block.json}`, `src/shared/nav-interactivity/store.js` |
+| 6 | U-3 — **DONE** (paired with U-8) | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
+| 7 | U-6 — **DONE** (paired with U-7) | Item hover parity: opacity and padding-shift hover (M-21, delivered by U-1 — see its row), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
+| 8 | U-7 — **DONE** (paired with U-6) | Per-item ornament (M-22) and per-item media slot (M-15) | M-22, M-15 | none | medium | `nav-menu-markup.php`, `nav-drawer-menu/block.json`, `mega-group/`, `nav-menu-submenu-css.php` |
+| 9 | U-10 — **DONE** (paired with U-14) | Role migration: move a non-menu header block into the drawer per tier. Crosses the Spec 37 boundary. First design question (Bean, 2026-09-25): the composition route, a copy of the block in the drawer body plus the header copy hidden at that tier with the existing device-visibility extension (`includes/device-visibility.php`, `sgsHideOnMobile/Tablet/Desktop`); Bean calls it the right use of those settings. Eye Care does this today with Additional CSS, which that route replaces. Blocks reading Site Info carry no duplicate data | M-19 | design | medium | `site-header-row/block.json`, `nav-drawer/render.php`, `nav-menu-markup.php` |
+| 10 | U-4 — **DONE** (cut to `vw`/`vh` units, Bean) | Type scaling mode: a formula unit, per-tier line-height; includes `business-info` for the footer half | M-45 | none | medium | `nav-bar-menu/block.json`, `nav-drawer-menu/block.json`, `nav-menu-submenu-css.php`, `business-info/block.json` |
+| 11 | U-8 — **DONE** (paired with U-3) | Panel geometry: anchor enum and mega top offset (M-16). "Panel follows the pill" is a covered value of M-16, already built. Then Away's callout row (M-20), the aside or callout column count, which comes last on one reference | M-16, M-20 | none | medium | `nav-menu-submenu-css.php`, `mega-panel/{block.json,render.php}`, `mega-aside/render.php` |
+| 12 | U-14 — **DONE** (paired with U-10) | Band pass-through, a zero-height shell (M-52); the surface trigger (M-39, DEC-14, built as the separate `triggerSurface` attribute); then a trigger that outlives its header, the detaching chip (M-08, buck and resn), last on two references. Do not reuse `class-sgs-floating-ui-renderer.php` as is: its container is `aria-hidden`, and FR-36-8's priority-plus-More text contradicts it | M-52, M-39, M-08 | design | medium | `site-header/{render.php,block.json,style.css}`, `site-header-row/block.json`, `nav-bar-menu/block.json` |
+| 13 | U-13 — **DONE** | Header scroll intelligence: section-adaptive ink (M-04), then direction-keyed restyle (M-03, one reference, last) | M-04, M-03 | design | high | `src/header-behaviours/view.js`, `includes/class-sgs-header-behaviours.php`, `site-header/*` |
+| 14 | U-16 — DONE (2026-09-26) | Header and footer entrance animation. The entrance is its own layer on every block: `animation-observer.js` plays it as a script animation (`element.animate()`), so it never shares a block's own transition, CSS animation or transform (the header's shrink and hide-on-scroll keep working); distance presets 15/30/50/100px, delays up to 800ms, a head flag that holds entrances until their start pose is placed (no flash at 375), a header failsafe and first-appearance notice (design `.claude/reports/2026-09-26-u16-entrance-design.md`, council three rounds GO WITH FIXES). Live report `reports/visual-diff/entrance-2026-09-26.md` (verdict: PASS, axe included). Live PASS on sandybrown at 375/768/1440, twice: `node plugins/sgs-blocks/scripts/nav-qa/u16-entrance-probe.mjs` (15 failures on the pre-U-16 build) and `node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs` (18 pass; 7 failures on the pre-U-16 build). Divergence recorded: the preloader-gated start (lamalama, studionamma). Eye check waived by Bean (2026-09-26): the wave's goal is a visual copy of the references, so the motion's feel is not judged here. | M-11 | eye (waived) | medium | `assets/js/animation-observer.js`, `src/components/AnimationControl.js`, `src/blocks/extensions/animation.js`, `includes/animation-attributes.php`, `assets/css/extensions.css`, `scripts/dbschema/seed-motion-shape-signatures.py` |
+| ‖ | U-12 — **DONE** | Header and footer furniture: local-time clock, language switch, store selector, wishlist (link, saved-items panel, Save for later), theme toggle with an automatic dark palette, back-to-top and account as `sgs/button` link sources, sound mute as an `sgs/audio` style (Bean, 2026-09-25). `headerEssential` on `product-search` only | M-18 | none | high | six new directories (`local-time/`, `language-switch/`, `store-selector/`, `theme-toggle/`, `wishlist-link/`, `wishlist-panel/`), plus `button/`, `audio/`, `product-card/`, `cart/`, `product-search/block.json`, `includes/wishlist/`, `includes/helpers-link-source.php`, `scripts/derive-dark-palette.py` and the theme's dark-mode files |
+| ‖ | U-15 — **DONE** | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*`, new `notice-message/` |
+| ‖ | U-17 — **DONE** | The Lottie player (DEC-13, section 1h): Spec 38 Tier H, the fourth media type, the wrapper background and the logo substrate | M-33 | design | high | `includes/lottie-*.php`, `src/shared/effects/{fx-lottie,lottie-adapter}.js`, `src/vendor-modules/lottie-light.js`, the media atoms, `media/`, `hero/`, `responsive-logo/`, `class-sgs-container-wrapper.php` |
+| 15 | U-18 — **open** (G1-G7, G9-G11 live; G8 accepted as DEC-18 and parked; **both copies failed Bean's eye 2026-09-27; the framework capabilities they lacked are live (2026-09-28); the copies' settings, accepts and final walker run continue in `.claude/plans/2026-09-27-reference-capture-method-plan.md` "Build status"**) | Copy-parity gaps found composing Gate 3C item 4's two copies. Done and live: G3 custom colours reach the page (gate `check-custom-colour-survives.py`), G1 burger width, G2 `header-box` drawer anchor, G4 narrow panels centre, G5 by composition. Live (report `reports/visual-diff/u18-copy-parity-2026-09-27.md`): G6 burger bar size, G7 drawer `stretch`, G10 narrow desktop panel stacks (four `@container` leaks), G11 group-heading over-reach plus the eyebrow selector-list bug. G8 (pin a block to a screen corner) stopped at NO GO and is accepted as DEC-18, parked in `2026-09-27-g8-screen-corner-pin-plan.md`. Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | G6 `nav-bar-menu/{block.json,style.css,BurgerPanel.js}`, `nav-menu-trigger-css.php`; G7 `nav-drawer/{block.json,render.php,edit.js}`; G8 `container/{block.json,edit.js}`, `class-sgs-container-wrapper.php`, a footer portal; G10/G11 `mega-panel/{render.php,style.css}` |
+
+**U-1 — done** (live `reports/visual-diff/container-2026-09-23.md`, `nav-bar-menu-2026-09-23.md` and
+`nav-drawer-2026-09-23.md`, each `verdict: PASS`). Shipped: mega close-grace reads `submenuCloseGrace`; force-solid paints the header's own
+resting background; per-tier `zIndex` on `sgs/site-header` with drawer stacking derived from it;
+`submenuIntentDelay` + `submenuOpenOn` (hover or click); the surface-ground trio (`surfaceBlur`,
+`surfaceSaturate`, `surfaceOpacity`) aligned across `site-header`, `mega-panel`, `nav-drawer`, `container`,
+`cta-section`, `hero`, `multi-button`, `physics-canvas`, `site-footer` and `trust-bar`; a
+`shadow`/`shadowColour` writer on `mega-panel` and `nav-drawer`; layered shadows clone as a shape list plus a
+colour list; item hover paint (`itemOpacity`/`itemOpacityHover`, `submenuOpacity`/`submenuOpacityHover`,
+`itemPaddingShiftHover`, `panelCardLift`). The faded ground (fantasy) is the
+header's own gradient fill (`backgroundColourGradient`, resolved by `sgs_background_paint_value()` and, once
+scrolled, `sgs_css_gradient_value()`), live-verified on sandybrown (`/qa-scrim/`, fixture
+`scripts/nav-qa/qa-u1-owed-fixture.php`, probe `scripts/nav-qa/u1-owed-probe.mjs`: top pixel 129, bottom 254
+over white, no mask on the header, dropdown still clickable). The same probe live-verified the card lift and
+the submenu opacity pair: fantasy's submenu link opacity 0.6 at rest to 1 hovered; indus-foods' 6px card lift
+with a negative control (an empty lift does not move the card; fixed in ae50c7626, mega-panel `style.css`'s
+fallback was -3px). Exit cells: M-43 moves to `covered` in `families-master.json` (residual: rabbit's open
+state never reproduced live). M-09 moves to `covered` (buck's `auto` z-index is an accepted divergence,
+Bean). M-21 moves to `covered`. M-13 moves to `covered` (its only open item, the edge-fade live check, is
+now proven; the mega-panel `borderRadius` staying a single value is a Bean-approved acceptance, not a gap).
+Shipped alongside U-1: the universal shadow-tone check (design
+`.claude/reports/2026-09-23-shadow-tone-design.md`, Bean-approved GO WITH FIXES) — a surface is judged dark
+when white text would be chosen for it, a dark surface takes a black shadow at 2.2x plus a light ring, and
+the wrapper, nav-drawer and mega-panel mark `sgs-on-dark`/`sgs-on-light`. Owed: Bean's eye on the
+dark-surface screenshot and ring strength. Theme gradient presets now resolve in the editor canvas preview
+and tone check (0ec253b35): every caller of `backgroundPreview()`/`wrapperToneClass()`/`surfaceToneClass()`
+passes `useSettings('color.gradients')` via `flattenPresetSetting()`.
+
+**U-2 — done** (D1148; design `.claude/reports/2026-09-24-u2-scrim-design.md`; live `reports/visual-diff/scrim-2026-09-24.md`).
+Shipped as ONE shared scrim (Bean widened the scope): `includes/helpers-scrim.php` plus `scrimColour`,
+`scrimColourGradient`, per-device `scrimOpacity` and `scrimBlur` on nav-drawer and nav-bar-menu (the owner of every
+dropdown and mega panel, not mega-panel: three references dim for plain dropdowns too) and on modal, cart, gallery and
+product-search. Exit cells: halcyon and indus-foods panel cells, away's drawer and panel cells, butcherbox's drawer cell,
+lamalama's drawer cells and lusion's 1440 gradient cell are all reachable per tier; halcyon, lamalama and away's drawer
+cells were measured live within tolerance (exact values). Residue, named: butcherbox's dropdown strength was never
+captured as a number (measure at its Wave 4 clone); lamalama's click-through is an accepted divergence; the scrim fade
+stays 0.2s until U-5's motion vocabulary; lusion's phone and tablet blue is the full-screen drawer's own fill, and its
+card inset is U-3 (M-46). M-14 moves to `covered`.
+
+**U-9 + U-11 — done, as one pair** (D1150; design `.claude/reports/2026-09-24-u9-u11-design.md`; live
+`reports/visual-diff/nav-drawer-2026-09-24.md`; commit c36105939). The drawer's × follows DEC-15's own wording: it is
+left out at a tier only when the drawer is `non-modal`, `closeStyle` there is the new `trigger` value and the opener is
+live (hit-tested). `closeStyle` became a tier object (stored flat values migrated on sandybrown and in seven theme
+patterns); `closePlacement`, `closeOffset`, `closeRadius` added; the DEC-09 resize rule keys on the opener's liveness;
+`closeOnScrollDistance` is DEC-02's one carve-out (pointer scrolling only, never touch); `accordionExclusive` (ENG-02);
+`burgerMorph`, `burgerMorphDuration`, `burgerMorphEasing`; `itemMagnetStrength`. A Spec 32/35 audit found seven Spec 35
+must-fixes, all fixed before commit. M-36, M-34, M-35, M-40, M-47, M-27 and M-10 move to `covered`. Residue, named:
+wearecollins' two-bar burger belongs to U-6; away's and rabbit's icon swap and indus-foods' 38px × are recorded
+divergences; the `m` hotkey and history-back stay outside the wave (section 2). Bean's review then closed seven
+defects, all live-checked: the hidden × releases its top row and stays hidden through the close animation; the
+`trigger` and `centred` cards and a non-modal full-screen drawer (now starting under the burger's own header row) paint
+above the header; drawers above the header default to the `floating` shadow and a 1px primary border (cards also 20px
+corners); the business-info Button style no longer spills out of its row; the gallery lightbox dims to black, closes
+on an outside click and keeps its arrows off the image; the cart's button trigger resets browser button paint (Spec 36
+"Stacking order" and "Default edge"). The lane A QA pass (d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass") closed axe with the drawer open
+and the editor round-trip of the close controls; Bean's eye on the gallery arrows is still open.
+
+**U-5 — done** (design `.claude/reports/2026-09-24-u5-motion-design.md`, two-model council GO WITH FIXES,
+Bean sign-off; commit 01e4b5a5f; live `reports/visual-diff/nav-drawer-2026-09-24.md` section "U-5"). One motion
+vocabulary for the drawer and every dropdown and mega panel (Spec 36 "Motion"): a per-tier drawer shape
+(`entryAnimation`, twelve values, replacing `animateFrom`), open and close times, a shared speed-curve list
+(`includes/helpers-motion-easing.php`, also the burger's), `entryFade`, a curtain colour, the drawer item stagger
+(top-level items, per-tier distance, no cap by default, reverse on close), and the panel set on `sgs/nav-bar-menu`
+(`submenuAnimation` gains `fade-lift` and `grow` and now reaches the mega fork; exit through `@starting-style`;
+duration, exit, easing and item stagger). `mega-panel::staggerOnOpen` and `shared/effects/stagger.js` are removed
+(stored value on sandybrown mega post 1745 stripped before deploy). Also fixed on the way: the editor's "Slide"
+option saved a value the renderer refused; Escape did not close a panel opened by hover (35d98e413). Exit cells
+measured live: away's drawer slide (300ms each way, no fade, close 295ms) and the drafts' panel fade-lift (340ms,
+-8px and 0.99, drafts curve) with the 28ms and 55ms item staggers. M-31 and M-32 move to `covered`. Residue,
+named: dogstudio's durations are upper bounds (compared by shape and order only); lusion's closed-pose rotate,
+its 0.4s scrim close delay and fantasy's second item direction are recorded divergences; lusion's end pose was
+never captured, so its stagger is expressed but not measured. The lane A QA pass (d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass") closed
+reduced motion (14 and 20 animations without the emulation, 0 with it, same end state), axe on the open drawer and
+the editor round-trip of the new controls; Bean's eye on the shapes is still open. U-16 was not paired (it needed step 0d first) and
+builds on the universal animation extension instead.
+
+**U-3 + U-8 — done, as one pair** (design `.claude/reports/2026-09-24-u3-u8-design.md`, two-model council GO
+WITH FIXES, Bean sign-off; commits 9f3fc5071, 51d4be574, dd2db8a1f; live `reports/visual-diff/nav-drawer-2026-09-25.md`).
+The drawer gains `side-start`, `side-end` and `container` positions and a per-tier `anchorOffset`; the menu item `gap`
+is a tier object on both menu blocks (stored values folded by `scripts/migrate-nav-gap-tier.php`, which every other
+site runs before it takes the deploy); dropdowns and mega panels share one placement vocabulary (`submenuAlign`
+widened, `megaAlign` new, per tier) and sit `submenuTopOffset` below the header's bottom; the hover bridge hangs from the
+open item. Bean's direction: a mega panel post and the drawer body take any blocks, so callout tiles, narrow panels and
+buck's offset column are structured starter patterns (`sgs/mega-links-with-tiles`, `sgs/mega-compact-links`,
+`sgs/drawer-offset-column`), not attributes. The live check found and fixed two defects (panels centred on a width that
+included the scrollbar, pre-existing for mega panels; the bridge sized mid-animation). Exit cells measured live: away's
+390px side drawer, lusion's header-content panel and 12.8px corner-panel gap, lusion's pitch (gap 0 on 44px rows), a
+mega panel and a dropdown on the page centre below the header, away's two tiles side by side. M-17, M-46, M-16 and M-20
+move to `covered`. Away's drawer callouts (a mega panel inside the drawer accordion) were delivered by U-6 + U-7.
+Found here and fixed (7fea496c4, Bean): an `sgs/container` set to `contentWidth: full` shrank
+to its content when it was itself a grid or flex item, because the wrapper's centring margin fell back onto the outer
+box; centring is now per tier, only where the width is a real cap. The lane A QA pass closed axe with the side
+and header-content drawers open (0 each) and the editor round-trip of the placement controls; Bean's eye on the three
+patterns, once they have imagery, is still open.
+
+**U-6 + U-7 — done, as one pair** (design `.claude/reports/2026-09-25-u6-u7-design.md`, two-model council GO WITH
+FIXES, Bean sign-off; commits 3aae1950c, 777ee5dd4; live `reports/visual-diff/nav-drawer-2026-09-25.md` section
+"U-6 + U-7"). A mega item in the drawer renders its own panel post inside its accordion (`megaDrawerMode`, Spec 36
+FR-36-6), with no JS and no floating shell; both menu forks render panels through one helper. Sibling dim
+(drawer menu, icon-list; not on the bar, Bean), the two-copy label roll (bar items, drawer items, icon-list and the
+trigger word with `triggerHoverLabel`/`triggerOpenLabel`, the accessible name following the visible word), the
+drawer row ornament (a per-tier index counter or icon, an expander glyph and its open turn) and per-item media (the
+linked page's featured image, GIF/WebP full size) are new settings (Spec 41 FR-41-39 to FR-41-41); icon-list numbered
+lists gain a number format. Row separators needed no new setting. Exit cells measured live: halcyon's separator,
+wearecollins' dim, lusion's roll and MENU to CLOSE, dogstudio's index at desktop only, a 45 degree expander turn,
+studionamma's 160 x 112 hover thumbnail, and a mega panel inside the drawer at mobile. M-30, M-24, M-25, M-22 and
+M-15 move to `covered`. Correction to U-3 + U-8's row 14: indus-foods' "More" is a compact-links panel (its rows carry
+descriptions and numbers). Residue and follow-ups, named: studionamma's up-scale origin (never captured); the hovered
+item's faster return in wearecollins (one duration both ways); resn's canvas dissolve (DEC-01); buck's per-link
+glyphs if they differ (Wave 4 buck clone); studionamma's DARK MODE roll (U-12) and its button's hover word (Wave 4
+studionamma clone); wearecollins' social-link dim (Wave 4 wearecollins clone). wearecollins' two-bar burger (M-27 residue from U-9 + U-11, missed by this pair's design) is delivered:
+`burgerBarCount` (design `.claude/reports/2026-09-25-two-bar-burger-design.md`; commits a19a5c6ee, c16bcb949; live
+`reports/visual-diff/nav-drawer-2026-09-25.md` section "Two-bar burger": two bars 6.51px apart cross into an X in
+0.45s on wearecollins' curve; bar thickness and width are a recorded divergence). Owed, lane A: none. Delivered from
+this list: away's 375 two-up tile scroller as a container setting, "Scroll sideways" (`scrollSideways`, `scrollItemWidth`;
+Bean option a1, reusing the native scroller of the horizontal-panel effect without GSAP; design
+`.claude/reports/2026-09-25-container-scroll-sideways-design.md`, council GO WITH FIXES; commits 85ddc09a1 to a71fde293; live on
+`sgs/mega-links-with-tiles`: two 236px tiles in a snapping row at phone width, the 2-column grid unchanged at desktop);
+the menu thumbnail as a short clip, closed by GIF (Bean, 2026-09-25: the video option is GIF-based; live, an animated
+GIF set as the linked page's featured image renders as the drawer thumbnail at its full-size original, 3 frames, looping,
+no resized static copy); the numbered compact-links starter pattern (`sgs/mega-compact-links-numbered`, authored in the real editor and
+serialised from the saved post; its rows needed a new per-item `description` on `sgs/icon-list`, Bean option a, 8441095ec;
+live: a real `<ol>`, `decimal-leading-zero`, 12px 700 numbers, the description a block line inside the link);
+`sgs/mega-panel`'s opaque default fill (Bean, option a, 2026-09-25): an empty `panelBg` paints the
+surface token and the dark scheme's own fill is opaque `rgb(20,20,25)`; translucency comes only from `surfaceOpacity`,
+the reading the tone logic already used (`render.php::$panel_bg_value`, `::$dark_panel_bg`); `sgs/nav-bar-menu` link padding as a setting (`itemPadding`, 4cf0b9069 and f06b7133f; handed over by the Eye
+Care build; live: 14px 24px read back on the fixture, and the hover shift adds to the custom left padding, 24px + 8px
+= 32px) and a per-run upload name, theme.json payload name and unpacking folder in `build-deploy.py` (7c61b7d16; live:
+the sandybrown deploy used `sgs-deploy-<pid>-<time>` and left nothing in the SSH home). Also fixed after Bean's review: the drawer scrollbar (thin, tinted, no arrows, clear of the rounded corners) and a wheel over an open drawer no longer scrolls the page and closes it (Lenis `prevent` on open dialogs); live `reports/visual-diff/nav-drawer-2026-09-25.md` F1, F2. The lane A QA pass
+(d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass") closed axe with the drawer open, reduced motion and the editor round-trip, and fixed keyboard
+sibling dim, which never fired (a `:has()` nested in a `:has()` is invalid CSS). Fixture `scripts/nav-qa/qa-item-markup-fixture.php` is applied on sandybrown (`restore` undoes it,
+including the added menu-119 page link and page 2742's featured image).
+
+**U-4 — done, cut to units** (design and Bean's decision `.claude/reports/2026-09-25-u4-type-scaling-design.md`,
+two-model council GO WITH FIXES, then cut by Bean; commit 61ae4cf99; live `reports/visual-diff/nav-drawer-2026-09-25.md`
+section "U-4"). Formula type sizes were ruled too niche for SME clients: `vw` and `vh` join the shared typography
+control's font-size units instead, so every text element can grow with the screen; `sgs/heading`'s editor preview of a
+custom size is fixed on the way. M-45 is covered for fixed and vw-scaled sizes (lusion, wearecollins exact; fantasy by
+per-tier vw); buck's and dogstudio's step and height rules go in each clone's custom CSS (`sites/<client>/theme-snapshot.json`),
+with the exact formula for each in the design note's §3. Per-tier menu line height is not built (no reference needs it).
+
+**U-10 + U-14 — done, as one pair** (design `.claude/reports/2026-09-25-u10-u14-design.md`, two-model council GO WITH
+FIXES, Bean sign-off; commit 0fbe085f1, then DB rows and gate fixes 96b375e53, d91764560, 5a511b9a6, 8baee8dee,
+5781740e7; live `reports/visual-diff/nav-drawer-2026-09-25.md` section "U-10 + U-14"). U-10 (M-19) is composition: a
+copy in the drawer body, the header copy hidden by tier or, new, exactly while the menu shows its burger
+(`sgsCollapseVisibility`, a universal extension attribute whose rules the header writes at its burger-owning menu's
+`collapsePoint`). Eye Care's phone keeps its 1160px rule in Additional CSS (Bean: a rare one-off; that width is where its bar stops fitting,
+not the collapse point). U-14: `headerPassThrough` (M-52, fixed with structural pointer-events), `triggerSurface`
+(M-39; DEC-14 amended to a separate attribute) and the detaching chip (`triggerDetach*`, M-08, buck; a second copy of
+the burger printed on `wp_footer`, one open state per drawer in the store). All four families move to `covered`.
+Lesson from the build: a new `supports.sgs.elements` entry and override rows each trip their own DB gate; run the
+full local `npm run build` (all gates) before the first deploy, not after.
+The lane A QA pass is done (d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass"): axe 0 on the drawer opened from the header burger (1440, 375)
+and from the chip, and on a Scroll sideways row; the chip is the last tab stop (printed on `wp_footer`) and works by
+keyboard; every new control round-trips in the real editor. Fixed on the way: a Scroll sideways row clipped a focus
+ring top and bottom (8px block room added; the first item's inline start stays trimmed at rest, accepted by Bean and
+recorded in Spec 02's Scroll sideways line);
+an empty chip background now paints the opaque surface token (Bean, option a: buck fills its chip); and
+`TypographyControls.js::isTieredValue` read the editor's `[]` default as a flat value, so a custom font size, line
+height or letter spacing on a fresh block was lost on reload. Fixture cases `header-row` and
+`detach-chip` in `scripts/nav-qa/qa-item-markup-fixture.php` set the U-10/U-14 settings up on `/qa-scrim/`.
+Close-out (6962dd0e6, live on sandybrown): bar dropdown links default to the palette's `text`, not `primary` (Mama's
+Munches pink on cream read 2.24:1); the brand colour stays as the Hover row fill. axe on the keyboard-opened dropdown
+at 1440 with the `exit-cells` geometry fixture: 0 violations.
+
+**U-13 — done** (design `.claude/reports/2026-09-26-u13-header-ink-design.md`, two-model council GO WITH FIXES,
+Bean sign-off; commits 0844bb1cf, 97b7df3a1, 93196a939, 31c2ed4c5, 51d80ff73; Spec 37 FR-37-50 and FR-37-51; live
+report `reports/visual-diff/section-ink-2026-09-26.md`, `verdict: PASS`). The
+header's colour follows the section behind it (`sectionInk` adapt or blend, ink and optional fill per tone), only where
+the header is see-through; menu links and header icons follow it over their own colour while live (Bean); photo sections are toned by a
+brightness measure taken at upload (`_sgs_top_tone`, `wp sgs media measure-tone`) with a `surfaceTone` override on
+every wrapper block; the logo answers its own ground ("Logo for dark backgrounds", colour treatment Automatic), so the
+header never styles it (Bean re-scoped this into the logo block). M-03: `scrolledTrigger` direction plus
+`scrolledOffset`, the solid-first fill fading by opacity. Live on sandybrown (`/qa-section-ink/`, fixtures
+`section-ink`, `section-ink-off`, `direction-fade`; probes `scripts/nav-qa/u13-ink-probe.mjs` and
+`m03-direction-probe.mjs`): wearecollins' pair at 18.64:1 over light, dark, photo and plain sections at 375/768/1440
+with the negative control flat; fantasy's fade gone going down past 100px, back on a 15px upward scroll, a 5px nudge
+held. axe on the header over dark and light sections: 0 at 1440; at 375 one pre-existing finding with the feature on or
+off (the top row's phone button, cream on Mama's pink, 2.4:1). Its framework half is fixed (ba4340c39, 167d3835f):
+every block putting `text-inverse` text on a `primary` ground now uses the palette's `primary-text` (26 rules in 13
+blocks, kept out by the fast gate `scripts/check-text-on-primary.py`), and the business-info Button hover brightens.
+Mama's own `primary-text` is still cream, so its pink buttons stay 2.4:1 until its palette changes (Bean: framework fix
+only; a change of that colour in `sites/mamas-munches/theme-snapshot.json` is the client's call). Bean's review of the editor
+(sheets in `.claude/reports/2026-09-26-u13-review/`, 5248c847d, e50e587f5): every on/off tier switch follows the one
+global device toggle (the "Customise per device" reveal is gone); all 18 raw core `BoxControl` mounts, the header's
+Band padding among them, are `SgsBoxControl` with presets (gate `scripts/check-raw-box-control.py`); no panel title
+says "(per device)"; the logo's colour treatment sits in its Colour panel. Proved in the real editor at Desktop and
+Tablet, each check failing first against the previous build (Spec 35 §5 and §12). Every new control set through the real inspector and
+unchanged after reload. Found and fixed on the way: a freshly inserted header's menu (and the drawer's menu) seeded a
+flat `gap`, so the editor preview failed with "Error loading block" (31c2ed4c5); the ink colours had opened a second
+"Colour" panel. M-04 and M-03 move to `covered`. Residue, named: fantasy's light half and lusion's black and blue
+states are not measurable live; the ink colours carry no `css_state`, so the converter cannot route a draft's CSS
+to them.
+
+**Lane C — U-12, U-15 and U-17 done** (designs `.claude/reports/2026-09-26-u12-furniture-design.md`, `.claude/reports/2026-09-26-u15-notice-message-design.md`, `.claude/reports/2026-09-26-u17-lottie-design.md` (two-model council GO WITH FIXES, Bean sign-off); live checks on sandybrown fixture pages 4070 `/qa-furniture/`, 4072 `/qa-notice/`, 4074 `/qa-wishlist/`, 4087 `/qa-lottie/`, trees in `plugins/sgs-blocks/scripts/nav-qa/lane-c/`; live reports `reports/visual-diff/furniture-2026-09-26.md` (U-12), `notice-banner-2026-09-26.md` (U-15) and `lottie-2026-09-26.md` (U-17), each `verdict: PASS`). M-18, M-07 and M-33 move to `covered` (M-33 keeps lamalama's canvas mark as the accepted still). Researched with /research-buddies and /gh-research before building (Bean): the automatic dark palette (derived at snapshot push time, minimum-change rule, every colour checked against every ground it is used on, failing closed) and the two-tier wishlist (browser list merged into the account on log-in). The live check found and fixed: every media upload fatalling (a typed hook parameter; 039bd248d), the Lottie player never built (vendor list) and unstyled, the Media block's Lottie pause control unbound, `sgs/media` missing `lottie` in its enum, wishlist rows not refreshing and Move to basket failing for products with options, a 21px icon-only toggle, unpadded 24-hour clocks, and brand-pink links at 2.24:1. Existing backgrounds proved byte-identical before and after the wrapper change (23 of 23 elements on three live pages). Residue, named: Polylang/WPML as a language-list source; the customer account area and saved-item alerts (price drops, share by link) shipped as Spec 30 FR-30-14 and FR-30-15 (2026-09-26); per-item icons in nav menus; Lottie in the cloning pipeline (Lottie in `sgs/before-after` dropped, Bean 2026-09-26: a drag-compared animation has no real use); `extract-signatures.py` missing bracket-index and local-variable reads (`sgs/whatsapp-cta.showOn`); Bean's eye on U-15 (seen 2026-09-26: good; its rounded corners were the inline card style, now a full-width strip mode, c2737bd34).
+
+**Dark palette, the Mama's Munches refusal (fixed 2026-09-26).** Of the four refused colours, three were framework false alarms: `text-inverse`, `primary-text` and `accent-text` were paired with a fill by NAME, and those pairs already fail in light mode (cream on pink 2.4:1, olive on yellow 3.8:1). The real conflict was Mama's yellow `accent` buttons labelled in body `text`, which must turn light on the dark page. Fixed in the framework (Spec 33 FR-33-20): a name-guessed pair counts only when it reads in light mode (else a light-mode warning), and fill-scoped ink keeps a readable label inside the scope that paints text on a fill (`settings.custom.darkInk`, printed by `theme/sgs-theme/functions.php::dark_mode_ink_css`). Mama's now derives with no failures and no hand-set colours. Proved live on sandybrown with a temporary dark push (rolled back): the yellow button's label 8.77:1, page text 6.55:1; the same colours outside the button's scope measured 1.92:1 (the control). The same check found that a missing `settings.custom` key read as the whole settings array, which loaded dark mode on every site without a palette; fixed with `includes/helpers-global-settings.php::sgs_global_custom_setting` and gated by `scripts/check-nested-global-settings.py`. The notice banner also gained a full-width strip display mode and an icon size plus a trust-bar-style icon badge (`iconStyle`, `iconCircle*`).
+
+**U-18 — copy-parity gaps from Gate 3C item 4 (open).** Two composed copies on sandybrown, built only through
+`scripts/wp-build-page.js` from trees in `plugins/sgs-blocks/scripts/nav-qa/gate3c/`: lamalama's pill, page 4446
+`/qa-copy-lamalama/` (`sgs_header` 4435, `sgs_drawer` 4428, menus 130/131, logo still 4415, Sometype Mono 4411), and
+the Indus draft, page 4465 `/qa-copy-indus/` (`sgs_header` 4461, `sgs_drawer` 4456, menu 132, `sgs_mega_menu` 4426
+About, 4430 Trade, 4433 More, 4443 Sectors, 4440 Brands, logo 4509, Plus Jakarta Sans 4414 with faces 4484/4485).
+Measure a copy only as the ACTIVE header (in-page copies sit in a lower stacking layer and mislead, as G9 showed):
+`plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs <url> --copy lamalama|indus --out <dir>` inside one trapped
+command that swaps `wp sgs header set-active 4435|4461` and always restores 3777 plus `qa-item-markup-fixture.php
+two-bar`.
+
+Done and live on sandybrown (2026-09-27, designs `.claude/reports/2026-09-27-u18-g1-g2-g4-design.md`, council GO
+WITH FIXES, Bean go):
+- G3: a custom colour picked in the editor reaches the page on every colour setting (19 settings on 8 blocks were
+  fixed: nav drawer, both nav menus' featured item, mega panel, CTA section, accordion item, pricing ribbon; plus
+  the notice banner's type fill showing through a transparent choice). `includes/helpers-colour-parse.php::
+  sgs_colour_hex_for_contrast` resolves any colour for the WCAG maths. Gate `scripts/check-custom-colour-survives.py`
+  (fast tier; static rules plus a slug-versus-hex render proof of 846 colour attributes; `--survey --live hd
+  --menu 132` repeats it through real WordPress: 540 PASS, 0 dropped, 306 unreachable without content).
+- G1 `sgs/nav-bar-menu::burgerWidth` (per tier) with a 44x44 `::after` tap area; G2 `sgs/nav-drawer::anchor`
+  `header-box`; G4 `mega-disclosure.js::repositionPanel` + `panel-bounds.js::placePanel` centre the panel's own
+  width. Probe: lamalama burger 30x36 and card top/left/width = the pill at 375/768/1440; Indus panels at x
+  410/180/180/410/570 at 1440, all PASS.
+- G5 by composition: Sectors as four `sgs/container` cards; every Indus panel, the logo, Request Catalogue (hidden
+  while the menu is a burger) and the scrim (#141923 at 25%, 2px) rebuilt to the draft; lamalama's card contents
+  (436 tall, rows 66-316, CTAs at 329/389, black text on the filled CTAs as the reference paints).
+- G9 (scrim over the panel) measured as not a defect with the copy active; a hard-coded `z-index:101` on the
+  fixed-panel path is folded into G10's commit as hardening.
+
+Live and measured 2026-09-27 (design `.claude/reports/2026-09-27-u18-g6-g8-design.md`; Bean's go on options 1,
+2, 3A plus G10/G11):
+- G6 `sgs/nav-bar-menu::burgerIconWidth`/`::burgerIconHeight` per tier, both writing `--sgs-nbm-icon-w`/
+  `--sgs-nbm-icon-h` on a uid-scoped rule so they beat `--two-bar`'s own (0,1,0) height; the `x` and `x-rotate`
+  poses hard-coded `translateY(8px)` and now derive travel from the property like `line` already did (9697d30d4).
+  Exit: lamalama bars 16 long, 3px gaps, single line open with 5px travel.
+- G7 `drawerAlign` `stretch` ("Full width"), with `$allowed_aligns`, `$align_items_map` and `$text_align_map` all
+  extended together — both maps are indexed unguarded (adab2705a). Exit: lamalama's two CTAs 156.5 (375) / 204
+  (768, 1440) wide.
+- G10 all FOUR `@container` emissions in `mega-panel/render.php` gated on `$sgs_mm_in_drawer`, not just the 640px
+  stack rule: the panel root is its own unnamed query container, so a 620px desktop panel also self-matched the
+  tablet and mobile tiers of max-width, padding and group-gap. `@media` twins unchanged (c598d260f). Exit: Indus
+  About and Trade aside 300px beside the links at 1440, still stacked in the 375 drawer.
+- G11 `$heading_sel` and the `style.css` rule go direct-child, and the eyebrow preset is rebuilt from a relative
+  fragment prefixed once per branch: `$heading_sel` is a comma-separated LIST whose every branch already carried
+  `$root_sel`, so the old concatenation left branch 1 self-nested (matching nothing) and branch 2 with no style
+  scope and no headings-off gate, painting the 11px mono eyebrow on every heading in every group under every style
+  (c598d260f). `style.css` lists a direct-child form for the frontend and a one-level-down form for the editor's
+  block-list wrapper. Exit: the Indus row labels move back from `sgs/text` to `sgs/heading` with their own styles.
+
+**G8 STOPPED at NO GO (2026-09-27), then accepted as DEC-18 (Bean, 2026-09-27).** The design lifted an in-page
+`sgs/container` to `wp_footer`; two reviewers returned NO GO (no editor branch, so `position:fixed` covers the canvas;
+several `<style>` tags stranded from the CSS collector; design report §8-§9). lamalama's corner card is an accepted
+difference for Wave 3C and the rebuild brief is parked in `.claude/plans/2026-09-27-g8-screen-corner-pin-plan.md`.
+- Copies composed 2026-09-27 (trees in `plugins/sgs-blocks/scripts/nav-qa/gate3c/`). The live report
+  `reports/visual-diff/u18-copy-parity-2026-09-27.md` (lamalama 75/76, Indus 23/23, axe 0) measured box positions and
+  widths only, so it is a geometry check, never a copy verdict. It still proves G6, G7, G10, G11 and the `sgs/button`
+  focus-colour fix (076279a31, `button/style.css`). M-13, M-16, M-17, M-39 are `covered`; M-08 is covered by DEC-18.
+- **Both copies FAIL Bean's eye (2026-09-27, R-31-13).** lamalama: wrong and missing item glyphs, the missing
+  "This is Us" media circle, hover markers, hover colours, button text scramble, item fade-in, the slide-open drawer,
+  a pill that is too small and does not scale with the viewport, pill text that blocks the click, and middle text
+  hidden at 375 (L1-L10). Indus: text sizes, every hover colour and motion, mega-panel spacing and order, and the
+  drawer's order and contents (I-1 to I-3). The cause is proven: `u18-copy-probe.mjs` reads no type, hover, motion
+  or order, and the draft's stylesheet was never parsed. Full list and the method questions:
+  `.claude/plans/2026-09-27-reference-capture-method-plan.md`. Its steps 1-6 are done (2026-09-28): the
+  hand-read diff and walker reports are in `reports/visual-diff/u18-*`, every row is sorted, and every framework gap
+  is built as a real control (Specs 36, 37, 02). **Resume at that plan's "Build status" open list.**
+- Residue, named (not built): `widthType: fit` and a label's `fullWidth: false` do not hold inside a stretching flex
+  column, and `sgs/mega-aside` has no alignment control (worked around with flex-row wrappers); the Indus drawer's
+  fourth social is Twitter because no block draws the draft's flat white Google G; lamalama's drawer menu has no
+  item side-padding setting (text 20px nearer the edge), no hairline under the pill's top row and no trailing glyph
+  for a plain item; small Indus offsets (nav about 9px left, heavier chevrons, arrow spacing, Sectors cards 4px
+  inset, placeholder boxes without their icon).
+
+Sizes are `families-master.json::units[].size` at full scope. Convert per
+`~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole
+chain about 4 sessions with U-12's eight blocks running in parallel throughout. Revise
+downward the moment a unit comes in faster.
+
+**Parallel dispatch rules (U-12, U-15, and any reviewer agent).** Each agent's brief names
+the ONLY directory it may write (one `src/blocks/<new-block>/` per agent for U-12,
+`src/blocks/notice-banner/` for U-15) and states: no `git add`, no commit, no `git stash`, no
+`npm run build`, no deploy, and no edit outside that directory; no cleanup of files it did
+not create; tests written under its own directory. Blocks register by directory discovery, so
+no shared registry edit is needed, and `site-header-row` has no `allowedBlocks` restriction,
+so no allow-list edit either. The main thread reads `git diff --stat` after each agent, builds
+once, commits each agent's directory with its own pathspec, and deploys once. Two agents never
+share `build/`: builds are serialised in the main thread.
+
+**Pairs and lanes (Bean-approved 2026-09-24; supersedes the one-at-a-time order above).**
+Each unit carries a fixed overhead (plan read, design note, council, sign-off, full build,
+deploy, live check, docs), so related units run as ONE pair: one design note, one council,
+one sign-off, one build, one deploy, one live check, one report.
+
+| Pair | Shared concern |
+|---|---|
+| U-9 + U-11 | How a menu closes: dismissal routes plus the close control |
+| U-3 + U-8 | Where a surface sits: drawer anchor and inset, panel anchor and top offset |
+| U-6 + U-7 | New item markup in the same two menu files |
+| U-5 + U-16 | Proposed as one motion vocabulary; not paired in the end (U-16 builds on the universal animation extension); U-2's scrim fade joined U-5 |
+| U-10 + U-14 | Header-row structure |
+
+U-4 and U-13 run alone. Three lanes run as separate sessions on disjoint files:
+- **Lane A (nav and drawer):** U-9+U-11, U-5, U-3+U-8, U-6+U-7, U-4 and U-10+U-14 (all done); lane B skips U-14.
+- **Lane B (header behaviours):** U-13, then U-16 (U-14 was built by lane A).
+- **Lane C (independent):** U-12, U-15, U-17 (all done; see the lane C paragraph below).
+
+A pair that spans two lanes (U-5+U-16, U-10+U-14) runs in whichever lane reaches it first;
+the other lane then skips that unit. Sandybrown has one active test header, so lanes take
+turns to deploy and each lane verifies on its own fixture pages.
+
+**Attribute names and defaults are fixed in the unit's design report**, never invented by an
+implementer agent. Check the name does not collide first:
+`sgs-db.py sql "SELECT block_slug FROM block_attributes WHERE attr_name='<name>'"`. Enum
+values are mirrored in the PHP allow-list in the same commit as the JSON enum.
+
+## 5. The per-unit loop
+
+**0. Done when.** Before designing, write the unit's exit-cell table into the design report:
+one row per exit cell (reference, surface, tier, column, the measured value read from
+`<ref>.json`, and the attribute and value that will express it). The unit is done when
+(a) every exit cell is reachable by a block attribute that is settable in the editor, per tier
+where the cell differs per tier; (b) at least one exit cell per family is reproduced on a
+`qa-hdr-*` fixture and measured live within the capture protocol's 2px tolerance; (c) the
+family's `coverage_status` can honestly move to covered, or its residue is named. A cell the
+unit does not satisfy is written into the unit row as
+"not covered: `<ref>`/`<surface>`/`<tier>`/`<column>`, reason". No silent skipping.
+
+**1. Design gate (rule 7).** A short `.claude/reports/<date>-<unit>-design.md`: the problem,
+the exit-cell table, the design, the risks. Attributes are per-tier objects; no inline styles;
+universal, no per-block carve-outs. On a `design` unit the gate is closed by Bean's reply, not
+by the council.
+
+**2. QC council.** Invoke `/qc-council` before building any shared change, with two different
+models chosen by `/delegate`: one code-path census agent and one adversarial reader. The
+payload is (a) the problem statement, (b) the files the change touches, (c) the baseline
+measurement of what the code does today, (d) the hypothesis, meaning what the change is meant
+to make true, and (e) the command that will prove or disprove it. Apply their changes.
+
+**2a. If the gate or the council says no.** Do not build. Record the verdict and the reason in
+the design report and classify it. A spec gap means writing the amendment first, then
+re-gating. A scope change goes to Bean as a menu with one recommendation and the unit stops
+until he answers. An implementation objection gets one revision, re-run past the same two
+reviewers; a second no ends the session on that unit with a `/handoff` stating both verdicts.
+A council that splits is not approval: the design goes to Bean with both positions.
+
+**3. Build, including the editor surface.** Every new attribute gets its inspector control in
+the same commit as its render: colour rows through `SgsColourPanel` with `linked` wired;
+per-element typography through `TypographyControls`; per-tier objects through
+`ResponsiveControl` under the global device toggle, never a per-control switcher; borders
+through `SgsBorderControl`; enums as `ToggleGroupControl` or `SelectControl` with the PHP
+allow-list carrying the same values. Run `node plugins/sgs-blocks/scripts/inspector-scan/run.js`
+on the block. After any `edit.js` or shared-component change, deploy and open the real editor
+on the canary (log in with `.claude/secrets/sandybrown.env`), insert the block, set each new
+control, save, reload: a control that does not round-trip is not done. Every `createBlock`
+slug must be registered. Use `/subagent-driven-development`: an implementer plus two reviewers,
+one unit at a time in the nav chain.
+
+**4. Tests.** PHP tests in `plugins/sgs-blocks/tests/php/`, JS tests under `scripts/tests/`.
+Every test carries a negative control: a version of the test that FAILS against the previous
+code, proving it catches the defect, and passes after the fix. Assert the break landed before
+trusting it. Then `npm run build` and the prebuild gates.
+
+**5. Commit with explicit pathspecs.** ⚠ The visual-diff gate is NOT wired at commit time on this
+machine, so nothing blocks a block commit that has no capture report; the capture report is a
+deliverable this loop owes (and Gate 3C item 2 requires), not something a hook enforces. Verified
+2026-09-27: the per-machine `.git/hooks/pre-commit` runs gitleaks, then `.githooks/sgs-gates.sh`,
+then `.githooks/pre-commit`. `sgs-gates.sh` holds only Gate A (converter golden fixtures, staged
+converter code only) and `.githooks/pre-commit` holds only the extension-attribute drift check plus
+the cloning-pipeline gates. The D564 restructure note in the per-machine wrapper records that the
+visual-diff gate and its five auto-skip branches used to live in that untracked file; only Gate A
+reached `.githooks/`. `SGS_VISUAL_GATE_SKIP` / `SGS_VISUAL_GATE_REASON` are therefore no-ops and
+append nothing to `reports/visual-diff/manual-skips.log`. The gate roster that DOES run
+(`run-gates.py --tier fast`, inspector-scan, `audit-inline-styling.js` and the rest) runs from
+`npm run prebuild`, i.e. at BUILD time — so run the gates through `npm run build` and never treat a
+clean commit as gate evidence. The report is
+`reports/visual-diff/<block>-<YYYY-MM-DD>.md` with `verdict: PASS`,
+`intent_capture_passed: true`, and a `source_sha:` line whose value comes from
+`python plugins/sgs-blocks/scripts/visual-report-sha.py <block>`. After a manual skip the
+gate prints nothing, so read it from the script. Run long commits in the background because
+the hooks take over a minute, and poll the commit's exit before claiming it landed:
+`git log -1` is the proof. Re-check the branch in the same command as the commit.
+
+**6. Deploy.** `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
+--blocks-only` (`--blocks-only` ships the blocks plugin and skips the theme; drop it when a
+unit touches the theme). Deploy to sandybrown only (section 1f); switch the active CPTs there
+for another client's chrome. If the dirty-tree gate
+blocks: the dirt is another session's. Do not stash, do not pass `--allow-dirty`, do not
+commit it. List the paths, tell Bean, and wait.
+
+**7. Verify live in a real headed Chrome, one window**, with the chrome-devtools MCP
+(section 9). The page fully loaded, measured against the exit cell with `getComputedStyle` and
+`getBoundingClientRect`, using `clientWidth`. Fixtures are the `qa-hdr-*` pages; never measure
+a loose block in page content. Real pointer paths for hover. A negative control for every
+claim. Accessibility in the same pass: `node plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs`
+on the fixture with the surface open, plus the unit's own check. U-5 and U-16 reduced motion
+(with a positive control proving the effect fires without the media query); U-15 a pause
+control for the rotating message and no `aria-live` on a live clock (WCAG 2.2.2); U-12 `lang`
+on each language option and focus moved to the target by back-to-top; U-2 the scrim's
+click-to-close must not remove the keyboard route; U-13 4.5:1 ink on every section, proved
+with `node plugins/sgs-blocks/scripts/nav-qa/palette-contrast-sweep.mjs`.
+
+**7a. If the live check fails.** Do not iterate on the canary. (1) Redeploy the last green
+commit through `build-deploy.py`; never hand-roll a restore. (2) `git revert` the unit's
+commits newest first with an explicit pathspec, one revert commit each; never
+`git reset --hard` on this worktree. (3) Record the failing measurement in the design report
+and in the unit row: "live FAIL `<date>`, reverted `<sha>`". (4) Prove the cause on the live
+page before any second attempt, and confirm it by removing the cause; the second attempt is a
+new design-gate revision. (5) If the failure is in a shared file another unit has since
+touched, stop and `/handoff`.
+
+**8. Framework DB and converter.** After the unit's `block.json` changes, run
+`python plugins/sgs-blocks/scripts/sgs-update-v2.py` in the background, then prove the rows:
+
+```
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT attr_name, css_property, css_element, css_state, css_tier, box_family FROM block_attributes WHERE block_slug='sgs/<block>' AND attr_name IN (<new attrs>)"
+```
+
+Every new attribute that maps to a CSS property must show its `css_property` or the converter
+cannot route a draft's CSS to it. A hover companion must be named `{base}Hover` and carry
+`css_state='hover'`. Tier objects declare `{"type":"object","default":{}}`. Box-object attrs
+are declared in `supports.sgs.boxFamilies`. Then one converter smoke run:
+`python -m pytest plugins/sgs-blocks/scripts/converter -q`. Never import
+`scripts/converter/db/db_lookup.py` from a read-only reporter; it runs schema migrations as an
+import side effect. The attribute commit and the reseed are pushed together.
+
+**9. Docs in the same push:** Spec 36 (and Spec 37 in the same commit where a unit crosses the
+boundary), this plan's unit row, `.claude/verify/merged-spec36-37-track.md`, `LEDGER.md`,
+`decisions.md`. Then `python .claude/hooks/handoff-preflight.py --check` and
+`python plugins/sgs-blocks/scripts/lints/lint-spec-drift.py --check`. Push to `main` after
+every unit.
+
+## 6. Session boundaries
+
+End every session with `/handoff`. Before it: never stop between a skipped-gate commit and its
+capture-report commit, nor between a deploy and its live check. Finish the loop step or revert
+to the last green commit.
+
+`LEDGER.md` gets one line: "Wave 3C: U-x at loop step N; last green sha; deployed to
+`<targets>`; capture report owed yes or no; Bean questions open: `<list>`". The unit's row in
+section 4 records the same. The next session's prompt is written fresh from that line, starts
+with `Invoke /autopilot`, and names the next unit's exit cells.
+
+One unit, or one approved pair (section 4, "Pairs and lanes"), per checkpoint. Do not start a
+second nav unit or pair in a session that has an unverified deploy. Each lane (A, B, C) writes
+only its own line in `LEDGER.md`, re-read from disk immediately before the edit.
+
+## 7. Gate 3C, the one definition
+
+This is the only definition. The same words sit in the strategic plan's Gate 3C entry and in
+`.claude/verify/merged-spec36-37-track.md` Wave 3C.
+
+Gate 3C passes when:
+
+1. Every family in the signed list is covered: its exit cells reachable and at least one
+   reproduced live. Twelve families are already covered and are assigned to no unit: M-01,
+   M-02, M-05, M-06, M-12, M-23, M-26, M-29, M-41, M-42, M-50 and M-51. They are not built by
+   this wave and close the gate as covered. No family closes the gate as parked.
+2. Each unit row cites its live report with `verdict: PASS`.
+3. `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 and
+   `python plugins/sgs-blocks/scripts/no-inline/check-no-inline.py` passes against a
+   reachable canary.
+4. Two composed headers are 100% visual copies of their references, at 375, 768 and 1440: a
+   copy of lamalama's floating pill and a copy of the Indus Foods Mega Menu draft (section 1g).
+   Every panel's position and width match the reference's measured cells (the Indus draft
+   centres each panel on the page: mega 1080px, About and Trade 620px, More 300px; Bean
+   2026-09-26), and the header's left and right gaps are equal at 1440px. The structural
+   fixtures 3733 and 3734 are test rigs on Mama's content, not these copies. Bean's eye is
+   co-authoritative (R-31-13).
+5. Spec 36, Spec 37, the verify doc and `LEDGER.md` state the model.
+
+**Status 2026-09-28.** Items 2, 3 and 5 pass. Item 1 passes: M-08's one uncovered cell, lamalama's corner card,
+is accepted as DEC-18 (Bean, 2026-09-27). Item 4 FAILS on Bean's eye: both copies are far from visual copies, and
+the 75/76 and 23/23 counts measured geometry only. The capabilities are built (2026-09-28); the walker reads lamalama
+295 open and Indus 692 open, closing in `.claude/plans/2026-09-27-reference-capture-method-plan.md` "Build status".
+
+## 8. Wave 4 preconditions
+
+Before W4-b (the studionamma clone) starts, all of these are closed:
+
+- Gate 3C passed, and the W2-i..u checkpoint set plus W2-f verified live (session).
+- W4-a2: Bean signs the substitution policy for licensed fonts and copyrighted imagery
+  (Bean).
+- The 0c captures done and Away re-read on the UK storefront (session).
+- resn re-judged at family level from the headed capture (session).
+- The three accepted divergences (section 1d) written into the clone report template, so
+  none of them reaches Wave 4 as an unexplained difference (session).
+- The Bean session booked with the evidence pack pre-built and an external ping (session
+  prepares, Bean attends).
+
+## 9. Commands, fixtures, gotchas and lessons
+
+**Build.** PowerShell, not Git Bash: `cd plugins/sgs-blocks; npm run build`. The nvm shim is
+broken in Git Bash.
+
+**Fixtures on the canary** (built by `plugins/sgs-blocks/scripts/nav-qa/build-header-fixtures.py`,
+slug prefix `qa-hdr-`): page 3723 plain, 3733 capped width, 3734 floating pill, 3735 drawer
+with submenus, 3763 hover parity. They already exist; do not rebuild them casually. They MUST
+be rebuilt after any unit changes a nav block's attribute schema, because a stored fixture
+carries the old attributes while a new one defaults. Record the new page ids when you do. The
+loose-block pages 3692 to 3699 are not evidence.
+
+**Credentials.** `.claude/secrets/sandybrown.env`: `WP_USER_SANDYBROWN`, `WP_PWD_SANDYBROWN`,
+`WP_APP_PWD_SANDYBROWN`.
+
+**The chrome-devtools MCP** is the headed browser. Its tools are deferred, so load them first
+with `ToolSearch` ("select:mcp__plugin_chrome-devtools-mcp_chrome-devtools__navigate_page,
+mcp__plugin_chrome-devtools-mcp_chrome-devtools__evaluate_script,
+mcp__plugin_chrome-devtools-mcp_chrome-devtools__emulate,
+mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_screenshot"), then navigate, and use
+`…__emulate` to set 375px for the mobile tier rather than resizing by hand. One window for the
+whole session: one browser launch per script makes windows flash on Bean's screen.
+
+**Gates.** `python plugins/sgs-blocks/scripts/run-gates.py`;
+`node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`;
+`python plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py`;
+`python plugins/sgs-blocks/scripts/migrate-tier-object.py --property <p> --survey`;
+`node plugins/sgs-blocks/scripts/qa/check-border-roundtrip.js`;
+`python plugins/sgs-blocks/scripts/nav-qa/check-fixture-fidelity.py`.
+
+**Data.** `families-master.json` holds `families`, `units`, `decisions`, `engineering_notes`,
+`lanes`, `verification` and `meta` as top-level keys; use it for anything programmatic and
+FAMILIES-MASTER.md for reading. Each `<ref>.json` holds `rows[]`, each with `surface`, `tier`,
+`presence` and `cells`, and each cell with `value`, `method` and `evidence`.
+
+**Gotchas that already cost time:**
+
+- The site caches phone and tablet page variants separately, so the first measurement after a
+  deploy can read a stale variant. Purge, reload, measure twice.
+- Hostinger's CDN can serve week-old HTML and `build-deploy.py` does not purge it.
+- A defaulted attribute joining the uid hash changes every header's uid once. Expect that
+  after U-1; it is cache churn, not a defect.
+- A tier-object attribute given a scalar string emits nothing, and a `{}` default drops the
+  old scalar defaults. Ship the migration and the fallthrough check together.
+- `header-behaviours/view.js` wires every header on a page and fixture pages have two
+  `<header>` elements; probes select `.entry-content header.sgs-site-header`.
+- `freezeBackground` is a pure function, `collectFreezeTargets`; U-9 and U-2 touch its
+  neighbourhood.
+- `sgs-db.py stats` crashes on a missing `grade` column; use `sql`.
+- The framework DB is stale for `sgs/site-header` until 0a completes; `block.json` is ground
+  truth.
+
+**Lessons that each cost time:**
+
+- Headless distorts timing, WebGL, scrollbars (about 15px) and pointer input. Real headed
+  Chrome, one window, wait for the load.
+- Presence is what a visitor sees, not an HTML tag: resn has a header of fixed controls and
+  no `<header>`.
+- Test inside a real header. Loose nav blocks in page content showed defects that do not
+  exist in a header, and hid a real one.
+- Prove the cause before the fix: read computed styles and rules on the live page, then
+  confirm by removing the cause.
+- The Bash tool halves backslashes in heredocs. Write scripts with the Write tool, run them,
+  and syntax-check first.
+- A gate's skip reason must be true. Never claim a live check that has not happened.
+- Bean's decisions are not assumed. "Should I start it?" waits for an answer, and a
+  background-task notification is never an answer.

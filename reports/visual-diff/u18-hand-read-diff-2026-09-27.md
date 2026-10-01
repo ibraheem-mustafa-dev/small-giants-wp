@@ -1,6 +1,6 @@
 # U-18 hand-read diff: the two header copies against their references (step 1 baseline)
 
-Plan: `.claude/plans/2026-09-27-reference-capture-method-plan.md`, Method step 1. This is the diff the walker must reach
+Plan: `.claude/plans/archive/2026-09-27-reference-capture-method-plan.md`, Method step 1. This is the diff the walker must reach
 or beat (steps 3 to 5). Every row names the reference value, the copy value and the widths it holds at.
 
 **How it was read.** The Indus draft source (`sites/Indus Foods Mega Menu Design/Indus Foods Mega Menu.dc.html`, markup,

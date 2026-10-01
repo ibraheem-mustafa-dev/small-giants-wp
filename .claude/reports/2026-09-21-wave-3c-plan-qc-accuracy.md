@@ -3,7 +3,7 @@ doc_type: qc-report
 project: small-giants-wp
 subject: accuracy + staleness fact-check of the Wave 3C implementation plan and its fresh-session prompt
 targets:
-  - .claude/plans/2026-09-21-wave-3c-implementation-plan.md
+  - .claude/plans/archive/2026-09-21-wave-3c-implementation-plan.md
   - .claude/prompts/2026-09-21-wave-3c-start.md
 ground_truth:
   - .claude/reports/reference-requirements/families-master.json (46 families, 17 units, 14 decisions, 3 engineering notes)
@@ -81,7 +81,7 @@ one stale spec citation in the prompt.
   per-tier z-index and vocabulary alignment. The U-3 row lists only side anchor, container
   inset and pitch tier object.
 - Evidence: the parent plan carries both —
-  `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`, W3C-1 row: *"force-solid and
+  `plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md`, W3C-1 row: *"force-solid and
   the drawer clamp folded into U-1 and U-3"*. The implementation plan is the one that
   drops them.
 - Effect: a fresh session that builds from the unit table (which §3 presents as the
@@ -317,7 +317,7 @@ re-audit them:
 | 10 | `.claude/reports/reference-requirements/FAMILIES-MASTER.md` ("17 units", 46 families) | OK |
 | 11 | `.claude/reports/reference-requirements/families-master.json` | OK |
 | 12 | `.claude/reports/reference-requirements/FAMILIES-REVIEW.md` | OK |
-| 13 | `.claude/plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` (Checkpoint protocol §150, Wave 3B §197, Wave 3C §272, Gate 3C §410) | OK |
+| 13 | `.claude/plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md` (Checkpoint protocol §150, Wave 3B §197, Wave 3C §272, Gate 3C §410) | OK |
 | 14 | `.claude/verify/merged-spec36-37-track.md` | OK |
 | 15 | `.claude/specs/36-SGS-NAVIGATION-SYSTEM.md` FR-36-6 (§274, the drawer) | OK |
 | 16 | Spec 36 FR-36-22 (§809) — **is the logo, not the drawer** | FAIL (finding 5) |

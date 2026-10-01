@@ -1,6 +1,6 @@
 # U-13 design: header scroll intelligence (M-04 section-adaptive ink, M-03 direction-keyed restyle)
 
-Wave 3C, lane B. Plan `.claude/plans/2026-09-21-wave-3c-implementation-plan.md` §4 row 13. Bean column: `design`.
+Wave 3C, lane B. Plan `.claude/plans/archive/2026-09-21-wave-3c-implementation-plan.md` §4 row 13. Bean column: `design`.
 Measurements: headless Playwright sweep 2026-09-26 (raw samples and scripts in the session scratchpad `m04/`;
 values below are read from those samples and from `<ref>.json`).
 

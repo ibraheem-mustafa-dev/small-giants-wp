@@ -7,7 +7,7 @@ plan_rows: W3B-2, W3B-3, W3B-3a
 # Reference requirements table — capture protocol
 
 Every agent capturing a reference follows this file exactly. The plan section is
-`.claude/plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` under "Wave 3B — Reference
+`.claude/plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md` under "Wave 3B — Reference
 deconstruction". Read that section first: it holds the 14 columns and the rules for every cell.
 
 ## Output (one reference = two files, nothing else in the repo)

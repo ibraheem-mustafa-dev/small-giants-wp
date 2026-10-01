@@ -1,6 +1,6 @@
 # U-15 design: the self-changing header message (Wave 3C lane C)
 
-Status: design (no Bean sign-off needed; Bean judges the built result by eye). Governing: `.claude/plans/2026-09-21-wave-3c-implementation-plan.md` §4 (U-15 row), §5 step 7 (WCAG 2.2.2); family M-07.
+Status: design (no Bean sign-off needed; Bean judges the built result by eye). Governing: `.claude/plans/archive/2026-09-21-wave-3c-implementation-plan.md` §4 (U-15 row), §5 step 7 (WCAG 2.2.2); family M-07.
 
 ## 1. Problem
 

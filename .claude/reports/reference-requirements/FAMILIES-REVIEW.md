@@ -1,6 +1,6 @@
 # Adversarial review of the master family list (before W3B-5 sign-off)
 
-**Reviewed:** `FAMILIES-MASTER.md` + `families-master.json` (50 masters, 17 units, 14 decisions, 33 verifications), the three source lists `families-A/B/C.json`, and the plan sections Wave 3B / Wave 3C in `.claude/plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`.
+**Reviewed:** `FAMILIES-MASTER.md` + `families-master.json` (50 masters, 17 units, 14 decisions, 33 verifications), the three source lists `families-A/B/C.json`, and the plan sections Wave 3B / Wave 3C in `.claude/plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md`.
 **Method:** every claim below was re-read against either the raw capture cell (`<reference>.json` → `rows[surface,tier].cells[column]`) or the tree (`block.json`, `render.php`, `style.css`, `includes/*.php`, `src/shared/nav-interactivity/*.js`). Commands are given inline; paths are relative to the repo root. Read-only: nothing in the tree or in the reviewed files was changed.
 
 **Fact-check tally.** `needed_by` claims checked against raw cells: **15, of which 14 match and 1 mismatches** (finding 4). `sgs_coverage` statuses checked against `block.json` + code: **14, of which 9 hold, 3 are wrong in status or covering mechanism (findings 1, 3, 7) and 2 carry a wrong number under a VERIFIED badge (finding 21)**.

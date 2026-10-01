@@ -497,7 +497,7 @@ Estimates are smallest-plausible, per `~/.claude/rules/time-estimates.md`.
 | 4 | Inspector controls + the three notices + editor canvas parity | 1 h |
 | | **Total** | **~6.5 h** |
 
-> ⚠ **This contradicts the plan.** `.claude/plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`
+> ⚠ **This contradicts the plan.** `.claude/plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md`
 > quotes W2-m at **2h (4h)**. That figure cannot include the dock, which both specs make a hard
 > precondition for mode (c). Either the plan row is re-quoted, or Option B (mode (b) only, ~2.5 h)
 > is chosen, which *does* fit the original quote.

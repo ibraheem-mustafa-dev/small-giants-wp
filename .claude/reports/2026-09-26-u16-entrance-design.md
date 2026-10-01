@@ -1,6 +1,6 @@
 # U-16 design: header and footer entrance animation (M-11)
 
-Wave 3C, lane B. Plan `.claude/plans/2026-09-21-wave-3c-implementation-plan.md` §4 row 14. Bean column: `eye`
+Wave 3C, lane B. Plan `.claude/plans/archive/2026-09-21-wave-3c-implementation-plan.md` §4 row 14. Bean column: `eye`
 (Bean judges the built output; the design gate is closed by the council). Evidence: step 0d, headed capture
 2026-09-26 (f839facc7), cells in `<ref>.json` (`entrance`, footer `motion` and `item_states`), raw samples local
 in `.claude/reports/reference-requirements/raw/*-0d*.json`.

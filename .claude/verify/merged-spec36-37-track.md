@@ -1,7 +1,7 @@
 ---
 doc_type: verify
 project: small-giants-wp
-plan: plans/2026-07-29-merged-spec36-37-track-strategic-plan.md
+plan: plans/2026-10-01-header-nav-thread-plan.md
 ---
 
 # Verification criteria — merged Spec 36+37 track
@@ -131,13 +131,13 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
 - W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5,
+- STATUS: under way (`plans/archive/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5,
   U-3+U-8, U-6+U-7, U-4, U-10+U-14, with its batched QA pass), all of lane C (U-12, U-15, U-17), U-13 and U-16 are
   closed. Gate 3C items 1, 2, 3 and 5 pass: M-08's one open cell, lamalama's card pinned to the top-right corner, is
   accepted as DEC-18 (Bean, 2026-09-27; G8 stopped at NO GO, rebuild parked in
-  `plans/2026-09-27-g8-screen-corner-pin-plan.md`). Item 4 FAILS on Bean's eye (2026-09-27): U-18 G1-G7, G10 and G11
+  `plans/2026-10-01-header-nav-thread-plan.md` section 7). Item 4 FAILS on Bean's eye (2026-09-27): U-18 G1-G7, G10 and G11
   are live, but `reports/visual-diff/u18-copy-parity-2026-09-27.md` (lamalama 75/76, Indus 23/23) measured geometry
-  only; type, hover, motion and element order were never compared. Next: `plans/2026-09-27-reference-capture-method-plan.md`.
+  only; type, hover, motion and element order were never compared. Next: `plans/2026-10-01-header-nav-thread-plan.md` section 2.
 - U-16 exit criteria (live report `reports/visual-diff/entrance-2026-09-26.md`, verdict PASS; sandybrown 2026-09-26, fixture `qa-item-markup-fixture.php entrance` on `/qa-entrance/`,
   restored to `two-bar`): the header's `fade-in` extra-slow rises from 0 to 1 over 713 to 761ms with no flash at
   375/768/1440; shrink (16px to 4px) and hide-on-scroll (slides away and back, pins) keep working; a dropdown opened

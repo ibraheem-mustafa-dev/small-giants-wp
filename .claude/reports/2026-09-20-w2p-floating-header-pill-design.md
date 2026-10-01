@@ -146,7 +146,7 @@ carrying one latent assumption that this feature invalidates, and fixing that as
 
 > ⚠ **Correction to the plan.** The brief for this document referred to "W2-v (the header-offset
 > primitive, 'B1') has no build record". There is no `W2-v` row — the plan's Wave 2 rows run
-> `W2-a` … `W2-u` (`.claude/plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`). "B1" is a
+> `W2-a` … `W2-u` (`.claude/plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md`). "B1" is a
 > bullet inside D418, and it is recorded there as **validated**, not as pending work. Nothing is
 > blocking W2-p.
 

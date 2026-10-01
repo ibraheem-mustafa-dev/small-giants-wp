@@ -3,8 +3,8 @@ doc_type: report
 project: small-giants-wp
 title: Wave 3C implementation plan and start prompt, completeness and misconstrual review
 date: 2026-09-21
-reviewed: plans/2026-09-21-wave-3c-implementation-plan.md, prompts/2026-09-21-wave-3c-start.md
-against: plans/2026-07-29-merged-spec36-37-track-strategic-plan.md (Checkpoint protocol, Wave 3B, Wave 3C, gates, risk register), reports/reference-requirements/FAMILIES-MASTER.md + FAMILIES-REVIEW.md + families-master.json, CLAUDE.md (root, plugins/sgs-blocks, .claude), ~/.claude/CLAUDE.md and rules, decisions D1120 to D1135, Spec 36 FR-36-6, Spec 37 §1.2, .githooks/sgs-gates.sh, scripts/nav-qa/README.md
+reviewed: plans/archive/2026-09-21-wave-3c-implementation-plan.md, prompts/2026-09-21-wave-3c-start.md
+against: plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md (Checkpoint protocol, Wave 3B, Wave 3C, gates, risk register), reports/reference-requirements/FAMILIES-MASTER.md + FAMILIES-REVIEW.md + families-master.json, CLAUDE.md (root, plugins/sgs-blocks, .claude), ~/.claude/CLAUDE.md and rules, decisions D1120 to D1135, Spec 36 FR-36-6, Spec 37 §1.2, .githooks/sgs-gates.sh, scripts/nav-qa/README.md
 read_only: true (nothing in the tree was changed except this file)
 ---
 
@@ -141,7 +141,7 @@ Add a "Done when" column to the §3 table, or a one-line "Exit: M-xx for refs a,
 
 **Measured.** FAMILIES-MASTER §"Wave 3C build units" still lists U-17, U-12 as "eight new blocks" with `product-search`/`filter-search` files, U-6 with M-24/M-25, U-14 with M-08, U-8 with M-20 and `mega-aside/render.php`. The plan (post-DEC-13/16/17) removes all of those. A fresh session reading FAMILIES-MASTER second will see the larger scope.
 
-**Add to the plan §3 (first line):** "This table supersedes FAMILIES-MASTER's unit table, which is pre-decision. Use `families-master.json::units[].files` for the full file lists and `families[].uncovered_references` for exit cells; take scope from here." And add one line at the top of FAMILIES-MASTER's unit section: "Superseded for scope by `plans/2026-09-21-wave-3c-implementation-plan.md` §3 (DEC-13, DEC-16, DEC-17)."
+**Add to the plan §3 (first line):** "This table supersedes FAMILIES-MASTER's unit table, which is pre-decision. Use `families-master.json::units[].files` for the full file lists and `families[].uncovered_references` for exit cells; take scope from here." And add one line at the top of FAMILIES-MASTER's unit section: "Superseded for scope by `plans/archive/2026-09-21-wave-3c-implementation-plan.md` §3 (DEC-13, DEC-16, DEC-17)."
 
 ### 16. Gate 3C is worded three different ways
 

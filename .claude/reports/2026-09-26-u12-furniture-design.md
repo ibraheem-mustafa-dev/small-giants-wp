@@ -1,6 +1,6 @@
 # U-12 design: header and footer furniture (Wave 3C lane C)
 
-Status: design (no Bean sign-off needed for U-12; the dark palette and wishlist shapes were researched and approved by Bean on 2026-09-25). Governing: `.claude/plans/2026-09-21-wave-3c-implementation-plan.md` §4 (U-12 row, parallel dispatch rules), §5; family M-18 in `.claude/reports/reference-requirements/families-master.json`.
+Status: design (no Bean sign-off needed for U-12; the dark palette and wishlist shapes were researched and approved by Bean on 2026-09-25). Governing: `.claude/plans/archive/2026-09-21-wave-3c-implementation-plan.md` §4 (U-12 row, parallel dispatch rules), §5; family M-18 in `.claude/reports/reference-requirements/families-master.json`.
 
 Bean's rulings (2026-09-25): back-to-top and account are `sgs/button` link sources; sound is an `sgs/audio` style; languages are hand-set and use PHP `intl` for names and tags; the automatic dark palette follows the minimum-change rule; the wishlist is two-tier with a saved-items panel under the basket and Save for later; inside menus, account and wishlist are ordinary menu links.
 
