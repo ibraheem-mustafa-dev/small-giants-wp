@@ -68,6 +68,27 @@ describe( 'separatorSegments', () => {
 		expect( row[ 0 ].at ).toBe( 72 ); // between the tallest item above (60) and the item below (84)
 	} );
 
+	test( 'items with a 1px or 0px gap still get a line between them', () => {
+		const tile = ( col, gap ) => ( { left: col * ( 100 + gap ), right: col * ( 100 + gap ) + 100, top: 0, bottom: 50 } );
+		for ( const gap of [ 0, 1 ] ) {
+			const { column } = separatorSegments( [ tile( 0, gap ), tile( 1, gap ), tile( 2, gap ) ], { column: true, row: false } );
+			expect( column ).toHaveLength( 2 );
+			expect( column[ 0 ].at ).toBeCloseTo( 100 + gap / 2, 5 );
+		}
+	} );
+
+	test( 'rows separated by a 1px gap are still two rows with a line between', () => {
+		const stack = [ { left: 0, right: 100, top: 0, bottom: 50 }, { left: 0, right: 100, top: 51, bottom: 101 } ];
+		const { row } = separatorSegments( stack, { column: false, row: true } );
+		expect( row ).toHaveLength( 1 );
+		expect( row[ 0 ].at ).toBeCloseTo( 50.5, 5 );
+	} );
+
+	test( 'overlapping boxes (a spanning item) are not given a line', () => {
+		const { column } = separatorSegments( [ { left: 0, right: 100, top: 0, bottom: 50 }, { left: 60, right: 160, top: 0, bottom: 50 } ], { column: true, row: false } );
+		expect( column ).toEqual( [] );
+	} );
+
 	test( 'negative control: a geometry that ignored empty cells would extend the third line', () => {
 		const { column } = separatorSegments( grid, { column: true, row: false } );
 		expect( column[ 2 ].to ).not.toBe( 236 );

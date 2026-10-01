@@ -239,19 +239,14 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   the block's scoped `<style>` (Spec 32). Not offered because they are bar-only by nature: `burger*`, `trigger*`,
   `showBurger`, `collapsePoint`, `drawerRef`, `scrim*` (owned by `sgs/nav-drawer`), `megaAlign`, `submenuAlign`,
   `submenuMinWidth`, `submenuTopOffset`, `submenuOpenOn`, `submenuIntentDelay`, `submenuCloseGrace`.
-  - **Row divider.** `itemSeparatorWidth`, `itemSeparatorStyle`, `itemSeparatorColour`, `itemSeparatorColourHover`,
-    `itemSeparatorHoverTreatment` (`none` | `swap` | `sweep`) and `itemSeparatorSweepAngle` (default 90, a horizontal
-    rule; the bar's default is 180 because its rule is vertical). A `::before` across the top edge of every top-level
-    row except the first, emitted only when width AND colour are set
-    (`includes/nav-drawer-menu-separator-css.php::sgs_nav_drawer_menu_separator_css`). It is independent of the row's
-    own border (`itemBorderWidth`/`itemBorderColour*`), so both can run in different colours. Hovering or focusing
-    either row it sits between repaints it, through the row's own link, expander or whole-row toggle (not the open
-    section beneath it). Sweep needs a solid line, so a dashed or dotted style withdraws it to `swap`
-    (`supports.sgs.sweepEligibility.itemSeparatorHoverTreatment`). The bar's vertical emitter skips the drawer
-    (`includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css`). `itemSeparatorPosition` `below`
-    instead gives every top-level row, the last included, the line as its own bottom border, under the row and its open
-    section and taking its width in layout (`sgs_nav_drawer_menu_separator_below_css`); its hover follows that row's own
-    head only, and a sweep falls back to `swap`.
+  - **Row separators.** `separators` (the top-level rows) and `submenuSeparators` (the rows of a nested section) are
+    the shared Separators setting (Spec 41 FR-41-37, `includes/nav-menu-separators.php`): a horizontal line centred in
+    the gap between stacked rows, drawn by the rows themselves, with `edges` `end` for a line under the last row. They
+    are independent of the row's own border (`itemBorderWidth`/`itemBorderColour*`), so both can run in different
+    colours. Hovering or focusing either row a line sits between repaints it, through the row's own link, expander or
+    whole-row toggle (not the open section beneath it). Sweep needs a solid line. With `listColumns` on, the list is a
+    column-major grid, so its lines take the grid path (native gap decorations, with the runtime overlay in
+    `src/shared/separators/` elsewhere).
   - **Hover scope, magnet, alignment.** `itemHoverScope` is read by the shared item emitters
     (`includes/nav-menu-css.php::sgs_nav_shared_item_state_css`). `itemMagnetStrength` (0.02 to 0.5, shown with
     `itemMagnetEnabled`) rides as `data-magnet-strength` on the list and is read by
@@ -891,8 +886,8 @@ different element from the bar's own item paint (FR-36-4):
   roll the BURGER TRIGGER's own word, not a list item's.
 - **Row separators.** Two independent mechanisms. The `itemBorderWidth`/`itemBorderColour*` family paints the
   bottom edge of a vertical row (on the horizontal bar the same attribute paints the item underline instead —
-  `block.json::attributes.itemBorderWidth`). The `itemSeparator*` family draws the rule between stacked rows, with its
-  own colours and hover treatment (Spec 36 "Drawer item-level parity").
+  `block.json::attributes.itemBorderWidth`). The `separators` setting draws the line between stacked rows, with its
+  own colours and hover treatment (Spec 36 "Drawer item-level parity", Spec 41 FR-41-37).
 - **Numbered link lists.** `sgs/icon-list`'s `markerType: 'numbered'` plus its per-item `description` (FR-36-26)
   serves the numbered starter pattern (`sgs/mega-compact-links-numbered`) that pairs with this unit.
 

@@ -81,7 +81,9 @@ function columnSegments( rows ) {
 		for ( let k = 1; k < row.items.length; k++ ) {
 			const a = row.items[ k - 1 ];
 			const b = row.items[ k ];
-			if ( b.left - a.right <= EPS ) {
+			// Touching items (a gap of 0 or 1px) still have a line between them; only
+			// overlapping boxes (a spanning item) are skipped.
+			if ( b.left - a.right < -EPS ) {
 				continue;
 			}
 			const x = ( a.right + b.left ) / 2;

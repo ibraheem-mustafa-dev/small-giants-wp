@@ -720,5 +720,188 @@
         "hoverTreatment": "swap"
       }
     }
+  },
+  {
+    "name": "sgs/heading",
+    "attributes": {
+      "content": "8. Grid with a 1px gap and opaque tiles (Why-buy shape)",
+      "level": "h2"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "layout": "grid",
+      "columns": {
+        "desktop": 4,
+        "tablet": 2,
+        "mobile": 1
+      },
+      "gap": {
+        "desktop": "1px"
+      },
+      "separators": {
+        "row": {
+          "style": "solid",
+          "width": {
+            "desktop": "1px"
+          },
+          "colour": "text-muted"
+        },
+        "column": {
+          "style": "solid",
+          "width": {
+            "desktop": "1px"
+          },
+          "colour": "text-muted"
+        }
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "surface",
+          "padding": {
+            "desktop": {
+              "top": "24px",
+              "right": "24px",
+              "bottom": "24px",
+              "left": "24px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Tile 1"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "surface",
+          "padding": {
+            "desktop": {
+              "top": "24px",
+              "right": "24px",
+              "bottom": "24px",
+              "left": "24px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Tile 2"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "surface",
+          "padding": {
+            "desktop": {
+              "top": "24px",
+              "right": "24px",
+              "bottom": "24px",
+              "left": "24px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Tile 3"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "surface",
+          "padding": {
+            "desktop": {
+              "top": "24px",
+              "right": "24px",
+              "bottom": "24px",
+              "left": "24px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Tile 4"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/heading",
+    "attributes": {
+      "content": "9. Scrolling brand strip, lines after every brand",
+      "level": "h2"
+    }
+  },
+  {
+    "name": "sgs/brand-strip",
+    "attributes": {
+      "source": "manual",
+      "brandDisplay": "text",
+      "scrolling": true,
+      "separators": {
+        "column": {
+          "style": "solid",
+          "width": {
+            "desktop": "1px"
+          },
+          "colour": "text-muted"
+        }
+      },
+      "logos": [
+        {
+          "name": "Alpha",
+          "alt": "Alpha",
+          "_key": "s1"
+        },
+        {
+          "name": "Bravo",
+          "alt": "Bravo",
+          "_key": "s2"
+        },
+        {
+          "name": "Charlie",
+          "alt": "Charlie",
+          "_key": "s3"
+        },
+        {
+          "name": "Delta",
+          "alt": "Delta",
+          "_key": "s4"
+        },
+        {
+          "name": "Echo",
+          "alt": "Echo",
+          "_key": "s5"
+        },
+        {
+          "name": "Foxtrot",
+          "alt": "Foxtrot",
+          "_key": "s6"
+        }
+      ]
+    }
   }
 ]

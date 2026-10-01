@@ -631,26 +631,47 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // carries ZERO inline style attribute (Spec 32 intent: nothing inline).
 // ---------------------------------------------------------------------------
 
-// Lines between the brands: the shared Separators setting (flow path: the strip
-// wraps). A scrolling strip draws none; its clones are measured by view.js.
-$sgs_bs_sep_active = ! $scrolling && sgs_separators_active( sgs_separators_normalise( $attributes['separators'] ?? array(), array( 'axes' => array( 'row', 'column' ) ) ) );
-if ( $sgs_bs_sep_active ) {
+// Lines between the brands: the shared Separators setting. A static strip wraps, so it
+// takes the flow path (the root carries the marker the runtime fallback looks for). A
+// scrolling strip is one row of cloned sets, so its items draw the line, one after every
+// item: the clones copy the lines, and the seam between two sets stays continuous.
+$sgs_bs_sep_raw    = $attributes['separators'] ?? array();
+$sgs_bs_sep_axes   = $scrolling ? array( 'column' ) : array( 'row', 'column' );
+$sgs_bs_sep_caps   = array(
+	'axes'  => $sgs_bs_sep_axes,
+	'edges' => $scrolling,
+);
+$sgs_bs_sep_active = sgs_separators_active( sgs_separators_normalise( $sgs_bs_sep_raw, $sgs_bs_sep_caps ) );
+$sgs_bs_sep_flow   = $sgs_bs_sep_active && ! $scrolling;
+if ( $sgs_bs_sep_active && $scrolling ) {
 	$scoped_css[] = sgs_separators_css(
-		$attributes['separators'],
+		array_merge( (array) $sgs_bs_sep_raw, array( 'edges' => 'end' ) ),
+		array(
+			'list'      => $root_sel . ' .sgs-brand-strip__set',
+			'layout'    => 'line',
+			'item'      => $root_sel . ' .sgs-brand-strip__set > *',
+			'direction' => 'row',
+			'gap_expr'  => array( 'column' => 'var(--sgs-logo-gap, 0px)' ),
+		),
+		$sgs_bs_sep_caps
+	);
+} elseif ( $sgs_bs_sep_flow ) {
+	$scoped_css[] = sgs_separators_css(
+		$sgs_bs_sep_raw,
 		array(
 			'list'   => $root_sel . ' .sgs-brand-strip__set',
 			'layout' => 'flow',
 		),
-		array( 'axes' => array( 'row', 'column' ) )
+		$sgs_bs_sep_caps
 	);
 }
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array_merge(
 		array(
-			'class' => implode( ' ', array_merge( $classes, array( $uid ), $sgs_bs_sep_active ? array( sgs_separators_marker_class() ) : array() ) ),
+			'class' => implode( ' ', array_merge( $classes, array( $uid ), $sgs_bs_sep_flow ? array( sgs_separators_marker_class() ) : array() ) ),
 		),
-		$sgs_bs_sep_active ? array( 'data-sgs-sep-list' => '.sgs-brand-strip__set' ) : array()
+		$sgs_bs_sep_flow ? array( 'data-sgs-sep-list' => '.sgs-brand-strip__set' ) : array()
 	)
 );
 

@@ -333,10 +333,11 @@ Step 8 — Write the work plan, by surface
 ### Pre-emptive decisions (Hidden Decisions pass: Sonnet and Haiku cold reviewers, 2026-10-01)
 
 - **Decision:** How to classify the gap-line grids. **Flagged by:** Bean, 2026-10-01. **Recommendation:** the
-  divider lines on home "Why buy", about, help, prescription-lenses and the product template are drawn by the
-  container's `gapColour` (gap decorations, Chromium; the walker reads `column-rule`, not a background), so a
-  background-colour row on those grids is expected, not a violation. In step 8's work plan, list moving them to
-  the shared Separators setting (`plans/2026-10-01-separators-plan.md`, step 2) as a dependency, not as new work.
+  divider lines on home "Why buy", about, help, prescription-lenses and the product template are the container's
+  `separators` setting (native gap decorations in Chromium, a small overlay script in Safari and Firefox; the
+  walker reads `column-rule` there, not a background), so a background-colour row on those grids is expected, not a
+  violation. Those five trees were moved from the retired `gapColour` to `separators` on 2026-10-01
+  (`plans/2026-10-01-separators-plan.md`); step 8's work plan rebuilds the five pages from them.
 
 - **Decision:** Which STALE verdicts to spot-check in step 3. **Flagged by:** haiku. **Recommendation:** the first
   STALE claim on each of header, bag, footer, home and product (one per checker group at least). **Why:** those

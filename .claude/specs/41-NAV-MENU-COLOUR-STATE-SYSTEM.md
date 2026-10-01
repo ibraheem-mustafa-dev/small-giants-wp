@@ -83,7 +83,8 @@ from their own `render.php`.
 | `plugins/sgs-blocks/includes/class-sgs-nav-menu-source.php` | `SGS_Nav_Menu_Source` — resolves the site's menu (one source for both blocks) |
 | `plugins/sgs-blocks/includes/nav-menu-markup.php` | `sgs_nav_bar_menu_render_items()`, `sgs_nav_drawer_menu_render_items()`, `sgs_nav_bar_menu_burger_toggle_markup()`, `sgs_nav_shared_badge_html()` |
 | `plugins/sgs-blocks/includes/nav-menu-css.php` | `sgs_nav_shared_item_state_css()` — item typography, nav-container colour, the item text / background three-state emission with its paired treatments, the FR-41-13 hover-persistence rules |
-| `plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php` | `sgs_nav_shared_item_border_css()` — the item border's three states, the directional border-sweep band, and the independent between-item separator (FR-41-37); `sgs_nav_shared_featured_css()` — the featured item |
+| `plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php` | `sgs_nav_shared_item_border_css()` — the item border's three states and the directional border-sweep band, then the call that adds the lines between items; `sgs_nav_shared_featured_css()` — the featured item |
+| `plugins/sgs-blocks/includes/nav-menu-separators.php` | `sgs_nav_menu_separators_css()` — the lines between top-level items and between submenu rows for both blocks (FR-41-37); `sgs_nav_menu_separators_root()` — the drawer root's marker for a multi-column list |
 | `plugins/sgs-blocks/includes/nav-menu-treatments.php` | `sgs_nav_shared_sweep_eligible()`, `sgs_nav_shared_resolved_treatments()` (the treatment resolution), `sgs_nav_shared_text_sweep_css()` (the shared glyph-sweep emitter), `sgs_nav_shared_icon_markup()` (IconPicker-object → SVG resolution) |
 | `plugins/sgs-blocks/includes/nav-menu-trigger-css.php` | `sgs_nav_bar_menu_trigger_css()` — the Menu Button's icon/text colour + glyph sweep, its resting and hover background, and the size rule that stops being a fixed square once the button carries a word (bar-only — the trigger/burger has no drawer counterpart) |
 | `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` | `sgs_nav_shared_submenu_css()` — collapse-point switch, dropdown/mega positioning + the FR-41-11 bridge, the submenu LINK's base typography/text-colour states, custom CSS |
@@ -276,12 +277,11 @@ Uses the real `theme.json` palette tokens: `primary`, `primary-dark`, `accent`, 
 `text-muted`, `border-light`.
 
 **Terminology.** The shared bottom-edge attribute family (`itemBorderWidth` / `Colour` /
-`ColourHover` / `ColourCurrent` and its submenu-row sibling `submenuLinkBorder*`) has two names by
-context: **Underline** on the horizontal bar's own top-level items (a bottom-edge text-indicator
-under one item's own label, not between two items); **Row separator** everywhere the identical
-bottom edge sits between two adjacent rows (drawer top-level accordion rows, and the bar/drawer's
-shared dropdown/submenu rows). FR-41-37 is a genuinely separate capability — a vertical divider
-between top-level BAR items — and is NOT part of this shared family.
+`ColourHover` / `ColourCurrent`) is the item's own edge: the **Underline** on the horizontal bar's
+top-level items (a text-indicator under one item's own label), or a boxed item when all four sides
+are set. A line BETWEEN two items or two rows (the bar's vertical divider, the drawer's row dividers,
+the dropdown and nested-submenu row lines) is not part of that family: it is the shared Separators
+setting, FR-41-37.
 
 **The defaults, as declared** in both `block.json` files and the PHP default-closes:
 
@@ -294,7 +294,7 @@ between top-level BAR items — and is NOT part of this shared family.
 
 Sources: `itemBorderColour`, `itemBorderColourHover`, `itemBorderColourCurrent`,
 `itemFontWeightCurrent`, `submenuLinkBg`, `submenuLinkBgHover`, `submenuLinkBgCurrent`,
-`submenuColourCurrent`, `submenuLinkBorder*` in both blocks' `block.json`;
+`submenuColourCurrent`, `submenuSeparators` in both blocks' `block.json`;
 `plugins/sgs-blocks/src/blocks/nav-drawer/block.json` `drawerBg`;
 `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_shared_item_state_css` (its
 `$default_item_colour_hover` parameter — both callers pass `'primary'`) and
@@ -332,59 +332,50 @@ for accents only; `drawerBg` defaults to the neutral `surface`.
 and a Current-row tint on the top bar and drawer top-level; those background defaults are unset, so
 an untouched item paints no Hover or Current fill.
 
-### FR-41-37 — An independent vertical divider between top-level BAR items
+### FR-41-37 — The lines between items (Separators)
 
-> Planned: this divider and the drawer's row separator move into the shared Separators setting
-> (`.claude/plans/2026-10-01-separators-plan.md`, step 2); this FR is rewritten when that ships.
+A line between two items is its own setting, not a border on one of them. Both nav blocks carry two
+instances of the shared Separators setting (`includes/helpers-separators.php`, editor control
+`SgsSeparatorControl`; plan `.claude/plans/2026-10-01-separators-plan.md`):
 
-**A capability separate from the Underline/Row-separator family above.** An operator can draw a
-vertical line between adjacent top-level bar items and colour it, and hover it, independently of the
-bar's own Underline. FR-41-7 also lets an operator set `itemBorderWidth.right` for a vertical line,
-but that shares `itemBorderColour` / `Hover` / `Current` with the SAME family's bottom-edge Underline
-— one colour set, two edges — so it cannot be styled independently, which is what "independent"
-requires.
+| Attribute | Block | List it draws between | Axis | Offers |
+|---|---|---|---|---|
+| `separators` | `sgs/nav-bar-menu` | top-level bar items, side by side | `column` (a vertical line); not drawn in the bar's drawer copy | hover colour, swap / sweep |
+| `separators` | `sgs/nav-drawer-menu` | top-level rows, stacked | `row` (a horizontal line) | hover colour, swap / sweep, `edges` (between / all / end) |
+| `submenuSeparators` | both | the rows of an open submenu: a dropdown panel on the bar, a nested section in the drawer | `row` | hover colour, swap |
 
-**Attributes** (declared in `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`, and in `nav-drawer-menu/block.json` with the sweep angle defaulting to 90):
+**Shape.** `{ row?: axis, column?: axis, edges, hoverTreatment, sweepAngle }`, an axis being
+`{ style, width: {desktop,tablet,mobile}, colour, colourHover }`. An axis with no width draws nothing, so
+an untouched nav shows no line on the top-level lists. Defaults: `separators` carries style `solid`,
+colour `text-muted` (about 4.7:1 on a light header, a WCAG 1.4.11 pass), hover `accent`, treatment
+`swap`, and no width; `submenuSeparators` carries a 1px line in `border-light` with an `accent` hover.
+`sweepAngle` defaults to 180 for a vertical line and 90 for a horizontal one; a sweep is a gradient band, so it
+is offered and emitted for a solid line only.
 
-| Attribute | Type | Default | Meaning |
-|---|---|---|---|
-| `itemSeparatorWidth` | string | `""` | Line width. Empty is the unset sentinel: the whole rule is emitted only when width AND colour are non-empty, so an untouched nav shows no divider. |
-| `itemSeparatorStyle` | string | `"solid"` | solid / dashed / dotted / none. PHP-validated, no JSON enum. |
-| `itemSeparatorColour` | string | `"text-muted"` | Resting colour. `border-light` measured ~1.12:1 against a real header background, so a divider in it read as "hover-only"; `text-muted` measures ~4.7:1, a genuine WCAG 1.4.11 UI-component pass (3:1). A between-item divider and an under-text underline read differently against the same background, so this default deliberately differs from the Underline family's `border-light`. |
-| `itemSeparatorColourHover` | string | `"accent"` | Hover colour. |
-| `itemSeparatorHoverTreatment` | string | `"swap"` | none / swap / sweep. Sweep is offered and emitted only when `supports.sgs.sweepEligibility.itemSeparatorHoverTreatment` passes. |
-| `itemSeparatorSweepAngle` | number | `180` | Sweep angle in CSS gradient-angle degrees (same convention as `sweepAngle`); shown only when the treatment is `sweep`. |
+**Geometry.** The items draw the line: an empty pseudo-element on every item except the first, offset
+half the gap plus half the line outward, so it is centred in the gap at any thickness, with no measuring
+(`includes/helpers-separators-line-css.php`). The gap is the `--sgs-nm-gap` custom property each tier
+writes (`nav-menu-submenu-link-css.php`); submenu rows touch, so their gap is zero and the line
+straddles the join. `edges: 'end'` adds a flush line under the last row, `'all'` also above the first.
+With `listColumns` on, the drawer's top-level list is a column-major grid whose row starts CSS cannot
+know, so that one list takes the flow path (native `column-rule` / `row-rule` where the browser has them,
+the runtime overlay in `src/shared/separators/` elsewhere).
 
-There is no Current state (a between-item rule is not itself "the current page").
+**Hover reaches from both neighbours.** A line belongs to the item before it and the item after it, so
+pointing at or keyboard-focusing EITHER repaints it: the own-item rule on the following item plus an
+adjacent-sibling rule from the preceding one, built from the touch-safe primitives
+(`sgs_hover_guarded_rule()` for the guarded hover, an unguarded focus rule beside it). A drawer row counts
+a hover on its link, its split-row link or its expander summary (`heads`). No Current state: a line
+between items is not itself the current page.
 
-**Geometry.** The rule is an empty `::before` pseudo-element on every item EXCEPT THE FIRST
-(`:not(:first-child)`), positioned at `left: calc(<gap> / -2)`. A flex `gap` is split evenly between
-two adjacent siblings, so shifting a zero-width box half the gap to the left of an item's own left
-edge lands it in the middle of the gap that precedes it — no JS measurement, no hardcoded pixel
-value, tracking whatever `gap` the operator has set (an unset `gap` falls back to the block's own
-`8px` default). Exactly one separator paints per gap (n-1 for n items), and neither outer edge of
-the bar gets one. It uses `border-left-*`, not `background-color`, so `itemSeparatorStyle`'s
-dashed/dotted options keep working.
+**Controls.** One `SgsSeparatorControl` per list, in its own panel ("Item separators", "Row separators",
+"Submenu row separators"): a per-device thickness beside one colour swatch whose popover holds the Normal /
+Hover tabs and the line-style picker. The colour lives in this composite, like a border colour in
+`SgsBorderControl`, not in the Colour panel.
 
-**Hover reaches from both neighbours.** Because the line sits centred, it reads as shared by the
-item before it and the item after it. Hover or focus on EITHER neighbour repaints it: the owning
-item's own `:hover` / `:focus-within`, plus an adjacent-sibling rule (`:hover + .item::before` /
-`:focus-within + .item::before`) from the preceding item. The reverse pair is built with the same
-touch-safe primitives as every other hover rule (`sgs_hover_guarded_rule()` for the guarded `:hover`
-half, an unguarded `:focus-within` rule alongside it); `sgs_hover_state_rules()` cannot express the
-sibling form.
-
-**Scope.** This emitter draws the bar's vertical rule between adjacent items and gates on the bar not
-carrying the `--drawer` modifier (`.sgs-nav-bar-menu__bar:not(.sgs-nav-bar-menu__bar--drawer)`); it skips
-the `sgs-nav-drawer-menu` BEM root outright. `sgs/nav-drawer-menu` declares the same `itemSeparator*`
-family and draws a horizontal rule between stacked rows instead, with its own emitter
-(`includes/nav-drawer-menu-separator-css.php::sgs_nav_drawer_menu_separator_css`; Spec 36 "Drawer
-item-level parity"). Its sweep angle defaults to 90 rather than 180.
-
-**Emitter:** `plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css`.
-The `item-separator` element in `block.json`'s `supports.sgs.elements` plus the
-`plugins/sgs-blocks/scripts/attr-classification-overrides.json` entries for the behaviour-role
-treatment/angle attributes are DB-first (R-31-1), reseeded via `sgs-update-v2.py`.
+**Emitter:** `plugins/sgs-blocks/includes/nav-menu-separators.php::sgs_nav_menu_separators_css`, called at the
+end of `nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css`. Gate:
+`scripts/check-separators-through-helper.py` fails a between-item line drawn outside the helper.
 
 ### FR-41-38 — The hover Sweep is angle-driven
 
@@ -402,8 +393,8 @@ from an already-parsed block's attrs before `render.php` runs; see the note on e
 render-invisible attributes in `.claude/rules/block-authoring.md`.) The text/glyph Sweep (FR-41-26) is a
 fixed left-to-right gradient and does not use this primitive.
 
-**The same mechanism drives FR-41-37's separator hover** through `itemSeparatorHoverTreatment` /
-`itemSeparatorSweepAngle`. The separator's sweep band lives on the item's own `::before` (the same
+**The same mechanism drives FR-41-37's separator hover** through `separators.hoverTreatment` /
+`separators.sweepAngle`. The separator's sweep band lives on the item's own `::before` (the same
 pseudo as the resting line), which keeps the item link's own `::before` / `::after` free for the
 item background and the border-bottom sweep.
 
@@ -1878,7 +1869,7 @@ Condition 1's attribute list covers EVERY state, not just resting.
 | **Submenu link text** `.{bem_root}__sublink` | gated on **`submenuLinkBg` AND `submenuLinkBgHover` AND `submenuLinkBgCurrent` AND `submenuLinkBgGradient`** all being empty — this element paints its background DIRECTLY, it has no `::before` indirection, and it is a 3-state fill family (FR-41-9), so a Hover or Current fill blocks the sweep exactly as the resting one does. ⚠ The predicate reads the registered defaults under the stored attributes, and `submenuLinkBg` / `submenuLinkBgHover` / `submenuLinkBgCurrent` default to tokens (FR-41-36), so Sweep is not offered here until an operator clears those fills | gated on `submenuColourGradient` being empty | ✅ always | Sweep offered only on a sublink with no background in ANY state and no text gradient |
 | **Menu button icon** `.sgs-nav-bar-menu__burger` (bar-only) | gated on **`burgerBg` AND `burgerBgGradient` AND `burgerHoverColour`** all being empty — the button paints its own background, and `burgerHoverColour` is the HOVER background on that same element (§8.1's disambiguation table) | gated on `burgerColourGradient` being empty | gated on `triggerMode !== 'icon'` | Sweep offered only on a text-bearing button with no background in either state and no icon gradient |
 | **Item border** (band on `::after`) | no background or gradient condition — the band is a separate element paint, not a `background-clip:text` sweep | — | `glyphGuard` on `itemBorderStyle`: Sweep not offered for `dashed` / `dotted` / `double` / `groove` / `ridge` / `inset` / `outset` (a gradient band can only paint solid) | Sweep offered for a solid border style |
-| **Item separator** (bar-only, band on `::before`) | as the border row | — | `glyphGuard` on `itemSeparatorStyle`: Sweep not offered for `dashed` / `dotted` | Sweep offered for a solid separator style |
+| **Separators** (both blocks, band on `::before`) | the line paints no background of its own | — | line style `dashed` / `dotted` | Sweep offered for a solid line; decided by `SgsSeparatorControl` and `sgs_separators_line_css()`, not by a `sweepEligibility` row |
 
 ⚠ **The FEATURED sub-item is a fourth blocking background on the sublink row.**
 `.{bem_root}__subitem--featured .{bem_root}__sublink` paints a background directly on
@@ -1963,8 +1954,8 @@ separate JSON file, a PHP constant, or a JS constant** — any of those is a sec
 sync, which is the failure this section exists to end.
 
 **The declared shape — three keys per row, and nothing else. Both surfaces read exactly these.** The
-bar declares five rows (`itemColourHoverTreatment`, `submenuColourHoverTreatment`,
-`burgerColourHoverTreatment`, `itemBorderHoverTreatment`, `itemSeparatorHoverTreatment`); the drawer
+bar declares four rows (`itemColourHoverTreatment`, `submenuColourHoverTreatment`,
+`burgerColourHoverTreatment`, `itemBorderHoverTreatment`); the drawer
 declares three (item text, submenu text, item border). The first three:
 
 ```json
@@ -2761,11 +2752,10 @@ and — on `nav-bar-menu` — `submenuBorderRadius` and the shadow attrs (`subme
 `sublink` carries it. ⛔ **No `states` key at all** — the panel has no hover and no current state for
 any property.
 
-**(d) The `item-separator` element (bar-only) claims the between-item divider.** Clusters
-`["border"]`, `"prefix": "itemSeparator"`; base `css:border-right-color` / `-width` / `-style` →
-`itemSeparatorColour` / `Width` / `Style`, and `states.hover` `css:border-right-color` →
-`itemSeparatorColourHover` (FR-41-37). It is a GENUINELY SEPARATE element from `item`: it never
-reads the item's own `itemBorderColour` / `itemBorderWidth` family.
+**(d) The between-item line has no element.** It is the shared Separators setting (FR-41-37):
+`separators` and `submenuSeparators` are object attributes drawn by the helper, so neither block's
+`supports.sgs.elements` carries an `item-separator` element, and the `sublink` element claims no border
+members (it declares the `fill`, `text` and `layout` clusters only).
 
 **(e) The `burger` element carries nothing for `triggerMode` / `triggerLabel` / `triggerIcon` / the
 three `triggerMagnet*` attributes.** None is a CSS property; they are content, structure or behaviour
@@ -2797,10 +2787,9 @@ surface re-derives the rule. Four notes:
 3. ⚠ **Nothing in the tree constrains which keys `supports.sgs` may carry** (no key allowlist in the
    gate scripts). Adding a key is precedented and needs no schema change.
 4. ⛔ **Every attribute NAMED in a row must exist in `attributes`, in that block's own `block.json`.**
-   The `sweepEligibility` table is per block: the `burgerColourHoverTreatment` and
-   `itemSeparatorHoverTreatment` rows exist only at
-   `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::supports.sgs.sweepEligibility` (burger and
-   separator are BAR-only), while `itemColourHoverTreatment` / `submenuColourHoverTreatment` /
+   The `sweepEligibility` table is per block: the `burgerColourHoverTreatment` row exists only at
+   `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::supports.sgs.sweepEligibility` (the burger is
+   BAR-only), while `itemColourHoverTreatment` / `submenuColourHoverTreatment` /
    `itemBorderHoverTreatment` are declared identically in both blocks. A typo in a
    `blockingBackgroundAttrs` entry reads as permanently empty, so the predicate silently always passes
    and the eligibility rule quietly stops existing — a dead-detector shape with no error. Assert
@@ -2916,12 +2905,10 @@ swatch** (FR-41-23).
 | | Item background | Normal, Hover, **Current** *(Current omitted under Highlight — FR-41-14)* | `itemBg` / `itemBgHover` / `itemBgCurrent` (+ `itemBgGradient`, `itemBgHoverGradient`, `itemBgCurrentGradient`) | None / Swap / **Highlight** — `itemBgHoverTreatment`. Highlight paints in the row's OWN Hover swatch |
 | | **Item border colour** (labelled "Item underline colour" on the bar) | Normal, Hover, **Current** | `itemBorderColour` / `…Hover` / `…Current` | None / Swap / **Sweep** — `itemBorderHoverTreatment` |
 | | ↳ Sweep angle *(shown only when treatment = Sweep)* | — | `sweepAngle` (`AnglePickerControl` + preset dropdown) | — |
-| | **Item separator colour** *(bar-only, FR-41-37)* | Normal, Hover | `itemSeparatorColour` / `itemSeparatorColourHover` | None / Swap / **Sweep** — `itemSeparatorHoverTreatment`; angle `itemSeparatorSweepAngle` shown under Sweep |
 | **Submenu** | Panel background | Normal only | `submenuBg` (+ `submenuBgGradient`) | — (no Hover state to pair) |
 | | **Panel border colour** | Normal only | `submenuBorderColour` (+ `submenuBorderColourGradient`) | — (Normal-only surface, FR-41-9) |
 | | Link text | Normal, Hover, **Current** | `submenuColour` / `submenuColourHover` / `submenuColourCurrent` (+ `submenuColourGradient`) | None / Swap / **Sweep** — `submenuColourHoverTreatment`. Sweep OMITTED when the link paints its own background **in ANY of its three states** or carries its own text gradient (FR-41-26) |
 | | Link background | Normal, Hover, **Current** | `submenuLinkBg` / `…Hover` / `…Current` (+ `submenuLinkBgGradient`) | None / **Swap only** — `submenuLinkBgHoverTreatment` (2-option row, FR-41-23) |
-| | Link border colour | Normal, Hover | `submenuLinkBorderColour` / `submenuLinkBorderColourHover` | — |
 | | Sublink marker colour *(drawer-only, FR-41-30b)* | Normal, Hover, **Current** *(revealed once `sublinkMarkerIcon` is non-default)* | `sublinkMarkerColour` / `…Hover` / `…Current` (+ 3 gradient counterparts) | — |
 | **Menu button** *(bar-only)* | Icon colour | Normal, Hover | `burgerColour` / `burgerColourHover` (+ `burgerColourGradient`) | None / Swap / **Sweep** — `burgerColourHoverTreatment`. Sweep OMITTED under `triggerMode:'icon'`, or when the button paints its own background **in EITHER state — `burgerBg` resting or `burgerHoverColour` on hover** — or carries its own icon gradient (FR-41-26) |
 | | Button background | Normal, Hover | `burgerBg` / `burgerHoverColour` (+ `burgerBgGradient`) | None / **Swap only** — `burgerBgHoverTreatment` (2-option row) |
@@ -2987,14 +2974,16 @@ attribute from two panels is banned.
 **The same border mechanism applies identically in the bar and the drawer (FR-41-28).** No
 per-layout-mode branching exists.
 
-**9.7a Panel "Item separator (bar)"** *(bar-only, FR-41-37)*
+**9.7a Panels "Item separators" (bar), "Row separators" (drawer) and "Submenu row separators" (both)** *(FR-41-37)*
 
-| Control | Component | Attribute | Default |
-|---|---|---|---|
-| Width | `TextControl` (a CSS length, e.g. `1px`; empty clears the separator) | `itemSeparatorWidth` | `""` |
-| Style | `SelectControl` — Solid \| Dashed \| Dotted | `itemSeparatorStyle` | `"solid"` |
-
-The separator's colours are the "Item separator colour" row in §9.6.
+Each is one `PanelBody` holding one `SgsSeparatorControl` (`src/shared/nav-menu-panels/SeparatorsPanel.js`),
+bound to `separators` or `submenuSeparators`. The control shows a per-device **Thickness**
+(`ResponsiveLengthControl`, empty draws no line) beside one **Line colour and style** swatch whose popover
+carries the Normal / Hover tabs and the Solid / Dashed / Dotted style picker. The drawer's top-level panel
+also offers **Outer lines** (Between items only / Between items and at both ends / Between items and after
+the last); the top-level panels also offer **Line on hover** (None / Swap / Sweep, with the sweep direction
+and angle under Sweep). The line colours are NOT rows in §9.6: they sit with their thickness and style in
+this composite, as a border colour does in `SgsBorderControl`.
 
 **9.8 Panel "Submenu — Items"** *(drawer-only)*
 
@@ -3020,7 +3009,6 @@ Every row is a `ToolsPanelItem` with `hasValue` / `onDeselect`.
 | Minimum width *(bar-only)* | `SgsLengthControl` with `presets={ false }` | `submenuMinWidth` | `""` |
 | Inner spacing | `ResponsiveBoxControl` | `submenuPadding` | `{}` |
 | Border | `SgsBorderControl` with **`showColour={ false }`** — width + style (+ radius on the bar) only, matching §9.7. Its colour is a Normal-only row in §9.6's Submenu grouping (FR-41-33) | `submenuBorderWidth` / `submenuBorderStyle` / `submenuBorderRadius` (bar) | `{}` / `""` / `{}` |
-| Link border | `SgsBorderControl` with **`showColour={ false }`** — the submenu ROW separator's width + style | `submenuLinkBorderWidth` / `submenuLinkBorderStyle` | `{"bottom":"1px"}` / `"solid"` |
 | Box shadow *(bar-only)* | `ShadowControl` with `attrNames={ shadowAttrKeys( 'submenuShadow' ) }` | `submenuShadow` + `submenuShadowColour` | `""` |
 
 Radius rides the border control's radius half; there is no flat `submenuRadius` control.

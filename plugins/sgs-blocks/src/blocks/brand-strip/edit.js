@@ -543,16 +543,15 @@ export default function Edit( { attributes, setAttributes } ) {
 			<InspectorControls>
 				<SourcePanel attributes={ attributes } setAttributes={ setAttributes } />
 
-				{ /* The lines between brands (not drawn while the strip scrolls). */ }
-				{ ! attributes.scrolling && (
-					<PanelBody title={ __( 'Separators', 'sgs-blocks' ) } initialOpen={ false }>
-						<SgsSeparatorControl
-							label={ __( 'Lines between brands', 'sgs-blocks' ) }
-							value={ attributes.separators }
-							onChange={ ( next ) => setAttributes( { separators: next } ) }
-						/>
-					</PanelBody>
-				) }
+				{ /* The lines between brands. A scrolling strip is one row, so it offers the
+				   between-columns line only. */ }
+				<PanelBody title={ __( 'Separators', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsSeparatorControl
+						value={ attributes.separators }
+						onChange={ ( next ) => setAttributes( { separators: next } ) }
+						axes={ attributes.scrolling ? [ 'column' ] : [ 'row', 'column' ] }
+					/>
+				</PanelBody>
 
 				{ /* Manual-entry UI only makes sense for the manual source —
 				   hidden (not merely disabled) once Product brands is picked

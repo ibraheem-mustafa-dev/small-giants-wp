@@ -2651,6 +2651,15 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_configurator_mode_regular` | `function sgs_configurator_mode_regular( array $combo, string $mode, int $decimals ): string` | The struck-through regular-price display string for a combo under a tax mode. |
 | `sgs_configurator_per_unit_display` | `function sgs_configurator_per_unit_display( array $combo, string $mode, int $decimals, string $template )…` | Per-unit price display string for a combo under a tax mode, e.g. "£1.04 per bar". |
 
+#### `includes/helpers-container-separators.php` — 4 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_container_separators_caps` | `function sgs_container_separators_caps(): array` | What `sgs/container` offers (mirrors block.json `supports.sgs.separators.separators`). |
+| `sgs_container_separators_active` | `function sgs_container_separators_active( array $attributes, string $layout ): bool` | Whether this container draws any line: a grid or flex layout with a thickness set. |
+| `sgs_container_separators_root` | `function sgs_container_separators_root( array $attributes, string $layout, bool $grid_on_inner ): array` | The class and data attribute the root carries so the runtime fallback finds the list. |
+| `sgs_container_separators_css` | `function sgs_container_separators_css( array $attributes, string $layout, string $grid_sel, bool $container =…` | The scoped CSS for the container's separators. |
+
 #### `includes/helpers-container.php` — 8 function(s)
 
 | Function | Signature | Purpose |
@@ -2685,14 +2694,6 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_tab_content_is_empty` | `function sgs_tab_content_is_empty( string $html ): bool` | Whether a rendered tab's HTML carries no visible text and no media. |
-
-#### `includes/helpers-gap-rule.php` — 3 function(s)
-
-| Function | Signature | Purpose |
-|---|---|---|
-| `sgs_gap_rule_width` | `function sgs_gap_rule_width( $raw, string $axis ): string` | One axis of a gap tier value, as a rule width. |
-| `sgs_gap_rule_props` | `function sgs_gap_rule_props( array $gap ): array` | The per-device rule widths, as specs for sgs_emit_responsive_css(). |
-| `sgs_gap_rule_css` | `function sgs_gap_rule_css( string $selector, string $colour ): string` | The rule style and colour for one grid/flex selector, plus the fallback. |
 
 #### `includes/helpers-global-settings.php` — 1 function(s)
 
@@ -2874,6 +2875,43 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_scrim_render` | `function sgs_scrim_render( array $attributes, string $uid, array $args )` | Build a block's scrim: its scoped CSS, and queue its HTML for `wp_footer`. |
 | `sgs_scrim_queue` | `function sgs_scrim_queue( $uid = null, $html = null )` | Queue (or, with no argument, read) the scrim HTML printed at `wp_footer`. Keyed by uid, so a block rendered twice queues one scrim. |
 | `sgs_scrim_print_footer` | `function sgs_scrim_print_footer()` | Print every queued scrim as a direct child of `<body>`. |
+
+#### `includes/helpers-separators-css.php` — 5 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_separators_var_props` | `function sgs_separators_var_props( array $n, array $list ): array` | The per-device custom properties every path reads: the line thickness and the gap, per axis. |
+| `sgs_separators_axis_decls` | `function sgs_separators_axis_decls( array $n ): string` | The style and colour custom properties for the active axes (not per device). |
+| `sgs_separators_flow_css` | `function sgs_separators_flow_css( array $n, string $list ): string` | The flow path: native gap decorations plus the stylesheet for the runtime overlay. |
+| `sgs_separators_css` | `function sgs_separators_css( $raw, array $list, array $caps = array() ): string` | The scoped CSS for one list's separators. |
+| `sgs_separators_root_attrs` | `function sgs_separators_root_attrs( string $list_selector = 'self' ): array` | What a flow list's root carries so the runtime can find the list: a class and a `data-sgs-sep-list` value ('self', or a path below the root… |
+
+#### `includes/helpers-separators-hover-css.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_separators_hover_selectors` | `function sgs_separators_hover_selectors( string $item, string $pseudo, array $heads, string $state ): array` | The selectors that repaint one item's leading line. |
+| `sgs_separators_swap_hover_css` | `function sgs_separators_swap_hover_css( string $item, string $pseudo, array $heads, string $decls ): string` | A plain colour swap on hover and focus. |
+| `sgs_separators_sweep_band` | `function sgs_separators_sweep_band( string $axis, array $a, ?float $angle ): array` | The resting declarations and the hover position of a sweep band. |
+
+#### `includes/helpers-separators-line-css.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_separators_line_geometry` | `function sgs_separators_line_geometry( string $axis ): array` | The logical-property names for one axis of a line. |
+| `sgs_separators_line_css` | `function sgs_separators_line_css( array $n, array $list ): string` | The item-drawn rules for a line-mode list. |
+
+#### `includes/helpers-separators.php` — 7 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_separators_axes` | `function sgs_separators_axes(): array` | The two axes a separators object can carry. |
+| `sgs_separators_marker_class` | `function sgs_separators_marker_class(): string` | The class a list's root carries when it draws separators on the flow path, so the runtime fallback can find it. |
+| `sgs_separators_style` | `function sgs_separators_style( $raw ): string` | A line style keyword. An empty or unknown style paints solid; `none` draws nothing. |
+| `sgs_separators_normalise_axis` | `function sgs_separators_normalise_axis( $raw ): ?array` | One axis, sanitised and resolved. |
+| `sgs_separators_normalise` | `function sgs_separators_normalise( $raw, array $caps = array() ): array` | The whole setting, sanitised and resolved. |
+| `sgs_separators_active` | `function sgs_separators_active( array $normalised ): bool` | Whether a normalised setting draws any line. |
+| `sgs_separators_gap_axis` | `function sgs_separators_gap_axis( $raw, string $axis ): string` | One axis of a gap tier value (`<row> <column>`, or one length for both). A value holding a function (`var(--x, 4px)`, `calc(…)`) is used… |
 
 #### `includes/helpers-shadow-dark-css.php` — 5 function(s)
 
@@ -3068,7 +3106,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_saving_display` | `function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_pence, string $framing_mode, bool…` | Plain-text saving label for one row of the comparative value ladder (Spec 28 P1). |
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 28 P1). |
 
-**53 files, 250 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**57 files, 268 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -3087,7 +3125,6 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `FieldLabelLayoutPanel.js` | `FieldLabelLayoutPanel (default)` | "Label and headings" panel for SGS form fields: whether the field's label shows or is read only by screen readers, and (for boxes… |
 | `FlowingGradientRowControls.js` | `isCssOnlyFlowingGradientVariant`, `FlowingGradientRowControls` | FlowingGradientRowControls — shared "flowing gradient" (`wave-gradient`) controls for blocks that reach the effect via a… |
 | `FocalPositionField.js` | `FocalPositionField (default)` | FocalPositionField — the SGS wrapper around WP-native `FocalPointPicker` |
-| `GapColour.js` | `gapColourRow`, `gapColourPreview` | Gap colour: the shared editor pieces for a grid or flex layout's gap colour. |
 | `GradientCapableColourControl.js` | `GradientCapableColourControl (default)`, `isGradientValue` | GradientCapableColourControl — the text-colour gradient rollout's shared control (D636 Task 1b, "text" builder). |
 | `GradientOverlayControl.js` | `GradientOverlayControl (default)`, `gradientOverlayAttrName`, `gradientOverlayAttrKeys` | GradientOverlayControl |
 | `GridDotFieldRowControls.js` | `GridDotFieldRowControls` | GridDotFieldRowControls — shared grid-dot field (FR-38-33) controls for blocks that reach the effect via a block-private escape… |
@@ -3110,6 +3147,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `RowScrollBehaviourControls.js` | `RowScrollBehaviourControls (default)` | RowScrollBehaviourControls — per-row transparent / hide-on-scroll toggles |
 | `ScaleAxisControl.js` | `ScaleAxisControl (default)` | ScaleAxisControl — 2-axis (X/Y) proportional scale control with a link/unlink toggle (Spec 35A §F.2.3, D637). |
 | `ScrimControls.js` | `ScrimControls (default)`, `scrimColourRow` | ScrimControls: the shared inspector controls for a viewport scrim, the see-through layer that dims the page behind an open… |
+| `SeparatorAxisRow.js` | `SeparatorAxisRow (default)` | SeparatorAxisRow — one axis of `SgsSeparatorControl`: the per-device thickness beside ONE colour swatch whose popover holds the… |
 | `ServerSideRender.js` | `ServerSideRender (default)`, `omitNullish` | ServerSideRender: the SGS drop-in for `@wordpress/server-side-render`. |
 | `SgsBooleanField.js` | `SgsBooleanField (default)` | SgsBooleanField — the SGS standard BOOLEAN control (golden-controls.json goldens/input.json `boolean` row, Bean-approved live… |
 | `SgsBorderControl.js` | `SgsBorderControl (default)` | SgsBorderControl — the border control PAIR, matching WP core's native `BorderBoxControl` layout (Bean-directed 2026-08-27 Task 0… |
@@ -3118,6 +3156,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SgsFreeTextField.js` | `SgsFreeTextField (default)` | SgsFreeTextField — the SGS standard FREE-TEXT / BARE-NUMBER control |
 | `SgsLengthControl.js` | `SgsLengthControl (default)` | SgsLengthControl — thin SGS wrapper for a length/unit value (Bean-directed new build, 2026-08-19; same construction pattern… |
 | `SgsMultiSelectField.js` | `SgsMultiSelectField (default)` | SgsMultiSelectField — the SGS standard MULTI-SELECT / TOKEN control |
+| `SgsSeparatorControl.js` | `SgsSeparatorControl (default)` | SgsSeparatorControl — the one control for the lines drawn between a list's items. |
 | `ShadowControl.js` | `ShadowControl (default)`, `shadowAttrName`, `shadowAttrKeys` | ShadowControl — the shared layered box-shadow control. |
 | `ShadowLiftControls.js` | `ShadowLiftControls (default)` | ShadowLiftControls: the ONE hover-shadow control (Bean's ruling, 2026-09-24). |
 | `SpacingControl.js` | `SpacingControl (default)` | Spacing control that reads theme.json spacing presets. |
@@ -3126,9 +3165,10 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `StarterLookPresetControl.js` | `StarterLookPresetControl (default)` | SGS Starter Look preset control (FR-37-47). |
 | `SurfaceGroundControls.js` | `SurfaceGroundControls (default)` | SurfaceGroundControls: the shared inspector controls for a frosted surface |
 | `SurfaceTreatmentPanel.js` | `isSimpleBackgroundImage`, `SurfaceTreatmentPanel` | SurfaceTreatmentPanel — shared surface-treatment (grain/halftone/duotone) controls for blocks that reach the effect via… |
+| `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**51 files.**
+**53 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 

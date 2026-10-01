@@ -240,7 +240,7 @@
 		"separators": {
 			"type": "object",
 			"default": {},
-			"description": "The lines between the brands of a static strip (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `column` is the vertical line between brands side by side, `row` the horizontal line between wrapped rows. Drawn centred in the gap by CSS gap decorations where the browser has them and by a small script elsewhere. Not drawn while the strip scrolls. No thickness (the default) draws nothing."
+			"description": "The lines between the brands of a static strip (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `column` is the vertical line between brands side by side, `row` the horizontal line between wrapped rows. Drawn centred in the gap by CSS gap decorations where the browser has them and by a small script elsewhere. A scrolling strip is one row, so only `column` applies and the line is drawn after every brand by the items themselves. No thickness (the default) draws nothing."
 		},
 		"shadowLiftOnHover": {
 			"type": "boolean",

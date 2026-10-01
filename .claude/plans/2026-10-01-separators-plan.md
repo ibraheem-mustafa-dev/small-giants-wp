@@ -97,6 +97,26 @@ items only. Nav extras: hover colour, `hoverTreatment` (swap / sweep) and `sweep
    and renames to Sonnet subagents in batches and verify against the detector's zero. Run after the Separators
    work is verified, as its own commits.
 
+## Progress and decisions (2026-10-01)
+
+**Built and verified on the sandybrown canary** (page `[QA] Separators`, 375 / 768 / 1440, native Chrome 154 plus
+the overlay in Chromium, Firefox and WebKit): the shared helper, editor control, runtime overlay and gate;
+adopted by `sgs/container` (`gapColour` removed), both nav blocks (top-level and submenu rows), `sgs/icon-list`
+and `sgs/brand-strip`. The Eye Care trees moved from `gapColour` to `separators`.
+
+**Per-block decisions for the other gap layouts** (step 3):
+
+| Block | Decision | Why |
+|---|---|---|
+| pricing-table features, business-info hours, cart items | adopt next (item-drawn rows list) | each draws a hardcoded or ad-hoc border on every item with the last removed; the cart's line is JS-rendered, so it needs the editor-twin CSS rather than a PHP rule |
+| accordion | keep its own borders | three styles (`bordered`, `flush`, `card`) draw boxes and joins that are part of the design, not a line between items |
+| card-grid, feature-grid, post-grid (grid layout), gallery (grid layout), multi-button, site-header-row, site-footer-row | inherit through the container wrapper: the `separators` attribute fans out to wrapper-routed composites (Spec 31 §13.6), flow path | the wrapper already owns their grid / flex; carousel, masonry and marquee layouts draw none |
+| process-steps, timeline, `sgs/separator`, breadcrumbs, mega-panel aside and drawer link divider, google-reviews header | out of scope | they draw connectors, glyphs or edges that gap lines cannot |
+
+**Known limits, accepted:** a wrapping `sgs/nav-bar-menu` draws a stray line at the start of a wrapped line (the
+bar collapses to the burger before it wraps in practice); a scrolling brand strip and carousel layouts draw no
+lines; with JavaScript off, Safari and Firefox show spacing only on flow lists.
+
 ## Inventory (2026-10-01, read from the code)
 
 | List | Item selector | Directions | Count known to CSS | Current line |
