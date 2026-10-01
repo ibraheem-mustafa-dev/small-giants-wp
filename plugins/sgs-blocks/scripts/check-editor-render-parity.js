@@ -527,6 +527,12 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'rowHideOnScroll',
 	'rowShrink',
 	'rowShrinkHideTarget',
+	// Motion of the scroll-gated shrink: its speed and curve have no resting
+	// frame a static canvas could show (rowShrinkPadding is NOT here — the
+	// "Show me the shrunk size" preview applies it).
+	'rowShrinkDuration',
+	'rowShrinkEasing',
+	'rowShrinkEasingCustom',
 	'headerTransparentDirection',
 	'ariaLabel',
 	// NOT invisible: the canvas shows it as the wrapper's `sgs-on-dark`/`-light`

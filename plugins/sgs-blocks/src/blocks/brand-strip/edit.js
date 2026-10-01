@@ -16,7 +16,7 @@ import {
 import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, generateItemKey, withStableItemKeys } from '../../utils';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { SourcePanel, BrandTextStylePanel } from './source-controls';
 
 const LOGO_OBJECT_FIT_OPTIONS = [
@@ -638,21 +638,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Logo layout', 'sgs-blocks' ) }
 						help={ __(
 							'Tiles: square tiles that grow with the strip. Row: every brand in a slim slot like a text brand (minimum width, padding and divider from the text settings), the logo no taller than the cap above.',
 							'sgs-blocks'
 						) }
 						value={ attributes.logoLayout || 'tiles' }
-						options={ [
-							{ label: __( 'Tiles', 'sgs-blocks' ), value: 'tiles' },
-							{ label: __( 'Row', 'sgs-blocks' ), value: 'row' },
-						] }
 						onChange={ ( val ) => setAttributes( { logoLayout: val } ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						<ToggleGroupControlOption value="tiles" label={ __( 'Tiles', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="row" label={ __( 'Row', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 					{ 'row' === attributes.logoLayout && (
 						<>
 							<RangeControl

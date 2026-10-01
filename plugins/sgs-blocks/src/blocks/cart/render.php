@@ -193,9 +193,6 @@ $sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
 	'--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour ),
 );
-if ( $has_panel && '' !== $free_delivery_track_colour ) {
-	$sgs_cart_vars[] = '--sgs-cart-free-delivery-track:' . sgs_colour_value( $free_delivery_track_colour );
-}
 
 // ── Margin — `margin` is a single block-owned TIER-of-BOXES envelope attr
 // {desktop,tablet,mobile}, read once via
@@ -298,7 +295,10 @@ if ( '' !== $badge_text_hover_effective ) {
 // modifiers whenever it renders, so `::after` has a positioning context
 // without this code adding one.
 if ( $has_panel ) {
-	$panel_sel         = $sel . ' .sgs-cart__panel';
+	// The panel element carries the uid class itself: the nav store moves the
+	// drawer dialog to <body> when it opens, so a rule scoped through the block
+	// wrapper ($sel) would stop matching the moment the drawer is on screen.
+	$panel_sel         = '.' . $uid . '.sgs-cart__panel';
 	$panel_bg_gradient = (string) ( $attributes['panelBgGradient'] ?? '' );
 	$panel_bg_paint    = sgs_background_paint_decl( $panel_bg_slug, $panel_bg_gradient );
 	if ( '' !== $panel_bg_paint ) {
@@ -442,11 +442,22 @@ if ( 'pill' === $trigger_style ) {
 // above); the element these target is inserted by panel-render.js, so the
 // selector only ever matches once the operator has opened the panel.
 // Track colour is fed as the --sgs-cart-free-delivery-track custom property
-// (declared above in $sgs_cart_vars) that style.css::.sgs-cart__free-delivery-track
+// (set on the panel element below) that style.css::.sgs-cart__free-delivery-track
 // consumes via var(--sgs-cart-free-delivery-track, <default>) — the sanctioned
 // overridable-default pattern (check-hardcoded-render-defaults.js F3).
 if ( $has_panel && '' !== $free_delivery_fill_colour ) {
-	$scoped_css[] = $sel . ' .sgs-cart__free-delivery-fill{background-color:' . sgs_colour_value( $free_delivery_fill_colour ) . ';}';
+	$scoped_css[] = '.' . $uid . '.sgs-cart__panel .sgs-cart__free-delivery-fill{background-color:' . sgs_colour_value( $free_delivery_fill_colour ) . ';}';
+}
+if ( $has_panel && '' !== $free_delivery_track_colour ) {
+	$scoped_css[] = '.' . $uid . '.sgs-cart__panel{--sgs-cart-free-delivery-track:' . sgs_colour_value( $free_delivery_track_colour ) . ';}';
+}
+
+// The panel's own design settings (heading, rows, footer, buttons, motion),
+// scoped to the panel element for the same reason as the colours above.
+if ( $has_panel ) {
+	foreach ( sgs_cart_panel_css( $attributes, $uid, 'drawer' === $effective_mode ) as $sgs_cart_panel_rule ) {
+		$scoped_css[] = $sgs_cart_panel_rule;
+	}
 }
 
 // ── Media-element atom layer (rule 37-media-no-handroll fix) — item-thumbnail
@@ -501,6 +512,8 @@ if ( $has_panel ) {
 	$wrapper_data_attributes['data-free-delivery-threshold']       = ( null !== $free_delivery_threshold ) ? (string) $free_delivery_threshold : '';
 	$wrapper_data_attributes['data-free-delivery-message']         = $free_delivery_message;
 	$wrapper_data_attributes['data-free-delivery-success-message'] = $free_delivery_success_message;
+	$wrapper_data_attributes['data-free-delivery-placement']       = 'footer' === ( $attributes['freeDeliveryPlacement'] ?? 'above-items' ) ? 'footer' : 'above-items';
+	$wrapper_data_attributes['data-free-delivery-hide-empty']      = ! empty( $attributes['freeDeliveryHideWhenEmpty'] ) ? '1' : '0';
 }
 
 $wrapper_attributes = get_block_wrapper_attributes(
@@ -598,6 +611,16 @@ $panel_args = array(
 	'checkout_url'       => $checkout_url,
 	'view_cart_label'    => $view_cart_label,
 	'checkout_label'     => $checkout_label,
+	'show_count'         => ! empty( $attributes['panelShowCount'] ),
+	'show_view_cart'     => ! isset( $attributes['panelShowViewCart'] ) || ! empty( $attributes['panelShowViewCart'] ),
+	'tax_note'           => sanitize_text_field( $attributes['panelTaxNote'] ?? __( 'Shipping and taxes calculated at checkout.', 'sgs-blocks' ) ),
+	'instalments_note'   => sanitize_text_field( $attributes['panelInstalmentsNote'] ?? '' ),
+	'instalments_count'  => absint( $attributes['panelInstalmentsCount'] ?? 3 ),
+	'close_html'         => 'drawer' === $effective_mode ? sgs_cart_close_button_html() : '',
+	'remove_style'       => 'text' === ( $attributes['itemRemoveStyle'] ?? 'icon' ) ? 'text' : 'icon',
+	'remove_label'       => sanitize_text_field( $attributes['itemRemoveLabel'] ?? __( 'Remove', 'sgs-blocks' ) ),
+	'show_qty'           => ! isset( $attributes['itemShowQty'] ) || ! empty( $attributes['itemShowQty'] ),
+	'show_save'          => ! isset( $attributes['itemShowSaveForLater'] ) || ! empty( $attributes['itemShowSaveForLater'] ),
 );
 
 $panel_html = $has_panel

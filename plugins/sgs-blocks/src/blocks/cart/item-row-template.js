@@ -78,16 +78,31 @@ function detailsHtml( item ) {
 }
 
 /**
- * Build one item row's markup: thumbnail, name, the line's details
- * (variation and item data), inline qty-edit input, line price, and a
- * remove button.
+ * Build one item row's markup: thumbnail, a top line (brand, else the name,
+ * with the line price on the right), the name, the line's details
+ * (variation and item data), the optional quantity input, and the actions
+ * (Save for later, and Remove when it is set to show as a text link).
  *
- * @param {Object} item   A Store API cart item.
- * @param {Object} totals The cart's `totals` object (currency metadata).
+ * @param {Object}  item                The Store API cart item.
+ * @param {Object}  totals              The cart's `totals` object (currency metadata).
+ * @param {Object}  [opts]              The panel's item settings (render.php data-* attributes).
+ * @param {string}  [opts.removeStyle]  'icon' (an × in its own column) or 'text' (a link under the details).
+ * @param {string}  [opts.removeLabel]  The text link's label.
+ * @param {boolean} [opts.showQty]      Show the quantity input.
+ * @param {boolean} [opts.showSave]     Show Save for later.
  * @return {string} The row's HTML.
  */
-export function itemRowHtml( item, totals ) {
+export function itemRowHtml( item, totals, opts = {} ) {
+	const {
+		removeStyle = 'icon',
+		removeLabel = 'Remove',
+		showQty = true,
+		showSave = true,
+	} = opts;
 	const name = escapeHtml( item.name );
+	// The brand comes from the plugin's own Store API extension data
+	// (includes/cart-item-brand.php), empty when the product has none.
+	const brand = escapeHtml( plainText( item.extensions?.sgs?.brand ?? '' ) );
 	const thumb = item.images?.[ 0 ]?.thumbnail || '';
 	const linePrice = formatMoney( item.totals?.line_total ?? 0, totals );
 	const key = escapeHtml( item.key );
@@ -105,59 +120,81 @@ export function itemRowHtml( item, totals ) {
 	// atom marker (includes/class-sgs-media-element.php /
 	// assets/css/media-atoms/object-fit.css) — this thumbnail is added to the
 	// DOM here, client-side, but the `--sgs-media-object-fit` custom property
-	// it reads is set server-side on the block wrapper (render.php), so the
-	// marker class is all this template needs to add for the atom's CSS rule
-	// to apply once the image is inserted.
+	// it reads is set server-side on the block's uid class (render.php), which
+	// the panel element itself carries, so the marker class is all this
+	// template needs to add for the atom's CSS rule to apply.
 	const thumbHtml = thumb
 		? `<img class="sgs-cart__item-thumb sgs-media-el" src="${ escapeHtml(
 				thumb
-		  ) }" alt="" width="48" height="48" loading="lazy" />`
+		  ) }" alt="" width="96" height="96" loading="lazy" />`
 		: '<span class="sgs-cart__item-thumb sgs-cart__item-thumb--placeholder" aria-hidden="true"></span>';
 
-	const qtyLabelHtml =
-		`<label class="sgs-cart__item-qty-label" for="${ qtyInputId }">` +
-		escapeHtml( 'Qty' ) +
-		'</label>';
+	const priceHtml = `<span class="sgs-cart__item-price">${ escapeHtml(
+		linePrice
+	) }</span>`;
+	const topHtml =
+		'<div class="sgs-cart__item-top">' +
+		( brand
+			? `<span class="sgs-cart__item-brand">${ brand }</span>`
+			: `<span class="sgs-cart__item-name">${ name }</span>` ) +
+		priceHtml +
+		'</div>' +
+		( brand ? `<span class="sgs-cart__item-name">${ name }</span>` : '' );
 
-	const qtyInputHtml =
-		`<input type="number" min="0" step="1" id="${ qtyInputId }" ` +
-		`class="sgs-cart__item-qty-input" value="${ qty }" data-key="${ key }" ` +
-		`aria-label="${ escapeHtml( 'Quantity for ' + item.name ) }" />`;
+	const qtyHtml = showQty
+		? '<div class="sgs-cart__item-row">' +
+		  `<label class="sgs-cart__item-qty-label" for="${ qtyInputId }">` +
+		  escapeHtml( 'Qty' ) +
+		  '</label>' +
+		  `<input type="number" min="0" step="1" id="${ qtyInputId }" ` +
+		  `class="sgs-cart__item-qty-input" value="${ qty }" data-key="${ key }" ` +
+		  `aria-label="${ escapeHtml( 'Quantity for ' + item.name ) }" />` +
+		  '</div>'
+		: '';
 
-	const removeButtonHtml =
-		`<button type="button" class="sgs-cart__item-remove" data-key="${ key }" ` +
-		`aria-label="${ escapeHtml(
-			'Remove ' + item.name + ' from cart'
-		) }">` +
-		'<span aria-hidden="true">&times;</span>' +
-		'</button>';
+	const removeLabelText = `Remove ${ item.name } from cart`;
+	const removeIconHtml =
+		'text' === removeStyle
+			? ''
+			: `<button type="button" class="sgs-cart__item-remove" data-key="${ key }" ` +
+			  `aria-label="${ escapeHtml( removeLabelText ) }">` +
+			  '<span aria-hidden="true">&times;</span>' +
+			  '</button>';
+	const removeTextHtml =
+		'text' === removeStyle
+			? `<button type="button" class="sgs-cart__item-remove sgs-cart__item-remove--text sgs-cart__item-action" data-key="${ key }" ` +
+			  `aria-label="${ escapeHtml( removeLabelText ) }">` +
+			  escapeHtml( removeLabel || 'Remove' ) +
+			  '</button>'
+			: '';
 
 	// Wave 3C U-12 §E: the SAME "Save for later" action as the wishlist
 	// panel's cart-page enhancer (src/blocks/wishlist-panel/save-for-later.js),
 	// but as the flyout's own markup — a valid product id is required (skips
 	// silently on a malformed cart item rather than saving id 0).
-	const saveForLaterHtml = wishlistProductId > 0
-		? `<button type="button" class="sgs-cart__item-save-for-later" data-key="${ key }" data-product-id="${ wishlistProductId }">` +
-			escapeHtml( 'Save for later' ) +
-			'</button>'
-		: '';
+	const saveForLaterHtml =
+		showSave && wishlistProductId > 0
+			? `<button type="button" class="sgs-cart__item-save-for-later sgs-cart__item-action" data-key="${ key }" data-product-id="${ wishlistProductId }">` +
+			  escapeHtml( 'Save for later' ) +
+			  '</button>'
+			: '';
+	const actionsHtml =
+		saveForLaterHtml || removeTextHtml
+			? `<div class="sgs-cart__item-actions">${ saveForLaterHtml }${ removeTextHtml }</div>`
+			: '';
 
 	return (
-		`<div class="sgs-cart__item" data-key="${ key }">` +
+		`<div class="sgs-cart__item${
+			'text' === removeStyle ? ' sgs-cart__item--remove-text' : ''
+		}" data-key="${ key }">` +
 		thumbHtml +
 		'<div class="sgs-cart__item-info">' +
-		`<span class="sgs-cart__item-name">${ name }</span>` +
+		topHtml +
 		detailsHtml( item ) +
-		'<div class="sgs-cart__item-row">' +
-		qtyLabelHtml +
-		qtyInputHtml +
-		`<span class="sgs-cart__item-price">${ escapeHtml(
-			linePrice
-		) }</span>` +
+		qtyHtml +
+		actionsHtml +
 		'</div>' +
-		saveForLaterHtml +
-		'</div>' +
-		removeButtonHtml +
+		removeIconHtml +
 		'</div>'
 	);
 }

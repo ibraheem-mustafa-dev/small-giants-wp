@@ -440,7 +440,7 @@
                   "pillBorderRadius": "999px",
                   "badgeColour": "accent",
                   "badgeTextColour": "surface-alt",
-                  "freeDeliveryMessage": "You're %s away from free delivery",
+                  "freeDeliveryMessage": "Add %s more for free UK delivery",
                   "showZero": true,
                   "pillCountStyle": "bubble",
                   "pillFontSize": {
@@ -458,7 +458,210 @@
                   },
                   "pillTextColour": "text",
                   "pillBgColourHover": "primary",
-                  "pillTextColourHover": "primary-text"
+                  "pillTextColourHover": "primary-text",
+                  "panelHeading": "Bag",
+                  "panelCloseSize": {
+                    "desktop": "18px"
+                  },
+                  "panelShowCount": true,
+                  "panelBg": "surface",
+                  "panelTextColour": "text",
+                  "panelMaxWidth": {
+                    "desktop": "460px"
+                  },
+                  "panelHeadPadding": {
+                    "desktop": {
+                      "top": "18px",
+                      "right": "24px",
+                      "bottom": "18px",
+                      "left": "24px"
+                    }
+                  },
+                  "panelHeadBorderColour": "border",
+                  "panelTitleFontFamily": "heading",
+                  "panelTitleFontSize": {
+                    "desktop": 22
+                  },
+                  "panelTitleFontSizeUnit": "px",
+                  "panelTitleFontWeight": "500",
+                  "panelCountFontFamily": "body",
+                  "panelCountFontSize": {
+                    "desktop": 13
+                  },
+                  "panelCountFontSizeUnit": "px",
+                  "panelCountColour": "text-subtle",
+                  "panelBodyPadding": {
+                    "desktop": {
+                      "top": "20px",
+                      "right": "24px",
+                      "bottom": "20px",
+                      "left": "24px"
+                    }
+                  },
+                  "panelBodyGap": {
+                    "desktop": "18px"
+                  },
+                  "emptyCartMessage": "Nothing in here yet.",
+                  "emptyCartCtaLabel": "Shop sunglasses",
+                  "panelEmptyPadding": {
+                    "desktop": {
+                      "top": "60px",
+                      "right": "0px",
+                      "bottom": "60px",
+                      "left": "0px"
+                    }
+                  },
+                  "panelEmptyTextAlign": "center",
+                  "panelEmptyColour": "text-muted",
+                  "emptyMessageFontFamily": "heading",
+                  "emptyMessageFontSize": {
+                    "desktop": 26
+                  },
+                  "emptyMessageFontSizeUnit": "px",
+                  "emptyMessageFontWeight": "500",
+                  "emptyMessageColour": "text",
+                  "emptyMessageGap": {
+                    "desktop": "20px"
+                  },
+                  "emptyCtaBg": "primary",
+                  "emptyCtaColour": "primary-text",
+                  "emptyCtaPadding": {
+                    "desktop": {
+                      "top": "0px",
+                      "right": "20px",
+                      "bottom": "0px",
+                      "left": "20px"
+                    }
+                  },
+                  "emptyCtaRadius": "0px",
+                  "emptyCtaFontSize": {
+                    "desktop": 12.5
+                  },
+                  "emptyCtaFontSizeUnit": "px",
+                  "emptyCtaFontWeight": "400",
+                  "emptyCtaLetterSpacing": {
+                    "desktop": 0.1
+                  },
+                  "emptyCtaLetterSpacingUnit": "em",
+                  "emptyCtaTextTransform": "uppercase",
+                  "itemShowQty": false,
+                  "itemShowSaveForLater": false,
+                  "itemRemoveStyle": "text",
+                  "itemRemoveLabel": "Remove",
+                  "itemThumbSize": {
+                    "desktop": "96px"
+                  },
+                  "itemGap": {
+                    "desktop": "16px"
+                  },
+                  "itemThumbBg": "surface-stage",
+                  "itemThumbRadius": "0px",
+                  "itemBrandFontSize": {
+                    "desktop": 11
+                  },
+                  "itemBrandFontSizeUnit": "px",
+                  "itemBrandLetterSpacing": {
+                    "desktop": 0.16
+                  },
+                  "itemBrandLetterSpacingUnit": "em",
+                  "itemBrandTextTransform": "uppercase",
+                  "itemBrandColour": "text-label",
+                  "itemNameFontSize": {
+                    "desktop": 15
+                  },
+                  "itemNameFontSizeUnit": "px",
+                  "itemNameFontWeight": "400",
+                  "itemPriceFontSize": {
+                    "desktop": 14
+                  },
+                  "itemPriceFontSizeUnit": "px",
+                  "itemPriceFontWeight": "400",
+                  "itemDetailFontSize": {
+                    "desktop": 13
+                  },
+                  "itemDetailFontSizeUnit": "px",
+                  "itemDetailColour": "text-muted",
+                  "itemActionFontSize": {
+                    "desktop": 12.5
+                  },
+                  "itemActionFontSizeUnit": "px",
+                  "itemRemoveColour": "text-subtle",
+                  "itemRemoveBorderColour": "border",
+                  "panelFooterBg": "surface-alt",
+                  "panelFooterBorderColour": "border",
+                  "panelFooterPadding": {
+                    "desktop": {
+                      "top": "18px",
+                      "right": "24px",
+                      "bottom": "18px",
+                      "left": "24px"
+                    }
+                  },
+                  "subtotalFontSize": {
+                    "desktop": 14
+                  },
+                  "subtotalFontSizeUnit": "px",
+                  "subtotalFontWeight": "400",
+                  "subtotalLabelColour": "text-muted",
+                  "subtotalValueColour": "text",
+                  "panelTaxNote": "",
+                  "panelShowViewCart": false,
+                  "freeDeliveryPlacement": "footer",
+                  "freeDeliveryHideWhenEmpty": true,
+                  "freeDeliveryThresholdOverride": "75",
+                  "freeDeliverySuccessMessage": "Free UK delivery unlocked",
+                  "freeDeliveryTextFontSize": {
+                    "desktop": 12.5
+                  },
+                  "freeDeliveryTextFontSizeUnit": "px",
+                  "freeDeliveryTextColour": "text-label",
+                  "freeDeliveryTrackHeight": {
+                    "desktop": "2px"
+                  },
+                  "freeDeliveryTrackColour": "border",
+                  "freeDeliveryFillColour": "accent",
+                  "freeDeliveryTrackRadius": "0px",
+                  "freeDeliveryBarMargin": {
+                    "desktop": {
+                      "top": "4px",
+                      "right": "0px",
+                      "bottom": "4px",
+                      "left": "0px"
+                    }
+                  },
+                  "checkoutBg": "primary",
+                  "checkoutBgHover": "primary-hover",
+                  "checkoutColour": "primary-text",
+                  "checkoutMinHeight": {
+                    "desktop": "54px"
+                  },
+                  "checkoutRadius": "0px",
+                  "checkoutFontSize": {
+                    "desktop": 13
+                  },
+                  "checkoutFontSizeUnit": "px",
+                  "checkoutFontWeight": "400",
+                  "checkoutLetterSpacing": {
+                    "desktop": 0.12
+                  },
+                  "checkoutLetterSpacingUnit": "em",
+                  "checkoutTextTransform": "uppercase",
+                  "panelInstalmentsNote": "Or 3 payments of %s with Klarna",
+                  "panelInstalmentsCount": 3,
+                  "panelNoteFontSize": {
+                    "desktop": 12.5
+                  },
+                  "panelNoteFontSizeUnit": "px",
+                  "panelNoteColour": "text-muted",
+                  "panelShadow": "-20px 0 60px 0",
+                  "panelShadowColour": "color-mix(in srgb, var(--wp--custom--shadow-colour) 20%, transparent)",
+                  "panelSlideDuration": 400,
+                  "panelSlideEasing": "custom",
+                  "panelSlideEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+                  "scrimColour": "primary",
+                  "scrimOpacity": {
+                    "desktop": 0.45
+                  }
                 }
               }
             ]
