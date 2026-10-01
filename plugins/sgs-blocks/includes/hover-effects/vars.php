@@ -33,11 +33,8 @@ defined( 'ABSPATH' ) || exit;
  * @param float  $hover_opacity         Fade-to opacity on hover (0-1; 0 = off).
  * @param string $hover_easing_custom   Hand-typed curve, read only when $hover_easing_slug is 'custom'.
  * @param string $hover_indent          Additive hover-only inline-start padding growth (a CSS length), or '' = off.
- * @param string $hover_indent_base     The block's own RESTING inline-start padding (read from its `padding`
- *                                      tier-object attribute where present — see resolve in hover-effects.php),
- *                                      or '' when unknown. The consuming rule's calc() (extensions.css) falls
- *                                      back to 0 when this is empty, so the shift is still additive whenever the
- *                                      base is knowable, and simply grows from zero otherwise (never breaks).
+ *                                      The resting base it adds to is emitted per device by
+ *                                      build_hover_indent_base_css().
  * @param string $hover_shadow_custom   Pre-sanitised (sgs_shadow_value()) raw box-shadow string, read only when
  *                                      $hover_shadow is the literal 'custom'; '' otherwise.
  * @return string[] CSS custom-property declarations, e.g. [ '--sgs-hover-scale:1.05', … ].
@@ -59,7 +56,6 @@ function build_hover_vars(
 	float $hover_opacity = 0.0,
 	string $hover_easing_custom = '',
 	string $hover_indent = '',
-	string $hover_indent_base = '',
 	string $hover_shadow_custom = ''
 ): array {
 	$css_vars = array();
@@ -142,9 +138,6 @@ function build_hover_vars(
 	// other hover property here.
 	if ( '' !== $hover_indent ) {
 		$css_vars[] = '--sgs-hover-indent:' . $hover_indent;
-		if ( '' !== $hover_indent_base ) {
-			$css_vars[] = '--sgs-hover-indent-base:' . $hover_indent_base;
-		}
 	}
 
 	if ( $has_ripple ) {
@@ -159,4 +152,46 @@ function build_hover_vars(
 	}
 
 	return $css_vars;
+}
+
+/**
+ * The resting inline-start padding a hover indent grows from, per device.
+ *
+ * Read from the block's own `padding` tier object ({desktop,tablet,mobile}.left),
+ * the canonical box shape every SGS block with padding controls stores, and
+ * emitted as `--sgs-hover-indent-base` through the same media-query emitter the
+ * block's own padding uses, so the base changes at the same widths the padding
+ * does and the hover shift stays additive on every device. A tier with no left
+ * padding inherits the wider tier's value; a block with none emits nothing and
+ * the consuming calc() in extensions.css grows from 0.
+ *
+ * @param string     $scope_class The instance scope class the hover vars are keyed to.
+ * @param array|null $padding     The block's `padding` attribute.
+ * @return string CSS text (no <style> wrapper), or ''.
+ */
+function build_hover_indent_base_css( string $scope_class, $padding ): string {
+	if ( '' === $scope_class || ! is_array( $padding ) ) {
+		return '';
+	}
+	require_once dirname( __DIR__ ) . '/helpers-responsive.php';
+	$base = array();
+	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+		$raw   = $padding[ $tier ]['left'] ?? '';
+		$value = \sgs_css_single_length_value( is_string( $raw ) ? $raw : '' );
+		if ( '' !== $value ) {
+			$base[ $tier ] = $value;
+		}
+	}
+	if ( array() === $base ) {
+		return '';
+	}
+	return \sgs_emit_responsive_css(
+		'.' . $scope_class,
+		array(
+			array(
+				'value' => $base,
+				'css'   => '--sgs-hover-indent-base',
+			),
+		)
+	);
 }

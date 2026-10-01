@@ -123,18 +123,9 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		: '';
 
 	// Padding indent — additive hover-only inline-start growth (generalised
-	// nav "Item hover paint" shape, Spec 36). The RESTING base is read from
-	// this block's own `padding` tier-object attribute where present — the
-	// SAME canonical box-object shape every SGS block with padding controls
-	// uses ({desktop,tablet,mobile}.{top,right,bottom,left}) — so the growth
-	// is genuinely additive on any block using that attribute name, and
-	// simply grows from zero (documented, non-breaking) on one that doesn't.
-	$hover_indent      = sgs_css_single_length_value( $attrs['sgsHoverIndent'] ?? '' );
-	$hover_indent_base = '';
-	if ( '' !== $hover_indent ) {
-		$padding_left_raw  = $attrs['padding']['desktop']['left'] ?? '';
-		$hover_indent_base = sgs_css_single_length_value( is_string( $padding_left_raw ) ? $padding_left_raw : '' );
-	}
+	// nav "Item hover paint" shape, Spec 36). Its resting base is emitted per
+	// device from the block's own `padding` (build_hover_indent_base_css()).
+	$hover_indent = sgs_css_single_length_value( $attrs['sgsHoverIndent'] ?? '' );
 
 	// 'custom' with no surviving sanitised value is inert — never counts as
 	// an active shadow (mirrors an out-of-list preset slug already being
@@ -205,7 +196,6 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$hover_opacity,
 		$hover_easing_custom,
 		$hover_indent,
-		$hover_indent_base,
 		$hover_shadow_custom
 	);
 
@@ -296,6 +286,10 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	// reason about a trailing <style> tag being present.
 	if ( $css_vars && $sgs_scope_class ) {
 		$block_content = sgs_append_scoped_var_style( $block_content, $sgs_scope_class, $css_vars );
+		$indent_base   = '' !== $hover_indent ? build_hover_indent_base_css( $sgs_scope_class, $attrs['padding'] ?? null ) : '';
+		if ( '' !== $indent_base ) {
+			$block_content .= '<style>' . wp_strip_all_tags( $indent_base ) . '</style>';
+		}
 	}
 
 	return $block_content;
