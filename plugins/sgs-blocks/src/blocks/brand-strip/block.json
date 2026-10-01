@@ -84,7 +84,8 @@
 						"css:border-radius": "tileRadius",
 						"css:box-shadow": "tileShadow",
 						"css:padding": "tilePadding",
-						"css:gap": "logoGap"
+						"css:gap": "logoGap",
+						"css:opacity": "logoOpacity"
 					},
 					"states": {
 						"hover": {

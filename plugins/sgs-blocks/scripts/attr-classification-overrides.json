@@ -6628,6 +6628,14 @@
 			"_why": "2026-09-30 (deploy gate, orphan_unclassified). Cards moved per arrow click, a per-device whole number the slider script reads; no CSS property."
 		},
 		{
+			"slug": "sgs/brand-strip",
+			"attr": "logoLayout",
+			"fields": {
+				"role": "select-from-enum"
+			},
+			"_why": "2026-10-01 (deploy gate, orphan_unclassified). tiles | row: chooses how logo brands lay out (the sgs-brand-strip--layout-row class variant), not a CSS value."
+		},
+		{
 			"slug": "sgs/nav-drawer-menu",
 			"attr": "itemSeparatorPosition",
 			"fields": {
