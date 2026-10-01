@@ -6,7 +6,7 @@
 
 ## Sites
 
-- **Reference site (client's current live site, non-SGS stack):** https://lightsalmon-tarsier-683012.hostingersite.com/ — DO NOT modify or deploy to; client-facing, read-only reference only.
+- **Reference site (client's current draft site, non-SGS stack):** https://lightsalmon-tarsier-683012.hostingersite.com/ — DO NOT modify or deploy to; client-facing, read-only reference only.
 - **Indus Foods build/test site:** https://lavender-dinosaur-183533.hostingersite.com/ — an Indus-only SGS install (sgs-theme + sgs-blocks active, no WooCommerce). Deploy target `indus-test`. This is the PRIMARY render target for all Indus header/footer/nav/homepage work.
 - **Shared canary (sandybrown):** the canary can hold only one client's active header/footer/drawer/theme-snapshot at a time — `sgs_active_header_cpt_id` etc. are single global `wp_options` — so it is for isolated block QA only.
 
