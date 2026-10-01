@@ -9,6 +9,7 @@ import {
 } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, textRow } from '../../components';
 import { parseSvgGradient, SvgGradientDefs, textPaintPreview, backgroundPaintPreview } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 // Box-object interface contract §1: a 4-side box is an object with named
 // keys, each an already-unit-bearing CSS length string or absent (unset
@@ -46,12 +47,12 @@ function buildWrapperStyle( attributes, colourPalette ) {
 	Object.assign( wrapperStyle, textPaintPreview( textColour, textColourGradient, colourPalette ) );
 	Object.assign( wrapperStyle, backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ) );
 
-	if ( borderStyle && borderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		const borderWidthPreview = boxShorthand( borderWidth );
 		if ( borderWidthPreview ) {
 			wrapperStyle.borderWidth = borderWidthPreview;
 		}
-		wrapperStyle.borderStyle = borderStyle;
+		wrapperStyle.borderStyle = wrapperStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) {
 			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
 		}

@@ -203,12 +203,13 @@
 		"borderStyle": {
 			"type": "string",
 			"enum": [
+				"",
 				"none",
 				"solid",
 				"dashed",
 				"dotted"
 			],
-			"default": "none"
+			"default": ""
 		},
 		"borderRadius": {
 			"type": "object",

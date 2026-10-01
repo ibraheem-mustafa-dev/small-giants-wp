@@ -332,8 +332,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 		);
 		$burger_border_width = is_array( $attributes['burgerBorderWidth'] ?? null ) ? sgs_box_object_shorthand( $attributes['burgerBorderWidth'] ) : null;
 		if ( null !== $burger_border_width && '' !== $burger_border_width ) {
-			$burger_border_style  = (string) ( $attributes['burgerBorderStyle'] ?? 'solid' );
-			$burger_border_style  = in_array( $burger_border_style, array( 'solid', 'dashed', 'dotted', 'double', 'none' ), true ) ? $burger_border_style : 'solid';
+			$burger_border_style  = sgs_border_style_keyword( $attributes['burgerBorderStyle'] ?? '' );
 			$burger_border_colour = sgs_colour_value( (string) ( $attributes['burgerBorderColour'] ?? '' ) );
 			$css                 .= $burger_sel . '{border-style:' . $burger_border_style . ';border-width:' . esc_attr( $burger_border_width ) . ';'
 				. ( '' !== $burger_border_colour ? 'border-color:' . $burger_border_colour . ';' : '' ) . '}';

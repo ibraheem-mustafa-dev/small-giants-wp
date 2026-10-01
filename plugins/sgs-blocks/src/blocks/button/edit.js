@@ -26,6 +26,7 @@ import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 import { backgroundPaintPreview, textPaintPreview } from '../../utils';
 import { parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 const LINK_SOURCE_OPTIONS = [
 	{ label: __( 'Typed URL', 'sgs-blocks' ), value: 'url' },
@@ -345,8 +346,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
 		previewStyle.borderImage = `${ borderColourGradient } 1`;
 	}
-	if ( borderStyle ) previewStyle.borderStyle = borderStyle;
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( borderStyle || borderWidthPreview ) previewStyle.borderStyle = resolveBorderStyle( borderStyle );
 	if ( borderWidthPreview ) previewStyle.borderWidth = borderWidthPreview;
 	// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
 	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );

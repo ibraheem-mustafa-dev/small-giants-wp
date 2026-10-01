@@ -43,6 +43,15 @@ without it the client's colour is frozen against every future re-skin.
 
 Per-device border width is Bean-locked OFF — do not build it.
 
+**A width paints solid.** The style picker writes '' when nothing is picked or the active option
+is deselected (as WP core's does); a width with '' paints `solid`, an explicit style (dashed,
+dotted, `none` …) wins, and no width paints nothing. Resolve the style through
+`includes/helpers-border-style.php::sgs_border_style_keyword` / `::sgs_border_box_decls` in PHP and
+`src/utils/border-style.js::resolveBorderStyle` / `::borderBoxPreview` in the canvas — never a
+hand-rolled `in_array(…) ? $raw : 'none'` or `borderStyle && borderStyle !== 'none'`. A border-style
+attribute defaults to '' (or `solid`), never `none`. Gate: `scripts/check-border-width-without-style.py`
+(the inverse of `check-border-style-without-width.py`).
+
 A palette slug fed raw to CSS paints nothing: `sgs_border_states_css()` needs `sgs_colour_value()`
 resolution first (it feeds a masked `::before` ring that also sets `border-color:transparent`, so
 an unresolved slug paints nothing rather than degrading visibly).

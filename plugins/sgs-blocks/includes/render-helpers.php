@@ -22,6 +22,9 @@
  *   helpers-gradient-tone.php       — sgs_resolve_palette_gradient,
  *                                     sgs_gradient_resolve_value, sgs_gradient_tone
  *
+ *   helpers-gap-rule.php            — sgs_gap_rule_width, sgs_gap_rule_props,
+ *                                     sgs_gap_rule_css (a grid/flex gap colour)
+ *
  *   helpers-surface-tone.php        — sgs_surface_tone, sgs_surface_tone_class
  *                                     (a painted surface's dark/light tone from
  *                                     its top-down layers)
@@ -112,6 +115,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-hover-state.php';
 require_once __DIR__ . '/helpers-responsive.php';
+require_once __DIR__ . '/helpers-gap-rule.php';
 require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-media-position.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';
@@ -126,6 +130,7 @@ require_once __DIR__ . '/helpers-media-element.php';
 require_once __DIR__ . '/helpers-configurator-pricing.php';
 require_once __DIR__ . '/helpers-value-ladder.php';
 require_once __DIR__ . '/helpers-css-safety.php';
+require_once __DIR__ . '/helpers-border-style.php';
 require_once __DIR__ . '/helpers-container.php';
 require_once __DIR__ . '/helpers-svg-kses.php';
 require_once __DIR__ . '/helpers-button-style.php';

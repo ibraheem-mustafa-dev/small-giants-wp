@@ -12,6 +12,7 @@ import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, no
 import { ToolsPanel } from '../../components/primitives';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import { borderPaintPreview, backgroundPaintPreview } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
@@ -68,12 +69,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	// border-colour rows below); the canvas preview approximates the same
 	// visual on the root element regardless of the exact frontend selector.
 	const borderPreviewStyle = {};
-	if ( borderStyle && borderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		const bw = [ 'top', 'right', 'bottom', 'left' ];
 		if ( borderWidth && bw.some( ( k ) => borderWidth[ k ] ) ) {
 			borderPreviewStyle.borderWidth = bw.map( ( k ) => borderWidth[ k ] || '0' ).join( ' ' );
 		}
-		borderPreviewStyle.borderStyle = borderStyle;
+		borderPreviewStyle.borderStyle = borderPreviewStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) {
 			borderPreviewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
 		}

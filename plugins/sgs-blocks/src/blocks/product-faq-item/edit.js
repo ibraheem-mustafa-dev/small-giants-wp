@@ -12,6 +12,7 @@ import { SgsColourPanel, fillRow, textRow,
 	resolveColourToken,
 } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 const CHEVRON_SVG = (
 	<svg
@@ -85,11 +86,11 @@ function buildWrapperStyle( attributes ) {
 	// not WP-native style.border.* (undeclared in block.json, silently
 	// discarded by WordPress — check-undeclared-attrs finding).
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( borderStyle && 'none' !== borderStyle ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		if ( borderWidthPreview ) {
 			wrapperStyle.borderWidth = borderWidthPreview;
 		}
-		wrapperStyle.borderStyle = borderStyle;
+		wrapperStyle.borderStyle = wrapperStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) {
 			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
 				? borderColour

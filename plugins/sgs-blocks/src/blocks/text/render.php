@@ -120,7 +120,7 @@ $border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' )
 $border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
-$border_style  = $attributes['borderStyle'] ?? 'none';
+$border_style  = sgs_border_style_keyword( $attributes['borderStyle'] ?? '' );
 $border_colour = $attributes['borderColour'] ?? '';
 // D636 border-colour gradient rollout — non-empty wins over $border_colour
 // above, painted via the shared masked ::before ring mechanism.
@@ -170,12 +170,6 @@ $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, t
 
 if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
 	return;
-}
-
-// Full CSS border-style set.
-$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-if ( ! in_array( $border_style, $allowed_border_styles, true ) ) {
-	$border_style = 'none';
 }
 
 // Validate unit values — only allow safe CSS units.

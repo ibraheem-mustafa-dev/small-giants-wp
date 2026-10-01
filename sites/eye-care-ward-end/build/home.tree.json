@@ -1363,7 +1363,10 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "backgroundColour": "rgba(250,248,245,.16)",
+          "gapColour": "rgba(250,248,245,.16)",
+          "contentWidth": {
+            "desktop": "full"
+          },
           "columns": {
             "desktop": 4,
             "tablet": 2

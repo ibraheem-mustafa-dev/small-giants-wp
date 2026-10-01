@@ -7,6 +7,7 @@
  *
  * @package SGS\Blocks
  */
+import { resolveBorderStyle } from '../../utils/border-style';
 
 /**
  * Box-object interface contract §1/§5: build an editor-preview shorthand from
@@ -97,7 +98,7 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 			rootStyle.borderWidth = borderWidthPreview;
 		}
 		if ( cardBorderStyle ) {
-			rootStyle.borderStyle = cardBorderStyle;
+			rootStyle.borderStyle = resolveBorderStyle( cardBorderStyle );
 		}
 	}
 

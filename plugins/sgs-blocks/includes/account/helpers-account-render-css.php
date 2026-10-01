@@ -13,6 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__ ) . '/helpers-border-style.php';
+
 if ( ! function_exists( 'sgs_account_menu_icon_css' ) ) {
 	/**
 	 * Build the `::before` mask-image CSS that paints one Lucide icon per
@@ -90,29 +92,16 @@ if ( ! function_exists( 'sgs_account_icon_data_uri' ) ) {
 if ( ! function_exists( 'sgs_account_card_border_shape_css' ) ) {
 	/**
 	 * Card border width and style (the colour comes from sgs_border_states_css).
-	 * A style with no width, or 'none', leaves the stylesheet's default border.
+	 * A width paints solid unless another style was chosen; no width, or
+	 * 'none', leaves the stylesheet's default border (sgs_border_box_decls).
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $selector   Scoped card selector.
 	 * @return string CSS text (may be '').
 	 */
 	function sgs_account_card_border_shape_css( array $attributes, string $selector ): string {
-		$style = (string) ( $attributes['cardBorderStyle'] ?? '' );
-		if ( ! in_array( $style, array( 'solid', 'dashed', 'dotted', 'double' ), true ) ) {
-			return '';
-		}
-		$width = is_array( $attributes['cardBorderWidth'] ?? null ) ? $attributes['cardBorderWidth'] : array();
-		$sides = array();
-		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
-			$sides[ $side ] = sgs_css_length_value( (string) ( $width[ $side ] ?? '' ) );
-		}
-		if ( '' === implode( '', $sides ) ) {
-			return '';
-		}
-		foreach ( $sides as $side => $value ) {
-			$sides[ $side ] = '' !== $value ? $value : '0';
-		}
-		return $selector . '{border-style:' . $style . ';border-width:' . implode( ' ', $sides ) . ';}';
+		$decls = sgs_border_box_decls( $attributes['cardBorderWidth'] ?? null, $attributes['cardBorderStyle'] ?? '' );
+		return $decls ? $selector . '{' . implode( ';', $decls ) . ';}' : '';
 	}
 }
 

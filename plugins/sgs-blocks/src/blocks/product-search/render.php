@@ -234,9 +234,7 @@ if ( $sgs_ps_has_border_width ) {
 	$sgs_ps_bwb                 = '' !== $sgs_ps_border_width_bot ? $sgs_ps_border_width_bot : '0';
 	$sgs_ps_bwl                 = '' !== $sgs_ps_border_width_lft ? $sgs_ps_border_width_lft : '0';
 	$sgs_ps_border_base_decls[] = "border-width:{$sgs_ps_bwt} {$sgs_ps_bwr} {$sgs_ps_bwb} {$sgs_ps_bwl}";
-	if ( $sgs_ps_border_style_raw && 'solid' !== $sgs_ps_border_style_raw ) {
-		$sgs_ps_border_base_decls[] = 'border-style:' . $sgs_ps_border_style_raw;
-	}
+	$sgs_ps_border_base_decls[] = 'border-style:' . sgs_border_style_keyword( $sgs_ps_border_style_raw );
 }
 if ( $sgs_ps_border_base_decls ) {
 	$sgs_scoped_css[] = "{$sgs_ps_border_sel}{" . implode( ';', $sgs_ps_border_base_decls ) . ';}';

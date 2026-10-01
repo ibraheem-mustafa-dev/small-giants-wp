@@ -319,9 +319,8 @@ $border_colour = $attributes['borderColour'] ?? '';
 // D636 border-colour gradient rollout — non-empty wins over $border_colour
 // above, painted via the shared masked ::before ring mechanism.
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-$border_style_raw       = $attributes['borderStyle'] ?? 'none';
-$allowed_border_styles  = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$border_style           = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+$border_style_raw       = $attributes['borderStyle'] ?? '';
+$border_style           = sgs_border_style_keyword( $border_style_raw );
 
 // ---------------------------------------------------------------------------
 // 3. Scoped CSS assembly. uid is a CLASS (this block has anchor support for

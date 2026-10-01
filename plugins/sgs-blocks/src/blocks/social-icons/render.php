@@ -316,9 +316,7 @@ if ( $has_wrapper_border_width ) {
 	$wbwb                        = '' !== $wrapper_border_width_bot ? $wrapper_border_width_bot : '0';
 	$wbwl                        = '' !== $wrapper_border_width_lft ? $wrapper_border_width_lft : '0';
 	$wrapper_border_base_decls[] = "border-width:{$wbwt} {$wbwr} {$wbwb} {$wbwl}";
-	if ( $wrapper_border_style_raw && 'solid' !== $wrapper_border_style_raw ) {
-		$wrapper_border_base_decls[] = 'border-style:' . $wrapper_border_style_raw;
-	}
+	$wrapper_border_base_decls[] = 'border-style:' . sgs_border_style_keyword( $wrapper_border_style_raw );
 }
 if ( $wrapper_border_base_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_border_base_decls ) . ';}';

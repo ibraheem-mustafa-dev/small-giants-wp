@@ -13,6 +13,7 @@ import {
 } from "@wordpress/components";
 import { SgsColourPanel, DesignTokenPicker, IconPicker, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SGS_FONT_WEIGHT_OPTIONS } from "../../components";
 import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
+import { resolveBorderStyle } from '../../utils/border-style';
 
 const STYLE_OPTIONS = [
   { label: __("Bordered", "sgs-blocks"), value: "bordered" },
@@ -87,11 +88,11 @@ export default function Edit({ attributes, setAttributes }) {
   } )();
 
   const previewStyle = {};
-  if ( borderStyle && "none" !== borderStyle ) {
+  if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
     // G5 (Bean, 2026-08-26): a style with no width means NO border — never fall
     // through to the browser's initial `medium`. Same gate as render.php.
     if ( borderWidthPreview ) {
-      previewStyle.borderStyle = borderStyle;
+      previewStyle.borderStyle = resolveBorderStyle( borderStyle );
       previewStyle.borderWidth = borderWidthPreview;
     }
     if ( borderColour ) {

@@ -19,6 +19,7 @@ import {
 import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
 import { colourVar, linkColourPreviewCss, resolveTextColourPreviewStyle } from '../../utils';
 import { sanitiseSvg } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 // ── Select options ──────────────────────────────────────────────────────────
 
@@ -247,12 +248,12 @@ function buildRootPreviewStyle( attributes ) {
 		previewStyle.borderRadius = radiusPreview;
 	}
 
-	if ( borderStyle && borderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 		if ( borderWidthPreview ) {
 			previewStyle.borderWidth = borderWidthPreview;
 		}
-		previewStyle.borderStyle = borderStyle;
+		previewStyle.borderStyle = previewStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) {
 			previewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
 				? borderColour

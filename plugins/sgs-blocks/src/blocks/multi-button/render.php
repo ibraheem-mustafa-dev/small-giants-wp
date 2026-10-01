@@ -312,11 +312,11 @@ if ( isset( $attributes['childBtnBorderColour'] ) && '' !== $attributes['childBt
 // matches a standalone button (see that rule's comment for the full reasoning).
 $mb_child_border_width           = is_array( $attributes['childBtnBorderWidth'] ?? null ) ? $attributes['childBtnBorderWidth'] : array();
 $mb_child_border_width_shorthand = sgs_box_object_shorthand( $mb_child_border_width );
+// The style travels with the width: a width with no chosen style paints solid
+// (helpers-border-style.php), and a style with no width paints nothing (G5).
 if ( null !== $mb_child_border_width_shorthand ) {
 	$mb_child_defaults[] = '--sgs-mb-btn-border-width-default:' . $mb_child_border_width_shorthand;
-}
-if ( isset( $attributes['childBtnBorderStyle'] ) && '' !== $attributes['childBtnBorderStyle'] ) {
-	$mb_child_defaults[] = '--sgs-mb-btn-border-style-default:' . sgs_css_keyword_sanitise( (string) $attributes['childBtnBorderStyle'] );
+	$mb_child_defaults[] = '--sgs-mb-btn-border-style-default:' . sgs_border_style_keyword( $attributes['childBtnBorderStyle'] ?? '' );
 }
 // childBtnBorderRadius is a RESPONSIVE TIER OBJECT (2026-09-07), matching this
 // block's own `borderRadius` and every other radius attr in the framework. Its
@@ -344,9 +344,8 @@ $border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' )
 $border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
-$border_style_raw      = $attributes['borderStyle'] ?? 'none';
-$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+$border_style_raw      = $attributes['borderStyle'] ?? '';
+$border_style          = sgs_border_style_keyword( $border_style_raw );
 
 if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall

@@ -28,6 +28,7 @@ import {
 } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
@@ -108,12 +109,12 @@ function buildWrapperStyle( attributes ) {
 	if ( radiusPreview ) {
 		wrapperStyle.borderRadius = radiusPreview;
 	}
-	if ( borderStyle && borderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 		if ( borderWidthPreview ) {
 			wrapperStyle.borderWidth = borderWidthPreview;
 		}
-		wrapperStyle.borderStyle = borderStyle;
+		wrapperStyle.borderStyle = wrapperStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) {
 			wrapperStyle.borderColor = borderColour;
 		}

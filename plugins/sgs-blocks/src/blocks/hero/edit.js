@@ -48,6 +48,7 @@ import {
 } from '../container/components/ContainerWrapperControls';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { sanitiseSvg, svgBackgroundPreview, backgroundPreview, wrapperToneClass, surfaceBackdropPreview } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 // BORDER_STYLE_OPTIONS (the local 4-option none/solid/dashed/dotted list) was removed
@@ -543,10 +544,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// splitMedia's raw colour pass-through (no token resolution) rather than
 	// introducing a different mechanism into this file.
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( borderStyle && 'none' !== borderStyle ) {
-		wrapperStyle.borderStyle = borderStyle;
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		if ( borderWidthPreview ) {
 			wrapperStyle.borderWidth = borderWidthPreview;
+			wrapperStyle.borderStyle = resolveBorderStyle( borderStyle );
 		}
 		if ( borderColour ) {
 			wrapperStyle.borderColor = borderColour;
@@ -620,9 +621,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// emit when style isn't 'none' OR a width is set.
 	const splitMediaBorderWidthPreview = boxShorthand( splitMediaBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( 'none' !== splitMediaBorderStyle || splitMediaBorderWidthPreview ) {
-		imagePreviewStyle.borderStyle = splitMediaBorderStyle;
 		if ( splitMediaBorderWidthPreview ) {
 			imagePreviewStyle.borderWidth = splitMediaBorderWidthPreview;
+			imagePreviewStyle.borderStyle = resolveBorderStyle( splitMediaBorderStyle );
 		}
 		if ( splitMediaBorderColour ) {
 			imagePreviewStyle.borderColor = splitMediaBorderColour;
@@ -1661,7 +1662,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaBorderRadius: {},
 								splitMediaBorderRadiusTablet: {},
 								splitMediaBorderRadiusMobile: {},
-								splitMediaBorderStyle: 'none',
+								splitMediaBorderStyle: '',
 								splitMediaBorderWidth: {},
 								splitMediaBorderColour: '',
 								splitMediaBorderColourGradient: '',
@@ -1756,7 +1757,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								Object.keys( splitMediaMaxHeight ?? {} ).length > 0 ||
 								splitMediaMaxHeightUnit !== 'px' ||
 								Object.keys( splitMediaBorderWidth ?? {} ).length > 0 ||
-								splitMediaBorderStyle !== 'none' ||
+								splitMediaBorderStyle !== '' ||
 								splitMediaBorderColour !== '' ||
 								splitMediaBorderColourGradient !== '' ||
 								Object.keys( splitMediaBorderRadius ?? {} ).length > 0 ||
@@ -1783,7 +1784,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									splitMediaBorderRadius: {},
 									splitMediaBorderRadiusTablet: {},
 									splitMediaBorderRadiusMobile: {},
-									splitMediaBorderStyle: 'none',
+									splitMediaBorderStyle: '',
 									splitMediaBorderWidth: {},
 									splitMediaBorderColour: '',
 									splitMediaBorderColourGradient: '',

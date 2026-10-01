@@ -177,9 +177,8 @@ $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
 $hover_background          = $attributes['backgroundColourHover'] ?? '';
 $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
 
-$border_style_raw      = $attributes['borderStyle'] ?? 'none';
-$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+$border_style_raw      = $attributes['borderStyle'] ?? '';
+$border_style          = sgs_border_style_keyword( $border_style_raw );
 
 $custom_width      = $attributes['customWidth'] ?? '';
 $custom_width_unit = sgs_heading_safe_unit( $attributes['customWidthUnit'] ?? 'px' );

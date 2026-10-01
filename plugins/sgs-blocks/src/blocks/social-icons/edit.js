@@ -13,6 +13,7 @@ import {
 import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 import { spacingVar, borderPaintPreview } from '../../utils';
 import BrandIconGlyph from './brand-icons';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
 // sgs/business-info 'socials' case reads from Sgs_Site_Info — Appearance >
@@ -179,10 +180,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
 	}
-	if ( wrapperBorderStyle && wrapperBorderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( wrapperBorderStyle ) ) {
 		const wbw = boxShorthand( wrapperBorderWidth );
 		if ( wbw ) previewStyle.borderWidth = wbw;
-		previewStyle.borderStyle = wrapperBorderStyle;
+		previewStyle.borderStyle = previewStyle.borderWidth ? resolveBorderStyle( wrapperBorderStyle ) : undefined;
 		if ( wrapperBorderColour ) {
 			previewStyle.borderColor = /^#|^rgb|^hsl/.test( wrapperBorderColour ) ? wrapperBorderColour : resolveColourToken( wrapperBorderColour, palette );
 		}

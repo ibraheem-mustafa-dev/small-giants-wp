@@ -125,6 +125,7 @@
 					],
 					"attrMap": {
 						"css:gap": "gap",
+						"css:column-rule-color": "gapColour",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-columns:count": "columns",
 						"css:grid-template-rows": "gridTemplateRows",
@@ -255,6 +256,11 @@
 		"gap": {
 			"type": "object",
 			"default": {}
+		},
+		"gapColour": {
+			"type": "string",
+			"default": "",
+			"description": "Paints the gaps of a grid or flex layout, each line as wide as its gap, and nothing else (CSS gap decorations; browsers without them get the colour behind the tracks, showing through the gaps between opaque items). Empty (default) paints nothing, so the gaps stay transparent. A palette slug or any CSS colour."
 		},
 		"minColumnWidth": {
 			"type": "object",
@@ -692,7 +698,7 @@
 		"borderColour": {
 			"type": "string",
 			"default": "",
-			"description": "Wrapper root border colour (R2c pattern — block-private, replaces the native __experimentalBorder.color path). Empty = no border colour; the shared style-engine border-colour rule only emits when borderStyle is also set."
+			"description": "Wrapper root border colour (R2c pattern — block-private, replaces the native __experimentalBorder.color path). Empty = no border colour; the colour only emits when some side has a border width and borderStyle is not 'none'."
 		},
 		"borderColourGradient": {
 			"type": "string",
@@ -733,7 +739,7 @@
 				"inset",
 				"outset"
 			],
-			"description": "Wrapper root border style. Empty/none = no border rendered regardless of colour/width — matches sgs/product-card's 'none' sentinel."
+			"description": "Wrapper root border style. Empty = solid once any side has a width (sgs_border_box_decls); 'none' = no border rendered regardless of colour/width."
 		},
 		"contentBandPadding": {
 			"type": "object",

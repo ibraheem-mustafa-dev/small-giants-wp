@@ -8,6 +8,7 @@ export * from './background-preview';
 export * from './surface-preview';
 export * from './svg-gradient-preview';
 export * from './spacing-preview';
+export * from './border-style';
 export * from './content-band-preview';
 export * from './grid-layout-preview';
 export * from './wcag-contrast';

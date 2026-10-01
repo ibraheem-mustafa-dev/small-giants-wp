@@ -11,6 +11,7 @@ import {
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -85,7 +86,7 @@ function buildRootPreviewStyle( attributes, padding, margin ) {
 		margin: boxShorthand( margin?.desktop ),
 		borderRadius: radiusShorthand( borderRadius?.desktop ),
 		borderWidth: boxShorthand( borderWidth ) || undefined,
-		borderStyle: ( borderStyle && borderStyle !== 'none' ) ? borderStyle : undefined,
+		borderStyle: boxShorthand( borderWidth ) ? resolveBorderStyle( borderStyle ) : undefined,
 		borderColor: borderColour || undefined,
 		fontSize: fontSizeDesktop ? `${ fontSizeDesktop }${ fontSizeUnit || 'px' }` : undefined,
 		lineHeight: lineHeightDesktop ? `${ lineHeightDesktop }${ lineHeightUnit || '' }` : undefined,

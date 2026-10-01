@@ -38,6 +38,7 @@ import {
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, DesignTokenPicker, GradientCapableColourControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -233,7 +234,7 @@ function buildEditorStyle( attributes ) {
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( borderWidthPreview ) {
 		previewStyle.borderWidth = borderWidthPreview;
-		previewStyle.borderStyle = borderStyle && 'none' !== borderStyle ? borderStyle : 'solid';
+		previewStyle.borderStyle = resolveBorderStyle( borderStyle );
 		if ( borderColour ) {
 			previewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
 				? borderColour

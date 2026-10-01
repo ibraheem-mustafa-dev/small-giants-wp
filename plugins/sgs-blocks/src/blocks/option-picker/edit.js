@@ -30,6 +30,7 @@ import { TypographyControls, ResponsiveControl, ResponsiveBoxControl, SgsColourP
 import { colourVar, resolveTextColourPreviewStyle, borderPaintPreview } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import SubLabelPanel from './sub-label-panel';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 /* ── Options ─────────────────────────────────────────────────────────────── */
 
@@ -105,11 +106,11 @@ function buildRootPreviewStyle( attributes ) {
 	}
 
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( borderStyle && borderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		if ( borderWidthPreview ) {
 			rootStyle.borderWidth = borderWidthPreview;
 		}
-		rootStyle.borderStyle = borderStyle;
+		rootStyle.borderStyle = rootStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) {
 			rootStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
 				? borderColour

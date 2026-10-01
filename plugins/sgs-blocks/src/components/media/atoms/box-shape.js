@@ -673,7 +673,9 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	}
 
 	const borderStyleKey = mediaStoredAttrName( blockSlug, prefix, 'BorderStyle' );
-	const borderStyle = validateBorderStyle( attributes[ borderStyleKey ] );
+	// A width with no chosen style paints solid — the shared rule in
+	// `src/utils/border-style.js`; box-shape.css's fallback is `none`.
+	const borderStyle = validateBorderStyle( attributes[ borderStyleKey ] ) || ( borderWidthShorthand ? 'solid' : '' );
 	if ( borderStyle ) {
 		decls.push( `--sgs-media-border-style:${ borderStyle }` );
 	}

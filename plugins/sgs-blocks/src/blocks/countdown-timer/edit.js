@@ -10,6 +10,7 @@ import {
 import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, textPaintPreview, backgroundPaintPreview } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -76,12 +77,12 @@ function buildPreviewStyle( attributes, colourPalette ) {
 	// borderRadius attrs (SgsBorderControl, below) — NOT WP-native
 	// `style.border`, which no control in this file ever writes to; the
 	// block.json `supports` block declares no `__experimentalBorder` at all.
-	if ( borderStyle && borderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 		if ( borderWidthPreview ) {
 			preview.borderWidth = borderWidthPreview;
 		}
-		preview.borderStyle = borderStyle;
+		preview.borderStyle = preview.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) {
 			preview.borderColor = borderColour;
 		}

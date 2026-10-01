@@ -406,13 +406,14 @@ if ( $has_border_width ) {
 // base rule — see the 2026-08-27 defect-2 fix above). Without this gate a
 // custom/preset-less button with a style override but no width would fall
 // through to the browser's initial ~3px `medium`.
-$border_style_has_width = $has_border_width || in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true );
-if ( $border_style && 'solid' !== $border_style && $border_style_has_width ) {
-	$base_decls[] = 'border-style:' . $border_style;
-} elseif ( $has_border_width && ! in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true ) ) {
-	// A preset class supplies border-style:solid; a preset-less (custom) button
-	// has none, so a border width alone would paint nothing.
-	$base_decls[] = 'border-style:solid';
+// A preset class supplies border-style:solid, so a preset button only needs a
+// non-solid override; a preset-less (custom) button has no style of its own, so
+// its width paints with the resolved style ('' = solid, helpers-border-style.php).
+$border_style_is_preset = in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true );
+$border_style_has_width = $has_border_width || $border_style_is_preset;
+$border_style_resolved  = sgs_border_style_keyword( $border_style );
+if ( ( $has_border_width && ! $border_style_is_preset ) || ( $border_style_has_width && 'solid' !== $border_style_resolved ) ) {
+	$base_decls[] = 'border-style:' . $border_style_resolved;
 }
 if ( $box_shadow_decls['normal'] ) {
 	$base_decls = array_merge( $base_decls, $box_shadow_decls['normal'] );

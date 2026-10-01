@@ -632,7 +632,7 @@
 		},
 		"splitMediaBorderStyle": {
 			"type": "string",
-			"default": "none"
+			"default": ""
 		},
 		"splitMediaBorderWidth": {
 			"type": "object",

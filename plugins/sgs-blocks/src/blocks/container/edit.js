@@ -11,7 +11,7 @@ import {
   TextControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl } from "../../components";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl, gapColourRow, gapColourPreview } from "../../components";
 import ScrollSidewaysPanel from "./components/ScrollSidewaysPanel";
 import { resolveOnTiers } from "../../utils/responsive";
 import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar, flattenPresetSetting } from "../../utils";
@@ -24,6 +24,7 @@ import {
   GridItemDefaultsPanel,
   MIN_HEIGHT_OPTIONS,
 } from "./components/ContainerWrapperControls";
+import { resolveBorderStyle } from '../../utils/border-style';
 
 /**
  * Resolve a gap attribute value to a CSS string for editor preview.
@@ -211,6 +212,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
 
   const style = {
     gap: gapCssValue( gap, previewTier ),
+    ...( ( layout === "grid" || layout === "flex" ) && gapColourPreview( gapCssValue( gap, previewTier ), attributes.gapColour ) ),
     minHeight: resolveResponsiveTier( attributes.minHeight, previewTier )?.value || undefined,
     aspectRatio: /^\s*\d+(\.\d+)?\s*(\/\s*\d+(\.\d+)?\s*)?$/.test( attributes.boxAspectRatio || '' ) ? attributes.boxAspectRatio : undefined,
     ...(shadow && { boxShadow: resolveShadowPreviewComposed( shadow, attributes.shadowColour ) }),
@@ -245,10 +247,10 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // into SgsBorderControl's InspectorControls binding, never applied to the
   // wrapper style), same gap as sgs/hero. borderWidth is a box object
   // (base-only, no tiers, matching the SgsBorderControl pair standard).
-  if ( borderStyle && borderStyle !== "none" ) {
+  if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
     const borderWidthPreview = boxShorthand( borderWidth );
     if ( borderWidthPreview ) style.borderWidth = borderWidthPreview;
-    style.borderStyle = borderStyle;
+    style.borderStyle = style.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
     Object.assign( style, borderPaintPreview( borderColour, borderColourGradient, colourPalette ) );
   }
 
@@ -553,6 +555,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
                 },
               ],
             },
+            ( layout === "grid" || layout === "flex" ) && gapColourRow( { attributes, setAttributes } ),
           ] }
         />
         {/* Typography — replaces the old WP-native supports.typography

@@ -251,7 +251,7 @@
           "gap": {
             "desktop": "1px"
           },
-          "backgroundColour": "border",
+          "gapColour": "border",
           "borderWidth": {
             "top": "1px",
             "right": "1px",

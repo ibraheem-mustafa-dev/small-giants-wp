@@ -3844,6 +3844,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					);
 				}
 
+				// Gap colour (includes/helpers-gap-rule.php): rule widths ride the
+				// gap's own tiers; the colour rule is emitted once, below.
+				$gap_colour = isset( $attributes['gapColour'] ) ? trim( (string) $attributes['gapColour'] ) : '';
+				$gap_lines  = '' !== $gap_colour && ( 'grid' === $layout || 'flex' === $layout )
+					&& isset( $attributes['gap'] ) && is_array( $attributes['gap'] ) && array() !== $attributes['gap'];
+				if ( $gap_lines ) {
+					$obj_inner_props = array_merge( $obj_inner_props, sgs_gap_rule_props( $attributes['gap'] ) );
+				}
+
 				if ( $obj_inner_props && '' !== $grid_sel ) {
 					// `container` adds an @container copy of each tier rule ALONGSIDE the
 					// @media one (class-sgs-breakpoints.php:74-81 emits both, never one
@@ -3855,6 +3864,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// match. Dead CSS is not free: it is what the next reader has to
 					// explain before they can trust the rest.
 					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => $container_queries ) );
+				}
+				if ( $gap_lines ) {
+					$responsive_css .= sgs_gap_rule_css( $grid_sel, $gap_colour );
 				}
 
 				// grid-template-columns' count-based tier fallback — its own call,

@@ -84,7 +84,7 @@ export function DialogSizeBorderControls( { attributes, setAttributes } ) {
 				widthValues={ borderWidth ?? {} }
 				onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
 				styleValue={ borderStyle }
-				onStyleChange={ ( val ) => setAttributes( { borderStyle: val || 'none' } ) }
+				onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 				colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 				colourValue={ borderColour }
 				onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }

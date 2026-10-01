@@ -31,6 +31,7 @@ const HOVER_EFFECT_OPTIONS = [
 import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 // Spec 35 Part B: 2 options, short labels → ToggleGroupControl (mirrors
 // sgs/icon-list's "List content" source toggle).
@@ -183,9 +184,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( borderWidthPreview ) {
 		wrapperPreviewStyle.borderWidth = borderWidthPreview;
-		if ( borderStyle && 'none' !== borderStyle ) {
-			wrapperPreviewStyle.borderStyle = borderStyle;
-		}
+		wrapperPreviewStyle.borderStyle = resolveBorderStyle( borderStyle );
 		if ( borderColour ) {
 			wrapperPreviewStyle.borderColor = colourVar( borderColour ) || undefined;
 		}

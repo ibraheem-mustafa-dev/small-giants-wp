@@ -253,35 +253,21 @@ if ( $sgs_container_resting_decls || $sgs_container_hover_decls ) {
 // borderColourGradient are block-private attrs (see block.json note on the
 // wrapper element's attrMap); only border-radius stays native (resolved
 // above via the style engine). No hover pair (block.json declares none).
-$sgs_container_border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$sgs_container_border_width_top    = sgs_css_length_value( $sgs_container_border_width_obj['top'] ?? '' );
-$sgs_container_border_width_right  = sgs_css_length_value( $sgs_container_border_width_obj['right'] ?? '' );
-$sgs_container_border_width_bottom = sgs_css_length_value( $sgs_container_border_width_obj['bottom'] ?? '' );
-$sgs_container_border_width_left   = sgs_css_length_value( $sgs_container_border_width_obj['left'] ?? '' );
-$sgs_container_has_border_width    = ( '' !== $sgs_container_border_width_top || '' !== $sgs_container_border_width_right || '' !== $sgs_container_border_width_bottom || '' !== $sgs_container_border_width_left );
+// sgs_border_box_decls() (helpers-border-style.php) is the shared rule: a width
+// on any side paints solid unless the client chose another style, 'none' paints
+// nothing, and no width means no border (G5) — so an empty result skips the
+// colour too.
+$sgs_container_border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$sgs_container_border_box_decls = sgs_border_box_decls( $sgs_container_border_width_obj, $attributes['borderStyle'] ?? '' );
+$sgs_container_border_width_top = sgs_css_length_value( $sgs_container_border_width_obj['top'] ?? '' );
 
-$sgs_container_border_style_raw      = $attributes['borderStyle'] ?? '';
-$sgs_container_allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$sgs_container_border_style          = in_array( $sgs_container_border_style_raw, $sgs_container_allowed_border_styles, true ) ? $sgs_container_border_style_raw : '';
-
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-// default — never fall through to the browser's initial medium (~3px)
-// border-width.
-if ( '' !== $sgs_container_border_style && 'none' !== $sgs_container_border_style && $sgs_container_has_border_width ) {
+if ( $sgs_container_border_box_decls ) {
 	if ( empty( $sgs_container_supports_uid ) ) {
 		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
 	}
 	$sgs_container_border_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
 
-	$sgs_container_border_box_decls = array( 'border-style:' . $sgs_container_border_style );
-	if ( $sgs_container_has_border_width ) {
-		$sgs_container_bwt                = '' !== $sgs_container_border_width_top ? $sgs_container_border_width_top : '0';
-		$sgs_container_bwr                = '' !== $sgs_container_border_width_right ? $sgs_container_border_width_right : '0';
-		$sgs_container_bwb                = '' !== $sgs_container_border_width_bottom ? $sgs_container_border_width_bottom : '0';
-		$sgs_container_bwl                = '' !== $sgs_container_border_width_left ? $sgs_container_border_width_left : '0';
-		$sgs_container_border_box_decls[] = "border-width:{$sgs_container_bwt} {$sgs_container_bwr} {$sgs_container_bwb} {$sgs_container_bwl}";
-	}
 	$sgs_container_supports_css .= $sgs_container_border_sel . '{' . implode( ';', $sgs_container_border_box_decls ) . ';}';
 
 	$sgs_container_supports_css .= sgs_border_states_css(

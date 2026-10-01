@@ -28,6 +28,7 @@ import {
 import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
 import { colourVar, spacingVar } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
+import { resolveBorderStyle } from '../../utils/border-style';
 
 const ICON_SIZE_OPTIONS = [
   { label: __("Small", "sgs-blocks"), value: "small" },
@@ -283,10 +284,10 @@ export default function Edit({ attributes, setAttributes }) {
   if (paddingPreview) previewStyle.padding = paddingPreview;
   const marginPreview = boxShorthand(margin?.desktop, ["top", "right", "bottom", "left"]);
   if (marginPreview) previewStyle.margin = marginPreview;
-  if (borderStyle && borderStyle !== "none") {
+  if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
     const borderWidthPreview = boxShorthand(borderWidth, ["top", "right", "bottom", "left"]);
     if (borderWidthPreview) previewStyle.borderWidth = borderWidthPreview;
-    previewStyle.borderStyle = borderStyle;
+    previewStyle.borderStyle = previewStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
     if (borderColour) {
       previewStyle.borderColor = /^#|^rgb|^hsl/.test(borderColour) ? borderColour : colourVar(borderColour);
     }

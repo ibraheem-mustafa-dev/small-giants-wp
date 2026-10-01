@@ -70,7 +70,7 @@
           "gap": {
             "desktop": "1px"
           },
-          "backgroundColour": "border",
+          "gapColour": "border",
           "borderStyle": "solid",
           "borderWidth": {
             "top": "1px",

@@ -43,6 +43,7 @@ import {
 	ToolsPanelItem,
 } from '../../components/primitives';
 import { SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
@@ -853,11 +854,11 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		} else if ( backgroundColour ) {
 			typedPreviewStyle.backgroundColor = resolveCardColourPreview( backgroundColour );
 		}
-		if ( borderStyle && 'none' !== borderStyle ) {
-			typedPreviewStyle.borderStyle = borderStyle;
+		if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 			const borderWidthPreview = cardBoxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 			if ( borderWidthPreview ) {
 				typedPreviewStyle.borderWidth = borderWidthPreview;
+				typedPreviewStyle.borderStyle = resolveBorderStyle( borderStyle );
 			}
 			if (
 				borderColourGradient &&
@@ -944,7 +945,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		backgroundColor: resolvePcColour( ctaColourBackground ),
 		color: resolvePcColour( ctaColourText ),
 		borderColor: resolvePcColour( ctaColourBorder ),
-		borderStyle: ctaBorderStyle || undefined,
+		borderStyle: boxShorthand( ctaBorderWidth, [ 'top', 'right', 'bottom', 'left' ] ) ? resolveBorderStyle( ctaBorderStyle ) : undefined,
 		borderWidth: boxShorthand( ctaBorderWidth, [ 'top', 'right', 'bottom', 'left' ] ),
 		// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
 		borderRadius: boxShorthand( ctaBorderRadius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] ),

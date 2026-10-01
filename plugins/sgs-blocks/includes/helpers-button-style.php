@@ -109,9 +109,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		$font_weight                  = (string) $read( 'FontWeight' );
 		$width_type                   = (string) $read( 'WidthType' );
 
-		$border_style_raw = (string) $read( 'BorderStyle' );
-		$allowed_borders  = array( 'solid', 'dashed', 'dotted', 'none' );
-		$border_style     = in_array( $border_style_raw, $allowed_borders, true ) ? $border_style_raw : '';
+		// '' (never picked, or the active option deselected) paints solid once a
+		// width exists — sgs_border_style_keyword() (helpers-border-style.php).
+		$border_style = sgs_border_style_keyword( $read( 'BorderStyle' ) );
 
 		// A2 box-object migration (2026-07-26): ctaBorderWidth/ctaBorderRadius are
 		// now {top,right,bottom,left} / {topLeft,topRight,bottomLeft,bottomRight}

@@ -190,8 +190,9 @@
 		},
 		"borderStyle": {
 			"type": "string",
-			"default": "none",
+			"default": "",
 			"enum": [
+				"",
 				"none",
 				"solid",
 				"dashed",
@@ -202,7 +203,7 @@
 				"inset",
 				"outset"
 			],
-			"description": "'none' (default) keeps the dialog's existing borderless look. SgsBorderControl (Shape B, block-private) — same shape as sgs/accordion."
+			"description": "Empty (default) paints solid once a border width is set, so a dialog with no width stays borderless; 'none' paints no border. SgsBorderControl (Shape B, block-private) — same shape as sgs/accordion."
 		},
 		"borderColour": {
 			"type": "string",

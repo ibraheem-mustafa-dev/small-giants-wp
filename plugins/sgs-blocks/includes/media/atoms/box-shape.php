@@ -486,6 +486,11 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 
 		$border_style_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderStyle' );
 		$border_style      = sgs_media_atom_box_shape_validate_border_style( $attributes[ $border_style_key ] ?? null );
+		if ( '' === $border_style && '' !== $border_width_shorthand ) {
+			// A width with no chosen style paints solid — the shared rule in
+			// helpers-border-style.php; box-shape.css's fallback is `none`.
+			$border_style = 'solid';
+		}
 		if ( '' !== $border_style ) {
 			$decls[] = '--sgs-media-border-style:' . $border_style;
 		}

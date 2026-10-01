@@ -1262,5 +1262,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 139
+  },
+  {
+    "id": "check-border-width-without-style",
+    "cmd": "python scripts/check-border-width-without-style.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 140
+  },
+  {
+    "id": "check-border-width-without-style-selftest",
+    "cmd": "python scripts/check-border-width-without-style.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 141
   }
 ]

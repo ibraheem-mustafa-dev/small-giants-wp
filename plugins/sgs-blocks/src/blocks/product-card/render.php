@@ -552,9 +552,8 @@ $sgs_pc_border_width_bottom = sgs_css_length_value( $sgs_pc_border_width_obj['bo
 $sgs_pc_border_width_left   = sgs_css_length_value( $sgs_pc_border_width_obj['left'] ?? '' );
 $sgs_pc_has_border_width    = ( '' !== $sgs_pc_border_width_top || '' !== $sgs_pc_border_width_right || '' !== $sgs_pc_border_width_bottom || '' !== $sgs_pc_border_width_left );
 
-$sgs_pc_border_style_raw      = $attributes['borderStyle'] ?? 'none';
-$sgs_pc_allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$sgs_pc_border_style          = in_array( $sgs_pc_border_style_raw, $sgs_pc_allowed_border_styles, true ) ? $sgs_pc_border_style_raw : 'none';
+$sgs_pc_border_style_raw      = $attributes['borderStyle'] ?? '';
+$sgs_pc_border_style          = sgs_border_style_keyword( $sgs_pc_border_style_raw );
 $sgs_pc_border_colour_raw     = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
 
 if ( 'none' !== $sgs_pc_border_style ) {

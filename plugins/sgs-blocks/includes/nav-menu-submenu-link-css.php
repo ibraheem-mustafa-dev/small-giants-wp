@@ -23,6 +23,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-border-style.php';
+
 if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 	/**
 	 * Build the submenu LINK background/border/typography-hover, in-drawer
@@ -119,13 +121,13 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 		 */
 		$sublink_border_box          = is_array( $attributes['submenuLinkBorderWidth'] ?? null ) ? $attributes['submenuLinkBorderWidth'] : array();
 		$sublink_border_width        = $sublink_border_box ? sgs_box_object_shorthand( $sublink_border_box ) : null;
-		$sublink_border_style        = sgs_css_keyword_sanitise( $attributes['submenuLinkBorderStyle'] ?? '' );
+		$sublink_border_style        = sgs_border_style_keyword( $attributes['submenuLinkBorderStyle'] ?? '' );
 		$sublink_border_colour       = (string) ( $attributes['submenuLinkBorderColour'] ?? '' );
 		$sublink_border_colour_hover = (string) ( $attributes['submenuLinkBorderColourHover'] ?? '' );
 
 		if ( null !== $sublink_border_width && '' !== $sublink_border_width ) {
 			$css .= $sublink_sel . '{border-width:' . $sublink_border_width . ';border-style:'
-				. ( '' !== $sublink_border_style ? $sublink_border_style : 'solid' ) . ';}';
+				. $sublink_border_style . ';}';
 		}
 		if ( '' !== $sublink_border_colour ) {
 			$css .= $sublink_sel . '{border-color:' . sgs_colour_value( $sublink_border_colour ) . ';}';

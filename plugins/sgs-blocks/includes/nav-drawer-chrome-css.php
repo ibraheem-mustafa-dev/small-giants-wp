@@ -130,8 +130,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_css' ) ) {
 		// emitter follows.
 		$border_width = is_array( $attributes['closeBorderWidth'] ?? null ) ? sgs_box_object_shorthand( $attributes['closeBorderWidth'] ) : null;
 		if ( null !== $border_width && '' !== $border_width ) {
-			$style  = (string) ( $attributes['closeBorderStyle'] ?? 'solid' );
-			$style  = in_array( $style, array( 'solid', 'dashed', 'dotted', 'double', 'none' ), true ) ? $style : 'solid';
+			$style  = sgs_border_style_keyword( $attributes['closeBorderStyle'] ?? '' );
 			$colour = sgs_colour_value( (string) ( $attributes['closeBorderColour'] ?? '' ) );
 			$css   .= $close_sel . '{border-style:' . $style . ';border-width:' . esc_attr( $border_width ) . ';'
 				. ( '' !== $colour ? 'border-color:' . $colour . ';' : '' ) . '}';

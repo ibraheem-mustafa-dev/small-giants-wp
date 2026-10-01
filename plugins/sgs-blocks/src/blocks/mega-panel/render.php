@@ -172,9 +172,7 @@ $border_width_right  = '' !== $border_width_right ? $border_width_right : '1px';
 $border_width_bottom = '' !== $border_width_bottom ? $border_width_bottom : '1px';
 $border_width_left   = '' !== $border_width_left ? $border_width_left : '1px';
 
-$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$border_style_raw      = isset( $attributes['borderStyle'] ) ? (string) $attributes['borderStyle'] : 'solid';
-$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'solid';
+$border_style = sgs_border_style_keyword( $attributes['borderStyle'] ?? '' );
 $aside_width       = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['asideWidth'] ?? '340px' ) : '340px';
 $aside_separator   = is_array( $attributes['asideSeparator'] ?? null ) ? $attributes['asideSeparator'] : array( 'style' => 'line' );
 

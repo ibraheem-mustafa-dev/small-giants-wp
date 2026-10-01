@@ -18,6 +18,7 @@ import MediaPicker from '../../components/MediaPicker';
 import { colourVar, generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { SourcePanel, BrandTextStylePanel } from './source-controls';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 const LOGO_OBJECT_FIT_OPTIONS = [
 	{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
@@ -237,16 +238,11 @@ function buildWrapperStyle( attributes ) {
 	}
 
 	const borderWidthPreview = boxShorthand( borderWidth );
-	if ( borderStyle && borderStyle !== 'none' ) {
-		wrapperStyle.borderWidth = borderWidthPreview || undefined;
-		wrapperStyle.borderStyle = borderStyle;
-		if ( borderColour ) {
-			wrapperStyle.borderColor = borderColour;
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+			wrapperStyle.borderStyle = resolveBorderStyle( borderStyle );
 		}
-	} else if ( borderColour || borderWidthPreview ) {
-		// Colour/width set without an explicit style — WP defaults to solid.
-		wrapperStyle.borderWidth = borderWidthPreview || undefined;
-		wrapperStyle.borderStyle = 'solid';
 		if ( borderColour ) {
 			wrapperStyle.borderColor = borderColour;
 		}

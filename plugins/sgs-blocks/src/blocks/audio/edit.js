@@ -13,14 +13,15 @@ import {
 import { SgsColourPanel, ResponsiveBoxControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, BooleanResponsiveControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { boxShorthand } from '../../utils/spacing-preview';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 /** Editor-canvas mirror of render.php's border block — width/style/colour(+gradient)/radius. */
 function buildBorderPreviewStyle( { borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } ) {
 	const preview = {};
-	if ( borderStyle && borderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		const borderWidthPreview = boxShorthand( borderWidth );
 		if ( borderWidthPreview ) preview.borderWidth = borderWidthPreview;
-		preview.borderStyle = borderStyle;
+		preview.borderStyle = preview.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) {
 			preview.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
 		}

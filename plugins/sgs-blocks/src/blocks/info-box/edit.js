@@ -17,6 +17,7 @@ import { createBlock } from '@wordpress/blocks';
 import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { colourVar } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 /**
  * FR-22-6 migration: all card content (icon/media, heading, subtitle,
@@ -141,10 +142,10 @@ function buildPreviewStyle( attributes ) {
 	// never populated here (the old inline comment above claiming a native
 	// resting-colour control was stale; verified against the current Border
 	// PanelBody, which is fully SgsBorderControl-driven).
-	if ( borderStyle && borderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		const borderWidthPreview = boxShorthand( borderWidth );
 		if ( borderWidthPreview ) preview.borderWidth = borderWidthPreview;
-		preview.borderStyle = borderStyle;
+		preview.borderStyle = preview.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) preview.borderColor = borderColour;
 		// A gradient border renders frontend as a masked ::before ring, which cannot
 		// be reproduced in a plain inline style — approximate it with the gradient as

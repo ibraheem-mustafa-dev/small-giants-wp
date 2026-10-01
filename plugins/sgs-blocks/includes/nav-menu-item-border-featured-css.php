@@ -20,6 +20,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-border-style.php';
+
 if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 	/**
 	 * Build the item BORDER (three states + directional Sweep band) and the
@@ -67,13 +69,13 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		 */
 		$item_border_box   = is_array( $attributes['itemBorderWidth'] ?? null ) ? $attributes['itemBorderWidth'] : array();
 		$item_border_width = $item_border_box ? sgs_box_object_shorthand( $item_border_box ) : null;
-		$item_border_style = sgs_css_keyword_sanitise( $attributes['itemBorderStyle'] ?? '' );
+		$item_border_style = sgs_border_style_keyword( $attributes['itemBorderStyle'] ?? '' );
 		if ( null !== $item_border_width && '' !== $item_border_width ) {
 			// A width with no style paints nothing at all, so `solid` is the shape
 			// the control's own storage implies rather than a design default — an
 			// operator who wants no border clears the WIDTH (or picks style `none`).
 			$css .= $link_sel . '{border-width:' . $item_border_width . ';border-style:'
-				. ( '' !== $item_border_style ? $item_border_style : 'solid' ) . ';}';
+				. $item_border_style . ';}';
 		}
 		/*
 		 * A border style with no width is deliberately NOT emitted on its own:

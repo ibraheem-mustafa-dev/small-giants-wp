@@ -27,6 +27,7 @@ defined( 'ABSPATH' ) || exit;
 // order does not matter — only that both load before either is CALLED.
 require_once __DIR__ . '/helpers-css-safety.php';
 require_once __DIR__ . '/helpers-css-sizing-keyword.php';
+require_once __DIR__ . '/helpers-border-style.php';
 
 if ( ! function_exists( 'sgs_css_length_sanitise' ) ) {
 	/**

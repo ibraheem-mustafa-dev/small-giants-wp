@@ -47,6 +47,7 @@ import {
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, shadowAttrKeys, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, linkColourPreviewCss, isTierBoxEmpty } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -150,11 +151,11 @@ function buildWrapperStyle( attributes ) {
 	}
 
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( borderStyle && borderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		if ( borderWidthPreview ) {
 			wrapperStyle.borderWidth = borderWidthPreview;
 		}
-		wrapperStyle.borderStyle = borderStyle;
+		wrapperStyle.borderStyle = wrapperStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) {
 			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
 				? borderColour

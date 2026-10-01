@@ -8,6 +8,7 @@ import {
 } from '@wordpress/components';
 import { SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 const SEPARATOR_OPTIONS = [
 	{ label: '/', value: '/' },
@@ -59,10 +60,10 @@ function buildRootStyle( attributes ) {
 		rootStyle.margin = marginPreview;
 	}
 
-	if ( borderStyle && borderStyle !== 'none' ) {
+	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
 		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 		if ( borderWidthPreview ) rootStyle.borderWidth = borderWidthPreview;
-		rootStyle.borderStyle = borderStyle;
+		rootStyle.borderStyle = rootStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
 		if ( borderColour ) {
 			rootStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : colourVar( borderColour );
 		}

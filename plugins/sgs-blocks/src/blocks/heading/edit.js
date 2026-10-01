@@ -15,6 +15,7 @@ import {
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, SgsLengthControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
+import { resolveBorderStyle } from '../../utils/border-style';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -228,9 +229,7 @@ function buildWrapperStyle( attributes ) {
 		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 		if ( borderWidthPreview ) {
 			wrapperStyle.borderWidth = borderWidthPreview;
-			if ( borderStyle && 'none' !== borderStyle ) {
-				wrapperStyle.borderStyle = borderStyle;
-			}
+			wrapperStyle.borderStyle = resolveBorderStyle( borderStyle );
 			if ( borderColour ) {
 				wrapperStyle.borderColor = colourVar( borderColour ) || undefined;
 			}
