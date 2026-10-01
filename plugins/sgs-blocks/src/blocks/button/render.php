@@ -118,6 +118,16 @@ $has_explicit_aria = isset( $attributes['ariaLabel'] ) && '' !== trim( (string) 
 
 // Icon.
 $icon          = isset( $attributes['icon'] ) ? sanitize_text_field( $attributes['icon'] ) : '';
+// A custom SVG icon (iconSvg, the IconPicker's Custom SVG source) — client
+// markup, re-sanitised here with the same allowlist every inline-SVG surface
+// uses (sgs/icon's iconSvg). It takes the icon's place: $icon becomes the
+// 'custom' sentinel so every icon-gated rule below (size, colour, position)
+// applies to it exactly as to a Lucide icon.
+$icon_svg_custom_raw = (string) ( $attributes['iconSvg'] ?? '' );
+$icon_svg_custom     = '' !== trim( $icon_svg_custom_raw ) ? wp_kses( $icon_svg_custom_raw, sgs_svg_kses_allowed_tags() ) : '';
+if ( '' !== $icon_svg_custom ) {
+	$icon = 'custom';
+}
 $icon_position = isset( $attributes['iconPosition'] ) ? sanitize_text_field( $attributes['iconPosition'] ) : 'after';
 // iconSize is a TIER OBJECT (Spec 35) — one attr holding {desktop,tablet,mobile}.
 // ⛔ There are no iconSizeTablet/iconSizeMobile attrs; reading them reads nothing.
@@ -729,7 +739,7 @@ $sgs_button_stroke_grad     = sgs_icon_gradient_states_css( 'lucide', $icon_colo
 
 $icon_html = '';
 if ( $icon ) {
-	$icon_svg = sgs_get_lucide_icon( $icon );
+	$icon_svg = '' !== $icon_svg_custom ? $icon_svg_custom : sgs_get_lucide_icon( $icon );
 	$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_button_stroke_grad['defs_base'] );
 	$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_button_stroke_grad['defs_hover'] );
 

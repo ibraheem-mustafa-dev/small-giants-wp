@@ -82,9 +82,9 @@
           },
           "padding": {
             "desktop": {
-              "top": "17px",
+              "top": "20px",
               "right": "28px",
-              "bottom": "17px",
+              "bottom": "20px",
               "left": "28px"
             },
             "tablet": {
@@ -195,7 +195,30 @@
                 "tablet": {
                   "left": "-8px"
                 }
-              }
+              },
+              "itemMinHeight": {
+                "desktop": "0px"
+              },
+              "itemBadgeFontSize": {
+                "desktop": 9.5
+              },
+              "itemBadgeFontSizeUnit": "px",
+              "itemBadgeFontWeight": "400",
+              "itemBadgeLetterSpacing": {
+                "desktop": 0.1
+              },
+              "itemBadgeLetterSpacingUnit": "em",
+              "itemBadgeTextTransform": "uppercase",
+              "itemBadgePadding": {
+                "desktop": {
+                  "top": "3px",
+                  "right": "6px",
+                  "bottom": "3px",
+                  "left": "6px"
+                }
+              },
+              "itemBadgeBorderRadius": "0px",
+              "itemBadgeGap": "7px"
             }
           },
           {
@@ -321,7 +344,16 @@
                       "right": "10px"
                     }
                   },
-                  "sgsCollapseVisibility": "hide"
+                  "sgsCollapseVisibility": "hide",
+                  "iconSize": {
+                    "desktop": "15px"
+                  },
+                  "iconGap": {
+                    "desktop": "8px"
+                  },
+                  "linkMinHeight": {
+                    "desktop": "0px"
+                  }
                 }
               },
               {
@@ -367,7 +399,10 @@
                   "itemBorderColourCurrent": "transparent",
                   "itemColourHover": "text",
                   "itemFontWeightCurrent": "400",
-                  "submenuAnimationDuration": 200
+                  "submenuAnimationDuration": 200,
+                  "itemMinHeight": {
+                    "desktop": "0px"
+                  }
                 }
               },
               {
@@ -387,9 +422,26 @@
                   },
                   "pillBorderRadius": "999px",
                   "badgeColour": "accent",
-                  "badgeTextColour": "text",
+                  "badgeTextColour": "surface-alt",
                   "freeDeliveryMessage": "You're %s away from free delivery",
-                  "showZero": true
+                  "showZero": true,
+                  "pillCountStyle": "bubble",
+                  "pillFontSize": {
+                    "desktop": 12.5
+                  },
+                  "pillFontSizeUnit": "px",
+                  "pillFontWeight": "400",
+                  "pillLetterSpacing": {
+                    "desktop": 0.08
+                  },
+                  "pillLetterSpacingUnit": "em",
+                  "pillTextTransform": "uppercase",
+                  "pillMinHeight": {
+                    "desktop": "38px"
+                  },
+                  "pillTextColour": "text",
+                  "pillBgColourHover": "primary",
+                  "pillTextColourHover": "primary-text"
                 }
               }
             ]

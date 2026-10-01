@@ -680,6 +680,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					padding={ attributes.padding }
 					showItemPadding
 					itemPadding={ attributes.itemPadding }
+					itemMinHeight={ attributes.itemMinHeight }
+					itemBadgePadding={ attributes.itemBadgePadding }
+					itemBadgeBorderRadius={ attributes.itemBadgeBorderRadius }
+					itemBadgeGap={ attributes.itemBadgeGap }
 					setAttributes={ setAttributes }
 				/>
 
@@ -732,6 +736,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTextIndent: false, // never emitted for nav links; attr kept
 								showWritingMode: true,
 								showHover: true,
+							},
+							{
+								key: 'itemBadge',
+								label: __( 'Item badge', 'sgs-blocks' ),
+								prefix: 'itemBadge',
+								showStyle: false,
+								showLineHeight: false,
+								showLetterSpacing: true,
+								showTransform: true,
 							},
 							// No 'burger' target — the whole burger family is BAR-only;
 							// this block has no trigger button.

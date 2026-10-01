@@ -938,6 +938,9 @@ if ( '' !== $sgs_nm_badge_text_decl ) {
 if ( '' !== $sgs_nm_badge_css ) {
 	$css .= $uid_sel . ' .sgs-nav-bar-menu__badge{' . $sgs_nm_badge_css . '}';
 }
+if ( function_exists( 'sgs_nav_item_badge_css' ) ) {
+	$css .= sgs_nav_item_badge_css( $uid_sel . ' .sgs-nav-bar-menu__badge', $attributes );
+}
 
 /*
  * ── Wave B — disabled item/sublink text colour. ─────────────────────────

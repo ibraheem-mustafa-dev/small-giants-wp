@@ -418,6 +418,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"iconSvg": {
+			"type": "string",
+			"default": "",
+			"description": "A client-pasted inline SVG used as the icon instead of a Lucide name (the IconPicker's Custom SVG source, the same shape as sgs/icon's iconSvg). Re-sanitised server-side with wp_kses() + sgs_svg_kses_allowed_tags()."
+		},
 		"iconPosition": {
 			"type": "string",
 			"default": "after"

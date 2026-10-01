@@ -19,6 +19,7 @@ import { IconPicker } from '../../components';
  * @param {boolean}  root0.hideWhenEmpty      Whether the whole trigger hides until non-empty.
  * @param {string}   root0.triggerStyle       'icon' (icon+badge) or 'pill' (word+count).
  * @param {string}   root0.pillLabel          The pill trigger's editable word (e.g. "Cart"/"Bag").
+ * @param {string}   root0.pillCountStyle     'plain' (count as text) or 'bubble' (round filled chip).
  * @param {boolean}  root0.countPopAnimation  Whether the count plays a scale animation on increase.
  * @param {Function} root0.setAttributes      The block's attribute setter.
  */
@@ -29,6 +30,7 @@ export default function TriggerSettingsControls( {
 	hideWhenEmpty,
 	triggerStyle,
 	pillLabel,
+	pillCountStyle,
 	countPopAnimation,
 	setAttributes,
 } ) {
@@ -57,6 +59,23 @@ export default function TriggerSettingsControls( {
 						label={ __( 'Pill label', 'sgs-blocks' ) }
 						value={ pillLabel }
 						onChange={ ( val ) => setAttributes( { pillLabel: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				) }
+				{ isPill && (
+					<SelectControl
+						label={ __( 'Count shows as', 'sgs-blocks' ) }
+						help={ __(
+							'Plain: the number beside the word. Bubble: a round chip filled with the badge colours.',
+							'sgs-blocks'
+						) }
+						value={ pillCountStyle || 'plain' }
+						options={ [
+							{ label: __( 'Plain number', 'sgs-blocks' ), value: 'plain' },
+							{ label: __( 'Bubble', 'sgs-blocks' ), value: 'bubble' },
+						] }
+						onChange={ ( val ) => setAttributes( { pillCountStyle: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
