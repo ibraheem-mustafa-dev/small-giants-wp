@@ -792,7 +792,7 @@ if ( 'none' !== $border_style ) {
 	// class default) would otherwise keep painting even though the
 	// operator picked "no border". Cause-agnostic: harmless when no
 	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+	$responsive_css .= $root_sel . '{border-style:none;border-width:0;}';
 }
 
 // ── Block-private border-radius (radius is no longer native -- Shape B now
@@ -831,6 +831,28 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 	);
 	if ( ! empty( $border_radius_mob_out['css'] ) ) {
 		$responsive_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
+// Lines between the grid layout's cards: the shared Separators setting
+// (includes/helpers-separators.php), flow path. The grid belongs to `__inner`, not the
+// wrapper (the wrapper sees no `layout`, see below), so the block names that list and
+// marks its own root for the runtime fallback. List, masonry and carousel draw none.
+if ( 'grid' === $layout ) {
+	$sgs_pg_sep_css = sgs_separators_css(
+		$attributes['separators'] ?? array(),
+		array(
+			'list'   => $root_sel . ' > .sgs-post-grid__inner',
+			'layout' => 'flow',
+			'gap'    => is_array( $attributes['gap'] ?? null ) ? $attributes['gap'] : array(),
+		),
+		sgs_container_separators_caps()
+	);
+	if ( '' !== $sgs_pg_sep_css ) {
+		$responsive_css                    .= $sgs_pg_sep_css;
+		$sgs_pg_sep_root                    = sgs_separators_root_attrs( '> .sgs-post-grid__inner' );
+		$post_grid_classes[]                = $sgs_pg_sep_root['class'];
+		$extra_attrs['data-sgs-sep-list']   = '> .sgs-post-grid__inner';
 	}
 }
 

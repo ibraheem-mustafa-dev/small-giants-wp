@@ -1194,25 +1194,25 @@
    {
     "name": "sgs/button",
     "attributes": {
-     "text": "Button 1"
+     "label": "Button 1"
     }
    },
    {
     "name": "sgs/button",
     "attributes": {
-     "text": "Button 2"
+     "label": "Button 2"
     }
    },
    {
     "name": "sgs/button",
     "attributes": {
-     "text": "Button 3"
+     "label": "Button 3"
     }
    },
    {
     "name": "sgs/button",
     "attributes": {
-     "text": "Button 4"
+     "label": "Button 4"
     }
    }
   ]
