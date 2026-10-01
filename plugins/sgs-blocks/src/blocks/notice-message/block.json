@@ -28,6 +28,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"containerMirror": false,
 			"hideExtensions": [
 				"animation",
 				"fx"

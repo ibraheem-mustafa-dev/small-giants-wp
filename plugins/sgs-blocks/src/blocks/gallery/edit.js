@@ -25,6 +25,7 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 // file already removed (see the Spec 37 note below).
 import {
 	LayoutPanel,
+	SeparatorsPanel,
 } from '../container/components/ContainerWrapperControls';
 // Spec 37 FR-37-16 object model (Spec 35 Phase 1.4, 2026-08-10). Replaces
 // WidthPanel + ResponsiveSpacingPanel here — see the mount below for why.
@@ -680,6 +681,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
+				{ /* Lines between the grid's items (the wrapper draws them for the grid layout). */ }
+				<SeparatorsPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			{ /* ============================================================

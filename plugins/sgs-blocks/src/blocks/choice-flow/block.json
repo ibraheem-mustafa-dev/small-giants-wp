@@ -18,6 +18,7 @@
 	"supports": {
 		"html": false,
 		"sgs": {
+			"containerMirror": false,
 			"hideExtensions": [
 				"animation",
 				"clickEffects",

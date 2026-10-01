@@ -36,7 +36,7 @@
 		},
 		"sgs": {
 			"separators": {
-				"separators": {
+				"featureSeparators": {
 					"axes": [
 						"row"
 					],
@@ -266,7 +266,7 @@
 		"root": ".wp-block-sgs-pricing-table"
 	},
 	"attributes": {
-		"separators": {
+		"featureSeparators": {
 			"type": "object",
 			"default": {
 				"row": {

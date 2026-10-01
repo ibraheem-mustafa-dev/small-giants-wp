@@ -38,6 +38,17 @@
       "__experimentalSkipSerialization": true
     },
     "sgs": {
+      "separators": {
+        "separators": {
+          "axes": [
+            "row",
+            "column"
+          ],
+          "edges": false,
+          "hover": false,
+          "sweep": false
+        }
+      },
       "collection": true,
       "_comment_mediaElements": "37-media-no-handroll close-out (2026-09-03). The post-thumbnail <img> is ONE element rendered by Post_Grid_REST::render_card() (class sgs-post-grid__img) regardless of layout mode -- the two hardcoded object-fit:cover rules in style.css (grid-mode .sgs-post-grid__img and list-mode .sgs-post-grid--list .sgs-post-grid__image img) both target that same element via different ancestor-scoped selectors, never two elements. Unprefixed/single-slot, mirrors sgs/decorative-image's adoption shape. Only object-fit adopted (in scope for this pass) -- no attribute hand-declared, matching every existing adopter (decorative-image/before-after/media/hero): the runtime injection filter (src/blocks/extensions/media-elements.js) supplies objectFit/objectFitTablet/objectFitMobile, and the atom's own CSS var() chain already resolves to 'cover' when unset (assets/css/media-atoms/object-fit.css), matching this block's prior hardcoded default with zero attribute-default duplication.",
       "mediaElements": [
@@ -273,6 +284,11 @@
     "root": ".wp-block-sgs-post-grid"
   },
   "attributes": {
+    "separators": {
+      "type": "object",
+      "default": {},
+      "description": "The lines drawn between the items of a grid or flex layout (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `row` is the line between rows, `column` between columns; an axis with no width draws nothing. Drawn centred in the gap by CSS gap decorations (column-rule / row-rule) where the browser has them, and by a small script painting the same lines elsewhere. Spacing only when empty."
+    },
     "shadowLiftOnHover": {
       "type": "boolean",
       "default": true

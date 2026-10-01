@@ -718,7 +718,7 @@ if ( 'none' !== $border_style ) {
 // features themselves (includes/helpers-separators-line-css.php). The tick owns
 // ::before, so the line sits on ::after.
 $responsive_css .= sgs_separators_css(
-	$attributes['separators'] ?? array(),
+	$attributes['featureSeparators'] ?? array(),
 	array(
 		'list'      => $root_sel . ' .sgs-pricing-table__features',
 		'layout'    => 'line',

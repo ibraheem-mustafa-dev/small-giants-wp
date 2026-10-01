@@ -116,7 +116,7 @@ function normaliseFeature( f ) {
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewTier = usePreviewTier();
 	const {
-		separators,
+		featureSeparators,
 		columns,
 		billingToggle: billingToggleRaw,
 		toggleStyle,
@@ -186,7 +186,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Lines between each plan's features: the canvas mirrors render.php's item-drawn
 	// rules for the previewed device (includes/helpers-separators-line-css.php).
 	const separatorsCss = separatorsLineCss(
-		separators,
+		featureSeparators,
 		{
 			item: `.sgs-ed-sep-${ clientId } .sgs-pricing-table__features > .sgs-pricing-table__feature`,
 			direction: 'column',
@@ -594,8 +594,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 					<SgsSeparatorControl
 						label={ __( 'Lines between features', 'sgs-blocks' ) }
-						value={ separators }
-						onChange={ ( next ) => setAttributes( { separators: next } ) }
+						value={ featureSeparators }
+						onChange={ ( next ) => setAttributes( { featureSeparators: next } ) }
 						axes={ [ 'row' ] }
 					/>
 				</PanelBody>

@@ -32,6 +32,17 @@
       "__experimentalSkipSerialization": true
     },
     "sgs": {
+      "separators": {
+        "separators": {
+          "axes": [
+            "row",
+            "column"
+          ],
+          "edges": false,
+          "hover": false,
+          "sweep": false
+        }
+      },
       "_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
       "colourExemptions": {
         "child-btn-text-colour": {
@@ -97,6 +108,11 @@
     }
   },
   "attributes": {
+    "separators": {
+      "type": "object",
+      "default": {},
+      "description": "The lines drawn between the items of a grid or flex layout (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `row` is the line between rows, `column` between columns; an axis with no width draws nothing. Drawn centred in the gap by CSS gap decorations (column-rule / row-rule) where the browser has them, and by a small script painting the same lines elsewhere. Spacing only when empty."
+    },
     "padding": {
       "type": "object",
       "default": {

@@ -7,6 +7,7 @@ import {
 	InspectorControls,
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
+import { SeparatorsPanel } from '../container/components/SeparatorsPanel';
 import {
 	PanelBody,
 	SelectControl,
@@ -852,6 +853,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+
+				{ /* Lines between the row's items (the wrapper draws them for a flex or grid row). */ }
+				<SeparatorsPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				{ /* TIER 1 — the `content-band` element's own panel (Spec 35 Part
 				   O). `contentWidth` used to live inside the shared

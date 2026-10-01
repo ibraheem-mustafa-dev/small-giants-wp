@@ -1,907 +1,1220 @@
 [
-  {
-    "name": "sgs/heading",
-    "attributes": {
-      "content": "Separators QA",
-      "level": "h1"
-    }
-  },
-  {
-    "name": "sgs/heading",
-    "attributes": {
-      "content": "1. Grid, both axes, 7 items (incomplete last row), 2px with 1px on mobile",
-      "level": "h2"
-    }
-  },
-  {
-    "name": "sgs/container",
-    "attributes": {
-      "layout": "grid",
-      "columns": {
-        "desktop": 4,
-        "tablet": 2,
-        "mobile": 1
-      },
-      "gap": {
-        "desktop": "24px"
-      },
-      "padding": {
-        "desktop": {
-          "top": "32px",
-          "right": "32px",
-          "bottom": "32px",
-          "left": "32px"
-        }
-      },
-      "separators": {
-        "row": {
-          "style": "solid",
-          "width": {
-            "desktop": "2px",
-            "mobile": "1px"
-          },
-          "colour": "primary"
-        },
-        "column": {
-          "style": "solid",
-          "width": {
-            "desktop": "2px",
-            "mobile": "1px"
-          },
-          "colour": "primary"
-        }
-      }
-    },
-    "innerBlocks": [
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "shadow": "md",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          },
-          "borderRadius": {
-            "desktop": {
-              "topLeft": "8px",
-              "topRight": "8px",
-              "bottomLeft": "8px",
-              "bottomRight": "8px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Item 1"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "shadow": "md",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          },
-          "borderRadius": {
-            "desktop": {
-              "topLeft": "8px",
-              "topRight": "8px",
-              "bottomLeft": "8px",
-              "bottomRight": "8px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Item 2"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "shadow": "md",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          },
-          "borderRadius": {
-            "desktop": {
-              "topLeft": "8px",
-              "topRight": "8px",
-              "bottomLeft": "8px",
-              "bottomRight": "8px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Item 3"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "shadow": "md",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          },
-          "borderRadius": {
-            "desktop": {
-              "topLeft": "8px",
-              "topRight": "8px",
-              "bottomLeft": "8px",
-              "bottomRight": "8px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Item 4"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "shadow": "md",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          },
-          "borderRadius": {
-            "desktop": {
-              "topLeft": "8px",
-              "topRight": "8px",
-              "bottomLeft": "8px",
-              "bottomRight": "8px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Item 5"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "shadow": "md",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          },
-          "borderRadius": {
-            "desktop": {
-              "topLeft": "8px",
-              "topRight": "8px",
-              "bottomLeft": "8px",
-              "bottomRight": "8px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Item 6"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "shadow": "md",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          },
-          "borderRadius": {
-            "desktop": {
-              "topLeft": "8px",
-              "topRight": "8px",
-              "bottomLeft": "8px",
-              "bottomRight": "8px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Item 7"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "name": "sgs/heading",
-    "attributes": {
-      "content": "2. Flex row wrap, columns only, dashed",
-      "level": "h2"
-    }
-  },
-  {
-    "name": "sgs/container",
-    "attributes": {
-      "layout": "flex",
-      "flexDirection": "row",
-      "flexWrap": "wrap",
-      "gap": {
-        "desktop": "16px"
-      },
-      "padding": {
-        "desktop": {
-          "top": "16px",
-          "right": "16px",
-          "bottom": "16px",
-          "left": "16px"
-        }
-      },
-      "separators": {
-        "column": {
-          "style": "dashed",
-          "width": {
-            "desktop": "1px"
-          },
-          "colour": "text-muted"
-        }
-      }
-    },
-    "innerBlocks": [
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 1"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 2"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 3"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 4"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 5"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 6"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 7"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "name": "sgs/heading",
-    "attributes": {
-      "content": "3. Stack, rows only",
-      "level": "h2"
-    }
-  },
-  {
-    "name": "sgs/container",
-    "attributes": {
-      "layout": "stack",
-      "gap": {
-        "desktop": "20px"
-      },
-      "padding": {
-        "desktop": {
-          "top": "16px",
-          "right": "16px",
-          "bottom": "16px",
-          "left": "16px"
-        }
-      },
-      "separators": {
-        "row": {
-          "style": "solid",
-          "width": {
-            "desktop": "1px"
-          },
-          "colour": "primary"
-        }
-      }
-    },
-    "innerBlocks": [
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 1"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 2"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 3"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "padding": {
-            "desktop": {
-              "top": "12px",
-              "right": "20px",
-              "bottom": "12px",
-              "left": "20px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Chip 4"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "name": "sgs/heading",
-    "attributes": {
-      "content": "4. Icon list, rows, edges all",
-      "level": "h2"
-    }
-  },
-  {
-    "name": "sgs/icon-list",
-    "attributes": {
-      "source": "typed",
-      "markerType": "icon",
-      "icon": "check",
-      "gap": "20",
-      "separators": {
-        "row": {
-          "style": "solid",
-          "width": {
-            "desktop": "1px"
-          },
-          "colour": "primary"
-        },
-        "edges": "all"
-      },
-      "items": [
-        {
-          "text": "First point"
-        },
-        {
-          "text": "Second point"
-        },
-        {
-          "text": "Third point"
-        }
-      ]
-    }
-  },
-  {
-    "name": "sgs/heading",
-    "attributes": {
-      "content": "5. Brand strip, text, columns",
-      "level": "h2"
-    }
-  },
-  {
-    "name": "sgs/brand-strip",
-    "attributes": {
-      "source": "manual",
-      "brandDisplay": "text",
-      "scrolling": false,
-      "separators": {
-        "column": {
-          "style": "solid",
-          "width": {
-            "desktop": "1px"
-          },
-          "colour": "text-muted"
-        }
-      },
-      "logos": [
-        {
-          "name": "Alpha",
-          "alt": "Alpha",
-          "_key": "b1"
-        },
-        {
-          "name": "Bravo",
-          "alt": "Bravo",
-          "_key": "b2"
-        },
-        {
-          "name": "Charlie",
-          "alt": "Charlie",
-          "_key": "b3"
-        },
-        {
-          "name": "Delta",
-          "alt": "Delta",
-          "_key": "b4"
-        },
-        {
-          "name": "Echo",
-          "alt": "Echo",
-          "_key": "b5"
-        },
-        {
-          "name": "Foxtrot",
-          "alt": "Foxtrot",
-          "_key": "b6"
-        }
-      ]
-    }
-  },
-  {
-    "name": "sgs/heading",
-    "attributes": {
-      "content": "6. Nav bar top-level and dropdown rows",
-      "level": "h2"
-    }
-  },
-  {
-    "name": "sgs/nav-bar-menu",
-    "attributes": {
-      "ref": 1467,
-      "gap": {
-        "desktop": "24px"
-      },
-      "collapsePoint": 0,
-      "separators": {
-        "column": {
-          "style": "solid",
-          "width": {
-            "desktop": "1px"
-          },
-          "colour": "text-muted",
-          "colourHover": "accent"
-        },
-        "hoverTreatment": "swap"
-      }
-    }
-  },
-  {
-    "name": "sgs/heading",
-    "attributes": {
-      "content": "7. Nav drawer list rows, edges end",
-      "level": "h2"
-    }
-  },
-  {
-    "name": "sgs/nav-drawer-menu",
-    "attributes": {
-      "ref": 1467,
-      "separators": {
-        "row": {
-          "style": "solid",
-          "width": {
-            "desktop": "1px"
-          },
-          "colour": "text-muted",
-          "colourHover": "accent"
-        },
-        "edges": "end",
-        "hoverTreatment": "swap"
-      }
-    }
-  },
-  {
-    "name": "sgs/heading",
-    "attributes": {
-      "content": "8. Grid with a 1px gap and opaque tiles (Why-buy shape)",
-      "level": "h2"
-    }
-  },
-  {
-    "name": "sgs/container",
-    "attributes": {
-      "layout": "grid",
-      "columns": {
-        "desktop": 4,
-        "tablet": 2,
-        "mobile": 1
-      },
-      "gap": {
-        "desktop": "1px"
-      },
-      "separators": {
-        "row": {
-          "style": "solid",
-          "width": {
-            "desktop": "1px"
-          },
-          "colour": "text-muted"
-        },
-        "column": {
-          "style": "solid",
-          "width": {
-            "desktop": "1px"
-          },
-          "colour": "text-muted"
-        }
-      }
-    },
-    "innerBlocks": [
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Tile 1"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Tile 2"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Tile 3"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "backgroundColour": "surface",
-          "padding": {
-            "desktop": {
-              "top": "24px",
-              "right": "24px",
-              "bottom": "24px",
-              "left": "24px"
-            }
-          }
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Tile 4"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "name": "sgs/heading",
-    "attributes": {
-      "content": "9. Scrolling brand strip, lines after every brand",
-      "level": "h2"
-    }
-  },
-  {
-    "name": "sgs/brand-strip",
-    "attributes": {
-      "source": "manual",
-      "brandDisplay": "text",
-      "scrolling": true,
-      "separators": {
-        "column": {
-          "style": "solid",
-          "width": {
-            "desktop": "1px"
-          },
-          "colour": "text-muted"
-        }
-      },
-      "logos": [
-        {
-          "name": "Alpha",
-          "alt": "Alpha",
-          "_key": "s1"
-        },
-        {
-          "name": "Bravo",
-          "alt": "Bravo",
-          "_key": "s2"
-        },
-        {
-          "name": "Charlie",
-          "alt": "Charlie",
-          "_key": "s3"
-        },
-        {
-          "name": "Delta",
-          "alt": "Delta",
-          "_key": "s4"
-        },
-        {
-          "name": "Echo",
-          "alt": "Echo",
-          "_key": "s5"
-        },
-        {
-          "name": "Foxtrot",
-          "alt": "Foxtrot",
-          "_key": "s6"
-        }
-      ]
-    }
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "Separators QA",
+   "level": "h1"
   }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "1. Grid, both axes, 7 items (incomplete last row), 2px with 1px on mobile",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "grid",
+   "columns": {
+    "desktop": 4,
+    "tablet": 2,
+    "mobile": 1
+   },
+   "gap": {
+    "desktop": "24px"
+   },
+   "padding": {
+    "desktop": {
+     "top": "32px",
+     "right": "32px",
+     "bottom": "32px",
+     "left": "32px"
+    }
+   },
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    },
+    "column": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "shadow": "md",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     },
+     "borderRadius": {
+      "desktop": {
+       "topLeft": "8px",
+       "topRight": "8px",
+       "bottomLeft": "8px",
+       "bottomRight": "8px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Item 1"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "shadow": "md",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     },
+     "borderRadius": {
+      "desktop": {
+       "topLeft": "8px",
+       "topRight": "8px",
+       "bottomLeft": "8px",
+       "bottomRight": "8px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Item 2"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "shadow": "md",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     },
+     "borderRadius": {
+      "desktop": {
+       "topLeft": "8px",
+       "topRight": "8px",
+       "bottomLeft": "8px",
+       "bottomRight": "8px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Item 3"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "shadow": "md",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     },
+     "borderRadius": {
+      "desktop": {
+       "topLeft": "8px",
+       "topRight": "8px",
+       "bottomLeft": "8px",
+       "bottomRight": "8px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Item 4"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "shadow": "md",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     },
+     "borderRadius": {
+      "desktop": {
+       "topLeft": "8px",
+       "topRight": "8px",
+       "bottomLeft": "8px",
+       "bottomRight": "8px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Item 5"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "shadow": "md",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     },
+     "borderRadius": {
+      "desktop": {
+       "topLeft": "8px",
+       "topRight": "8px",
+       "bottomLeft": "8px",
+       "bottomRight": "8px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Item 6"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "shadow": "md",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     },
+     "borderRadius": {
+      "desktop": {
+       "topLeft": "8px",
+       "topRight": "8px",
+       "bottomLeft": "8px",
+       "bottomRight": "8px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Item 7"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "2. Flex row wrap, columns only, dashed",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "flex",
+   "flexDirection": "row",
+   "flexWrap": "wrap",
+   "gap": {
+    "desktop": "16px"
+   },
+   "padding": {
+    "desktop": {
+     "top": "16px",
+     "right": "16px",
+     "bottom": "16px",
+     "left": "16px"
+    }
+   },
+   "separators": {
+    "column": {
+     "style": "dashed",
+     "width": {
+      "desktop": "1px"
+     },
+     "colour": "text-muted"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 1"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 2"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 3"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 4"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 5"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 6"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 7"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "3. Stack, rows only",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "gap": {
+    "desktop": "20px"
+   },
+   "padding": {
+    "desktop": {
+     "top": "16px",
+     "right": "16px",
+     "bottom": "16px",
+     "left": "16px"
+    }
+   },
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "1px"
+     },
+     "colour": "primary"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 1"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 2"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 3"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "padding": {
+      "desktop": {
+       "top": "12px",
+       "right": "20px",
+       "bottom": "12px",
+       "left": "20px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Chip 4"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "4. Icon list, rows, edges all",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/icon-list",
+  "attributes": {
+   "source": "typed",
+   "markerType": "icon",
+   "icon": "check",
+   "gap": "20",
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "1px"
+     },
+     "colour": "primary"
+    },
+    "edges": "all"
+   },
+   "items": [
+    {
+     "text": "First point"
+    },
+    {
+     "text": "Second point"
+    },
+    {
+     "text": "Third point"
+    }
+   ]
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "5. Brand strip, text, columns",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/brand-strip",
+  "attributes": {
+   "source": "manual",
+   "brandDisplay": "text",
+   "scrolling": false,
+   "separators": {
+    "column": {
+     "style": "solid",
+     "width": {
+      "desktop": "1px"
+     },
+     "colour": "text-muted"
+    }
+   },
+   "logos": [
+    {
+     "name": "Alpha",
+     "alt": "Alpha",
+     "_key": "b1"
+    },
+    {
+     "name": "Bravo",
+     "alt": "Bravo",
+     "_key": "b2"
+    },
+    {
+     "name": "Charlie",
+     "alt": "Charlie",
+     "_key": "b3"
+    },
+    {
+     "name": "Delta",
+     "alt": "Delta",
+     "_key": "b4"
+    },
+    {
+     "name": "Echo",
+     "alt": "Echo",
+     "_key": "b5"
+    },
+    {
+     "name": "Foxtrot",
+     "alt": "Foxtrot",
+     "_key": "b6"
+    }
+   ]
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "6. Nav bar top-level and dropdown rows",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/nav-bar-menu",
+  "attributes": {
+   "ref": 1467,
+   "gap": {
+    "desktop": "24px"
+   },
+   "collapsePoint": 0,
+   "separators": {
+    "column": {
+     "style": "solid",
+     "width": {
+      "desktop": "1px"
+     },
+     "colour": "text-muted",
+     "colourHover": "accent"
+    },
+    "hoverTreatment": "swap"
+   }
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "7. Nav drawer list rows, edges end",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/nav-drawer-menu",
+  "attributes": {
+   "ref": 1467,
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "1px"
+     },
+     "colour": "text-muted",
+     "colourHover": "accent"
+    },
+    "edges": "end",
+    "hoverTreatment": "swap"
+   }
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "8. Grid with a 1px gap and opaque tiles (Why-buy shape)",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "grid",
+   "columns": {
+    "desktop": 4,
+    "tablet": 2,
+    "mobile": 1
+   },
+   "gap": {
+    "desktop": "1px"
+   },
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "1px"
+     },
+     "colour": "text-muted"
+    },
+    "column": {
+     "style": "solid",
+     "width": {
+      "desktop": "1px"
+     },
+     "colour": "text-muted"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Tile 1"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Tile 2"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Tile 3"
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Tile 4"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "9. Scrolling brand strip, lines after every brand",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/brand-strip",
+  "attributes": {
+   "source": "manual",
+   "brandDisplay": "text",
+   "scrolling": true,
+   "separators": {
+    "column": {
+     "style": "solid",
+     "width": {
+      "desktop": "1px"
+     },
+     "colour": "text-muted"
+    }
+   },
+   "logos": [
+    {
+     "name": "Alpha",
+     "alt": "Alpha",
+     "_key": "s1"
+    },
+    {
+     "name": "Bravo",
+     "alt": "Bravo",
+     "_key": "s2"
+    },
+    {
+     "name": "Charlie",
+     "alt": "Charlie",
+     "_key": "s3"
+    },
+    {
+     "name": "Delta",
+     "alt": "Delta",
+     "_key": "s4"
+    },
+    {
+     "name": "Echo",
+     "alt": "Echo",
+     "_key": "s5"
+    },
+    {
+     "name": "Foxtrot",
+     "alt": "Foxtrot",
+     "_key": "s6"
+    }
+   ]
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "Pricing-table features (default 1px line, 2px on desktop override on plan list)",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/pricing-table",
+  "attributes": {}
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "Opening hours rows (default 1px line)",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/business-info",
+  "attributes": {
+   "displayType": "hours"
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "Cart item rows (panel items, 3px rose lines)",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/cart",
+  "attributes": {
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "3px"
+     },
+     "colour": "primary"
+    }
+   },
+   "displayMode": "flyout"
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "Composites: card-grid (grid, 7 cards, both axes)",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/card-grid",
+  "attributes": {
+   "layout": "grid",
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    },
+    "column": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    }
+   },
+   "items": [
+    {
+     "title": "Card 1",
+     "subtitle": "Sub",
+     "media": null
+    },
+    {
+     "title": "Card 2",
+     "subtitle": "Sub",
+     "media": null
+    },
+    {
+     "title": "Card 3",
+     "subtitle": "Sub",
+     "media": null
+    },
+    {
+     "title": "Card 4",
+     "subtitle": "Sub",
+     "media": null
+    },
+    {
+     "title": "Card 5",
+     "subtitle": "Sub",
+     "media": null
+    },
+    {
+     "title": "Card 6",
+     "subtitle": "Sub",
+     "media": null
+    },
+    {
+     "title": "Card 7",
+     "subtitle": "Sub",
+     "media": null
+    }
+   ]
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "Composites: feature-grid (grid)",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/feature-grid",
+  "attributes": {
+   "layout": "grid",
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    },
+    "column": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/info-box",
+    "attributes": {}
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {}
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {}
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {}
+   },
+   {
+    "name": "sgs/info-box",
+    "attributes": {}
+   }
+  ]
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "Composites: post-grid (grid layout)",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/post-grid",
+  "attributes": {
+   "layout": "grid",
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    },
+    "column": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    }
+   }
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "Composites: gallery (grid layout)",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/gallery",
+  "attributes": {
+   "layout": "grid",
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    },
+    "column": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    }
+   },
+   "mediaItems": [
+    {
+     "id": 3459,
+     "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+     "alt": ""
+    },
+    {
+     "id": 3459,
+     "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+     "alt": ""
+    },
+    {
+     "id": 3459,
+     "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+     "alt": ""
+    },
+    {
+     "id": 3459,
+     "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+     "alt": ""
+    },
+    {
+     "id": 3459,
+     "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+     "alt": ""
+    }
+   ]
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "Composites: multi-button (flex)",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/multi-button",
+  "attributes": {
+   "layout": "flex",
+   "separators": {
+    "row": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    },
+    "column": {
+     "style": "solid",
+     "width": {
+      "desktop": "2px",
+      "mobile": "1px"
+     },
+     "colour": "primary"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "text": "Button 1"
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "text": "Button 2"
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "text": "Button 3"
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "text": "Button 4"
+    }
+   }
+  ]
+ }
 ]

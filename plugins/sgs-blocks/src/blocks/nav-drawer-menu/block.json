@@ -33,6 +33,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"containerMirror": false,
 			"separators": {
 				"separators": {
 					"axes": [

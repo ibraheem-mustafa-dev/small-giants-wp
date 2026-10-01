@@ -1154,13 +1154,30 @@ def main() -> int:
             # inspector rebuild gave it the grid/flex attr family. Detection was correct; the
             # roster simply had not been refreshed since that work landed.
             "sgs/brand-strip",
+            # Refreshed 2026-10-01 against detection (each verified in block.json). Detection
+            # was right for all of these; the roster had not been refreshed since they landed.
+            # - sgs/card-grid declares `containerKind: "layout"` explicitly: its image
+            #   overlay attrs (overlayColour/-Gradient/-Opacity) match SECTION_ATTR_RE, which
+            #   made it read as a section.
+            # - sgs/form-step and sgs/notice-banner are structural parents (their children
+            #   declare them as `parent`), so derive_kind() reads them as layout, not content.
+            # - sgs/choice-flow-question, sgs/process-steps, sgs/wishlist-panel and
+            #   sgs/nav-drawer-menu carry an own-arrangement attr (`layout` / `columns` /
+            #   `justifyContent`) and hand-roll their root. They declare `containerMirror:
+            #   false`, so a --apply run never mirrors container attrs into them.
+            "sgs/choice-flow", "sgs/choice-flow-question", "sgs/form-step",
+            "sgs/nav-drawer-menu", "sgs/notice-banner", "sgs/process-steps",
+            "sgs/wishlist-panel",
             # sgs/content-collection is not in this roster: `src/blocks/content-collection/`
             # does not exist and the DB has no `sgs/content-collection` row.
         },
         "content": {
             "sgs/info-box", "sgs/testimonial", "sgs/quote",
-            "sgs/tab", "sgs/accordion-item", "sgs/form-step", "sgs/notice-banner",
+            "sgs/tab", "sgs/accordion-item",
             "sgs/option-picker",
+            # sgs/buybox + sgs/notice-message added 2026-10-01: InnerBlocks-only, so content-KIND
+            # by default; both hand-roll their root and declare `containerMirror: false`.
+            "sgs/buybox", "sgs/notice-message",
             # sgs/nav-drawer added 2026-07-20 (Spec 36 FR-36-6 / Phase-1 close): content-KIND,
             # and deliberately BLOCK-PRIVATE — it does NOT call SGS_Container_Wrapper. Its root
             # must BE the <dialog> for showModal()/top-layer/::backdrop/native-ESC to work, and

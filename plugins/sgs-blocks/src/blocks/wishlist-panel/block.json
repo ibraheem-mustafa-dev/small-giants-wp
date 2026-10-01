@@ -29,6 +29,7 @@
 			"lineHeight": true
 		},
 		"sgs": {
+			"containerMirror": false,
 			"elements": {
 				"heading": {
 					"label": "Heading",
