@@ -334,6 +334,9 @@ an untouched item paints no Hover or Current fill.
 
 ### FR-41-37 — An independent vertical divider between top-level BAR items
 
+> Planned: this divider and the drawer's row separator move into the shared Separators setting
+> (`.claude/plans/2026-10-01-separators-plan.md`, step 2); this FR is rewritten when that ships.
+
 **A capability separate from the Underline/Row-separator family above.** An operator can draw a
 vertical line between adjacent top-level bar items and colour it, and hover it, independently of the
 bar's own Underline. FR-41-7 also lets an operator set `itemBorderWidth.right` for a vertical line,

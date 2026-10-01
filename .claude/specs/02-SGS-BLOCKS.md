@@ -235,6 +235,7 @@ block-name/
 - `columnsMobile` — 1-3 (grid columns on mobile)
 - `columnsTablet` — 1-4 (grid columns on tablet)
 - `gap` — raw CSS length string (e.g. `"16px"`, `"1.5rem"`); rendered via `sgs_container_gap_value()`. Composite/wrapper blocks (trust-bar, card-grid, feature-grid, gallery, multi-button, post-grid) carry no gap control of their own — all use this shared one via `ContainerWrapperControls`; there is no `blockGap` native support.
+- `gapColour` — paints only the gaps of a grid or flex layout (CSS gap decorations as wide as each tier's gap; `@supports not` falls back to the colour behind the tracks). Empty by default. `includes/helpers-gap-rule.php`. Replaced by the shared Separators setting in `plans/2026-10-01-separators-plan.md`.
 - `padding` — per-side spacing with responsive overrides
 - `margin` — per-side spacing with responsive overrides
 - `backgroundColour` — token slug or custom hex
