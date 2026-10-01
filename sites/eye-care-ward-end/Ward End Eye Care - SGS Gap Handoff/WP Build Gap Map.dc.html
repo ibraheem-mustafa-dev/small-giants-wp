@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F1EB;color:#181512;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#7A3B1E;text-decoration:underline;text-underline-offset:2px}
+a:hover{color:#181512}
+*{box-sizing:border-box}
+</style>
+</helmet>
+
+<div style="max-width:1280px;margin:0 auto;padding:40px clamp(18px,4vw,56px) 80px">
+
+  <header style="border-bottom:3px double #181512;padding-bottom:22px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5C554C">
+      <span>Eye Care Birmingham × SGS framework</span>
+      <span>Audit of small-giants-wp @ main · 24 Sep 2026</span>
+    </div>
+    <h1 style="margin:0;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(34px,5.4vw,68px);line-height:1;letter-spacing:-.02em;max-width:18ch;text-wrap:balance">What the WordPress build can already do, and what it can't</h1>
+    <p style="margin:0;font-size:18px;line-height:1.55;color:#3A342D;max-width:70ch;text-wrap:pretty">Every section, control and visual effect in the storefront draft, checked against the sgs-theme templates and the 87 sgs-blocks block definitions. Each item is graded by the size of the gap and given the fix I'd choose.</p>
+  </header>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:0;border-bottom:1px solid #181512">
+    <div style="padding:26px 24px 26px 0;border-right:1px solid #D6CFC4">
+      <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:64px;line-height:1">{{ pctReady }}%</div>
+      <p style="margin:8px 0 0;font-size:15px;line-height:1.5;color:#3A342D">of the {{ total }} items work today or need only configuration, content or a pattern ({{ c0 }} native, {{ c1 }} configure).</p>
+    </div>
+    <div style="padding:26px 24px">
+      <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:64px;line-height:1">{{ c2 }} · {{ c3 }}</div>
+      <p style="margin:8px 0 0;font-size:15px;line-height:1.5;color:#3A342D">theme fixes · block extensions. Most extensions are one or two attributes on a block that already exists.</p>
+    </div>
+    <div style="padding:26px 24px;border-left:1px solid #D6CFC4">
+      <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:64px;line-height:1;color:#A3392B">{{ c4 }}</div>
+      <p style="margin:8px 0 0;font-size:15px;line-height:1.5;color:#3A342D">need a new block or PHP module. They cluster into four builds: the lens configurator, the frame-measurement diagram, prescription capture at checkout, and a wishlist.</p>
+    </div>
+    <div style="padding:26px 0 26px 24px;border-left:1px solid #D6CFC4">
+      <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:64px;line-height:1;color:#5B4E7A">{{ c5 }}</div>
+      <p style="margin:8px 0 0;font-size:15px;line-height:1.5;color:#3A342D">sit outside the codebase: the payment gateway, the WhatsApp number, review content, photography and pending copy.</p>
+    </div>
+  </section>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:36px;padding:34px 0;border-bottom:1px solid #181512">
+    <div>
+      <h2 style="margin:0 0 12px;font-family:'Source Serif 4',serif;font-weight:600;font-size:26px">Headline findings</h2>
+      <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:12px;font-size:15.5px;line-height:1.55;color:#2A251F">
+        <li>The chrome, home page and content pages map almost one-to-one onto existing blocks: trust bar (marquee below 768), sticky blurred header with shrink, mega panels, brand strip, hero with Ken Burns and parallax, Google reviews slider, accordion with FAQ schema, business info, forms.</li>
+        <li>The theme is the first job. The Eye Care site snapshot in the repo still sets DM Serif Display, DM Sans and a navy/gold palette; the design uses Playfair Display, Outfit and warm ink/taupe. Both fonts are already self-hosted in the theme, so this is a style-variation rewrite, not a font install.</li>
+        <li>The product page is where the gaps concentrate. <code style="font-family:'IBM Plex Mono',monospace;font-size:13px">sgs/buybox</code> has no InnerBlocks slot (the template itself records this), so the second CTA, the WhatsApp card and the assurance list cannot sit inside the buy column without a block change.</li>
+        <li>The PDP content template is still the food-client version: Ingredients, Nutritional information and Allergens tabs, and a Trustpilot reviews block. It needs replacing for this client, not extending.</li>
+        <li>Prescription upload cannot use WooCommerce's additional-checkout-fields API, which only supports text, select and checkbox. It needs a custom checkout inner block.</li>
+      </ol>
+    </div>
+    <div>
+      <h2 style="margin:0 0 12px;font-family:'Source Serif 4',serif;font-weight:600;font-size:26px">The gap scale</h2>
+      <div style="display:flex;flex-direction:column;gap:1px;background:#D6CFC4;border:1px solid #D6CFC4">
+        <sc-for list="{{ levels }}" as="l" hint-placeholder-count="6">
+          <div style="background:#FBF9F5;padding:12px 14px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:baseline">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;padding:3px 8px;background: {{ l.bg }};color: {{ l.col }};white-space:nowrap">{{ l.n }} · {{ l.label }}</span>
+            <span style="font-size:14px;line-height:1.45;color:#3A342D">{{ l.desc }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:30px 0 10px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px">
+      <h2 style="margin:0;font-family:'Source Serif 4',serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);letter-spacing:-.01em">The full inventory</h2>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#5C554C">Showing {{ shownCount }} of {{ total }}</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;position:sticky;top:0;z-index:5;background:#F4F1EB;padding:12px 0;border-bottom:1px solid #D6CFC4">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#5C554C;margin-right:6px">Gap</span>
+        <sc-for list="{{ levelChips }}" as="c" hint-placeholder-count="7">
+          <button onClick="{{ c.pick }}" style="font-family:'IBM Plex Sans',sans-serif;font-size:13px;min-height:34px;padding:0 12px;border:1px solid {{ c.border }};background: {{ c.bg }};color: {{ c.col }};cursor:pointer">{{ c.label }}</button>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#5C554C;margin-right:6px">Area</span>
+        <sc-for list="{{ areaChips }}" as="c" hint-placeholder-count="9">
+          <button onClick="{{ c.pick }}" style="font-family:'IBM Plex Sans',sans-serif;font-size:13px;min-height:34px;padding:0 12px;border:1px solid {{ c.border }};background: {{ c.bg }};color: {{ c.col }};cursor:pointer">{{ c.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+      <div style="margin-top:30px">
+        <div style="display:flex;align-items:baseline;gap:14px;border-bottom:2px solid #181512;padding-bottom:8px">
+          <h3 style="margin:0;font-family:'Source Serif 4',serif;font-weight:600;font-size:24px">{{ g.area }}</h3>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C554C">{{ g.count }} items</span>
+        </div>
+        <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
+          <div style="display:flex;flex-wrap:wrap;gap:10px 22px;padding:16px 0;border-bottom:1px solid #D6CFC4">
+            <div style="flex:1 1 240px;min-width:0">
+              <div style="font-weight:600;font-size:15.5px;line-height:1.35;color:#181512;text-wrap:pretty">{{ r.i }}</div>
+              <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;padding:3px 8px;background: {{ r.bg }};color: {{ r.col }};white-space:nowrap">{{ r.g }} · {{ r.label }}</span>
+                <sc-if value="{{ r.hasE }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:2px 7px;border:1px solid #BDB4A6;color:#3A342D;white-space:nowrap">effort {{ r.e }}</span>
+                </sc-if>
+              </div>
+            </div>
+            <div style="flex:1 1 260px;min-width:0">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#7A7166;margin-bottom:4px">What we have</div>
+              <div style="font-size:14px;line-height:1.5;color:#3A342D;text-wrap:pretty">{{ r.h }}</div>
+            </div>
+            <div style="flex:1.4 1 320px;min-width:0">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#7A7166;margin-bottom:4px">Best fix</div>
+              <div style="font-size:14px;line-height:1.5;color:#181512;text-wrap:pretty">{{ r.f }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+    <sc-if value="{{ noneShown }}" hint-placeholder-val="{{ false }}">
+      <p style="margin:30px 0;font-size:15px;color:#5C554C">Nothing matches that combination.</p>
+    </sc-if>
+  </section>
+
+  <section style="margin-top:56px;border-top:3px double #181512;padding-top:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:40px">
+    <div>
+      <h2 style="margin:0 0 14px;font-family:'Source Serif 4',serif;font-weight:600;font-size:26px">Suggested build order</h2>
+      <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:12px;font-size:15px;line-height:1.55;color:#2A251F">
+        <li><strong style="font-weight:600">Client style variation.</strong> Replace the Eye Care snapshot: Playfair Display / Outfit, the ink–paper–taupe palette, square 52px buttons, section rhythm. Everything else inherits from it.</li>
+        <li><strong style="font-weight:600">WooCommerce data model.</strong> Brands taxonomy for the 40 brands, Colour as a Colour / Image attribute, shape, material, frame type, hinge and nose-pad attributes, per-variation measurements, RRP as its own meta, local pickup.</li>
+        <li><strong style="font-weight:600">Cross-cutting extensions.</strong> Open-modal-from-any-link, a buybox InnerBlocks slot, the WhatsApp card variant, a "product has reviews" visibility condition. Each unblocks several items.</li>
+        <li><strong style="font-weight:600">Templates.</strong> New PDP content part (Description / Details / Sizing), shop archive with the ten filter groups, checkout composition.</li>
+        <li><strong style="font-weight:600">New builds.</strong> Lens configurator module first (it drives revenue and the checkout step count), then prescription capture, then the measurement diagram, then wishlist.</li>
+      </ol>
+    </div>
+    <div>
+      <h2 style="margin:0 0 14px;font-family:'Source Serif 4',serif;font-weight:600;font-size:26px">What's verified and what isn't</h2>
+      <p style="margin:0 0 12px;font-size:15px;line-height:1.55;color:#2A251F">Capabilities marked as existing were read from block.json attributes, templates and theme files at main. Where a block's behaviour depends on render or view code I didn't read (for example the exact mega-menu hover delay, nav underline indicator, or whether product-card swatches swap the card image), the fix says "confirm".</p>
+      <p style="margin:0;font-size:15px;line-height:1.55;color:#2A251F">WooCommerce and third-party facts come from current documentation, linked below. The colour-swatch attribute type arrived in WooCommerce 10.9; a user reported a critical error configuring those terms on 11.0.1, so test on the installed version before relying on it.</p>
+    </div>
+  </section>
+
+  <section style="margin-top:40px;border-top:1px solid #181512;padding-top:22px">
+    <h2 style="margin:0 0 14px;font-family:'Source Serif 4',serif;font-weight:600;font-size:22px">Sources</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:8px 32px;font-size:13.5px;line-height:1.5">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7A7166">Repository (read at main, 24 Sep 2026)</span>
+        <a href="https://github.com/ibraheem-mustafa-dev/small-giants-wp/tree/main/plugins/sgs-blocks/src/blocks" target="_blank" rel="noopener">plugins/sgs-blocks/src/blocks/*/block.json</a>
+        <a href="https://github.com/ibraheem-mustafa-dev/small-giants-wp/blob/main/theme/sgs-theme/theme.json" target="_blank" rel="noopener">theme/sgs-theme/theme.json</a>
+        <a href="https://github.com/ibraheem-mustafa-dev/small-giants-wp/tree/main/theme/sgs-theme/templates" target="_blank" rel="noopener">theme/sgs-theme/templates (front-page, archive-product, single-product)</a>
+        <a href="https://github.com/ibraheem-mustafa-dev/small-giants-wp/tree/main/theme/sgs-theme/parts" target="_blank" rel="noopener">theme/sgs-theme/parts (pdp-buybox, pdp-content, checkout-content)</a>
+        <a href="https://github.com/ibraheem-mustafa-dev/small-giants-wp/blob/main/theme/sgs-theme/assets/js/sgs-shop-filters.js" target="_blank" rel="noopener">theme/sgs-theme/assets/js/sgs-shop-filters.js</a>
+        <a href="https://github.com/ibraheem-mustafa-dev/small-giants-wp/tree/main/sites/eye-care-ward-end" target="_blank" rel="noopener">sites/eye-care-ward-end theme snapshots</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7A7166">WooCommerce and third parties</span>
+        <a href="https://developer.woocommerce.com/2026/06/03/introducing-color-swatches-in-woocommerce-core/" target="_blank" rel="noopener">WooCommerce: colour swatches in core (Jun 2026)</a>
+        <a href="https://woocommerce.com/document/woocommerce-store-editing/customizing-shop-page-catalog/filter-products/" target="_blank" rel="noopener">WooCommerce: Product Filters block docs</a>
+        <a href="https://developer.woocommerce.com/docs/block-development/tutorials/how-to-additional-checkout-fields-guide/" target="_blank" rel="noopener">WooCommerce: additional checkout fields guide</a>
+        <a href="https://developer.woocommerce.com/docs/apis/store-api/resources-endpoints/cart/" target="_blank" rel="noopener">WooCommerce: Store API cart (add-to-cart data filter)</a>
+        <a href="https://developer.woocommerce.com/docs/apis/store-api/extending-store-api/available-endpoints-to-extend/" target="_blank" rel="noopener">WooCommerce: extensible Store API endpoints</a>
+        <a href="https://wordpress.org/plugins/woo-stripe-payment/" target="_blank" rel="noopener">Payment Plugins for Stripe (Klarna messaging, wallets)</a>
+        <a href="https://featurable.com/blog/google-places-more-than-5-reviews" target="_blank" rel="noopener">Places API 5-review limit and the Business Profile alternative</a>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const LEVELS = [
+  { n: 0, label: 'Works today', col: '#1F5A3E', bg: '#DCEBE2', desc: 'An existing block or template covers it. Place it and fill in content.' },
+  { n: 1, label: 'Configure', col: '#1E5563', bg: '#DCE9EC', desc: 'Existing blocks, composed into a pattern, or a setting changed. No code.' },
+  { n: 2, label: 'Theme fix', col: '#6B5213', bg: '#F1E6C8', desc: 'theme.json, a style variation, a template or a CSS/JS change in sgs-theme.' },
+  { n: 3, label: 'Block extension', col: '#8A4418', bg: '#F5DFCD', desc: 'New attribute, variant or hook on a block that already exists.' },
+  { n: 4, label: 'New block / module', col: '#8E2B1F', bg: '#F3D6D0', desc: 'A new block, or a PHP module against WooCommerce APIs.' },
+  { n: 5, label: 'Outside the code', col: '#4B3F6B', bg: '#E4DFEE', desc: 'Plugin or gateway choice, business confirmation, content or photography.' }
+];
+
+const AREAS = ['Global & chrome', 'Home', 'Shop', 'Product page', 'Lens configurator', 'Size guide', 'Bag & checkout', 'Content pages', 'Cross-cutting'];
+
+const R = (a, i, h, g, f, e) => ({ a, i, h, g, f, e: e || '' });
+
+const ROWS = [
+  R('Global & chrome', 'Typography: Playfair Display headings, Outfit body, Roboto inside the Google panels', 'Playfair Display, Outfit and Roboto woff2 files are already in theme/assets/fonts. The Eye Care site snapshot sets DM Serif Display + DM Sans.', 2, 'Write an Eye Care style variation (typography axis) registering the three families and the heading scale from the design. Retire the DM Serif snapshot.', 'S'),
+  R('Global & chrome', 'Palette: ink #141414, paper #FAF8F5, accent #9C8B78, accent ink #6F6152, soft #EFEAE2, hairline #E6E1DA', 'Theme palette is teal/amber; Eye Care snapshot is navy/gold.', 2, 'Colour axis in the same variation, keeping the framework slugs (primary, accent, accent-text, surface, surface-alt, border) so blocks resolve without per-block overrides.', 'S'),
+  R('Global & chrome', 'Buttons: square, uppercase 13px tracked, 52px tall, lift 2–3px on hover; outline variant', 'buttonPresets are 8px radius, 48px min-height, 15px/600.', 2, 'Override buttonPresets in the variation (radius 0, min-height 52px, letter-spacing .1em, uppercase). Use the hover extension for the lift; confirm it offers translate rather than only scale.', 'S'),
+  R('Global & chrome', 'Section kicker + serif H2 + "See everything" underlined link', 'sgs/label, sgs/heading, sgs/button text-link; label-heading-subheading-cluster pattern.', 1, 'Make one Eye Care section-header pattern and reuse it on every band.'),
+  R('Global & chrome', 'Trust ticker: dark bar, four icon claims, marquee only below 768', 'sgs/trust-bar icon-bare variant with autoScroll, autoScrollBelow (0/768/1024), pause on hover.', 0, 'Set autoScroll on, autoScrollBelow 768. Use the four agreed claims.'),
+  R('Global & chrome', 'Ticker rule: drop claims that do not fit; never wrap to two lines', 'Trust bar wraps or scrolls; no "hide what doesn\'t fit" mode.', 3, 'Add overflowMode: "drop" to sgs/trust-bar — a ResizeObserver hides trailing items that would wrap, with items ordered by priority.', 'S'),
+  R('Global & chrome', 'Sticky header, 90% paper with 16px backdrop blur, hairline bottom border', 'sgs/site-header: headerSticky, surfaceBlur, surfaceOpacity, border attributes.', 0, 'Configure on the header part.'),
+  R('Global & chrome', 'Header shrinks on scroll (padding, logo and wordmark size ease down)', 'site-header headerShrink; theme adds .is-scrolled after 50px.', 1, 'Turn on headerShrink. Confirm sgs/responsive-logo responds to the scrolled state; if not, add a scrolled-size attribute (S).'),
+  R('Global & chrome', 'Three-column header: nav left, centred logo + wordmark, utilities right', 'sgs/site-header-row, sgs/responsive-logo.', 1, 'Compose in the header part. Wordmark "EYE CARE / BIRMINGHAM" as heading + label beside the logo.'),
+  R('Global & chrome', 'Nav links uppercase with an underline on hover and when the mega panel is open', 'sgs/nav-bar-menu item colour states.', 1, 'Configure item styles. Confirm there is an underline indicator style; otherwise a two-line CSS addition in the variation.'),
+  R('Global & chrome', '"Glasses SOON" — a greyed, non-link nav item with a small badge', 'No item badge or disabled state found in nav-bar-menu attributes.', 3, 'Add per-item badge text and a non-link "coming soon" state to nav items. Alternatively leave Glasses out of the nav until launch.', 'S'),
+  R('Global & chrome', 'Nav collapses to a "Menu" burger below 1060px', 'nav-bar-menu has a configurable collapse breakpoint and triggerMode icon-and-text.', 1, 'Set collapse breakpoint 1060, triggerMode icon-and-text, label "Menu".'),
+  R('Global & chrome', 'Clinic phone in the header, only at 1160px and wider', 'sgs/business-info phone. Responsive visibility only knows the 768/1024 tiers.', 3, 'Cheapest: show it from the desktop tier and accept it at 1024–1160, or drop the rule. If kept, add a min-width option to responsive visibility.', 'S'),
+  R('Global & chrome', 'Bag pill: outlined pill, "Bag" label + accent count badge that pops on change', 'sgs/cart with icon + badge, displayMode drawer.', 3, 'Add a text-label trigger mode (label instead of icon) and a count-change pop class to sgs/cart.', 'S'),
+  R('Global & chrome', 'Mega menu opens on hover after a delay, click at touch sizes, closes on Escape / outside click', 'nav-bar-menu openOn hover|click; Escape and outside click in click mode; touch always works.', 1, 'Hover mode. Confirm the hover-intent delay in view code; add a delay attribute if there is none.'),
+  R('Global & chrome', 'Sunglasses panel: 12 styles in two columns, "Shop by" list, image promo card', 'sgs/mega-panel + mega-general-2col-aside and mega-media-cards patterns.', 1, 'Build as a pattern. Styles are hand-linked (they change rarely); promo is a media card.'),
+  R('Global & chrome', 'Brands panel: top-10 grid with product counts, then all 40 brands', 'mega-brands-1 pattern; mega-panel has a brandsEyebrow attribute.', 3, 'Give the brands panel a live source: Brands taxonomy terms with counts, a "top" flag from term meta. Hand-typed counts would go stale.', 'M'),
+  R('Global & chrome', 'Lenses panel: four price cards in a hairline grid', 'mega-panel card patterns.', 1, 'Pattern.'),
+  R('Global & chrome', 'Help panel: three link columns incl. "Size guide" (opens modal) and a WhatsApp link', 'Links: yes. Opening a modal from a plain menu link: no — sgs/modal opens from its own trigger button.', 3, 'See Cross-cutting: open-modal-from-any-link.'),
+  R('Global & chrome', 'Mobile menu: full-screen paper overlay, large serif links rising in sequence, phone card and social row', 'sgs/nav-drawer (panelSize, drawer patterns incl. editorial ghost list), native dialog, focus trap, scroll lock.', 1, 'Full-size panel with the editorial pattern. Confirm staggered entrance exists for drawer items (mega-panel has staggerOnOpen).'),
+  R('Global & chrome', 'Footer: wordmark and tagline, social squares with brand-colour hover ring, Shop / Help / Visit columns, copyright bar', 'sgs/site-footer + rows, sgs/business-info (socials, address, hours, copyright, description), sgs/social-icons brand colours on hover.', 1, 'Compose. Hours and address come from Business Details, so the footer and contact page never disagree.'),
+  R('Global & chrome', 'Floating WhatsApp button: label "Ask me anything" on desktop, icon-only on phones, always visible, lift on hover', 'sgs/whatsapp-cta floating. Floating variant renders icon-only and appears after 300px of scroll.', 3, 'Add showLabel for floating, a hide-label-below tier (768), and showAfterScroll (0 = always).', 'S'),
+  R('Global & chrome', 'Scroll reveal: fade and rise 18px, once only', 'Animation extension on every sgs/* block; IntersectionObserver fires once.', 0, 'Apply fade-up to section heads and cards. Check the preset distance is close to 18px.'),
+  R('Global & chrome', 'Reduced motion: marquees, Ken Burns, parallax and reveals all stop', 'Prototype uses two switches; the data-rm hook is prototype-only.', 2, 'One global prefers-reduced-motion block in the theme covering trust-bar, brand-strip, hero and the animation extension. Audit each block\'s own CSS.', 'S'),
+
+  R('Home', 'Hero: full-bleed photo with a one-off Ken Burns, scroll parallax, gradient + scrim, bottom-left copy, staggered rise, two buttons', 'sgs/hero: bgKenBurns, bgParallax, overlayGradient, backgroundOverlay, minHeight, alignment; animation extension for stagger.', 1, 'Standard variant. Stagger via per-child animation delays. Confirm Ken Burns can run once rather than loop.'),
+  R('Home', 'Brand marquee: text wordmarks in tracked Playfair caps, linking to brand pages, 64s, pause on hover', 'sgs/brand-strip: scrolling, scrollSpeed, pauseOnHover, showNames; logos[] is a manual image list.', 3, 'Add source: product_brand (live terms + links) and a text-only mode. Avoids 40 logo uploads and keeps links correct.', 'M'),
+  R('Home', 'Best sellers: eight cards, 4 / 3 / 2 columns', 'woocommerce/product-collection (best-selling collection) + sgs/product-card.', 0, 'Collection with perPage 8.'),
+  R('Home', 'Why buy: dark band, two-column intro, four numbered reasons in a hairline grid', 'sgs/container grid (gap 1px on a line colour), sgs/heading, sgs/text or process-steps.', 1, 'Pattern.'),
+  R('Home', 'Shape tiles: six tiles, photo zoom, dark gradient, white shape glyph, label, "Photo to come" fallback, lift on hover', 'sgs/card-grid overlay variant with hover zoom.', 3, 'Add an optional SVG glyph per card and an empty-image fallback tile. Links go to the shop with the shape filter applied.', 'S'),
+  R('Home', 'Google reviews panel: G logo, 4.7, partial star fill, count, See all / Write a review pills, card rail, arrows under the rail, footnote', 'sgs/google-reviews slider: showAggregate, seeAll*, writeReview*, navPosition below-end, footnote, textClamp, showReviewLink, card logo, avatars, dataSource synced | inline.', 1, 'Configure with dataSource inline holding all 13 verbatim reviews. Stars render full/half, so 4.7 shows as 4.5 unless a precise-fill option is added (XS).'),
+  R('Home', 'All 13 commented reviews shown, verbatim', 'Places API returns at most 5 reviews.', 5, 'Keep the inline set and re-check it against the profile monthly, or apply for Business Profile API access (paginated, all reviews) and sync from that.'),
+  R('Home', '"Placeholder review" entry in the data', '—', 5, 'Replace with the real review or delete before launch.'),
+  R('Home', 'Prescription strip: image with slow zoom, numbered three steps, CTA', 'sgs/container, sgs/media (image hover zoom), process-steps or icon-list.', 1, 'Pattern.'),
+  R('Home', 'Optician band: clinic photo, named heading, WhatsApp button (green, dark ink icon), outline button', 'sgs/whatsapp-cta inline with colour attributes, sgs/button.', 1, 'Compose. The photo is still outstanding (see Cross-cutting).'),
+
+  R('Shop', 'Header row: kicker, H1 (Sunglasses / brand name), result count, sort select', 'archive-product: query-title, product-results-count, catalog-sorting.', 1, 'Restyle the existing toolbar for this client.'),
+  R('Shop', 'Sort options "Biggest saving" and "Brand A–Z"', 'WooCommerce default orderby only.', 3, 'Register both via woocommerce_catalog_orderby and query args. Saving needs a stored saving value (RRP − price) on save_post.', 'M'),
+  R('Shop', 'Active-filter chips and Clear all', 'woocommerce/product-filter-active with removable chips + clear button, already in the template.', 0, 'Restyle chips dark.'),
+  R('Shop', 'Ten collapsible filter groups with counts and a rotating chevron', 'WooCommerce filter blocks under sgs/heading group headings; not collapsible.', 3, 'Wrap each group in a disclosure (details/summary) container with the count in the summary. Keep WooCommerce\'s wrapper markup intact — the template notes block-validation traps here.', 'M'),
+  R('Shop', 'Colour filter as round swatches', 'WooCommerce 10.9+ Colour / Image attribute type renders swatches in the Chips filter.', 0, 'Make Colour a Colour / Image attribute. Test first — an 11.0.1 critical error has been reported configuring those terms.'),
+  R('Shop', 'Segmented and chip filters (e.g. shape, frame type)', 'product-filter-attribute with chips display.', 2, 'Chips work; the segmented look is CSS in the variation.'),
+  R('Shop', 'Price: single maximum slider £59–£339', 'WooCommerce price slider (min and max handles).', 0, 'Use the dual slider; the design difference is minor.'),
+  R('Shop', 'Brand list with a search box, counts, scrolling list', 'WooCommerce brand filter; sgs/filter-search exists but is keyed to attributeId.', 3, 'Let sgs/filter-search target a taxonomy (product_brand) as well as attributes.', 'S'),
+  R('Shop', '"Polarised only" toggle switch', 'Attribute filter with checkbox list.', 3, 'Add a switch display style for single-term attribute filters, or style the checkbox as a switch in CSS (S).', 'S'),
+  R('Shop', 'Filter rail becomes a bottom-sheet drawer below 1060px, with body scroll lock', 'sgs-shop-filters.js already converts the aside to a native dialog bottom sheet — but BREAKPOINT is hardcoded to 782.', 2, 'Make the breakpoint configurable (data attribute on the aside) and set 1060 for this client.', 'S'),
+  R('Shop', 'Drawer footer: "Clear" + "Show N frames" with a live count', 'Close button in the drawer header; no sticky footer with count.', 3, 'Add a sticky footer to the drawer reading the live result count from the collection.', 'S'),
+  R('Shop', 'Grid goes from three to four across at 1280px', 'product-collection column count.', 2, 'One container-query rule in the variation.'),
+  R('Shop', 'No-results state with message and Clear filters', 'woocommerce/product-collection-no-results in the template.', 1, 'Rewrite the copy; add the clear button.'),
+  R('Shop', 'Filters and sort serialise to query params', 'WooCommerce Product Filters update the URL and re-query in place.', 0, 'Nothing to do.'),
+
+  R('Product page', 'Breadcrumb Home / Sunglasses / Brand', 'woocommerce/breadcrumbs or sgs/breadcrumbs follow categories.', 3, 'Add a "brand" trail option to sgs/breadcrumbs, or make the brand the primary category.', 'S'),
+  R('Product page', 'Gallery: square main image with hover zoom, four view thumbnails, saving badge on the image', 'sgs/buybox gallery column: variation-aware main image and thumbnail strip.', 1, 'Upload four real views per colourway. Saving badge on the gallery needs a small buybox option (S).'),
+  R('Product page', 'Buy column sticks while the gallery scrolls', 'buybox is a two-column grid.', 2, 'position: sticky on the configurator column in the variation CSS.'),
+  R('Product page', 'Brand name link (tracked serif) above the H1, model code under it', 'post-title; no brand or SKU line in the buybox part.', 3, 'Bind sgs/text to product brand and SKU (block bindings source), placed in sgs-pdp-buybox.', 'S'),
+  R('Product page', 'Rating line under the title', 'woocommerce/product-rating in the buybox part.', 0, 'Restyle.'),
+  R('Product page', 'Big price, RRP struck through, "You save £X" pill', 'buybox live price row and pack-saving ladder (bulk packs, not RRP).', 3, 'Store RRP as its own product meta rather than using regular price, so the comparison is the manufacturer\'s RRP. Buybox shows RRP + saving when present.', 'M'),
+  R('Product page', 'Stock line: green "In stock — dispatched next working day" / amber "Ordered in from the brand — 3–5 working days"', 'buybox renders stock status.', 3, 'Label + colour attributes per stock status (instock, onbackorder).', 'S'),
+  R('Product page', 'Colour picker as image tiles with the name beneath', 'sgs/option-picker supports an image swatch from term meta (_sgs_swatch_image_id), shown as a 2rem square.', 3, 'Add a "tile" pill style (4:3 image, caption) to option-picker.', 'S'),
+  R('Product page', 'Size picker S / M / L with the measurement line under each, "Which size am I?" link', 'option-picker pills with label only.', 3, 'Optional sub-label per option from term or variation meta. The link uses open-modal-from-any-link.', 'S'),
+  R('Product page', 'Two CTAs: "Add my prescription — from +£59" (opens configurator) and "Add to bag as they are — £X"', 'buybox has one add-to-cart and no InnerBlocks slot (recorded in sgs-pdp-buybox.html as a block candidate).', 3, 'Give buybox an InnerBlocks slot after the add-to-cart form and a secondary-action button that opens the lens configurator with the selected variation.', 'M'),
+  R('Product page', 'Klarna "3 payments of £X" and wallet line under the CTAs', 'None in the theme.', 5, 'Choose the gateway. Stripe-based plugins provide Klarna messaging and Apple Pay / Google Pay on product pages; place their element in the new buybox slot.'),
+  R('Product page', 'WhatsApp advice card (green tint, icon disc, two-line text)', 'sgs/whatsapp-cta variants: floating, inline, banner. No sub-line.', 3, 'Add a "card" variant with title + sub-line. Used on the PDP, lens configurator and size guide.', 'S'),
+  R('Product page', 'Assurance list with tick discs (warranty, returns, genuine)', 'sgs/icon-list exists but cannot sit inside the buybox column.', 3, 'Solved by the buybox slot above.'),
+  R('Product page', 'Tabs: Description / Details / Sizing, underline style', 'sgs-pdp-content.html uses sgs/tabs underline — with Ingredients, Nutritional information and Allergens tabs.', 2, 'New PDP content part for eyewear; remove the food tabs and the allergen statutory slot for this client.', 'S'),
+  R('Product page', 'Description tab: blurb plus four bullets built from shape, material, colour and lens type', 'post-content for the blurb.', 3, 'Bullets via block bindings to product attributes, so they never drift from the data.', 'S'),
+  R('Product page', 'Details tab: up to 18 spec cells in a hairline grid', 'WooCommerce additional-information table (plain table).', 4, 'Small sgs/product-specs block: reads attributes and meta, renders the grid, hides empty cells.', 'M'),
+  R('Product page', 'Sizing tab: front and side line diagrams, labels (bridge, lens width, lens height, temple) live-wired to the selected size, measure key, "55▫18 140" sentence', 'Nothing comparable.', 4, 'New sgs/frame-measurements block. Reads per-variation meta, listens to option-picker\'s selection event (the picker already emits one), SVG diagrams with HTML labels as in the prototype.', 'M'),
+  R('Product page', '"Good to know" accordion', 'sgs/accordion.', 0, 'Place beside the tabs.'),
+  R('Product page', 'Reviews: large score, stars, "Based on N", five rating bars, review cards with a tag', 'Template uses sgs/trustpilot-reviews (synced Trustpilot data, emptyState hide, carousel).', 3, 'Add dataSource: woocommerce to that block with a list layout and rating breakdown, keeping emptyState hide.', 'M'),
+  R('Product page', 'Zero-review rule: hide reviews, show a Google-styled strip borrowing the 4.7 business rating', 'google-reviews has a badge variant; conditional visibility has roles, days and schedule but no product-context condition.', 3, 'Add "current product has reviews" as a visibility condition. Show the google-reviews badge only when false. This is the launch-day state, so build it first.', 'S'),
+  R('Product page', '"More from Ray-Ban" (same brand, excluding this product), with a "See all" link', 'product-collection related (categories/tags).', 3, 'Register a custom product collection "same brand as current product" and a dynamic heading/link bound to the brand.', 'M'),
+  R('Product page', '"Similar shapes" (same shape, excluding this product)', 'related collection in single-product.html.', 1, 'Store shape as a product tag so the related collection matches on it; otherwise the same custom-collection approach.'),
+  R('Product page', '"Photography to come" placeholder state', 'WooCommerce placeholder image setting.', 1, 'Upload a branded placeholder in WooCommerce settings.'),
+
+  R('Lens configurator', 'Full-screen overlay: header (logo, step label, Close), thin progress bar', 'sgs/choice-flow (progressStyle bar, Back styled from this very prototype) and sgs/modal maxWidth full.', 3, 'Host choice-flow inside a full-screen modal; add a step label slot to the header.', 'M'),
+  R('Lens configurator', 'Left aside: frame preview whose tint changes with the chosen finish, name / colour / size, running price lines, animated total, WhatsApp help card', 'None of the live-price or preview behaviour exists.', 4, 'Part of a new lens module: an aside that subscribes to the flow state, computes price from the ladder and applies a CSS filter per finish.', 'L'),
+  R('Lens configurator', 'Q1 use: picture cards with price, description, "?" help popover, selected border', 'sgs/form-field-tiles (visual tiles).', 3, 'Add price and help-text fields per tile, and a popover toggle.', 'S'),
+  R('Lens configurator', 'Q2 thickness: ellipse illustrations, "Most people pick this" badge', 'form-field-tiles.', 3, 'Same extension plus a per-tile badge.', 'S'),
+  R('Lens configurator', 'Q3 finish: swatch cards previewing the frame photo through each finish', 'form-field-tiles.', 3, 'Tile image can be the current product image with a per-option CSS filter (same data the aside uses).', 'S'),
+  R('Lens configurator', 'Q4 prescription: WhatsApp later (preselected), upload, or type SPH / CYL / AXIS', 'form-field-file, form-field-number, form-field-radio.', 3, 'Compose, with a compact grid layout for the SPH/CYL/AXIS rows.', 'S'),
+  R('Lens configurator', 'Price ladder (use, thickness, finish) held as business config', 'Nothing.', 4, 'Settings page for the ladder. Add-to-cart passes the configuration through woocommerce_store_api_add_to_cart_data; prices applied in woocommerce_before_calculate_totals.', 'L'),
+  R('Lens configurator', 'Opens from the product page and bag; not a route', 'sgs/modal opens from its own trigger.', 3, 'Open-modal-from-any-link (Cross-cutting), passing the product and variation.', 'S'),
+  R('Lens configurator', 'Cart and order lines show "Single vision · Thin 1.67 · Polarised grey"', 'Store API item_data surfaces cart item data automatically once stored.', 4, 'Part of the lens module: format item_data and copy it to order item meta.', 'S'),
+
+  R('Size guide', 'Modal: sticky header, intro, example "55 ▫ 18 137", three definitions, S/M/L table, WhatsApp card', 'sgs/modal with modalRef to a reusable sgs_modal post — the CPT is documented for exactly this ("a size guide, say").', 1, 'Author once as an sgs_modal post.'),
+  R('Size guide', 'Opened from nav, footer, PDP (twice), FAQs, mobile menu and filters', 'Trigger is the modal block\'s own button.', 3, 'See Cross-cutting: open-modal-from-any-link.'),
+
+  R('Bag & checkout', 'Bag drawer: items, remove, subtotal, Checkout, empty state with Shop button', 'sgs/cart drawer: Store API add/qty/remove, subtotal, checkout, empty message + CTA, autoOpenOnAdd, hydrates past page cache.', 0, 'displayMode drawer; restyle.'),
+  R('Bag & checkout', 'Lens line under each item', 'Shown if the item carries item_data.', 0, 'Comes free with the lens module.'),
+  R('Bag & checkout', '"Add my prescription" on frame-only items', 'No per-item action slot.', 3, 'Item action hook in sgs/cart that opens the configurator for that cart key.', 'S'),
+  R('Bag & checkout', 'Free-delivery progress bar toward £75', 'Not in sgs/cart.', 3, 'Read the free-shipping minimum from the shipping zone and render a progress row in the drawer footer.', 'S'),
+  R('Bag & checkout', 'Klarna line in the drawer and order summary', 'None.', 5, 'Gateway messaging element; the drawer needs a footer slot to hold it.'),
+  R('Bag & checkout', 'Toast "Added — View bag" after adding', 'sgs/cart opens the drawer on add instead.', 1, 'Recommend dropping the toast and keeping autoOpenOnAdd — one confirmation, already built. Add a toast mode only if you want the page to stay put (S).'),
+  R('Bag & checkout', 'Express pay: Apple Pay, Google Pay, PayPal, Klarna', 'checkout-express-payment-block in the checkout part.', 5, 'Stripe plugin for card, wallets and Klarna; PayPal Payments for PayPal.'),
+  R('Bag & checkout', 'Numbered steps (serif numerals): Contact, Delivery, Prescription, Payment', 'WooCommerce checkout sections.', 2, 'CSS counter on section headings in the variation.'),
+  R('Bag & checkout', 'Step count adapts: four with lenses, three without', 'Prescription step would be a custom inner block.', 4, 'The prescription inner block renders nothing when the cart has no lens items; numbering follows from the CSS counter.', 'S'),
+  R('Bag & checkout', 'Mobile field "so I can WhatsApp you updates"', 'WooCommerce phone field.', 1, 'Relabel and move phone into Contact; or register an additional field in the contact location.'),
+  R('Bag & checkout', 'Delivery vs Collect cards (Royal Mail £3.95, free over £75 / Collect free, fitted in person)', 'Checkout shipping-method block (ship / pickup toggle) and pickup-options block in the part.', 1, 'Enable Local Pickup, flat rate £3.95 and free shipping over £75. Copy via method descriptions.'),
+  R('Bag & checkout', 'Prescription step: three modes and a file upload', 'Additional-checkout-fields API supports text, select and checkbox only.', 4, 'Custom checkout inner block + Store API extension to store the mode and upload reference on the order; uploads kept outside the public media library.', 'L'),
+  R('Bag & checkout', 'Card fields, "Pay now £X", GDPR note', 'checkout-payment-block, actions block, terms block.', 1, 'Note goes in the terms block.'),
+  R('Bag & checkout', 'Sticky order summary with lens lines, Edit link', 'checkout-totals / order-summary blocks.', 2, 'Sticky via CSS; Edit opens the drawer.'),
+  R('Bag & checkout', 'Order confirmed: tick, order number, collection vs delivery wording', 'sgs-order-confirmation-content part.', 3, 'Conditional copy block keyed to the order\'s shipping method (pickup vs flat rate).', 'S'),
+
+  R('Content pages', 'Lenses page: price cards, "in every lens" list, "how it goes" steps, CTA', 'container, heading, text, icon-list, process-steps.', 1, 'Pattern.'),
+  R('Content pages', 'About: name, credential line, story, WhatsApp + shop buttons, credential stack with one accent-edged card', 'container (per-side borders), text, whatsapp-cta, button.', 1, 'Pattern.'),
+  R('Content pages', 'Help: three info cards, "Still not answered?" card with Contact and Call', 'container, business-info phone.', 1, 'Pattern.'),
+  R('Content pages', 'FAQ accordion with FAQ structured data', 'sgs/accordion with FAQ schema.', 0, 'Place the eight answers.'),
+  R('Content pages', 'Ninth FAQ on free adjustments and re-fitting', '—', 5, 'Write and approve the copy.'),
+  R('Content pages', 'Contact: WhatsApp button with number, phone / email / address / hours grid', 'whatsapp-cta inline, business-info.', 1, 'Compose from Business Details.'),
+  R('Content pages', 'Contact form: name, email, phone, topic select, message, inline thank-you', 'sgs/form + text/email/phone/select/textarea fields, success message, N8N webhook, stored submissions.', 0, 'Build and connect the webhook.'),
+  R('Content pages', 'Map card with Directions', 'business-info map display type.', 1, 'Replace the sketch map with it.'),
+
+  R('Cross-cutting', 'Open a modal from any link or button (size guide ×7, lens configurator ×3)', 'sgs/modal renders its own trigger.', 3, 'Let any link with href="#modal-{slug}" or a data attribute open a referenced sgs_modal. Unblocks ten triggers at once.', 'S'),
+  R('Cross-cutting', 'Wishlist hearts with persistence and a saved-items view', 'Nothing.', 4, 'Small module: localStorage for guests, user meta when signed in, a saved-items page. Or a wishlist plugin if accounts matter more than weight.', 'M'),
+  R('Cross-cutting', 'Frame card details: polarised tag, "No reviews yet" text, swatch click switches the card', 'sgs/product-card: brand overlay, saving badge, rating, colour swatches with swatchMaxVisible, featured/trial tags.', 3, 'Attribute-driven tag, empty-rating text. Confirm swatches swap the card image; if not, wire them to the variation image.', 'S'),
+  R('Cross-cutting', 'Brand and product data model (40 brands, shape, material, lens, frame type, hinge, nose pads, sizes with real measurements)', 'WooCommerce Brands taxonomy and global attributes.', 1, 'Set up Brands, the attributes and per-variation measurement meta before any template work.'),
+  R('Cross-cutting', 'Hit targets never under 44px', 'Theme presets 48px.', 2, 'Covered by the 52px preset; audit chips (34–38px in the design) and raise them.'),
+  R('Cross-cutting', 'Extra breakpoints 1280, 1100, 1060, 1160, 620', 'Blocks work to the 768/1024 tiers.', 2, 'Handle 1280 and 620 as container queries in CSS; 1060 is the nav/filter setting; 1100 goes away with the configurator build.'),
+  R('Cross-cutting', 'WhatsApp number used everywhere', 'Business Details holds contact data.', 5, 'Confirm the number (wa.me/4479605978 looks one digit short). Every WhatsApp block should read it from Business Details, not a typed URL.'),
+  R('Cross-cutting', 'Photography: product views, colourways, clinic interior', 'Unsplash placeholders.', 5, 'Commission or source four views per colourway and one clinic shot.'),
+  R('Cross-cutting', 'Pending copy: returns reassurance under Add to bag, prescription-lens returns exception', 'Drafted, not placed.', 5, 'Sign off, then place in the buybox slot and the Help page.')
+];
+
+class Component extends DCLogic {
+  state = { lv: null, area: null };
+  renderVals() {
+    const { lv, area } = this.state;
+    const L = LEVELS;
+    const counts = L.map(l => ROWS.filter(r => r.g === l.n).length);
+    const total = ROWS.length;
+    const filtered = ROWS.filter(r => (lv === null || r.g === lv) && (area === null || r.a === area));
+    const groups = AREAS.map(a => {
+      const rows = filtered.filter(r => r.a === a).map(r => ({
+        ...r, label: L[r.g].label, col: L[r.g].col, bg: L[r.g].bg, hasE: !!r.e
+      }));
+      return { area: a, count: rows.length, rows };
+    }).filter(g => g.rows.length);
+    const chip = (on, label, pick, col, bg) => ({
+      label, pick,
+      border: on ? '#181512' : '#CFC6B8',
+      bg: on ? '#181512' : (bg || '#FBF9F5'),
+      col: on ? '#F4F1EB' : (col || '#181512')
+    });
+    const levelChips = [chip(lv === null, 'All levels', () => this.setState({ lv: null }))]
+      .concat(L.map(l => chip(lv === l.n, `${l.n} ${l.label} (${counts[l.n]})`, () => this.setState({ lv: lv === l.n ? null : l.n }), l.col, l.bg)));
+    const areaChips = [chip(area === null, 'All areas', () => this.setState({ area: null }))]
+      .concat(AREAS.map(a => chip(area === a, a, () => this.setState({ area: area === a ? null : a }))));
+    return {
+      levels: L,
+      total,
+      c0: counts[0], c1: counts[1], c2: counts[2], c3: counts[3], c4: counts[4], c5: counts[5],
+      pctReady: Math.round(((counts[0] + counts[1]) / total) * 100),
+      groups,
+      shownCount: filtered.length,
+      noneShown: filtered.length === 0,
+      levelChips, areaChips
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "entries": {
+    "a4bce4d5aae03f91": {
+      "block": "sgs/cart",
+      "confidence": 0.45,
+      "evidence": "same bagItems content as the other fingerprint (drawer variant, adds a secondary CTA and a Remove action) -- same cart line-item identity, not a different block",
+      "model_id": "claude-haiku-4-5-20251001"
+    },
+    "ee24bdfdc57176d8": {
+      "block": "sgs/cart",
+      "confidence": 0.45,
+      "evidence": "brand+name+lensLine (prescription/variant description)+lineLabel (price) is a cart line-item shape, confirmed earlier this session against sgs/cart's real item-row template",
+      "model_id": "claude-haiku-4-5-20251001"
+    }
+  },
+  "schema_version": 1
+}

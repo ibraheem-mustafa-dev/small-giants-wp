@@ -1,0 +1,82 @@
+[
+  { "name": "core/template-part", "attributes": { "slug": "header", "tagName": "header" } },
+  {
+    "name": "sgs/container",
+    "attributes": { "tagName": "main", "contentWidth": { "desktop": "full" }, "flexWrap": "wrap" },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "contentWidth": { "desktop": "normal" },
+          "flexDirection": "column",
+          "padding": { "top": "var:preset|spacing|60", "bottom": "var:preset|spacing|60" }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "content": "Mama's — guided buybox (QA)",
+              "level": "h1",
+              "textColour": "text",
+              "margin": { "bottom": "var:preset|spacing|40" }
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "One decision at a time — flow QA fixture for Mama's Munches (product 3990)."
+            }
+          },
+          {
+            "name": "woocommerce/product-collection",
+            "attributes": {
+              "queryId": 1,
+              "query": {
+                "perPage": 1,
+                "pages": 1,
+                "offset": 0,
+                "postType": "product",
+                "order": "asc",
+                "orderBy": "title",
+                "search": "",
+                "exclude": [],
+                "inherit": false,
+                "taxQuery": {},
+                "isProductCollectionBlock": true,
+                "featured": false,
+                "woocommerceOnSale": false,
+                "woocommerceStockStatus": ["instock", "outofstock", "onbackorder"],
+                "woocommerceAttributes": [],
+                "woocommerceHandPickedProducts": ["3990"]
+              },
+              "tagName": "div",
+              "displayLayout": { "type": "flex", "columns": 1 },
+              "dimensions": { "widthType": "fill" },
+              "collection": "woocommerce/product-collection/hand-picked",
+              "hideControls": ["inherit", "filterable"],
+              "queryContextIncludes": ["collection"]
+            },
+            "innerBlocks": [
+              {
+                "name": "woocommerce/product-template",
+                "attributes": {},
+                "innerBlocks": [
+                  {
+                    "name": "sgs/buybox",
+                    "attributes": {
+                      "buyboxLayout": "guided",
+                      "guidedAutoAdvance": true,
+                      "guidedAnswerAttributes": true
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  { "name": "core/template-part", "attributes": { "slug": "footer", "tagName": "footer" } }
+]
