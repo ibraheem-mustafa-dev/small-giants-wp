@@ -99,7 +99,7 @@ breakpoint) and serialised into the block's own `sgsCustomCss` field — never s
 an acceptable gap).
 
 **The 3-layer wrapper model** (OUTER / CONTENT-WIDTH / PER-GRID-ITEM) is how every composite
-with a built-in wrapper mirrors `sgs/container`'s capabilities — see §5's composite-mirror rule.
+with a built-in wrapper offers the `sgs/container` panels it opts into — see §6.2.
 
 **Fidelity measurement — computed-parity, Stage 11.6 (Spec 20).** `scripts/parity/
 computed-parity.js` compares `getComputedStyle` on the rendered clone vs the draft, matched by
@@ -138,7 +138,7 @@ sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
 |---|---|
 | `blocks` | Block roster; `tier` (block / class-section / pattern), `variant_attr` (names the variant-selector attr) |
 | `block_attributes` | Per-attribute routing: `role`, `emit_shape`, `box_family`/`box_side`, `css_property`/`css_element`/`css_state`/`css_tier`, `canonical_slot` |
-| `block_composition` | `container_kind` (section / layout / content), `wraps_block` — the composite-mirror roster |
+| `block_composition` | `container_kind` (section / layout / content), `wraps_block` — the container-bearing roster |
 | `block_supports` / `block_capabilities` | Native WP `supports` + SGS capability flags per block |
 | `slots` / `roles` | Element- and section-scope BEM vocabulary + role classification |
 | `property_suffixes` | CSS property → device-tier attribute-name mapping (the D0/D1/D2 router's core lookup) |
@@ -173,17 +173,17 @@ structural AST gate fails the build if any box-property grouping runs without ch
 Verify current compliance: `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`.
 Canonical spec: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`.
 
-### 6.2 `SGS_Container_Wrapper` and the composite-mirror rule
+### 6.2 `SGS_Container_Wrapper` and the composite wrapper rule
 
 `sgs/container` is the canonical wrapper block (background image/video/parallax, shape
 dividers, width/content-width capping, grid/flex layout, responsive gap, grid-item defaults,
 shadow). Every composite block with a built-in outer wrapper (hero, cta-section, trust-bar,
-card-grid, …) must mirror its capabilities rather than diverge with per-block CSS hacks — this
-is a composite-mirror obligation (Spec 31 §13.6 FR-31-21.1), gated on the DB's
-`block_composition.container_kind` column (`section` / `layout` / `content`), propagated by
-`block.json supports.sgs.containerKind` → `/sgs-update`.
+card-grid, …) offers the container panels it needs, opt-in per block, and must not diverge from
+the wrapper's computed behaviour with per-block CSS hacks (Spec 31 §13.6 FR-31-21.1). The DB's
+`block_composition.container_kind` column (`section` / `layout` / `content`) is read from
+`block.json supports.sgs.containerKind` by `/sgs-update`.
 
-**"Mirror capabilities" does not mean "must call `SGS_Container_Wrapper::render()`"** — this is
+**A composite need not call `SGS_Container_Wrapper::render()`** — this is
 a settled clarification, not an open design question. A **content-KIND composite that uses only
 box + width** (quote, info-box, testimonial, team-member) may render **block-private** — its own
 scoped `<style>`, no wrapper call — because the converter routes CSS by `block_attributes` keyed
@@ -260,8 +260,8 @@ source. The decision log is `.claude/archive/decisions.md`.
    Nesting containers inside containers is the correct pattern for complex layouts.
 4. **No inline styling, framework-wide.** Zero `sgs/*` blocks emit an inline `style` property
    declaration (§6.1); `audit-inline-styling.js --check` proves it.
-5. **Composite-mirror rule.** No composite with a built-in wrapper may diverge from
-   `sgs/container`'s capabilities; the `container_kind` column gates which 3-layer panels a block
+5. **Composite wrapper rule.** No composite with a built-in wrapper may diverge from the
+   wrapper's computed behaviour; the `container_kind` column gates which 3-layer panels a block
    exposes (§6.2).
 6. **Content-KIND composites may render block-private** — section/layout-KIND composites keep the
    shared wrapper (§6.2).

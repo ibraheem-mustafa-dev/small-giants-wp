@@ -33,10 +33,9 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                                   (ghost rows Stage 1 never removes — always deleted regardless
                                   of prune_mode; block_attributes has no is_stale column)
                               Operates on both .agents + .claude DBs.
- 10. container_mirror_report — run sync-container-wrapping-blocks.py --write-block-json
-                               (report-only; NO --apply — operator-gated). Surfaces which
-                               KIND-scoped sgs/container attrs each composite is missing
-                               so a version-bump is visible before any operator-gated --apply.
+ 10. container_roster_report — run sync-container-wrapping-blocks.py (report-only;
+                               NO --apply). Prints the container-bearing roster, KINDs and
+                               the roster validation result.
  11. motion_fx_artefact_regen — regenerate the Spec 38 motion-fx shipped artefacts
                                (generated-fx-effects.php + generated-fx-effect-meta.json +
                                generated-fx-qualifying-blocks.json — the .php mirror of the
@@ -1194,8 +1193,8 @@ def _index_sgs_block_files(
         # _WRAPPER_TIER_OBJECT_ATTRS is name-keyed and was applied
         # unconditionally to every block, including sgs/brand-strip's
         # unrelated `columns`, which never mentions the wrapper). Routing is
-        # declared via `supports.sgs.containerKind` (Spec 31 §13.6's
-        # composite-mirror propagation route), matching every other place in
+        # declared via `supports.sgs.containerKind` (Spec 31 §13.6),
+        # matching every other place in
         # this codebase that gates wrapper-derived behaviour.
         _routes_through_wrapper = bool(
             isinstance(supports.get("sgs"), dict) and supports["sgs"].get("containerKind")
@@ -6911,21 +6910,20 @@ def stage_9_prune_orphans(
 
 
 # ---------------------------------------------------------------------------
-# Stage 10 — Container-wrapper attribute mirror (WS-4, D160)
+# Stage 10 — Container-bearing roster report
 # ---------------------------------------------------------------------------
-# Runs sync-container-wrapping-blocks.py in --write-block-json mode (report-only
-# by default — NO --apply flag so no block.json files are written).  A container
-# version-bump surfaces the diff for operator review; --apply is gated behind an
-# explicit operator command.
+# Runs sync-container-wrapping-blocks.py with no flags (report-only: it writes
+# neither the DB nor any block.json file). The roster, KINDs and validation
+# result flow through to the terminal.
 #
 # The script is invoked as a subprocess (same pattern as Stage 6 / Stage 7) so
 # it runs in its own Python process and cannot import-side-effect this module.
 
 
-def stage_10_container_mirror_report(dry_run: bool = False) -> dict:
-    """Stage 10 — container-wrapper attribute mirror diff (report-only).
+def stage_10_container_roster_report(dry_run: bool = False) -> dict:
+    """Stage 10 — container-bearing roster report (report-only).
 
-    Calls sync-container-wrapping-blocks.py --write-block-json (no --apply).
+    Calls sync-container-wrapping-blocks.py with no flags (no --apply).
     dry_run=True: just prints what Stage 10 would invoke and returns stub output.
     """
     sync_script = (
@@ -6939,12 +6937,12 @@ def stage_10_container_mirror_report(dry_run: bool = False) -> dict:
     if dry_run:
         print(
             f"Stage 10 [dry-run]: would run:\n"
-            f"  python {sync_script} --write-block-json\n"
-            "(no --apply — operator-gated; this stage only surfaces the diff)"
+            f"  python {sync_script}\n"
+            "(no --apply; this stage only reports the roster)"
         )
         return {"status": "dry-run", "dry_run": True}
 
-    cmd = [sys.executable, str(sync_script), "--write-block-json"]
+    cmd = [sys.executable, str(sync_script)]
     print(f"Stage 10: running {' '.join(cmd)}")
     try:
         result = subprocess.run(
@@ -6958,7 +6956,7 @@ def stage_10_container_mirror_report(dry_run: bool = False) -> dict:
             msg = f"sync-container-wrapping-blocks.py exited {result.returncode}"
             print(f"Stage 10 WARN: {msg}")
             return {"status": "warn", "returncode": result.returncode, "dry_run": False}
-        print("Stage 10: container-wrapper mirror diff complete.")
+        print("Stage 10: container roster report complete.")
         return {"status": "ok", "dry_run": False}
     except subprocess.TimeoutExpired:
         msg = "sync-container-wrapping-blocks.py timed out after 120 s"
@@ -8004,7 +8002,7 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
     every stage from 3 onward as "one less than it used to be".
 
     Stage 9 is the prune-orphans stage (controlled by --prune-mode).
-    Stage 10 is the container-wrapper attribute mirror diff (WS-4, D160).
+    Stage 10 is the container-bearing roster report (report-only).
     Stage 11 is the motion-fx artefact regeneration (D432 follow-up, 2026-08-01).
     Stage 12 is the audit scanners (DB/roster-keyed, report-only).
     Stage 13 is the database-to-CSV export (final stage, idempotent).
@@ -8022,7 +8020,7 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
         7: lambda: stage_7_uimax_mirror(dry_run=args.dry_run),
         8: lambda: stage_8_drift_gate(conn, dry_run=args.dry_run),
         9: lambda: stage_9_prune_orphans(conn, dry_run=args.dry_run, prune_mode=prune_mode),
-        10: lambda: stage_10_container_mirror_report(dry_run=args.dry_run),
+        10: lambda: stage_10_container_roster_report(dry_run=args.dry_run),
         11: lambda: stage_11_motion_fx_artefact_regen(dry_run=args.dry_run),
         12: lambda: stage_12_run_audit_scanners(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
         13: lambda: stage_13_export_db_to_csv(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
@@ -8129,7 +8127,7 @@ def main() -> None:
         # This loop previously did `status = result.get("error", "ok")` and NEVER looked at
         # result["status"] — so any stage returning {"status": "warn"} (or "retired",
         # "refreshed", "synced") printed a flat **"ok"** unless it happened to carry an
-        # "error" key. Measured live (2026-07-16, pre-renumber numbering — container_mirror_report
+        # "error" key. Measured live (2026-07-16, pre-renumber numbering — container_roster_report
         # was Stage 11 then, now Stage 10): it returned {"status": "warn", "returncode": 1}
         # and the summary said "ok"; the since-removed retired-stage tombstone (formerly
         # Stage 3, deleted from the pipeline 2026-08-10) returned {"status": "retired"} and

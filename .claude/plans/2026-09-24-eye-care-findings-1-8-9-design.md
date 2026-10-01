@@ -101,7 +101,7 @@ Order: C2, then C4, C3, C1 (smallest first; C1 is the largest). One commit each,
 - **C1 to C4 approved.**
 - **"Couldn't the default container fix the hero, open items included?"** `sgs/container` carries the
   same background set as `sgs/hero` (backgroundImage, overlayGradient, bgKenBurns, bgParallax;
-  checked in the DB), per the composite-mirror rule. But the container's descent has the same gap: it
+  checked in the DB), per the composite wrapper rule. But the container's descent has the same gap: it
   would turn the photo layer into a nested container holding an image, and the empty overlay layers
   into empty containers. So **C1's shape rule moves to the shared routing both paths use**. A
   classless section recognised as the default container then gets the same background and overlay

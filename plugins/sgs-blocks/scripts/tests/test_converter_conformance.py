@@ -513,7 +513,7 @@ class TestNoButtonGroupDoubleNest:
     When the parent was sgs/multi-button itself (the button-group block), its
     button children were re-wrapped in a bare inner sgs/multi-button.
     Fix: parent_slug parameter added to _process_container_children; the call site
-    for resolved container-mirror blocks (walk() line ~2934) passes parent_slug=slug;
+    for resolved container-wrapper blocks (walk() line ~2934) passes parent_slug=slug;
     the guard at line ~3862 suppresses _group_loose_buttons when parent_slug ==
     block_for_slot_token('button-group'). DB-derived (R-22-1), universal (R-22-9).
 
@@ -564,7 +564,7 @@ class TestNoButtonGroupDoubleNest:
             "Root cause: _process_container_children called _group_loose_buttons "
             "when the parent IS the button-group block — re-wrapping its children.\n"
             "Fix: ensure parent_slug is passed to _process_container_children at "
-            "the container-mirror-block call site (walk() line ~2934) so the guard fires.\n"
+            "the container-wrapper-block call site (walk() line ~2934) so the guard fires.\n"
             "Violations:\n" + "\n".join(violations)
         )
 

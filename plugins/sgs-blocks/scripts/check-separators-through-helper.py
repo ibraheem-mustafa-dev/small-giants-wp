@@ -124,12 +124,45 @@ def cmd_survey() -> int:
     return 0
 
 
+# Editor preview: a block that declares `supports.sgs.separators` must show the lines in its canvas
+# through a shared preview, or have its canvas rendered by render.php (ServerSideRender).
+PREVIEW_TOKENS = ("useSeparatorsCanvas", "useSeparatorOverlay", "separatorsLineCss", "separatorsFlowPreview", "ServerSideRender")
+EDITOR_EXEMPT = {
+    "sgs/cart": "the mini-cart panel is not rendered in the canvas, so there is nothing to draw lines on",
+}
+
+
+def editor_preview_ok(text: str) -> bool:
+    return any(token in text for token in PREVIEW_TOKENS)
+
+
+def editor_findings() -> list[str]:
+    out: list[str] = []
+    for manifest in sorted((PLUGIN / "src" / "blocks").glob("*/block.json")):
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        if not (data.get("supports", {}).get("sgs", {}) or {}).get("separators"):
+            continue
+        if data.get("name") in EDITOR_EXEMPT:
+            continue
+        text = " ".join(p.read_text(encoding="utf-8", errors="replace") for p in manifest.parent.glob("*.js"))
+        if not editor_preview_ok(text):
+            out.append(f"{data.get('name')}: declares supports.sgs.separators but its editor canvas never previews the lines "
+                       "(use useSeparatorsCanvas from src/shared/separators/)")
+    return out
+
+
 def cmd_check() -> int:
     new, stale = compare(scan(), load_baseline())
+    editor = editor_findings()
     for line in new:
         print(f"FAIL new between-item line outside the helper: {line}")
     for line in stale:
         print(f"FAIL stale baseline: {line}")
+    for line in editor:
+        print(f"FAIL editor preview: {line}")
+    if editor and not (new or stale):
+        print("[separators] FAIL — a block with a separators setting must preview it in its canvas.")
+        return 1
     if new or stale:
         print("[separators] FAIL — route a between-item line through includes/helpers-separators*.php "
               "(or, after adopting a block, lower its baseline entry: --write-baseline).")

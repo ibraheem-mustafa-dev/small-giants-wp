@@ -15,7 +15,8 @@ import { ResponsiveOverride, SgsColourPanel, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { resolveResponsiveTier, textPaintPreview } from '../../utils';
+import { resolveResponsiveTier, textPaintPreview, usePreviewTier } from '../../utils';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 
 const LAYOUT_MODE_OPTIONS = [
 	{
@@ -148,10 +149,29 @@ export default function Edit( { attributes, setAttributes } ) {
 	// merged alongside the existing grid-layout preview.
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
+	// Lines between items: the block root is the grid (render.php forces
+	// layout=grid), so the hook's ref and style land on blockProps.
+	const previewTier = usePreviewTier();
+	const sep = useSeparatorsCanvas( {
+		separators: attributes.separators,
+		device: previewTier,
+		active: true,
+		deps: [
+			layoutMode,
+			attributes.columns,
+			attributes.gridTemplateColumns,
+			minItemWidth,
+			minItemWidthUnit,
+			gap,
+		],
+	} );
+
 	const blockProps = useBlockProps( {
+		ref: sep.ref,
 		className: `sgs-feature-grid sgs-feature-grid--${ layoutMode }`,
 		style: {
 			...buildGridStyle( attributes ),
+			...sep.style,
 			...textPaintPreview( textColour, textColourGradient, colourPalette ),
 		},
 	} );

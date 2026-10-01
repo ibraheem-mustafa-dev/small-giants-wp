@@ -15,7 +15,7 @@
  *    initial values are server-rendered, so the card is fully meaningful with
  *    no JS.
  *
- * WS-4 (composite-mirror): render.php now delegates the OUTER wrapper to
+ * WS-4 (composite wrapper): render.php now delegates the OUTER wrapper to
  * SGS_Container_Wrapper::render() so sgs/product-card mirrors sgs/container's
  * wrapper capabilities (align, maxWidth, etc.). The block is
  * a CONTENT-KIND composite — only width layers are emitted (no bg/grid/shapes).
@@ -43,7 +43,7 @@
  *  Both land on the same outer element get_block_wrapper_attributes() controls.
  *
  * @since 1.1.0
- * @since 1.7.0  WS-4 composite-mirror: SGS_Container_Wrapper delegation.
+ * @since 1.7.0  WS-4 composite wrapper: SGS_Container_Wrapper delegation.
  *
  * @var array     $attributes Block attributes.
  * @var string    $content    Unused — the block has no InnerBlocks slot.

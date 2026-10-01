@@ -630,7 +630,7 @@
 			"type": "string",
 			"default": "default"
 		},
-		"_comment_wrapperAttrs": "WS-4 container-mirror (CONTENT kind): width/spacing only — mirrored verbatim from sgs/container block.json.",
+		"_comment_wrapperAttrs": "WS-4 container wrapper (CONTENT kind): width/spacing only — mirrored verbatim from sgs/container block.json.",
 		"maxWidth": {
 			"type": "string",
 			"default": ""

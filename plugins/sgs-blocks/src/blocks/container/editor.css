@@ -28,4 +28,4 @@
    there, keyed on the same marker classes `src/utils/background-preview.js`
    applies for EVERY block mounting `BackgroundPanel` (container included), so
    there is exactly one copy of this CSS instead of one per adopting block.
-   Do not re-add a private copy here — see CLAUDE.md's composite-mirror rule. */
+   Do not re-add a private copy here — see CLAUDE.md's composite wrapper rule. */

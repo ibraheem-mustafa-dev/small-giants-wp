@@ -6,7 +6,7 @@
  * (sgs/nav-bar-menu) and the drawer (sgs/nav-drawer-menu, itself nested inside
  * sgs/nav-drawer) both resolve their menu through this class, so a single
  * WordPress menu drives both — no divergent/duplicated menu content (Spec 36
- * FR-36-1 "one menu source"; composite-mirror R-31-9).
+ * FR-36-1 "one menu source"; composite wrapper R-31-9).
  *
  * TWO menu formats resolve here (Spec 36 FR-36-1). **Classic menus are PRIMARY**
  * (Appearance → Menus, `nav_menu` terms); block-based `wp_navigation` posts

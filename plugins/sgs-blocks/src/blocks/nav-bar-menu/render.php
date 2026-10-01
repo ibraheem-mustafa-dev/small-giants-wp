@@ -1009,7 +1009,7 @@ $css .= sgs_nav_menu_caret_css( $uid_sel, 'sgs-nav-bar-menu', $attributes );
 // display:none at the collapse point (§4f), so only ever ONE flex child
 // exists and a flex gap between one item paints nothing.
 //
-// ⛔ Do NOT "restore the composite-mirror rule" here. R-31-9 is NOT breached:
+// ⛔ Do NOT "restore the composite wrapper rule" here. R-31-9 is NOT breached:
 // "mirror capabilities" forbids a per-block hack that DIVERGES from the
 // wrapper's computed behaviour, not a clean block-private implementation
 // reproducing the same capability set — which §4g-bis above does for

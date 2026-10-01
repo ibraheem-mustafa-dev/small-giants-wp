@@ -228,7 +228,7 @@ final class ContainerWrapperTest extends TestCase {
 	}
 
 	/**
-	 * KIND gate — the mechanism that makes composite-mirror (D294) safe.
+	 * KIND gate — the mechanism that makes composite wrapper (D294) safe.
 	 * Section-only layers must be completely absent for 'layout'/'content',
 	 * even given the EXACT SAME $attributes that produce them under 'section'.
 	 */

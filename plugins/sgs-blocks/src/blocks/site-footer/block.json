@@ -96,7 +96,7 @@
 							}
 						}
 					},
-					"_note": "The rendered <footer>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite-mirror rule R-31-9). Colour is SGS-owned (backgroundColour/textColour + Gradient/Hover siblings, the same shape as sgs/site-header); spacing and border are SGS-owned attributes too (see attrMap), each emitted into this block's own scoped <style> rather than inline (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
+					"_note": "The rendered <footer>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite wrapper rule R-31-9). Colour is SGS-owned (backgroundColour/textColour + Gradient/Hover siblings, the same shape as sgs/site-header); spacing and border are SGS-owned attributes too (see attrMap), each emitted into this block's own scoped <style> rather than inline (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",

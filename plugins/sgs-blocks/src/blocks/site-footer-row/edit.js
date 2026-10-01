@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
+import { useMergeRefs } from '@wordpress/compose';
 import { useSelect } from '@wordpress/data';
 import {
 	useBlockProps,
@@ -34,7 +35,8 @@ import { ParticleTrailRowControls } from '../../components/ParticleTrailRowContr
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview } from '../../utils';
+import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview, usePreviewTier } from '../../utils';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 
 // Motion — block-private `fxEffect` selector, NOT the
 // shared fx ToolsPanel roster's `fx` attribute (this block declares no `fx`
@@ -398,7 +400,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// (not a box), same shape as `gap`/`columns` above.
 	const maxWidthPreview = resolveResponsiveTier( maxWidth, 'desktop' )?.value;
 
-	const style = { ...previewStyle, ...paddingPreview };
+	// Separators preview: the row's list is the root, or the band when a content
+	// width opens one (contentBandPreview moves the rule keys onto the band with
+	// the grid/flex declarations, and the ref follows below).
+	const previewTier = usePreviewTier();
+	const sep = useSeparatorsCanvas( {
+		separators: attributes.separators,
+		device: previewTier,
+		active: [ 'grid', 'flex', 'stack' ].includes( layout || 'flex' ),
+		deps: [ attributes.columns, attributes.gap, attributes.layout ],
+	} );
+
+	const style = { ...previewStyle, ...paddingPreview, ...sep.style };
 	if ( marginPreview ) style.margin = marginPreview;
 	if ( maxWidthPreview ) style.maxWidth = maxWidthPreview;
 
@@ -428,12 +441,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		}`,
 		style,
 	} );
+	const rootRef = useMergeRefs( [ blockProps.ref, sep.ref ] );
 
 	// The children belong to the BAND when one renders, and to the root when
 	// one does not — useInnerBlocksProps is called exactly once either way,
 	// branching the ARGUMENT (mirrors sgs/container/edit.js).
 	const innerBlocksProps = useInnerBlocksProps(
-		hasBandProps ? { className: 'sgs-container__inner', style: bandStyle } : blockProps,
+		hasBandProps
+			? { className: 'sgs-container__inner', style: bandStyle, ref: sep.ref }
+			: { ...blockProps, ref: rootRef },
 		{
 			templateLock: false,
 			orientation: 'horizontal',

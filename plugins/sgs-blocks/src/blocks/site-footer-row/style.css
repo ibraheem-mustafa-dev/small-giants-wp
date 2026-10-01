@@ -4,7 +4,7 @@
  * The layout (display:grid/flex, columns, gap, align-items, justify-content) is
  * owned by the shared SGS_Container_Wrapper via block attributes (layout,
  * columns*, gridTemplateColumns*, gap, verticalAlign, justifyContent) — NOT
- * hardcoded here (Gate B / no-inline, composite-mirror R-31-9). The responsive
+ * hardcoded here (Gate B / no-inline, composite wrapper R-31-9). The responsive
  * column collapse is emitted by the wrapper as scoped per-tier rules at the grid
  * selector (QB-2). It is NOT a `sgs-cols-*` class: such a class would sit on the
  * wrapper while container queries place the grid on `.sgs-container__inner`,

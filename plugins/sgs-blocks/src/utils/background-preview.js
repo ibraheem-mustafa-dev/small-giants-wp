@@ -24,7 +24,7 @@ import { motionEasingCss } from '../components/MotionEasingControl';
  *  - `SGS_Container_Wrapper::render()` (class-sgs-container-wrapper.php) — the
  *    shared frontend renderer every adopting block (container, hero,
  *    multi-button, physics-canvas, site-footer, site-header, trust-bar) goes
- *    through, per the composite-mirror rule (CLAUDE.md).
+ *    through, per the composite wrapper rule (CLAUDE.md).
  *
  * ⛔ `bgSvg*` (a separate decorative-SVG background attribute family that
  * `BackgroundPanel` also writes) is DELIBERATELY NOT covered here.

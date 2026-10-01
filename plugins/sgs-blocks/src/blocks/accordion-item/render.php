@@ -2,7 +2,7 @@
 /**
  * Accordion Item — server-side render.
  *
- * WS-4 composite-mirror: CONTENT kind — width/spacing layers only via
+ * WS-4 composite wrapper: CONTENT kind — width/spacing layers only via
  * SGS_Container_Wrapper::render(). The outer <details> wrapper carries
  * all toggle attrs (open / aria-expanded is on <summary> inside $inner_html).
  *

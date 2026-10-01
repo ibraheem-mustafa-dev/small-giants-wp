@@ -80,7 +80,7 @@
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap"
 					},
-					"_note": "Composite-mirror grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1). This block has NO `alignItems` attribute at all — an honest gap, not an omission."
+					"_note": "composite wrapper grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1). This block has NO `alignItems` attribute at all — an honest gap, not an omission."
 				},
 				"tab": {
 					"label": "Tab (resting state)",

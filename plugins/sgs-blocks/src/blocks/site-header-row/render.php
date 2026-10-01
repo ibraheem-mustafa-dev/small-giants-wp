@@ -11,7 +11,7 @@
  * authored width (Spec 37 §3.6 / FR-37-12).
  *
  * Outer rendering is delegated ENTIRELY to the shared SGS_Container_Wrapper
- * (composite-mirror, R-31-9) — no divergent per-block styling path. The
+ * (composite wrapper, R-31-9) — no divergent per-block styling path. The
  * only block-private CSS is the cluster hardening in style.css + the scoped
  * colour/border re-emit below (no-inline contract, Spec 32).
  *

@@ -384,10 +384,10 @@ def test_layout_attr_out_of_enum_value_gaps_not_coerced(caplog):
 
 def test_layout_attr_valid_enum_value_still_writes_positive_control():
     """Positive control: a block whose `layout` enum DOES contain "flex"
-    (["", "flex", "stack", "grid"], the container-mirror shape shared by
+    (["", "flex", "stack", "grid"], the container-wrapper shape shared by
     sgs/hero and 11 others) must still write "layout":"flex" through the
     validate() gate for the SAME display:flex signature — proves the gate isn't
-    a blanket-reject that would break every container-mirroring composite. DB
+    a blanket-reject that would break every container-wrapper composite. DB
     stubbed (Important #3) — no live-DB dependency."""
     from converter.context import Recognition
     import converter.services.extraction as _ext

@@ -529,7 +529,7 @@
 		"ctaColourText": {
 			"type": "string",
 			"default": "",
-			"description": "Built-in CTA text colour override. EMPTY (default) = inherit the shared button-preset colour channel via the sgs-button--{style} class (composite-mirror, WCAG-correct per client — a light-primary palette gets dark CTA text automatically). Set a theme token slug or raw CSS colour only to override. (Was 'text-inverse', which force-painted near-white and failed WCAG on light palettes — D-pending.)"
+			"description": "Built-in CTA text colour override. EMPTY (default) = inherit the shared button-preset colour channel via the sgs-button--{style} class (composite wrapper, WCAG-correct per client — a light-primary palette gets dark CTA text automatically). Set a theme token slug or raw CSS colour only to override. (Was 'text-inverse', which force-painted near-white and failed WCAG on light palettes — D-pending.)"
 		},
 		"ctaColourTextGradient": {
 			"type": "string",
@@ -771,7 +771,7 @@
 				"secondary",
 				"outline"
 			],
-			"description": "Primary CTA visual style (primary/secondary/outline) — maps to the sgs-button--{ctaStyle} modifier class, mirroring a standalone sgs/button's inheritStyle. The cloning converter lifts the draft CTA's --modifier here (Spec 31 §13.5). Picking a style in the editor also seeds the ctaColour*/ctaBorder*/ctaFontWeight fields; leaving those empty makes the CTA inherit the shared button-preset colour channel (composite-mirror, WCAG-correct per client)."
+			"description": "Primary CTA visual style (primary/secondary/outline) — maps to the sgs-button--{ctaStyle} modifier class, mirroring a standalone sgs/button's inheritStyle. The cloning converter lifts the draft CTA's --modifier here (Spec 31 §13.5). Picking a style in the editor also seeds the ctaColour*/ctaBorder*/ctaFontWeight fields; leaving those empty makes the CTA inherit the shared button-preset colour channel (composite wrapper, WCAG-correct per client)."
 		},
 		"cta2Text": {
 			"type": "string",

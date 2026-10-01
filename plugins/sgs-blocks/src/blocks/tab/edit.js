@@ -152,7 +152,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					} ),
 				] }
 			/>
-			{ /* Width / spacing (WS-4 container mirror) */ }
+			{ /* Width / spacing (WS-4 container wrapper) */ }
 			<InspectorControls>
 				<PanelBody title={ __( 'Tab Settings', 'sgs-blocks' ) } initialOpen={ true }>
 					<TextControl

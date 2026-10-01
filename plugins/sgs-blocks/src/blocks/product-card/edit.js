@@ -3405,7 +3405,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						     (`sgs-button sgs-button--{style}` +, for the
 						     primary CTA, the `sgs-product-card__cta--primary`
 						     marker class) so the typed preview picks up the
-						     same base/composite-mirror CSS cascade as the
+						     same base/composite wrapper CSS cascade as the
 						     frontend, on top of which ctaPreviewStyle applies
 						     the per-instance cta* box/colour/typography
 						     overrides render.php emits via

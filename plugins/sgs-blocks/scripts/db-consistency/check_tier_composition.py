@@ -7,7 +7,7 @@ MUST have:
   - block_composition.composition_role IN ('section-root', 'content-block'), AND
   - block_composition.container_kind IS NOT NULL
 
-else the converter's container-mirror logic can't route it through the shared
+else the converter's container-wrapper logic can't route it through the shared
 3-layer model.  NOTE: 'content-block' IS allowed (trust-bar uses it) — do NOT
 require 'section-root'.
 

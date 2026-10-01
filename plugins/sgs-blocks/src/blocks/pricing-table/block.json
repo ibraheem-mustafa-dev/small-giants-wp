@@ -121,7 +121,7 @@
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap"
 					},
-					"_note": "Composite-mirror grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared (ROLLOUT REQUIREMENT 1). This block has NO `alignItems` attribute — an honest gap."
+					"_note": "composite wrapper grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared (ROLLOUT REQUIREMENT 1). This block has NO `alignItems` attribute — an honest gap."
 				},
 				"title": {
 					"label": "Plan name",

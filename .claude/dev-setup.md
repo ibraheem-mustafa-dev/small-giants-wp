@@ -598,9 +598,9 @@ per-commit cadence is dictated by `/sgs-clone --debug-trace` measurement rather 
 QA. The `/wp-sgs-deploy` skill governs *what must pass before* a production deploy (QC gates,
 doc walk); it does not replace the script that performs it.
 
-### Inheritance audit — container-wrapping blocks
+### Container roster — container-wrapping blocks
 
-`plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` detects which blocks wrap children via InnerBlocks (the "wraps children" model, a validated structural signal) and syncs `wraps_block` + `container_kind` into `block_composition`.
+`plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` detects which blocks wrap children via InnerBlocks (the "wraps children" model, a validated structural signal) and, with `--apply`, writes `wraps_block` + `container_kind` into `block_composition`. A dry run prints the roster and `[VALIDATION PASS]`/`[VALIDATION FAIL]`.
 
 ```bash
 python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
@@ -784,8 +784,8 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 71 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 939 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 77 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 941 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -920,12 +920,16 @@ Each entry's purpose is quoted from the script's own header.
 | 118 | `check-raw-box-control.py` | every 4-side box editor in the inspector is SgsBoxControl. |
 | 119 | `check-custom-colour-survives.py` | a custom colour picked in the editor must reach the live page. |
 | 120 | `audit-ssr-http-method.js` | Every `<ServerSideRender>` preview under `src/` must come from the SGS drop-in `src/components/ServerSideRender.js`, which always POSTs. Fails when: |
-| 121 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 122 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 123 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 124 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 121 | `test-media-enum-vocabulary.mjs` | A block that HAND-DECLARES a media-atom attribute with an `enum` must allow every value the atom's registry vocabulary offers. |
+| 122 | `check-border-width-without-style.py` | the "a width paints solid" detector. |
+| 123 | `check-separators-through-helper.py` | lines between items go through the helper. |
+| 124 | `check-no-client-names.py` | : keep client names and reference-site names out of the framework. |
+| 125 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 126 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 127 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 128 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
 
-**124 gating scripts.** Regenerate this whole section with:
+**128 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -933,7 +937,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (124 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 125 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (128 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 129 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -985,6 +989,14 @@ Every field below is extracted from the script's own executable code (regex over
 - Path constants: `REPO` = Path(__file__).resolve().parents[3]; `PLUGIN` = REPO / "plugins" / "sgs-blocks"; `BASELINE` = Path(__file__).with_name("border-style-without-width-baseline.json")
 - Reads: `BASELINE`
 - Writes: **read-only** — no write call site found in source
+- CLI flags read: `--check`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/check-border-width-without-style.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- DB tables (sgs-framework.db): plugins
 - CLI flags read: `--check`, `--self-test`, `--survey`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
@@ -1196,6 +1208,14 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: `FIXTURE_FILE`
 - Writes: `FIXTURE_FILE`
 - CLI flags read: `--check`, `--self-test`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/check-separators-through-helper.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]; `BASELINE` = Path(__file__).resolve().with_name("check-separators-through-helper-baseline.json")
+- Reads: `BASELINE`, `manifest`
+- Writes: `BASELINE`
+- DB tables (sgs-framework.db): plugins
+- CLI flags read: `--check`, `--self-test`, `--survey`, `--write-baseline`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-shadow-fallback-php.py`** (build)
@@ -1622,6 +1642,11 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/tests/test-media-enum-vocabulary.mjs`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites found: exit(1)
+
 **`plugins/sgs-blocks/scripts/tests/test-media-injection-parity.mjs`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
@@ -1658,6 +1683,13 @@ Every field below is extracted from the script's own executable code (regex over
 - DB tables (sgs-framework.db): block_attributes, slots
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`scripts/check-no-client-names.py`** (build)
+- Path constants: `REPO` = Path(__file__).resolve().parent.parent
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- CLI flags read: `--check`, `--files`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`scripts/font-source-audit.js`** (build)
 - Reads: `filePath`
 - Writes: `args.report`
@@ -1684,7 +1716,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 797 scripts
+#### `plugins/sgs-blocks/scripts/` — 798 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1702,25 +1734,25 @@ for the verb you happen to have in mind.
 | `audit-script-reachability.py` | manifest+script-call | which scripts in this library actually RUN, and how. |
 | `audit-shrink-to-fit.js` | manifest+script-call | WHY LIVE (not static) |
 | `audit-typography-attr-declarations.js` | manifest | bug introduced while rolling out the full TypographyControls control set |
-| `behavioural-analyser/assign-canonical.py` | manifest+script-call | Backfills `canonical_slot`, `role`, and `derived_selector` for every row in |
+| `behavioural-analyser/assign-canonical.py` | manifest+script-call+test-import | Backfills `canonical_slot`, `role`, and `derived_selector` for every row in |
 | `behavioural-analyser/backfill-coarse-roles.py` | manifest | Spec 31 Phase 3.5 — Refine Phase 1 coarse roles to role-templates taxonomy. |
 | `behavioural-analyser/backfill-from-json-catalogue.py` | manifest | Spec 31 Phase 3 step 3.1 helper — one-shot backfill of role / derived_selector |
-| `behavioural-analyser/extract-signatures.py` | manifest+script-call | SGS Block Behavioural Signature Extractor |
-| `build-deploy.py` | manifest+script-call | One-shot SGS build + tar + scp + remote extract + cleanup. |
+| `behavioural-analyser/extract-signatures.py` | manifest+script-call+test-import | SGS Block Behavioural Signature Extractor |
+| `build-deploy.py` | manifest+script-call+test-import | One-shot SGS build + tar + scp + remote extract + cleanup. |
 | `build-font-collection.py` | manifest | Generates a WordPress Font Library collection manifest (google-fonts.json) from the |
 | `build-tier-fixture-page.py` | manifest+script-call | Build (and publish) ONE canary page carrying every block that has migrated |
-| `business_info/__init__.py` | manifest+script-call | Business-details extraction and push for Spec 33 FR-33-14. |
-| `business_info/credentials.py` | script-call | REST credential resolution for the Site Info push (mirrors push-theme-snapshot.py). |
-| `business_info/extract.py` | manifest+script-call+skill | Extraction of high-confidence business-details fields from a draft's HTML. |
-| `business_info/label_context.py` | script-call | Where a label is allowed to sit. A label inside a form, dialog, wizard or review summary is |
-| `business_info/placeholder_map.py` | script-call | The placeholder map: which `{{ binding }}` in a draft template resolves to which Site Info key. |
-| `business_info/push.py` | manifest+script-call | The Site Info REST push: POST /wp-json/sgs/v1/site-info (fill-if-empty unless overwrite). |
-| `business_info/script_source.py` | script-call | Source 1: the draft script's runtime data object (`key: 'value'` pairs in VOCABULARY). |
-| `business_info/shapes.py` | script-call | Shape validation: a value is kept only if it LOOKS like the field it claims to be. |
-| `business_info/vocabulary.py` | script-call | Vocabulary and shape tables for the business-details extractor. DATA only, no behaviour. |
+| `business_info/__init__.py` | manifest+script-call+test-import | Business-details extraction and push for Spec 33 FR-33-14. |
+| `business_info/credentials.py` | manifest+script-call+test-import | REST credential resolution for the Site Info push (mirrors push-theme-snapshot.py). |
+| `business_info/extract.py` | manifest+script-call+skill+test-import | Extraction of high-confidence business-details fields from a draft's HTML. |
+| `business_info/label_context.py` | manifest+script-call | Where a label is allowed to sit. A label inside a form, dialog, wizard or review summary is |
+| `business_info/placeholder_map.py` | manifest+script-call | The placeholder map: which `{{ binding }}` in a draft template resolves to which Site Info key. |
+| `business_info/push.py` | manifest+script-call+test-import | The Site Info REST push: POST /wp-json/sgs/v1/site-info (fill-if-empty unless overwrite). |
+| `business_info/script_source.py` | manifest+script-call+test-import | Source 1: the draft script's runtime data object (`key: 'value'` pairs in VOCABULARY). |
+| `business_info/shapes.py` | manifest+script-call+test-import | Shape validation: a value is kept only if it LOOKS like the field it claims to be. |
+| `business_info/vocabulary.py` | manifest+script-call+test-import | Vocabulary and shape tables for the business-details extractor. DATA only, no behaviour. |
 | `capture-tier-fixture.py` | manifest+script-call | Measure the tier-fixture page — one scoped measurement per block, three viewports. |
 | `census-colour-paint-route.py` | manifest+script-call | Census: how does each block's render.php route its COLOUR PAINT? |
-| `cheat-gate/__init__.py` | manifest+script-call | cheat-gate — F5 anti-cheat detection suite for the SGS cloning pipeline. |
+| `cheat-gate/__init__.py` | manifest+script-call+test-import | cheat-gate — F5 anti-cheat detection suite for the SGS cloning pipeline. |
 | `cheat-gate/check_bound_emit.py` | manifest+script-call | Check #8: static sourceMode='bound' EMIT in converter source. |
 | `cheat-gate/check_converter_source.py` | manifest+script-call | Check #9: static source cheats in the new converter/ tree. |
 | `cheat-gate/check_d2_when_d1.py` | manifest+script-call | Check #6: D2-when-D1-exists (run_dir-dependent, best-effort). |
@@ -1730,10 +1762,11 @@ for the verb you happen to have in mind.
 | `cheat-gate/check_sentinel.py` | manifest+script-call | Check #7: sentinel leakage ('unitless' string). |
 | `cheat-gate/check_slug_literals.py` | manifest+script-call | Check #1: per-block slug literals (whole-tree + indirect forms). |
 | `cheat-gate/models.py` | manifest+script-call+skill+test-import | shared data types for the F5 cheat-detection gate. |
-| `cheat-gate/run.py` | commit-gate+manifest+npm+script-call+settings+skill | F5 cheat-detection gate runner. |
+| `cheat-gate/run.py` | commit-gate+manifest+npm+script-call+settings+skill+test-import | F5 cheat-detection gate runner. |
 | `check-block-asset-targets.js` | manifest+npm+script-call | STRUCTURAL GUARD (post-D382 hardening) — stops the "block.json names a source filename that never gets compiled" class of bug from regressing. |
 | `check-blockjson-metadata-only.py` | manifest+script-call | visual-diff-gate helper. |
-| `check-border-style-without-width.py` | manifest | the "no width = no border" detector. |
+| `check-border-style-without-width.py` | manifest+script-call | the "no width = no border" detector. |
+| `check-border-width-without-style.py` | manifest | the "a width paints solid" detector. |
 | `check-box-family-guard.py` | manifest+npm+script-call | STRUCTURAL GUARD — box-object interface contract (2026-07-09 plan §6). |
 | `check-child-lift.py` | manifest | check-child-lift — every child-lift rule in the tree stays at ZERO specificity. |
 | `check-colour-attr-css-property.py` | manifest+npm | D962-adjacent gate: no colour attribute may reach the DB with a NULL/empty |
@@ -1780,7 +1813,8 @@ for the verb you happen to have in mind.
 | `check-raw-box-control.py` | manifest+script-call | every 4-side box editor in the inspector is SgsBoxControl. |
 | `check-render-tier-object-spacing.py` | manifest+npm+script-call | GUARD gate (Step 8 shape 2 — 'compares a derived copy to its source; 0 |
 | `check-render-undefined-vars.py` | manifest+npm+script-call | Undefined-variable gate for block render templates (PHPStan level 1). |
-| `check-rest-route-require.py` | npm | STRUCTURAL GUARD — catches a REST route registered against a callback class |
+| `check-rest-route-require.py` | manifest+npm | STRUCTURAL GUARD — catches a REST route registered against a callback class |
+| `check-separators-through-helper.py` | manifest | lines between items go through the helper. |
 | `check-shader-sources.py` | manifest+npm | structural gate for Tier W `*.frag.js` shader sources. |
 | `check-shadow-fallback-php.py` | manifest+npm+script-call | Every PHP writer of a `box-shadow:` declaration must carry the forced-colours fallback. |
 | `check-shadow-sources.py` | manifest | the shadow-source detector (D4/D5 follow-on, survey stage). |
@@ -1831,16 +1865,16 @@ for the verb you happen to have in mind.
 | `content-role-detect/detector7_css_paint_flow.php` | script-call | Detector 7 — CSS PAINT FLOW (forward variable tracking to a paint site). |
 | `content-role-detect/detector8_undeclared_enum.php` | — | Detector 8 — UNDECLARED ENUM (a schema gap, not a role gap). |
 | `content-role-detect/fingerprint_content_roles.py` | manifest+script-call | Deterministic content-role fingerprint (Track A / Spec 35, Step 2). |
-| `converter/__init__.py` | manifest+script-call | SGS clean modular converter (Spec 31 §12.4 / §12.6 step 2 — vertical slice). |
+| `converter/__init__.py` | manifest+script-call+test-import | SGS clean modular converter (Spec 31 §12.4 / §12.6 step 2 — vertical slice). |
 | `converter/block_serialization.py` | manifest+script-call | WP-core-faithful block-attribute serialisation. |
 | `converter/context.py` | manifest+script-call+skill | typed per-element context + declaration for the modular converter. |
 | `converter/coverage_report.py` | manifest+script-call | the Bean-visible sign-off grid (design §5). |
-| `converter/db/__init__.py` | manifest+script-call | converter/db — the modular engine's own DB-accessor package. |
+| `converter/db/__init__.py` | manifest+script-call+test-import | converter/db — the modular engine's own DB-accessor package. |
 | `converter/db/db_lookup.py` | manifest+script-call+skill+test-import | DB-backed canonical lookups for the converter. |
 | `converter/dispatch_spine.py` | manifest+script-call | dispatch + conservation spine (design §3 / §4). |
 | `converter/dispatch_table.py` | manifest+script-call | the DB-sourced routing function (design §2). |
 | `converter/entry.py` | manifest+script-call+skill+test-import | Stage 4 pipeline entry point for the modular converter (`converter/`). |
-| `converter/gates/__init__.py` | manifest+script-call | Anti-cheat gates the scaffold ships (design §4.1). |
+| `converter/gates/__init__.py` | manifest+script-call+test-import | Anti-cheat gates the scaffold ships (design §4.1). |
 | `converter/gates/check_content_attr_collisions.py` | manifest | DB gate: attrs the content resolver cannot tell apart. |
 | `converter/gates/check_preset_absence_no_slug_literal.py` | manifest+npm+script-call | scoped static gate for |
 | `converter/gates/check_raw_sqlite.py` | commit-gate+manifest+script-call | AST gate: no converter/ file opens sqlite3 directly. |
@@ -1848,10 +1882,10 @@ for the verb you happen to have in mind.
 | `converter/gates/no_slug_literal.py` | commit-gate+manifest+script-call | AST gate: no block-slug / variant / slot carve-outs in resolver bodies. |
 | `converter/models.py` | manifest+script-call+skill+test-import | the Write / GAP result types every resolver returns. |
 | `converter/recognition.py` | manifest+script-call | Stage-2 block recognition (modular rebuild, step-3 stage 1). |
-| `converter/resolvers/__init__.py` | manifest+script-call | Resolver registry — resolver_id (from dispatch_table) → resolve callable. |
+| `converter/resolvers/__init__.py` | manifest+script-call+test-import | Resolver registry — resolver_id (from dispatch_table) → resolve callable. |
 | `converter/resolvers/array_content.py` | manifest+script-call | Array / repeater content lift (Spec 31 §3.B4 / §13.3 FR-31-2.5). |
 | `converter/resolvers/content_band.py` | manifest+script-call | content_band — the CONTENT-layer resolver (Spec 31 §3.A, layer L2). |
-| `converter/resolvers/grid.py` | manifest+script-call | grid — the GRID-layer resolver (Spec 31 §3.A, layer L3 / D207 grid engine). |
+| `converter/resolvers/grid.py` | manifest+script-call+skill | grid — the GRID-layer resolver (Spec 31 §3.A, layer L3 / D207 grid engine). |
 | `converter/resolvers/load_settle_probe.py` | manifest+script-call | - Tier 4b "page-load-settle" motion probe (D1032). |
 | `converter/resolvers/marquee.py` | manifest+script-call | lift a draft's seamless-marquee animation onto the block's own marquee attrs. |
 | `converter/resolvers/motion_library_signals.py` | manifest+script-call | Tier 4a DOM-runtime-signal detection for GSAP/Lenis/Three.js -- Phase R8 Step 10. |
@@ -1866,8 +1900,8 @@ for the verb you happen to have in mind.
 | `converter/resolvers/test_load_settle_probe_fixtures.py` | — | Ad-hoc verification harness for `load_settle_probe.py` (Tier 4b, D1032). |
 | `converter/resolvers/test_motion_shape_fixtures.py` | — | Ad-hoc verification harness for `motion_shape.py` (Phase R8 Step 3). |
 | `converter/resolvers/test_motion_trigger_fixtures.py` | — | Ad-hoc verification harness for motion_trigger.py (Phase R8 Step 5). |
-| `converter/resolvers/typography.py` | manifest+script-call | typography — the typography resolver (Spec 31 §3.B2 / §3.A, layer-agnostic). |
-| `converter/services/__init__.py` | manifest+script-call | Resolver services — the small typed steps a resolver composes. |
+| `converter/resolvers/typography.py` | manifest+script-call+test-import | typography — the typography resolver (Spec 31 §3.B2 / §3.A, layer-agnostic). |
+| `converter/services/__init__.py` | manifest+script-call+test-import | Resolver services — the small typed steps a resolver composes. |
 | `converter/services/arrangement.py` | manifest+script-call | Spec 31 §2.3/§2.4/§2.5 arrangement-layer helpers. |
 | `converter/services/assembly.py` | manifest+script-call | Stage 3 §1 emit glue: build_block_markup (design §1). |
 | `converter/services/attr_resolve.py` | manifest+script-call | attr_resolve — name-free (block, layer, property) → attr resolution (design §3.1). |
@@ -1878,7 +1912,7 @@ for the verb you happen to have in mind.
 | `converter/services/content_select.py` | manifest+script-call | content_select — bs4 selection + DOM-shape helpers for content extraction (Stage 3). |
 | `converter/services/css_parse.py` | manifest+script-call | css_parse — shared CSS-text-to-rule-dict parser (ported off the frozen tree). |
 | `converter/services/css_pass.py` | manifest+script-call | Stage 3 §3.A CSS pass: the CSS-declaration resolver dispatch. |
-| `converter/services/dc_import_resolver.py` | script-call | resolve Claude Design `<dc-import>` cross-component |
+| `converter/services/dc_import_resolver.py` | manifest+script-call | resolve Claude Design `<dc-import>` cross-component |
 | `converter/services/draft_oracle.py` | manifest+script-call | independent draft reader for the LANDED gate (Stage 3 §7). |
 | `converter/services/extraction.py` | manifest+script-call+skill | Stage 3 content extraction: ScalarLifts / ChildBlocks / ContentGaps. |
 | `converter/services/field_extractors.py` | manifest+script-call | Shared per-element role→value dispatch (Spec 31 §3.B.0). |
@@ -1894,13 +1928,13 @@ for the verb you happen to have in mind.
 | `converter/services/render_emits.py` | manifest+script-call | render_emits — source-derived per-element nested-content signal (the render_reads gate). |
 | `converter/services/repeated_sibling_detector.py` | manifest+script-call | - Q2 Tier 1 structural repeated-sibling detector. |
 | `converter/services/root_supports.py` | manifest+script-call | root-CSS-to-WP-native-style lift for the modular engine. |
-| `converter/services/sc_var_responsive_bridge.py` | script-call | - turns a correlated classless-draft measurement |
+| `converter/services/sc_var_responsive_bridge.py` | manifest+script-call | - turns a correlated classless-draft measurement |
 | `converter/services/section_passes.py` | manifest+script-call | the two universal section passes, ported from the frozen |
-| `converter/services/shadow_layers.py` | script-call | shadow_layers — parse a draft `box-shadow` CSS value into the stored |
+| `converter/services/shadow_layers.py` | manifest+script-call | shadow_layers — parse a draft `box-shadow` CSS value into the stored |
 | `converter/services/sibling_shape_prefilter.py` | manifest+script-call | - standalone sibling shape-alike pre-filter. |
 | `converter/services/state_value_lift.py` | manifest+script-call | state_value_lift — direct (block, css_property, css_state) resolution + |
 | `converter/services/styling_helpers.py` | manifest+script-call | ported helper functions for the styling-attr lift. |
-| `converter/services/template_binding.py` | script-call | template_binding -- refuse to lift a style value that is an unresolved template binding. |
+| `converter/services/template_binding.py` | manifest+script-call | template_binding -- refuse to lift a style value that is an unresolved template binding. |
 | `converter/services/test_tier4a_gate_hardening_fixtures.py` | — | Ad-hoc verification harness for the Tier 4a gate hardening fix |
 | `converter/services/test_webgl_reference_puller_fixtures.py` | — | Ad-hoc verification harness for webgl_reference_puller.py (Phase R8 Step 13). |
 | `converter/services/text_leaf.py` | manifest+script-call | text-leaf detection + text-capability gate. |
@@ -1921,7 +1955,7 @@ for the verb you happen to have in mind.
 | `coverage-matrix/db_queries.py` | manifest+script-call | all DB reads for the coverage-matrix module. |
 | `coverage-matrix/generate-coverage-matrix.py` | manifest | Spec 31 §5 + MF-7 auto-generated coverage dashboard. |
 | `coverage-matrix/models.py` | manifest+script-call+skill+test-import | shared data types for the coverage-matrix module. |
-| `db-consistency/__init__.py` | manifest+script-call | db-consistency — F6 DB-as-code consistency suite. |
+| `db-consistency/__init__.py` | manifest+script-call+test-import | db-consistency — F6 DB-as-code consistency suite. |
 | `db-consistency/check_composition.py` | manifest+script-call | Check #2: block.json hasInnerBlocks override sanity. |
 | `db-consistency/check_css_property_reseed.py` | manifest+script-call | Check #8: css_property/css_layer reseed-survival. |
 | `db-consistency/check_dead_composition_signal.py` | manifest+script-call | Check #10: dead composition discriminator. |
@@ -1937,7 +1971,7 @@ for the verb you happen to have in mind.
 | `db-consistency/check_variants.py` | manifest+script-call | Check #3: variant discriminator AMBIGUITY on the lift surface. |
 | `db-consistency/models.py` | manifest+script-call+skill+test-import | shared data types for the F6 DB-consistency suite. |
 | `db-consistency/resolver_bridge.py` | manifest+script-call | reuse the REAL resolver derivation for F6 checks. |
-| `db-consistency/run.py` | commit-gate+manifest+npm+script-call+settings+skill | F6 DB-as-code consistency suite shared runner. |
+| `db-consistency/run.py` | commit-gate+manifest+npm+script-call+settings+skill+test-import | F6 DB-as-code consistency suite shared runner. |
 | `dbschema/capture_seed_data.py` | manifest+script-call | Capture the Phase-1 Group-5 seed tables from a LIVE database into data files. |
 | `dbschema/check_schema_drift.py` | manifest+script-call | Detect drift between the committed ``schema.sql`` and the live database's DDL. |
 | `dbschema/check_value_identity.py` | manifest+script-call | Assert that named, load-bearing DB rows still hold the EXACT value they must. |
@@ -1952,23 +1986,23 @@ for the verb you happen to have in mind.
 | `dbschema/wp_reference_archive.py` | manifest+script-call | Preserve the ORPHANED WordPress reference corpus (`hooks` + `docs`). |
 | `dead-api-checker/tokenize-calls.php` | manifest+script-call | Tokenize-calls.php |
 | `dedupe-shadow-colour-rows.py` | manifest+script-call | One writer for a shadow's colour: the ShadowControl. Any other colour row for the same attribute |
-| `deploy-client-notes-quick.py` | — | a small, one-off deploy path for |
-| `derive-dark-palette.py` | script-call | automatic dark palette derivation (U-12 §D). |
+| `deploy-client-notes-quick.py` | manifest | a small, one-off deploy path for |
+| `derive-dark-palette.py` | manifest+script-call+test-import | automatic dark palette derivation (U-12 §D). |
 | `detect-repeated-siblings.py` | manifest+script-call | - Q2 Tier 1 structural repeated-sibling triad CLI. |
 | `diff-gap-sanitiser.php` | — | Differential test: sgs_container_gap_value() old allowlist vs the new sgs_css_length_value()-delegating implementation. |
-| `draft-manifest/build_order.py` | script-call | Build order: a dependency-respecting sequence, tiers first, dependencies always winning. |
-| `draft-manifest/dc_script.py` | script-call | Read a Claude Design draft's script: what each handler does and what each flag means. |
-| `draft-manifest/dc_template.py` | script-call | Read a Claude Design draft's template: its screens, overlay regions and the handlers wired to them. |
-| `draft-manifest/manifest.py` | script-call | Spec 31 draft manifest: what a draft contains, what refers to what, and the order to build it in. |
-| `draft-manifest/manifest_report.py` | script-call | Markdown report for a draft manifest: the same facts as the JSON, in reading order. |
-| `draft-manifest/manifest_vocab.py` | script-call | Draft manifest vocabulary: every word-list and lookup the manifest uses, held as data. |
-| `draft-manifest/readme_routes.py` | script-call | The README's routes table: which views the design says exist, their route and purpose. |
+| `draft-manifest/build_order.py` | manifest+script-call | Build order: a dependency-respecting sequence, tiers first, dependencies always winning. |
+| `draft-manifest/dc_script.py` | manifest+script-call | Read a Claude Design draft's script: what each handler does and what each flag means. |
+| `draft-manifest/dc_template.py` | manifest+script-call | Read a Claude Design draft's template: its screens, overlay regions and the handlers wired to them. |
+| `draft-manifest/manifest.py` | manifest+script-call | Spec 31 draft manifest: what a draft contains, what refers to what, and the order to build it in. |
+| `draft-manifest/manifest_report.py` | manifest+script-call | Markdown report for a draft manifest: the same facts as the JSON, in reading order. |
+| `draft-manifest/manifest_vocab.py` | manifest+script-call | Draft manifest vocabulary: every word-list and lookup the manifest uses, held as data. |
+| `draft-manifest/readme_routes.py` | manifest+script-call | The README's routes table: which views the design says exist, their route and purpose. |
 | `drift-validator/validate.py` | manifest+script-call+skill | Spec 19 Stage 9 — Drift Validator |
 | `e2e-authoring-acceptance.php` | — | SGS QA-AUTHORING Gate — FR-27 Cluster C End-to-End Authoring Acceptance Test |
-| `excluded-gate/__init__.py` | manifest+script-call | excluded-gate — F5 excluded-literal tripwire gate. |
+| `excluded-gate/__init__.py` | manifest+script-call+test-import | excluded-gate — F5 excluded-literal tripwire gate. |
 | `excluded-gate/db_check.py` | manifest+script-call | cross-reference detected signatures against excluded_properties DB table. |
 | `excluded-gate/models.py` | manifest+script-call+skill+test-import | shared data types for the F5 excluded-literal gate. |
-| `excluded-gate/run.py` | commit-gate+manifest+npm+script-call+settings+skill | F5 excluded-literal tripwire gate for the SGS cloning pipeline. |
+| `excluded-gate/run.py` | commit-gate+manifest+npm+script-call+settings+skill+test-import | F5 excluded-literal tripwire gate for the SGS cloning pipeline. |
 | `excluded-gate/scanner.py` | manifest+script-call | import-graph-wide scan for CSS-property exclusion literals. |
 | `extract-button-presets.py` | manifest | Pipeline step: extract a draft mockup's `.sgs-button--{variant}` + `:hover` CSS |
 | `extract-comment-narrative.py` | manifest | Find comment blocks that NARRATE CHANGES rather than describe behaviour. |
@@ -2009,17 +2043,17 @@ for the verb you happen to have in mind.
 | `hover-guard/run-transform.js` | manifest+npm+script-call | CLI: run transform.js over every `build/blocks/*​/style.css` (or an explicit directory passed as argv[2]) and write the result back in place. |
 | `hover-guard/selector-split.js` | manifest+script-call | Selector-level classification for the hover guard. |
 | `hover-guard/test-fixtures/anti-vacuity-dead-detector.js` | manifest | ANTI-VACUITY PROOF, not a shipped part of the tool. Simulates a "dead detector" (one that has stopped detecting `:hover` rules at all — the failure… |
-| `hover-guard/transform.js` | manifest+script-call+skill | Build-time transform: wraps motion-only `:hover` rules in compiled block CSS with BOTH touch-safety layers (see includes/helpers-hover-state.php for… |
+| `hover-guard/transform.js` | manifest+script-call+skill+test-import | Build-time transform: wraps motion-only `:hover` rules in compiled block CSS with BOTH touch-safety layers (see includes/helpers-hover-state.php for… |
 | `image-sequence-prep.py` | manifest | turns a video into frames the sgs/image-sequence block can use. |
 | `inspector-scan/core/baseline.js` | manifest+script-call+skill+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.7 source=spec evidence=hybrid baseline shape (keyed… |
-| `inspector-scan/core/components.js` | manifest+script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.5 source=file evidence=live-read… |
+| `inspector-scan/core/components.js` | manifest+script-call+skill+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.5 source=file evidence=live-read… |
 | `inspector-scan/core/extensions.js` | manifest+script-call | GROUND-TRUTH: spec=task brief 2026-08-08 (extensionsDir plumbing) source=file evidence=live-read plugins/sgs-blocks/src/blocks/extensions/ on… |
 | `inspector-scan/core/finding.js` | manifest+script-call | GROUND-TRUTH: spec=none source=file evidence=live-read plugins/sgs-blocks/scripts/inspector-scan/core/roster.js (`BLOCKS_DIR =… |
 | `inspector-scan/core/golden.js` | manifest+script-call | core/golden.js — the shared GOLDEN-CONTROL engine (C4 step 1, 2026-08-19). |
 | `inspector-scan/core/report.js` | manifest+script-call | Report is generated by iterating the rule REGISTRY (rules.json order), never a second hand-written order list — this is the direct mitigation for H7… |
 | `inspector-scan/core/roster.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=file evidence=live-read… |
 | `inspector-scan/core/selftest.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.9 source=file evidence=live-read… |
-| `inspector-scan/core/sources.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=file evidence=`@babel/*` confirmed NOT a declared… |
+| `inspector-scan/core/sources.js` | manifest+script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=file evidence=`@babel/*` confirmed NOT a declared… |
 | `inspector-scan/export-colour-css-property.py` | manifest+script-call | DB-first mechanism source for rule 31. |
 | `inspector-scan/rules/01-tab-group.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/plans/spec-35-inspector-DONE-checklist.md item 1 source=file evidence=live-read… |
 | `inspector-scan/rules/03-dense-panel-candidate.js` | manifest | GROUND-TRUTH: spec=.claude/plans/spec-35-inspector-DONE-checklist.md item 3 source=file evidence=PORTED VERBATIM from… |
@@ -2054,8 +2088,8 @@ for the verb you happen to have in mind.
 | `inspector-scan/rules/43-colour-only-state-indicator.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/44-help-text-not-described.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/45-typography-full-replacement.js` | manifest | GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard" item 2 (Bean R-22-13, 2026-06-11) +… |
-| `inspector-scan/run.js` | manifest+npm+script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… ⚠ **header disputes this — it IS wired** |
-| `ledger/__init__.py` | manifest+script-call | ledger — F2 draft-derived CSS Accounting Ledger (input parser). |
+| `inspector-scan/run.js` | manifest+npm+script-call+skill+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… ⚠ **header disputes this — it IS wired** |
+| `ledger/__init__.py` | manifest+script-call+test-import | ledger — F2 draft-derived CSS Accounting Ledger (input parser). |
 | `ledger/content_gap_check.py` | commit-gate+manifest+script-call+test-import | ledger.content_gap_check — F5 ContentGap visibility gate (the content-dropping channel). |
 | `ledger/coverage_check.py` | commit-gate+manifest+npm+script-call+test-import | ledger.coverage_check — F5 pipeline-close coverage-conservation gate (UNACCOUNTED leg). |
 | `ledger/declare_input.py` | manifest+npm+script-call+test-import | ledger.declare_input — F2 draft-derived CSS Accounting Ledger (input parser). |
@@ -2070,7 +2104,7 @@ for the verb you happen to have in mind.
 | `lib/stage8-self-test-network.js` | manifest+script-call | purely so no self-test file exceeds the repo's 250-line limit. Orchestrated by `stage8-self-test.js` via `runNetworkSelfTests(check)`. |
 | `lib/stage8-self-test.js` | manifest+script-call | launches a browser or touches the network — every assertion runs against fixture Lighthouse Result objects, so the SAME pure functions that a real… |
 | `lint-responsive-controls.py` | manifest+script-call | FR-36-24 structural gate (R-31-9 for responsive controls). |
-| `lints/__init__.py` | manifest+script-call |  |
+| `lints/__init__.py` | manifest+script-call+test-import |  |
 | `lints/bem-lint.py` | manifest+script-call+skill | BEM compliance lint — Stage 0.1 of /sgs-clone (Spec 31). |
 | `lints/lint-spec-drift.py` | manifest+npm+script-call | Spec-drift lint — do the specs describe things that actually EXIST? ⚠ **header disputes this — it IS wired** |
 | `lints/lint-theme-css-hardcodes.py` | manifest+script-call | Theme-CSS hardcode lint — arbitrary typography/colour literals in THEME CSS. |
@@ -2092,7 +2126,7 @@ for the verb you happen to have in mind.
 | `migrate-core-blocks/driver.py` | manifest+script-call | Track C migration driver — swaps core blocks for their SGS replacements. |
 | `migrate-core-blocks/lint-page.py` | manifest+script-call | Lint (and optionally fix) banned core blocks in a PAGE's block markup. |
 | `migrate-core-blocks/migrate-details-to-accordion.py` | manifest | core/details -> sgs/accordion + sgs/accordion-item (N sibling details -> 1 accordion). |
-| `migrate-core-blocks/pairings/__init__.py` | manifest+script-call |  |
+| `migrate-core-blocks/pairings/__init__.py` | manifest+script-call+test-import |  |
 | `migrate-core-blocks/pairings/button_pairing.py` | manifest+script-call+script-call(dynamic) | core/button -> sgs/button transformer (Track C pairing module). |
 | `migrate-core-blocks/pairings/buttons_pairing.py` | manifest+script-call(dynamic) | core/buttons -> sgs/multi-button transformer (Track C pairing module). |
 | `migrate-core-blocks/pairings/column_pairing.py` | manifest+script-call(dynamic) | core/column -> sgs/container (a grid cell). Track C pairing module. |
@@ -2180,43 +2214,44 @@ for the verb you happen to have in mind.
 | `motion-qa/probe-wave-c-editor.mjs` | manifest | Spec 38 Wave C — EDITOR-surface probe (D388). |
 | `motion-qa/probe-wave-c.mjs` | manifest+script-call | Spec 38 Wave C — live browser probe for every shipped Wave C effect. |
 | `motion-qa/run-live-probes.mjs` | manifest+npm+script-call | Live motion-QA runner — the standing post-deploy motion check. |
-| `n8n/push-site-events.py` | — | Push or check the "Build emails" code of the live SGS site-events N8N workflow. |
-| `n8n/site-events-build-emails.js` | script-call | SGS site events: turns one webhook POST into zero or more ready-to-send emails. |
+| `n8n/push-site-events.py` | manifest | Push or check the "Build emails" code of the live SGS site-events N8N workflow. |
+| `n8n/site-events-build-emails.js` | manifest+script-call | SGS site events: turns one webhook POST into zero or more ready-to-send emails. |
 | `nav-qa/axe-run.mjs` | manifest+script-call | blocks (Spec 36 §8 / FR-36-16: "axe = 0 on the OPEN drawer AND an OPEN desktop mega"). |
-| `nav-qa/build-header-fixtures.py` | — | nav QA fixtures whose nav blocks sit INSIDE a real site header. |
+| `nav-qa/build-header-fixtures.py` | manifest | nav QA fixtures whose nav blocks sit INSIDE a real site header. |
 | `nav-qa/build-poc-fixtures.py` | manifest | create the nav-drawer variant POC fixtures on the canary. |
 | `nav-qa/check-fixture-fidelity.py` | manifest | compare the nav-drawer POC content plan to the harvest. |
 | `nav-qa/crawl-assert.mjs` | manifest | bar+dropdown+mega link AND mega content must be present in the PRE-JS HTML (what a crawler / no-JS user gets), never injected client-side. |
 | `nav-qa/elementfrompoint-sweep.mjs` | manifest+script-call | occlusion sweep, carried verbatim from Spec 34 FR-S9-5 / FR-34-7. |
-| `nav-qa/extended-probe.mjs` | — | Extended open-drawer measurement probe (measurement-vs-eye rule). |
-| `nav-qa/gate3c/parity-indus.mjs` | — | Parity config: Bean's Indus Foods mega-menu draft against its copy on sandybrown (page 4465, header 4461). |
-| `nav-qa/gate3c/parity-lamalama.mjs` | — | Parity config: lamalama.com's floating pill against its copy on sandybrown (page 4446, header 4435). |
-| `nav-qa/lib/elementfrompoint-sweep-selftest.mjs` | script-call | `elementFromPoint` occlusion sweep. |
+| `nav-qa/extended-probe.mjs` | manifest | Extended open-drawer measurement probe (measurement-vs-eye rule). |
+| `nav-qa/gate3c/parity-indus.mjs` | manifest | Parity config: the wholesale-food client's mega-menu draft against its copy on sandybrown (page 4465, header 4461). |
+| `nav-qa/gate3c/parity-lamalama.mjs` | manifest | Parity config: the reference site's floating pill against its copy on sandybrown (page 4446, header 4435). |
+| `nav-qa/gate3c/probe-drawer-row.mjs` | manifest | Opens a page, taps the burger, and prints computed layout for the drawer's first sgs/button and every ancestor up to the drawer, plus the email/call… |
+| `nav-qa/lib/elementfrompoint-sweep-selftest.mjs` | manifest+script-call | `elementFromPoint` occlusion sweep. |
 | `nav-qa/lib/openness-guard.mjs` | manifest+script-call | for every nav-qa script that measures or captures an interactive surface. |
-| `nav-qa/lib/shoot-drawer-pairs-selftest.mjs` | script-call | WHY |
-| `nav-qa/lib/sweep-drawer-variants-selftest.mjs` | script-call | A sweep whose assertions cannot fail reads green forever. Every control here runs one of the sweep's REAL decision functions (handed in as `targets`… |
+| `nav-qa/lib/shoot-drawer-pairs-selftest.mjs` | manifest+script-call | WHY |
+| `nav-qa/lib/sweep-drawer-variants-selftest.mjs` | manifest+script-call | A sweep whose assertions cannot fail reads green forever. Every control here runs one of the sweep's REAL decision functions (handed in as `targets`… |
 | `nav-qa/logical-props-lint.py` | manifest | RTL-readiness lint for the SGS nav blocks |
-| `nav-qa/m03-direction-probe.mjs` | — | U-13 M-03 live probe: direction-keyed restyle (fixture `direction-fade`, fantasy's cell). |
+| `nav-qa/m03-direction-probe.mjs` | manifest | U-13 M-03 live probe: direction-keyed restyle (fixture `direction-fade`, fantasy's cell). |
 | `nav-qa/palette-contrast-sweep.mjs` | manifest+script-call | drafts (mega-menu panels and any other self-contained SGS-BEM draft). |
 | `nav-qa/qa-close-fixture.php` | — | U-9+U-11 live-check fixture on sandybrown (wp eval-file qa-close-fixture.php <case>). Idempotent. |
 | `nav-qa/qa-geometry-fixture.php` | script-call | U-3 + U-8 live-check fixture on sandybrown (wp eval-file qa-geometry-fixture.php <case>). Idempotent. |
-| `nav-qa/qa-item-markup-fixture.php` | script-call | U-6 + U-7 live-check fixture on sandybrown (wp eval-file qa-item-markup-fixture.php <case>). Idempotent. |
+| `nav-qa/qa-item-markup-fixture.php` | manifest+script-call | U-6 + U-7 live-check fixture on sandybrown (wp eval-file qa-item-markup-fixture.php <case>). Idempotent. |
 | `nav-qa/qa-motion-fixture.php` | script-call | U-5 live-check fixture on sandybrown (wp eval-file qa-motion-fixture.php <case>). Idempotent. |
-| `nav-qa/qa-u1-owed-fixture.php` | script-call | U-1 owed live checks on sandybrown (wp eval-file qa-u1-owed-fixture.php <case>). Idempotent. |
+| `nav-qa/qa-u1-owed-fixture.php` | manifest+script-call | U-1 owed live checks on sandybrown (wp eval-file qa-u1-owed-fixture.php <case>). Idempotent. |
 | `nav-qa/shoot-drawer-pairs.mjs` | manifest+script-call | WHY |
 | `nav-qa/submenu-harness.php` | — | Stubbed harness for SGS_Nav_Menu_Bar_Renderer — walker AND render_items. |
 | `nav-qa/sweep-drawer-variants.mjs` | manifest+script-call | WHY THIS SHAPE |
-| `nav-qa/u1-owed-probe.mjs` | — | U-1 + U-2 owed live checks (Wave 3C), run against `qa-u1-owed-fixture.php`. |
-| `nav-qa/u13-ink-probe.mjs` | — | U-13 live probe: section-adaptive header ink on /qa-section-ink/. |
-| `nav-qa/u16-editor-check.mjs` | — | U-16 editor check: the entrance panel's Distance and delay options through the real inspector. |
-| `nav-qa/u16-entrance-probe.mjs` | — | U-16 live probe: entrances as their own layer, on /qa-entrance/ (fixture case `entrance`). |
-| `nav-qa/u18-copy-probe.mjs` | — | U-18 copy-parity probe (Wave 3C Gate 3C item 4): measures a composed header copy while it is the ACTIVE header, and screenshots it closed and open at… |
-| `nav-qa/w2u-probe.mjs` | — | W2-u — mega-menu + drawer SAME-PAGE integration probe. |
+| `nav-qa/u1-owed-probe.mjs` | manifest | U-1 + U-2 owed live checks (Wave 3C), run against `qa-u1-owed-fixture.php`. |
+| `nav-qa/u13-ink-probe.mjs` | manifest | U-13 live probe: section-adaptive header ink on /qa-section-ink/. |
+| `nav-qa/u16-editor-check.mjs` | manifest | U-16 editor check: the entrance panel's Distance and delay options through the real inspector. |
+| `nav-qa/u16-entrance-probe.mjs` | manifest | U-16 live probe: entrances as their own layer, on /qa-entrance/ (fixture case `entrance`). |
+| `nav-qa/u18-copy-probe.mjs` | manifest | U-18 copy-parity probe (Wave 3C Gate 3C item 4): measures a composed header copy while it is the ACTIVE header, and screenshots it closed and open at… |
+| `nav-qa/w2u-probe.mjs` | manifest | W2-u — mega-menu + drawer SAME-PAGE integration probe. |
 | `no-inline/check-no-inline.py` | manifest+npm+script-call | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
 | `no-inline/check-stranded-guards.py` | manifest+npm | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |
 | `no-inline/detect.py` | manifest+script-call+skill | No-inline detector — the worklist generator for the framework-wide inline-zero |
 | `no-inline-land-verify.js` | manifest+script-call+settings | For a manifest of blocks, it: |
-| `oracle/__init__.py` | manifest+script-call | oracle — F3 LANDED render-oracle (F3-core). |
+| `oracle/__init__.py` | manifest+script-call+test-import | oracle — F3 LANDED render-oracle (F3-core). |
 | `oracle/attribution_ground_truth.py` | manifest | Generate + check the attribution GROUND TRUTH (the falsifiable control). |
 | `oracle/batch_runner.py` | manifest+script-call | oracle.batch_runner — F3 render-oracle LANDED runtime, multi-fixture BATCH mode. |
 | `oracle/capture.py` | manifest+script-call+skill | oracle.capture — capture-adapter INTERFACE for the F3 LANDED oracle. |
@@ -2233,36 +2268,36 @@ for the verb you happen to have in mind.
 | `orchestrator/atomic-block-scaffold.py` | manifest+script-call+skill | - Spec 31 Phase 5b.8 atomic-block scaffold. |
 | `orchestrator/attribute-staged-apply.py` | manifest+script-call+skill | - Spec 31 Phase 5b.6 attribute staged-application. |
 | `orchestrator/autonomy_gate.py` | manifest+script-call+skill | - Spec 31 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7. |
-| `orchestrator/boundary_nesting.py` | script-call | Which loop-item boundaries sit inside another boundary. |
-| `orchestrator/breakpoint_snap.py` | script-call | breakpoint_snap: round a draft script's width thresholds to our device edges (Bean's rule, D1129/D1132). |
+| `orchestrator/boundary_nesting.py` | manifest+script-call+test-import | Which loop-item boundaries sit inside another boundary. |
+| `orchestrator/breakpoint_snap.py` | manifest+script-call+test-import | breakpoint_snap: round a draft script's width thresholds to our device edges (Bean's rule, D1129/D1132). |
 | `orchestrator/check_attr_schema_conformance.py` | manifest+script-call | Task 3 (G2): fail closed when the converter |
 | `orchestrator/check_flat_tier_regression.py` | manifest+script-call | Spec 35 flat-to-object migration divergence gate. |
 | `orchestrator/check_no_mirror.py` | manifest+script-call | R-31-15 anti-mirror gate for the cloning converter. |
 | `orchestrator/critical-fix-verification.py` | manifest+script-call+skill | - Spec 31 Phase 5f.1 acceptance harness. |
 | `orchestrator/css_router.py` | manifest+script-call+test-import | Spec 16 §FR6 four-destination CSS router. |
-| `orchestrator/draft-responsive-probe.js` | manifest+script-call | THE PROBLEM (plain English): `computed-parity.js` measures draft-vs-CLONE fidelity AFTER a clone exists — it hard-requires --draft AND --clone… |
-| `orchestrator/draft_server.py` | script-call | Serve an original Claude Design draft folder over HTTP for Stage 11.6. |
+| `orchestrator/draft-responsive-probe.js` | manifest+script-call+test-import | THE PROBLEM (plain English): `computed-parity.js` measures draft-vs-CLONE fidelity AFTER a clone exists — it hard-requires --draft AND --clone… |
+| `orchestrator/draft_server.py` | manifest+script-call | Serve an original Claude Design draft folder over HTTP for Stage 11.6. |
 | `orchestrator/expected_rules.py` | manifest+script-call | - Per-section CSS rule baseline for Phase 9 walkdown. |
 | `orchestrator/functionality-bulk-apply.py` | manifest+script-call+skill | - Spec 31 Phase 5b.7 bulk-application. |
-| `orchestrator/js_content_resolver.py` | script-call | expand `<sc-for>` loops whose repeated content lives ONLY in a draft's |
+| `orchestrator/js_content_resolver.py` | manifest+script-call | expand `<sc-for>` loops whose repeated content lives ONLY in a draft's |
 | `orchestrator/lingua_franca.py` | manifest+script-call+skill | - Spec 31 Phase 5c (FR9) convention-to-SGS-BEM converter. |
-| `orchestrator/manifest_annotation.py` | script-call | manifest_annotation: turn a Claude Design draft's block proposals into SGS-BEM class names on the run copy. |
-| `orchestrator/manifest_decisions_log.py` | script-call | Write the manifest annotation stage's decisions to Spec 44's audit log. |
-| `orchestrator/manifest_layout_choices.py` | script-call | manifest_layout_choices: read a block's LAYOUT CHOICES from the draft's structure (design 2026-09-23 section 4). |
+| `orchestrator/manifest_annotation.py` | manifest+script-call | manifest_annotation: turn a Claude Design draft's block proposals into SGS-BEM class names on the run copy. |
+| `orchestrator/manifest_decisions_log.py` | manifest+script-call | Write the manifest annotation stage's decisions to Spec 44's audit log. |
+| `orchestrator/manifest_layout_choices.py` | manifest+script-call | manifest_layout_choices: read a block's LAYOUT CHOICES from the draft's structure (design 2026-09-23 section 4). |
 | `orchestrator/media-sideload.py` | manifest+script-call+skill | - Spec 31 Phase 5b.5 media sideloader. |
 | `orchestrator/mutex.py` | manifest+script-call+skill | - Spec 31 Phase 5b.4 build mutex (FR19). |
 | `orchestrator/object_attr_shape.py` | manifest+script-call | shared object-attribute shape discriminator. |
-| `orchestrator/orchestrator_main.py` | manifest+script-call+skill | - Spec 31 Phase 5e.8 top-level entry point. |
+| `orchestrator/orchestrator_main.py` | manifest+script-call+skill+test-import | - Spec 31 Phase 5e.8 top-level entry point. |
 | `orchestrator/pipeline-stage-gate.py` | manifest+script-call | post-clone structural gate for the SGS cloning pipeline. |
 | `orchestrator/preflight_chain.py` | manifest+script-call+skill | - Spec 31 Phase 5e.1 + 5e.2. |
 | `orchestrator/register_patterns.py` | manifest+script-call | - Spec 31 Phase 6 Step 0 +REGISTER tail. |
-| `orchestrator/resolve-js-content.js` | script-call | THE PROVEN APPROACH (FR-31-26 preamble): a draft whose `<sc-for>` content lives only in a `static ARRAY = [...]` class property has zero usable… |
-| `orchestrator/screen_route.py` | script-call | Screen route: which screen of a multi-screen draft a clone run turns into the page. |
-| `orchestrator/script-bindings-eval.js` | script-call | Read by `script_bindings.py::resolve_tier_bindings`. It receives, as JSON on stdin, the draft's own declarations (`const effW = ...`, `const mob =… |
-| `orchestrator/script_bindings.py` | script-call | Script bindings: the per-device values a Claude Design draft's script gives its template. |
-| `orchestrator/script_bindings_stage.py` | script-call | script_bindings_stage: turn a draft script's own width rules into the per-run value map the converter reads. |
-| `orchestrator/site_info_values.py` | script-call | site_info_values: put the draft's own business details in place of the `{{ name }}` bindings that carry them. |
-| `orchestrator/stage1_boundary_hook.py` | manifest+script-call+skill | - Spec 31 Phase 5c.4 Stage 1 BOUNDARY hook. |
+| `orchestrator/resolve-js-content.js` | manifest+script-call | THE PROVEN APPROACH (FR-31-26 preamble): a draft whose `<sc-for>` content lives only in a `static ARRAY = [...]` class property has zero usable… |
+| `orchestrator/screen_route.py` | manifest+script-call+test-import | Screen route: which screen of a multi-screen draft a clone run turns into the page. |
+| `orchestrator/script-bindings-eval.js` | manifest+script-call | Read by `script_bindings.py::resolve_tier_bindings`. It receives, as JSON on stdin, the draft's own declarations (`const effW = ...`, `const mob =… |
+| `orchestrator/script_bindings.py` | manifest+script-call+test-import | Script bindings: the per-device values a Claude Design draft's script gives its template. |
+| `orchestrator/script_bindings_stage.py` | manifest+script-call+test-import | script_bindings_stage: turn a draft script's own width rules into the per-run value map the converter reads. |
+| `orchestrator/site_info_values.py` | manifest+script-call+test-import | site_info_values: put the draft's own business details in place of the `{{ name }}` bindings that carry them. |
+| `orchestrator/stage1_boundary_hook.py` | manifest+script-call+skill+test-import | - Spec 31 Phase 5c.4 Stage 1 BOUNDARY hook. |
 | `orchestrator/staged_merge.py` | manifest+script-call+skill | - Spec 31 Phase 5e.3 staged-merge orchestrator. |
 | `orchestrator/staged_output.py` | manifest+script-call+skill | - Spec 31 Phase 5b.1 staged-output dir convention. |
 | `orchestrator/surface_pipeline_logs.py` | manifest+script-call | Surface structured per-severity logs from trace.jsonl at pipeline end. |
@@ -2294,12 +2329,12 @@ for the verb you happen to have in mind.
 | `orchestrator/test_validate_stage_artifact.py` | — | Spec 31 Phase 5b.2 self-test for validate-stage-artifact.py. |
 | `orchestrator/test_wp_integration.py` | — | Spec 31 Phase 5d.7 + 5d.9 + 5d.10 self-test for wp_integration.py. |
 | `orchestrator/trace.py` | manifest+script-call | - Structured trace-logger for /sgs-clone pipeline runs. |
-| `orchestrator/upload_and_patch.py` | manifest+script-call+skill | One-shot: upload all mockup images to sandybrown WP Media Library + |
+| `orchestrator/upload_and_patch.py` | manifest+script-call+skill+test-import | One-shot: upload all mockup images to sandybrown WP Media Library + |
 | `orchestrator/validate-stage-artifact.py` | manifest+script-call+skill | - Spec 31 Phase 5b.2 per-stage validator. |
 | `orchestrator/visual_qa_capture.py` | manifest+script-call | - Stage 8 autonomy-gate capture stub. |
 | `orchestrator/wp_integration.py` | manifest+script-call+skill | - Spec 31 Phase 5d.7 + 5d.9 + 5d.10. |
 | `parity/computed-parity.js` | manifest+script-call | Spec 20 v1.1.0 (Clone Fidelity Measurement). The number tracks VISIBLE fidelity and PAIRS with Bean's eye — it never closes alone (Spec 31 §7b /… |
-| `parity/draft-vs-live/side_by_side.py` | — | Put draft and live captures next to each other so they can be LOOKED at (method step 6, README.md). |
+| `parity/draft-vs-live/side_by_side.py` | manifest | Put draft and live captures next to each other so they can be LOOKED at (method step 6, README.md). |
 | `parity/extract-css-diff.js` | manifest+script-call | THE STANDARD first step for matching a clone section to its reference |
 | `pattern-classify.py` | manifest+script-call+skill | SGS Pattern Classifier |
 | `pattern-fingerprint.py` | manifest+script-call+skill | Compute a deterministic fingerprint for an HTML pattern + CSS bundle. |
@@ -2316,10 +2351,10 @@ for the verb you happen to have in mind.
 | `probes/probe-smil-bypass.mjs` | manifest+script-call | (.claude/prompts/2026-09-01-media-owed-debts.md): the SMIL bypass |
 | `product-search-leak-check.php` | manifest+script-call | SGS Product Search — Behavioural Leak Test (FR-30-5 Named Enforcement Runner). |
 | `programme-progress.py` | manifest+npm+script-call | burn-down reporter for the tier-object migration programme. |
-| `promote-icon.py` | script-call | human promote / reject step for SGS icon proposals. |
+| `promote-icon.py` | manifest+script-call | human promote / reject step for SGS icon proposals. |
 | `prove-selftest-can-fail.py` | manifest+script-call | Prove a detector's --self-test is LOAD-BEARING, not decorative. |
-| `provision-site-mail.py` | script-call | : give a client site working SMTP email through FluentSMTP. |
-| `push-theme-snapshot.py` | manifest+script-call | Deploy a per-client theme.json snapshot to a WP site. |
+| `provision-site-mail.py` | manifest+script-call | : give a client site working SMTP email through FluentSMTP. |
+| `push-theme-snapshot.py` | manifest+script-call+test-import | Deploy a per-client theme.json snapshot to a WP site. |
 | `qa/assert-css-effect.js` | manifest+script-call | BACKGROUND. fix.js's own 15-assertion self-test (--self-test) is entirely edit-correctness: was the row planned fixable, does DRY RUN write nothing… |
 | `qa/capture-native-colour-ui.js` | manifest | Visual verification for the native-colour-ui migration (16 blocks). |
 | `qa/capture-ncui-final3.js` | manifest | The last 3 native-colour-ui blocks — the ones page-content probing could not reach. |
@@ -2336,23 +2371,21 @@ for the verb you happen to have in mind.
 | `qa/lib/wp-stubs.php` | manifest+script-call | Minimal WordPress core function/class stubs for standalone render.php execution (scripts/qa/lib/render-css-harness.php). |
 | `qa/probe-native-colour-ui-close.js` | manifest | intent_capture probe for the native-colour-ui class closure (2026-08-23). |
 | `qa/probe-row-gradient.js` | manifest | Set an attribute on every instance of one block inside a header/footer CPT, measure the live paint, and restore. |
-| `recogniser/__init__.py` | manifest+script-call | SGS clone-pipeline recogniser modules. |
-| `recogniser/array_schema_eliminator.py` | script-call | Stage B recognition for a repeated, classless draft group — Spec 44 §5. |
+| `recogniser/__init__.py` | manifest+script-call+test-import | SGS clone-pipeline recogniser modules. |
+| `recogniser/array_schema_eliminator.py` | manifest+script-call | Stage B recognition for a repeated, classless draft group — Spec 44 §5. |
 | `recogniser/attribute-gap-writer.py` | manifest+script-call+skill | - Spec 31 Phase 5a.4 attribute-gap writes. |
 | `recogniser/bucket-c-classifier.py` | manifest+script-call+skill | - Spec 31 Phase 5a.2 (FR10). |
-| `recogniser/classless_draft_adapter.py` | script-call | Draft-side input adapter for Spec 44's Stage A / Stage B — the missing half. |
-| `recogniser/classless_field_resolver.py` | script-call | - Spec 45 field-mapping resolver, Tiers 1-3. |
-| `recogniser/classless_trust_gate.py` | script-call | FR-44-1's trust gate, §7's audit log, and the end-of-run summary — Spec 44 Task 4. |
+| `recogniser/classless_draft_adapter.py` | manifest+script-call | Draft-side input adapter for Spec 44's Stage A / Stage B — the missing half. |
+| `recogniser/classless_field_resolver.py` | manifest+script-call | - Spec 45 field-mapping resolver, Tiers 1-3. |
+| `recogniser/classless_trust_gate.py` | manifest+script-call | FR-44-1's trust gate, §7's audit log, and the end-of-run summary — Spec 44 Task 4. |
 | `recogniser/confidence-matrix.py` | manifest+script-call+skill | - Stage 2 of /sgs-clone pipeline. |
 | `recogniser/dom_shape_classifier.py` | manifest+script-call | - Q1 Tier 2 DOM-shape heuristic classifier. |
 | `recogniser/functionality-gap-detector.py` | manifest+script-call+skill | - Spec 31 Phase 5a.3 (FR8 functionality leg). |
 | `recogniser/gap-review-report.py` | manifest+script-call+skill | - Spec 31 Phase 5a.5 operator-review surface. |
 | `recogniser/leftover-bucket-router.py` | manifest+script-call+skill | - Stage 9 leftover routing. |
-| `sites/eye-care-ward-end/measure/measure-classless-baseline.py` | script-call | Front C Task 3 — re-measure Spec 44's safety baseline against the real Eye Care |
-| `sites/eye-care-ward-end/measure/measure-classless-frame-card.py` | — | Spec 44 completion register item 3 — generalisation check: run the real Stage A -> |
-| `recogniser/per-section-convention-voter.py` | manifest+script-call+skill | - Stage 1 of /sgs-clone pipeline. |
-| `recogniser/render_repeater_recogniser.py` | script-call | Stage A recognition for a repeated, classless draft group — Spec 44 §3.1/§4.1/§4.3/§4.4. |
-| `recogniser/render_repeater_seeder.py` | script-call | Seed `block_render_repeaters` — Spec 44 §4.2/§4.3 Steps 1-2 (2026-09-17). |
+| `recogniser/per-section-convention-voter.py` | manifest+script-call+skill+test-import | - Stage 1 of /sgs-clone pipeline. |
+| `recogniser/render_repeater_recogniser.py` | manifest+script-call | Stage A recognition for a repeated, classless draft group — Spec 44 §3.1/§4.1/§4.3/§4.4. |
+| `recogniser/render_repeater_seeder.py` | manifest+script-call | Seed `block_render_repeaters` — Spec 44 §4.2/§4.3 Steps 1-2 (2026-09-17). |
 | `recogniser/sc_var_classifier.py` | manifest+script-call | - Claude Design `sc-for` variable-name classifier. |
 | `recogniser/sc_var_haiku_batch.py` | manifest+script-call | - Piece 1's Tier B: one Haiku call per DRAFT. |
 | `recogniser/sc_var_responsive_correlator.py` | manifest+script-call | - joins Piece 1 identity to Piece 2 values. |
@@ -2381,7 +2414,7 @@ for the verb you happen to have in mind.
 | `remove-dead-flat-spacing-destructure.py` | manifest | one-shot cleanup for the Group 1 |
 | `remove-vacuous-style-engine-guard.py` | manifest+npm | Delete the vacuous `function_exists( 'wp_style_engine_get_styles' )` guard. |
 | `row-fit-sweep.mjs` | manifest | row-fit-sweep — reusable Playwright width-sweep verification harness. |
-| `run-gates.py` | commit-gate+manifest+npm+script-call | the consolidated gate runner. |
+| `run-gates.py` | commit-gate+manifest+npm+script-call+test-import | the consolidated gate runner. |
 | `run-motion-fx-generators.js` | manifest+npm+script-call | motion-fx generator chain (seed-motion-fx-registry.py, generate-fx-effects-php.py, generate-fx-qualifying-blocks.py). |
 | `scan-component-adoption.js` | manifest+script-call | WHY THIS EXISTS |
 | `scrim/check-scrim.py` | manifest | the viewport-scrim detector (Wave 3C U-2, family M-14). |
@@ -2390,16 +2423,16 @@ for the verb you happen to have in mind.
 | `seed-component-adoption.py` | manifest+script-call | write the unification ADOPTION LEDGER to `components`. |
 | `seed-composition-roles.py` | manifest+script-call | idempotent corrections to block_composition.composition_role. |
 | `seed-motion-fx-registry.py` | manifest+script-call | idempotent editorial seeder for the Spec 38 motion system. |
-| `seed-render-composition.py` | script-call | write `block_render_composition` (Spec 31 §13.9). |
-| `seed-render-singletons.py` | script-call | write `block_render_singletons` (Spec 31 §13.10). |
-| `sgs-clone-orchestrator.py` | commit-gate+manifest+script-call+settings+skill | sgs-clone orchestrator (Phase 7 rewire). |
-| `sgs-update-v2.py` | manifest+script-call | 13-stage holistic refresh of the SGS framework knowledge base. |
-| `shadow-fallback/run.js` | manifest+npm+script-call+skill | Forced-colours shadow fallback for static stylesheets: census, fix and gate in one script. |
-| `shadow-fallback/transform.js` | manifest+script-call+skill | Forced-colours shadow fallback for STATIC stylesheets (Wave 3C U-1 commit 4f-1). |
-| `shadow-lift/fixtures.js` | script-call+test-import | Self-test fixtures for scripts/shadow-lift — one CSS input + an assertion function per case. run.js's `--self-test` drives these; kept in their own… |
-| `shadow-lift/run.js` | manifest+npm+script-call+skill | Shadow lift on hover for static stylesheets: census, fix and gate in one script, mirroring scripts/shadow-fallback/run.js's shape (design H4… |
-| `shadow-lift/transform.js` | manifest+script-call+skill | Shadow lift on hover for STATIC stylesheets (design H4, stylesheet part — `.claude/reports/2026-09-23-shadow-hover-lift-design.md`). |
-| `shared_utils.py` | manifest+script-call | Shared, zero-dependency utilities for the SGS clone scripts. |
+| `seed-render-composition.py` | manifest+script-call | write `block_render_composition` (Spec 31 §13.9). |
+| `seed-render-singletons.py` | manifest+script-call | write `block_render_singletons` (Spec 31 §13.10). |
+| `sgs-clone-orchestrator.py` | commit-gate+manifest+script-call+settings+skill+test-import | sgs-clone orchestrator (Phase 7 rewire). |
+| `sgs-update-v2.py` | manifest+script-call+test-import | 13-stage holistic refresh of the SGS framework knowledge base. |
+| `shadow-fallback/run.js` | manifest+npm+script-call+skill+test-import | Forced-colours shadow fallback for static stylesheets: census, fix and gate in one script. |
+| `shadow-fallback/transform.js` | manifest+script-call+skill+test-import | Forced-colours shadow fallback for STATIC stylesheets (Wave 3C U-1 commit 4f-1). |
+| `shadow-lift/fixtures.js` | manifest+script-call+test-import | Self-test fixtures for scripts/shadow-lift — one CSS input + an assertion function per case. run.js's `--self-test` drives these; kept in their own… |
+| `shadow-lift/run.js` | manifest+npm+script-call+skill+test-import | Shadow lift on hover for static stylesheets: census, fix and gate in one script, mirroring scripts/shadow-fallback/run.js's shape (design H4… |
+| `shadow-lift/transform.js` | manifest+script-call+skill+test-import | Shadow lift on hover for STATIC stylesheets (design H4, stylesheet part — `.claude/reports/2026-09-23-shadow-hover-lift-design.md`). |
+| `shared_utils.py` | manifest+script-call+test-import | Shared, zero-dependency utilities for the SGS clone scripts. |
 | `stage8-audit.js` | manifest+npm+script-call | ONE Lighthouse run. ⚠ **header disputes this — it IS wired** |
 | `strip-dead-radius-legacy-args.py` | manifest | Strip the provably-dead legacy tier args from sgs_border_radius_tiers() calls. |
 | `strip-dead-radius-tier-stanzas.py` | manifest | Delete the DEAD duplicate border-radius tier stanzas from render.php. |
@@ -2416,7 +2449,7 @@ for the verb you happen to have in mind.
 | `surveys/fetch-native-control-contracts.sh` | manifest+script-call | Fetch the CANONICAL prop contract for each WordPress core control primitive straight from the Gutenberg source, so a golden describes the real… |
 | `surveys/lib/control-detection.js` | manifest+script-call | Answers ONE question per (block, attribute): **can a client set this?** |
 | `surveys/lib/php-kind-consumption.js` | manifest+script-call | BRANCH-AWARE CONSUMPTION ANALYSER for the shared container wrapper. |
-| `surveys/lib/primitive-alias-imports.js` | script-call | PROBLEM THIS EXISTS FOR |
+| `surveys/lib/primitive-alias-imports.js` | manifest+script-call | PROBLEM THIS EXISTS FOR |
 | `surveys/lib/wrapper-capability-selftest.js` | manifest+script-call | Self-test for the wrapper-capability census. |
 | `surveys/survey-background-colour-support.py` | manifest+npm+script-call | Track A completion audit — native colour/gradient background support. |
 | `surveys/survey-box-controls.py` | manifest+npm | "--survey" census of the BOX (4-side) and BORDER |
@@ -2437,40 +2470,40 @@ for the verb you happen to have in mind.
 | `surveys/survey-responsive-shape.py` | manifest+npm+script-call | the responsive STORAGE-SHAPE census. |
 | `surveys/survey-typography-controls.py` | manifest+npm | Phase 0.0 "--survey" census of the TYPOGRAPHY |
 | `surveys/survey-wrapper-capability.js` | manifest+script-call | PHASE 0 CENSUS for the shared-wrapper decomposition. |
-| `sync-business-info.py` | manifest+script-call | Tier-1 business-data extractor + pusher (D325, Spec 33 FR-33-14). |
-| `sync-container-wrapping-blocks.py` | manifest+script-call | Tracks every SGS block that is container-bearing (wraps children via InnerBlocks, |
+| `sync-business-info.py` | manifest+script-call+test-import | Tier-1 business-data extractor + pusher (D325, Spec 33 FR-33-14). |
+| `sync-container-wrapping-blocks.py` | manifest+script-call | Detects every SGS block that is container-bearing (wraps children via InnerBlocks, |
 | `sync-snapshot-shadow-presets.py` | manifest | Every client theme snapshot carries the framework's shadow presets, shadow colour and hover map. |
-| `test-hover-state-guard.php` | manifest | Gate: the touch-safe hover emitter emits the shape it claims to. |
+| `test-hover-state-guard.php` | manifest+test-import | Gate: the touch-safe hover emitter emits the shape it claims to. |
 | `test-pack-pricing-cascade.php` | — | Standalone cascade-resolver test runner for Spec 28 P3 (FR-28-6). |
 | `test_render_singleton_seeder.py` | — | Self-test for seed-render-singletons.py — Spec 31 §13.10. |
 | `theme-extractor/colour.py` | manifest+script-call+skill | colour parsing + CIEDE2000 dedup for the Spec 33 extractor. |
-| `theme-extractor/declared_layout.py` | script-call | Spec 33 declared layout and shape: the README's content width and corner radius as theme settings. |
-| `theme-extractor/declared_reconcile.py` | script-call | Spec 33 declared design checked against the RENDERED page (FR-33-1: computed wins). |
-| `theme-extractor/declared_sources.py` | script-call | Spec 33 declared-source readers: the design system a draft states outright. |
+| `theme-extractor/declared_layout.py` | manifest+script-call | Spec 33 declared layout and shape: the README's content width and corner radius as theme settings. |
+| `theme-extractor/declared_reconcile.py` | manifest+script-call | Spec 33 declared design checked against the RENDERED page (FR-33-1: computed wins). |
+| `theme-extractor/declared_sources.py` | manifest+script-call | Spec 33 declared-source readers: the design system a draft states outright. |
 | `theme-extractor/derive.py` | manifest+script-call | Pass B: PROVISIONAL palette derivation for drafts that declare NO :root tokens (FR-33-5). |
-| `theme-extractor/extract.py` | manifest+script-call+skill | the Spec 33 draft global-styles extractor (CLI orchestrator). |
-| `theme-extractor/font-usage.js` | script-call | FONT_USAGE_SRC is serialised into the browser context by measure.js, so it must not close over anything in Node scope. |
-| `theme-extractor/font_weights.py` | script-call | weight evidence for the Google fonts the extractor self-hosts (Spec 33). |
-| `theme-extractor/heading_weight.py` | script-call | Heading font weight from measurement (Spec 33, declared-design path only). |
-| `theme-extractor/layout-census.js` | script-call | LAYOUT_CENSUS_SRC is serialised into the browser context by measure.js, so it must not close over anything in Node scope. measure.js runs it once per… |
-| `theme-extractor/measure-node.js` | script-call | read). Nothing here runs in the browser except HOVER_READ_SRC, which is serialised into the page and therefore must not close over anything. |
+| `theme-extractor/extract.py` | manifest+script-call+skill+test-import | the Spec 33 draft global-styles extractor (CLI orchestrator). |
+| `theme-extractor/font-usage.js` | manifest+script-call | FONT_USAGE_SRC is serialised into the browser context by measure.js, so it must not close over anything in Node scope. |
+| `theme-extractor/font_weights.py` | manifest+script-call | weight evidence for the Google fonts the extractor self-hosts (Spec 33). |
+| `theme-extractor/heading_weight.py` | manifest+script-call | Heading font weight from measurement (Spec 33, declared-design path only). |
+| `theme-extractor/layout-census.js` | manifest+script-call | LAYOUT_CENSUS_SRC is serialised into the browser context by measure.js, so it must not close over anything in Node scope. measure.js runs it once per… |
+| `theme-extractor/measure-node.js` | manifest+script-call | read). Nothing here runs in the browser except HOVER_READ_SRC, which is serialised into the page and therefore must not close over anything. |
 | `theme-extractor/measure.js` | manifest+script-call | THE IRON LAW (Spec 33 FR-33-1/33-3): the value the extractor ships is always the COMPUTED value on a really-rendered node — never a raw source… |
-| `theme-extractor/palette.py` | manifest+script-call | build the theme colour palette from draft tokens (Spec 33 FR-33-1/2/9). |
-| `theme-extractor/palette_refs.py` | script-call | Spec 33: route palette colours into buttons and the page base. |
-| `theme-extractor/palette_vocab.py` | script-call | Spec 33 declared-design vocabulary: every role word and threshold as DATA, in one place. |
+| `theme-extractor/palette.py` | manifest+script-call+test-import | build the theme colour palette from draft tokens (Spec 33 FR-33-1/2/9). |
+| `theme-extractor/palette_refs.py` | manifest+script-call | Spec 33: route palette colours into buttons and the page base. |
+| `theme-extractor/palette_vocab.py` | manifest+script-call | Spec 33 declared-design vocabulary: every role word and threshold as DATA, in one place. |
 | `theme-extractor/presets.py` | manifest+script-call | button presets, layout, and font families for the Spec 33 extractor. |
-| `theme-extractor/roles.py` | manifest+script-call | colour ROLE inference by usage-context (Spec 33 FR-33-2). |
+| `theme-extractor/roles.py` | manifest+script-call+test-import | colour ROLE inference by usage-context (Spec 33 FR-33-2). |
 | `theme-extractor/schema_validate.py` | manifest+script-call | theme.json v3 structural validation (Spec 33 FR-33-7). |
-| `theme-extractor/site_palette.py` | script-call | Spec 33 declared-design overlay: a per-site palette built from what a draft DECLARES. |
+| `theme-extractor/site_palette.py` | manifest+script-call | Spec 33 declared-design overlay: a per-site palette built from what a draft DECLARES. |
 | `theme-extractor/token_map.py` | manifest+script-call | declared-CSS parsing for the Spec 33 extractor (tinycss2, not regex). |
-| `theme-extractor/typography.py` | manifest+script-call | base + heading typography from COMPUTED nodes (Spec 33 FR-33-3, the drift-killer). |
-| `theme-extractor/usage_census.py` | script-call | Colour usage census for a draft's HTML and JavaScript. |
-| `theme-extractor/usage_js.py` | script-call | Quote-aware bracket structure of a draft's script, for the colour census' JS-bound scan. |
-| `theme-extractor/usage_roles.py` | script-call | Spec 33 usage-proposed fallback roles: neutral palette slots a README's wording did not fill. |
-| `theme-extractor/used_fonts.py` | script-call | FR-33-18: every font family a draft LOADS and actually RENDERS becomes a |
-| `theme-extractor/used_layout.py` | script-call | FR-33-19: the site's content width and wide width, read from the draft's RENDERED layout. |
-| `theme-extractor/variant_sets.py` | script-call | Spec 33 script variant sets: switchable brand colour sets a draft holds in its own script. |
-| `tls_urlopen.py` | script-call | open an HTTPS request against a live SGS site with a trust-store fallback. |
+| `theme-extractor/typography.py` | manifest+script-call+test-import | base + heading typography from COMPUTED nodes (Spec 33 FR-33-3, the drift-killer). |
+| `theme-extractor/usage_census.py` | manifest+script-call | Colour usage census for a draft's HTML and JavaScript. |
+| `theme-extractor/usage_js.py` | manifest+script-call | Quote-aware bracket structure of a draft's script, for the colour census' JS-bound scan. |
+| `theme-extractor/usage_roles.py` | manifest+script-call | Spec 33 usage-proposed fallback roles: neutral palette slots a README's wording did not fill. |
+| `theme-extractor/used_fonts.py` | manifest+script-call | FR-33-18: every font family a draft LOADS and actually RENDERS becomes a |
+| `theme-extractor/used_layout.py` | manifest+script-call | FR-33-19: the site's content width and wide width, read from the draft's RENDERED layout. |
+| `theme-extractor/variant_sets.py` | manifest+script-call | Spec 33 script variant sets: switchable brand colour sets a draft holds in its own script. |
+| `tls_urlopen.py` | manifest+script-call | open an HTTPS request against a live SGS site with a trust-store fallback. |
 | `toolindex/build_index.py` | script-call | extracts a searchable purpose index from every script in |
 | `toolindex/query.py` | manifest+script-call+skill | free-text search over the tool index built by build_index.py. |
 | `uimax-tools/enrich-db.py` | manifest+script-call | SGS Framework DB Enrichment — 10 targets in one idempotent pass. |
@@ -2480,29 +2513,31 @@ for the verb you happen to have in mind.
 | `uimax-tools/test_uimax_write_validator.py` | — | Tests for uimax-write-validator.py — Rosetta Stone discipline (Row 213) only. |
 | `uimax-tools/uimax-write-validator.py` | manifest+script-call+skill | Pre-write validator for uimax tables. |
 | `uimax-tools/uimax_write.py` | manifest+script-call+skill | Validate-then-write helper for uimax tables. |
-| `value-matcher/inheritance.py` | manifest+script-call | Default-inheritance lookup module. |
-| `value-matcher/match.py` | manifest+script-call | Token value-matcher for the SGS Deterministic Draft-to-SGS Converter pipeline. |
+| `value-matcher/inheritance.py` | manifest+script-call+test-import | Default-inheritance lookup module. |
+| `value-matcher/match.py` | manifest+script-call+test-import | Token value-matcher for the SGS Deterministic Draft-to-SGS Converter pipeline. |
 | `variant-value-extractor/extract-variation-values.js` | manifest+script-call | each variation's `attributes` object as PLAIN JSON to stdout. |
 | `visual-report-sha.py` | manifest+script-call | Content hash binding a visual-diff report to the change it actually describes. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 37 scripts
+#### `scripts/` — 39 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
-| `apply-block-attrs-batch.js` | — | One-off companion to wp-update-block-attrs.js for the Indus homepage attribute-mirror task (2026-07-16). Handles the case wp-update-block-attrs.js… |
+| `apply-block-attrs-batch.js` | — | One-off companion to wp-update-block-attrs.js for the wholesale-food client's homepage attribute-mirror task (2026-07-16). Handles the case… |
 | `brand-palette-sampler.py` | — |  |
+| `check-no-client-names.py` | manifest | : keep client names and reference-site names out of the framework. |
 | `colour-parity-audit.js` | — | Colour Parity Audit — automated comparison between mockup HTML brief and SGS variation JSON. |
 | `css-pattern-audit.js` | — | CSS pattern audit — static analysis for risky patterns in deployed/built CSS. |
 | `font-source-audit.js` | manifest+npm | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
 | `global-styles-reset.js` | skill | wp_global_styles reset + reapply. |
+| `lib/close-browser-on-exit.js` | script-call | close-browser-on-exit — make sure a Playwright browser dies with the script that launched it. |
 | `lib/oldshape-mappings.js` | script-call | wp-migrate-oldshape-blocks.js (Track B content restore, 2026-07-15). |
-| `lint-naming-conventions.py` | manifest | CI linter for the SGS WordPress Framework naming conventions. |
-| `lint-patterns-for-personal-data.py` | manifest+npm | Lint SGS pattern PHP files for hardcoded personal data. |
-| `parity/benchmark/cases.mjs` | manifest+script-call | The walker's catch-rate benchmark: six Eye Care gaps the walker passed and Bean found by eye |
+| `lint-naming-conventions.py` | manifest+test-import | CI linter for the SGS WordPress Framework naming conventions. |
+| `lint-patterns-for-personal-data.py` | manifest+npm+test-import | Lint SGS pattern PHP files for hardcoded personal data. |
+| `parity/benchmark/cases.mjs` | manifest+script-call | The walker's catch-rate benchmark: six optician-client gaps the walker passed and Bean found by eye |
 | `parity/benchmark/score.mjs` | manifest+script-call+skill | Scores a catch-rate benchmark run from its recorded walker reports (<out>/<config>-control and <out>/case-<id>): benchmark.mjs calls it after the… |
 | `parity/benchmark.mjs` | script-call+skill | The walker's catch-rate benchmark. For each page config it runs the walker once as a control |
-| `parity/draft-live-walk.mjs` | script-call | Draft-versus-live parity walker. Drives the design draft and the live site through the same states (tabs, steps, open panels, filters, modals) at… |
+| `parity/draft-live-walk.mjs` | manifest+script-call | Draft-versus-live parity walker. Drives the design draft and the live site through the same states (tabs, steps, open panels, filters, modals) at… |
 | `parity/lib/auto-align.mjs` | script-call | Word and control alignment for the walker's automatic check (auto-compare.mjs). |
 | `parity/lib/auto-collect.mjs` | script-call | In-page collector for the walker's automatic check (GAP-CHECKLIST.md section 12): every painted word and every control or media item on the page, so… |
 | `parity/lib/auto-compare.mjs` | script-call | The walker's automatic check (GAP-CHECKLIST.md section 12): aligns every painted word of the draft with the live page's, then reports what no config… |
@@ -2517,9 +2552,9 @@ for the verb you happen to have in mind.
 | `parity/lib/report.mjs` | manifest+script-call | Writes the parity report: report.json (everything), report.md (the differences), and one side-by-side screenshot per state and width (draft left… |
 | `parity/lib/review.mjs` | manifest+script-call+skill | The screenshot review gate for draft-live-walk.mjs. Writes contact.md: every state x width side-by-side shot, full size, with the config's review… |
 | `parity/lib/structure.mjs` | manifest+script-call+skill | Structure and drive checks for draft-live-walk.mjs: where each pair sits relative to the other pairs (inside which, in whose row), and how each state… |
-| `qc-anti-cheat.py` | script-call | Static-analysis gate that fails on converter-cheating patterns. |
+| `qc-anti-cheat.py` | script-call+test-import | Static-analysis gate that fails on converter-cheating patterns. |
 | `qc-correctness-regression.py` | — | Mechanical regression checker for the SGS clone pipeline. |
-| `qc_anti_cheat_checks.py` | script-call | Cheat-pattern definitions, AST visitor, and file analysers. |
+| `qc_anti_cheat_checks.py` | script-call+test-import | Cheat-pattern definitions, AST visitor, and file analysers. |
 | `render-mobile-override-audit.js` | — | Render.php inline-vs-media audit. |
 | `sgs-block-grep.py` | — | SGS block-name search utility — fixes the block-name-search-blindspot failure mode. |
 | `verify-restored-page.js` | — | The Track B definition-of-done requires the restore to be proven on the REAL page via computed DOM (R-31-11), not on assertion output or the emitted… |
@@ -3246,26 +3281,26 @@ meaning shows a blank cell rather than an invented sentence.
 | Table | Rows | Expanded |
 |---|---|---|
 | `animation_tokens` | 8 | yes |
-| `array_item_schema` | 90 | yes |
-| `block_attributes` | 7773 | yes |
-| `block_capabilities` | 509 | yes |
-| `block_composition` | 211 | yes |
-| `block_render_composition` | 6 | — |
+| `array_item_schema` | 112 | yes |
+| `block_attributes` | 9448 | yes |
+| `block_capabilities` | 553 | yes |
+| `block_composition` | 219 | yes |
+| `block_render_composition` | 8 | — |
 | `block_render_repeaters` | 57 | — |
-| `block_render_singletons` | 97 | — |
-| `block_selectors` | 56 | yes |
-| `block_supports` | 1241 | yes |
-| `blocks` | 209 | yes |
-| `components` | 298 | — |
+| `block_render_singletons` | 118 | — |
+| `block_selectors` | 61 | yes |
+| `block_supports` | 1281 | yes |
+| `blocks` | 217 | yes |
+| `components` | 520 | — |
 | `deploy_steps` | 7 | — |
-| `design_tokens` | 260 | yes |
+| `design_tokens` | 319 | yes |
 | `docs` | 1216 | — |
 | `excluded_properties` | 10 | — |
-| `fx_effects` | 21 | yes |
+| `fx_effects` | 22 | yes |
 | `gotchas` | 12 | — |
 | `hooks` | 5494 | — |
 | `html_tag_to_core_block` | 17 | — |
-| `indexed_files` | 117 | — |
+| `indexed_files` | 125 | — |
 | `library_runtime_signals` | 3 | — |
 | `markup_examples` | 422 | — |
 | `modifier_suffixes` | 19 | — |
@@ -3273,26 +3308,26 @@ meaning shows a blank cell rather than an invented sentence.
 | `pattern_coverage` | 108 | — |
 | `patterns` | 57 | — |
 | `plugins` | 3 | — |
-| `preset_implications` | 23 | yes |
+| `preset_implications` | 28 | yes |
 | `property_suffixes` | 158 | yes |
-| `roles` | 43 | yes |
+| `roles` | 47 | yes |
 | `schema_metadata` | 4 | yes |
 | `schema_migrations` | 29 | — |
 | `slots` | 108 | yes |
 | `style_variations` | 8 | — |
 | `theme_parts` | 28 | — |
-| `variant_composition_attr_slots` | 6 | — |
-| `variant_composition_slots` | 1 | — |
-| `variant_slots` | 36 | yes |
+| `variant_composition_attr_slots` | 0 | — |
+| `variant_composition_slots` | 0 | — |
+| `variant_slots` | 33 | yes |
 
-#### `blocks` — 209 rows
+#### `blocks` — 217 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
 | `slug` | TEXT | 0% |  |
 | `title` | TEXT | 0% |  |
-| `category` | TEXT | 0% | `theme` 51, `sgs-content` 46, `design` 25, `sgs-forms` 20, `text` 15, `widgets` 14, `sgs-interactive` 13, `media` 10, `sgs-layout` 8, `common` 5, `reusable` 1, `embed` 1 |
-| `type` | TEXT | 0% | `dynamic` 148, `static` 61 |
+| `category` | TEXT | 0% | `theme` 51, `sgs-content` 49, `design` 25, `sgs-forms` 20, `sgs-interactive` 18, `text` 15, `widgets` 14, `media` 10, `sgs-layout` 8, `common` 5, `reusable` 1, `embed` 1 |
+| `type` | TEXT | 0% | `dynamic` 156, `static` 61 |
 | `status` | TEXT | 0% | Constant — every row is `built`. Filtered on as a gate predicate, so it filters nothing today. |
 | `description` | TEXT | 0% |  |
 | `has_view_script` | INTEGER | 0% |  |
@@ -3301,62 +3336,62 @@ meaning shows a blank cell rather than an invented sentence.
 | `created_at` | TEXT | 0% |  |
 | `updated_at` | TEXT | 0% |  |
 | `replaces` | TEXT | 89% |  |
-| `source` | TEXT | 0% | `native_wp` 122, `sgs` 87 |
+| `source` | TEXT | 0% | `native_wp` 122, `sgs` 95 |
 | `is_stale` | INTEGER | 0% | Constant 0 — no row has ever gone stale. Dormant, not load-bearing. |
-| `tier` | TEXT | 0% | `block` 205, `class-section` 4 — Recognition tier — how the walker identifies this thing in a draft. |
+| `tier` | TEXT | 0% | `block` 213, `class-section` 4 — Recognition tier — how the walker identifies this thing in a draft. |
 | `variant_attr` | TEXT | 98% | Names the attribute that selects the block's variant (FR-31-20). Pairs with the variant_slots table. |
 
-#### `block_attributes` — 7773 rows
+#### `block_attributes` — 9448 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
 | `id` | INTEGER | 0% |  |
 | `block_slug` | TEXT | 0% |  |
 | `attr_name` | TEXT | 0% |  |
-| `attr_type` | TEXT | 0% | `string` 4672, `number` 1861, `object` 683, `boolean` 440, `array` 55, `integer` 35, `rich-text` 21, `string\|boolean` 6 |
-| `default_value` | TEXT | 46% |  |
+| `attr_type` | TEXT | 0% | `string` 5670, `number` 2109, `object` 968, `boolean` 564, `array` 64, `integer` 46, `rich-text` 21, `string\|boolean` 6 |
+| `default_value` | TEXT | 41% |  |
 | `enum_values` | TEXT | 92% |  |
-| `description` | TEXT | 46% |  |
+| `description` | TEXT | 39% |  |
 | `is_responsive` | INTEGER | 0% |  |
 | `canonical_slot` | TEXT | 75% |  |
-| `role` | TEXT | 1% | `behaviour` 2770, `color` 880, `typography` 761, `layout` 613, `colour-gradient` 525, `visual` 471, `select-from-enum` 368, `core` 225, `boolean-visibility` 197, `text-content` 157, `motion` 118, `technical` 114, `content` 76, `image-object` 74, +23 more — What KIND of thing the attribute is — the single best attribute classifier here. A gate (db-consistency/check_orphan_roles.py) fails the build if a value has no `roles` row, so it cannot rot quietly. |
-| `derived_selector` | TEXT | 76% | A NAMED TRAP. Reads like a CSS emit target; is a synthetic per-attribute identifier. colour-codemod/survey.js:21-27 measured 58% autofixable off it and the figure was wrong — ZERO of its values exist as classes in the tree. Never classify on it. |
+| `role` | TEXT | 2% | `behaviour` 2942, `typography` 1200, `color` 1085, `layout` 742, `colour-gradient` 571, `visual` 570, `select-from-enum` 432, `boolean-visibility` 317, `text-content` 235, `core` 225, `motion` 177, `technical` 131, `enum-mode` 116, `styling` 102, +27 more — What KIND of thing the attribute is — the single best attribute classifier here. A gate (db-consistency/check_orphan_roles.py) fails the build if a value has no `roles` row, so it cannot rot quietly. |
+| `derived_selector` | TEXT | 75% | A NAMED TRAP. Reads like a CSS emit target; is a synthetic per-attribute identifier. colour-codemod/survey.js:21-27 measured 58% autofixable off it and the figure was wrong — ZERO of its values exist as classes in the tree. Never classify on it. |
 | `output_signature` | TEXT | 73% |  |
-| `equivalent_implementations` | TEXT | 75% | FOSSIL — holds stale synthetic Rosetta rows; no writer and no reader in current code. |
-| `inspector_control_type` | TEXT | 87% | `SelectControl` 249, `ToggleControl` 185, `TextControl` 171, `DesignTokenPicker` 163, `RangeControl` 94, `UnitControl` 50, `ToggleGroupControl` 24, `ResponsiveBoxControl` 23, `ShadowControl` 20, `NumberControl` 12, `MediaUpload` 11, `IconPicker` 7, `TextareaControl` 6, `SgsLinkControl` 4, +9 more — The editor control the client actually sees. Cross-tab against `attr_type` to find controls whose shape cannot hold their setting. |
-| `source` | TEXT | 0% | `sgs` 4223, `sgs-fx` 3043, `native_wp` 507 |
-| `emit_shape` | TEXT | 96% | `nested` 234, `child` 63 — How the converter emits it. Fails closed at converter/walk.py:581 when unseeded on a content-role attribute, so its NULLs are tracked gaps rather than silent ones. |
+| `equivalent_implementations` | TEXT | 79% | FOSSIL — holds stale synthetic Rosetta rows; no writer and no reader in current code. |
+| `inspector_control_type` | TEXT | 88% | `SelectControl` 269, `ToggleControl` 206, `TextControl` 205, `DesignTokenPicker` 162, `RangeControl` 110, `UnitControl` 53, `ToggleGroupControl` 40, `ResponsiveBoxControl` 25, `ShadowControl` 20, `NumberControl` 16, `MediaUpload` 13, `IconPicker` 9, `TextareaControl` 6, `ResponsiveTriStateControl` 5, +10 more — The editor control the client actually sees. Cross-tab against `attr_type` to find controls whose shape cannot hold their setting. |
+| `source` | TEXT | 0% | `sgs` 5724, `sgs-fx` 3217, `native_wp` 507 |
+| `emit_shape` | TEXT | 96% | `nested` 327, `child` 77 — How the converter emits it. Fails closed at converter/walk.py:581 when unseeded on a content-role attribute, so its NULLs are tracked gaps rather than silent ones. |
 | `alt_companion_attr` | TEXT | 100% |  |
-| `css_layer` | TEXT | 90% | `OUTER` 546, `GRID` 140, `CONTENT` 83, `GRID_AREA` 41 — Which layer of the 3-layer wrapper model (OUTER / CONTENT / GRID / GRID_AREA) the attribute belongs to. |
+| `css_layer` | TEXT | 88% | `OUTER` 754, `GRID` 175, `CONTENT` 115, `GRID_AREA` 43 — Which layer of the 3-layer wrapper model (OUTER / CONTENT / GRID / GRID_AREA) the attribute belongs to. |
 | `css_property` | TEXT | 57% | The CSS longhand(s) this attribute writes. WARNING: a NULL means TWO different things — for a painting role it is a real gap; for `text-content`/`content`/`boolean-visibility` it is correct by design (100% NULL, they do not paint). Condition on `role` before reading a NULL as a defect. |
-| `box_family` | TEXT | 97% | `borderRadius` 57, `borderWidth` 55, `padding` 46, `margin` 45, `contentBandPadding` 7, `splitMediaBorderRadius` 3, `submenuPadding` 2, `cardPadding` 2, `wrapperBorderWidth` 1, `tagPadding` 1, `splitMediaPadding` 1, `splitMediaBorderWidth` 1, `savingBadgePadding` 1, `pillPadding` 1, +15 more — Merged box-object family. Narrow but authoritative — the DB-first replacement for name-regex box detection. No box_family means provably not a box attribute. |
-| `css_element` | TEXT | 71% | `wrapper` 1056, `inner` 112, `item` 97, `title` 66, `sublink` 54, `label` 50, `name` 31, `cta` 31, `icon` 30, `pill` 28, `overlay` 23, `featured` 22, `body` 22, `caption` 21, +106 more — Which sub-element inside the block it paints. Must be paired with `css_layer` — matching on element alone mis-routes (converter/db/db_lookup.py:1340-1353). |
-| `css_state` | TEXT | 94% | `hover` 449, `current` 28, `scrolled` 3 — Pseudo-state the value applies to. Exact where present; the only state marker. |
+| `box_family` | TEXT | 97% | `borderRadius` 57, `borderWidth` 55, `padding` 49, `margin` 45, `contentBandPadding` 7, `splitMediaBorderRadius` 3, `itemPadding` 3, `cardPadding` 3, `submenuPadding` 2, `submenuLinkPadding` 2, `iconCircleBorderWidth` 2, `cardBorderWidth` 2, `writeReviewPadding` 1, `writeReviewBorderWidth` 1, +33 more — Merged box-object family. Narrow but authoritative — the DB-first replacement for name-regex box detection. No box_family means provably not a box attribute. |
+| `css_element` | TEXT | 69% | Which sub-element inside the block it paints. Must be paired with `css_layer` — matching on element alone mis-routes (converter/db/db_lookup.py:1340-1353). |
+| `css_state` | TEXT | 94% | `hover` 497, `current` 29, `scrolled` 5, `open` 3, `shrunk` 1 — Pseudo-state the value applies to. Exact where present; the only state marker. |
 | `css_tier` | TEXT | 100% | `tablet` 11, `mobile` 11, `desktop` 10 — Responsive tier. Deliberately SPARSE — responsive siblings intentionally carry NULL and only anomalies keep a value. Do NOT treat these NULLs as gaps; 'fixing' them breaks db_lookup's base-row query. |
 | `canonical_slot_aliases` | TEXT | 100% |  |
-| `tier_shape` | TEXT | 92% |  |
+| `tier_shape` | TEXT | 90% |  |
 
-#### `block_composition` — 211 rows
+#### `block_composition` — 219 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
 | `block_slug` | TEXT | 0% |  |
-| `wraps_block` | TEXT | 82% | NOT A MEASUREMENT. The value sgs/container is a hardcoded string literal inside the writer SQL (sync-container-wrapping-blocks.py:1337), asserted for every roster member regardless of truth — 14 of the 38 make no real SGS_Container_Wrapper call, so the column is false for ~37% of its rows. Its only reader (db_lookup.py:1659) asks which wraps_block value is most common: a self-fulfilling question about a constant. Same trap shape as blocks.status and derived_selector. Verified 2026-08-24 (D762). |
-| `composition_role` | TEXT | 0% | `content-block` 192, `leaf` 10, `section-root` 8, `wrapper-shell` 1 — The block's structural shape. See the container_kind warning — the two columns disagree. |
+| `wraps_block` | TEXT | 82% | NOT A MEASUREMENT. The value sgs/container is a hardcoded string literal inside the writer SQL (sync-container-wrapping-blocks.py::main), asserted for every roster member regardless of truth — 14 of the 38 make no real SGS_Container_Wrapper call, so the column is false for ~37% of its rows. Its only reader (db_lookup.py:1659) asks which wraps_block value is most common: a self-fulfilling question about a constant. Same trap shape as blocks.status and derived_selector. Verified 2026-08-24 (D762). |
+| `composition_role` | TEXT | 0% | `content-block` 200, `leaf` 10, `section-root` 8, `wrapper-shell` 1 — The block's structural shape. See the container_kind warning — the two columns disagree. |
 | `accepts_allowed_blocks` | TEXT | 91% |  |
 | `created_at` | TEXT | 0% |  |
-| `container_kind` | TEXT | 82% | `layout` 18, `content` 13, `section` 8 — The D294 pattern selector, and a converter recognition input (l2_qualify.py:122 tests PRESENCE; recognise_helpers.py:49-53 uses the VALUE as a priority tie-break). NULL means never-written, NOT not-container-bearing — the writer (sync-container-wrapping-blocks.py:1337) only ever SETS and has no statement clearing back to NULL, so a block that stops qualifying keeps its old value permanently. Refreshed 2026-08-24 (D762): 7 missing values added, 5 unclearable stale ones cleared; 38 rows now match the roster exactly. An earlier version of this cell claimed it disagrees with render.php in 14 of 58 blocks — that used the predicate content-kind-must-not-call-the-wrapper, but D294 says content-kind MAY render block-private. A permission read as an obligation; the figure was wrong. |
+| `container_kind` | TEXT | 82% | `layout` 18, `content` 13, `section` 8 — The D294 pattern selector, and a converter recognition input (l2_qualify.py:122 tests PRESENCE; recognise_helpers.py:49-53 uses the VALUE as a priority tie-break). NULL means never-written, NOT not-container-bearing — the writer (sync-container-wrapping-blocks.py::main) only ever SETS and has no statement clearing back to NULL, so a block that stops qualifying keeps its old value permanently. Refreshed 2026-08-24 (D762): 7 missing values added, 5 unclearable stale ones cleared; 38 rows now match the roster exactly. An earlier version of this cell claimed it disagrees with render.php in 14 of 58 blocks — that used the predicate content-kind-must-not-call-the-wrapper, but D294 says content-kind MAY render block-private. A permission read as an obligation; the figure was wrong. |
 
-#### `block_capabilities` — 509 rows
+#### `block_capabilities` — 553 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
 | `id` | INTEGER | 0% |  |
 | `block_slug` | TEXT | 0% |  |
 | `capability` | TEXT | 0% |  |
-| `kind` | TEXT | 0% | `discovery` 456, `functional` 53 — THE LOAD-BEARING SPLIT. `functional` = real converter behaviour; `discovery` = search keywords from the block title. Without it the table looks like hundreds of behavioural facts when only a few dozen are. |
+| `kind` | TEXT | 0% | `discovery` 497, `functional` 56 — THE LOAD-BEARING SPLIT. `functional` = real converter behaviour; `discovery` = search keywords from the block title. Without it the table looks like hundreds of behavioural facts when only a few dozen are. |
 
-#### `block_supports` — 1241 rows
+#### `block_supports` — 1281 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
@@ -3364,7 +3399,7 @@ meaning shows a blank cell rather than an invented sentence.
 | `block_slug` | TEXT | 0% |  |
 | `support_name` | TEXT | 0% |  |
 | `support_value` | TEXT | 0% |  |
-| `source` | TEXT | 0% | `native_wp` 819, `sgs` 422 |
+| `source` | TEXT | 0% | `native_wp` 819, `sgs` 462 |
 | `is_stale` | INTEGER | 0% |  |
 
 #### `property_suffixes` — 158 rows
@@ -3392,16 +3427,16 @@ meaning shows a blank cell rather than an invented sentence.
 | `standalone_block_default_attrs` | TEXT | 96% |  |
 | `resolves_whole_instance` | TEXT | 96% |  |
 
-#### `roles` — 43 rows
+#### `roles` — 47 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
 | `role_name` | TEXT | 0% |  |
-| `classification` | TEXT | 0% | `styling-behaviour` 22, `content-bearing` 20, `unclassified` 1 — Collapses the role vocabulary into a content-vs-styling fork — the cheapest reliable predicate for 'does this carry text the client edits, or does it paint'. |
+| `classification` | TEXT | 0% | `styling-behaviour` 25, `content-bearing` 21, `unclassified` 1 — Collapses the role vocabulary into a content-vs-styling fork — the cheapest reliable predicate for 'does this carry text the client edits, or does it paint'. |
 | `description` | TEXT | 0% |  |
 | `created_at` | TEXT | 0% |  |
 
-#### `variant_slots` — 36 rows
+#### `variant_slots` — 33 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
@@ -3409,9 +3444,9 @@ meaning shows a blank cell rather than an invented sentence.
 | `variant_value` | TEXT | 0% |  |
 | `unique_slot` | TEXT | 0% | The slot ONLY this variant has — the discriminator, computed by set-difference against the block's other variants. |
 | `created_at` | TEXT | 0% |  |
-| `slot_value` | TEXT | 72% |  |
+| `slot_value` | TEXT | 100% |  |
 
-#### `preset_implications` — 23 rows
+#### `preset_implications` — 28 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
@@ -3419,29 +3454,29 @@ meaning shows a blank cell rather than an invented sentence.
 | `preset_attr` | TEXT | 0% |  |
 | `enum_value` | TEXT | 0% |  |
 | `implied_property` | TEXT | 0% |  |
-| `presence` | TEXT | 0% | `present` 14, `absent` 9 |
+| `presence` | TEXT | 0% | `present` 14, `absent` 14 |
 | `is_neutral` | INTEGER | 0% | Marks preset values that genuinely imply nothing (`none`, `flat`), so the converter can tell 'no styling' from 'not set'. |
 | `created_at` | TEXT | 0% |  |
 
-#### `fx_effects` — 21 rows
+#### `fx_effects` — 22 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
 | `effect` | TEXT | 0% | Primary key and the effect's public identity — the value that appears in `data-sgs-fx`. Closed vocabulary chosen by hand to match Spec 38 §11.2; every consumer keys off it (generate-fx-effects-php.py:88, generate-fx-qualifying-blocks.py:779). |
-| `tier` | TEXT | 0% | `G` 11, `V` 6, `W` 3, `H` 1 — The Spec 38 four-tier motion doctrine: V vanilla / G GSAP / H helper / W WebGL substrate. |
+| `tier` | TEXT | 0% | `G` 11, `V` 6, `W` 3, `H` 2 — The Spec 38 four-tier motion doctrine: V vanilla / G GSAP / H helper / W WebGL substrate. |
 | `plugin_set` | TEXT | 0% | JSON array of GSAP plugin names the effect needs. LIVE — generate-fx-effects-php.py:165-169 emits it into generated-fx-effects.php, and class-sgs-motion-registry.php uses it to decide which vendor module to enqueue. This is what keeps a page that uses no GSAP effect shipping zero GSAP bytes. |
 | `owns_scroll_transform` | INTEGER | 0% | Marks effects that claim the scroll transform — the mutual-exclusion axis for combining effects on one element. |
 | `reduced_motion` | TEXT | 0% | FOSSIL as of 2026-08-24 — no operational reader; generate-fx-effects-php.py:26 states outright that it is not carried. Same for editor_story, tier and created_at: only a reseed self-test touches them. |
 | `editor_story` | TEXT | 0% | FOSSIL as of 2026-08-24 — no operational reader. generate-fx-effects-php.py:26 states outright that editor/JS-facing concerns are not carried here; only the reseed self-test touches it. |
 | `created_at` | TEXT | 0% | FOSSIL — SQL DEFAULT (datetime('now')), never written by application code and read by nothing. |
-| `scope` | TEXT | 0% | `block` 15, `element` 3, `site` 2, `paired` 1 — Gates which effects are considered at all — generate-fx-qualifying-blocks.py:780 filters scope IN (block, element). A live reader, not a label. |
+| `scope` | TEXT | 0% | `block` 15, `element` 4, `site` 2, `paired` 1 — Gates which effects are considered at all — generate-fx-qualifying-blocks.py:780 filters scope IN (block, element). A live reader, not a label. |
 | `requires` | TEXT | 0% | What an effect needs from a block (text/svg/svg-subtree/section/item-set/track/surface/image/none). LIVE — generate-fx-qualifying-blocks.py:750-780 matches it against each block's provision. The value none is real, meaning any block qualifies — NOT a null-substitute. The svg vs svg-subtree split (2026-07-31) exists because under-specifying here once offered MorphSVG on blocks carrying only a background SVG. |
 | `pins` | INTEGER | 0% | Whether the effect pins its element during scroll. Drives the editor's fxEnd control wording (generate-fx-effects-php.py:167,232). Hand-set but empirically grounded — each row's seeder comment cites the source file checked, e.g. 'VERIFIED: fx-pin-scrub.js sets pin:true'. |
 | `triggers` | TEXT | 0% | Comma-joined string split at read time (generate-fx-effects-php.py:174), not a join table — one stray comma silently changes behaviour. |
 | `creates_panel` | INTEGER | 0% | Whether the effect may create a standalone FX panel (FR-38-25). Read at generate-fx-qualifying-blocks.py:854. Both readers guard on PRAGMA table_info before selecting it and fall back to 1 — so the risk case is the column being ABSENT on a pre-migration DB, not NULL. |
 | `in_picker` | INTEGER | 0% | Whether the effect appears in the generic FX picker. Two-way gated against fx.js SHIPPED_EFFECTS by check-fx-list-drift.py:486-503, so it cannot rot quietly. |
 
-#### `array_item_schema` — 90 rows
+#### `array_item_schema` — 112 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
@@ -3449,9 +3484,9 @@ meaning shows a blank cell rather than an invented sentence.
 | `array_attr` | TEXT | 0% | Which array-typed attribute on the block these field rows describe. DECLARED — the attribute name straight from block.json. |
 | `field_key` | TEXT | 0% | One key of the array's item shape, copied verbatim from block.json `items.properties` (seeded by the array_item_schema seeder in sgs-update-v2.py). One row per item key per array attribute. |
 | `field_order` | INTEGER | 0% | STRUCTURAL and implicit — it is the block.json key order of items.properties, captured by enumerate() at sgs-update-v2.py:1056, not anything an author declares. Consumed as a tie-break (array_content.py:282-289). Any tool that sorts or reformats block.json keys would silently change converter behaviour with no error. |
-| `role` | TEXT | 72% | `text-content` 9, `url-href` 5, `image-object` 4, `icon-slug` 3, `icon` 3, `state-modifier-boolean` 1 — A SEPARATE 3-VALUE VOCABULARY — icon-slug / text-content / url-href, plus NULL. NEVER join it to block_attributes.role (34 values); they are unrelated despite the shared column name. DECLARED from block.json items.properties.<field>.role, never name-parsed (FR-31-2.1a). NULL means no role was declared, and the reader (array_content.py:112) deliberately falls back to name-derivation for those. |
+| `role` | TEXT | 70% | `text-content` 13, `url-href` 6, `image-object` 6, `icon-slug` 3, `icon` 3, `state-modifier-boolean` 1, `rating` 1, `colour-background` 1 — A SEPARATE 3-VALUE VOCABULARY — icon-slug / text-content / url-href, plus NULL. NEVER join it to block_attributes.role (34 values); they are unrelated despite the shared column name. DECLARED from block.json items.properties.<field>.role, never name-parsed (FR-31-2.1a). NULL means no role was declared, and the reader (array_content.py:112) deliberately falls back to name-derivation for those. |
 
-#### `design_tokens` — 260 rows
+#### `design_tokens` — 319 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
@@ -3461,7 +3496,7 @@ meaning shows a blank cell rather than an invented sentence.
 | `css_var` | TEXT | 0% | FOSSIL as of 2026-08-24 — written by formula (NAME-DERIVED from slug via the WP preset convention), read by nothing. Same for description. |
 | `description` | TEXT | 0% | FOSSIL — written as `preset.name` with the slug as fallback, read by nothing anywhere in the tree. |
 
-#### `block_selectors` — 56 rows
+#### `block_selectors` — 61 rows
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|

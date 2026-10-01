@@ -677,7 +677,7 @@ The header container and its rows implement §3.1, §3.3, §3.4, §3.6.
 **Status:** `BUILT`. A per-clause audit against §3 records: **PASS** §3.1 three named rows; §3.4
 empty-row-zero-output (`site-header-row/render.php` returns `''` for an empty `$content`); §3.5 no
 `allowedBlocks` lock on the row; §3.6 `min-width:0` on children and no `flex-shrink:0` on the logo
-(`site-header-row/style.css`); no inline `style=""` (Spec 32); composite-mirror. The three gaps the
+(`site-header-row/style.css`); no inline `style=""` (Spec 32); composite wrapper. The three gaps the
 audit found are FR-37-33 (§3.3 row layout control), FR-37-34 (§3.5 promoted palette) and FR-37-35
 (§3.6 container-query reflow), all BUILT. The §3.6 live overflow gate is FR-37-12.
 **Done when:** an audit against §3 is recorded per clause with a pass/fail and a path, and every fail
@@ -1071,7 +1071,7 @@ block in the framework (`includes/device-visibility.php`,
 `src/blocks/extensions/responsive-visibility.js`), and Spec 35 §D3 owns the generic principle
 ("Mobile inherits from desktop unless overridden"). Spec 35 owns the build; §3.8 of this spec states
 the header/footer behaviour that depends on it. Changing the visibility extension from a header/footer
-spec would diverge from R-31-9 and the composite-mirror rule.
+spec would diverge from R-31-9 and the composite wrapper rule.
 
 **At the collapse point, not a tier (Wave 3C U-10, M-19).** A header block that moves into the drawer
 (a copy in the drawer body, the header copy hidden) can hide exactly while the menu shows its burger:
@@ -1821,7 +1821,7 @@ canary). The pointers are read through `Sgs_Active_Layout`, never with a raw opt
 ## 7. Constraints binding every FR
 
 1. **No inline `style=""`** on any block in this spec (Spec 32).
-2. **Composite-mirror (R-31-9)** — both containers are `containerKind: section`, so they keep
+2. **Composite wrapper (R-31-9)** — both containers are `containerKind: section`, so they keep
    `SGS_Container_Wrapper`; no per-block CSS that diverges from it. Block-private rendering is not
    used for header/footer: a private copy would not escape an attribute-shape inconsistency, because
    that inconsistency lives in the block's own settings, not the shared engine, so a fork would copy

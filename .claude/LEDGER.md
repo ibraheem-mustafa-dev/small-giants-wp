@@ -56,9 +56,9 @@ walk and eye-check every surface, classify, write the work plan by surface).
 **Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info
 hours, the mini-cart's items and the seven wrapper composites (`plans/archive/2026-10-01-separators-plan.md`). Open, only if
-asked: the composites' editor canvases and the cart panel show spacing only in the editor (lines draw on the page); the
-container-sync mirror (`scripts/sync-container-wrapping-blocks.py --write-block-json`) now validates and dry-runs but would add
-348 attributes across 19 blocks, so it stays report-only until that drift is reviewed.
+asked: the composites' editor canvases and the cart panel show spacing only in the editor (lines draw on the page).
+The container roster script (`scripts/sync-container-wrapping-blocks.py`) reports the roster and KINDs and writes
+the DB only; container capabilities are opt-in per block at panel level.
 
 **Names in code.** `python scripts/check-no-client-names.py --check` (gated, fast tier) keeps client and reference-site names
 out of code and file names; docs, tests, fixtures, QA captures and dated reports may carry them.

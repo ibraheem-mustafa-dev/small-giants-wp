@@ -2,7 +2,7 @@
 /**
  * Server-side render for the SGS Form Step block.
  *
- * WS-4 composite-mirror: CONTENT kind — width/spacing layers only via
+ * WS-4 composite wrapper: CONTENT kind — width/spacing layers only via
  * SGS_Container_Wrapper::render(). The step wrapper carries:
  *   - .sgs-form-step class (queried by the parent sgs/form view.js to
  *     enumerate steps and drive the multi-step progress bar)

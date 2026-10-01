@@ -2,7 +2,7 @@
 /**
  * Server-side render for the SGS Form block.
  *
- * WS-4 (composite-mirror, 2026-06-04): outer wrapper now emitted by
+ * WS-4 (composite wrapper, 2026-06-04): outer wrapper now emitted by
  * SGS_Container_Wrapper::render( ..., 'layout', ... ) so the block inherits
  * sgs/container's full LAYOUT-scope capabilities (align/maxWidth/contentWidth,
  * customWidth, gap, grid/flex, responsive gridTemplateColumns, etc.).

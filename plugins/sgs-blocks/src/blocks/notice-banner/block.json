@@ -30,7 +30,6 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"containerMirror": false,
 			"iconPicker": true,
 			"is_section_root": true,
 			"enabledExtensions": [

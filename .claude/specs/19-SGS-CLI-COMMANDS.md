@@ -710,21 +710,19 @@ local cleanup, then the cache purge and the post-deploy smoke test.
 
 ### `sync-container-wrapping-blocks.py`
 
-Container-inheritance audit and KIND-classification script at
+Container roster and KIND-classification script at
 `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py`.
 
 - **Wraps-children detection** — a structural signal (the block wraps child blocks) read
   from `block_composition.has_inner_blocks` + `accepts_allowed_blocks`.
 - **3-KIND model** — classifies each block as `section` (full-bleed outer), `layout`
   (inner content-width wrapper) or `content` (composite with its own chrome).
-- **KIND→attr-scope diff** — emits a per-block diff showing which attrs are in scope for
-  each KIND and which are missing versus `sgs/container`.
+- **Roster validation** — compares the detected roster and KINDs with a hand-kept expected
+  list and prints `[VALIDATION PASS]` or `[VALIDATION FAIL]`.
 
 With `--apply` it writes `block_composition.wraps_block` and `container_kind` to the
-canonical `sgs-framework.db`; without it, it is a dry run. It never edits `block.json`
-unless `--write-block-json` is combined with `--apply`. Per-block diff Markdown goes to
-`pipeline-state/container-inheritance-sync/<date>/<block>.diff.md`. See Spec 31 §13
-FR-31-21 for the wrapper-conversion procedure.
+canonical `sgs-framework.db`; without it, it is a dry run. It never edits `block.json`.
+See Spec 31 §13 FR-31-21 for the wrapper-conversion procedure.
 
 ```bash
 python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py                 # report only
@@ -732,7 +730,7 @@ python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py --apply     
 python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py --target-block sgs/hero
 ```
 
-**Args:** `--apply`, `--write-block-json`, `--target-block <slug>`, `--db <path>`.
+**Args:** `--apply`, `--target-block <slug>`, `--db <path>`.
 
 ---
 

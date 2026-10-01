@@ -2767,7 +2767,7 @@ def container_default_slug() -> str | None:
     children. This returns that container slug WITHOUT a block-slug literal
     (R-31-1 / the no_slug_literal contract) by deriving it from the DB as "the
     block that composites wrap" — every composite with a built-in wrapper carries
-    `block_composition.wraps_block = <the container>` (the 31-block composite-mirror
+    `block_composition.wraps_block = <the container>` (the 31-block composite wrapper
     roster, FR-31-21.1). The most-wrapped `wraps_block` value IS the canonical
     container, name-free.
 
@@ -5658,7 +5658,7 @@ def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
 #   DEC-3 (D194) — Layer prefix families: OUTER = '' (unprefixed wrapper attrs),
 #                  CONTENT = 'content', GRID = 'gridItem'.
 #   R-31-1        — Pure DB lookups; no hardcoded per-slug dicts.
-#   R-31-9        — Universal: applies to all 29 container-mirror composites.
+#   R-31-9        — Universal: applies to all 29 container-wrapper composites.
 
 
 @functools.lru_cache(maxsize=4096)

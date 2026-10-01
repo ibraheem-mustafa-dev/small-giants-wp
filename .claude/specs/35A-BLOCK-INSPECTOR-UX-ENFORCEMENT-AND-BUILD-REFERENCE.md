@@ -481,7 +481,7 @@ PLACEMENT RULE.
   `inspector-scan` rule 21 (`render-without-control`): re-run for the current count. ⚠ Count
   `status:"FLAGGED"` — `core/report.js` puts BASELINED entries in the `--json` array too, so a raw
   array length over-counts.
-- **The composite-mirror rule (root `CLAUDE.md` §"Composite-mirror rule") has a fourth,
+- **The composite wrapper rule (Spec 31 §13.6 FR-31-21.1) has a fourth,
   measured exit condition: a block whose wrapper contributes ZERO live arrangement CSS
   to its own children may exit `SGS_Container_Wrapper` and render block-private — this is
   DIFFERENT from the KIND-based test and stands on its own measured evidence.**

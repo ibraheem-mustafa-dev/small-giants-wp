@@ -20,9 +20,8 @@
  * renders a small `brandsEyebrow` text attribute above the content row.
  *
  * WRAPPER NOTE (standalone): this block does NOT call
- * `SGS_Container_Wrapper` / `sgs/container`. It is `containerMirror:false`
- * (block.json) — it hand-rolls its own flex/grid content-row per `style`,
- * mirroring only the wrapper's fill/box capability (background, padding,
+ * `SGS_Container_Wrapper` / `sgs/container`. It hand-rolls its own
+ * flex/grid content-row per `style`, reproducing only the wrapper's fill/box capability (background, padding,
  * max-width, border, radius), never its grid/section machinery. This is the
  * "content-KIND composite renders block-private" pattern, extended
  * here to a section-shaped composite because the shape is bespoke per

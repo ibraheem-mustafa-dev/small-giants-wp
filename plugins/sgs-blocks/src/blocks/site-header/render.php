@@ -5,7 +5,7 @@
  * The header shell: a vertical stack of up to three sgs/site-header-row blocks
  * (top / middle / bottom). Empty rows emit zero output (handled by the row
  * block itself). Outer rendering is delegated ENTIRELY to the shared
- * SGS_Container_Wrapper (section KIND) per composite-mirror (R-31-9) —
+ * SGS_Container_Wrapper (section KIND) per composite wrapper (R-31-9) —
  * no divergent per-block styling path.
  *
  * Rendered with tag <header>: this block IS the site banner landmark.

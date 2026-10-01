@@ -3372,7 +3372,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// ----------------------------------------------------------------
 			// Spec 37 FR-37-16 object-model responsive CSS (opt-in, wrapper-owned).
-			// Emitted via the shared sgs_emit_responsive_css() so the composite-mirror
+			// Emitted via the shared sgs_emit_responsive_css() so the composite wrapper
 			// + auto-propagation hold (R-31-9). Inner props (gap / grid-template-columns)
 			// route to $grid_sel — the __inner, a DESCENDANT of the container-type outer
 			// — with @container + @media, so the block adapts to its OWN width when

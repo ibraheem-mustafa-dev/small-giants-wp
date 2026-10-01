@@ -51,6 +51,7 @@ import {
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { useRef, useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import SgsColourPanel from '../../components/SgsColourPanel';
 import MediaGalleryPicker from '../../components/MediaGalleryPicker';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
@@ -534,6 +535,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		columnCount: layout === 'masonry' ? columnsDesktop : undefined,
 		gap: /^\d+$/.test( String( gapDesktop ) ) ? gapDesktop + 'px' : gapDesktop || '16px',
 	};
+
+	// Separators preview: the lines sit on the grid list (`.sgs-gallery__grid`), the same
+	// element render.php hands to sgs_separators_css(), and only for the grid layout. The
+	// grid's gap is the same value `--sgs-gap` carries on the wrapper, so the lines sit mid-gap.
+	const separatorsCanvas = useSeparatorsCanvas( {
+		separators: attributes.separators,
+		device: previewTier,
+		active: 'grid' === layout,
+		deps: [ columns, gap, items.length ],
+	} );
+	const gridStyle = { ...previewGridStyle, ...separatorsCanvas.style };
 
 	// Carousel controls canvas mirror (CHECK A) — render.php emits real
 	// `.sgs-gallery__carousel-prev`/`-next` buttons + a `.sgs-gallery__carousel-dots`
@@ -1290,8 +1302,9 @@ export default function Edit( { attributes, setAttributes } ) {
 
 						{ items.length > 0 && (
 							<div
+								ref={ separatorsCanvas.ref }
 								className="sgs-gallery__grid"
-								style={ previewGridStyle }
+								style={ gridStyle }
 							>
 								{ items.map( ( item, index ) => {
 									const isVideo =
@@ -1381,8 +1394,9 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ items.length > 0 && (
 					<div
+						ref={ separatorsCanvas.ref }
 						className="sgs-gallery__grid"
-						style={ previewGridStyle }
+						style={ gridStyle }
 					>
 						{ items.map( ( item, index ) => {
 							const isVideo =

@@ -6,7 +6,7 @@
  * pill/eyebrow/tag chrome shared by sgs/label AND the product-card TRIAL tag (and
  * any future block that renders the same shape). Keeping ONE renderer here means
  * label and product-card produce byte-identical box CSS from the same normalised
- * struct — Bean's composite-mirror requirement (R-31-9): no per-block divergence.
+ * struct — Bean's composite wrapper requirement (R-31-9): no per-block divergence.
  *
  * NO-INLINE (Spec 32 §6.1): this helper returns a SCOPED CSS string (rules +
  * optional @media tiers) for the caller to place inside the block's OWN

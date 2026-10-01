@@ -1562,7 +1562,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					</ToolsPanel>
 				</PanelBody>
 
-				{ /* ── Width / spacing (WS-4 container-mirror, content kind).
+				{ /* ── Width / spacing (WS-4 container wrapper, content kind).
 				     padding/margin are each a single block-owned tier-object
 				     attr { desktop, tablet, mobile }, written via
 				     ResponsiveOverride + SgsBoxControl; read directly by this

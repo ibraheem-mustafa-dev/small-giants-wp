@@ -216,7 +216,7 @@ if ( ! empty( $base_margin_obj ) ) {
 // --- BOX (padding base + tiers, radius, background) + DISPLAY model — emitted
 // through the shared sgs_label_box_css_rule() helper: the SAME renderer the
 // product-card trial tag uses, so label + product-card produce byte-identical
-// box CSS (Bean's composite-mirror requirement, R-31-9). Padding + background +
+// box CSS (Bean's composite wrapper requirement, R-31-9). Padding + background +
 // radius paint on VALUE-PRESENCE (ungated 2026-07-12). ---
 $base_padding_shorthand = sgs_box_object_shorthand( $padding_obj );
 

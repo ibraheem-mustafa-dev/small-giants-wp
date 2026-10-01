@@ -5,7 +5,7 @@
  * (display:flex, flex-wrap, gap, align-items, justify-content) is owned by the
  * shared SGS_Container_Wrapper via block attributes (layout='flex', flexWrap,
  * gap, verticalAlign, justifyContent) — NOT hardcoded here (Gate B / no-inline,
- * composite-mirror R-31-9). This file only adds the two non-attr hardening rules
+ * composite wrapper R-31-9). This file only adds the two non-attr hardening rules
  * that make the cluster actually never overflow, plus the touch-target floor.
  *
  * `min-width:0` lets flex children shrink instead of forcing horizontal

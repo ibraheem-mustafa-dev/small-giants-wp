@@ -2,7 +2,7 @@
 /**
  * SGS Tabs — server-side render.
  *
- * WS-4 composite-mirror: outer wrapper via SGS_Container_Wrapper (layout kind).
+ * WS-4 composite wrapper: outer wrapper via SGS_Container_Wrapper (layout kind).
  * data-tabs-block + id attributes are passed via extra_attrs so view.js continues
  * to find the block via document.querySelectorAll('[data-tabs-block]').
  *

@@ -3,7 +3,7 @@
  * SGS Footer Row — server-side render.
  *
  * A single row of a site footer. Two shapes, both driven by the shared
- * SGS_Container_Wrapper (composite-mirror, R-31-9) via the block's
+ * SGS_Container_Wrapper (composite wrapper, R-31-9) via the block's
  * `layout` attr — no divergent per-block styling path:
  *   - layout='grid'  → a column grid (up to 6 columns → 1 below the mobile tier)
  *                       for the columns row; `columns` (a TIER OBJECT)

@@ -5,7 +5,7 @@
  * The footer shell: a vertical stack of sgs/site-footer-row blocks (top /
  * columns / bottom bar). Empty rows emit zero output (handled by the row block
  * itself). Outer rendering is delegated ENTIRELY to the shared
- * SGS_Container_Wrapper (section KIND) per composite-mirror (R-31-9) —
+ * SGS_Container_Wrapper (section KIND) per composite wrapper (R-31-9) —
  * no divergent per-block styling path.
  *
  * Rendered with tag <footer>: this block IS the site contentinfo landmark.

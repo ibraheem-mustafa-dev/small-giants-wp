@@ -9,7 +9,7 @@ import { PanelBody, RangeControl, SelectControl, Notice } from '@wordpress/compo
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, fillRow, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import { backgroundPreview, spacingPreview, svgBackgroundPreview, flattenPresetSetting } from '../../utils';
-// Reused directly rather than duplicated (Spec 35 Part B / composite-mirror rule,
+// Reused directly rather than duplicated (Spec 35 Part B / composite wrapper rule,
 // D152): physics-canvas KEEPS SGS_Container_Wrapper (containerKind: 'section'), so
 // its box + width controls must be the SAME shape sgs/container itself exposes —
 // WidthPanel already handles maxWidth/contentWidth + their Tablet/Mobile tiers,
@@ -290,7 +290,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 				{ /* ── Section (outer): width + min-height ────────────────────
 				     Same shape as sgs/container / sgs/trust-bar's own "Section
-				     (outer)" panel (composite-mirror rule, D152) — this is the
+				     (outer)" panel (composite wrapper rule, D152) — this is the
 				     resizable arena box: minHeight ships defaults (480px desktop /
 				     320px mobile) with no control until now, so a client could
 				     never resize the throw arena at all. */ }

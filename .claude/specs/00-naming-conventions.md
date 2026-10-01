@@ -116,7 +116,7 @@ Current roster: the blocks with `blocks.tier='class-section'` (query the DB, nev
 2. Run `/sgs-update` to populate `blocks.tier`
 3. Walker recognition flows automatically — no code branches needed
 
-Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_composition table — sibling routing data), D118 + **Spec 31 §13 FR-31-4.1** (Universal wrapper/container resolution — the single rule governing how every sgs-classed wrapper below a section root is resolved: direct-descendant fold, grid/flex absorption, block-match exception, non-direct-descendant own-container), D152 + **Spec 31 §13 FR-31-21** (`block_composition.container_kind` 3-KIND model section|layout|content; composite-mirror rule — every composite wrapper block mirrors `sgs/container`, BLOCK-SIDE COMPLETE across the 29-block roster D167; `supports.sgs.containerKind` operator-override + `supports.sgs.containerMirror:false` exclusion — `sgs/modal` + `sgs/nav-drawer` are excluded).
+Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_composition table — sibling routing data), D118 + **Spec 31 §13 FR-31-4.1** (Universal wrapper/container resolution — the single rule governing how every sgs-classed wrapper below a section root is resolved: direct-descendant fold, grid/flex absorption, block-match exception, non-direct-descendant own-container), D152 + **Spec 31 §13 FR-31-21** (`block_composition.container_kind` 3-KIND model section|layout|content; composite wrapper rule — a composite with a built-in wrapper offers the `sgs/container` panels it needs, opt-in per block; `supports.sgs.containerKind` operator-override).
 
 ### 3.3 Content-width cap → `contentWidth` attribute (the inner-wrapper mapping, D194)
 

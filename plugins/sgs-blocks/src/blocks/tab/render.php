@@ -2,7 +2,7 @@
 /**
  * SGS Tab — server-side render.
  *
- * WS-4 composite-mirror: CONTENT kind — width/spacing layers only via
+ * WS-4 composite wrapper: CONTENT kind — width/spacing layers only via
  * SGS_Container_Wrapper::render(). The tab panel wrapper carries full
  * ARIA tabpanel semantics required by the parent sgs/tabs view.js:
  *   - role="tabpanel"          (ARIA role — tabs view.js shows/hides panels)
@@ -54,7 +54,7 @@ $tab_uid  = 'sgs-tab-uid-' . substr( md5( wp_json_encode( $attributes ) . ( $att
 $root_sel = '.' . $tab_uid . '.wp-block-sgs-tab';
 
 // The tab content is wrapped in a .sgs-tab__inner div — renamed from
-// .sgs-tab__content (2026-09-08) to match the composite-mirror convention
+// .sgs-tab__content (2026-09-08) to match the composite wrapper convention
 // every other CONTENT-kind wrapper block uses for its content-width band
 // (sgs-container__inner, sgs-form__inner, sgs-modal__inner, sgs-post-grid__inner).
 // This is the same architectural layer as those — a single band wrapping

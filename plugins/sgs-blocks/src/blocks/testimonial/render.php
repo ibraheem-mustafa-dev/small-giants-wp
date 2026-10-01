@@ -21,7 +21,7 @@
  *
  * BLOCK-PRIVATE, NO-WRAPPER: sgs/testimonial is a CONTENT-kind composite that
  * only ever used the shared wrapper's box+width machinery (WS-4
- * container-mirror = width/spacing only — no grid/section/background/
+ * container-wrapper = width/spacing only — no grid/section/background/
  * overlay), so SGS_Container_Wrapper is dropped — the same block-private
  * pattern proven on sgs/quote. The block's OWN root `<div>` is built via
  * get_block_wrapper_attributes().
@@ -185,7 +185,7 @@ $hover_shadow          = $attributes['shadowHover'] ?? '';
 $hover_shadow_colour   = $attributes['shadowHoverColour'] ?? '';
 $stagger_delay         = isset( $attributes['staggerDelay'] ) ? (int) $attributes['staggerDelay'] : 0;
 
-// ── Width (WS-4 container-mirror, content kind: kept-scalar, no tiers) ─────
+// ── Width (WS-4 container-wrapper, content kind: kept-scalar, no tiers) ─────
 $max_width = $attributes['maxWidth'] ?? '';
 
 // ── Anchor + scope id (contract §B3: uid is a CLASS, not an id, so the anchor

@@ -258,7 +258,7 @@ contains( $content_html, '>.sgs-container__inner{max-width:var(--wp--style--glob
 not_contains( $content_html, 'display:grid', 'content: NO grid layer (content kind has no __inner grid/flex per Spec 31 §13.6)' );
 not_contains( $content_html, 'display:flex', 'content: NO flex layer (content kind has no __inner grid/flex per Spec 31 §13.6)' );
 
-// ── KIND gate — the mechanism that makes composite-mirror (D294) safe ─────────
+// ── KIND gate — the mechanism that makes composite wrapper (D294) safe ─────────
 // Section-only layers (background image/video/overlay/svg/shape-divider) must
 // be completely absent for 'layout' and 'content' kinds, even given the EXACT
 // SAME $attributes that produce them under 'section'. This is what lets a

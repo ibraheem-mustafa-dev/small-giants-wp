@@ -773,7 +773,7 @@ def build_block_markup(
     # block identically — sgs/container, container-equivalents, AND composites (hero /
     # trust-bar / cta-section) — because they all declare supports.align:['wide','full'],
     # carry supports.sgs.is_section_root, and render through the shared SGS_Container_Wrapper
-    # (composite-mirror, FR-31-21.1). Gating on the container slug was a carve-out CHEAT
+    # (composite wrapper, FR-31-21.1). Gating on the container slug was a carve-out CHEAT
     # (R-31-9) that left composites constrained. The universal signal is is_root itself:
     # build_block_markup is is_root=True ONLY for the top-level section (children pass
     # is_root=False), so this never touches a nested block. setdefault = idempotent (never

@@ -2,7 +2,7 @@
 /**
  * Accordion — server-side render.
  *
- * WS-4 composite-mirror: wraps accordion items via SGS_Container_Wrapper (layout kind).
+ * WS-4 composite wrapper: wraps accordion items via SGS_Container_Wrapper (layout kind).
  * data-allow-multiple + data-default-open are passed via extra_attrs so view.js selectors
  * continue to work without modification.
  * Optionally outputs FAQ Schema JSON-LD.

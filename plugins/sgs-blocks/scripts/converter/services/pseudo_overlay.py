@@ -53,7 +53,7 @@ from converter.services import content_gap_collector
 from converter.services.styling_helpers import collect_css_decls_for_element
 
 # ---------------------------------------------------------------------------
-# The universal overlay attr-name family (Spec 31 §13.6 composite-mirror rule).
+# The universal overlay attr-name family (Spec 31 §13.6 composite wrapper rule).
 # These are ATTRIBUTE NAMES (a shared framework naming convention across every
 # container-KIND composite), not a block-slug lookup dict — R-31-1 forbids
 # hardcoded SLUG dicts; checking for a block's OWN declared attr names via

@@ -163,7 +163,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // Editor preview: media (image/video), overlay, ken-burns and parallax —
   // extracted to the shared `backgroundPreview()` (`src/utils/background-preview.js`,
   // 2026-08-26) so the same mirror serves every other block mounting
-  // `BackgroundPanel` (composite-mirror rule, CLAUDE.md). `bgPreview.style`
+  // `BackgroundPanel` (composite wrapper rule, CLAUDE.md). `bgPreview.style`
   // carries the same custom-property set this block used to build inline.
   // Decorative SVG background layer — editor mirror (2026-09-05). Deliberately
   // NOT folded into backgroundPreview()'s return: that helper paints via

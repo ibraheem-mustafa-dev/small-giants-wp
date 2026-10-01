@@ -73,7 +73,7 @@
 						"css:width": "contentWidth",
 						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "WS-4 composite-mirror — outer wrapper emitted by SGS_Container_Wrapper('layout', render.php:366-382), inheriting sgs/container's full LAYOUT-scope capabilities. color/typography/border are block-private, scoped via render.php:131-198 (mirrors sgs/container's render.php pattern)."
+					"_note": "WS-4 composite wrapper — outer wrapper emitted by SGS_Container_Wrapper('layout', render.php:366-382), inheriting sgs/container's full LAYOUT-scope capabilities. color/typography/border are block-private, scoped via render.php:131-198 (mirrors sgs/container's render.php pattern)."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -95,7 +95,7 @@
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap"
 					},
-					"_note": "Composite-mirror grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1)."
+					"_note": "composite wrapper grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1)."
 				},
 				"submit-button": {
 					"label": "Submit button",
@@ -443,7 +443,7 @@
 				"grid"
 			],
 			"default": "stack",
-			"description": "Composite-mirror review (P2-2, container's layout-default fix): sgs/form routes through SGS_Container_Wrapper::render() the same way sgs/container does, so an untouched form would otherwise inherit container's new 'flex'/row default and lay its fields out side-by-side. Form fields are unambiguously vertical, so this block declares its own explicit 'stack' default rather than sharing the primitive's."
+			"description": "composite wrapper review (P2-2, container's layout-default fix): sgs/form routes through SGS_Container_Wrapper::render() the same way sgs/container does, so an untouched form would otherwise inherit container's new 'flex'/row default and lay its fields out side-by-side. Form fields are unambiguously vertical, so this block declares its own explicit 'stack' default rather than sharing the primitive's."
 		},
 		"alignItems": {
 			"type": "string",

@@ -340,7 +340,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
 
     # --- padding/border-radius FORK by box_family (A1 migration, 2026-07-26) ----
     # gridItemPadding/gridItemBorderRadius are now box-object attrs on the 4
-    # composite-mirror blocks (container/cta-section/hero/trust-bar). When
+    # composite wrapper blocks (container/cta-section/hero/trust-bar). When
     # box_family_for gates the resolved attr, expand the shorthand into
     # sides/corners and emit ONE Write per side/corner — the orchestrator's
     # accumulator (ElementResult.attrs, box_family_for-generic) folds them

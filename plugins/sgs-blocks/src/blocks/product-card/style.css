@@ -199,7 +199,7 @@
 
 /* Trial variant — dashed border + gradient overlay (B6, 2026-06-10): wrapped in
    :where() so specificity is 0 and the operator's border/background controls
-   (universal container-mirror supports, A1) always override these defaults.
+   (universal container-wrapper supports, A1) always override these defaults.
    The background-image is now a standalone declaration (not a shorthand) to preserve
    the transparent background-color set by the .product-card.trial-card rule above. */
 :where(.product-card.trial-card) {
@@ -224,9 +224,9 @@
 .product-card .sgs-button {
 	/* display + min-height MIRROR the shared .sgs-button base (inline-flex / 48px)
 	 * — the former `display:inline-block` + `min-height:44px` were a per-block
-	 * LAYOUT divergence (composite-mirror, FR-31-21.1 / D314): they overrode the
+	 * LAYOUT divergence (composite wrapper, FR-31-21.1 / D314): they overrode the
 	 * framework button's own defaults so a cloned CTA rendered smaller than the
-	 * draft's standard `.sgs-button`. Extends the D310 colour composite-mirror fix
+	 * draft's standard `.sgs-button`. Extends the D310 colour composite wrapper fix
 	 * (lines below) to layout. Base .sgs-button = display:inline-flex; min-height:48px.
 	 * A per-instance ctaPadding / minHeight still wins via sgs_button_element_style_css(). */
 	/*
@@ -267,14 +267,14 @@
 :where(.product-card) .sgs-button {
 	border-radius: 10px;
 	/* padding MIRRORS the shared .sgs-button base (14px 24px) — the former
-	 * `12px 20px` was a per-block LAYOUT divergence (composite-mirror FR-31-21.1 /
+	 * `12px 20px` was a per-block LAYOUT divergence (composite wrapper FR-31-21.1 /
 	 * D314); removed so a cloned CTA matches the draft's standard `.sgs-button`
 	 * padding. A per-instance ctaPadding still wins via the helper (0,2,0). */
 	font-size: 15px;
 }
 
 /*
- * Composite-mirror (R-31-9 / Spec 31 §13.6, D310+): the CTA's colour (rest AND
+ * Composite wrapper (R-31-9 / Spec 31 §13.6, D310+): the CTA's colour (rest AND
  * hover, background/text/border) is governed ENTIRELY by the shared sgs/button
  * class channel — `.sgs-button` base + `.sgs-button--{primary,secondary,outline}`
  * setting the six `--sgs-btn-*` vars from the per-client
@@ -285,7 +285,7 @@
  * / `--secondary` rest+hover rules (and the `--sgs-product-card-btn-*` vars) were a
  * per-block DIVERGENCE that overrode the channel with different values (secondary
  * border→primary-dark not primary; secondary:hover text stayed dark not white;
- * primary:hover border→#8B3A47 not text) — removed per the composite-mirror rule.
+ * primary:hover border→#8B3A47 not text) — removed per the composite wrapper rule.
  * A per-instance colour override still wins via sgs_button_element_style_css()'s
  * `.{uid} .sgs-product-card__cta--primary` rule (0,2,0, appended) when a client sets
  * a ctaColour* value; empty (default) = inherit the channel. Layout defaults stay in
@@ -341,7 +341,7 @@
 }
 
 /*
- * `.sgs-button--secondary` (rest + hover) colour removed — see the composite-mirror
+ * `.sgs-button--secondary` (rest + hover) colour removed — see the composite wrapper
  * note above the primary block. The secondary CTA now inherits its transparent
  * background, primary (#E68A95) border, dark text, and hover (dark bg + white text +
  * dark border) from the shared `.sgs-button--secondary` preset channel = the draft's

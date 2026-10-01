@@ -8,7 +8,7 @@
  * alternative, so WCAG 2.5.7 is dissolved by construction rather than
  * answered. The whole arena is `aria-hidden`, matching that constraint.
  *
- * Composite-mirror rule (D152): delegates wrapper assembly to
+ * Composite wrapper rule (D152): delegates wrapper assembly to
  * SGS_Container_Wrapper::render() exactly as sgs/container does, so this
  * block never diverges from the shared padding/max-width/contentWidth/gap/
  * background capability set.

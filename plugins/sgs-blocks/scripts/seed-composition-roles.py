@@ -383,7 +383,7 @@ INSERTS: list[dict] = [
         # ARTISTIC canvas whose direct children become throwable, gravity-driven
         # decorative bodies. Unlike the standalone leaves above it IS a genuine
         # section-KIND composite: render.php delegates to SGS_Container_Wrapper
-        # (D152 composite-mirror), and the wrapper's .sgs-container__inner band
+        # (D152 composite wrapper), and the wrapper's .sgs-container__inner band
         # is the throw arena itself, so the row must carry wraps_block +
         # container_kind='section' or the wrapper routing never applies.
         # Bean ruled 2026-08-02 that this surface is deliberately NOT built for

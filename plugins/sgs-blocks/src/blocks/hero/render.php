@@ -411,7 +411,7 @@ $vertical_alignment = $attributes['verticalAlignment'] ?? 'center';
 // SGS_Container_Wrapper's own grid/flex branches exactly
 // (includes/class-sgs-container-wrapper.php ~L879-902), so a value here means
 // the same thing an operator already knows from sgs/container. Never routed
-// through the shared wrapper itself (Composite-mirror rule, CLAUDE.md) —
+// through the shared wrapper itself (Composite wrapper rule, CLAUDE.md) —
 // hero's split grid is bespoke (fixed 2-column, not the wrapper's generic
 // column-count grid), so these extend hero's OWN existing $is_split CSS
 // builder below rather than the wrapper's generic branch.
@@ -1176,7 +1176,7 @@ if ( '' !== $hero_preset_text_slug ) {
 // the framework's primary-dark->primary gradient.
 // `sgs/cta-section` already sets `has-background` from its own `backgroundColour`
 // (cta-section/render.php:391) — this makes the hero mirror it, per the
-// composite-mirror rule. Only the suppression flag is added, NOT the
+// composite wrapper rule. Only the suppression flag is added, NOT the
 // `has-<slug>-background-color` class: unlike cta-section, the hero paints its
 // colour through the scoped `.{uid}` rule, so the preset class would be a second
 // owner for one value.
@@ -1204,7 +1204,7 @@ if ( $has_attr_video ) {
 	$desktop_src = $bg_video_attr['url'];
 	// Tiers fall back UPWARD (mobile -> tablet -> desktop), matching
 	// SGS_Container_Wrapper::render()'s three-tier resolution. Hero duplicates the
-	// wrapper's video path rather than calling it (a composite-mirror divergence
+	// wrapper's video path rather than calling it (a composite wrapper divergence
 	// predating this change) — so the two must be kept in step by hand until hero
 	// is routed through the wrapper. If you change one, change the other.
 	$has_tablet_src = ! empty( $bg_video_tablet['url'] );
@@ -1246,7 +1246,7 @@ if ( $has_attr_video ) {
 	// `.sgs-container__video-bg` rule for sgs/container, cta-section,
 	// multi-button, physics-canvas, site-footer, site-header, trust-bar —
 	// but hero hand-rolls its OWN video markup rather than calling the
-	// wrapper for it (see the "composite-mirror divergence" note above this
+	// wrapper for it (see the "composite wrapper divergence" note above this
 	// block), so this reads the shared attributes directly and emits its own
 	// scoped rule using hero's own $uid/$responsive_css, exactly like the
 	// split-media object-fit/object-position rule further up in this file.
@@ -1736,7 +1736,7 @@ $sgs_hero_null_attrs = array(
 	// A client could set a decorative background SVG, its position, opacity,
 	// min-height, text-shadow, animation and speed, and see no effect anywhere.
 	// Restoring it makes hero paint this layer exactly as the other seven
-	// wrapper-adopting blocks do, per the composite-mirror rule. (Eight blocks declare
+	// wrapper-adopting blocks do, per the composite wrapper rule. (Eight blocks declare
 	// bgSvgContent in total INCLUDING hero, so the others number seven.)
 	//
 	// minHeight is a TIER OBJECT (Spec 35 pass 3b) — nulling the one attr

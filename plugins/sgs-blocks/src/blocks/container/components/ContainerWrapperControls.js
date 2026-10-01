@@ -4,8 +4,9 @@
  * Reusable InspectorControls component that exposes the canonical sgs/container
  * wrapper attributes as editor panels, scoped by `kind`.
  *
- * WS-4 (composite-mirror): drop this into any composite block's edit.js so its
- * wrapper controls stay in sync with sgs/container without duplicating logic.
+ * Drop this into a composite block's edit.js to offer the sgs/container wrapper
+ * panels that block needs, without duplicating logic. Each block opts in at panel
+ * level and declares the matching attributes.
  *
  * KIND GATING
  * -----------

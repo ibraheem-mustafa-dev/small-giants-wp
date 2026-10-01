@@ -10,7 +10,8 @@ import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls, { BackgroundPanel } from '../container/components/ContainerWrapperControls';
 import { ResponsiveOverride, SpacingControl, SgsColourPanel, fillRow, ResponsiveBoxControl, SGS_FONT_WEIGHT_OPTIONS, textRow, SgsBorderControl, resolveColourToken, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, boxShorthand, resolveBorderStyle, resolveTextColourPreviewStyle, flattenPresetSetting } from '../../utils';
+import { backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, boxShorthand, resolveBorderStyle, resolveTextColourPreviewStyle, flattenPresetSetting, usePreviewTier } from '../../utils';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	PanelBody,
@@ -188,12 +189,16 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// getDeviceType) — this block had no previewTier mechanism of its own
 	// (its layout preview above only ever shows the desktop tier), so this
 	// follows container's exactly rather than inventing a second convention.
-	const previewTier = useSelect( ( select ) => {
-		const ed = select( 'core/editor' );
-		const device =
-			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
-		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
-	}, [] );
+	const previewTier = usePreviewTier();
+
+	// Lines between the buttons: the block root is the flex list, so the hook's
+	// ref and style land on blockProps.
+	const sep = useSeparatorsCanvas( {
+		separators: attributes.separators,
+		device: previewTier,
+		active: [ 'grid', 'flex', 'stack' ].includes( attributes.layout ),
+		deps: [ flexDirection, flexWrap, gap, childButtons.length ],
+	} );
 
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
@@ -219,6 +224,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		gap: gap?.desktop || undefined,
 		justifyContent: justify,
 		alignItems: align,
+		...sep.style,
 		...bgPreview.style,
 		...svgPreview.style,
 		...spacePreview,
@@ -266,6 +272,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const allowedBlocks = [ 'sgs/button' ];
 
 	const blockProps = useBlockProps( {
+		ref: sep.ref,
 		className: [ bgPreview.className, ...svgPreview.className ].filter( Boolean ).join( ' ' ),
 		style: editorStyle,
 	} );
