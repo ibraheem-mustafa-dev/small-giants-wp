@@ -58,7 +58,7 @@ Agent-judge-the-diff flow (Bean's workflow, 2026-07-17):
                 converted `sgs/container` must NOT carry over its old
                 `core/group` wrapper `<div>` — see `APPLY.md`) are documented
                 in `APPLY.md` in this directory. Proven end-to-end 2026-07-17
-                on the Indus Foods homepage (page 13) final CTA section.
+                on the wholesale-food client's homepage (page 13) final CTA section.
 
 The `--json` shape (see `build_json_report()` below):
   {

@@ -19,11 +19,11 @@ Stages 3 (slot list from block.json) and 4-8 (extract.py harvest) unchanged.
 
 Usage:
   python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \\
-    --mockup sites/mamas-munches/mockups/homepage/index.html \\
+    --mockup sites/<client>/mockups/homepage/index.html \\
     --section "section.sgs-hero" \\
-    --client mamas-munches \\
+    --client <client> \\
     --page homepage \\
-    --media-map sites/mamas-munches/research/sandybrown-media-map.json
+    --media-map sites/<client>/research/sandybrown-media-map.json
 """
 from __future__ import annotations
 
@@ -2091,7 +2091,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
 
     # An "item" boundary (one <sc-for> iteration) nested inside ANOTHER boundary is part of that
     # boundary's content: its owner converts it. Converting it again on its own emits a loop
-    # template as a stray top-level section (the Eye Care audit found menu links from inside the
+    # template as a stray top-level section (the optician client's audit found menu links from inside the
     # header and a swatch button from inside a product card at the foot of the page). Map each
     # nested item to its nearest owning boundary once; Spec 44's classless recognition, which uses
     # an item to identify its group, still runs first and is untouched.
@@ -3506,13 +3506,13 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
 def _derive_client_from_mockup_path(mockup_path: Path) -> "str | None":
     """Walk the resolved mockup path's parents looking for a sites/<client>/ ancestor.
 
-    Returns the client slug (e.g. 'mamas-munches') when found, or None when the
+    Returns the client slug (e.g. 'acme-bakery') when found, or None when the
     mockup does not live under a sites/ directory (e.g. absolute path outside repo,
     or a flat path with no sites/ component).
 
     Examples:
-        sites/mamas-munches/mockups/homepage/index.html  -> 'mamas-munches'
-        /abs/path/sites/indus-foods/mockups/page.html    -> 'indus-foods'
+        sites/acme-bakery/mockups/homepage/index.html    -> 'acme-bakery'
+        /abs/path/sites/acme-foods/mockups/page.html     -> 'acme-foods'
         /tmp/mockup.html                                 -> None
     """
     try:
@@ -3640,7 +3640,7 @@ def main():
     parser.add_argument("--block", type=str, default=None, help="(deprecated; ignored when voter present) target block slug")
     parser.add_argument(
         "--client", type=str, default=None,
-        help="Client slug (e.g. mamas-munches). When omitted, auto-derived from the "
+        help="Client slug (e.g. acme-bakery). When omitted, auto-derived from the "
              "mockup path by walking up to find a sites/<client>/ parent directory. "
              "Stage 10 (style activation) fires only when the client slug is known.",
     )
@@ -3738,7 +3738,7 @@ def main():
              "to the target site via push-theme-snapshot.py (Phase 5a Decision "
              "16'). Default OFF — Stage 10 runs a snapshot diff only (--no-push). "
              "Even with this flag set, push-theme-snapshot.py refuses to push to "
-             "shared dev surfaces (sandybrown / palestine-lives) without an "
+             "shared dev surfaces (sandybrown / the campaign-site client's staging site) without an "
              "additional explicit confirmation.",
     )
     parser.add_argument(
@@ -3960,7 +3960,7 @@ def main():
 
     # Decision 6 (Phase 0): auto-derive --client from mockup path when not supplied.
     # Walks the resolved mockup path's parents looking for a sites/<client>/ ancestor.
-    # e.g. sites/mamas-munches/mockups/homepage/index.html -> mamas-munches
+    # e.g. sites/acme-bakery/mockups/homepage/index.html -> acme-bakery
     # Falls back to None (Stage 10 skipped) when no sites/ ancestor is found.
     if args.client is None:
         args.client = _derive_client_from_mockup_path(args.mockup)

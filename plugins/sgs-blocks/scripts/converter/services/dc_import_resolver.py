@@ -18,7 +18,7 @@ WHOLE draft through BeautifulSoup and re-serialised it (``str(soup)``) — that
 round-trip silently LOWERCASES the DSL's camelCase pseudo-attributes
 (``onClick``->``onclick``, ``onMouseEnter``->``onmouseenter``), reorders
 attributes, and collapses whitespace across the ENTIRE document, not just the
-spliced sites. Measured live against Eye Care Birmingham: every one of 74
+spliced sites. Measured live against the optician client: every one of 74
 boundaries failed (down from the pre-existing 38/70 baseline) because
 downstream case-sensitive matching on those pseudo-attributes broke
 project-wide, not just at the 4 real dc-import sites. This version never

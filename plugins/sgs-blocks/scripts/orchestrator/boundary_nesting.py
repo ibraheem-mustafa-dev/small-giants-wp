@@ -4,8 +4,8 @@ Stage 1 emits an "item" boundary for each ``<sc-for>`` iteration it finds, in ad
 top-level sections (``per-section-convention-voter.py::detect_sc_for_item_boundaries``). Spec 44
 uses an item to recognise the repeated group it belongs to. An item that sits INSIDE another
 boundary is part of that boundary's content, so Stage 4 must never convert it again as a
-standalone section: that is how a loop template (``{{ s.name }}``) reached the foot of the Eye
-Care page. This module names each nested item's nearest owning boundary.
+standalone section: that is how a loop template (``{{ s.name }}``) reached the foot of the optician
+client's page. This module names each nested item's nearest owning boundary.
 """
 from __future__ import annotations
 

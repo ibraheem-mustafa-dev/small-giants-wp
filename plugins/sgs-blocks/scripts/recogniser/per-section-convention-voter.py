@@ -155,13 +155,13 @@ LEGACY_ROLE_LOOKUP: dict[str, str] = {}
 # on canonical SGS-BEM mockups where a block was retired post-Spec-13.
 #
 # Heritage-strip remap removed 2026-05-21 — retired blocks should be
-# hard-deleted across all surfaces (files, refs, DB rows). The 8 Indus Foods
+# hard-deleted across all surfaces (files, refs, DB rows). The 8 wholesale-food-client
 # files that previously referenced heritage-strip were migrated to brand in
 # Wave 3d. This dict is retained as an empty placeholder; future "no permanent
 # remap" is the rule. See feedback_universal_extraction_no_per_block_legacy.md
 # + decisions.md.
 #
-# TODO: Once Wave 3d Indus migration is verified clean, the consultation branch
+# TODO: Once the Wave 3d wholesale-food-client migration is verified clean, the consultation branch
 # below (if slug_root in RETIRED_BLOCK_REMAP / if cls in RETIRED_BLOCK_REMAP)
 # can be physically removed in a follow-up commit.
 RETIRED_BLOCK_REMAP: dict[str, str] = {}
@@ -399,7 +399,7 @@ def vote_block_slug(class_signature: list[str], convention: str) -> tuple[str, f
                 return (db_slug, 0.85, "spec-12-lookup")
         if cls in RETIRED_BLOCK_REMAP:
             # RETIRED_BLOCK_REMAP is now empty (see comment above the dict).
-            # This branch is a no-op but retained until Wave 3d Indus migration
+            # This branch is a no-op but retained until the Wave 3d wholesale-food-client migration
             # is verified clean and the branch can be removed in a follow-up commit.
             return (RETIRED_BLOCK_REMAP[cls], 0.85, "retired-block-remap-legacy")
 
@@ -862,7 +862,7 @@ def detect_sc_for_item_boundaries(soup: BeautifulSoup) -> list[tuple[Tag, str]]:
     boundaries. But a Claude Design draft's real repeated content (the
     "reasons" cards, "featured" products, etc.) lives INSIDE those sections,
     wrapped by `<sc-for>` -- confirmed live: 29 of 31 real top-level
-    boundaries in the Ward End Eye Care draft are `sc-if`-gated page-routing
+    boundaries in the optician client's draft are `sc-if`-gated page-routing
     sections, and 0 carry `sc_var_kind='for'` at all, because the walker
     never looks inside them.
 

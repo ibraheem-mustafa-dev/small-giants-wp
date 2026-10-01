@@ -18,14 +18,14 @@ sys.path.insert(0, str(_SCRIPTS / "orchestrator"))
 import script_bindings_stage as stage  # noqa: E402
 
 REPO = _SCRIPTS.parents[2]
-EYE_CARE = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
+OPTICIAN = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
 MAMAS = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 
 needs_node = pytest.mark.skipif(shutil.which("node") is None, reason="node is not installed")
 
 
 def test_a_static_bem_draft_is_inert_no_map_and_no_file(tmp_path: pathlib.Path) -> None:
-    """Mama's Munches: nothing bound in any style value, so the run is byte-identical to one without this stage."""
+    """The bakery client: nothing bound in any style value, so the run is byte-identical to one without this stage."""
     html = MAMAS.read_text(encoding="utf-8") if MAMAS.exists() else '<section class="sgs-hero" style="padding:20px"><h1>Hi</h1></section>'
     logged: list[str] = []
     assert stage.build_run_map(html, tmp_path, log=logged.append) == {}
@@ -33,10 +33,10 @@ def test_a_static_bem_draft_is_inert_no_map_and_no_file(tmp_path: pathlib.Path) 
 
 
 @needs_node
-@pytest.mark.skipif(not EYE_CARE.exists(), reason="the Eye Care draft is not in this checkout")
+@pytest.mark.skipif(not OPTICIAN.exists(), reason="the optician-client draft is not in this checkout")
 def test_the_real_draft_yields_the_map_a_file_and_a_summary(tmp_path: pathlib.Path) -> None:
     logged: list[str] = []
-    run_map = stage.build_run_map(EYE_CARE.read_text(encoding="utf-8"), tmp_path, log=logged.append)
+    run_map = stage.build_run_map(OPTICIAN.read_text(encoding="utf-8"), tmp_path, log=logged.append)
     assert len(run_map) == 75
     assert run_map["secPad"]["mobile"] == "56px 20px" and run_map["secPad"]["desktop"] == "104px 52px"
     record = json.loads((tmp_path / "script-bindings.json").read_text(encoding="utf-8"))

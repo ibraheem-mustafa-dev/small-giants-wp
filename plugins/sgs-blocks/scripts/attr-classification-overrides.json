@@ -3617,7 +3617,7 @@
 			"fields": {
 				"role": "numeric-content",
 				"derived_selector": ".sgs-google-reviews__average-rating",
-				"_reason": "2026-09-21 (Eye Care reviews). Was role 'behaviour', which the content walk excludes, so the header score '4.7' could never lift. It is a genuinely numeric, decimal-capable content value the DRAFT states (render.php sgs_reviews_inline_data reads it as the block's headline average, editor control WrittenReviewsPanel.js, 0..5), i.e. exactly the shape of sgs/testimonial.ratingScale -> 'numeric-content' (see that entry). NOT role 'rating': that role's extractor (lift_helpers.extract_star_count) reads an aria-label digit or a star-glyph count into an int 0..5 and can never carry 4.7. derived_selector is the class an annotated draft gives the score element (<block root class>__<kebab attribute name>); lift_scalar_content needs it, plus the block's supports.sgs.scalarContentLift opt-in."
+				"_reason": "2026-09-21 (optician client reviews). Was role 'behaviour', which the content walk excludes, so the header score '4.7' could never lift. It is a genuinely numeric, decimal-capable content value the DRAFT states (render.php sgs_reviews_inline_data reads it as the block's headline average, editor control WrittenReviewsPanel.js, 0..5), i.e. exactly the shape of sgs/testimonial.ratingScale -> 'numeric-content' (see that entry). NOT role 'rating': that role's extractor (lift_helpers.extract_star_count) reads an aria-label digit or a star-glyph count into an int 0..5 and can never carry 4.7. derived_selector is the class an annotated draft gives the score element (<block root class>__<kebab attribute name>); lift_scalar_content needs it, plus the block's supports.sgs.scalarContentLift opt-in."
 			}
 		},
 		{
@@ -3626,7 +3626,7 @@
 			"fields": {
 				"role": "numeric-content",
 				"derived_selector": ".sgs-google-reviews__review-count",
-				"_reason": "2026-09-21 (Eye Care reviews). Was role NULL (unreached). The '15 reviews' figure of the header: a numeric content value the draft states (render.php sgs_reviews_inline_data: (int) reviewCount, else the count of written reviews). 'numeric-content' returns an int for a whole number ('15 reviews' -> 15, '1,204 reviews' -> 1204). The sibling rows sgs/product-card.reviewCount / .ratingValue carry role 'rating', but that role parses star glyphs into an int and is the wrong shape for a count read from prose."
+				"_reason": "2026-09-21 (optician client reviews). Was role NULL (unreached). The '15 reviews' figure of the header: a numeric content value the draft states (render.php sgs_reviews_inline_data: (int) reviewCount, else the count of written reviews). 'numeric-content' returns an int for a whole number ('15 reviews' -> 15, '1,204 reviews' -> 1204). The sibling rows sgs/product-card.reviewCount / .ratingValue carry role 'rating', but that role parses star glyphs into an int and is the wrong shape for a count read from prose."
 			}
 		},
 		{
@@ -3635,7 +3635,7 @@
 			"fields": {
 				"role": "text-content",
 				"derived_selector": ".sgs-google-reviews__business-name",
-				"_reason": "2026-09-21 (Eye Care reviews). Was role NULL (unreached). Plain text the draft may state (the business the reviews are about); render side: includes/helpers-reviews-inline.php passes sanitize_text_field(businessName) as displayName. 'text-content' is the established role for a plain string content attr. No Eye Care element names the business today; the row makes a draft that does reachable."
+				"_reason": "2026-09-21 (optician client reviews). Was role NULL (unreached). Plain text the draft may state (the business the reviews are about); render side: includes/helpers-reviews-inline.php passes sanitize_text_field(businessName) as displayName. 'text-content' is the established role for a plain string content attr. No optician-client element names the business today; the row makes a draft that does reachable."
 			}
 		},
 		{
@@ -3643,7 +3643,7 @@
 			"attr": "reviewRequestUrl",
 			"fields": {
 				"role": "link-href",
-				"_reason": "2026-09-21 (Eye Care reviews). Was role 'content', so the walk's element-driven leg (which already reaches this attr by the kebab-to-camel attribute-name match on a '__review-request-url' element) extracted the anchor's TEXT: a live conversion emitted reviewRequestUrl='See all reviews' instead of the href. It holds a URL (the 'write a review' link), which is what 'link-href' means (the alias of url-href: the nearest <a href>, sanitised by _safe_href); 30 other scalar URL attrs, e.g. sgs/button.url, carry it. No canonical_slot or derived_selector is needed or added: the attribute-name match is what routes it."
+				"_reason": "2026-09-21 (optician client reviews). Was role 'content', so the walk's element-driven leg (which already reaches this attr by the kebab-to-camel attribute-name match on a '__review-request-url' element) extracted the anchor's TEXT: a live conversion emitted reviewRequestUrl='See all reviews' instead of the href. It holds a URL (the 'write a review' link), which is what 'link-href' means (the alias of url-href: the nearest <a href>, sanitised by _safe_href); 30 other scalar URL attrs, e.g. sgs/button.url, carry it. No canonical_slot or derived_selector is needed or added: the attribute-name match is what routes it."
 			}
 		},
 		{
@@ -3653,7 +3653,7 @@
 				"derived_selector": ".sgs-google-reviews__star, .sgs-google-reviews__rating",
 				"css_property": "fill,color",
 				"css_layer": "OUTER",
-				"_reason": "2026-09-21 (Eye Care reviews). Names the draft's own element for the star colour and the property the draft states for it. The block paints the stars with `fill` on `.sgs-google-reviews__star`; a draft states the same visual fact as `color` on its star row, annotated `.sgs-google-reviews__rating` (a different canonical slot from `star`, so the slot-alias checks of attr_for_area_property cannot bridge them). derived_selector lists both classes (comma-separated, the established multi-class form, e.g. sgs/testimonial quoteFontSize); css_property lists both properties (established multi-value form, e.g. sgs/icon iconSize). Read by db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, which routes an inline or class `color` on `.sgs-google-reviews__rating` here. The hover sibling is unchanged: a state declaration routes through the state lift, not the per-area fold."
+				"_reason": "2026-09-21 (optician client reviews). Names the draft's own element for the star colour and the property the draft states for it. The block paints the stars with `fill` on `.sgs-google-reviews__star`; a draft states the same visual fact as `color` on its star row, annotated `.sgs-google-reviews__rating` (a different canonical slot from `star`, so the slot-alias checks of attr_for_area_property cannot bridge them). derived_selector lists both classes (comma-separated, the established multi-class form, e.g. sgs/testimonial quoteFontSize); css_property lists both properties (established multi-value form, e.g. sgs/icon iconSize). Read by db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, which routes an inline or class `color` on `.sgs-google-reviews__rating` here. The hover sibling is unchanged: a state declaration routes through the state lift, not the per-area fold."
 			}
 		},
 		{
@@ -3661,7 +3661,7 @@
 			"attr": "starColourHover",
 			"fields": {
 				"derived_selector": ".sgs-google-reviews__star",
-				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+				"_reason": "2026-09-21 (optician client reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the optician client's draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
 			}
 		},
 		{
@@ -3669,7 +3669,7 @@
 			"attr": "writeReviewColourText",
 			"fields": {
 				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
-				"_reason": "2026-09-21 (Eye Care reviews). Names the classes of the element this attr styles: the block's own link (`.sgs-google-reviews__write-review`, css_element 'write-review') and the draft's annotation of it (`.sgs-google-reviews__review-request-url`, named for the reviewRequestUrl field it carries; there is no slot row for either name, so attr_for_area_property has nothing to bridge). Read by db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, which routes the draft link's inline or class colour/background here. Content routing is unaffected: this attr's role is 'color', not a content role."
+				"_reason": "2026-09-21 (optician client reviews). Names the classes of the element this attr styles: the block's own link (`.sgs-google-reviews__write-review`, css_element 'write-review') and the draft's annotation of it (`.sgs-google-reviews__review-request-url`, named for the reviewRequestUrl field it carries; there is no slot row for either name, so attr_for_area_property has nothing to bridge). Read by db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, which routes the draft link's inline or class colour/background here. Content routing is unaffected: this attr's role is 'color', not a content role."
 			}
 		},
 		{
@@ -3677,7 +3677,7 @@
 			"attr": "writeReviewColourBackground",
 			"fields": {
 				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
-				"_reason": "2026-09-21 (Eye Care reviews). Names the classes of the element this attr styles: the block's own link (`.sgs-google-reviews__write-review`, css_element 'write-review') and the draft's annotation of it (`.sgs-google-reviews__review-request-url`, named for the reviewRequestUrl field it carries; there is no slot row for either name, so attr_for_area_property has nothing to bridge). Read by db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, which routes the draft link's inline or class colour/background here. Content routing is unaffected: this attr's role is 'color', not a content role."
+				"_reason": "2026-09-21 (optician client reviews). Names the classes of the element this attr styles: the block's own link (`.sgs-google-reviews__write-review`, css_element 'write-review') and the draft's annotation of it (`.sgs-google-reviews__review-request-url`, named for the reviewRequestUrl field it carries; there is no slot row for either name, so attr_for_area_property has nothing to bridge). Read by db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, which routes the draft link's inline or class colour/background here. Content routing is unaffected: this attr's role is 'color', not a content role."
 			}
 		},
 		{
@@ -3685,7 +3685,7 @@
 			"attr": "writeReviewColourTextHover",
 			"fields": {
 				"derived_selector": "",
-				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+				"_reason": "2026-09-21 (optician client reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the optician client's draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
 			}
 		},
 		{
@@ -3693,7 +3693,7 @@
 			"attr": "writeReviewColourBackgroundHover",
 			"fields": {
 				"derived_selector": "",
-				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+				"_reason": "2026-09-21 (optician client reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the optician client's draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
 			}
 		},
 		{
@@ -6437,7 +6437,7 @@
 				"css_property": "color",
 				"css_element": "glyph"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B). Emitted by card-grid/glyph-fallback.php::sgs_card_grid_glyph_css() as a scoped custom property that card-grid/style.css consumes; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
+			"_why": "2026-09-24 (optician client Wave B). Emitted by card-grid/glyph-fallback.php::sgs_card_grid_glyph_css() as a scoped custom property that card-grid/style.css consumes; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
 		},
 		{
 			"slug": "sgs/card-grid",
@@ -6447,7 +6447,7 @@
 				"css_property": "background-color",
 				"css_element": "image-wrap"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B). Emitted by card-grid/glyph-fallback.php::sgs_card_grid_glyph_css() as a scoped custom property that card-grid/style.css consumes; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
+			"_why": "2026-09-24 (optician client Wave B). Emitted by card-grid/glyph-fallback.php::sgs_card_grid_glyph_css() as a scoped custom property that card-grid/style.css consumes; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
 		},
 		{
 			"slug": "sgs/product-card",
@@ -6457,7 +6457,7 @@
 				"css_property": "color",
 				"css_element": "attribute-tag"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B). product-card/render.php resolves it via sgs_colour_value() into a variable and emits it on '.{uid} .sgs-product-card__attribute-tag' through sgs_label_box_css_rule()/a decls array: the same two-hop shape as this block's tagTextColour entry, which the shape matcher cannot trace."
+			"_why": "2026-09-24 (optician client Wave B). product-card/render.php resolves it via sgs_colour_value() into a variable and emits it on '.{uid} .sgs-product-card__attribute-tag' through sgs_label_box_css_rule()/a decls array: the same two-hop shape as this block's tagTextColour entry, which the shape matcher cannot trace."
 		},
 		{
 			"slug": "sgs/product-card",
@@ -6467,7 +6467,7 @@
 				"css_property": "background-color",
 				"css_element": "attribute-tag"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B). product-card/render.php resolves it via sgs_colour_value() into a variable and emits it on '.{uid} .sgs-product-card__attribute-tag' through sgs_label_box_css_rule()/a decls array: the same two-hop shape as this block's tagTextColour entry, which the shape matcher cannot trace."
+			"_why": "2026-09-24 (optician client Wave B). product-card/render.php resolves it via sgs_colour_value() into a variable and emits it on '.{uid} .sgs-product-card__attribute-tag' through sgs_label_box_css_rule()/a decls array: the same two-hop shape as this block's tagTextColour entry, which the shape matcher cannot trace."
 		},
 		{
 			"slug": "sgs/nav-bar-menu",
@@ -6477,7 +6477,7 @@
 				"css_property": "background-color",
 				"css_element": "badge"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B). nav-bar-menu/render.php wraps the attr in a `?? '<slug>'` default inside sgs_background_paint_decl()/sgs_text_colour_decl() and emits the declaration on a selector assembled in a later statement; the shape matcher does not pair them. Verified by reading render.php."
+			"_why": "2026-09-24 (optician client Wave B). nav-bar-menu/render.php wraps the attr in a `?? '<slug>'` default inside sgs_background_paint_decl()/sgs_text_colour_decl() and emits the declaration on a selector assembled in a later statement; the shape matcher does not pair them. Verified by reading render.php."
 		},
 		{
 			"slug": "sgs/nav-bar-menu",
@@ -6487,7 +6487,7 @@
 				"css_property": "color",
 				"css_element": "badge"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B). nav-bar-menu/render.php wraps the attr in a `?? '<slug>'` default inside sgs_background_paint_decl()/sgs_text_colour_decl() and emits the declaration on a selector assembled in a later statement; the shape matcher does not pair them. Verified by reading render.php."
+			"_why": "2026-09-24 (optician client Wave B). nav-bar-menu/render.php wraps the attr in a `?? '<slug>'` default inside sgs_background_paint_decl()/sgs_text_colour_decl() and emits the declaration on a selector assembled in a later statement; the shape matcher does not pair them. Verified by reading render.php."
 		},
 		{
 			"slug": "sgs/nav-bar-menu",
@@ -6497,7 +6497,7 @@
 				"css_property": "color",
 				"css_element": "link"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B). nav-bar-menu/render.php wraps the attr in a `?? '<slug>'` default inside sgs_background_paint_decl()/sgs_text_colour_decl() and emits the declaration on a selector assembled in a later statement; the shape matcher does not pair them. Verified by reading render.php."
+			"_why": "2026-09-24 (optician client Wave B). nav-bar-menu/render.php wraps the attr in a `?? '<slug>'` default inside sgs_background_paint_decl()/sgs_text_colour_decl() and emits the declaration on a selector assembled in a later statement; the shape matcher does not pair them. Verified by reading render.php."
 		},
 		{
 			"slug": "sgs/cart",
@@ -6505,7 +6505,7 @@
 			"fields": {
 				"role": "text-content"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (pillLabel = text-content)."
+			"_why": "2026-09-24 (optician client Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (pillLabel = text-content)."
 		},
 		{
 			"slug": "sgs/cart",
@@ -6513,7 +6513,7 @@
 			"fields": {
 				"role": "text-content"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (pillLabel = text-content)."
+			"_why": "2026-09-24 (optician client Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (pillLabel = text-content)."
 		},
 		{
 			"slug": "sgs/product-card",
@@ -6521,7 +6521,7 @@
 			"fields": {
 				"role": "technical"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (attributeTagTaxonomy = technical)."
+			"_why": "2026-09-24 (optician client Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (attributeTagTaxonomy = technical)."
 		},
 		{
 			"slug": "sgs/card-grid",
@@ -6531,7 +6531,7 @@
 				"css_property": "background-color",
 				"css_element": "imageOverlay"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B round 2). Painted on .sgs-card-grid__image-overlay by card-grid/image-overlay.php::sgs_card_grid_image_overlay_css() through the shared sgs_overlay_decls() primitive; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
+			"_why": "2026-09-24 (optician client Wave B round 2). Painted on .sgs-card-grid__image-overlay by card-grid/image-overlay.php::sgs_card_grid_image_overlay_css() through the shared sgs_overlay_decls() primitive; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
 		},
 		{
 			"slug": "sgs/card-grid",
@@ -6541,7 +6541,7 @@
 				"css_property": "background-image",
 				"css_element": "imageOverlay"
 			},
-			"_why": "2026-09-24 (Eye Care Wave B round 2). Painted on .sgs-card-grid__image-overlay by card-grid/image-overlay.php::sgs_card_grid_image_overlay_css() through the shared sgs_overlay_decls() primitive; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
+			"_why": "2026-09-24 (optician client Wave B round 2). Painted on .sgs-card-grid__image-overlay by card-grid/image-overlay.php::sgs_card_grid_image_overlay_css() through the shared sgs_overlay_decls() primitive; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
 		},
 		{
 			"slug": "sgs/nav-drawer-menu",
@@ -6605,7 +6605,7 @@
 			"fields": {
 				"role": "technical"
 			},
-			"_why": "2026-09-30 (Gate 3C Indus scrim). A hand-typed cubic-bezier() read only when scrimFadeEasing is custom; same role as burgerMorphEasingCustom."
+			"_why": "2026-09-30 (Gate 3C wholesale-food client scrim). A hand-typed cubic-bezier() read only when scrimFadeEasing is custom; same role as burgerMorphEasingCustom."
 		},
 		{
 			"slug": "sgs/button",
@@ -6613,7 +6613,7 @@
 			"fields": {
 				"role": "technical"
 			},
-			"_why": "2026-09-30 (Gate 3C lamalama CTA). A hand-typed cubic-bezier() read only when transitionEasing is custom (the button now uses the shared sgs_motion_easing_css list); same role as sgs/nav-bar-menu burgerMorphEasingCustom. The classifier records no role for free-text curve strings."
+			"_why": "2026-09-30 (Gate 3C reference-site CTA). A hand-typed cubic-bezier() read only when transitionEasing is custom (the button now uses the shared sgs_motion_easing_css list); same role as sgs/nav-bar-menu burgerMorphEasingCustom. The classifier records no role for free-text curve strings."
 		},
 		{
 			"slug": "sgs/nav-bar-menu",
@@ -6737,7 +6737,7 @@
 			"fields": {
 				"role": "behaviour"
 			},
-			"_why": "2026-09-25 (Eye Care Wave C product page). How many of the buybox's extra-area child blocks render above the price instead of below the add-to-cart form: a placement behaviour, no CSS property."
+			"_why": "2026-09-25 (optician client Wave C product page). How many of the buybox's extra-area child blocks render above the price instead of below the add-to-cart form: a placement behaviour, no CSS property."
 		},
 		{
 			"slug": "sgs/buybox",
@@ -6745,7 +6745,7 @@
 			"fields": {
 				"role": "behaviour"
 			},
-			"_why": "2026-09-25 (Eye Care product page). How many of the buybox's extra blocks render between the pickers and add-to-cart: a placement behaviour, no CSS property."
+			"_why": "2026-09-25 (optician client product page). How many of the buybox's extra blocks render between the pickers and add-to-cart: a placement behaviour, no CSS property."
 		},
 		{
 			"slug": "sgs/buybox",
@@ -6753,7 +6753,7 @@
 			"fields": {
 				"role": "text-content"
 			},
-			"_why": "2026-09-25 (Eye Care product page). The words before the saving in the RRP pill ('You save'): visible text."
+			"_why": "2026-09-25 (optician client product page). The words before the saving in the RRP pill ('You save'): visible text."
 		},
 		{
 			"slug": "sgs/icon-list",
@@ -6761,7 +6761,7 @@
 			"fields": {
 				"role": "layout"
 			},
-			"_why": "2026-09-25 (Eye Care product page). Vertical padding inside each list item (padding-block on the item row)."
+			"_why": "2026-09-25 (optician client product page). Vertical padding inside each list item (padding-block on the item row)."
 		},
 		{
 			"slug": "sgs/icon-list",

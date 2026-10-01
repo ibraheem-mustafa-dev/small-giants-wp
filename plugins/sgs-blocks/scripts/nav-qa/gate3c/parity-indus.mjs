@@ -1,4 +1,4 @@
-// Parity config: Bean's Indus Foods mega-menu draft against its copy on sandybrown (page 4465, header 4461).
+// Parity config: the wholesale-food client's mega-menu draft against its copy on sandybrown (page 4465, header 4461).
 // Full checks (scripts/parity/GAP-CHECKLIST.md section 11). Measure only while 4461 is the ACTIVE header, inside
 // one trapped command that restores 3777 and qa-item-markup-fixture.php two-bar (nav-qa/README.md §13).
 // Run: node scripts/parity/draft-live-walk.mjs plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-indus.mjs
@@ -65,7 +65,7 @@ const LACC = { js: `() => [...document.querySelectorAll('dialog[open] summary')]
 const LLABEL = LACC;
 
 export default {
-	name: 'indus',
+	name: 'wholesale-food',
 	// The automatic check (GAP-CHECKLIST section 12) excludes header, footer and banner landmarks by
 	// design, so on a header-only copy it compares only the page bodies, which here are QA scaffolding and
 	// not the reference's page. The header is covered by the section 11 header checks below.

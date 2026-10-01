@@ -119,7 +119,7 @@ def _noop_record_gap(
 #   every non-transfer below already built its finding as a ``trace(...)`` call
 #   and ``assembly`` injects ``_fold_trace``, which is a ``_LOG.warning`` and
 #   NOTHING else — no gap row, no ``content-gaps.json`` entry. Proven by a live
-#   ``convert_section()`` on the Eye Care reviews draft: 15 declarations on
+#   ``convert_section()`` on the optician client's reviews draft: 15 declarations on
 #   ``__rating`` / ``__review-request-url`` / ``__avatar-colour`` /
 #   ``__average-rating`` were discarded and the returned ``content_gaps`` list
 #   was EMPTY. These helpers add the missing channel write. They change no
@@ -214,7 +214,7 @@ def _declarative_selector_route(
     ``sgs/testimonial.quoteFontSize`` is ``css_element='quote-text'`` with
     ``derived_selector='.sgs-testimonial__quote, .sgs-testimonial__text'``, and
     it really does carry the draft's ``font-size`` for ``__text`` (proven: the
-    Mama's social-proof emit carries ``"quoteFontSize":"14px"``). Reporting the
+    the bakery client's social-proof emit carries ``"quoteFontSize":"14px"``). Reporting the
     same declaration as a per-area skip would be a false alarm.
 
     Tier-aware, deliberately: the route only counts for a tier whose own

@@ -40,7 +40,7 @@ lock_reason: none
 
 The cloning pipeline (Spec 31) converts a draft mockup into native SGS blocks. Judging *how
 faithfully* a clone reproduces its draft was **not dependable**, and Bean could not trust the
-scores. Every prior method had a structural blind spot, proven on the Mama's Munches clone
+scores. Every prior method had a structural blind spot, proven on the bakery client clone
 2026-07-03:
 
 1. **Pixel-diff** (old Stage 11) — an EMPTY section scores a false WIN (matches the background);

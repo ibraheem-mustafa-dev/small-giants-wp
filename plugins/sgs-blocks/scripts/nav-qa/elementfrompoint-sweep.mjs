@@ -11,8 +11,8 @@
  *   - every drawer link probed at its own centre returns itself;
  *   - everything below the header is unreachable (a probe over a hero
  *     link returns the scrim / `inert` layer, never the underlying link).
- * PASS = every probe returns its expected node. Baseline: 10/10 Mama's,
- * 18/18 Indus.
+ * PASS = every probe returns its expected node. Baseline: 10/10 on the bakery client's page,
+ * 18/18 on the wholesale-food client's.
  *
  * Geometry check (also Spec 36 §8): a partial drawer's
  * `getBoundingClientRect().top` === header bottom ±1px at all three
@@ -100,7 +100,7 @@
  *   3 — VACUOUS: the surface named by "openScope" was not genuinely open, so the
  *       probe results prove nothing (they are not evidence of a defect either)
  *
- * Spec 36 coverage: FR-36-16 elementFromPoint occlusion sweep (baseline 10/10 Mama's, 18/18 Indus).
+ * Spec 36 coverage: FR-36-16 elementFromPoint occlusion sweep (baseline 10/10 on the bakery client's page, 18/18 on the wholesale-food client's).
  */
 'use strict';
 

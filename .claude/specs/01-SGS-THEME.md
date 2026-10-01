@@ -57,7 +57,7 @@ sgs-theme/
 │   │   ├── smooth-scroll.js         # Smooth anchor scrolling
 │   │   └── viewport-width.js        # Viewport-width helper for responsive JS
 │   ├── fonts/                       # Self-hosted font files (WOFF2)
-│   └── decorative-foods/            # Decorative food PNG assets (client-specific, Indus Foods)
+│   └── decorative-foods/            # Decorative food PNG assets (client-specific, the wholesale-food client)
 │
 ├── templates/
 │   ├── index.html               # Default fallback template
@@ -606,8 +606,8 @@ Each site has ONE `theme.json`. The local repo holds per-client snapshots in `si
 
 Per-client visual snapshots live at `sites/<client>/theme-snapshot.json` (per-site dir, stays in the local repo):
 
-- `sites/mamas-munches/theme-snapshot.json` — full `theme.json` copy for Mama's Munches
-- `sites/indus-foods/theme-snapshot.json` — full `theme.json` copy for Indus Foods
+- `sites/mamas-munches/theme-snapshot.json` — full `theme.json` copy for the bakery client
+- `sites/indus-foods/theme-snapshot.json` — full `theme.json` copy for the wholesale-food client
 - etc.
 
 Snapshot format: **full `theme.json` copy** (not a diff). File is ~5–20 KB; simplicity of a 1:1 overwrite outweighs bandwidth savings of a diff.
@@ -618,7 +618,7 @@ Python script:
 
 ```bash
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
-  --client mamas-munches \
+  --client <client> \
   --target u945238940@141.136.39.73
 ```
 
@@ -645,7 +645,7 @@ Then bump `theme/sgs-theme/style.css` `Version:` to bust WP's compiled-styles ca
 
 **Known gap (PARTIAL):** `push-theme-snapshot.py` also POSTs to the live `wp_global_styles` REST endpoint, so a push updates both the disk file and the live post. Open (tracked at parking `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES`, status PARTIAL): the pull round-trip (reading the live post back into the snapshot) and a pre-deploy guard to confirm the push landed.
 
-**Orphan:** `theme/sgs-theme/styles/mamas-munches.css` is NOT enqueued — never put overrides there.
+**Orphan:** a per-client stylesheet in `theme/sgs-theme/styles/` is NOT enqueued — never put overrides there.
 
 ### theme.json raw custom values + overridable defaults
 

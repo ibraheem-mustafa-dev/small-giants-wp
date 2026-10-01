@@ -91,7 +91,7 @@ class TestRule1PatternSlugs:
         good = _php_file(
             patterns_dir,
             "header-good.php",
-            "<?php\n/**\n * Title: Good Header\n * Slug: sgs/indus-foods-header\n */\n",
+            "<?php\n/**\n * Title: Good Header\n * Slug: sgs/acme-foods-header\n */\n",
         )
         violations = LINT.check_pattern_slugs([good])
         assert violations == [], f"Expected no violations, got {violations}"

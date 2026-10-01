@@ -1,8 +1,8 @@
 /**
  * sgs/choice-flow-question — static frontend + editor styles.
  *
- * Spec 43 Phase 2b visual pass (design-reviewer findings vs the AthleanX/
- * Invisalign reference quizzes, 2026-09-15) plus FR-43-15 (per-option image)
+ * Spec 43 Phase 2b visual pass (design-reviewer findings vs the reference
+ * quizzes, 2026-09-15) plus FR-43-15 (per-option image)
  * and FR-43-16 (per-option help-text toggle) support classes.
  *
  * NO-INLINE (Spec 32): every rule below is a class selector; render.php never

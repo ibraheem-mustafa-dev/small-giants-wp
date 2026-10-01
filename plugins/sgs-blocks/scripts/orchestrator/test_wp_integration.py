@@ -97,7 +97,7 @@ def test_deploy_dry_run_command_sequence() -> None:
     assert any("wp eval-file" in c for c in cmds), "wp eval-file missing"
     assert any("opcache_reset" in c for c in cmds), "opcache reset missing"
     assert any("curl -s https://" in c for c in cmds), "verifying curl missing"
-    assert report["verify_url"] == "https://palestine-lives.org/?p=42"
+    assert report["verify_url"] == "https://sandybrown-nightingale-600381.hostingersite.com/?p=42"
     print(f"  PASS  deploy-dry-run: {len(cmds)} commands matching CLAUDE.md pattern")
 
 

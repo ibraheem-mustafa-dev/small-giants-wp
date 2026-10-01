@@ -186,7 +186,7 @@ ok( false !== strpos( run_sublink_shift( $bypass_sub_clamp, array( 'submenuOpaci
 ok( '' === run_sublink_shift( $sublink_section, array() ), 'sublink: no attribute -> nothing emitted' );
 ok( '' === run_sublink_shift( $sublink_section, array( 'itemPaddingShiftHover' => '' ) ), 'sublink: empty attribute -> nothing emitted' );
 $sub_shift = run_sublink_shift( $sublink_section, array( 'itemPaddingShiftHover' => '6px' ) );
-ok( false !== strpos( $sub_shift, 'padding-inline-start:calc(16px + 6px)' ), 'sublink: padding shift adds onto the resting 16px literal (indus-foods dropdown 6 to 12/... reference shape)' );
+ok( false !== strpos( $sub_shift, 'padding-inline-start:calc(16px + 6px)' ), 'sublink: padding shift adds onto the resting 16px literal (wholesale-food client dropdown 6 to 12/... reference shape)' );
 ok( false !== strpos( $sub_shift, SGS_HOVER_MEDIA ), 'sublink: the padding-shift rule is touch-guarded' );
 ok( '' === run_sublink_shift( $sublink_section, array( 'itemPaddingShiftHover' => 'url(javascript:alert(1))' ) ), 'sublink: a hostile padding-shift value emits nothing' );
 
@@ -285,7 +285,7 @@ $empty_lift = run_lift( $lift_section, array( 'panelCardLift' => '' ) );
 ok( false === strpos( $empty_lift, 'transform:' ) && false !== strpos( $empty_lift, 'border-color:var(--sgs-mm-accent-border)' ), 'panelCardLift: empty -> no transform declaration, but the border-colour hover pair still emits' );
 
 $custom_lift = run_lift( $lift_section, array( 'panelCardLift' => '6px' ) );
-ok( false !== strpos( $custom_lift, 'calc(-1 * 6px)' ), 'panelCardLift: a custom value (indus-foods reference: 6px) is emitted' );
+ok( false !== strpos( $custom_lift, 'calc(-1 * 6px)' ), 'panelCardLift: a custom value (wholesale-food client reference: 6px) is emitted' );
 ok( false !== strpos( $custom_lift, SGS_HOVER_MEDIA ), 'panelCardLift: the lift rule is touch-guarded' );
 
 $hostile_lift = run_lift( $lift_section, array( 'panelCardLift' => 'red;}body{x' ) );

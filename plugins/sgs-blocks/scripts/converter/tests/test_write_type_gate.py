@@ -1,6 +1,6 @@
 """test_write_type_gate.py -- a Write whose value is the wrong JSON kind for its attr never reaches the block.
 
-Two independent fixes for one defect (the Eye Care ticker emitted ``"bgKenBurns":"none"``: a raw CSS
+Two independent fixes for one defect (the optician client's ticker emitted ``"bgKenBurns":"none"``: a raw CSS
 animation string written to a BOOLEAN toggle, which PHP reads as true):
 
   SOURCE  a boolean feature flag must not own a raw CSS property unless a value parser turns the draft

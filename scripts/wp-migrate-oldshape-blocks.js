@@ -28,9 +28,9 @@
  *
  * Usage (PowerShell; node via PowerShell on this machine):
  *   $env:WP_USER='...'; $env:WP_PASSWORD='...'; $env:WP_APP_PASSWORD='...'
- *   node scripts/wp-migrate-oldshape-blocks.js --site palestine-lives.org --post 58            # dry-run
- *   node scripts/wp-migrate-oldshape-blocks.js --site palestine-lives.org --post 58 --live
- *   node scripts/wp-migrate-oldshape-blocks.js --site palestine-lives.org --post 58 --restore .claude/backups/2026-07-15-track-b/palestine-lives/58.txt
+ *   node scripts/wp-migrate-oldshape-blocks.js --site <site-domain> --post 58            # dry-run
+ *   node scripts/wp-migrate-oldshape-blocks.js --site <site-domain> --post 58 --live
+ *   node scripts/wp-migrate-oldshape-blocks.js --site <site-domain> --post 58 --restore .claude/backups/<date>/<site>/58.txt
  *
  * Exit codes: 0 ok · 2 auth · 3 editor · 4 preflight · 5 save · 6 verify · 7 plan fail-closed
  */

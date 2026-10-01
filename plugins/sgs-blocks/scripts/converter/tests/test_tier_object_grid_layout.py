@@ -12,7 +12,7 @@ tier-object destination was never even attempted (never a Tablet/Mobile
 suffix sibling; always a bare scalar on the base attr).
 
 Measured via ``check_flat_tier_regression.py --report`` against a real clone
-run (``pipeline-state/mamas-munches-homepage-qa-2849-2026-08-26-223048``): 39
+run (the bakery client's homepage QA run of 2026-08-26 in ``pipeline-state/``): 39
 of 47 violations were exactly this shape, spanning sgs/container, sgs/hero,
 sgs/button, sgs/multi-button, sgs/trust-bar, sgs/feature-grid,
 sgs/testimonial-slider and sgs/media.

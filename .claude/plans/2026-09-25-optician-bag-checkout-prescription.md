@@ -1,13 +1,13 @@
 ---
 doc_type: plan
-plan_id: eye-care-bag-checkout-prescription
+plan_id: optician-bag-checkout-prescription
 project: small-giants-wp
-parent: plans/2026-09-24-eye-care-hand-build-design.md (Wave C task 6, section 6)
+parent: plans/2026-09-24-optician-hand-build-design.md (Wave C task 6, section 6)
 date: 2026-09-25
 status: built and proven on eye-care-test (2026-09-25); checkout styling and the parked items below remain
 ---
 
-# Eye Care: bag drawer, checkout and the prescription step
+# The optician client: bag drawer, checkout and the prescription step
 
 Wave C task 6 of the hand build. The draft's bag drawer (`sgs-bag-drawer`), checkout sections
 (`sgs-checkout-express`, `-contact`, `-delivery`, `-prescription`, `-payment`) and the configurator's

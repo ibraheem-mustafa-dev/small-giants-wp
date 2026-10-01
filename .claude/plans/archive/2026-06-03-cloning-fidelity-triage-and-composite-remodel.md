@@ -93,7 +93,7 @@ Memories: `composite-mirror-is-separate-from-cloning-fidelity`, `universal-lift-
 - `.claude/parking.md` → P-CLONE-PAGE-VISUAL-TRIAGE (#1–#8) + P-CONTAINER-WRAPPER-STANDARDISATION (WS-1 progress + WS-4 directive) + P-TRUSTBAR-BOUND-GRID
 - `.claude/decisions.md` D159 (WS-1 A1+A2 shipped + WS-4 sharpened directive + triage findings), D152 (composite-mirror rule), D150 (28-block roster + 3-KIND), D167 (WS-4 block-side complete — roster now 29, content-collection registered)
 - `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §FR-22-21 (wrapper-conversion procedure + composite-mirror), §FR-22-19 (composite interiors), §FR-22-4.1 (fold), §6 (R-22-1..14)
-- Run artefacts: `pipeline-state/mamas-munches-mamas-homepage-ws1-2026-06-03-060940/` (extract.json, trace.jsonl, leftover-buckets.json)
+- Run artefacts: `pipeline-state/bakery-client-mamas-homepage-ws1-2026-06-03-060940/` (extract.json, trace.jsonl, leftover-buckets.json)
 - `sites/mamas-munches/mockups/homepage/index.html` (draft truth) — served at `python -m http.server 8137 --bind 127.0.0.1` from `sites/mamas-munches/`
 - Block code: `plugins/sgs-blocks/src/blocks/{container,hero,trust-bar,cta-section,modal,product-card,notice-banner,announcement-bar,testimonial-slider}/`
 - Converter: `plugins/sgs-blocks/scripts/orchestrator/converter_v2/{convert.py,db_lookup.py,css_router.py}`

@@ -73,7 +73,7 @@ TEL_RE = re.compile(r"""tel:([^"'\s>]+)""", re.IGNORECASE)
 EMAIL_SHAPE_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 # Copyright line: a © or &copy; followed by the rest of that text run. Stop only
 # at an HTML tag boundary (< >), a newline, or a JS-template backtick — so real
-# text with apostrophes/quotes ("Mama's Munches.") is kept intact.
+# text with apostrophes/quotes ("Acme Bakery's.") is kept intact.
 COPYRIGHT_RE = re.compile(r"""(?:©|&copy;)\s*([^<>\n`]{2,160})""", re.IGNORECASE)
 
 PHONE_SHAPE_RE = re.compile(r"\+?[0-9][0-9\s().\-]{5,23}")

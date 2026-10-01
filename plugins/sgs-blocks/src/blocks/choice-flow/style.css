@@ -63,8 +63,8 @@
  * 2026-09-26 review; user-reported gap, 2026-09-15) =====
  * Reference design evidence puts Back in a
  * bottom sticky footer strip with a border-top divider — the same placement
- * AthleanX uses; Invisalign's top-of-page text-link placement was explicitly
- * ruled out (Bean, "the invisalign one is definitely the outlier"). Bean's
+ * a reference site uses; another reference's top-of-page text-link placement was explicitly
+ * ruled out as an outlier. Bean's
  * 2026-09-26 review added the right-hand row: Continue on a question step
  * (D1), or Add to basket/Buy now on an add-to-bag result step (D3) — never
  * both kinds at once (`navigation.js`'s `updateFooterActions()` decides).
@@ -487,14 +487,14 @@
 
 /* ===== Progress style variants (user-directed, 2026-09-15) =====
  * Real evidence from 3 live/real quizzes, captured via chrome-devtools MCP
- * (AthleanX, Invisalign) + direct source read (the client's own real lens
+ * (two reference sites) + direct source read (the client's own real lens
  * configurator). Operator picks one via the `progressStyle` attribute;
  * `data-progress-style` on the wrapper drives which CSS applies. All three
  * share the SAME underlying fill bar + `--sgs-choice-flow-progress` custom
  * property — 'circles'/'badge' add a visual on TOP of it, never replace it.
  */
 
-/* --- 'circles' (AthleanX): numbered circles + connecting lines, ABOVE the
+/* --- 'circles' (a reference site): numbered circles + connecting lines, ABOVE the
    plain bar. Entirely populated by view.js — see its buildStepperMarkup(). */
 .sgs-choice-flow__stepper {
 	display: flex;
@@ -552,7 +552,7 @@
 	color: var(--wp--preset--color--primary, #1F7A7A);
 }
 
-/* --- 'badge' (Invisalign): a step-count pill riding on the fill track,
+/* --- 'badge' (a reference site): a step-count pill riding on the fill track,
    styled like a slider thumb — needs room to overflow the thin bar. */
 .wp-block-sgs-choice-flow[data-progress-style="badge"] .sgs-choice-flow__progress {
 	position: relative;

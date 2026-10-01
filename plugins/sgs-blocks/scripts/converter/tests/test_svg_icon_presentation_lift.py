@@ -1,6 +1,6 @@
 """test_svg_icon_presentation_lift.py -- an item icon's <svg> size, stroke width and stroke colour reach block attributes.
 
-Measured on the Eye Care ticker: each item's icon was
+Measured on the optician client's ticker: each item's icon was
 ``<svg width="15" height="15" stroke="var(--acc,#9C8B78)" stroke-width="1.6">``. The raw-svg strip DROPPED
 ``width`` / ``height``; ``stroke`` / ``stroke-width`` stay in the stored markup but the block's stylesheet
 overrides them, so they reach the page only as block attributes. Nothing lifted them, so the clone drew 44px

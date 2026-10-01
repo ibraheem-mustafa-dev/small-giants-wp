@@ -1,9 +1,9 @@
-# Eye Care: where the 2026-09-28 autopilot session stopped
+# The optician client: where the 2026-09-28 autopilot session stopped
 
 **Written for:** Bean and the next session that picks this up. Source: the full session log of the 2026-09-28
 `/autopilot` run (three tasks: shop and lens tail, page waves, Phase 6), checked against `main` at 8ab1f0a5e.
-The governing plans are still `2026-09-24-eye-care-hand-build-design.md` (Status block) and
-`2026-09-28-eye-care-product-page-parity.md`; this file only says what state the session left them in.
+The governing plans are still `2026-09-24-optician-hand-build-design.md` (Status block) and
+`2026-09-28-optician-product-page-parity.md`; this file only says what state the session left them in.
 
 ## Why it stopped
 
@@ -85,10 +85,10 @@ The queue's "exit code 0" was the queue runner's, not the walks'.
 ## Motion batch (BUILT 2026-09-29, not yet deployed)
 
 Built in a cloud session as universal Animation-panel settings with editor controls; details and browser proof in
-`2026-09-28-eye-care-product-page-parity.md` §Motion batch. The draft's reveal trigger (1% past 6% up the screen)
+`2026-09-28-optician-product-page-parity.md` §Motion batch. The draft's reveal trigger (1% past 6% up the screen)
 is now the framework default, with a "Start when" control; a block's own delay is kept; "Stagger the blocks
 inside" (any block with inner blocks) and a block's own stagger (repeated lists) replace hand-typed delays;
-card-grid tiles use the same settings. Eye Care's shop card and Home trees updated (not yet applied).
+card-grid tiles use the same settings. The optician client's shop card and Home trees updated (not yet applied).
 
 Checks run here: PHP syntax, webpack compile, 116 of 127 fast gates pass; of the 11 failures, 8 need the framework
 DB or Python packages (bs4, tinycss2) only on Bean's PC, `check-hardcoded-render-defaults` fails on untouched

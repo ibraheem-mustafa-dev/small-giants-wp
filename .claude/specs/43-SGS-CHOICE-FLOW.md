@@ -20,11 +20,11 @@ derived_from:
     `.claude/memory/research/2026-09-14-sgs-choice-flow-architecture.md` for the record,
     not cited as authority here
   - The owner's direct correction (2026-09-14) rejecting a two-block-family split: the
-    real Ward End Eye Care lens flow uses `sgs/option-picker`'s tile-pricing mechanism
+    real optician client lens flow uses `sgs/option-picker`'s tile-pricing mechanism
     *inside a step-by-step wizard*, not WooCommerce's flat "product add-ons" shape — one
     block family, pricing as an optional per-step capability, not a second product
   - The owner's follow-on requirement: the same block, in full-screen-modal mode via
-    `sgs_modal` (built same session), also replaces Mama's Munches' cramped inline
+    `sgs_modal` (built same session), also replaces the bakery client's cramped inline
     flavour/pack-size pickers with a sequential one-decision-per-screen flow
   - The 2026-09-14 reconciliation against Spec 42's adversarial-council findings (v1.1.0):
     confirmed `sgs/option-picker`'s live WC-bound mode already has stable option identity;
@@ -38,14 +38,14 @@ derived_from:
     correction: `sgs/buybox` + `sgs/product-card` already have a full, live, server-authoritative
     per-variation pricing engine** (`Product_Manifest` / `class-product-manifest.php` +
     `sgs_configurator_mode_price()` / `includes/helpers-configurator-pricing.php`) — the exact
-    mechanism Mama's Munches' flavour/pack-size picker already runs on. v1.2.0 replaces the
+    mechanism the bakery client's flavour/pack-size picker already runs on. v1.2.0 replaces the
     typed-tile pricing route entirely: every priced step in a `sgs/choice-flow` resolves ONE
     WooCommerce attribute axis of a single variable product via this existing manifest, exactly
     as `sgs/buybox` does today — never `option-picker`'s free-text typed mode. This collapses
     FR-43-1's "priced tile step" and "WC variation-picker step" into ONE step type, and resolves
     the Cynic/Competitor/Abuse-Red-Team convergent finding that the eyewear worked example had
-    no real server-side price authority — it now has the same one Mama's Munches already ships.
-  - **2026-09-15 (v1.3.0), post Phase 2 build — decomposed the REAL Ward End Eye Care lens-
+    no real server-side price authority — it now has the same one the bakery client already ships.
+  - **2026-09-15 (v1.3.0), post Phase 2 build — decomposed the REAL optician client lens-
     configurator source** (`sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care
     Birmingham.dc.html`, lines ~1300-1545), not a generic external reference. This is the
     client's own already-agreed design (`sites/eye-care-ward-end/CLAUDE.md`'s "lens-selection
@@ -59,12 +59,12 @@ derived_from:
     `sgs/choice-flow-question` today, and neither is lens/pricing-specific: a plain
     qualification quiz benefits from both identically. FR-43-15/FR-43-16 below add them to the
     plain-question step type now, universal to any `sgs/choice-flow`, not deferred to Phase 3.
-  - **2026-09-25 (v1.4.0), owner decision 2026-09-24 (`plans/2026-09-24-eye-care-hand-build-design.md` section 5):**
+  - **2026-09-25 (v1.4.0), owner decision 2026-09-24 (`plans/2026-09-24-optician-hand-build-design.md` section 5):**
     eyewear lens prices are ONE site-wide add-on price list, not WooCommerce variations. Variations were rejected
     (every frame would need one variation per colour x size x use x thickness x finish); separate lens products
     were rejected (two bag lines per pair). v1.4.0 adds "add-on price list" as a second priced-step source beside
     "product variation" (FR-43-17 to FR-43-20); the variation source stays for flows that resolve a product's own
-    axes (Mama's Munches).
+    axes (the bakery client).
   - **2026-09-25 (v1.5.0), owner direction (Bean, 2026-09-25: the lens configurator is built through the flow
     CPT):** FR-43-6 reference mechanism settled as `flowId` + `flowIsLinked` on `sgs/choice-flow` itself (the
     `sgs/form` `formId` precedent, and the attribute the Choice Flows usage column already counted), not a
@@ -72,7 +72,7 @@ derived_from:
   - **2026-09-25 (v1.6.0), owner decision (Bean, 2026-09-25: the prescription is asked in the configurator, per pair,
     as Glasses Direct does):** FR-43-21 adds answers and fields carried to the bag line, so a flow can end in
     "upload a photo" or "type the numbers" without a checkout form.
-  - **2026-09-25 (v1.7.0), owner direction (Bean, 2026-09-25: Mama's four choices, only the pack changes the price;
+  - **2026-09-25 (v1.7.0), owner direction (Bean, 2026-09-25: the bakery client's four choices, only the pack changes the price;
     two journeys, full customisation in a popup or pack on the page then "Choose your flavours"):** a product-option
     step reads ANY attribute of the flow's product (FR-43-10); an attribute that creates variations resolves the
     variation and its price, one that does not is an unpriced answer on the bag line (FR-43-21). FR-43-4 (email
@@ -83,13 +83,13 @@ derived_from:
     - The final step's Add to basket and Buy now sit in the footer opposite Back.
     - Progress counts finished steps (v1.9.0: or the question on screen, `progressCounts`).
     - A summary stage shows the finished product.
-    - The showcase layout (FR-43-24) is modelled on the Eye Care lens draft.
+    - The showcase layout (FR-43-24) is modelled on the optician client lens draft.
     - Options get term images, badges and descriptions; titles are bold; the round or text Close is set by
       `closeStyle`.
     - The architecture (FR-43-25): the saved flow owns content and look; products link a flow; the guided buybox
       (FR-43-23) stays product-options-only.
   - **2026-09-26 (v1.9.0), draft parity for the showcase layout (Bean, 2026-09-26: the lens flow must look, animate
-    and work as the Eye Care draft does):** FR-43-24 now states the full frame, stage, card and motion detail it was
+    and work as the optician client draft does):** FR-43-24 now states the full frame, stage, card and motion detail it was
     built to; progress can count the question on screen (`progressCounts`); a pre-selected default is listed on the
     stage only once its question is reached (Bean: "not chosen yet", as in the draft); option prices read "+£30.00"
     or "from £59.00" (FR-43-17); a result can carry the running total on its button.
@@ -112,8 +112,7 @@ cookie shop's flavour-then-pack-size picker.
 
 An earlier pass this session proposed splitting this into two separate systems — a
 lead-gen "quiz" block and Spec 27's existing WooCommerce configurator, bridged by a link.
-That was wrong, and wrong for a checkable reason: the owner confirmed the Ward End Eye
-Care lens flow's thickness/finish options are **not** WooCommerce product variations
+That was wrong, and wrong for a checkable reason: the owner confirmed the optician client lens flow's thickness/finish options are **not** WooCommerce product variations
 (they're never selectable on the product page) and are **not** WooCommerce's flat
 "product add-ons" shape either (add-ons have no real per-option pricing *engine*, just a
 fixed fee). What they actually are is `sgs/option-picker`'s existing tile-with-price
@@ -129,7 +128,7 @@ just to explain which one to use — not a model to copy for a solo-maintained f
 
 **v1.2.0 correction (owner-directed, post-`/adversarial-council`):** the eyewear
 thickness/finish surcharges are **real WooCommerce attribute axes on a single variable
-product, priced via real variations** — structurally identical to Mama's Munches'
+product, priced via real variations** — structurally identical to the bakery client's
 flavour × pack-size picker, just presented as sequential steps instead of inline pickers.
 This is not a new pricing capability to build: it is `sgs/buybox`'s existing
 `Product_Manifest` (`includes/class-product-manifest.php`) + configurator pricing
@@ -154,7 +153,7 @@ time based on which shares more cleanly — see §6) can be any of:
   Resolves ONE WooCommerce attribute axis per step, reading `sgs/buybox`'s existing
   `Product_Manifest` for live combo pricing — one attribute resolved per step (e.g. step
   1 = flavour, step 2 = pack size; or step 1 = lens thickness, step 2 = finish/tint).
-  Covers BOTH the Mama's Munches use case (replaces a cramped inline pill-picker with a
+  Covers BOTH the bakery client use case (replaces a cramped inline pill-picker with a
   full-screen, one-decision-per-screen sequence) AND the eyewear lens-surcharge use case
   (thickness/finish modelled as real WC attribute terms on one variable product — see §6
   FR-43-10). Renders each step's options via `sgs/option-picker`'s tile UI, bound to that
@@ -171,7 +170,7 @@ plain-question step MAY carry an optional `image` (a single media attachment —
 matching `sgs/media`'s existing image-attribute shape, not a new convention). When set, it
 renders in the option card's existing 16:9 preview zone (already reserved space for the
 option's icon/visual — see the option-card layout FR-43-1 describes) instead of a plain
-colour band. Grounded in the real Ward End Eye Care lens flow, where every option shows
+colour band. Grounded in the real optician client lens flow, where every option shows
 either a themed icon or a live product-image preview — but the capability itself has no
 pricing/lens dependency: a plain "which service suits you" quiz benefits from a photo per
 option exactly as much. Optional — an option with no image keeps rendering as before
@@ -335,7 +334,7 @@ block placed on a page) or full-screen (the linked block inside a `sgs/modal`, `
 opened by any link to the modal's anchor or by its own trigger). The Choice Flows list's
 "Embedded on N pages" column counts `flowId` references.
 
-**FR-43-7 (Mama's Munches, v1.7.0).** One variable product with four choices: Number in Pack creates the
+**FR-43-7 (the bakery client, v1.7.0).** One variable product with four choices: Number in Pack creates the
 variations (and the price); Flavour, Topping and Dietary are product attributes that do not, so they travel as
 answers on the bag line. Two journeys, both a sequential, one-decision-per-screen flow in a full-screen `sgs/modal`:
 (A) full customisation: Flavour, Topping, Dietary, then Number in Pack, then add to bag; (B) the pack is picked on the
@@ -371,7 +370,7 @@ finished segments carry the chosen value ("Chocolate · Chip · Vegan · 20") an
 
 **FR-43-24 (v1.8.0, detail v1.9.0) — showcase layout for full-screen flows.** `sgs/choice-flow` `flowLayout:
 compact | showcase`, set on the saved flow (FR-43-25). `compact` is the single column for a flow inline on a page.
-`showcase` is for a flow shown full screen and spends the screen the way the Eye Care draft's lens flow does (the
+`showcase` is for a flow shown full screen and spends the screen the way the optician client draft's lens flow does (the
 draft's `lensOpen` dialog); it ignores the compact box (`maxWidth`, `padding`) and fills its full-screen modal edge
 to edge (the modal's own padding drops, and a full-screen modal fades in rather than scales).
 - **Frame:** a full-height column on the page background (surface). At the top, a header bar on the raised
@@ -431,7 +430,7 @@ add-to-bag result there shows Add to bag with the running total and hides Contin
 that step's fields as when it is shown on its own. It fades in over 0.3s (none under reduced motion). In the
 showcase layout an opened step holding fields is one bordered panel whose boxes take the panel's colour, and a file
 drop zone stands alone. `src/blocks/choice-flow/flow-inline.js::openInlineStep` (every step change goes through
-`::showStep`). The Eye Care lens draft's last question is the reference: Send it later, Upload a photo and Type it
+`::showStep`). The optician client lens draft's last question is the reference: Send it later, Upload a photo and Type it
 in each open their panel under the options.
 
 **FR-43-25 (v1.8.0) — architecture: one saved flow, its placements, and the product link** (Bean, 2026-09-26).
@@ -573,31 +572,30 @@ not named as one anywhere in v1.1.0. **SHIPPED 2026-09-15 (D1082) — full evide
 (per-option image), FR-43-16 (per-option help-text toggle), plus a plain styling pass on
 `sgs/choice-flow`/`sgs/choice-flow-question`/`sgs/choice-flow-result` (max-width/padding —
 Phase 2 shipped with zero box attrs — button/option-card border+state treatment, a step
-progress indicator, and a Tier-V CSS step transition). Grounded against the real Ward End
-Eye Care lens-configurator source, not a generic reference. Still zero WooCommerce/pricing/
+progress indicator, and a Tier-V CSS step transition). Grounded against the real optician client lens-configurator source, not a generic reference. Still zero WooCommerce/pricing/
 modal — those stay Phase 3/4.
 
 **Phase 3 — priced steps + real purchase.** FR-43-1's priced step types, FR-43-17 to FR-43-20 (add-on price
-list: built first, for the Eye Care lens configurator), FR-43-10/FR-43-10a (variation source), FR-43-5, FR-43-4's
+list: built first, for the optician client lens configurator), FR-43-10/FR-43-10a (variation source), FR-43-5, FR-43-4's
 rate-limit note. The variation source still requires the product's attributes to exist as real WooCommerce
 variations; the add-on source requires only the price list to be filled in. **Add-on source SHIPPED 2026-09-25**
-(FR-43-17 to FR-43-20, plus FR-43-21 answers and fields) as the Eye Care lens configurator, proven end to end on
+(FR-43-17 to FR-43-20, plus FR-43-21 answers and fields) as the optician client lens configurator, proven end to end on
 eye-care-test. **Variation source, purchase and email ending SHIPPED 2026-09-26** (FR-43-10/10a as product-option
 steps over any attribute, FR-43-5, FR-43-4), proven live on sandybrown.
 
-**Phase 4 — modal delivery + Mama's Munches acceptance criterion.** FR-43-6 SHIPPED 2026-09-25 (linked flow, inline
-or in a fullscreen `sgs/modal`); FR-43-7 and FR-43-22 SHIPPED 2026-09-26 (Mama's journeys on sandybrown
+**Phase 4 — modal delivery + the bakery client acceptance criterion.** FR-43-6 SHIPPED 2026-09-25 (linked flow, inline
+or in a fullscreen `sgs/modal`); FR-43-7 and FR-43-22 SHIPPED 2026-09-26 (the bakery client journeys on sandybrown
 product 3990).
 
 **v1.8.0 follow-up (FR-43-23 to 25 and the Continue model): SHIPPED 2026-09-26**, live on sandybrown and
-eye-care-test. Closing QA at 1440 and 375: Mama's journeys A, B and C reach the cart with every answer row
+eye-care-test. Closing QA at 1440 and 375: the bakery client's journeys A, B and C reach the cart with every answer row
 (including a re-tapped default), the guided finish-choosing guard, Continue muted then active with its hint, Add to
-basket and Buy now, an editor round trip for every new setting, and the Eye Care £268 path. Plan:
+basket and Buy now, an editor round trip for every new setting, and the optician client's £268 path. Plan:
 `plans/archive/2026-09-26-choice-flow-ux-and-guided-buybox.md`.
 
-**v1.9.0 showcase parity: SHIPPED 2026-09-26**, live on eye-care-test: the Eye Care lens flow matches the draft at
+**v1.9.0 showcase parity: SHIPPED 2026-09-26**, live on eye-care-test: the optician client's lens flow matches the draft at
 1440, 768 and 375 in screenshots and computed motion, with the accepted differences recorded in
-`plans/2026-09-24-eye-care-hand-build-design.md` ("Lens-flow parity").
+`plans/2026-09-24-optician-hand-build-design.md` ("Lens-flow parity").
 
 **Phase 5: SHIPPED 2026-09-26** (Spec 42 FR-42-7b, FR-42-9). A choice flow still embedded on a
 page or linked from a product can't be trashed or deleted, by the same guard and the same
@@ -617,7 +615,7 @@ CPT-creation gap) and FR-42-13 (analytics).
 | FR-43-4 | Terminal: email-capture lead-gen handoff (result emailed over `wp_mail()` via `Form_Mailer`) + inherited rate-limit |
 | FR-43-5 | Terminal: real purchase via Spec 27's `/sgs/v1/cart/add-item` proxy, unmodified — corrected citation, no bespoke security apparatus |
 | FR-43-6 | A saved `sgs_choice_flow` post shown by a linked `sgs/choice-flow` (`flowId` + `flowIsLinked`, same picker as Spec 42), inline or inside a full-screen `sgs/modal` |
-| FR-43-7 | Mama's Munches: one product, only the pack priced; full-customisation popup and pick-on-page-then-popup journeys |
+| FR-43-7 | the bakery client: one product, only the pack priced; full-customisation popup and pick-on-page-then-popup journeys |
 | FR-43-8 | `sgs_choice_flow` CPT — same literal capability/cache/revision values as Spec 42, not a parallel decision |
 | FR-43-9 | Own small IAPI store, decided now — `sgs/form-step` has no runtime to extend, `sgs/form/view.js`'s engine stays block-private in v1 |
 | FR-43-10 | A product-option step reads any attribute of the flow's product: variation attributes price via `Product_Manifest::build()`, the rest are unpriced answers |
@@ -634,7 +632,7 @@ CPT-creation gap) and FR-42-13 (analytics).
 | FR-43-20 | What is bought: the page's chosen variation, or a set product; a "no add-ons" exit |
 | FR-43-21 | Unpriced answers on the path and fields in the terminal step travel with the purchase; file fields via a session-stamped cart upload |
 | FR-43-25 | Architecture: the saved flow owns content and look; products link to a flow and the buybox wires the popup; the guided buybox stays product-options-only with term-level image, badge and description |
-| FR-43-24 | Showcase layout (`flowLayout`): full-screen flows use a stage (the finished product, running lines, total) beside large image-led option cards, as in the Eye Care lens draft |
+| FR-43-24 | Showcase layout (`flowLayout`): full-screen flows use a stage (the finished product, running lines, total) beside large image-led option cards, as in the optician client lens draft |
 | FR-43-23 | Guided buybox: one option group at a time on the product page, a meter that doubles as the summary, a finish-choosing guard |
 | FR-43-22 | The buybox button can open a popup (`addToCartAction: modal`) so a flow finishes a purchase started on the product page |
 | FR-43-26 | A question can open the chosen option's next step underneath, on the same screen, with that step's Add to bag in the footer |

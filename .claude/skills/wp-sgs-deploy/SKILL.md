@@ -1,6 +1,6 @@
 ---
 name: wp-sgs-deploy
-description: "Use when deploying sgs-blocks plugin, sgs-theme, or both to an SGS site (sandybrown canary by default; palestine-lives on explicit opt-in). Stage 1 = pre-flight check (absorbed /deploy-check 2026-05-19); Stages 2-5 = build + `build-deploy.py` (the ONE deploy path — hand-rolled tar/scp is RETIRED per D336) + cache + OPcache reset + verify. Invoke as /wp-sgs-deploy plugin, /wp-sgs-deploy theme, or /wp-sgs-deploy both. Optional --skip-check flag for trusted micro-patches (staging only — production rejects the flag). Renamed from /deploy 2026-05-19 to disambiguate from generic deploy contexts. Do NOT invoke for: Next.js projects (use /deploy-nextjs), DB-only refresh after code changes (use /sgs-update), per-page cv2-output deploy to a client's staging site (use /sgs-clone --deploy-target page:<id> — Stage 10 of the cloning pipeline), verification + QA without deploying (use /qc), pre-flight checklist alone without the actual deploy step (still use /wp-sgs-deploy — Phase 1 is the checklist, and decoupling check from execute was the architectural mistake this consolidation fixed)."
+description: "Use when deploying sgs-blocks plugin, sgs-theme, or both to an SGS site (sandybrown canary by default; the production site on explicit opt-in). Stage 1 = pre-flight check (absorbed /deploy-check 2026-05-19); Stages 2-5 = build + `build-deploy.py` (the ONE deploy path — hand-rolled tar/scp is RETIRED per D336) + cache + OPcache reset + verify. Invoke as /wp-sgs-deploy plugin, /wp-sgs-deploy theme, or /wp-sgs-deploy both. Optional --skip-check flag for trusted micro-patches (staging only — production rejects the flag). Renamed from /deploy 2026-05-19 to disambiguate from generic deploy contexts. Do NOT invoke for: Next.js projects (use /deploy-nextjs), DB-only refresh after code changes (use /sgs-update), per-page cv2-output deploy to a client's staging site (use /sgs-clone --deploy-target page:<id> — Stage 10 of the cloning pipeline), verification + QA without deploying (use /qc), pre-flight checklist alone without the actual deploy step (still use /wp-sgs-deploy — Phase 1 is the checklist, and decoupling check from execute was the architectural mistake this consolidation fixed)."
 ---
 
 # SGS Deploy (consolidated)
@@ -102,10 +102,10 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-o
 python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --theme-only
 ```
 
-### production (palestine-lives) — explicit opt-in, never the default
+### production (the campaign-site client) — explicit opt-in, never the default
 
 ```bash
-python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives
+python plugins/sgs-blocks/scripts/build-deploy.py --target <production-target>
 ```
 
 `--target` defaults to `sandybrown` (the canary) **by design** — production is always an explicit, typed choice.
@@ -114,7 +114,7 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives
 
 | Flag | Effect | When |
 |---|---|---|
-| `--target sandybrown\|palestine-lives` | Picks the site. Hostnames + remote WP paths live in the script's `TARGETS` dict (R-31-9 universal — the script's own header still says "R-22-9"; Spec 22 was absorbed into Spec 31 §13, `R-22-N ≡ R-31-N`) — never inline a host here. | Always |
+| `--target sandybrown\|<production-target>` | Picks the site. Hostnames + remote WP paths live in the script's `TARGETS` dict (R-31-9 universal — the script's own header still says "R-22-9"; Spec 22 was absorbed into Spec 31 §13, `R-22-N ≡ R-31-N`) — never inline a host here. | Always |
 | `--blocks-only` / `--theme-only` | Narrows scope (pick one — you can't pass both) | Scoped deploys |
 | `--skip-build` | Reuses existing `build/` | Only when you *just* built |
 | `--dry-run` | Prints commands, executes nothing | Rehearsal |
@@ -132,10 +132,10 @@ Stage 2's `npm run build` is what the script runs itself unless you pass `--skip
 
 ```bash
 # LiteSpeed cache (only if plugin is active — check first: wp plugin list | grep litespeed)
-ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
+ssh hd "rm -rf ~/domains/<production-domain>/public_html/wp-content/litespeed/cache/*"
 
 # OPcache HTTP-reset (CLI pool is separate — CLI reset does nothing for web requests)
-ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
+ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/<production-domain>/public_html/op-reset-tmp.php" && curl -s https://<production-domain>/op-reset-tmp.php && ssh hd "rm ~/domains/<production-domain>/public_html/op-reset-tmp.php"
 ```
 
 ---
@@ -144,13 +144,13 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 
 ```bash
 # Site responds
-curl -sI https://palestine-lives.org/ | head -1
+curl -sI https://<production-domain>/ | head -1
 
 # Plugin file present + readable
-ssh hd "ls -la ~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/sgs-blocks.php"
+ssh hd "ls -la ~/domains/<production-domain>/public_html/wp-content/plugins/sgs-blocks/sgs-blocks.php"
 
 # One representative dynamic block returns dynamic render
-curl -s "https://palestine-lives.org/wp-json/wp/v2/types/sgs%2Flabel" | head -3
+curl -s "https://<production-domain>/wp-json/wp/v2/types/sgs%2Flabel" | head -3
 ```
 
 ---
@@ -163,7 +163,7 @@ Example:
 ```bash
 python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
   --mockup sites/mamas-munches/mockups/homepage/index.html \
-  --client mamas-munches --page homepage --auto-section \
+  --client <client-slug> --page homepage --auto-section \
   --skip-autonomy-gate --skip-register --mode draft \
   --deploy-target page:144
 ```
@@ -177,7 +177,7 @@ python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
 | **Hand-rolling any tar / `scp` / `ssh rm -rf` deploy** | `rm -rf` of the live dir before the extract succeeds = site down with no plugin/theme. **This is D336: two client sites, ~2.5 hours.** | `build-deploy.py` only. It never deletes the live directory ahead of a successful transfer, and it rotates a `.bak`. |
 | Deploying with an uncommitted working-tree edit | The script tars the WORKING TREE — a stray local edit ships to the client. This was D336's trigger. | Let the dirty-tree gate do its job; do not reach for `--allow-dirty`. |
 | Passing `--skip-verify` | Removes the fail-closed smoke test — a broken deploy stays live and silent | Leave verification on |
-| Assuming the default target is production | It is **not** — default is `sandybrown` (the canary) | Production requires an explicit `--target palestine-lives` |
+| Assuming the default target is production | It is **not** — default is `sandybrown` (the canary) | Production requires an explicit `--target <production-target>` |
 | Skipping `npm run build` | Deploys stale JS/CSS | The script builds unless you pass `--skip-build` |
 | Theme CSS change without a version bump | Hostinger caches CSS aggressively (`?ver` for ~7 days) | Bump `Version:` in the theme's `style.css`. **No block.json version bumps pre-production (D293).** |
 | Measuring live CSS without clearing the CDN | The edge serves the stale `?ver` copy — you measure the old file and misdiagnose | Hostinger MCP `hosting_clearWebsiteCacheV1` before any live CSS measurement (LiteSpeed + OPcache alone leave the edge copy) |
@@ -215,7 +215,7 @@ When deploying after a Spec 17 upgrade (includes `class-sgs-safety-guard.php`, `
 | Hand-rolling a tar / `scp` / `ssh` deploy instead of running `build-deploy.py` | Skips the dirty gate, the fail-closed verify and the `.bak` rotation — and the old recipe `rm -rf`'d the live directory before extracting (D336: two client sites down ~2.5h). Stage 3 is one command. |
 | Resetting OPcache via WP-CLI | CLI runs in a separate OPcache pool and has no effect on web requests. Use the HTTP-curl pattern in Phase 4. |
 | Forgetting to clear LiteSpeed CSS optimiser cache | LiteSpeed page cache + CSS optimiser cache are separate. Phase 4 clears both. |
-| Mistaking `/wp-sgs-deploy` for `/sgs-clone --deploy-target` | This skill is framework-wide (sgs-blocks + sgs-theme to palestine-lives.org). The clone Stage 10 is per-page on a client staging site. Use the right one. |
+| Mistaking `/wp-sgs-deploy` for `/sgs-clone --deploy-target` | This skill is framework-wide (sgs-blocks + sgs-theme to <production-domain>). The clone Stage 10 is per-page on a client staging site. Use the right one. |
 | Running on a fresh CC session without WP context | Phase 1 needs the operator to see what's being deployed. Do not invoke from a context that has not read the diff. |
 | Adding `Co-Authored-By:` to deploy commit messages | Banned globally (captured 2026-05-18). Deploy commits never carry co-author attribution. |
 
@@ -224,7 +224,7 @@ When deploying after a Spec 17 upgrade (includes `class-sgs-safety-guard.php`, `
 Past deploy incidents the framework has captured — cross-reference before running:
 
 - **2026-04-30** — Hostinger `scp -r` nested-dir trap (captured in Critical Gotchas)
-- **2026-05-05** — LiteSpeed cache plugin removed from palestine-lives + sandybrown; Phase 4 needs `wp plugin list | grep litespeed` guard
+- **2026-05-05** — LiteSpeed cache plugin removed from the production site + sandybrown; Phase 4 needs `wp plugin list | grep litespeed` guard
 - **2026-05-18** — `Co-Authored-By` git footer banned globally — never include in deploy commit messages
 - **2026-05-19** — Stage 9c placement bug (related: cv2 pipeline observability) — lesson #273 captured; pattern is "wire BEFORE early-return paths, verify against the live pipeline"
 - **2026-05-19** — `/deploy` → `/wp-sgs-deploy` rename + `/deploy-check` absorption — this skill's consolidation (project decision logged in `.claude/archive/decisions.md`)

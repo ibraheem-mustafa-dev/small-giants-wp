@@ -252,7 +252,7 @@ if ( ! $is_showcase ) {
 }
 
 // 'circles' gets an empty stepper container ABOVE the plain bar (mirrors
-// AthleanX: numbered circles + connecting lines above a separate fill bar)
+// reference site: numbered circles + connecting lines above a separate fill bar)
 // — populated entirely by view.js (it already knows step count + labels).
 if ( 'circles' === $progress_style ) {
 	echo '<div class="sgs-choice-flow__stepper" aria-hidden="true"></div>';

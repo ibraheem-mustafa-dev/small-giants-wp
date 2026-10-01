@@ -92,7 +92,7 @@ echo Carbon::now()->translatedFormat( 'l j F Y' ); // Arabic day/month names
 **Use cases:**
 - countdown-timer block: server-rendered time diff
 - Booking system: slot availability, grace periods, expiry
-- HelpingDoctors: Hijri date display on patient records
+- The charity client: Hijri date display on patient records
 - Prayer time display: next prayer countdown
 
 ---

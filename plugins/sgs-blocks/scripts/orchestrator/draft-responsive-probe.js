@@ -6,7 +6,7 @@
  * AFTER a clone exists — it hard-requires --draft AND --clone (verified: `if (!SELF_TEST
  * && (!DRAFT || !CLONE))` exits with an error). Claude Design drafts (`.dc.html`) compute
  * their responsive layout in JavaScript (a ResizeObserver-driven width -> boolean ->
- * inline-style-string chain — see `Eye Care Birmingham.dc.html::measure`), not CSS
+ * inline-style-string chain — see the `measure` function in `sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html`), not CSS
  * `@media` queries, so there is nothing for the CONVERTER to read at extraction time
  * UNLESS the draft is actually rendered and measured at each width FIRST. This script is
  * that missing extraction-time step: draft-vs-ITSELF across widths, no clone involved.
@@ -16,7 +16,7 @@
  * route at each device tier and diff computed styles keyed by normalised text content
  * (the project's existing rule 4a, not a new invention)." §8 re-verified live before
  * writing this file (2026-09-14): `mobilePreview` is STILL hardcoded `false` at line 1806
- * of the real Ward End Eye Care draft — if a regenerated draft ever flips it, this script's
+ * of the real optician client's draft — if a regenerated draft ever flips it, this script's
  * `mobilePreview` sanity check (below) will fail loudly rather than silently mismeasuring.
  *
  * SCOPE (deliberately narrow — matches this session's task, not the full pipeline):
@@ -59,7 +59,7 @@
  * interaction-discovery engine): the module docstring above named "driving interaction
  * states (mega-menu open, filter drawer, lens modal) to reach other routes/states" as an
  * unsolved risk. `--click <selector>[,<selector>...]` proves the pattern on ONE real case --
- * verified live against the real Ward End Eye Care draft: `button[aria-label="Bag"]` genuinely
+ * verified live against the real optician client's draft: `button[aria-label="Bag"]` genuinely
  * mounts the bag drawer (`sc-if value="{{ bagOpen }}"`, confirmed by its real copy "Nothing in
  * here yet." appearing only after the click -- NOT by guessing at text, an earlier attempt in
  * this session's own working notes wrongly checked for "Your bag", a DIFFERENT section's

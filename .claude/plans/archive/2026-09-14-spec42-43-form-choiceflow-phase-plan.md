@@ -11,15 +11,15 @@ docscore_grade: not-run (ad-hoc, in-flight — see phase-planner Stage 7 note on
 (`archive/2026-09-26-choice-flow-ux-and-guided-buybox.md`). Still parked: the cloning-pipeline gap and analytics
 (`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`).
 - Phase 0: landed with Phase 1 (fc6c66444); proven live 2026-09-25 (an unresolvable formId gets 503, a real form 200).
-- Phase 3: add-on price list (FR-43-17 to 20) as the Eye Care lens configurator; product-option steps reading any
+- Phase 3: add-on price list (FR-43-17 to 20) as the optician client lens configurator; product-option steps reading any
   product attribute (FR-43-10/10a), purchase from the flow's own variation (FR-43-5), email-capture ending with a
   server-read rate limit (FR-43-4). Commits 63d1bf426, 0bb4fc61d, 812a4d93f, 137c8e3de, a8b00ef82.
-- Phase 4: linked flows inline or in a popup (FR-43-6); Mama's Munches (FR-43-7) on sandybrown product 3990: full
+- Phase 4: linked flows inline or in a popup (FR-43-6); the bakery client (FR-43-7) on sandybrown product 3990: full
   customisation in a popup (page 4012, flow 4008) and pack on the product page with the rest in a popup (product 3990
   links flow 4010 through `_sgs_choice_flow`; its buybox opens it, FR-43-25). Flow chrome built and applied to the
-  Eye Care configurator.
+  the optician client configurator.
 - Proof: live QA 2026-09-26 at 1440 and 375 (journeys, cart rows, tampered variation 400, cross-page state,
-  resume, editor round trip, email 200/429/400/403/404, Eye Care 268 path); evidence in c:\tmp\qa-choiceflow\.
+  resume, editor round trip, email 200/429/400/403/404, the optician client 268 path); evidence in c:\tmp\qa-choiceflow\.
 - The v1.8.0 follow-up (Continue model, showcase, product link, guided buybox) shipped with its closing QA
   (`archive/2026-09-26-choice-flow-ux-and-guided-buybox.md`). A flow that asks only some of its product's price-changing
   options now gets an editor warning (all in the flow or all on the page, D9).
@@ -152,21 +152,21 @@ FR-43-9 (the block's own small IAPI store — decided, not a build-time fork), F
 a complete qualification quiz, zero WooCommerce/pricing/modal dependency.
 
 **Phase 3 — priced steps + real purchase. SHIPPED (2026-09-26).** Built first as the add-on price list (Spec 43 v1.4.0 FR-43-17 to
-FR-43-20) for the Eye Care lens configurator: the price list and its settings page, the cart/order integration
+FR-43-20) for the optician client lens configurator: the price list and its settings page, the cart/order integration
 (`woocommerce_before_calculate_totals`, cart item data, order line meta), the proxy's optional `addons` argument,
 priced add-on questions, the live price panel and the purchase terminal. The variation source (FR-43-10/10a,
 `Product_Manifest`) follows for flows that resolve a product's own axes. **Precondition:** for the add-on source,
-the price list filled in (seeded for Eye Care from the draft); for the variation source, real WooCommerce
+the price list filled in (seeded for the optician client from the draft); for the variation source, real WooCommerce
 variations.
 
-**Phase 4 — modal delivery + Mama's Munches acceptance criterion. SHIPPED (2026-09-26).** FR-43-6 (2026-09-25): a
+**Phase 4 — modal delivery + the bakery client acceptance criterion. SHIPPED (2026-09-26).** FR-43-6 (2026-09-25): a
 `sgs_choice_flow` post shown by a linked `sgs/choice-flow` (`flowId` + `flowIsLinked`, the Linked Form picker's
 shape), inline or inside a fullscreen `sgs/modal`. FR-43-7 (2026-09-26): Mama's two journeys, see Status.
 
 **Phase 5 — rebuild + delete guard. SHIPPED (2026-09-26).** Commits b75b75aa1, b3d72cfd5, 07121d92e, b2b5aef10 (an
 independent code review found unlinking left the slug behind, so the form stayed "in use"; unlinking now clears it).
 Live on sandybrown, eye-care-test and indus-test at 31c2ed4c5.
-FR-42-9: the count ran first; the only real form (Eye Care's Contact) was already a saved form, and sandybrown's
+FR-42-9: the count ran first; the only real form (the optician client's Contact) was already a saved form, and sandybrown's
 six inline forms are QA fixtures, so nothing was rebuilt. The editor now enforces the mandate instead (owner
 decision): outside a saved form, `sgs/form` picks a saved form, creates one by name, or saves an inline form to the
 Forms list in one click; a linked form renders under its slug. FR-42-7b: the #33234 race doesn't apply (the embed

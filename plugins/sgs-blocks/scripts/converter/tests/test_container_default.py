@@ -123,12 +123,12 @@ def test_text_leaf_becomes_content_block_not_container():
     wrapping raw text (which fails WP validation)."""
     node = _node(
         '<section class="sgs-footer">'
-        '  <div class="sgs-footer__copyright">(c) 2026 Mamas Munches</div>'
+        '  <div class="sgs-footer__copyright">(c) 2026 Example Bakery</div>'
         '</section>'
     )
     markup = build_block_markup(recognise_section(node), node, css_rules={}, media_map={})
     assert "wp:sgs/text" in markup
-    assert "2026 Mamas Munches" in markup
+    assert "2026 Example Bakery" in markup
     # the copyright text must NOT sit as raw text directly inside a container comment
     import re
     assert not re.search(r'wp:sgs/container[^>]*-->\s*\(c\)', markup)
@@ -186,7 +186,7 @@ def test_loose_text_under_container_is_lifted_not_dropped():
 def test_icon_plus_bare_text_span_converts_not_conservation_error():
     """D1112: `<span><svg/>Label</span>` (icon + bare text) has NO text-leaf element, so
     its only text is loose. It used to recurse to zero content blocks and raise
-    ContentConservationError (Eye Care Birmingham ticker, b32). The text must land."""
+    ContentConservationError (the optician client's ticker, b32). The text must land."""
     from converter.services.extraction import run_container_default
     from converter.context import ChildBlock
     node = _node(
@@ -209,7 +209,7 @@ def test_html_comment_is_not_lifted_as_content():
     assert not any(isinstance(r, ChildBlock) and "todo: remove" in (r.content or "") for r in results)
 
 
-# -- integration: the real Mama's homepage, all 9 sections --------------------
+# -- integration: the real bakery client's homepage, all 9 sections --------------------
 
 def _find_top_level_sections(soup: BeautifulSoup) -> list:
     """Return every top-level section-like element in the body.
@@ -253,9 +253,9 @@ def test_real_homepage_all_nine_sections_emit():
     from converter.services.css_parse import parse_css
 
     draft = (Path(__file__).resolve().parents[5]
-             / "sites" / "mamas-munches" / "mockups" / "homepage" / "index.html")
+             / "sites/mamas-munches/mockups/homepage/index.html")
     if not draft.exists():
-        pytest.skip("Mama's homepage draft not present in this checkout")
+        pytest.skip("the bakery client's homepage draft not present in this checkout")
     soup = BeautifulSoup(draft.read_text(encoding="utf-8"), "html.parser")
     css_rules = parse_css(_extract_inline_css(soup))
     sections = _find_top_level_sections(soup)

@@ -122,10 +122,10 @@ final class ReviewsInlineTest extends TestCase {
 		$this->assertSame( 4.5, $data['rating'] );
 		$this->assertSame( 2, $data['userRatingCount'] );
 
-		$set = sgs_reviews_inline_data( array( 'reviews' => array( $this->review() ), 'averageRating' => 4.9, 'reviewCount' => 15, 'businessName' => 'Ward End Eye Care' ) );
+		$set = sgs_reviews_inline_data( array( 'reviews' => array( $this->review() ), 'averageRating' => 4.9, 'reviewCount' => 15, 'businessName' => 'Example Opticians' ) );
 		$this->assertSame( 4.9, $set['rating'] );
 		$this->assertSame( 15, $set['userRatingCount'] );
-		$this->assertSame( 'Ward End Eye Care', $set['displayName']['text'] );
+		$this->assertSame( 'Example Opticians', $set['displayName']['text'] );
 	}
 
 	public function test_unrated_reviews_do_not_drag_the_average_towards_zero(): void {

@@ -10,7 +10,7 @@
  *
  * Inheritance makes a panel adapt to the brand. It does NOT make the panel
  * LEGIBLE in the brand. Those are different guarantees, and a client palette
- * can break the second: mamas-munches' `--primary-dark` is a dusty pink
+ * can break the second: the bakery client's `--primary-dark` is a dusty pink
  * (#c56a7a), where white text measures 3.67:1 against a 4.5:1 minimum. A by-eye
  * check on the draft's own palette would never surface it — which is exactly
  * how it would ship.
@@ -47,7 +47,7 @@
  *   node palette-contrast-sweep.mjs ../../../../.claude/drafts/mega-menu
  *
  *   # One client only, while fixing
- *   node palette-contrast-sweep.mjs ../../../../.claude/drafts/mega-menu --client mamas-munches
+ *   node palette-contrast-sweep.mjs ../../../../.claude/drafts/mega-menu --client <client-slug>
  *
  * WARN-ONLY BY DEFAULT
  * --------------------

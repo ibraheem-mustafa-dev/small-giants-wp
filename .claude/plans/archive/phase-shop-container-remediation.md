@@ -19,7 +19,7 @@ then closes the container defect that silently caps every background on every cl
 (693 lines, every claim live-verified). Its "BEAN'S DECISIONS" section is BINDING.
 
 **Branch:** `main` for all framework work (`plugins/sgs-blocks/`, `theme/sgs-theme/`).
-⚠ Step P2-6 also touches `sites/indus-foods/` — that portion goes on `feat/indus-foods-colour-rename`
+⚠ Step P2-6 also touches `sites/indus-foods/` — that portion goes on `feat/wholesale-food-client-colour-rename`
 per CLAUDE.md's branch routing. Verify with `git branch --show-current` **in the same command
 as every commit**.
 

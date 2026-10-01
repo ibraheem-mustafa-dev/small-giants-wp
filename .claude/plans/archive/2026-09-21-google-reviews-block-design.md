@@ -33,7 +33,7 @@ grep -oE 'sgs-google-reviews__[a-z-]+' plugins/sgs-blocks/src/blocks/google-revi
 Draft source read in full: `sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html`
 lines 969–1034 (markup) and 2294–2307 (`static REVIEWS`), 2756–2791 (`secPad`/`h2`/`googlePad`/
 `revCardW`/`revPrev`/`revNext`). Emit read from
-`pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-21-175447/stage-4.json`.
+`pipeline-state/eye-care-ward-end-optician-client-birmingham-2026-09-21-175447/stage-4.json`.
 
 ---
 
@@ -204,7 +204,7 @@ of a composite's structural variants, e.g. `sgs/hero` `split`).
 
 | Preset slug | Who it suits | Implied values |
 |---|---|---|
-| `google-card` | **Reproduces the Eye Care draft exactly.** Any local business showing Google reviews. | card: `padding 20px`, `border 1px #E8EAED`, `radius 8px`, `background #fff`, `gap 12px`, `width 340px/270px`; wrapper `padding 28px 26px`, `radius 12px`, `border 1px #DADCE0`, font-family Roboto; `logoPosition:leading`, `logoSize 30px`, `logoOpacity 1`; `headerDividerColour #E8EAED`; `avatarSize 40px`, `avatarBorderRadius 50%`; `starSize 15px`, `aggregateStarSize 18px`, `starColour #FBBC04`, `starEmptyColour #DADCE0`; pills `radius 20px`, `padding 0 22px`, `minHeight 40px`; `navPosition:below-end`, `arrowSize 40px`, `arrowBorderRadius 50%`; `scrollbar:thin`; `textClampLines 8` |
+| `google-card` | **Reproduces the optician client draft exactly.** Any local business showing Google reviews. | card: `padding 20px`, `border 1px #E8EAED`, `radius 8px`, `background #fff`, `gap 12px`, `width 340px/270px`; wrapper `padding 28px 26px`, `radius 12px`, `border 1px #DADCE0`, font-family Roboto; `logoPosition:leading`, `logoSize 30px`, `logoOpacity 1`; `headerDividerColour #E8EAED`; `avatarSize 40px`, `avatarBorderRadius 50%`; `starSize 15px`, `aggregateStarSize 18px`, `starColour #FBBC04`, `starEmptyColour #DADCE0`; pills `radius 20px`, `padding 0 22px`, `minHeight 40px`; `navPosition:below-end`, `arrowSize 40px`, `arrowBorderRadius 50%`; `scrollbar:thin`; `textClampLines 8` |
 | `quote-minimal` | Law firm, consultancy — restraint, no boxes | card: no border, no background, `padding 0`, `gap 8px`; text italic, larger; avatar hidden circle→square 32px; `navPosition:below-end`; `cardStyle` implies nothing else |
 | `boxed` | Restaurant, trade — solid, confident tiles | card: `background` surface-alt, `padding 28px`, `radius 4px`, no border; `showCardLogo:false`; heavier author weight |
 | `bubble` | Wedding planner, salon — soft speech-bubble cards with a tail | card: `radius 18px`, `background #fff`, `box-shadow`, `padding 22px`, a `::after` tail; avatar 48px sitting below the bubble |
@@ -222,7 +222,7 @@ An attribute-driven rule is written by `render.php` into the block's scoped `<st
 
 **(0,3,0) > (0,2,0), so any value the pipeline writes into an attribute always paints over the
 preset.** Presets are therefore pure starting points and need no converter policy change — the
-converter can keep emitting whatever `cardStyle` it detects (the Eye Care run already emits
+converter can keep emitting whatever `cardStyle` it detects (the optician client run already emits
 `"cardStyle":"bordered"`) without ever contesting a routed draft value. Gate this claim in
 Task 4 with a negative control: set `cardStyle:"elevated"` **and** `cardBorderRadius 8px`, assert
 the live computed `border-radius` is `8px`.
@@ -257,7 +257,7 @@ the inspector UI plus `editor.css` rules for the new element classes inside the 
 |---|---|---|
 | `averageRating`, `reviewCount`, `reviewRequestUrl`, per-review `author`/`text`/`date`/`meta`/`rating`/`avatarColour`/`url` | **Working today** — the header ladder + `arrayContentLift` + `scalarContentLift`; all 13 reviews are in `stage-4.json` | nothing |
 | `sourceLabel`, `footnote`, `writeReviewLabel`, `seeAllLabel`, `reviewLinkLabel`, `seeAllUrl` | class-to-camel attribute-name match on an annotated `__source-label` / `__footnote` / `__see-all` element, exactly the route `reviewRequestUrl` uses | **Annotator work:** the header ladder must additionally name the caption, the footnote and the *second* anchor. Today it maps one anchor only — the `See all reviews` / `Write a review` pair must be told apart, which the DB can do by role (`link-href` for both) plus order, so add a `seeAllUrl` rung keyed on **first anchor in the header**, `reviewRequestUrl` on the **second** |
-| Every CSS attribute in §2a / §2b | the converter's per-area fold, matched by the attribute's `derived_selector` against the annotated element | ⛔ **BLOCKED — see §7 R1.** The Eye Care draft styles these elements **inline**, and `styling_content.py` honours `derived_selector` only for class-CSS drafts. Until the fold honours `derived_selector` for inline declarations, every one of these is *reported skipped*, not routed (`test_area_css_skip_reporting.py`) |
+| Every CSS attribute in §2a / §2b | the converter's per-area fold, matched by the attribute's `derived_selector` against the annotated element | ⛔ **BLOCKED — see §7 R1.** The optician client draft styles these elements **inline**, and `styling_content.py` honours `derived_selector` only for class-CSS drafts. Until the fold honours `derived_selector` for inline declarations, every one of these is *reported skipped*, not routed (`test_area_css_skip_reporting.py`) |
 
 **Recommendations on the three "absent" items from D1141:**
 
@@ -356,7 +356,7 @@ Plus `Stage 11.6 computed-parity.json` for the reviews section, and Bean's eye (
 
 ### R1 ⛔ NEEDS BEAN'S APPROVAL — the inline-CSS fold is a shared-mechanism change
 **Problem.** The converter's per-area fold routes a declaration by **element name** only. The
-Eye Care draft styles every element **inline**, so a declaration whose target is identified by an
+The optician client draft styles every element **inline**, so a declaration whose target is identified by an
 attribute's `derived_selector` is reported skipped, never routed. This is already recorded in
 D1141 and in twelve `attr-classification-overrides.json` `_reason` fields.
 **Effect.** Without it, **every attribute in §2 stays at its default on this draft.** The block
@@ -397,6 +397,6 @@ flag the ladder diff in the T1 review.
 ## Open, tracked
 
 - R1 blocks fidelity but **not** this build: T1–T4 are all valuable and all shippable without it.
-  Build them, then land the fold change once approved and re-run the Eye Care clone.
+  Build them, then land the fold change once approved and re-run the optician client clone.
 - The two `dotColourGradient` / `dotColourHoverGradient` rows have `css_property` NULL in the DB
   (verified by the §0 query) — pre-existing, out of scope here, worth a separate fix.

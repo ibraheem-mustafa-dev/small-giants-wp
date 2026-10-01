@@ -4,7 +4,7 @@ d160fe287, 2026-09-21, item 5).
 
 Cause, reproduced before the fix: ``route_area_css_to_block_attrs`` excludes ``width``,
 ``height``, ``min-/max-`` variants outright (grid-area / track sizing is not element sizing),
-so the Eye Care avatar's ``width:40px;height:40px`` and the request pill's ``min-height``
+so the optician client's avatar's ``width:40px;height:40px`` and the request pill's ``min-height``
 were dropped although the block has attrs that declare exactly those properties for exactly
 those elements (``avatarSize`` height,width for the avatar; ``writeReviewMinHeight``).
 

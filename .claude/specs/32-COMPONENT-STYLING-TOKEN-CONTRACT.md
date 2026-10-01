@@ -511,7 +511,7 @@ every block picks its fill/ink by role, not by "whichever slug looked closest". 
 prevents: `theme.json` `styles.color.background: var:preset|color|surface` makes `surface` the PAGE
 BODY BACKGROUND on every site, so a block that also uses `surface` as its own card/panel fill is
 invisible against the page wherever a client palette's `surface` isn't white (for example
-Mama's `surface:#fbf3dc`, where `sgs/testimonial`'s card would vanish). Every slug gets one meaning.
+the bakery client's `surface:#fbf3dc`, where `sgs/testimonial`'s card would vanish). Every slug gets one meaning.
 
 > **Scope note:** this section governs colour VALUES — which token a block picks
 > and why. For where a colour CONTROL renders in the inspector (one `SgsColourPanel` per block, a
@@ -589,7 +589,7 @@ it then, against a real case.**
 | `success-light` | `#ECFDF5` | Pale tint of `success`, raised panel fill. | Completes the success family. |
 | `error-light` | `#FEF2F2` | Pale tint of `error`, raised panel fill. | Completes the error family. |
 | `border-light` | `#E5E7EB` | An even lighter neutral border, for subtler internal dividers (e.g. accordion item separators) than `border`. | |
-| `footer-bg` | `#0F172A` | A dedicated dark/deep section background for the site footer (and any block explicitly opting into the footer treatment). | Distinct from `primary-dark` — footer-bg is a NEUTRAL deep tone, not necessarily brand-hued (Indus Foods sets it to `#2c3e50`, unrelated to that client's teal/gold brand pair). Text/links on `footer-bg` use `text-inverse` or a client-specific accessible pairing (see `core-blocks.css` gold-on-footer-bg contrast fix, 4.6:1). |
+| `footer-bg` | `#0F172A` | A dedicated dark/deep section background for the site footer (and any block explicitly opting into the footer treatment). | Distinct from `primary-dark` — footer-bg is a NEUTRAL deep tone, not necessarily brand-hued (the wholesale-food client sets it to `#2c3e50`, unrelated to that client's teal/gold brand pair). Text/links on `footer-bg` use `text-inverse` or a client-specific accessible pairing (see `core-blocks.css` gold-on-footer-bg contrast fix, 4.6:1). |
 
 ### 12.3 Current usage by bucket
 
@@ -638,14 +638,14 @@ Checks run across every client snapshot against the §12.2 roster, reading the a
 
 | Client | `border` value | Verdict |
 |---|---|---|
-| mamas-munches | `#e8d5c0` (warm beige, tan-tinted — leans toward the brand's cream/orange family rather than a true neutral) | Role violation (mild) |
-| indus-foods | `#2EADE2` (a saturated blue, unrelated to Indus's teal/gold brand pair) | Role violation |
+| The bakery client | `#e8d5c0` (warm beige, tan-tinted — leans toward the brand's cream/orange family rather than a true neutral) | Role violation (mild) |
+| The wholesale-food client | `#2EADE2` (a saturated blue, unrelated to the wholesale-food client's teal/gold brand pair) | Role violation |
 | sgs-healthcare | `#4CAF88` | Role violation |
 | sgs-mosque | `#C9A035` | Role violation |
 | sgs-construction | `#E8700A` | Role violation |
 | sgs-professional | `#8B4A6B` | Role violation |
 | eye-care-ward-end | `#D4DBE5` (the framework neutral) | Correct |
-| helping-doctors | `#d4e8e4` | Correct |
+| The charity client | `#d4e8e4` | Correct |
 
 **(b) Missing slots.** No client is missing any framework slug, enforced by
 `check-palette-slug-refs.py` (ships a `--self-test` that plants a violation and asserts rejection).
@@ -653,7 +653,7 @@ A check of this shape must assert its output is empty — a verdict that never a
 
 ⚠ **Client palettes legitimately carry MORE than the framework roster — a longer palette is not
 drift.** Palette length per client: `python -c "import json,glob;[print(f,len(json.load(open(f))['settings']['color']['palette'])) for f in sorted(glob.glob('sites/*/theme-snapshot.json'))]"`
-(`mamas-munches` carries the most, including client extras such as `border-warm`). §12.2 documents
+(the bakery client's snapshot carries the most, including client extras such as `border-warm`). §12.2 documents
 the FRAMEWORK roster; a client adding to it is expected.
 
 **(c) Duplicate slot definitions** — no duplicate `slug` entries within any single client
@@ -669,13 +669,13 @@ blast-radius change that needs Bean's explicit go-ahead.
 
 **Open — client `border` values (§12.5(a)).** Recommended fix, awaiting Bean's sign-off: re-derive
 each palette's `border` as a low-chroma neutral near that site's `surface`/`surface-alt` tones, the
-way `helping-doctors` and `eye-care-ward-end` already have it.
+way the charity client's snapshot and `eye-care-ward-end` already have it.
 
-**Open — `surface-alt` distinctness.** Reading the snapshot values: `mamas-munches`
+**Open — `surface-alt` distinctness.** Reading the snapshot values: the bakery client's snapshot
 (`surface:#fbf3dc`, `surface-alt:#fff9f0` — RGB delta only (4,6,20), the weakest) and
 `sgs-professional` (`surface:#FFFFFF`, `surface-alt:#F8F7F9` — delta (7,8,6)) are the most
-weakly-differentiated pairs; `sgs-construction` (delta (10,12,15)) and `indus-foods` (delta
-(7,8,11)) are also subtle. The rest are more clearly distinct. `mamas-munches`' `surface-alt` is a
+weakly-differentiated pairs; `sgs-construction` (delta (10,12,15)) and the wholesale-food client's snapshot (delta
+(7,8,11)) are also subtle. The rest are more clearly distinct. the bakery client's `surface-alt` is a
 DECLARED token in the source draft HTML (not something the extractor derived), so changing it
 overwrites draft content rather than fixing an extraction bug. If the blocks in §12.3 still look
 under-differentiated on the live canary, the fix is a value change to
@@ -693,7 +693,7 @@ browser.
 prevents a re-extracted snapshot from recreating the `surface`/`surface-alt` collision:
 - A draft with NO content/card background signal at all still emits a distinct `surface-alt`:
   - dark surface `#222831` → synthesised `surface-alt` = `#2f353d` (`_source: "derived"`)
-  - light surface `#fbf3dc` (Mama's own hex) → synthesised `surface-alt` = `#ece4cf` (`_source: "derived"`)
+  - light surface `#fbf3dc` (the bakery client own hex) → synthesised `surface-alt` = `#ece4cf` (`_source: "derived"`)
 - The `surface-alt` role keeps low identity-claim confidence plus a nothing-claimed-it-yet synthesis
   fallback, so the regression guard `test_client_colour_keeps_raw_token_slug_not_custom` (in
   `plugins/sgs-blocks/scripts/theme-extractor/tests/test_extractor.py`) holds.

@@ -1,6 +1,6 @@
 """FR-33-18: every font family a draft LOADS and RENDERS becomes a fontFamilies entry.
 
-Proven gap on Eye Care: the draft loads Roboto for its Google-reviews widget and paints it there,
+Proven gap on the optician client: the draft loads Roboto for its Google-reviews widget and paints it there,
 but the three role slots (body / heading / display) never name it, so the snapshot dropped it.
 
 Each positive assertion has a negative control beside it: a family loaded but never rendered is
@@ -28,7 +28,7 @@ def _facts(rows):
     return {"fontUsage": [dict(zip(("fontFamily", "fontWeight", "fontStyle", "count"), r)) for r in rows]}
 
 
-EYE_CARE_ROWS = [
+OPTICIAN_ROWS = [
     ("Outfit, system-ui, sans-serif", "400", "normal", 120),
     ("Outfit, system-ui, sans-serif", "500", "normal", 30),
     ('"Playfair Display", serif', "500", "normal", 12),
@@ -49,7 +49,7 @@ def _snap():
     ]}}}
 
 
-def _run(snap, rows=EYE_CARE_ROWS, links=(LINK,), css=""):
+def _run(snap, rows=OPTICIAN_ROWS, links=(LINK,), css=""):
     trace, resolved = [], []
 
     def resolve(name):
@@ -97,7 +97,7 @@ def test_negative_rendered_but_not_loaded_is_not_added():
 
 def test_negative_control_the_census_is_what_adds_the_family():
     # Same links, Roboto rows removed -> Roboto must disappear. Proves the add is driven by the census.
-    rows = [r for r in EYE_CARE_ROWS if not r[0].startswith("Roboto")]
+    rows = [r for r in OPTICIAN_ROWS if not r[0].startswith("Roboto")]
     fams, _, _ = _run(_snap(), rows=rows)
     assert "roboto" not in fams
 

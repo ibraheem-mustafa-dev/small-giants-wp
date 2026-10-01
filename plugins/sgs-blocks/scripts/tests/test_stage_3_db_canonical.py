@@ -13,8 +13,7 @@ Tests four scenarios:
 2. Attribute with NULL canonical_slot (canonicalisation gap) → canonical_source:
    'auto-derived' + slot_canonicalisation_gap: True
 3. Mixed block (some canonical, some not) → both paths fire; output preserves both
-4. Regression — Spec 31 Phase 1's existing canonical_slot population for Mama's
-   Munches hero attributes still resolves via DB (sgs/hero.heading, sgs/hero.text)
+4. Regression — Spec 31 Phase 1's existing canonical_slot population for the bakery client's hero attributes still resolves via DB (sgs/hero.heading, sgs/hero.text)
 
 UK English throughout.
 Run from repo root:
@@ -272,10 +271,10 @@ class TestMixedBlock:
 
 
 # ---------------------------------------------------------------------------
-# Test 4 — regression: Mama's Munches hero attrs resolve via DB
+# Test 4 — regression: bakery-client hero attrs resolve via DB
 # ---------------------------------------------------------------------------
 
-class TestMamasMunchesHeroRegression:
+class TestBakeryClientHeroRegression:
     """Regression guard for Spec 31 Phase 1 canonical_slot population.
 
     sgs/hero is the canonical Phase 1 block. The DB should have populated

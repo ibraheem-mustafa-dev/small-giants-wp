@@ -69,7 +69,7 @@ const CAPTURE_SRC = function (generatedClassSrc) {
   // marker classes that land on <body> itself (e.g. Astra's "ast-hfb-header" Header-Footer-Builder
   // flag) — which made `body.closest('[class*="header"]')` match TRUE, and since body is an ancestor
   // of every element on the page, the entire DOM (every paragraph, heading, and section, down to
-  // `html>body` itself) was misclassified as chrome. Proven on the Indus original: 100% of captured
+  // `html>body` itself) was misclassified as chrome. Proven on the wholesale-food client's original: 100% of captured
   // facts carried `inChrome: true`. Tag-based landmark detection + the main/article/section nesting
   // exception is universal and draft-agnostic — it does not depend on any theme/builder class name.
   const inChrome = (el) => {

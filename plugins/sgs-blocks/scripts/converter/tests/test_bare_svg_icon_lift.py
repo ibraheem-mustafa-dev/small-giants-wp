@@ -1,6 +1,6 @@
 """test_bare_svg_icon_lift.py -- an icon drawn as a bare inline <svg> inside a repeated item is not lost.
 
-Measured on the Eye Care ticker: each item was ``<span class="__item"><svg>..</svg><span class="__label">..``.
+Measured on the optician client's ticker: each item was ``<span class="__item"><svg>..</svg><span class="__label">..``.
 The ``<svg>`` carries no BEM class, so no match tier bound it to the item's ``icon`` field and the item
 lifted its label only. Now (array_content L3b) an icon-role field binds a bare ``<svg>`` child; when the
 icon library does not know the drawing (``resolve_icon`` confidence 'none') the raw markup is carried into

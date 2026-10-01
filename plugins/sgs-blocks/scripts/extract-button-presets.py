@@ -14,7 +14,7 @@ Draft BEM `--ghost` is the framework `outline` preset (DB alias convention).
 
 Usage:
     python plugins/sgs-blocks/scripts/extract-button-presets.py \
-        --client mamas-munches \
+        --client <client> \
         --mockup sites/mamas-munches/mockups/homepage/index.html
 
     --dry-run   print the extracted presets without writing the snapshot

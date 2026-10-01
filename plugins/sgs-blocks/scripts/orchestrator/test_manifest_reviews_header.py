@@ -12,7 +12,7 @@ The annotator now names, on the run copy, what the redesigned `sgs/google-review
   attributes list in `derived_selector` (`derived_classes`), never to a name in this module's code.
 
 Every rule has a NEGATIVE CONTROL that breaks exactly one half and checks that the result changes. The fixtures are the REAL
-Eye Care header row and footer row (Eye Care Birmingham.dc.html v2, lines 977-993 and 1019-1029, copied verbatim; only the
+The optician client's header row and footer row (sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html, lines 977-993 and 1019-1029, copied verbatim; only the
 `{{ gmbHref }}` mustache is the address the runtime resolves it to).
 
 Run from plugins/sgs-blocks/scripts:
@@ -198,7 +198,7 @@ def test_negative_control_a_block_with_no_source_label_attribute_still_only_repo
 
 
 def test_negative_control_a_caption_that_is_not_the_blocks_name_goes_to_the_business_attribute_not_the_source_label():
-    out, row = run(eye_draft(EYE_HEADER.replace("Google Reviews", "Ward End Eye Care")))
+    out, row = run(eye_draft(EYE_HEADER.replace("Google Reviews", "Example Opticians")))
     assert "font-size:13px" in _tag_with(out, "sgs-google-reviews__business-name")
     assert "source-label" not in out and "businessName" in row["header_fields"]
 
@@ -311,7 +311,7 @@ def test_a_draft_with_no_manifest_comes_back_byte_identical():
 
 @pytest.mark.skipif(not DbBlockLookup.DEFAULT_DB.exists(), reason="needs the framework database")
 def test_the_real_mamas_drafts_come_back_byte_identical():
-    """Mama's has no manifest: the stage must not touch it (only the resolver's own markers are stripped, and it has none)."""
+    """the bakery client has no manifest: the stage must not touch it (only the resolver's own markers are stripped, and it has none)."""
     repo = HERE.parents[3]
     lookup = DbBlockLookup()
     try:
@@ -325,7 +325,7 @@ def test_the_real_mamas_drafts_come_back_byte_identical():
 
 
 # --------------------------------------------------------------------------------------------------------------
-# 5. The REAL Eye Care run, a database copy carrying the redesigned block's contract, the UNCHANGED converter
+# 5. The REAL optician client's run, a database copy carrying the redesigned block's contract, the UNCHANGED converter
 # --------------------------------------------------------------------------------------------------------------
 
 CONTRACT = [   # (attr, type, role, derived_selector): what the redesign lists for each class this change puts on the draft
@@ -359,7 +359,7 @@ def contract_db(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def eye_care(contract_db):
+def optician(contract_db):
     raw = (RUN_NEW / "site-info-resolved.html").read_text(encoding="utf-8", newline="")
     lookup = DbBlockLookup(db_path=contract_db)
     try:
@@ -370,12 +370,12 @@ def eye_care(contract_db):
 
 
 real_run = pytest.mark.skipif(not (RUN_NEW / "site-info-resolved.html").exists() or not DbBlockLookup.DEFAULT_DB.exists(),
-                              reason="needs the local Eye Care run in pipeline-state and the framework database")
+                              reason="needs the local optician client's run in pipeline-state and the framework database")
 
 
 @real_run
-def test_eye_care_every_new_class_lands_on_the_right_element_of_the_real_draft(eye_care):
-    out, row = eye_care["out"], eye_care["row"]
+def test_optician_every_new_class_lands_on_the_right_element_of_the_real_draft(optician):
+    out, row = optician["out"], optician["row"]
     assert re.search(r'<div class="sgs-google-reviews__source-label"[^>]*>Google Reviews</div>', out)
     assert re.search(r'<a class="sgs-google-reviews__see-all-url" href="[^"]+"[^>]*background:#1A73E8[^>]*>See all reviews</a>', out)
     assert re.search(r'<a class="sgs-google-reviews__review-request-url" href="[^"]+"[^>]*>Write a review</a>', out)
@@ -391,37 +391,37 @@ def test_eye_care_every_new_class_lands_on_the_right_element_of_the_real_draft(e
 
 
 @real_run
-def test_eye_care_the_new_classes_add_no_child_block_in_the_unchanged_converter_and_the_mark_is_never_a_photo(eye_care):
+def test_optician_the_new_classes_add_no_child_block_in_the_unchanged_converter_and_the_mark_is_never_a_photo(optician):
     """`arrow` is an alias of the `items` slot and `logo` of a slot with a standalone block: prove the annotated classes do not
     make the walker emit a child block for them (the block multiset equals the one with the new classes removed)."""
     def blocks(page):
         return sorted(re.findall(r"<!-- wp:(sgs/[a-z-]+)", _convert(page, "sgs-google-reviews")))
-    stripped = eye_care["out"]
+    stripped = optician["out"]
     for element in ("header", "rail", "arrow", "google-logo", "source-label", "footnote", "see-all-url"):
         cls = "sgs-google-reviews__" + element
         stripped = stripped.replace(f' class="{cls}"', "").replace(cls + " ", "")
-    assert blocks(eye_care["out"]) == blocks(stripped) and "wp:sgs/google-reviews" in _convert(eye_care["out"], "sgs-google-reviews")
-    block = _google_reviews_block(_convert(eye_care["out"], "sgs-google-reviews"))
+    assert blocks(optician["out"]) == blocks(stripped) and "wp:sgs/google-reviews" in _convert(optician["out"], "sgs-google-reviews")
+    block = _google_reviews_block(_convert(optician["out"], "sgs-google-reviews"))
     assert len(block["reviews"]) == 13 and all(not r.get("photo") for r in block["reviews"])
-    assert "google-g" not in _convert(eye_care["out"], "sgs-google-reviews")
+    assert "google-g" not in _convert(optician["out"], "sgs-google-reviews")
 
 
 @real_run
-def test_eye_care_only_classes_were_added_to_the_draft(eye_care):
+def test_optician_only_classes_were_added_to_the_draft(optician):
     section = lambda page: re.search(r'<section class="sgs-google-reviews".*?</section>', page, re.S).group(0)  # noqa: E731
-    undone = section(eye_care["out"])
+    undone = section(optician["out"])
     for cls in re.findall(r"sgs-google-reviews__[a-z-]+", undone):
         undone = undone.replace(f' class="{cls}"', "").replace(cls + " ", "")
     undone = undone.replace('<div class="sgs-google-reviews" data-reveal="1"', '<div data-reveal="1"')
     # the layout carriers (design 2026-09-23 section 4): a `data-sgs-<attr>` marker on the block root for each written choice
-    written = [e for e in eye_care["row"].get("layout_choices", []) if e["written"] and "on the block root" in e["evidence"]]
+    written = [e for e in optician["row"].get("layout_choices", []) if e["written"] and "on the block root" in e["evidence"]]
     for entry in written:
         undone = undone.replace(f' data-sgs-{ma._kebab(entry["attribute"])}="{str(entry["value"]).lower()}"', "", 1)
-    assert undone == ma.strip_field_markers(section(eye_care["raw"]))
+    assert undone == ma.strip_field_markers(section(optician["raw"]))
 
 
 @real_run
-def test_eye_care_negative_control_the_database_before_the_redesign_classes_none_of_it(tmp_path):
+def test_optician_negative_control_the_database_before_the_redesign_classes_none_of_it(tmp_path):
     """The database as it was before the redesign lists none of these classes and has one link attribute: the stage is inert
     for the redesign (only the older header ladder acts)."""
     dest = tmp_path / "before.db"

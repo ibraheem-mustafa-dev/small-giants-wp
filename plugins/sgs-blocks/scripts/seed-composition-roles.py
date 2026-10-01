@@ -36,7 +36,7 @@ Corrections (2026-06-02, Workstream A — D150):
   - sgs/gallery             leaf -> content-block  (genuine grid container with images array + layout attrs)
   - sgs/card-grid           leaf -> content-block  (genuine grid container with items array + columns attrs)
 
-  SAFETY NOTE: these 3 blocks are NOT present in the Mama's Munches canary mockup (verified by the
+  SAFETY NOTE: these 3 blocks are NOT present in the bakery client's canary mockup (verified by the
   council prior to D150). The walker leaf-guard at convert.py ~1989/2061/2847 reads composition_role,
   so the flip has zero canary impact. Gate any future mockup that uses these blocks.
 """

@@ -304,11 +304,11 @@ decision, not a way to quieten a red check.
 verbatim from Spec 34 FR-S9-5 / FR-34-7): with the drawer OPEN, the header row's
 probe returns the close control, every drawer link probed at its own centre returns
 itself, and everything below the header is unreachable (the modal owns the
-hit-test). Baseline: **10/10 Mama's, 18/18 Indus**.
+hit-test). Baseline: **10/10 on the bakery client's page, 18/18 on the wholesale-food client's**.
 
 Probes are supplied as a JSON file: `probes.example.json` documents the exact shape
 (flat vs per-viewport, `point` vs `self` probe kinds, `openSelector`, `openScope`);
-`probes.mamas.json` is the real Mama's Munches file, confirmed against the canary
+`probes.mamas.json` is the real bakery client's file, confirmed against the canary
 DOM. Keep one probes file per client or mockup. `openScope` names the surface the
 trigger opens (for example `dialog.sgs-nav-drawer`); with it the script asserts the
 drawer is genuinely open before probing (exit `3` if not), and without it the run is
@@ -549,7 +549,7 @@ php scripts/nav-qa/submenu-harness.php
 The fixture edits sandybrown's ACTIVE test header (post 3777, the one every page shows) and
 mega menu post 1745, so it must be restored in the same command that measures, never left
 applied between steps. Cases: `exit-cells` (fantasy's faded ground as a gradient fill, a
-dropdown at 0.6 to 1 opacity, indus-foods' 6px card lift), `controls` (a flat fill, no
+dropdown at 0.6 to 1 opacity, the wholesale-food client's 6px card lift), `controls` (a flat fill, no
 opacity pair, an empty lift), `transparent-tiers` (a navy header, Transparent on at desktop
 and off at mobile), `restore`. The probe asserts at 1440: painted fill alpha at the top and
 bottom of the band with no mask on the header, the dropdown link's opacity at rest and
@@ -611,12 +611,12 @@ node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs   # from the repo ro
 ## 13. `u18-copy-probe.mjs` — Gate 3C item 4's copies against their references
 
 Measures a composed header copy while it is the ACTIVE header (an in-page copy sits in a lower stacking layer
-and misleads) at 375 (mobile-emulated, no scrollbar), 768 and 1440, and screenshots it closed and open. lamalama:
+and misleads) at 375 (mobile-emulated, no scrollbar), 768 and 1440, and screenshots it closed and open. `pill` (the reference site's floating pill):
 the pill, the burger box and its 44x44 tap area, the three bars closed and open (16 long, 3px gaps, one line
 with 5px travel), the grown drawer against the closed pill, the two drawer CTAs' widths, and the corner "GET IN
-TOUCH" card (pinned 160x326 at top 16 / right 16 at 1440, absent at 375 and 768). Indus: every mega panel's
+TOUCH" card (pinned 160x326 at top 16 / right 16 at 1440, absent at 375 and 768). `mega` (the wholesale-food client's mega menu): every mega panel's
 position at 1440 and, for About and Trade, the aside beside the links rather than below them; the burger and
-drawer below 1440. Reference values sit in the script's `EXPECT`, from `lamalama.json` and `indus-foods.json`;
+drawer below 1440. Reference values sit in the script's `EXPECT`, from the reference-site and wholesale-food client captures in `.claude/reports/reference-requirements/`;
 exits 1 on a miss over 2px. A check whose element is missing FAILS rather than skipping, so an absent bar, CTA,
 card or aside reads as a failure, never as silence. It runs headed (a real window) with `--hide-scrollbars` by default: the canary's bot
 challenge answers a headless browser with a 403 "Just a moment" page, and a page that never shows its header now
@@ -628,15 +628,15 @@ scp scripts/nav-qa/qa-item-markup-fixture.php hd:/tmp/
 restore() { ssh hd "cd $WP && wp sgs header set-active 3777 --user=Claude && wp eval-file /tmp/qa-item-markup-fixture.php two-bar --user=Claude && wp litespeed-purge all"; }
 trap restore EXIT
 ssh hd "cd $WP && wp sgs header set-active 4435 --user=Claude && wp litespeed-purge all"
-node scripts/nav-qa/u18-copy-probe.mjs https://sandybrown-nightingale-600381.hostingersite.com/qa-copy-lamalama/ --copy lamalama --out <dir>
+node scripts/nav-qa/u18-copy-probe.mjs https://sandybrown-nightingale-600381.hostingersite.com/qa-copy-lamalama/ --copy pill --out <dir>
 ```
 
 ## Notes for the acceptance gate
 
-- Run all of them against **both** gate targets, Mama's (flat bar plus drawer) and
-  Indus (dropdowns plus mega), per FR-36-16.
+- Run all of them against **both** gate targets, the bakery client's (flat bar plus drawer) and
+  the wholesale-food client's (dropdowns plus mega), per FR-36-16.
 - **Clear the cache first** (`hosting_clearWebsiteCacheV1` and
   `wp litespeed-purge all`) before any run, or you measure a stale `?ver`, per
   Spec 36 §8's explicit warning.
 - `elementfrompoint-sweep.mjs`'s printed `N/N` is the number to quote against the
-  baseline (10/10 Mama's, 18/18 Indus); do not round or approximate it.
+  baseline (10/10 on the bakery client's page, 18/18 on the wholesale-food client's); do not round or approximate it.

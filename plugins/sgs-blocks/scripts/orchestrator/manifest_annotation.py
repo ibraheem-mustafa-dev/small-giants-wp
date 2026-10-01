@@ -1091,7 +1091,7 @@ def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema, lookup=Non
     edits are collected into ``edits`` (the same object comes back).
 
     ``lossy`` is True when the items hold text that cannot be assigned to a text field with certainty. Measured
-    on the Eye Care reviews rail: once the converter claims the block and finds items it cannot fully match, it
+    on the optician client's reviews rail: once the converter claims the block and finds items it cannot fully match, it
     lifts the fields it can and drops the rest of the card text, with no content gap reported. The caller
     therefore withholds the whole declaration unless told to keep it.
 

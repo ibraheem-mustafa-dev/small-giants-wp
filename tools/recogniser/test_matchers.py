@@ -338,8 +338,14 @@ class TestCatalogueIntegrity(unittest.TestCase):
     def test_no_client_slug_in_selectors(self):
         """No fingerprint entry should hardcode a client-specific slug.
         Catches anti-cheat violations — selectors must be generic."""
-        blocked = {"indus-foods", "mamas-munches", "helping-doctors",
-                   "eye-care", "mosque", "construction"}
+        # Every real client folder under sites/ is a client slug; the generic sgs-* demo
+        # folders and the _dogfood scratch folder are not.
+        sites_dir = Path(__file__).resolve().parents[2] / "sites"
+        blocked = {
+            p.name for p in sites_dir.iterdir()
+            if p.is_dir() and " " not in p.name and not p.name.startswith(("_", "sgs-"))
+        } | {"mosque", "construction"}
+        self.assertTrue(blocked - {"mosque", "construction"}, "no client folders found under sites/")
         for block_name, entry in self.fps.items():
             for extractor in entry.get("attr_extractors") or []:
                 sel = extractor.get("selector", "")

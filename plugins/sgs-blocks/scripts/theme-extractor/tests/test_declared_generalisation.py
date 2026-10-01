@@ -241,9 +241,9 @@ def test_a_brand_status_button_is_never_the_measured_primary():
     assert _pal(out)["primary"]["color"] == "#1A1A1A"
 
 
-def test_eye_care_still_gets_primary_141414_and_primary_text_faf8f5():
+def test_optician_still_gets_primary_141414_and_primary_text_faf8f5():
     import test_declared_path_integration as integration
-    pal = integration._palette(integration._eye_care())
+    pal = integration._palette(integration._optician())
     assert (pal["primary"]["color"], pal["primary-text"]["color"]) == ("#141414", "#FAF8F5")
 
 

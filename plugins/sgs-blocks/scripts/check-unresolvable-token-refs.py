@@ -127,17 +127,18 @@ _DEFAULT_FIXTURE_DIRS = [
 # fixtures (top-level conformance/ dir) carry no client — framework theme.json
 # tokens only, which is the correct behaviour for a client-agnostic draft
 # fixture (Spec 31 §13 — SGS is a standalone framework, no client hardcoded).
-_CLIENT_PREFIX_MAP = {
-    "mamas-munches": "mamas-munches",
-    "mamas-trust-bar-real": "mamas-munches",
-}
+# A golden id begins with its client's folder name under sites/, or that name's first word.
+def _client_sites() -> list[str]:
+    sites = _REPO_ROOT / "sites"
+    return sorted(d.name for d in sites.iterdir() if (d / "theme-snapshot.json").is_file()) if sites.is_dir() else []
 
 
 def _client_for_fixture(path: pathlib.Path, golden_id: str) -> str:
     stem = path.stem.replace(".golden", "")
-    for prefix, client in _CLIENT_PREFIX_MAP.items():
-        if stem.startswith(prefix) or golden_id.startswith(prefix):
-            return client
+    for client in _client_sites():
+        for prefix in (client, client.split("-")[0] + "-"):
+            if stem.startswith(prefix) or golden_id.startswith(prefix):
+                return client
     return ""
 
 
@@ -230,7 +231,7 @@ def print_report(findings: list[dict]) -> None:
 
 def _self_test() -> int:
     failures: list[str] = []
-    tok.configure_token_resolution_from_run("mamas-munches", _REPO_ROOT)
+    tok.configure_token_resolution_from_run((_client_sites() or [""])[0], _REPO_ROOT)
 
     # --- Case 1: planted UNRESOLVABLE draft-local var() must be flagged ----
     planted_markup = (

@@ -3,7 +3,7 @@
 Run:  cd plugins/sgs-blocks/scripts && python -m pytest theme-extractor/tests -q
 
 The tests are browser-free: they run against the checked-in ``mamas-computed-facts.json`` fixture,
-so they are deterministic and need no Playwright. The one live-browser leg is the Mama's reclone
+so they are deterministic and need no Playwright. The one live-browser leg is the bakery client's reclone
 proof (Phase 4), done manually, not here.
 """
 from __future__ import annotations
@@ -28,7 +28,7 @@ from colour import Colour, dedupe, parse_colour  # noqa: E402
 from roles import infer_role  # noqa: E402
 from schema_validate import validate_theme_json  # noqa: E402
 
-DRAFT = REPO / "sites" / "mamas-munches" / "mockups" / "homepage" / "index.html"
+DRAFT = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 FACTS = PKG / "mamas-computed-facts.json"
 EXPECTED = PKG / "expected"
 
@@ -46,7 +46,7 @@ def _css():
 def _snapshot():
     baseline = json.loads((REPO / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
     html = DRAFT.read_text(encoding="utf-8")
-    return extract.build_snapshot("mamas-munches", _css(), _facts(), html, baseline, [], REPO)
+    return extract.build_snapshot("bakery-client", _css(), _facts(), html, baseline, [], REPO)
 
 
 # ── FR-33-3 — the D303 drift-killer ─────────────────────────────────────────────────────────────
@@ -114,11 +114,11 @@ def test_d303_heading_line_height_is_1_2_not_hero_1_15():
 def test_chrome_heading_excluded():
     """A chrome-only heading must never DRIVE the global scale — but must not DELETE the baseline.
 
-    Mama's renders h5 only in the footer (chrome) at 11px. The requirement is that the 11px chrome
+    The bakery client renders h5 only in the footer (chrome) at 11px. The requirement is that the 11px chrome
     measurement never becomes the global h5. It is NOT that h5 is removed: the extractor's baseline
     is the framework theme.json, and `push-theme-snapshot.py` replaces the live theme.json WHOLESALE,
     so deleting the level strips h5 from every page of the live site (verified against the live
-    palestine-lives theme.json, which carries h5 medium/700). An unmeasured content h5 is a BLIND
+    the campaign-site client's theme.json, which carries h5 medium/700). An unmeasured content h5 is a BLIND
     SPOT, not a measurement of absence — the same principle that governs buttonPresets padding.
 
     This assertion previously read `"h5" not in elements`, which encoded the deletion rather than the
@@ -269,7 +269,7 @@ def test_frozen_colour_map_unchanged():
 
 # ── FR-33-6 — dark-theme / preview-shell background safety ────────────────────────────────────────
 def test_fr336_mamas_background_is_content_cream():
-    # Mama's: widest content-containing ancestor is body itself (cream); no shell markers → no regression.
+    # Bakery client: widest content-containing ancestor is body itself (cream); no shell markers → no regression.
     assert extract._theme_background(_facts(), []) == "rgb(251, 243, 220)"
 
 

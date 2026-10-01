@@ -19,14 +19,14 @@ Single source of truth for every identifier used across the SGS WordPress Framew
 
 **Format:**
 - Framework: `sgs/<role>` — e.g. `sgs/header-minimal`, `sgs/footer-columns`
-- Client: `sgs/<client-slug>-<role>` — e.g. `sgs/mamas-munches-header`, `sgs/indus-foods-footer`
+- Client: `sgs/<client-slug>-<role>` — e.g. `sgs/bakery-header`, `sgs/wholesale-footer`
 
 **Examples:**
 - `sgs/framework-header-default` — framework default header pattern
-- `sgs/mamas-munches-footer` — Mama's Munches client footer
-- `sgs/indus-foods-header` — Indus Foods client header
+- `sgs/bakery-footer` — a bakery client's footer
+- `sgs/wholesale-header` — a wholesale-food client's header
 
-**Anti-pattern:** `sgs-theme/header-mamas-munches` — wrong namespace (`sgs-theme/`), wrong order (role before client slug). Both violations.
+**Anti-pattern:** `sgs-theme/header-bakery` — wrong namespace (`sgs-theme/`), wrong order (role before client slug). Both violations.
 
 ---
 

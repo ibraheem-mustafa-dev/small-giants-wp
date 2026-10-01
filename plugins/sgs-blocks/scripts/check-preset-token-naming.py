@@ -372,7 +372,7 @@ def run_self_test() -> int:
         (client4 / "theme-snapshot.json").unlink()
 
         # --- Fixture 5: fully valid snapshot mirroring the REAL buttonPresets
-        #     shape (mamas-munches / indus-foods) -> NOT flagged ---------------
+        #     shape (a bakery client / a wholesale-food client) -> NOT flagged ---------------
         client5 = tmp_sites / "client-e"
         client5.mkdir()
         (client5 / "theme-snapshot.json").write_text(json.dumps({

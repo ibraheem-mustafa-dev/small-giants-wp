@@ -102,7 +102,7 @@ function ok( bool $cond, string $label ): void {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// Fixture — the Ward End Eye Care lens list shape (Spec 43 FR-43-17/18).
+// Fixture — the optician client's lens list shape (Spec 43 FR-43-17/18).
 // ════════════════════════════════════════════════════════════════════════════
 $GLOBALS['test_addon_option'] = array(
 	array(

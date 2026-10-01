@@ -1,7 +1,7 @@
 # Choice flow: a question whose chosen option opens its next step underneath
 
 **Status:** DONE 2026-09-28 (`lens.mjs` exits 0: 0 open, 18 of 18 shots reviewed; the purchase check lands one £268 line for each of later, type and upload). Governing spec: `.claude/specs/43-*.md` (sgs/choice-flow). Closes the lens pop-up's
-Q4 gaps in `plans/2026-09-24-eye-care-hand-build-design.md` (Status, parity re-review).
+Q4 gaps in `plans/2026-09-24-optician-hand-build-design.md` (Status, parity re-review).
 **Verify with:** `node ../../scripts/parity/draft-live-walk.mjs ../../sites/eye-care-ward-end/build/qa/parity/lens.mjs`
 from `plugins/sgs-blocks` (exit 0), and `node ../../sites/eye-care-ward-end/build/qa/lens-purchase-268.mjs` still
 landing one bag line at £268 with "Options: Distance · Thin · 1.6 · Polarised".
@@ -39,7 +39,7 @@ The opened step keeps its own look: the result's heading and body read as the dr
   footer from the opened step, position from the question), `flow-persistence.js` (restore), `style.css`.
 - Reseed ceremony for the new attribute (commit; stage-1 reseed from a detached-HEAD worktree; extract-signatures;
   role map and roster regenerated; commit) before the deploy.
-- Eye Care: `gen_lens_configurator.py` sets `showNextStepInline=True` on `rx`; the flow is rebuilt with
+- The optician client: `gen_lens_configurator.py` sets `showNextStepInline=True` on `rx`; the flow is rebuilt with
   `scripts/wp-build-page.js`.
 - `lens.mjs`: Q4 pairs (the note panel, the footer button, the Send it later description) anchored to the options,
   a Q4 state per option, review notes for every shot.

@@ -1,7 +1,7 @@
 """Self-test for classless_draft_adapter.py — Spec 44's DRAFT-side input derivation.
 
 FIXTURE DISCIPLINE, inherited from Tasks 1-3: the draft side is the REAL
-`Eye Care Birmingham.dc.html`, located by its own `<sc-for list="{{ thumbs }}">`
+`sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html`, located by its own `<sc-for list="{{ thumbs }}">`
 rather than by a line number that rots; the block side is Task 1's real seeder run
 against real block PHP into a TEMP DB, with reference rows copied from the live DB
 through a read-only handle. Nothing here is invented and the live DB is never written.
@@ -49,8 +49,7 @@ def _live_repeater_row_count() -> int:
 _LIVE_ROWS_BEFORE_THIS_RUN = _live_repeater_row_count()
 
 REPO = Path(__file__).resolve().parents[4]
-DRAFT = (REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care"
-         / "Eye Care Birmingham.dc.html")
+DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
 
 # Task 2's own hand-derived answer for this group, quoted from its report:
 #   onClick="{{ t.pick }}" -> action-trigger; aria-label="{{ t.label }}" -> label;
@@ -209,7 +208,7 @@ def test_derive_static_draft_roles_on_the_real_thumbs_boundary_is_empty() -> Non
     NOTHING besides the sc-for itself, so its static derivation is correctly empty —
     exactly why Front C Task 4's Stage A consumer never fires for this specific
     boundary on this specific draft (confirmed separately by the Task 3 baseline
-    re-measurement finding 0 buybox matches on the real Eye Care draft)."""
+    re-measurement finding 0 buybox matches on the real optician client's draft)."""
     holder = _thumbs_holder(_soup())
     assert mod.derive_static_draft_roles(holder) == (), (
         "if this fixture premise changed, the assertion above is the thing to update, "

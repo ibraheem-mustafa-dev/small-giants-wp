@@ -159,7 +159,7 @@ def route_native_feature(feature: str, value) -> dict:
 
 # Per CLAUDE.md deploy convention: SSH alias `hd` resolves to the host;
 # WP install lives under ~/domains/<domain>/public_html.
-DEFAULT_DOMAIN = "palestine-lives.org"
+DEFAULT_DOMAIN = "sandybrown-nightingale-600381.hostingersite.com"
 
 
 def build_deploy_command(

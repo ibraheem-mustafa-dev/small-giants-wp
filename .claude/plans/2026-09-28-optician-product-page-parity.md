@@ -1,10 +1,10 @@
-# Eye Care product page parity (page wave 1)
+# The optician client product page parity (page wave 1)
 
-**Status:** IN PROGRESS 2026-09-28. Parent plan: `2026-09-24-eye-care-hand-build-design.md` (Status: page waves).
+**Status:** IN PROGRESS 2026-09-28. Parent plan: `2026-09-24-optician-hand-build-design.md` (Status: page waves).
 Walker config `sites/eye-care-ward-end/build/qa/parity/product.mjs` (product 76, Gucci Oversized Cat-Eye; states:
 opening, auto-scrolled, gallery-thumbnail, three tabs, size-guide). First run 2026-09-28: 4152 open rows, a few
 causes repeated over states and widths. Includes the Wave C product page's owed polish
-(`2026-09-25-eye-care-product-page.md`: picker labels, add-to-cart typography, gallery saving badge).
+(`2026-09-25-optician-product-page.md`: picker labels, add-to-cart typography, gallery saving badge).
 **Written for:** Bean and the session running the page waves.
 
 ## Bean's decisions (2026-09-28)
@@ -42,7 +42,7 @@ and its CSS emitted in the block's `render.php` (logic in helpers: `buybox/rende
 | F6 (built) | Saving badge on the main photo ("Save £51 off RRP", top right) | dark tag | none |
 | F7 (built) | Gallery size: 732px square photo at 1440 | 732 | 687 (column split) |
 | F8 (built) | Price line height | 38px | 57px |
-| F9 (built) | Variation photo as swatch, tile fallback (a variation's image counts only when it differs from the product's main image: every Eye Care variation today carries the main placeholder photo) | (decision above) | tiles |
+| F9 (built) | Variation photo as swatch, tile fallback (a variation's image counts only when it differs from the product's main image: every the optician client variation today carries the main placeholder photo) | (decision above) | tiles |
 | F10 (built) | Tab headings: 12.5px capitals, 1.75px tracking, 2px indicator, 18px sides, 52px tall | as measured | 16px, none |
 | F11 (built) | A related-products section with no products hides, heading included | n/a | "More from Gucci" empty |
 | F12 (built) | Size guide pop-up: 720px wide, 1px border, soft shadow, "×" close, zoom-in entrance | as measured | 800px, icon close, none |
@@ -80,7 +80,7 @@ wave's settings; its split is owed.
 
 ## Motion batch (built 2026-09-29, not yet deployed)
 
-The draft's scroll reveal engine (its source, `design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html`
+The draft's scroll reveal engine (its source, the draft's storefront `.dc.html` file
 `reveals()`/`show()`): fade + 26px rise, 460ms, cubic ease-out `cubic-bezier(0.33, 1, 0.68, 1)`, stagger
 `min(index, 7) × 70ms` by sibling within a reveal group, IntersectionObserver threshold 0.01 with rootMargin
 `0px 0px -6% 0px`. Built as universal Animation-panel settings (Spec 02 Entrance Animations, Spec 38 §4.3a), each
@@ -89,7 +89,7 @@ default), a block's own stagger (`sgsAnimationStagger`), "Stagger the blocks ins
 (`sgsAnimationStaggerChildren`), and where the stagger stops (`sgsAnimationStaggerMax`, default 7). A block's own
 delay is kept exactly; the automatic 100ms spacing applies only to blocks with no delay or stagger. `sgs/card-grid`
 tiles now enter one by one through the same settings (`supports.sgs.animationItems`; its `staggerDelay` is the
-step), replacing a fixed scroll-linked tile rule. Eye Care: the shop's card takes the exact values with its own
+step), replacing a fixed scroll-linked tile rule. The optician client: the shop's card takes the exact values with its own
 70ms stagger (`gen_archive_product.py` `CARD`); Home's hand-typed 0/70/140… delays became "Stagger the blocks
 inside: 70" on their five parents, and the shape tiles take the exact values with a 70ms step. Proven in a
 browser fixture (Chromium, 2026-09-29): parent stagger 0/70/240/210ms (own 100ms kept, a static heading skipped),

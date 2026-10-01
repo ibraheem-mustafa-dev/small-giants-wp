@@ -85,6 +85,25 @@ EXEMPT_PREFIXES: Tuple[str, ...] = (
     ".claude/secrets/",
     "pipeline-state/",
     "site-reviews/",
+    # Test, fixture and QA-capture code (Bean, 2026-10-01: block, theme and helper code must be
+    # clean; tests and fixtures may carry real client data and slugs).
+    "tests/",
+    "plugins/sgs-blocks/tests/",
+    "plugins/sgs-blocks/scripts/tests/",
+    "plugins/sgs-blocks/scripts/converter/tests/",
+    "plugins/sgs-blocks/scripts/theme-extractor/tests/",
+    "plugins/sgs-blocks/scripts/theme-extractor/expected/",
+    "plugins/sgs-blocks/scripts/nav-qa/",
+    "plugins/sgs-blocks/scripts/parity/",
+    "scripts/tests/",
+    "scripts/qc-correctness-regression-fixtures.json",
+    ".gitignore",  # repo config: names the client folders it ignores
+    "tools/qc-prevention/",
+    ".claude/test/",
+    # Generated output.
+    "lighthouse-report.",
+    "plugins/sgs-blocks/.phpunit.cache/",
+    "plugins/sgs-blocks/scripts/recogniser/classless-recognition-log.jsonl",
     ".claude/memory/",
     "memory/",
     "tests/golden/",
@@ -96,6 +115,14 @@ EXEMPT_PREFIXES: Tuple[str, ...] = (
 # (path glob, reason). A glob is matched with Path.match against the repo-relative path.
 ALLOWLIST: Tuple[Tuple[str, str], ...] = (
     (
+        "plugins/sgs-blocks/scripts/push-theme-snapshot.py",
+        "SAFE_TARGETS and the target-to-secrets map name the production site as a deploy target",
+    ),
+    (
+        "scripts/qc_anti_cheat_checks.py",
+        "CLIENT_SLUGS is the list of names this QC check forbids in framework code",
+    ),
+    (
         "plugins/sgs-blocks/scripts/build-deploy.py",
         "TARGETS keys name each client's own test site; a deploy target is an operational "
         "identifier until the target registry moves into sites/<client>/",
@@ -105,13 +132,13 @@ ALLOWLIST: Tuple[Tuple[str, str], ...] = (
 # A pointer INTO a client or reference folder is how framework docs legitimately reach that
 # material ("see sites/<client>/CLAUDE.md"), so a path that starts with one of these roots is
 # blanked before the names are matched. The names inside the path stay in the exempt folder.
-POINTER_RE = re.compile(r"(?:\.\./|\./)*(?:sites|reference|\.claude/secrets)/[\w.\-/\ ]*", re.IGNORECASE)
+POINTER_RE = re.compile(r"[\w./\-]*(?:nav-qa|gate3c)/[\w./\-]*|[\w-]*(?:tree\.json|parity-[\w-]+\.mjs)|(?:\.\./|\./)*(?:sites|reference|reports|pipeline-state|\.claude/(?:secrets|reports|archive))/[\w.\-/\ ]*", re.IGNORECASE)
 
 # Operational identifiers that name a client's own test site (deploy target keys and the env files
 # and keys that go with them). They stay until the target registry moves into sites/<client>/;
 # listed here so the survey counts them instead of hiding them, and so a rename is one decision.
 OPERATIONAL_TOKENS = re.compile(
-    r"(?:eye-care-test|indus-test|eye-care-ward-end|EYECARETEST|INDUSTEST|EYECARE)", re.IGNORECASE
+    r"(?:eye-care-test|indus-test|eye-care-ward-end|EYECARETEST|INDUSTEST|EYECARE)", re.IGNORECASE
 )
 
 # Content is scanned only in text files; these suffixes are skipped outright.
@@ -140,6 +167,9 @@ def tracked_files(root: Path) -> List[str]:
 
 
 def is_exempt(rel: str) -> bool:
+    name = rel.rsplit("/", 1)[-1]
+    if name.startswith("test_") or name.endswith(("_test.py", ".test.mjs", ".test.js", "Test.php")):
+        return True  # test code (see EXEMPT_PREFIXES)
     return any(rel.startswith(prefix) for prefix in EXEMPT_PREFIXES)
 
 
@@ -156,7 +186,7 @@ def blank_allowed(text: str) -> str:
 
 
 def names_in(text: str) -> List[str]:
-    cleaned = blank_allowed(text)
+    cleaned = blank_allowed(text) if any(rx.search(text) for rx in COMPILED.values()) else text
     return [key for key, rx in COMPILED.items() if rx.search(cleaned)]
 
 
@@ -179,6 +209,8 @@ def scan(root: Path) -> Iterator[Tuple[str, str, str, int]]:
         if b"\0" in raw[:4096]:
             continue
         text = raw.decode("utf-8", "replace")
+        if not any(rx.search(text) for rx in COMPILED.values()):
+            continue  # the common case: no name at all, so skip the pointer blanking
         cleaned = blank_allowed(text)
         for key, rx in COMPILED.items():
             n = len(rx.findall(cleaned))

@@ -34,7 +34,7 @@ Five things change in the framework:
 
 1. **DB consolidation.** Today there are three databases (wp-blockmarkup-mcp's blocks.db, wp-devdocs-mcp's hooks.db, sgs-wp-engine's sgs-framework.db) — each holding part of the WordPress + SGS knowledge surface. We merge the relevant tables into sgs-framework.db with a `source` column distinguishing native_wp / sgs / third_party. After this, every WP + SGS skill consults ONE database.
 
-2. **Kill the per-client WP style-variation overlay system.** Today every SGS site ships with all 9 client variation JSONs accessible via WP's Browse-styles UI — a privacy leak (Indus Foods admin sees HelpingDoctors variation). Replaced with: each site has ONE `theme.json` (gitignored on the server because operators can edit it via Site Editor), and our local repo holds per-client snapshots in `sites/<client>/theme-snapshot.json` that we push to specific sites via a new CLI. Per-client visual differences live in the snapshot, not in the framework theme.
+2. **Kill the per-client WP style-variation overlay system.** Today every SGS site ships with all 9 client variation JSONs accessible via WP's Browse-styles UI — a privacy leak (the wholesale-food client admin sees the charity client variation). Replaced with: each site has ONE `theme.json` (gitignored on the server because operators can edit it via Site Editor), and our local repo holds per-client snapshots in `sites/<client>/theme-snapshot.json` that we push to specific sites via a new CLI. Per-client visual differences live in the snapshot, not in the framework theme.
 
 3. **Retire the hardcoded `INNER_BLOCK_PATTERNS` dict.** Currently the converter (cv2) reads a hardcoded dict in convert.py to know which composite blocks emit which inner-blocks shape. Replaced with: DB-backed lookup using `blocks.parent_block` (already exists, partially seeded) + `slot_synonyms.standalone_block` (already exists, mostly unseeded). Plus a pre-Phase-3 research subtask on whether WP 7.0's Pattern Overrides + Block Bindings provides a cleaner alternative.
 
@@ -50,7 +50,7 @@ There are THREE separate "variation" concepts in WordPress + SGS. They were conf
 
 | Concept | What it is | Where it lives | Fate |
 |---|---|---|---|
-| **WP style variations** | Per-client colour/typography overlay on top of base theme.json (e.g. "Mama's Munches branding") | `theme/sgs-theme/styles/<client>.json` + `set_theme_mod('active_theme_style', ...)` + `class-sgs-variation-picker.php` + REST | **DELETED — Decision 18** |
+| **WP style variations** | Per-client colour/typography overlay on top of base theme.json (e.g. "the bakery client branding") | `theme/sgs-theme/styles/<client>.json` + `set_theme_mod('active_theme_style', ...)` + `class-sgs-variation-picker.php` + REST | **DELETED — Decision 18** |
 | **Header/footer template parts** | Brand-agnostic alternative starting templates (centred header, split header, minimal header) | `wp_template_part` CPT + `class-sgs-template-part-seeder.php` + the part HTML files | **100% PRESERVED** |
 | **Block-level variations** | `register_block_variation()` for variants within ONE block (e.g. sgs/button primary/secondary/outline) | `includes/variations/class-sgs-block-variations.php` | **PRESERVED — indexed in Decision 7/8** |
 
@@ -69,7 +69,7 @@ Numbering inherits the debate sequence; primed numbers indicate revisions from e
 | 3 | Seed `slot_synonyms.standalone_block` for ~30 slots that have 1:1 SGS block equivalents (button, buttonSecondary, card, item, panel, slide, accordion-item, tab-item, form-field-*) | `sgs-framework.slot_synonyms` | ~30 min | Unblocks DB-backed standalone-block lookup. Today only 3/89 rows have this populated; rest is the gap |
 | 4 | Seed `blocks.parent_block` for `sgs/button` → `sgs/multi-button` (semantic: "preferred wrapper when emitting standalone"; group adjacent same-slot items) | `sgs-framework.blocks` | ~15 min | Direct replacement of one INNER_BLOCK_PATTERNS entry. 18/73 rows already populated for sgs/form-field-* + sgs/tab + sgs/accordion-item. Add ~7 more rows for button family + slider-item + other composites |
 | 5 | Add `blocks.replaces` column + seed ~20 mappings (e.g. `sgs/hero.replaces='core/cover'`, `sgs/card-grid.replaces='core/columns+core/group'`) | `sgs-framework.blocks` | ~20 min | Enables core→SGS routing when mockup uses a core block name |
-| 6 | Auto-derive `--client` flag from mockup path in `sgs-clone-orchestrator.py` (e.g. `sites/mamas-munches/` → `--client mamas-munches`) | `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | ~20 min | Fixes the wrong-variation-active bug Bean spotted on sandybrown (eye-care active despite Mama's Munches content) by making Stage 10 always fire |
+| 6 | Auto-derive `--client` flag from mockup path in `sgs-clone-orchestrator.py` (e.g. `sites/mamas-munches/` → `--client bakery-client`) | `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | ~20 min | Fixes the wrong-variation-active bug Bean spotted on sandybrown (the optician client active despite the bakery client content) by making Stage 10 always fire |
 
 ### Phase 1 — DB merge (~1.5 hr Sonnet)
 
@@ -201,7 +201,7 @@ Sources (in order added):
 | **3** — INNER_BLOCK_PATTERNS retirement | 24 (research first), 12 | ~1.5 hr (incl. research) | Pre: INNER_BLOCK_PATTERNS dict has 2 entries; cv2 reads it. Post: dict deleted; cv2 reads DB; hero CTA emission still works (regression test) |
 | **3** — INNER_BLOCK_PATTERNS retirement | 24 (research first), 12 | ~1.5 hr | Pre: dict has 2 entries; cv2 reads it. Post: dict deleted; cv2 reads DB; hero CTAs still render (regression test) |
 | **4** — `/sgs-update` rebuild + Option B port + completeness assurance | 13, 30 | ~5.5 hr | Pre: 4-stage version, ~89 hooks indexed. Post: 9-stage version; `--refresh-upstream` re-populates from 10 canonical sources incl. `developer.wordpress.org/reference/since/<version>/`; idempotent re-run produces zero diffs; per-release verification gate active |
-| **5a** — Variation system kill | 14′, 16′, 17′, 18, 19 | ~2 hr | Pre: WP variation system active; 9 style files ship to every install. Post: 3 PHP files deleted; theme/sgs-theme/styles/ empty; CLI push works; sandybrown displays Mama's Munches branding |
+| **5a** — Variation system kill | 14′, 16′, 17′, 18, 19 | ~2 hr | Pre: WP variation system active; 9 style files ship to every install. Post: 3 PHP files deleted; theme/sgs-theme/styles/ empty; CLI push works; sandybrown displays the bakery client branding |
 | **5b** — Customiser migration | 21, 22, 27 | ~6-10 hr | Pre: button presets in wp_options; header/footer admin under SGS top menu. Post: button presets in theme.json native; Customiser has live-preview sections for header/footer/site-info; old admin pages deleted; View Transitions wired |
 | **6** — Backfill + WP 7.0 audits + Lucide REST | 9, 10, 23, 25, 28 | ~5 hr | Pre: zero markup examples, supports under-documented, no role:content, Lucide bespoke endpoint. Post: all 69 blocks have markup examples + apiVersion 3 + role:content + script-module text domains; Lucide via WP_REST_Icons_Controller |
 | **7** — WP 7.0 alignment | 26, 29 | ~6 hr | Pre: AI Connectors unwired, wp-* skills stale on WP 7.0. Post: Sgs_Ai_Connector registered; 10 wp-* skills audited + updated for WP 7.0 |
@@ -319,7 +319,7 @@ Bean's separate concern about clone-pipeline support for header/footer template-
 After all 8 phases land:
 
 - **DB**: sgs-framework.db is the single source of truth; blocks.db + hooks.db can be deleted; runtime queries cross-domain (e.g. "what supports does a block declare?") succeed in one query
-- **Style variations**: zero per-client variation files in framework; each live site has exactly ONE theme.json; sandybrown's Mama's Munches content displays Mama's Munches branding without manual intervention
+- **Style variations**: zero per-client variation files in framework; each live site has exactly ONE theme.json; sandybrown's the bakery client content displays the bakery client branding without manual intervention
 - **INNER_BLOCK_PATTERNS**: dict deleted from convert.py; hero CTAs still render correctly on the live page; adjacent-button grouping works for any block declaring parent_block
 - **Button presets**: `wp_options.sgs_button_presets` row deleted; values live in theme.json; primary/secondary/outline rendered correctly without the CSS variable bridge
 - **Customiser**: header/footer/site-info admin pages migrated; live-preview works for at least colours + typography + spacing controls

@@ -1,4 +1,4 @@
-"""sgs/google-reviews header figures, the request link and the per-review avatar colour (Eye Care, 2026-09-21).
+"""sgs/google-reviews header figures, the request link and the per-review avatar colour (the optician client, 2026-09-21).
 
 Five causes, five fixes, each pinned here with a control that fails without the fix:
 

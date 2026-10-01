@@ -70,19 +70,19 @@ PERSONAL_DATA_PATTERNS = [
         "Operator name: Zainab",
     ),
     (
-        "operator_mamas_munches",
+        "operator_bakery_client",
         r"Mama['\s]*s\s+Munches",
-        "Business name: Mama's Munches",
+        "Business name: the bakery client",
     ),
     (
-        "operator_indus",
+        "operator_wholesale_food_client",
         r"\bIndus\s+Foods\b",
-        "Business name: Indus Foods",
+        "Business name: the wholesale-food client",
     ),
     (
-        "operator_helping_doctors",
+        "operator_charity_client",
         r"Helping\s+Doctors",
-        "Business name: Helping Doctors",
+        "Business name: the charity client",
     ),
     (
         "operator_amir",

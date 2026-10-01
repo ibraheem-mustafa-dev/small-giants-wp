@@ -1,12 +1,12 @@
 {
-  "_comment": "REAL probes file for Mama's Munches (gate-1) — Spec 36 §8 / FR-36-16. Every selector below is confirmed present by querying the rendered sandybrown canary page, not read from the block source (5 bar items Shop/Our Story/Send to Ward/Gift Ideas/FAQs; drawer = <dialog class='sgs-nav-drawer'> containing its own .sgs-nav-drawer-menu__bar). Baseline target per Spec 36 §8: 10/10 at 375.",
+  "_comment": "REAL probes file for the bakery client (gate-1) — Spec 36 §8 / FR-36-16. Every selector below is confirmed present by querying the rendered sandybrown canary page, not read from the block source (5 bar items Shop/Our Story/Send to Ward/Gift Ideas/FAQs; drawer = <dialog class='sgs-nav-drawer'> containing its own .sgs-nav-drawer-menu__bar). Baseline target per Spec 36 §8: 10/10 at 375.",
 
   "_selector_note": "The header bar renders as .sgs-nav-bar-menu (list .sgs-nav-bar-menu__bar, items .sgs-nav-bar-menu__item) and the drawer's menu renders as .sgs-nav-drawer-menu (list .sgs-nav-drawer-menu__bar, items .sgs-nav-drawer-menu__item), so a bar class can never match the drawer's copy. Bar probes are still scoped to .sgs-site-header so a second bar placed in page content is never probed by accident, and drawer probes to .sgs-nav-drawer.",
 
   "_viewport_note": "elementfrompoint-sweep.mjs opens every viewport at height 1200, so yRatio is a fraction of 1200 — not of a real device height. The 0.028 header-row ratio = the ~34px close-control centre measured live.",
 
   "375": {
-    "_comment": "Mobile: burger opens the full-screen <dialog> drawer. 10 probes = the Spec 36 §8 Mama's baseline. Proves (a) the header row hit-tests to the close control, (b) every drawer link is reachable at its own centre, (c) everything below the header is unreachable — the modal owns the hit-test.",
+    "_comment": "Mobile: burger opens the full-screen <dialog> drawer. 10 probes = the Spec 36 §8 bakery-client baseline. Proves (a) the header row hit-tests to the close control, (b) every drawer link is reachable at its own centre, (c) everything below the header is unreachable — the modal owns the hit-test.",
     "openSelector": ".sgs-nav-bar-menu__burger",
     "openScope": "dialog.sgs-nav-drawer",
     "probes": [

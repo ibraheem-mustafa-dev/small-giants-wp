@@ -1,5 +1,5 @@
-"""Front C Task 3 — re-measure Spec 44's safety baseline against the real Eye Care
-Birmingham draft, now that `block_render_repeaters` holds real seeded data (D1089) and
+"""Front C Task 3 — re-measure Spec 44's safety baseline against the real optician
+client's draft, now that `block_render_repeaters` holds real seeded data (D1089) and
 FR-44-1 carries the Task 1 (real human approval) + Task 2 (match-diversity floor) fixes.
 
 WHY THIS EXISTS. D1088's "35 no-matches, 0 diversions" figure was measured against an
@@ -48,7 +48,8 @@ import sys
 import uuid
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
+REPO = Path(__file__).resolve().parents[3]
+HERE = REPO / "plugins" / "sgs-blocks" / "scripts" / "recogniser"  # the recogniser modules
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
@@ -58,9 +59,7 @@ import classless_draft_adapter as adapter  # noqa: E402
 import classless_trust_gate as gate  # noqa: E402
 import render_repeater_recogniser as stage_a  # noqa: E402
 
-REPO = HERE.resolve().parents[3]
-DRAFT = (REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care"
-         / "Eye Care Birmingham.dc.html")
+DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
 CLIENT_SLUG = "eye-care-ward-end"
 REPORT = (REPO / ".claude" / "reports"
           / "2026-09-17-front-c-task3-baseline-remeasure.md")
@@ -140,7 +139,7 @@ def main() -> int:
     body = body.replace(
         "# Classless recognition — reports",
         "# Classless recognition — Front C Task 3+4 re-measurement "
-        "(Eye Care Birmingham draft)", 1)
+        "(the optician client's draft)", 1)
     out.write_text(body, encoding="utf-8")
     if corroborated:
         with out.open("a", encoding="utf-8") as fh:

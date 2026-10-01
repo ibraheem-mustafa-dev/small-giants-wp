@@ -1082,11 +1082,11 @@ def test_icon_leaf_raw_svg_emits_loud_gap_not_silent_star():
 def test_walk_leg2_image_with_alt_lifts_both_url_and_alt():
     """sgs/product-card: an <img> carrying alt text must lift BOTH the bare
     URL (image) and the alt text onto the DB-declared companion (imageAlt) —
-    the CG-8 fix. Draft alt text matches the real mamas-munches page 8 copy."""
+    the CG-8 fix. Draft alt text matches the real bakery-client page 8 copy."""
     node = _node(
         '<div class="sgs-product-card">'
         '<img class="sgs-product-card__media" src="/cookies.jpg" '
-        'alt="Stack of Mama\'s Munches Zookies lactation cookies">'
+        'alt="Stack of Zookies lactation cookies">'
         '<h3 class="sgs-product-card__heading">Zookies</h3>'
         "</div>"
     )
@@ -1095,7 +1095,7 @@ def test_walk_leg2_image_with_alt_lifts_both_url_and_alt():
     results = extract_content(rec, node)
     lifted = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
     assert lifted.get("image") == "/cookies.jpg", f"image URL dropped: {results}"
-    assert lifted.get("imageAlt") == "Stack of Mama's Munches Zookies lactation cookies", (
+    assert lifted.get("imageAlt") == "Stack of Zookies lactation cookies", (
         f"CG-8 regression — alt text not lifted onto the companion attr: {results}"
     )
 
@@ -1134,7 +1134,7 @@ def test_object_typed_image_attr_still_lifts_its_alt_companion():
     node = _node(
         '<div class="sgs-image-sequence">'
         '<img class="sgs-image-sequence__poster" src="/frame-001.jpg" '
-        'alt="Snooza chair rotating through 36 frames">'
+        'alt="Chair rotating through 36 frames">'
         "</div>"
     )
     rec = recognise(node)
@@ -1146,7 +1146,7 @@ def test_object_typed_image_attr_still_lifts_its_alt_companion():
         "object-typed image attr dropped its alt — the companion lift did not fire. "
         f"lifted={lifted}"
     )
-    assert lifted["thumbnailAlt"] == "Snooza chair rotating through 36 frames"
+    assert lifted["thumbnailAlt"] == "Chair rotating through 36 frames"
     # The image itself must still lift alongside its companion — the A6 defect was
     # the object never reaching the scalar-lift leg AT ALL, so asserting only the
     # alt would let that original failure return unnoticed.

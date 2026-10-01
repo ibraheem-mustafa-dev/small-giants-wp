@@ -2355,7 +2355,7 @@ def attr_for_typography_property(block_slug: str, css_property: str) -> "str | N
     touch. ``_OUTER_ROOT_ELEMENTS`` already correctly includes ``'wrapper'``
     and is the established root-domain set used elsewhere (D-2026-08-27).
 
-    ELEMENT-DOMAIN ROUTE (2026-09-21, Eye Care ticker). A typography declaration
+    ELEMENT-DOMAIN ROUTE (2026-09-21, the optician client's ticker). A typography declaration
     on a CONTAINER (``font-size:12.5px;letter-spacing:.04em`` on the ticker band)
     CSS-inherits into every descendant text node, so when the block has NO
     root-domain destination for the property but does declare element-scoped
@@ -6202,7 +6202,7 @@ def attrs_for_element_class_property(
     element_sizing: bool = False,
 ) -> "tuple[str, ...]":
     """Selector-keyed per-area resolver — the SECOND lookup behind
-    ``attr_for_area_property`` (Eye Care reviews card, 2026-09-21).
+    ``attr_for_area_property`` (the optician client's reviews card, 2026-09-21).
 
     ``attr_for_area_property`` keys on the BEM element TOKEN and matches
     ``block_attributes.css_element`` literally, or through the ``slots`` alias
@@ -6905,7 +6905,7 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
     # `cart-badge`, `trustpilot-logo`) which must stay structural wrappers.
     # `card-inner` is also correctly skipped (tail `inner` has no standalone_block
     # → not in the map → stays a passthrough wrapper). Verified zero collateral
-    # across all 86 BEM classes in the Mama's Munches mockup (2026-06-03).
+    # across all 86 BEM classes in the bakery client's mockup (2026-06-03).
     #
     # PRECEDENCE: Path 2b is a FALLBACK — it runs only after Path 2's literal
     # element/block alias lookup misses. So an explicit alias (e.g. `card-body`

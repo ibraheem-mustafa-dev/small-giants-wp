@@ -2,20 +2,20 @@
  * U-18 copy-parity probe (Wave 3C Gate 3C item 4): measures a composed header copy while it is the
  * ACTIVE header, and screenshots it closed and open at 375, 768 and 1440.
  *
- *   node plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs <url> --copy lamalama|indus --out <dir> [--headless]
+ *   node plugins/sgs-blocks/scripts/nav-qa/u18-copy-probe.mjs <url> --copy pill|mega --out <dir> [--headless]
  *
  * 375 runs in a mobile-emulated context (touch, no classic scrollbar): a desktop window's 15px
- * scrollbar narrows the page and made lamalama's 343px pill read 328px.
+ * scrollbar narrows the page and made the reference site's 343px pill read 328px.
  *
- * lamalama, every width: the pill (first `header.sgs-site-header`), the burger's box and its 44px
+ * pill, every width: the pill (first `header.sgs-site-header`), the burger's box and its 44px
  * tap area (elementFromPoint at the four corners of a 44x44 box centred on the burger must land on
  * the burger), then the burger is clicked and the open drawer's box is read beside the pill's
  * closed box (same top, left and width = the pill grows in place), with the header's grown state
  * and its painted background.
- * lamalama also reads the burger's three bars closed and open (16 long, 3px gaps, one line open
+ * pill also reads the burger's three bars closed and open (16 long, 3px gaps, one line open
  * with 5px travel), the two drawer CTAs' widths, and the corner "GET IN TOUCH" card: pinned
  * 160x326 at top 16 / right 16 at 1440 and absent (no box, or 0x0) at 375 and 768.
- * indus, 1440: every mega trigger is clicked in turn and its panel's box read (the wrap and its
+ * mega, 1440: every mega trigger is clicked in turn and its panel's box read (the wrap and its
  * widest child) plus its aside (`.sgs-mega-aside`), which must sit beside the links, not below;
  * 768 and 375: the burger and the open drawer, as above.
  *
@@ -36,26 +36,26 @@ const arg = ( name ) => {
 };
 const copy = arg( '--copy' );
 const out = arg( '--out' );
-if ( ! url || ! [ 'lamalama', 'indus' ].includes( copy ) || ! out ) {
-	console.error( 'usage: u18-copy-probe.mjs <url> --copy lamalama|indus --out <dir>' );
+if ( ! url || ! [ 'pill', 'mega' ].includes( copy ) || ! out ) {
+	console.error( 'usage: u18-copy-probe.mjs <url> --copy pill|mega --out <dir>' );
 	process.exit( 2 );
 }
 mkdirSync( out, { recursive: true } );
 
-// Reference values (px). lamalama.json: trigger_close rect, drawer archetype open/closed rects.
-// indus-foods.json: widths_measured_at_1440 and each panel's panelRect x and y (y 91 = 12px below the header).
+// Reference values (px). the reference-site capture's trigger_close rect, drawer archetype open/closed rects.
+// the wholesale-food client capture's widths_measured_at_1440 and each panel's panelRect x and y (y 91 = 12px below the header).
 const EXPECT = {
-	lamalama: {
-		// bars: lamalama.json trigger-close `barSize` 16x2 and its raw html (gap-y 3/16rem, open translate 0.3125rem).
+	pill: {
+		// bars: the reference-site capture's trigger-close `barSize` 16x2 and its raw html (gap-y 3/16rem, open translate 0.3125rem).
 		// ctas: drawer `secondary_blocks.ctas`. card: header-shell `secondary_blocks.contactCardTopRight`.
 		375: { pill: { x: 16, y: 16, w: 343, h: 50 }, burger: { w: 30, h: 36 }, open: { x: 16, y: 16, w: 343, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 156.5, pitch: 317, card: null },
 		768: { pill: { w: 438, h: 50 }, burger: { w: 30, h: 36 }, open: { w: 438, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 204, pitch: 412, card: null },
 		1440: { pill: { w: 438, h: 50 }, burger: { w: 30, h: 36 }, open: { w: 438, h: 436 }, bars: { w: 16, gap: 3, travel: 5 }, ctas: 204, pitch: 412, card: { top: 16, right: 16, w: 160, h: 326 } },
 	},
-	indus: {
+	mega: {
 		1440: {
 			panels: {
-				// aside: indus-foods.json dropdown rows 11/14 `zone_model.rail` (w 300 at x 729, beside the 318px links).
+				// aside: the wholesale-food client capture's dropdown rows 11/14 `zone_model.rail` (w 300 at x 729, beside the 318px links).
 				About: { x: 410, y: 91, w: 620, aside: { x: 729, w: 300 } },
 				Sectors: { x: 180, y: 91, w: 1080 },
 				Brands: { x: 180, y: 91, w: 1080 },
@@ -234,7 +234,7 @@ for ( const { width, ctx } of WIDTHS ) {
 	}
 	await page.waitForTimeout( 800 );
 	const res = { width };
-	if ( 'indus' === copy && 1440 === width ) {
+	if ( 'mega' === copy && 1440 === width ) {
 		res.pill = box( await header.boundingBox() );
 		await page.screenshot( { path: join( out, `${ copy }-${ width }-closed.png` ) } );
 		res.panels = await measurePanels( page, header );
@@ -268,7 +268,7 @@ for ( const { width, ctx } of WIDTHS ) {
 		console.log( `${ res.grown && res.burgerStillOnTop ? 'PASS' : 'FAIL' }  ${ width } header grown ${ res.grown }, burger on top ${ res.burgerStillOnTop }` );
 		failed += res.grown && res.burgerStillOnTop ? 0 : 1;
 	}
-	if ( want.bars && 'lamalama' === copy ) {
+	if ( want.bars && 'pill' === copy ) {
 		const c = res.barsClosed || [];
 		const o = res.barsOpen || [];
 		if ( 3 !== c.length || 3 !== o.length ) {

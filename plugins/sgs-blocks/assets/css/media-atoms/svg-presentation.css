@@ -54,7 +54,7 @@
  * position control is only offered for SVG media (atom `types`), so a -1
  * default reached only images and videos no client could re-layer. Where the
  * element is a flex or grid item with no stacking context above it, -1 painted
- * it BEHIND its section's background: the Eye Care brand strip showed 16
+ * it BEHIND its section's background: the optician client's brand strip showed 16
  * loaded logos as a blank white band. A layer applies only when chosen.
  */
 .sgs-media-el {

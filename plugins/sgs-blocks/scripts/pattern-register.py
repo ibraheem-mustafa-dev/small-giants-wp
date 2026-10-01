@@ -579,7 +579,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
             "Examples:\n"
             "  python pattern-register.py hero.html --slug mamas-hero --source idea\n"
             "  python pattern-register.py hero.html --slug mamas-hero "
-            "--source https://example.com --client mamas-munches --auto\n"
+            "--source https://example.com --client <client> --auto\n"
             "  python pattern-register.py hero.html --slug mamas-hero "
             "--source draft --dry-run --auto\n"
         ),
@@ -621,7 +621,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Optional client slug. Adds a 'sgs/<client>' category tag to "
-            "the pattern.php header (e.g. --client mamas-munches)."
+            "the pattern.php header (e.g. --client <client>)."
         ),
     )
     parser.add_argument(

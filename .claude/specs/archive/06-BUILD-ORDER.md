@@ -13,8 +13,8 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 | `sgs-theme` | Shipped | Per-client theming via `theme-snapshot.json` (WP style-variations system DELETED — Decision 18, 2026-05-21). 29 patterns, mega-menu template parts, frontend JS modules. theme.json v3, Inter variable + DM Serif/Sans + Montserrat/Source Sans 3. |
 | `sgs-blocks` | Shipped | 59 blocks (51 dynamic + 8 static), block extensions (animation, hover, visibility, off-canvas), Block Defaults system. Pre-commit uniformity audit (added 2026-04-30). |
 | `sgs-blocks/forms` | Shipped | 12 form field blocks, REST endpoint, N8N webhook integration, 4-step pattern. |
-| Style variations | 8 shipped | `eye-care-ward-end`, `helping-doctors`, `indus-foods`, `mamas-munches` (added 2026-04-30 — coral/cream/Fraunces), `sgs-construction`, `sgs-healthcare`, `sgs-mosque`, `sgs-professional`. |
-| IDE infrastructure | Shipped | `composer.json` + `vendor/php-stubs/wordpress-stubs` v6.9.1 (matches palestine-lives.org); Intelephense configured via `.vscode/settings.json`. |
+| Style variations | 8 shipped | `eye-care-ward-end`, the charity client's, the wholesale-food client's and the bakery client's variations (the last added 2026-04-30 — coral/cream/Fraunces), `sgs-construction`, `sgs-healthcare`, `sgs-mosque`, `sgs-professional`. |
+| IDE infrastructure | Shipped | `composer.json` + `vendor/php-stubs/wordpress-stubs` v6.9.1 (matches the campaign-site client's production site); Intelephense configured via `.vscode/settings.json`. |
 | Pre-commit audit | Shipped | `plugins/sgs-blocks/scripts/audit-block-uniformity.py` enforced via `.git/hooks/pre-commit`. Catches `viewScript` regressions, `source:html` on dynamic blocks, typography duplication, and missing `supports.color`. |
 
 ## Active initiative
@@ -39,8 +39,8 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 - **Selector naming canonical** — All 28 dynamic blocks now use `.wp-block-sgs-{name}` for `selectors.root`. All 8 static blocks use `.sgs-{name}` (their save.js class). Standardised across the framework.
 - **Pre-commit audit script** — `plugins/sgs-blocks/scripts/audit-block-uniformity.py`. Wired into `.git/hooks/pre-commit` (appends to existing gitleaks check). Runs only when `block.json` files are staged.
 - **Composer + WordPress stubs** — `composer.json` + `composer.lock` at repo root. `php-stubs/wordpress-stubs` v6.9.1 + `php-stubs/wp-cli-stubs` v2.12.0 to `vendor/` (gitignored). VS Code Intelephense points at the Composer-installed stubs.
-- **Dead code removed** — both copies of the orphaned `footer-indus-foods.php` pattern (one was a CLAUDE.md violation, the other referenced a non-existent block).
-- **`mamas-munches.json` style variation** — coral/cream/Fraunces palette built this branch.
+- **Dead code removed** — both copies of the orphaned wholesale-food client footer pattern (one was a CLAUDE.md violation, the other referenced a non-existent block).
+- **The bakery client's style variation** — coral/cream/Fraunces palette built this branch.
 
 ## Deferred / planned (not yet built)
 

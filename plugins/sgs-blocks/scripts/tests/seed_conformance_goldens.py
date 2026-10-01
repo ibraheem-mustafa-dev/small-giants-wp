@@ -76,7 +76,7 @@ from converter.entry import convert_section  # noqa: E402
 
 FIXTURE_DIR = _SCRIPTS_ROOT / "tests" / "fixtures" / "conformance"
 GOLDEN_DIR = FIXTURE_DIR / "goldens"
-MAMAS_DRAFT_PATH = _REPO_ROOT / "sites" / "mamas-munches" / "mockups" / "homepage" / "index.html"
+MAMAS_DRAFT_PATH = _REPO_ROOT / "sites/mamas-munches/mockups/homepage/index.html"
 
 _SEED_NOTE = (
     "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  "
@@ -161,7 +161,7 @@ def iter_conformance_fixtures() -> Iterator[tuple[str, Path]]:
 
 def collect_real_draft_sections() -> list[tuple[str, Tag, str]]:
     """Return [(golden_id, section_tag, css_text), ...] for the 9 top-level
-    sections of the real mamas-munches homepage draft: the <header
+    sections of the real bakery-client homepage draft: the <header
     class="sgs-header">, the 7 <section class="sgs-*"> children of <main>,
     and the <footer class="sgs-footer">, in draft document order.
 

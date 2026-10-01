@@ -1,12 +1,12 @@
-"""Rule 4 (NO SKIPPING) for the PER-AREA style fold (Eye Care reviews card, 2026-09-21).
+"""Rule 4 (NO SKIPPING) for the PER-AREA style fold (the optician client's reviews card, 2026-09-21).
 
 Cause, reproduced before the fix:
   ``fold_helpers.route_area_css_to_block_attrs`` asks
   ``db_lookup.attr_for_area_property(block, area, prop)`` for a destination and, on
   ``None``, emitted ONLY ``trace("cross_node_gap_candidate", reason="no_area_attr")``.
   ``assembly`` injects ``_fold_trace``, which is a ``_LOG.warning`` and nothing else —
-  no gap row, no ``content-gaps.json`` entry. A live ``convert_section()`` on the Eye
-  Care reviews draft returned ``content_gaps == []`` while 13 real declarations
+  no gap row, no ``content-gaps.json`` entry. A live ``convert_section()`` on the optician
+  client's reviews draft returned ``content_gaps == []`` while 13 real declarations
   (the gold star colour, the request link's colour/border/radius/background, the
   avatar's size and radius, the aggregate figure's font-size and colour) were
   discarded. On the live page the stars render taupe and the outlined pill renders
@@ -35,7 +35,7 @@ Three suppressions keep it honest rather than spammy:
 
 Re-pinned 2026-09-21 (google-reviews reseed): the block gained ~240 attributes, one for almost
 every element the draft styles (the pill's border and radius, the avatar's radius and letter
-colour, the aggregate figure's size and colour, the card's border). The Eye Care card now routes
+colour, the aggregate figure's size and colour, the card's border). The optician client's card now routes
 the declarations that used to be the "10 genuine skips", each in the shape its attribute stores.
 The avatar's width and height, the last two, are excluded properties (grid/track sizing is
 not element sizing); `avatarSize` declares them for the avatar element, so the selector route
@@ -268,7 +268,7 @@ def test_the_element_token_derivation_matches_the_array_field_names():
 
 
 # ---------------------------------------------------------------------------
-# The real Eye Care run's own annotated markup (not a hand-built fixture)
+# The real optician client's run's own annotated markup (not a hand-built fixture)
 # ---------------------------------------------------------------------------
 
 _RUN_DIR = "eye-care-ward-end-eye-care-birmingham-2026-09-21-175447"
@@ -292,7 +292,7 @@ def _real_run_markup() -> str | None:
 
 def test_the_real_run_annotates_the_classes_this_fix_reports_on():
     """Grounding: the reported element classes are the ones the live annotation
-    stage really put on the Eye Care reviews card — not invented for this test."""
+    stage really put on the optician client's reviews card — not invented for this test."""
     markup = _real_run_markup()
     if markup is None:
         pytest.skip(f"pipeline-state/{_RUN_DIR}/manifest-annotated.html not present")

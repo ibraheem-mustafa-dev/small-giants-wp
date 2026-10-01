@@ -1,6 +1,6 @@
 """
-Tests for scripts/derive-dark-palette.py (U-12 §D.1-D.3), run on the real Mama's
-Munches snapshot (sites/mamas-munches/theme-snapshot.json, 31 palette slugs) — the
+Tests for scripts/derive-dark-palette.py (U-12 §D.1-D.3), run on the real bakery-client
+snapshot (sites/mamas-munches/theme-snapshot.json, 31 palette slugs) — the
 live shape the derivation must handle, not a synthetic fixture.
 
 The real snapshot never carries `_sgsDark` itself (Bean's ruling: only the main
@@ -21,7 +21,7 @@ import pytest
 
 SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 REPO_ROOT = SCRIPTS_DIR.parents[2]
-SNAPSHOT_PATH = REPO_ROOT / "sites" / "mamas-munches" / "theme-snapshot.json"
+SNAPSHOT_PATH = REPO_ROOT / "sites/mamas-munches/theme-snapshot.json"
 
 
 def _load_module():
@@ -148,7 +148,7 @@ def test_base_surface_is_darkest(snapshot_with_dark):
 
 
 def test_real_usage_pairs_are_collected_and_mostly_pass(snapshot_with_dark, capsys):
-    """Every real (text, background) pair Mama's Munches' own `styles.color`,
+    """Every real (text, background) pair the bakery client's own `styles.color`,
     `styles.elements.*` (incl. `:hover`) and `styles.blocks.*` declare — printed so
     a human can read the whole checked set, per the fix's own reporting
     requirement. All but the ones covered by the conflict tests below pass."""
@@ -349,14 +349,14 @@ def test_dark_palette_contrast_error_names_every_pair():
 
 
 # ---------------------------------------------------------------------------
-# Name-guessed fill pairs and fill-scoped ink (the Mama's Munches refusal,
+# Name-guessed fill pairs and fill-scoped ink (the bakery client's refusal,
 # diagnosed 2026-09-26: three name-guessed false alarms, one real
 # text-on-yellow-button conflict).
 # ---------------------------------------------------------------------------
 
 
 def test_real_snapshot_derives_with_no_failures(snapshot_with_dark):
-    """Mama's Munches turns on with zero hand-set colours: page text turns light,
+    """The bakery client turns on with zero hand-set colours: page text turns light,
     the yellow button keeps its dark label through fill-scoped ink, and the three
     name-guessed pairings that already fail in light mode are warnings."""
     result = ddp.derive(snapshot_with_dark)

@@ -171,7 +171,7 @@ Six pre-built mega menu panels are included for common navigation categories: Br
 
 Style variations let the same SGS Theme serve different clients with completely different visual identities.
 
-The **Indus Foods** variation is included. When active, it overrides the colour palette, typography (Montserrat headings + Source Sans 3 body text), and adds decorative ingredient image effects.
+The wholesale-food client's variation is included. When active, it overrides the colour palette, typography (Montserrat headings + Source Sans 3 body text), and adds decorative ingredient image effects.
 
 **To switch style variation:**
 

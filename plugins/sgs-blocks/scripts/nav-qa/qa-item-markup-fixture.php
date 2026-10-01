@@ -32,7 +32,7 @@
  *   direction-fade  M-03 on the same page: fantasy's header, a black fill at 0.5 fading top to bottom
  *               that fades out while scrolling down past 100px and returns on any upward scroll of 8px.
  *   entrance    U-16 (design .claude/reports/2026-09-26-u16-entrance-design.md): the drawer's exit-cells items (the
- *               bar keeps its own collapse point, so 1440 shows its dropdown) plus lamalama's header
+ *               bar keeps its own collapse point, so 1440 shows its dropdown) plus the reference site's header
  *               entrance (fade-in, extra slow) on a sticky header with shrink and hide-on-scroll on at every tier,
  *               over page /qa-entrance/ (rewritten on each apply, kept): an info-box with its own hover lift and an
  *               extra-slow fade-up entrance, a tall spacer, then a footer whose rows fade up 50px (dogstudio) at

@@ -3,7 +3,7 @@
 A classless ``<img>`` becomes ``sgs/media``. Before the fix, the universal walk's leaf fallback
 ran only for a block with ONE unambiguous primary content attr and without the
 scalar-content-lift capability. ``sgs/media`` fails both, so the block emitted its styling
-and no image (the Eye Care about-strip photo).
+and no image (the optician client's about-strip photo).
 
 Run from plugins/sgs-blocks/scripts:
     python -m pytest converter/tests/test_atomic_self_lift.py -q --import-mode=importlib

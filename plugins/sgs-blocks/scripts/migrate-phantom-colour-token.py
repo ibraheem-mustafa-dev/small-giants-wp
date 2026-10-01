@@ -13,11 +13,11 @@ WHAT THIS DOES
     not theme.json, not any style variation, not any client theme-snapshot.
 
 WHY `border` AND NOT `border-light` (evidence, not preference)
-    The canary is built from the Mama's Munches draft. That draft defines
+    The canary is built from the bakery client's draft. That draft defines
         --border-subtle: #E8D5C0
-    in mockups/Claude App Design .../mamas-munches-mockup.html:31, and the LATER
+    in the bakery client's mockup, line 31, and the LATER
     drafts (mockups/homepage/index.html:25) rename that SAME hex to `--border`.
-    sites/mamas-munches/theme-extract-trace.json records the tie-break verbatim
+    the bakery client's theme-extract-trace.json records the tie-break verbatim
     ("name-tiebreak 'border'->border-subtle"), and the live snapshot carries
     `border: #e8d5c0` with no `border-subtle` slug at all.
     `border-light` (#E5E7EB) is the framework's generic grey and was never a

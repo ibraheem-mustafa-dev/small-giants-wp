@@ -69,7 +69,7 @@ namespace SGS\Blocks {
 				}
 				if ( 'unrated' === $mode ) {
 					return array(
-						'displayName' => array( 'text' => 'Ward End Eye Care' ),
+						'displayName' => array( 'text' => 'Example Opticians' ),
 						'reviews'     => array(
 							array(
 								'authorAttribution' => array(
@@ -84,7 +84,7 @@ namespace SGS\Blocks {
 				}
 
 				return array(
-					'displayName'     => array( 'text' => 'Ward End Eye Care' ),
+					'displayName'     => array( 'text' => 'Example Opticians' ),
 					'rating'          => 4.7,
 					'userRatingCount' => 132,
 					'reviews'         => array(

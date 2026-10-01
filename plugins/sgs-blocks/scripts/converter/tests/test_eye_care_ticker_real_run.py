@@ -1,4 +1,4 @@
-"""test_eye_care_ticker_real_run.py -- the real Eye Care draft's ticker and brand strip through the real Stage-4 path.
+"""test_eye_care_ticker_real_run.py -- the real optician draft's ticker and brand strip through the real Stage-4 path.
 
 Pins what the group-D converter work changed, on the real run artefacts (pipeline-state/, local and untracked,
 so every test skips when the run directory is absent): the tagged mockup, the merged variation CSS and the
@@ -26,7 +26,7 @@ REPO = Path(__file__).resolve().parents[5]
 RUN = REPO / "pipeline-state" / "eye-care-ward-end-eye-care-birmingham-2026-09-21-024409"
 needs_run = pytest.mark.skipif(
     not (RUN / "tagged-mockup.html").exists() or not (RUN / "script-bindings.json").exists(),
-    reason="needs the local Eye Care run artefacts in pipeline-state",
+    reason="needs the local optician client's run artefacts in pipeline-state",
 )
 
 

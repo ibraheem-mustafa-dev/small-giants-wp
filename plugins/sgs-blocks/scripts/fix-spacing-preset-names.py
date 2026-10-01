@@ -10,7 +10,7 @@ real label instead of a bare digit.
 
 ``theme/sgs-theme/theme.json`` seeds ``settings.spacing.spacingSizes`` with 8
 slugs (10-80) named XXS..XXXL. Five client snapshots
-(eye-care-ward-end, sgs-construction, sgs-healthcare, sgs-mosque,
+(the optician client, sgs-construction, sgs-healthcare, sgs-mosque,
 sgs-professional) were hand-typed in an unrelated 2026-03-18 commit with a
 DIFFERENT 8-slug scale (20-90) and numeric names ("2".."9"). No generator in
 this repo ever writes ``spacingSizes`` — every script that touches the key is
@@ -24,7 +24,7 @@ slugs 10-80. Both start at index 0 with the smallest step and increase
 monotonically, but the slug NUMBERS are offset by one rung (client's 20 lines
 up with the framework's 10, 90 with 80, etc). A slug-keyed lookup
 (``by_slug["40"] = "M"``) would therefore silently misalign every entry by
-one step. The actual rem sizes differ per client too (eye-care's slug 40 is
+one step. The actual rem sizes differ per client too (the optician client's slug 40 is
 1rem; the framework's slug 40 is 1.5rem) so sizes can't be used as the join
 key either. The only property both ladders share reliably is ORDER: each
 ladder holds exactly 8 entries running smallest-to-largest. So the mapping is
@@ -44,7 +44,7 @@ the self-test explicitly asserts they are byte-identical across a run.
 
 ## Third state — no spacingSizes at all
 
-``helping-doctors`` and ``indus-foods`` have no ``settings.spacing.spacingSizes``
+The charity client and the wholesale-food client have no ``settings.spacing.spacingSizes``
 key at all (not even an empty array). These are reported as SKIPPED with a
 reason — the script does not invent a ladder for them; that is separate,
 unrelated build work outside this fix's scope.
@@ -83,7 +83,7 @@ SITES_GLOB = os.path.join(REPO_ROOT, "sites", "*", "theme-snapshot.json")
 
 # Matches one spacingSizes array entry, capturing slug / size / name in
 # order. Tolerant of an optional trailing "fluid": {...} object (present on
-# theme.json / mamas-munches, which are already-correct and expected to be a
+# theme.json and the bakery client's snapshot, which are already-correct and expected to be a
 # no-op) and of either comma-or-not after "name" depending on whether fluid
 # follows.
 _ENTRY_RE = re.compile(

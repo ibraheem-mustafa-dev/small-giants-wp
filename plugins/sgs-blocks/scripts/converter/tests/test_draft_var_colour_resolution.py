@@ -23,7 +23,7 @@ from converter.services.styling_helpers import (
     extract_token_or_hex,
 )
 
-# Real Mama's Munches data (draft --border:#E8D5C0 → theme slug border-subtle).
+# Real bakery-client data (draft --border:#E8D5C0 → theme slug border-subtle).
 _DRAFT_MAP = {"border": "#e8d5c0", "primary": "#e68a95"}
 _PALETTE_MAP = {"#e8d5c0": "border-subtle", "#e68a95": "primary"}
 

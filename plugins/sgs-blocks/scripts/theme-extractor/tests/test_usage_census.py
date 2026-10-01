@@ -18,7 +18,7 @@ sys.path.insert(0, str(PKG))
 import declared_sources as ds  # noqa: E402
 import usage_census as uc  # noqa: E402
 
-DRAFT = REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care" / "Eye Care Birmingham.dc.html"
+DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
 
 
 def _spans(colour: str, n: int, prop: str = "color") -> str:
@@ -172,7 +172,7 @@ def test_only_a_whole_rrggbb_is_promotable():
     assert uc.explain_rejections(census, {"#12345"})["#12345"] == "not an opaque #RRGGBB colour"
 
 
-@pytest.mark.skipif(not DRAFT.exists(), reason="Eye Care draft not present")
+@pytest.mark.skipif(not DRAFT.exists(), reason="optician-client draft not present")
 class TestRealDraft:
     @pytest.fixture(scope="class")
     def census(self):

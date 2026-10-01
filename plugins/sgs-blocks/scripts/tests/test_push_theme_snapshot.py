@@ -73,7 +73,7 @@ def test_advisory_without_baseline_is_deleted(pts):
     assert _pal(out) == []
 
 
-# Shaped exactly like the entries the committed Eye Care snapshot carries (an older extractor wrote
+# Shaped exactly like the entries the committed optician-client snapshot carries (an older extractor wrote
 # them with no _baseline_color): slugs the framework base palette HAS.
 OLD_STYLE_SURFACE = {"slug": "surface", "color": "#faf8f5", "name": "Surface", "_source": "derived",
                      "confidence": 0.95, "advisory": True}
@@ -85,7 +85,7 @@ def _base_palette() -> dict:
 
 
 def test_advisory_base_slug_without_baseline_is_restored_not_deleted(pts):
-    """The proven defect: pushing the committed Eye Care snapshot deleted the base slugs surface,
+    """The proven defect: pushing the committed optician-client snapshot deleted the base slugs surface,
     surface-alt and text, because their advisory entries carried no _baseline_color."""
     base = _base_palette()
     entries = [OLD_STYLE_SURFACE,
@@ -109,10 +109,10 @@ def test_baseline_colour_wins_over_the_base_palette_lookup(pts):
     assert _pal(out)[0]["color"] == "#123456"
 
 
-def test_the_committed_eye_care_snapshot_keeps_every_base_slug_through_the_push_policy(pts):
-    path = REPO / "sites" / "eye-care-ward-end" / "theme-snapshot.json"
+def test_the_committed_optician_snapshot_keeps_every_base_slug_through_the_push_policy(pts):
+    path = REPO / "sites/eye-care-ward-end/theme-snapshot.json"
     if not path.is_file():
-        pytest.skip("Eye Care snapshot not present")
+        pytest.skip("the optician-client snapshot is not present")
     snap = json.loads(path.read_text(encoding="utf-8"))
     base = _base_palette()
     slugs_before = {e["slug"] for e in _pal(snap)}
@@ -408,11 +408,11 @@ def test_deploy_bytes_fail_loudly_on_a_broken_snapshot(pts, tmp_path):
 
 
 def test_apply_dark_palette_ships_fill_scoped_ink_and_light_mode_warnings(pts):
-    """Mama's Munches with dark mode on: the push carries settings.custom.darkInk
+    """The bakery client with dark mode on: the push carries settings.custom.darkInk
     (the button's own label colour) beside settings.custom.dark, strips the
     internal _sgsDark key, and names each light-mode warning in its note."""
     repo = Path(__file__).resolve().parents[4]
-    snap = json.loads((repo / "sites" / "mamas-munches" / "theme-snapshot.json").read_text(encoding="utf-8"))
+    snap = json.loads((repo / "sites/mamas-munches/theme-snapshot.json").read_text(encoding="utf-8"))
     snap["_sgsDark"] = {"enabled": True}
     out, note = pts.apply_dark_palette(snap)
     custom = out["settings"]["custom"]

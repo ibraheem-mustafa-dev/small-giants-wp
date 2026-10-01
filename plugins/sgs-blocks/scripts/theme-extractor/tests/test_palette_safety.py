@@ -2,7 +2,7 @@
 
 Run:  cd plugins/sgs-blocks/scripts && python -m pytest theme-extractor/tests -q
 
-Browser-free: runs against synthetic CSS and the checked-in Mama's facts fixture.
+Browser-free: runs against synthetic CSS and the checked-in bakery-client facts fixture.
 """
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ from token_map import parse_base_rules  # noqa: E402
 
 BASELINE = json.loads((REPO / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
 BASE_PALETTE = BASELINE["settings"]["color"]["palette"]
-DRAFT = REPO / "sites" / "mamas-munches" / "mockups" / "homepage" / "index.html"
+DRAFT = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 FACTS = PKG / "mamas-computed-facts.json"
 EXPECTED = PKG / "expected"
 
@@ -97,13 +97,13 @@ def test_overlay_appends_derived_slug_missing_from_baseline():
     assert len(merge) == 1 and merge[0]["overlaid"] == 1 and merge[0]["appended"] == 1
 
 
-def test_pass_a_output_for_mamas_unchanged():
+def test_pass_a_output_for_bakery_client_unchanged():
     golden = json.loads((EXPECTED / "mamas-munches.snapshot.json").read_text(encoding="utf-8"))
     html = DRAFT.read_text(encoding="utf-8")
     import re
     css = "\n".join(re.findall(r"<style[^>]*>(.*?)</style>", html, re.DOTALL))
     facts = json.loads(FACTS.read_text(encoding="utf-8"))
-    got = extract.build_snapshot("mamas-munches", css, facts, html, json.loads(json.dumps(BASELINE)), [], REPO)
+    got = extract.build_snapshot("bakery-client", css, facts, html, json.loads(json.dumps(BASELINE)), [], REPO)
     assert got["settings"]["color"]["palette"] == golden["settings"]["color"]["palette"]
     assert got["styles"]["typography"] == golden["styles"]["typography"]
     assert got["styles"]["elements"] == golden["styles"]["elements"]

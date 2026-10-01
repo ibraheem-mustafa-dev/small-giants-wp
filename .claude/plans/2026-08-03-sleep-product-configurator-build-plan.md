@@ -1,17 +1,17 @@
 ---
 doc_type: strategic-plan
 project: small-giants-wp
-plan_name: 2026-08-03-snooza-configurator-build-plan
+plan_name: 2026-08-03-sleep-product-configurator-build-plan
 generated: 2026-08-03
 timebox: "6 weeks (quoted) — pitch-demo track is 2-3 days, separate from this timebox"
 status: draft
 authors: Bean + Claude (wp-sgs-developer)
-primary_goal: "Ship the Snooza Chair 3D/AR configurator on a reusable SGS plugin architecture, without a false demo promise or an unbuilt accessories model surfacing mid-build"
+primary_goal: "Ship the sleep-product client Chair 3D/AR configurator on a reusable SGS plugin architecture, without a false demo promise or an unbuilt accessories model surfacing mid-build"
 motivation: "This is the first paid client build to lean on a genuinely new capability (WebGL/3D) instead of pattern-matching an existing block — and the pitch meeting date is fixed. Getting the model spec and the accessory-model gap right BEFORE either track starts is what keeps the 6-week quote honest."
 parent_plan: null
 ---
 
-# Snooza Chair 3D Configurator — Build Plan
+# The sleep-product client Chair 3D Configurator — Build Plan
 
 **PLANNING ONLY.** No code touched, no DB writes, no build run. This document is the plan; execution is a separate session.
 
@@ -24,7 +24,7 @@ Rest size follows chair size) is the hardest single item, is not modelled in the
 
 ## 1. Problem
 
-Bean has promised two different things in one proposal: (a) a working 3D/AR demo at a sales meeting "soon", and (b) a 6-week WordPress build with a £299/year configurator plugin as the product. These are not the same deliverable and the current plan conflates them — if Claude Code starts building the WordPress configurator first, there is no phone-AR demo ready for the meeting; if it builds only the demo, the 6-week quote has no head start. Separately, the existing SGS product engine (`Product_Manifest`, `sgs/option-picker`, `sgs/buybox`) only models WooCommerce **variations** (colour × size, one SKU, one price) — verified in code there is zero concept of a separately-priced, independently-toggleable add-on product bundled into the same order, which is exactly what Snooza's 8 accessories are. If this gap surfaces mid-build instead of now, it is the largest unplanned item in the project.
+Bean has promised two different things in one proposal: (a) a working 3D/AR demo at a sales meeting "soon", and (b) a 6-week WordPress build with a £299/year configurator plugin as the product. These are not the same deliverable and the current plan conflates them — if Claude Code starts building the WordPress configurator first, there is no phone-AR demo ready for the meeting; if it builds only the demo, the 6-week quote has no head start. Separately, the existing SGS product engine (`Product_Manifest`, `sgs/option-picker`, `sgs/buybox`) only models WooCommerce **variations** (colour × size, one SKU, one price) — verified in code there is zero concept of a separately-priced, independently-toggleable add-on product bundled into the same order, which is exactly what the sleep-product client's 8 accessories are. If this gap surfaces mid-build instead of now, it is the largest unplanned item in the project.
 
 ## 2. Plain-English summary
 
@@ -42,11 +42,11 @@ Bean has promised two different things in one proposal: (a) a working 3D/AR demo
 ## 4. Out of scope
 
 - Rebuilding WC cart/checkout/payments/shipping — the existing `/sgs/v1/cart/add-item` proxy and WC's own checkout are reused as-is.
-- A general-purpose 3D product configurator "engine" for arbitrary future clients beyond what Snooza needs — build for Snooza, generalise later if a 2nd 3D client lands (mirrors the Spec 27 MVP-first precedent).
+- A general-purpose 3D product configurator "engine" for arbitrary future clients beyond what the sleep-product client needs — build for the sleep-product client, generalise later if a 2nd 3D client lands (mirrors the Spec 27 MVP-first precedent).
 - WebGL cursor/fluid effects (separate Spec 38 research track, unrelated).
 - Multi-colour SIMULTANEOUS 3D models (one model, material-swapped — see §7).
 - AI-builder / brief-to-shop automation (FR-27-R5) — irrelevant here, already decision-gated elsewhere.
-- Wholesale/B2B role pricing, subscriptions, multi-currency — not in the Snooza brief.
+- Wholesale/B2B role pricing, subscriptions, multi-currency — not in the sleep-product client brief.
 - A finished visual design pass on the accessory-toggle UI beyond "accessible, on-brand, matches SGS pill/card idiom" — detailed design happens inside the build, not this plan.
 
 ## 5. Verified have/need table
@@ -55,17 +55,17 @@ Verified by reading the actual files below — not assumed from the spec's prose
 
 | Capability | Status | Evidence (file:what it proves) |
 |---|---|---|
-| Variation-axis engine (colour × size × headrest → SKU/price/stock, live WC read-through) | **HAVE — reusable, but verify at 72** | `plugins/sgs-blocks/includes/class-product-manifest.php` — `Product_Manifest::build()` reads WC variable-product variations live via `wc_get_product()`, returns axes+combos+defaultKey. Snooza is 6 colours × 4 sizes × 3 headrests = **72 combos, past WooCommerce's 30-variation cliff** — the engine was built to survive that (FR-27-C1), so re-verify it at 72 rather than assuming. |
+| Variation-axis engine (colour × size × headrest → SKU/price/stock, live WC read-through) | **HAVE — reusable, but verify at 72** | `plugins/sgs-blocks/includes/class-product-manifest.php` — `Product_Manifest::build()` reads WC variable-product variations live via `wc_get_product()`, returns axes+combos+defaultKey. The sleep-product client is 6 colours × 4 sizes × 3 headrests = **72 combos, past WooCommerce's 30-variation cliff** — the engine was built to survive that (FR-27-C1), so re-verify it at 72 rather than assuming. |
 | Accessible pill/swatch picker, one per axis | **HAVE — reusable as-is** | `plugins/sgs-blocks/src/blocks/option-picker/` — radio-group semantics, WCAG-gated (FR-27-B1: axe-core 0, keyboard nav, 44px targets, `aria-disabled` on unavailable). Directly fits colour + size axes. |
 | Secure add-to-cart (single product, server-authoritative price/stock) | **HAVE — reusable as-is** | `includes/class-cart-proxy.php` (per Spec 27 FR-27-G1/G2) — `/sgs/v1/cart/add-item`, IDOR + attribute-match + rate-limit; live-verified against adversarial fixtures per the spec's Phase 1 acceptance record. |
-| Cross-attribute availability past 30-variation cliff | **HAVE — and LOAD-BEARING for Snooza** (72 combos, past WC's native 30-variation ceiling). Verify it live at 72 before Week 1. | `Product_Manifest` FR-27-C1 in spec §454-544. |
+| Cross-attribute availability past 30-variation cliff | **HAVE — and LOAD-BEARING for the sleep-product client** (72 combos, past WC's native 30-variation ceiling). Verify it live at 72 before Week 1. | `Product_Manifest` FR-27-C1 in spec §454-544. |
 | PDP composition (gallery column + configurator column, thumbnail strip, price row, add-to-cart) | **HAVE — reusable as-is** | `plugins/sgs-blocks/src/blocks/buybox/block.json` — 2-col grid, variation-aware gallery, notify-me-when-back-in-stock form. |
 | WCAG 2.2 AA card-level gates (axe-core 0, keyboard, SR announcements, 44px targets) | **HAVE — proven, not just declared** | Spec 27 §"Phase 1 SHIPPED", FR-27-B1 done-when criteria; this is the exact bar the new 3D viewer must also clear, not a lower one because it's "just visual". |
 | ProductGroup + hasVariant JSON-LD (SEO schema for the variant matrix) | **HAVE — reusable as-is** | `includes/class-product-schema.php` per FR-27-E1, Rich Results 0 errors, live-verified on canary. Colour/size axes will emit correctly; accessories will NOT (see gap below) unless separately modelled. |
 | 3D/AR model viewer (any kind) | **NEED — zero existing code.** `grep` across `plugins/sgs-blocks` for `model-viewer`, `three`, `ogl`, `webgl`, `glb`, `usdz` returns nothing block-related. | No file. This is 100% new. |
 | Model↔variant-selection wiring (colour pill selects → model changes material) | **NEED — zero existing code.** The Interactivity store in `product-card`/`view.js` fires `sgs:option-selected` events (verified, FR-24-15) that a NEW listener can subscribe to — the WIRING POINT exists, the wiring itself does not. | `src/blocks/option-picker/` emits the event; nothing currently listens for it to drive a 3D scene. |
 | **Accessories as separately-priced, independently-toggleable add-ons** | **NEED — confirmed absent, not partially built.** Grep across the whole `sgs-blocks` plugin for `addon`/`add-on`/`accessory`/`accessories`/`bundle`/`upsell`/`cross-sell` returns 56 files, but every real hit is unrelated noise (webpack "bundle", CSS "draggable" scroller, `related` in code comments) — zero hits are a commerce add-on mechanism. `buybox/block.json`'s full attribute list (soldOutLabel, notifyEnabled, framingMode, decoyEnabled, drag/loop toggles) has no accessory-adjacent attribute at all. | See §6 for the sizing. |
-| Reusable, WC-decoupled plugin packaging (the £299/year licence implies a product, not a client-shaped block) | **NEED — architectural decision + partial refactor.** `Product_Manifest`, `class-cart-proxy.php`, and the schema emitter all live inside `sgs-blocks` (the whole framework plugin) and assume WooCommerce is present (`function_exists('wc_get_product')` guards, not a hard dependency — that part is fine per Spec 27 design principle 1). But there is no extraction boundary between "generic SGS configurator" and "Snooza-specific glue" — see §9. | `sgs-blocks.php` bootstraps everything as one plugin; no `sgs-configurator-pro` sub-plugin or feature-flag boundary exists. |
+| Reusable, WC-decoupled plugin packaging (the £299/year licence implies a product, not a client-shaped block) | **NEED — architectural decision + partial refactor.** `Product_Manifest`, `class-cart-proxy.php`, and the schema emitter all live inside `sgs-blocks` (the whole framework plugin) and assume WooCommerce is present (`function_exists('wc_get_product')` guards, not a hard dependency — that part is fine per Spec 27 design principle 1). But there is no extraction boundary between "generic SGS configurator" and "client-specific glue" — see §9. | `sgs-blocks.php` bootstraps everything as one plugin; no `sgs-configurator-pro` sub-plugin or feature-flag boundary exists. |
 
 **Bottom line:** the variant/commerce/a11y/SEO plumbing for colour+size is a genuine head start — don't rebuild it. The 3D layer and the accessories layer are both real, unstarted work, and accessories is the larger of the two because it requires a NEW cart-line-item model, not just a new block.
 
@@ -73,7 +73,7 @@ Verified by reading the actual files below — not assumed from the spec's prose
 
 **What exists today (variations):** one WC variable product, N attribute axes, each combination resolves to exactly ONE variation = ONE SKU = ONE price = ONE line item in the cart. This is what colour × size needs and it is fully built.
 
-**What accessories need (add-ons):** the customer buys ONE Snooza Chair (itself a variation-selected SKU) PLUS zero-or-more of 8 separate WC **simple products** (Rocker Base, Mobile Base, Medial Thigh Support, Leg Rest, Padded Tray, Side Infill Pads, Base Wedge, Back Rest Adjustment), each independently priced, all all landing in the SAME order as separate cart line items (or, alternatively, as a WC "composite"/"bundle" product — see options below).
+**What accessories need (add-ons):** the customer buys ONE the sleep-product client Chair (itself a variation-selected SKU) PLUS zero-or-more of 8 separate WC **simple products** (Rocker Base, Mobile Base, Medial Thigh Support, Leg Rest, Padded Tray, Side Infill Pads, Base Wedge, Back Rest Adjustment), each independently priced, all all landing in the SAME order as separate cart line items (or, alternatively, as a WC "composite"/"bundle" product — see options below).
 
 **This is not a UI problem, it's a data-model + cart problem:**
 1. The PDP needs a new repeatable block section — "Add accessories" — a checkbox/card grid of 8 products, each showing its own image/price/toggle. This is new UI but a shallow build (reuses `sgs/card-grid` idiom + a togglable state, not a new interaction paradigm).
@@ -90,11 +90,11 @@ Verified by reading the actual files below — not assumed from the spec's prose
 
 **Format requirement (verified from research, not assumed):** the `@google/model-viewer` library needs a `.glb` for Android Scene Viewer AR and a `.usdz` for iOS Quick Look AR — these are two different files, not one file with two extensions. `model-viewer` can auto-generate a `.usdz` from a `.glb`, but Google's own documentation is explicit that the auto-conversion "might not produce desired results." **For a live sales-pitch demo on an iPhone, do not rely on the auto-converted `.usdz` — generate/verify it explicitly before the meeting.**
 
-**One model, swappable materials — not six models.** AI photo-to-3D generation is weakest on soft foam/fabric (exactly what the Snooza Chair is made of), so the fewer times it has to generate geometry from scratch, the better the odds of a usable result. The build needs:
+**One model, swappable materials — not six models.** AI photo-to-3D generation is weakest on soft foam/fabric (exactly what the sleep-product client Chair is made of), so the fewer times it has to generate geometry from scratch, the better the odds of a usable result. The build needs:
 - ONE base geometry (the chair shell/foam form), generated once, approved once.
 - SIX material variants (Mandarin Orange, Royal Blue, Apple green, Grey, Hot Pink, Black) applied to that ONE geometry via material/texture swap at render time — `model-viewer` supports runtime material variants natively (this is a standard glTF feature, not a custom build).
 - Accessories as SEPARATELY TOGGLEABLE MESHES within the same `.glb`/scene graph (headrest, tray, pommel, leg rest, etc. as independently visible/hidden nodes) — NOT six separate accessory models, and NOT baked permanently into the base geometry. This must be specified to the model-maker BEFORE generation starts, because retrofitting toggleable sub-meshes onto an already-baked single-mesh model is materially harder than generating it with named, separable nodes from the start.
-- **Reference images:** they live directly in `sites/snooza-chair/assets/`, as Wix-CDN hash-named files (`bc3963_<32-hex>~mv2.jpg`) scraped from the client's current site — there is no `product-images/` subdirectory and no curated shortlist by filename. **Whoever generates the model must OPEN that directory and choose from what is actually there**; never cite a source image by a name quoted in a doc. `sites/snooza-chair/assets/3d-model/` already holds `snooza-chair-blue.glb` and `snooza-chair-web.glb` — check what those cover before commissioning new geometry.
+- **Reference images:** they live directly in `sites/snooza-chair/assets/`, as Wix-CDN hash-named files (`bc3963_<32-hex>~mv2.jpg`) scraped from the client's current site — there is no `product-images/` subdirectory and no curated shortlist by filename. **Whoever generates the model must OPEN that directory and choose from what is actually there**; never cite a source image by a name quoted in a doc. `sites/snooza-chair/assets/3d-model/` already holds the two existing `.glb` models — check what those cover before commissioning new geometry.
 
 **Week-1 critical path, stated plainly:** the proposal's own timeline names "3D model generated + approved" as Week 1. Given the foam/fabric weakness and the toggleable-mesh requirement above, this is the single highest-risk week in the whole 6-week quote — not a formality.
 
@@ -113,8 +113,8 @@ Two client-specific facts drive different defaults than a generic 3D product vie
 
 The proposal prices this as a plugin licence, meaning Bean is committing to sell it again. That has one direct architectural consequence this plan flags rather than defers:
 
-- **Build the 3D-viewer block and the accessory-toggle mechanism as generically as the variation engine already is** — i.e. no hardcoded Snooza colour names, no hardcoded accessory list length, no hardcoded "6 colours × 4 sizes × 3 headrests" assumption anywhere in the block/PHP logic (matches the framework's own R-31-9 "no per-block/client hardcoding" rule, which already governs everything else in this plugin).
-- **What does NOT need to happen for Snooza's build:** carving the configurator out into a physically separate `sgs-configurator-pro` plugin directory. That is a packaging/licensing exercise (build once, ship once, gate by licence key) that has zero bearing on whether Snooza's own site works — it can happen later, once there is a second paying customer, exactly the precedent already set by Spec 27's own MVP-first phasing ("friendly authoring... build when a 2nd shop client lands", later revised only because Bean explicitly chose to). Flagging this now so it is a deliberate deferral, not a silent one.
+- **Build the 3D-viewer block and the accessory-toggle mechanism as generically as the variation engine already is** — i.e. no hardcoded the sleep-product client colour names, no hardcoded accessory list length, no hardcoded "6 colours × 4 sizes × 3 headrests" assumption anywhere in the block/PHP logic (matches the framework's own R-31-9 "no per-block/client hardcoding" rule, which already governs everything else in this plugin).
+- **What does NOT need to happen for the sleep-product client's build:** carving the configurator out into a physically separate `sgs-configurator-pro` plugin directory. That is a packaging/licensing exercise (build once, ship once, gate by licence key) that has zero bearing on whether the sleep-product client's own site works — it can happen later, once there is a second paying customer, exactly the precedent already set by Spec 27's own MVP-first phasing ("friendly authoring... build when a 2nd shop client lands", later revised only because Bean explicitly chose to). Flagging this now so it is a deliberate deferral, not a silent one.
 - **What DOES need to happen now:** keep the 3D-viewer and accessory-toggle code inside `sgs-blocks` in their own clearly-bounded block folders (`src/blocks/product-viewer/`, and accessory logic inside `buybox`/a new `sgs/product-addons` block) so that a future extraction is a `git mv`, not a rewrite.
 - **WC-coupling check:** `Product_Manifest` and `class-cart-proxy.php` already guard every WC call behind `function_exists('wc_get_product')` (Spec 27 design principle 1 — "WC is optional at the framework level"). The new accessory-cart-proxy extension must follow the same guard. No new WC-hard-dependency risk introduced by this plan.
 
@@ -155,4 +155,4 @@ Per the WebGL research already on file (`.claude/reports/2026-08-02-webgl-adopti
 1. Does Bean want Option A (extended cart proxy, no paid WC extension) or Option B (WC Bundles/Composite Products, paid dependency) for accessories? This plan recommends A (§6) but it is Bean's call given the "no monthly fees" promise already made to the client.
 2. Where do the reference product images actually live? The client CLAUDE.md names files that were not found in this session's `Glob` — confirm the real path before Week 1 starts.
 3. Configurator-page byte budget ceiling — needs a build-session measurement of the real `model-viewer` + existing buybox JS total, not the estimate in §10.
-4. Does the £299/year licence extraction (packaging into a standalone plugin, §9) happen before or after Snooza's own launch? Recommended: after, but Bean may want it sequenced differently for a second prospect already in the pipeline.
+4. Does the £299/year licence extraction (packaging into a standalone plugin, §9) happen before or after the sleep-product client's own launch? Recommended: after, but Bean may want it sequenced differently for a second prospect already in the pipeline.

@@ -134,7 +134,7 @@ final class ReviewsPlaceholderTest extends TestCase {
 			$this->assertStringContainsString( $name, $html, "$name is shown when Sample reviews is chosen" );
 		}
 		$this->assertStringNotContainsString( 'ld+json', $html, 'invented reviews never feed schema' );
-		$this->assertStringNotContainsString( 'Ward End Eye Care', $html, 'placeholder never reads Google' );
+		$this->assertStringNotContainsString( 'Example Opticians', $html, 'placeholder never reads Google' );
 	}
 
 	// ── (c) written reviews: rendered, still no schema ─────────────────────────
@@ -167,7 +167,7 @@ final class ReviewsPlaceholderTest extends TestCase {
 		$schemas = $this->schemas( $html );
 		$this->assertCount( 1, $schemas, 'exactly one JSON-LD block for live Google data' );
 		$this->assertSame( 'LocalBusiness', $schemas[0]['@type'] );
-		$this->assertSame( 'Ward End Eye Care', $schemas[0]['name'] );
+		$this->assertSame( 'Example Opticians', $schemas[0]['name'] );
 		$this->assertEquals( 4.7, $schemas[0]['aggregateRating']['ratingValue'] );
 		$this->assertEquals( 132, $schemas[0]['aggregateRating']['reviewCount'] );
 		$this->assertStringContainsString( 'Live Reviewer One', $html );

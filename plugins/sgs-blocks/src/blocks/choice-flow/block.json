@@ -149,7 +149,7 @@
 			"type": "string",
 			"enum": [ "bar", "circles", "badge" ],
 			"default": "bar",
-			"description": "User-directed (2026-09-15): operator choice across the 3 real reference patterns found live — 'bar' (the client's own real lens-configurator: a plain thin fill bar, step name as separate text above), 'circles' (AthleanX: numbered circle stepper with connecting lines, above a separate plain bar), 'badge' (Invisalign: a step-count pill riding directly on the fill track, styled like a slider thumb)."
+			"description": "User-directed (2026-09-15): operator choice across the 3 real reference patterns found live — 'bar' (the client's own real lens-configurator: a plain thin fill bar, step name as separate text above), 'circles' (a reference site: numbered circle stepper with connecting lines, above a separate plain bar), 'badge' (a reference site: a step-count pill riding directly on the fill track, styled like a slider thumb)."
 		},
 		"showPricePanel": {
 			"type": "boolean",

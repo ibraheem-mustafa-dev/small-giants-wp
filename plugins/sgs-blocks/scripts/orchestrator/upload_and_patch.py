@@ -162,7 +162,7 @@ def main():
             "Actually push the client's theme.json snapshot to the target "
             "site (default: dry-run / --no-push, which only diffs). Safety "
             "net: even with this flag, push-theme-snapshot.py enforces "
-            "--no-push on shared dev surfaces (sandybrown / palestine-lives) "
+            "--no-push on shared dev surfaces (sandybrown / the campaign-site client) "
             "unless --yes is also threaded through. Off by default — "
             "orchestrator users must opt in explicitly."
         ),

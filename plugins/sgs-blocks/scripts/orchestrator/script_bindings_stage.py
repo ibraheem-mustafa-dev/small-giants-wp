@@ -8,7 +8,7 @@ returns ``{binding name: {mobile, tablet, desktop, intra_tier}}`` for ``converte
 
 Behaviour that matters:
 
-* A draft with no ``{{ }}`` in any style value (every static or BEM draft, Mama's Munches included) yields
+* A draft with no ``{{ }}`` in any style value (every static or BEM draft, the bakery client's included) yields
   an EMPTY map and writes NO file: the run is byte-identical to a run without this stage.
 * Fail-soft. Any failure returns an empty map and says why; the converter then drops and gaps every binding
   exactly as it did before. One retry when the evaluator hit a time budget (measured: a heavily loaded

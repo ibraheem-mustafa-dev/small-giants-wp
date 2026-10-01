@@ -80,7 +80,7 @@ TITLE_PREFIX = "[QA] HDR "
 # The existing published `sgs_mega_menu` post ("SPIKE Brands Panel") — real mega content.
 MEGA_POST_ID = 1745
 
-# Real site pages (the canary's own nav labels and URLs — see menu "Mamas Munches Main").
+# Real site pages (the canary's own nav labels and URLs — see the canary's main menu).
 MENU_ITEMS = [
     {"key": "home", "title": "Home", "url": "/"},
     {"key": "shop", "title": "Shop", "url": "/shop/"},

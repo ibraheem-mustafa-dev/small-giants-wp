@@ -3,8 +3,8 @@
 Run from plugins/sgs-blocks/scripts:
     python -m pytest tests/test_script_bindings.py -q -p no:cacheprovider
 
-Three layers: synthetic drafts (each behaviour in isolation, including the refusals), the real Eye Care
-Birmingham draft (expected per-tier values), and a cross-check against what draft-responsive-probe.js
+Three layers: synthetic drafts (each behaviour in isolation, including the refusals), the real optician-client
+draft (expected per-tier values), and a cross-check against what draft-responsive-probe.js
 MEASURED by rendering that draft at 375 / 768 / 1440 (skipped when the generated probe.json is absent).
 """
 from __future__ import annotations
@@ -23,7 +23,7 @@ sys.path.insert(0, str(_SCRIPTS / "orchestrator"))
 import script_bindings as sb  # noqa: E402
 
 REPO = _SCRIPTS.parents[2]
-EYE_CARE = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
+OPTICIAN = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
 PROBE = REPO / "pipeline-state/_manifest/probe.json"
 
 needs_node = pytest.mark.skipif(shutil.which("node") is None, reason="node is not installed")
@@ -115,7 +115,7 @@ def test_flag_line_missing_resolves_nothing_and_says_why() -> None:
 
 
 def test_a_draft_with_no_style_binding_is_inert_and_reports_no_problem() -> None:
-    """A static or BEM draft (Mama's Munches): nothing referenced, nothing resolved, nothing to complain about."""
+    """A static or BEM draft (the bakery client): nothing referenced, nothing resolved, nothing to complain about."""
     r = sb.resolve_tier_bindings('<section class="sgs-hero" style="padding:20px"><h1>Hi</h1></section>')
     assert r == {"tier_widths": sb.TIER_WIDTHS, "flags": None, "resolved": {}, "unresolved": [], "snaps": [], "problems": []}
 
@@ -179,20 +179,20 @@ def test_css_length_helpers() -> None:
 # ---- the real draft ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def eye_care() -> tuple[str, dict]:
-    html = EYE_CARE.read_text(encoding="utf-8")
+def optician() -> tuple[str, dict]:
+    html = OPTICIAN.read_text(encoding="utf-8")
     return html, sb.resolve_tier_bindings(html)
 
 
 @pytest.fixture(scope="module")
-def eye_care_raw() -> dict:
+def optician_raw() -> dict:
     """The same draft evaluated with its OWN thresholds (no snapping to our device edges)."""
-    return sb.resolve_tier_bindings(EYE_CARE.read_text(encoding="utf-8"), snap=False)
+    return sb.resolve_tier_bindings(OPTICIAN.read_text(encoding="utf-8"), snap=False)
 
 
 @needs_node
-def test_real_draft_flags_are_read_from_its_script(eye_care: tuple[str, dict]) -> None:
-    assert eye_care[1]["flags"] == {"mob": "effW < 760", "narrow": "effW < 1024", "wide": "effW >= 1280"}
+def test_real_draft_flags_are_read_from_its_script(optician: tuple[str, dict]) -> None:
+    assert optician[1]["flags"] == {"mob": "effW < 760", "narrow": "effW < 1024", "wide": "effW >= 1280"}
 
 
 @needs_node
@@ -207,43 +207,43 @@ def test_real_draft_flags_are_read_from_its_script(eye_care: tuple[str, dict]) -
     ("shapeCols", "repeat(2,minmax(0,1fr))", "repeat(3,minmax(0,1fr))", "repeat(6,minmax(0,1fr))"),
     ("opticianGap", "32px", "32px", "64px"),
 ])
-def test_real_draft_expected_per_tier_values(eye_care: tuple[str, dict], name: str, mobile: str, tablet: str, desktop: str) -> None:
-    e = eye_care[1]["resolved"][name]
+def test_real_draft_expected_per_tier_values(optician: tuple[str, dict], name: str, mobile: str, tablet: str, desktop: str) -> None:
+    e = optician[1]["resolved"][name]
     assert (e["mobile"], e["tablet"], e["desktop"]) == (mobile, tablet, desktop)
 
 
 @needs_node
-def test_real_draft_state_driven_values_stay_unresolved(eye_care: tuple[str, dict]) -> None:
-    reasons = {u["name"]: u["reason"] for u in eye_care[1]["unresolved"]}
+def test_real_draft_state_driven_values_stay_unresolved(optician: tuple[str, dict]) -> None:
+    reasons = {u["name"]: u["reason"] for u in optician[1]["unresolved"]}
     for name in ("railStyle", "navPad", "delBg", "ulSun"):        # read S.filtersOpen / S.scrolled / S.co / S.mega
         assert "reads state S." in reasons[name], name
-    assert "acc" in reasons and "acc" not in eye_care[1]["resolved"]   # reads the accent props
-    assert "cardMin" in eye_care[1]["resolved"]                       # embedded inside min(100%, {{ cardMin }})
+    assert "acc" in reasons and "acc" not in optician[1]["resolved"]   # reads the accent props
+    assert "cardMin" in optician[1]["resolved"]                       # embedded inside min(100%, {{ cardMin }})
 
 
 @needs_node
-def test_real_draft_draft_breakpoints_that_no_device_tier_can_hold_are_reported(eye_care: tuple[str, dict], eye_care_raw: dict) -> None:
-    raw = eye_care_raw["resolved"]
+def test_real_draft_draft_breakpoints_that_no_device_tier_can_hold_are_reported(optician: tuple[str, dict], optician_raw: dict) -> None:
+    raw = optician_raw["resolved"]
     assert [r["from"] for r in raw["prodCols"]["intra_tier"]["desktop"]] == [1024, 1280]     # 3 columns, then 4
     assert [r["from"] for r in raw["secPad"]["intra_tier"]["mobile"]] == [320, 760]          # 760-767 is not mobile in the draft
-    snapped = eye_care[1]["resolved"]
+    snapped = optician[1]["resolved"]
     assert [r["from"] for r in snapped["prodCols"]["intra_tier"]["desktop"]] == [1024, 1280]  # 1280 is not within 10px of an edge: kept
     assert "mobile" not in snapped["secPad"]["intra_tier"]                                     # 760 -> 768 (Bean's rule): no sliver left
 
 
 @needs_node
-def test_real_draft_snaps_are_logged_and_only_the_760_and_700_flags_move(eye_care: tuple[str, dict]) -> None:
-    snaps = eye_care[1]["snaps"]
+def test_real_draft_snaps_are_logged_and_only_the_760_and_700_flags_move(optician: tuple[str, dict]) -> None:
+    snaps = optician[1]["snaps"]
     assert {(x["draft"], x["snapped"]) for x in snaps} == {(760, 768), (700, 768)}
     assert all(x["differs_from_draft_between"] in ([760, 767], [700, 767]) for x in snaps)
     assert {x["in"] for x in snaps if x["draft"] == 700} == {"lensStack"}
 
 
 @needs_node
-def test_snapping_does_not_change_the_values_at_the_three_tier_widths(eye_care: tuple[str, dict], eye_care_raw: dict) -> None:
+def test_snapping_does_not_change_the_values_at_the_three_tier_widths(optician: tuple[str, dict], optician_raw: dict) -> None:
     """375 / 768 / 1440 are all outside the snapped bands, so every resolved value is identical with and without it."""
-    for name, e in eye_care_raw["resolved"].items():
-        s = eye_care[1]["resolved"][name]
+    for name, e in optician_raw["resolved"].items():
+        s = optician[1]["resolved"][name]
         assert (s["mobile"], s["tablet"], s["desktop"]) == (e["mobile"], e["tablet"], e["desktop"]), name
 
 
@@ -273,10 +273,10 @@ V2 = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Car
 
 @needs_node
 @pytest.mark.skipif(not V2.exists(), reason="the v2 bundle is not in this checkout (untracked)")
-def test_the_renamed_v2_draft_resolves_as_many_names_as_the_original(eye_care: tuple[str, dict]) -> None:
+def test_the_renamed_v2_draft_resolves_as_many_names_as_the_original(optician: tuple[str, dict]) -> None:
     r = sb.resolve_tier_bindings(V2.read_text(encoding="utf-8"))
     assert r["problems"] == []
-    assert len(r["resolved"]) == len(eye_care[1]["resolved"]) == 75
+    assert len(r["resolved"]) == len(optician[1]["resolved"]) == 75
 
 
 # ---- ground truth: what the probe measured by rendering the real draft -------------------------------
@@ -291,8 +291,8 @@ MEASURED = {
 
 
 @needs_node
-def test_evaluator_agrees_with_the_values_measured_on_the_rendered_draft(eye_care: tuple[str, dict]) -> None:
-    resolved = eye_care[1]["resolved"]
+def test_evaluator_agrees_with_the_values_measured_on_the_rendered_draft(optician: tuple[str, dict]) -> None:
+    resolved = optician[1]["resolved"]
     sec = [sb.css_to_px(t, 375) for t in resolved["secPad"]["mobile"].split()]
     assert (sec[0], sec[1]) == (MEASURED[("section", "why buy from me", "padding-top")][0], MEASURED[("section", "why buy from me", "padding-left")][0])
     desktop = [sb.css_to_px(t, 1440) for t in resolved["secPad"]["desktop"].split()]
@@ -311,8 +311,8 @@ def probe() -> dict:
 
 
 @needs_node
-def test_crosscheck_against_the_live_probe_has_no_mismatch_and_real_matches(eye_care: tuple[str, dict], probe: dict) -> None:
-    rows = sb.crosscheck_probe(eye_care[0], probe, eye_care[1])
+def test_crosscheck_against_the_live_probe_has_no_mismatch_and_real_matches(optician: tuple[str, dict], probe: dict) -> None:
+    rows = sb.crosscheck_probe(optician[0], probe, optician[1])
     assert [r for r in rows if r["status"] == "MISMATCH"] == []
     matched = {(r["binding"], r["property"]) for r in rows if r["status"] == "match"}
     for want in (("secPad", "padding"), ("panelPad", "padding"), ("twoColWide", "grid-template-columns"),
@@ -325,9 +325,9 @@ def test_crosscheck_against_the_live_probe_has_no_mismatch_and_real_matches(eye_
 
 
 @needs_node
-def test_crosscheck_negative_control_a_wrong_value_is_reported_as_mismatch(eye_care: tuple[str, dict], probe: dict) -> None:
+def test_crosscheck_negative_control_a_wrong_value_is_reported_as_mismatch(optician: tuple[str, dict], probe: dict) -> None:
     """The check can fail: corrupt one evaluated value and the same probe must flag it."""
-    broken = copy.deepcopy(eye_care[1])
+    broken = copy.deepcopy(optician[1])
     broken["resolved"]["secPad"]["desktop"] = "99px 52px"
-    rows = sb.crosscheck_probe(eye_care[0], probe, broken)
+    rows = sb.crosscheck_probe(optician[0], probe, broken)
     assert any(r["status"] == "MISMATCH" and r["binding"] == "secPad" for r in rows)

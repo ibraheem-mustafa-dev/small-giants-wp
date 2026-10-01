@@ -1,7 +1,7 @@
 """Spec 31 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7 self-test for autonomy_gate.py.
 
 Plan contracts:
-  5e.4  Run on Mama's mockup post-deploy; assert N screenshots + diff JSON
+  5e.4  Run on the bakery client's mockup post-deploy; assert N screenshots + diff JSON
         + thumbnails for surfaced regions.
   5e.5  4 scenarios -- 0.3%+clean=auto-proceed, 0.8%+clean=surface,
         1.2%=halt, 0.5%+console-error=halt.
@@ -172,7 +172,7 @@ def test_deliverable_writes_readable_md() -> None:
                 ],
             },
             "gap_review_path":"pipeline-state/sgs-clone/run-5e7/gap-review.md",
-            "deploy_url":     "https://palestine-lives.org/?p=42",
+            "deploy_url":     "https://client.example/?p=42",
             "next_actions":   ["Operator: review hero region surface",
                                "Stage: queue Phase 6 lingua-franca expansion"],
         }
@@ -187,7 +187,7 @@ def test_deliverable_writes_readable_md() -> None:
         assert "375" in md and "1440" in md
         assert "## Pipeline stages applied" in md
         assert "gap-review.md" in md
-        assert "palestine-lives.org" in md
+        assert "client.example" in md
         assert "Operator: review hero region surface" in md
     print(f"  PASS  deliverable-md: all sections present + key data readable")
 

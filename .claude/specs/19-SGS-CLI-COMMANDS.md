@@ -190,7 +190,7 @@ from a pattern, use `wp sgs header|footer|drawer seed-starter` (§4.14).
 wp sgs seed-template-parts --user=1
 
 # Seed from a specific variation
-wp sgs seed-template-parts --variation=mamas-munches --user=1
+wp sgs seed-template-parts --variation=<client> --user=1
 ```
 
 **Common errors:**
@@ -551,21 +551,21 @@ otherwise override the on-disk file for every property it already defines.
 ```bash
 # Diff only — prints the diff and exits, pushes nothing
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
-  --client mamas-munches \
+  --client <client> \
   --target u945238940@141.136.39.73 \
   --target-domain sandybrown-nightingale-600381.hostingersite.com \
   --no-push
 
 # Push, skipping the interactive confirmation
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
-  --client mamas-munches \
+  --client <client> \
   --target u945238940@141.136.39.73 \
   --target-domain sandybrown-nightingale-600381.hostingersite.com \
   --yes
 
 # Restore a backup taken by an earlier push
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
-  --client mamas-munches \
+  --client <client> \
   --target u945238940@141.136.39.73 \
   --rollback <backup-file>
 ```
@@ -601,13 +601,13 @@ The pipeline orchestrator for the SGS clone workflow. It runs every pipeline sta
 ```bash
 python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
   --mockup sites/mamas-munches/mockups/<draft>.html \
-  --client mamas-munches \
+  --client <client> \
   --page <page-slug>
 
 # Without Playwright (faster, skips responsive extraction)
 python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
   --mockup sites/mamas-munches/mockups/<draft>.html \
-  --client mamas-munches \
+  --client <client> \
   --page <page-slug> \
   --no-playwright
 ```
@@ -640,7 +640,7 @@ run `stats` for them.
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats            # Framework health
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/hero   # Block details
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing"  # Find best block
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods  # Load client context
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context <client>  # Load client context
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "<query>"    # Raw SQL
 ```
 
@@ -657,13 +657,13 @@ Check → Build → Execute → Cache → Verify ceremony around it (see `.claud
 | Target | Site | Notes |
 |---|---|---|
 | `sandybrown` (default) | `sandybrown-nightingale-600381.hostingersite.com` | The canary |
-| `indus-test` | `lavender-dinosaur-183533.hostingersite.com` | Indus Foods test site; `explicit_opt_in_required` — deploys only when named with `--target indus-test` |
+| `indus-test` | `lavender-dinosaur-183533.hostingersite.com` | the wholesale-food client test site; `explicit_opt_in_required` — deploys only when named with `--target indus-test` |
 
 ```bash
 # Default: build + deploy plugin + theme to sandybrown
 python plugins/sgs-blocks/scripts/build-deploy.py
 
-# Deploy to the Indus test site
+# Deploy to the wholesale-food client test site
 python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test
 
 # Skip npm build (use existing build/)

@@ -1,4 +1,4 @@
-"""The per-area fold's SECOND, selector-keyed lookup (Eye Care reviews card, 2026-09-21).
+"""The per-area fold's SECOND, selector-keyed lookup (the optician client's reviews card, 2026-09-21).
 
 Cause, proven before the fix (``test_area_css_skip_reporting.py`` header has the
 reproduction): ``fold_helpers.route_area_css_to_block_attrs`` asks

@@ -618,7 +618,7 @@ def _descend_container_children(
             # holding just that text run. Before this it was only tracked as a
             # ContentGap, so a container whose only text was loose recursed to
             # ZERO content blocks and raised ContentConservationError (b32, the
-            # Eye Care Birmingham ticker, D1112 prototype). Never mutates the
+            # the optician client's ticker, D1112 prototype). Never mutates the
             # source tree (the loop is iterating it). Comments/doctype/CDATA are
             # NavigableString subclasses but are not content: they keep the
             # ContentGap path below.

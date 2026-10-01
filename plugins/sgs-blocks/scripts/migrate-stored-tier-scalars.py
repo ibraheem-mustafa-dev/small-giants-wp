@@ -17,7 +17,7 @@ therefore an exported TEXT DUMP (a file, or a directory of dumps), not a repo gl
 structural difference from its sibling. Parsing, classification and fold logic are otherwise
 identical on purpose (D571's "same shape philosophy" rule), and reused near-verbatim.
 
-Measured live (2026-08-25) on canary page 2742 (Mama's Munches homepage clone): ~106
+Measured live (2026-08-25) on canary page 2742 (the bakery client's homepage clone): ~106
 attributes across 77 blocks are FLAT where their block.json now declares an object. WordPress
 does not error on this — `WP_Block_Type::prepare_attributes_for_render()` silently substitutes
 the attribute's DEFAULT when a stored value fails schema validation (D338 class of loss,

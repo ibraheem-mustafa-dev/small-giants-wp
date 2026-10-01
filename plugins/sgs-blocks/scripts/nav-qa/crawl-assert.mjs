@@ -56,12 +56,12 @@
  * Examples
  * --------
  *   # Explicit: prove these 7 bar links + 1 mega link survive with JS off
- *   node crawl-assert.mjs https://palestine-lives.org/ \
+ *   node crawl-assert.mjs https://client.example/ \
  *     --want-href "/about,/products,/contact" \
  *     --want-text "About,Products,Contact,Brands"
  *
  *   # Auto-detect against the nav-bar-menu + nav-drawer + mega panel roots
- *   node crawl-assert.mjs https://palestine-lives.org/
+ *   node crawl-assert.mjs https://client.example/
  *
  * Exit codes
  * ----------

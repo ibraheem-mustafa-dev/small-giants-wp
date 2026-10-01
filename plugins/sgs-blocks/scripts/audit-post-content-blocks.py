@@ -3,8 +3,8 @@
 
 WHY THIS EXISTS
 ---------------
-Two silent content-loss classes, both proven live on the Indus homepage (page 13,
-palestine-lives.org, 2026-07-14/15):
+Two silent content-loss classes, both proven live on the wholesale-food client's homepage (page 13,
+on the campaign-site client's staging site, 2026-07-14/15):
 
   1. STRANDED CONTENT (the D270/D271 hole): a block migrated from scalar content
      attrs to InnerBlocks renders ONLY its children ($content). A post still stored

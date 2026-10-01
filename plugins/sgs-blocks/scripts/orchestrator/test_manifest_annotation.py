@@ -1,7 +1,7 @@
 """manifest_annotation: a draft's `data-sgs-manifest` block proposals become SGS-BEM classes on the run copy.
 
 The annotator is a pure function over the draft HTML plus an injectable block lookup, so the logic tests use
-small synthetic drafts and a fake lookup (no database). The end-to-end tests use the REAL Eye Care run copy
+small synthetic drafts and a fake lookup (no database). The end-to-end tests use the REAL optician client's run copy
 (a local pipeline-state artefact) and the REAL framework database, and prove the result the way it matters:
 the UNCHANGED converter (`converter.entry.convert_section`) turns the annotated section into the declared block.
 
@@ -37,11 +37,11 @@ from manifest_annotation import (  # noqa: E402
 
 REPO = HERE.parents[3]
 ORCHESTRATOR = Path(os.environ.get("MA_TEST_ORCHESTRATOR", SCRIPTS / "sgs-clone-orchestrator.py"))
-EYE_CARE_RUN = REPO / "pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-20-222113/site-info-resolved.html"
+OPTICIAN_RUN = REPO / "pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-20-222113/site-info-resolved.html"
 MAMAS_HOME = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 VOTER = SCRIPTS / "recogniser/per-section-convention-voter.py"
 
-needs_eye_care = pytest.mark.skipif(not EYE_CARE_RUN.exists(), reason="needs the local Eye Care run copy in pipeline-state")
+needs_optician = pytest.mark.skipif(not OPTICIAN_RUN.exists(), reason="needs the local optician client's run copy in pipeline-state")
 needs_db = pytest.mark.skipif(not DbBlockLookup.DEFAULT_DB.exists(), reason="needs the framework database")
 
 
@@ -295,7 +295,7 @@ def test_no_usable_manifest_returns_the_draft_byte_identical_with_no_rows(html):
     assert out == html and rows == []
 
 
-def test_the_mamas_munches_homepage_draft_is_byte_identical():
+def test_the_bakery_homepage_draft_is_byte_identical():
     raw = MAMAS_HOME.read_bytes().decode("utf-8")
     assert "data-sgs-manifest" not in raw
     out, rows = annotate_from_manifest(raw, LOOKUP)
@@ -318,12 +318,12 @@ def test_line_endings_and_non_ascii_text_survive_the_edit():
 
 
 # --------------------------------------------------------------------------------------------------------------
-# The real Eye Care run copy, the real database, the UNCHANGED converter
+# The real optician client's run copy, the real database, the UNCHANGED converter
 # --------------------------------------------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def eye_care():
-    raw = EYE_CARE_RUN.read_text(encoding="utf-8", newline="")
+def optician():
+    raw = OPTICIAN_RUN.read_text(encoding="utf-8", newline="")
     lookup = DbBlockLookup()
     out, rows = annotate_from_manifest(raw, lookup)
     kept, kept_rows = annotate_from_manifest(raw, lookup, keep_unmapped_text=True)
@@ -346,9 +346,9 @@ def _element(page_html: str, cls: str) -> str:
 
 
 @needs_db
-@needs_eye_care
-def test_eye_care_ticker_is_annotated_and_the_converter_emits_a_trust_bar_with_the_text(eye_care):
-    out, row = eye_care["out"], eye_care["rows"]["sgs-trust-ticker"]
+@needs_optician
+def test_optician_ticker_is_annotated_and_the_converter_emits_a_trust_bar_with_the_text(optician):
+    out, row = optician["out"], optician["rows"]["sgs-trust-ticker"]
     assert row["status"] == "applied" and row["block"] == "sgs/trust-bar" and row["items"] == 4 and row["fields"] == ["label"]
     assert '<div class="sgs-trust-bar sgs-trust-ticker" ' in out
     assert out.count('class="sgs-trust-bar__item"') == 4 and out.count('<span class="sgs-trust-bar__label">') == 4
@@ -360,16 +360,16 @@ def test_eye_care_ticker_is_annotated_and_the_converter_emits_a_trust_bar_with_t
 
 
 @needs_db
-@needs_eye_care
-def test_without_the_annotation_the_converter_does_not_emit_a_trust_bar_for_the_ticker(eye_care):
+@needs_optician
+def test_without_the_annotation_the_converter_does_not_emit_a_trust_bar_for_the_ticker(optician):
     """Negative control for the end-to-end proof: the same section, un-annotated, is a plain container."""
-    markup = _convert(_element(eye_care["raw"], "sgs-trust-ticker"), eye_care["raw"])
+    markup = _convert(_element(optician["raw"], "sgs-trust-ticker"), optician["raw"])
     assert "wp:sgs/trust-bar" not in markup
 
 
 @needs_db
-@needs_eye_care
-def test_the_annotated_ticker_root_is_a_section_boundary_named_by_its_first_class(eye_care):
+@needs_optician
+def test_the_annotated_ticker_root_is_a_section_boundary_named_by_its_first_class(optician):
     spec = importlib.util.spec_from_file_location("voter_under_test", VOTER)
     voter = importlib.util.module_from_spec(spec)
     sys.modules["voter_under_test"] = voter
@@ -381,37 +381,37 @@ def test_the_annotated_ticker_root_is_a_section_boundary_named_by_its_first_clas
                 '<main><section class="sgs-hero"><h1>x</h1></section></main></body></html>')
         return [sel for _n, sel in voter.auto_detect_sections(BeautifulSoup(page, "html.parser"))]
 
-    assert "div.sgs-trust-bar" in selectors(_element(eye_care["out"], "sgs-trust-bar"))
-    assert "div.sgs-trust-ticker" not in selectors(_element(eye_care["out"], "sgs-trust-bar"))
-    assert "div.sgs-trust-bar" not in selectors(_element(eye_care["raw"], "sgs-trust-ticker"))   # negative control
+    assert "div.sgs-trust-bar" in selectors(_element(optician["out"], "sgs-trust-bar"))
+    assert "div.sgs-trust-ticker" not in selectors(_element(optician["out"], "sgs-trust-bar"))
+    assert "div.sgs-trust-bar" not in selectors(_element(optician["raw"], "sgs-trust-ticker"))   # negative control
 
 
 @needs_db
-@needs_eye_care
-def test_eye_care_reviews_are_withheld_by_default_and_the_section_keeps_every_review(eye_care):
+@needs_optician
+def test_optician_reviews_are_withheld_by_default_and_the_section_keeps_every_review(optician):
     """13 cards, 6 pieces of text each (initial, name, review count, stars, date, quote), one card shaped
     differently, 4 text fields in the block. No certain mapping, so nothing is annotated and the converter still
     produces every review as ordinary blocks."""
-    row = eye_care["rows"]["sgs-google-reviews"]
+    row = optician["rows"]["sgs-google-reviews"]
     assert row["status"] == "rejected" and "withheld" in row["reason"] and row["items"] == 0
-    section = _element(eye_care["out"], "sgs-google-reviews")
-    assert section == _element(eye_care["raw"], "sgs-google-reviews")            # not a byte of it changed
-    markup = _convert(section, eye_care["out"])
+    section = _element(optician["out"], "sgs-google-reviews")
+    assert section == _element(optician["raw"], "sgs-google-reviews")            # not a byte of it changed
+    markup = _convert(section, optician["out"])
     assert "wp:sgs/google-reviews" not in markup
     for text in ("Anonymous M.", "Had a lovely experience", "2 years ago", "6 reviews"):
         assert text in markup
 
 
 @needs_db
-@needs_eye_care
-def test_eye_care_reviews_annotated_anyway_become_a_google_reviews_block_that_drops_the_card_text(eye_care):
+@needs_optician
+def test_optician_reviews_annotated_anyway_become_a_google_reviews_block_that_drops_the_card_text(optician):
     """MEASURED (2026-09-21), pinned so a converter improvement shows up here. With keep_unmapped_text the rail is
     annotated and the converter emits a container holding an `sgs/google-reviews` block with 13 review items, but
     it lifts only the photo, rating and link: the names, dates and quotes are gone and no content gap says so.
     When the converter can carry those fields this test should start failing, and the default should be revisited."""
-    row = eye_care["kept_rows"]["sgs-google-reviews"]
+    row = optician["kept_rows"]["sgs-google-reviews"]
     assert row["status"] == "partial" and row["items"] == 13 and row["target"] == "ancestor" and row["climbed"] == 2
-    kept = eye_care["kept"]
+    kept = optician["kept"]
     # the block root is the bordered card that holds the header AND the rail (2 levels above the rail), not the rail
     assert re.search(r'<div class="sgs-google-reviews"[^>]*style="border:1px solid #DADCE0;border-radius:12px', kept)
     assert re.search(r'<div class="(?:sgs-google-reviews__rail )?rev-rail"', kept) and kept.count('class="sgs-google-reviews__review"') == 13
@@ -424,33 +424,33 @@ def test_eye_care_reviews_annotated_anyway_become_a_google_reviews_block_that_dr
 
 
 @needs_db
-@needs_eye_care
-def test_eye_care_brand_marquee_logos_are_lifted_into_a_brand_strip(eye_care):
-    row = eye_care["rows"]["sgs-brand-marquee"]
+@needs_optician
+def test_optician_brand_marquee_logos_are_lifted_into_a_brand_strip(optician):
+    row = optician["rows"]["sgs-brand-marquee"]
     assert row["status"] == "applied" and row["block"] == "sgs/brand-strip" and row["items"] == 32
-    out = eye_care["out"]
+    out = optician["out"]
     markup = _convert(_element(out, "sgs-brand-marquee"), out)
     block = json.loads(re.search(r"wp:sgs/brand-strip (\{.*?\}) /?-->", markup, re.S).group(1))
     assert len(block["logos"]) == 32 and block["logos"][0]["media"]["alt"] == "Ray-Ban"
 
 
 @needs_db
-@needs_eye_care
-def test_eye_care_every_declaration_is_reported_and_only_the_intended_markup_changed(eye_care):
-    manifest = json.loads(re.search(r"<script[^>]*data-sgs-manifest[^>]*>(.*?)</script>", eye_care["raw"], re.S).group(1))
-    assert list(eye_care["rows"]) == list(manifest["sectionBlocks"])                        # one row each, none skipped
-    assert {r["status"] for r in eye_care["rows"].values()} <= {"applied", "partial", "queued", "rejected"}
-    assert eye_care["rows"]["sgs-hero"]["status"] == "applied"                              # already carries its class
-    assert eye_care["rows"]["sgs-about-strip"]["status"] == "queued"                        # low confidence
-    assert eye_care["rows"]["sgs-product-more-from-brand"]["status"] == "rejected"          # unexpanded loop
-    assert _undo(eye_care["out"], "trust-bar", "brand-strip") == eye_care["raw"]
+@needs_optician
+def test_optician_every_declaration_is_reported_and_only_the_intended_markup_changed(optician):
+    manifest = json.loads(re.search(r"<script[^>]*data-sgs-manifest[^>]*>(.*?)</script>", optician["raw"], re.S).group(1))
+    assert list(optician["rows"]) == list(manifest["sectionBlocks"])                        # one row each, none skipped
+    assert {r["status"] for r in optician["rows"].values()} <= {"applied", "partial", "queued", "rejected"}
+    assert optician["rows"]["sgs-hero"]["status"] == "applied"                              # already carries its class
+    assert optician["rows"]["sgs-about-strip"]["status"] == "queued"                        # low confidence
+    assert optician["rows"]["sgs-product-more-from-brand"]["status"] == "rejected"          # unexpanded loop
+    assert _undo(optician["out"], "trust-bar", "brand-strip") == optician["raw"]
 
 
 @needs_db
-@needs_eye_care
-def test_eye_care_annotation_is_idempotent(eye_care):
-    again, rows = annotate_from_manifest(eye_care["out"], eye_care["lookup"])
-    assert again == eye_care["out"] and {r["root_class"]: r for r in rows} == eye_care["rows"]
+@needs_optician
+def test_optician_annotation_is_idempotent(optician):
+    again, rows = annotate_from_manifest(optician["out"], optician["lookup"])
+    assert again == optician["out"] and {r["root_class"]: r for r in rows} == optician["rows"]
 
 
 @needs_db
@@ -724,7 +724,7 @@ def test_unlabelled_varying_text_is_only_skipped_once_every_text_field_is_claime
 
 
 def test_an_optional_link_label_in_one_card_is_furniture_not_a_reason_to_withhold():
-    """The Eye Care `Read the full review` sits in a retained <sc-if> in ONE card, so it can be neither compared
+    """The optician client's `Read the full review` sits in a retained <sc-if> in ONE card, so it can be neither compared
     across cards nor left unexplained."""
     extra = '<sc-if value="x"><a href="#">Read the full review</a></sc-if>'
     cards = [_card(0, extra=extra)] + [_card(i) for i in (1, 2)]
@@ -843,7 +843,7 @@ def test_a_manifest_field_map_can_still_place_a_field_the_catch_all_slot_refused
 
 
 def test_a_narrow_slot_synonym_still_maps_and_a_leftover_with_no_free_field_is_only_reported():
-    """`who` and `author` share the narrow slot `attribution`; the derived initial has no field to go to (the Eye Care shape)."""
+    """`who` and `author` share the narrow slot `attribution`; the derived initial has no field to go to (the optician client's shape)."""
     out, rows = annotate_from_manifest(_named_draft(("initial", "N"), ("who", "Ada"), ("text", "Words")), SlotLookup())
     assert rows[0]["status"] == "applied" and rows[0]["fields"] == ["author", "text"]
     assert out.count("sgs-named__author") == 3 and [s["field"] for s in rows[0]["skipped_fields"]] == ["initial"]
@@ -906,12 +906,13 @@ def test_the_reviewers_scenario_on_the_real_database_is_withheld():
 
 
 # --------------------------------------------------------------------------------------------------------------
-# FR-31-31: the real Eye Care draft, resolved by the real browser, the real DB, the UNCHANGED converter
+# FR-31-31: the real optician client's draft, resolved by the real browser, the real DB, the UNCHANGED converter
 # --------------------------------------------------------------------------------------------------------------
 
-EYE_CARE_V2 = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2"
-needs_draft = pytest.mark.skipif(shutil.which("node") is None or not (EYE_CARE_V2 / "Eye Care Birmingham.dc.html").exists(),
-                                 reason="needs node and the Eye Care v2 bundle")
+OPTICIAN_V2 = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2"
+OPTICIAN_V2_DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html"
+needs_draft = pytest.mark.skipif(shutil.which("node") is None or not OPTICIAN_V2_DRAFT.exists(),
+                                 reason="needs node and the optician client's v2 bundle")
 
 
 def _apply_reviews_roles(conn) -> None:
@@ -946,8 +947,8 @@ def _with_who_alias(src_db: Path, dest: Path, present: bool) -> Path:
 def marked_run():
     """The run copy the pipeline would hand the annotator: the real draft with its loops expanded and marked."""
     from js_content_resolver import resolve_js_array_content_with_report
-    raw = (EYE_CARE_V2 / "Eye Care Birmingham.dc.html").read_text(encoding="utf-8")
-    html, count, report = resolve_js_array_content_with_report(raw, EYE_CARE_V2)
+    raw = OPTICIAN_V2_DRAFT.read_text(encoding="utf-8")
+    html, count, report = resolve_js_array_content_with_report(raw, OPTICIAN_V2)
     if count == 0:
         pytest.skip("no browser available here: %s" % report)
     return {"html": html, "report": report}
@@ -1008,7 +1009,7 @@ def test_the_real_databases_slot_table_lists_author_under_two_slots_and_only_rea
 
 @needs_db
 @needs_draft
-def test_eye_care_reviews_become_a_google_reviews_block_with_every_field_the_draft_names(marked_run, alias_dbs):
+def test_optician_reviews_become_a_google_reviews_block_with_every_field_the_draft_names(marked_run, alias_dbs):
     """END TO END. Real draft -> real browser -> markers -> annotation (DB has the `who` synonym) -> the UNCHANGED
     converter. 13 reviews, each with author, text, date and meta, none of it missing, none in the wrong field."""
     out, rows = _annotated(marked_run["html"], alias_dbs["with"])
@@ -1027,7 +1028,7 @@ def test_eye_care_reviews_become_a_google_reviews_block_with_every_field_the_dra
         assert (got["author"], got["text"], got["date"], got["meta"]) == (want["who"], want["text"], want["date"], want["meta"])
     assert [r["rating"] for r in block["reviews"]] == [5] * 13                    # every review really is five-star
     assert [r["avatarColour"] for r in block["reviews"]] == _draft_avatar_colours(marked_run["html"])
-    assert any(r["text"].startswith("I have had the pleasure of being a patient of Ward End Eye Care") for r in block["reviews"])
+    assert any(r["text"].startswith("I have had the pleasure of being a patient of") for r in block["reviews"])
 
 
 @needs_db
@@ -1175,7 +1176,7 @@ def test_a_draft_without_markers_is_left_exactly_as_it_was_and_loads_nothing(tmp
 @needs_db
 @needs_draft
 def test_the_real_marked_draft_never_reaches_the_converter_with_markers_on_any_path(marked_run, tmp_path):
-    """The real Eye Care run copy, resolved by the real browser, run through the real stage with annotation OFF."""
+    """The real optician client's run copy, resolved by the real browser, run through the real stage with annotation OFF."""
     assert "data-src-field" in marked_run["html"]
     args, _run_dir, _mockup = _run_stage(tmp_path, marked_run["html"], flag=False)
     assert "data-src-field" not in args.mockup.read_text(encoding="utf-8")

@@ -801,7 +801,7 @@ const CAPTURE_SRC = `() => {
   // tag substitution: if a draft sibling changes tag on the clone, every SURVIVING same-tag
   // sibling after it renumbers, so even a stripped-of-tag key string still diverged via its
   // index component (found live: Seat A's council report shows exactly this shape on
-  // mamas-munches' testimonial cards, where a p->blockquote substitution shifts sibling
+  // a bakery client's testimonial cards, where a p->blockquote substitution shifts sibling
   // indices). A pure positional index is unaffected by any sibling's tag changing.
   const siblingIndexAmongSiblings = (el) => {
     if (!el.parentElement) return 0;
@@ -1206,7 +1206,7 @@ function comparePair(drec, crec, dDef, viewportPx) {
 // Step 7 (measurement-integrity, 2026-09-09, D-2/M2, qc-council-corrected): replaces the
 // single-best-pair bestPairing(). Once tag is stripped from the three key-construction sites
 // above, a same-text-different-tag OR same-text-same-tag-repeated-instance collision can put
-// 2+ candidates on BOTH the draft and clone side under one key — proven live on mamas-munches
+// 2+ candidates on BOTH the draft and clone side under one key — proven live on a bakery client's page
 // (a product-card's wrapper <div>, body <div> and <img> all anchor to the same ancestor text
 // at "index 0 of their own tag"; council rater-structural traced this to Seat A's report
 // entries 3/5/11/12). The old bestPairing() could only ever resolve ONE pair, silently losing
@@ -1547,7 +1547,7 @@ async function selfTest() {
   // own .innerText inserts a real newline at that boundary. STRIP_RE ran BEFORE WS_RE (Step 5's
   // reorder) and didn't preserve \s, so that newline was silently DELETED rather than collapsed
   // to a space -- verified live this glued "our signature" + "zookies..." into
-  // "our signaturezookies" (no space) on the real mamas-munches site, breaking the ancestor
+  // "our signaturezookies" (no space) on a real bakery client site, breaking the ancestor
   // anchor for every element under that heading.
   {
     const f3bMarkup = `<section><span>Our signature</span><h2>Zookies unique wording control text</h2></section>`;

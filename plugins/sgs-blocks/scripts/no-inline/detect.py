@@ -53,7 +53,7 @@ POSITIVE_CONTROLS = {"brand-strip", "quote"}
 
 # Default canary URLs (the live, authoritative signal).
 DEFAULT_LIVE_URLS = [
-    "https://lavender-dinosaur-183533.hostingersite.com/",  # indus-test front page
+    "https://lavender-dinosaur-183533.hostingersite.com/",  # wholesale-food client test site front page
     "https://sandybrown-nightingale-600381.hostingersite.com/",  # sandybrown canary front page
 ]
 

@@ -3,7 +3,7 @@
 A guard such as `defined( 'ABSPATH' ) || exit;` stops a file being run directly. Misspell the
 constant and the guard exits on EVERY load, silently: no error, no log, an empty 200 page. That
 happened on 2026-09-26: theme/sgs-theme/inc/shop-toolbar-settings.php shipped
-`defined( 'A\\PATH' ) || exit;` (a text replacement ate "BS") and eye-care-test served blank pages
+`defined( 'A\\PATH' ) || exit;` (a text replacement ate "BS") and the optician client's test site served blank pages
 until the theme was rolled back.
 
 Scans the theme and the sgs-blocks plugin (not vendor/, node_modules/ or build/).

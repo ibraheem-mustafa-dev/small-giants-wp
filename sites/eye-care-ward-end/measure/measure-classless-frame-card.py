@@ -2,24 +2,24 @@
 Stage B -> FR-44-1 trust-gate pipeline against a SECOND draft (Frame Card,
 `sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Frame Card.dc.html`) that it has
 never been run against before. Every prior measurement (D1088, D1094, Front C Task 3/4)
-used ONLY the Eye Care Birmingham draft — a single-draft result proves nothing about
+used ONLY the optician client's draft — a single-draft result proves nothing about
 whether the design generalises. This is that second data point.
 
 WHY THIS IS A SEPARATE SCRIPT, NOT A PARAMETERISED `measure-classless-baseline.py`.
-Frame Card sits in the SAME client directory (`sites/eye-care-ward-end/`) as Eye Care
-Birmingham, which already has real rows in the git-tracked audit log
+Frame Card sits in the SAME client directory (`sites/eye-care-ward-end/`) as the optician
+client's draft, which already has real rows in the git-tracked audit log
 (`classless-recognition-log.jsonl`) under `client_slug="eye-care-ward-end"`. Running this
-measurement under that identical client slug would let Frame Card's groups see Eye Care
-Birmingham's precedent rows and risk a real FR-44-1(b) same-client second-occurrence
+measurement under that identical client slug would let Frame Card's groups see the optician
+client's precedent rows and risk a real FR-44-1(b) same-client second-occurrence
 auto-complete trip that has nothing to do with THIS draft — contaminating the precedent
 history a separate, still-pending live-flagged pipeline run depends on being clean.
 Belt and braces: this script uses BOTH (1) a dedicated throwaway audit-log file, never the
 real `classless-recognition-log.jsonl`, and (2) a distinct `CLIENT_SLUG` that never
-collides with the real `"eye-care-ward-end"` slug used by Eye Care Birmingham's own real
+collides with the real `"eye-care-ward-end"` slug used by the optician client's own real
 rows. Retrofitting both isolation knobs onto the maintained baseline script was possible
 (`append_decision`/`read_precedent` both already accept a `path=` override) but would have
 meant either changing that script's own defaults (risking its own correctness for the
-Eye Care Birmingham re-measurement it exists to serve) or trusting every future caller to
+the optician client's re-measurement it exists to serve) or trusting every future caller to
 remember to pass the override — a silent-contamination footgun not worth the avoided
 duplication. This script is read-structure-identical to `measure-classless-baseline.py`
 (same Stage A -> Stage B -> trust-gate call sequence) but owns its own isolated constants
@@ -39,7 +39,8 @@ import sys
 import uuid
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
+REPO = Path(__file__).resolve().parents[3]
+HERE = REPO / "plugins" / "sgs-blocks" / "scripts" / "recogniser"  # the recogniser modules
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
@@ -49,17 +50,15 @@ import classless_draft_adapter as adapter  # noqa: E402
 import classless_trust_gate as gate  # noqa: E402
 import render_repeater_recogniser as stage_a  # noqa: E402
 
-REPO = HERE.resolve().parents[3]
-DRAFT = (REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care"
-         / "Frame Card.dc.html")
+DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Frame Card.dc.html"
 
 # ISOLATION MEASURE 1 — a dedicated throwaway audit-log file, never the real
-# classless-recognition-log.jsonl (which already holds real Eye Care Birmingham rows).
+# classless-recognition-log.jsonl (which already holds real the optician client's rows).
 ISOLATED_LOG_PATH = (REPO / ".claude" / "reports"
                       / "2026-09-18-spec44-frame-card-test-log.jsonl")
 
 # ISOLATION MEASURE 2 — a client slug distinct from the real "eye-care-ward-end" used by
-# Eye Care Birmingham's own real audit-log rows, even though a separate log file alone
+# the optician client's own real audit-log rows, even though a separate log file alone
 # already prevents cross-contamination. Belt and braces per the task brief.
 CLIENT_SLUG = "eye-care-ward-end-frame-card-test"
 
@@ -111,7 +110,7 @@ def main() -> int:
     run_id = f"frame-card-second-draft-{uuid.uuid4().hex[:8]}"
     # Isolated log starts empty for THIS test client slug — a genuinely first run against
     # this draft, with no cross-client and no cross-run precedent to muddy the comparison
-    # against D1094's Eye Care Birmingham baseline.
+    # against D1094's the optician client's baseline.
     precedent = gate.read_precedent(path=ISOLATED_LOG_PATH)
     print(f"[measure] isolated precedent snapshot: {len(precedent)} row(s) before this "
           f"run (run_id={run_id})")

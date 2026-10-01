@@ -25,7 +25,7 @@ Nor can this reuse ``lift_styling_content`` itself: that resolver hard-gates
 on ``role in ('color', 'typography')`` (its own capability-gate comment), so a
 ``role='layout'`` box-family attr like ``sgs/card-grid``'s ``cardPadding``
 (the one REAL, live-verified case this bridge was built for -- D1061, a card's
-measured padding changing 28px@375 -> 34px@768 on the Ward End Eye Care
+measured padding changing 28px@375 -> 34px@768 on the optician client's
 draft) is invisible to it regardless of the ``scalarStylingLift`` capability.
 
 So this module builds the final attribute VALUE directly (a flat scalar, or

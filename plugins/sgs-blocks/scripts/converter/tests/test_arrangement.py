@@ -142,7 +142,7 @@ def test_an_items_own_layout_is_never_lifted_onto_the_containers_own_layout():
 
 
 def test_a_scroll_rail_keeps_its_own_gap_and_direction_when_its_cards_share_theirs():
-    """The measured failure (Eye Care review rail): 3+ identical cards turned a row rail into a column."""
+    """The measured failure (the optician client's review rail): 3+ identical cards turned a row rail into a column."""
     import re
     from converter.entry import convert_section
     card = ('<figure style="margin:0;padding:20px;display:flex;flex-direction:column;gap:12px">'

@@ -59,7 +59,7 @@ from tls_urlopen import urlopen_tls  # noqa: E402
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-DEFAULT_WP_SITE = os.environ.get("SGS_WP_SITE", "https://palestine-lives.org")
+DEFAULT_WP_SITE = os.environ.get("SGS_WP_SITE", "https://sandybrown-nightingale-600381.hostingersite.com")
 
 # Repo root — used to locate the sandybrown env file by default.
 _REPO = Path(__file__).resolve().parents[4]

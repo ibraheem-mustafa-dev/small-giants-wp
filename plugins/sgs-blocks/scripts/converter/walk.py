@@ -674,7 +674,7 @@ def run_universal_content_walk(rec, node, media_map, css_rules, css_text=None) -
         # content attrs (sgs/media: image, video, caption -> primary_content_attr None)
         # or the scalar-content-lift capability, whose selector leg reads descendants.
         # run_mechanism_leaf lifts at most one text, one image and one link, so this
-        # cannot over-fill. Before this, the Eye Care about-strip photo emitted an
+        # cannot over-fill. Before this, the optician client's about-strip photo emitted an
         # sgs/media with its styling and no image (2026-09-24 design, C2).
         atomic_self = rec.kind == "atomic"
         if (rec.delegates_content == 0

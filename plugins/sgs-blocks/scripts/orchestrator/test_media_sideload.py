@@ -1,6 +1,6 @@
 """Spec 31 Phase 5b.5 self-test for media-sideload.py.
 
-Plan contract: sideload a known PNG from Mama's mockup; assert attachment
+Plan contract: sideload a known PNG from the bakery client's mockup; assert attachment
 id + URL returned + writable to the block.json attr. We can't actually
 POST to live WP in CI, so this test covers:
   - collect_image_slots walks the tree + returns shape (path, url, alt)
@@ -158,7 +158,7 @@ BRANDS = [f"brand-{i:02d}.jpg" for i in range(16)]
 
 
 def _make_draft(tmp: str) -> Path:
-    """A draft folder with 16 real files under assets/brands/ (the Eye Care shape)."""
+    """A draft folder with 16 real files under assets/brands/ (the optician client's shape)."""
     draft = Path(tmp) / "draft"
     (draft / "assets" / "brands").mkdir(parents=True)
     for name in BRANDS:
@@ -174,7 +174,7 @@ def _logos() -> list[dict]:
     ]
 
 
-def eye_care_extract() -> dict:
+def optician_extract() -> dict:
     """The same 32 logos at the SIX places extract.json repeats them (192 slots)."""
     return {
         "extracted_attributes": {
@@ -238,7 +238,7 @@ def test_dedupe_192_slots_to_16_uploads() -> None:
         _write_site_env(secrets, "fake-site", "https://fake.example", "u", "p")
         fake = FakeUploader()
         report = mod.sideload_batch(
-            eye_care_extract(), mockup_root=draft, upload=True,
+            optician_extract(), mockup_root=draft, upload=True,
             site="fake-site", secrets_dir=secrets, uploader=fake,
         )
         assert report["slots_found"] == 192, report["slots_found"]
@@ -281,11 +281,11 @@ def test_root_is_the_draft_dir_not_a_run_dir_copy() -> None:
         secrets = Path(tmp) / "secrets"
         _write_site_env(secrets, "fake-site", "https://fake.example", "u", "p")
         fake = FakeUploader()
-        wrong = mod.sideload_batch(eye_care_extract(), mockup_root=run_dir, upload=True,
+        wrong = mod.sideload_batch(optician_extract(), mockup_root=run_dir, upload=True,
                                    site="fake-site", secrets_dir=secrets, uploader=fake)
         assert not wrong["uploaded"] and len(wrong["errors"]) == 16 and not fake.calls
         assert all("assets" in e["local_path"] for e in wrong["errors"])
-        right = mod.sideload_batch(eye_care_extract(), mockup_root=draft, upload=True,
+        right = mod.sideload_batch(optician_extract(), mockup_root=draft, upload=True,
                                    site="fake-site", secrets_dir=secrets, uploader=fake)
         assert len(right["uploaded"]) == 16 and not right["errors"]
         assert all(Path(u["local_path"]).parent == (draft / "assets" / "brands").resolve()
@@ -299,7 +299,7 @@ def test_missing_files_collapse_to_one_error_row_per_file() -> None:
         secrets = Path(tmp) / "secrets"
         _write_site_env(secrets, "fake-site", "https://fake.example", "u", "p")
         report = mod.sideload_batch(
-            eye_care_extract(), mockup_root=Path(tmp) / "empty-draft", upload=True,
+            optician_extract(), mockup_root=Path(tmp) / "empty-draft", upload=True,
             site="fake-site", secrets_dir=secrets,  # default uploader: a missing file raises before any network
         )
         assert len(report["errors"]) == 16, len(report["errors"])
@@ -358,7 +358,7 @@ def test_missing_env_file_fails_loudly() -> None:
             assert "WP_USER_HALF" in str(e), str(e)
         else:
             raise AssertionError("missing site keys must raise SideloadConfigError")
-        # no WP_URL_<KEY>: refuse rather than upload to the palestine-lives.org default.
+        # no WP_URL_<KEY>: refuse rather than upload to the built-in default site.
         (secrets / "nourl.env").write_text("WP_USER_NOURL=u\nWP_APP_PWD_NOURL=p\n", encoding="utf-8")
         try:
             mod.sideload_batch(extract, mockup_root=draft, upload=True,
@@ -415,10 +415,10 @@ def test_reuse_existing_attachment_not_reupload() -> None:
             draft = _make_draft(tmp)
             secrets = Path(tmp) / "secrets"
             _write_site_env(secrets, "fake-site", "https://fake.example", "u", "p")
-            first = mod.sideload_batch(eye_care_extract(), mockup_root=draft, upload=True,
+            first = mod.sideload_batch(optician_extract(), mockup_root=draft, upload=True,
                                        site="fake-site", secrets_dir=secrets)
             assert len(posts) == 16 and not any(u["reused"] for u in first["uploaded"])
-            second = mod.sideload_batch(eye_care_extract(), mockup_root=draft, upload=True,
+            second = mod.sideload_batch(optician_extract(), mockup_root=draft, upload=True,
                                         site="fake-site", secrets_dir=secrets)
             assert len(posts) == 16, f"a re-run must not POST again, got {len(posts)}"
             assert len(second["uploaded"]) == 16 and all(u["reused"] for u in second["uploaded"])
@@ -557,7 +557,7 @@ def _failing_batch(tmp: str, fail: set[str]):
             raise mod.SideloadError(f"upload refused for {file_path.name}")
         return {"id": 700 + int(file_path.stem[-2:]), "source_url": f"{wp_site}/wp-content/uploads/{file_path.name}"}, False
 
-    return mod.sideload_batch(eye_care_extract(), mockup_root=draft, upload=True, site="fake-site",
+    return mod.sideload_batch(optician_extract(), mockup_root=draft, upload=True, site="fake-site",
                               secrets_dir=secrets, uploader=uploader)
 
 
@@ -591,7 +591,7 @@ def test_allow_partial_returns_the_failed_list_and_warns_loudly(capsys) -> None:
 def test_a_complete_upload_and_a_dry_run_are_not_stopped() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         assert mod.enforce_complete_upload(_failing_batch(tmp, set())) is None
-    dry = mod.sideload_batch(eye_care_extract(), mockup_root=Path("/nonexistent"), upload=False)
+    dry = mod.sideload_batch(optician_extract(), mockup_root=Path("/nonexistent"), upload=False)
     assert mod.enforce_complete_upload(dry) is None
 
 

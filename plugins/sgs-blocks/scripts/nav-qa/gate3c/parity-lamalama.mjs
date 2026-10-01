@@ -1,4 +1,4 @@
-// Parity config: lamalama.com's floating pill against its copy on sandybrown (page 4446, header 4435).
+// Parity config: the reference site's floating pill against its copy on sandybrown (page 4446, header 4435).
 // Full checks (scripts/parity/GAP-CHECKLIST.md section 11). Measure only while 4435 is the ACTIVE header, inside
 // one trapped command that restores 3777 and qa-item-markup-fixture.php two-bar (nav-qa/README.md §13).
 // Run: node scripts/parity/draft-live-walk.mjs plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-lamalama.mjs
@@ -15,7 +15,7 @@ const rpill = `() => document.querySelector('${ RPILL }')`;
 // the pill's top row, centred and set in capitals, counts, so a message that is absent reads as absent.
 const message = ( root ) => ( { js: `() => { const r = document.querySelector('${ root }'); if (!r) return null; const top = r.getBoundingClientRect().top; return [...r.querySelectorAll('*')].find((e) => e.children.length === 0 && e.innerText && e.innerText.trim() && getComputedStyle(e).opacity !== '0' && getComputedStyle(e).textTransform === 'uppercase' && e.getClientRects().length && e.getBoundingClientRect().top - top < 40 && e.getBoundingClientRect().width > 20 && Math.abs(e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2 - (r.getBoundingClientRect().left + r.getBoundingClientRect().width / 2)) < 40) || null; }` } );
 
-// lamalama plays an intro before its pill is interactive; every state starts from a fresh page.
+// The reference site plays an intro before its pill is interactive; every state starts from a fresh page.
 const fresh = {
 	draft: async ( h ) => {
 		await h.goto( REF );
@@ -36,7 +36,7 @@ const state = ( name, act ) => ( { name, ...Object.fromEntries( [ 'draft', 'live
 } ] ) ) } );
 
 export default {
-	name: 'lamalama',
+	name: 'reference-pill',
 	// The automatic check (GAP-CHECKLIST section 12) excludes header, footer and banner landmarks by
 	// design, so on a header-only copy it compares only the page bodies, which here are QA scaffolding and
 	// not the reference's page. The header is covered by the section 11 header checks below.

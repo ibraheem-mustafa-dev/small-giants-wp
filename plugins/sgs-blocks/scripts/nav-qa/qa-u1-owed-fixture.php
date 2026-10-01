@@ -11,7 +11,7 @@
  *   exit-cells  header: fantasy's ground, black at 0.5 fading to clear at the bottom edge, as a
  *               gradient fill (`backgroundColourGradient`). Bar: menu 119 (Shop dropdown, Brands mega panel),
  *               collapse below 1024 so both open at 1440, fantasy's submenu link resting at 0.6 and
- *               brightening to 1. Mega panel: the `cards` style with indus-foods' 6px card lift.
+ *               brightening to 1. Mega panel: the `cards` style with the wholesale-food client's 6px card lift.
  *   controls    the negative controls: a flat black fill at 0.5, no submenu opacity pair, no card
  *               lift (empty).
  *   transparent-tiers  header only: a navy fill (#1a1a2e), Transparent on at desktop and off at

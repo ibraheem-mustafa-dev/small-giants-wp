@@ -1,14 +1,14 @@
 # Draft normalisation council: revised plan (2026-09-20, v2)
 
 Status: APPROVED by Bean 2026-09-20 (D1132). No pipeline code built yet. Written for Bean; plain English first.
-v1 of this plan misread the brief (it proposed rewriting drafts to Mama's shape and a new normalise stage) and was rejected. This v2 answers what you actually asked, after a five-part council over the real drafts and code.
+v1 of this plan misread the brief (it proposed rewriting drafts to the bakery client's shape and a new normalise stage) and was rejected. This v2 answers what you actually asked, after a five-part council over the real drafts and code.
 
 ## 1. Your questions, answered
 
 **"Haven't we already built functionality that translates the JS into CSS?"**
-Yes. It exists and works. It is not switched on. The evaluator turns the draft script's own width rules into mobile, tablet and desktop values (75 of 140 names, 0 mismatches against a real render); nothing calls it. So on the live Eye Care page padding is 0px and grids are one column because finished code is not wired in, not because the ability is missing.
+Yes. It exists and works. It is not switched on. The evaluator turns the draft script's own width rules into mobile, tablet and desktop values (75 of 140 names, 0 mismatches against a real render); nothing calls it. So on the live the optician client page padding is 0px and grids are one column because finished code is not wired in, not because the ability is missing.
 
-**"What is actually failing, and the true root cause?"** (run `eye-care-ward-end-eye-care-birmingham-2026-09-20-015848`)
+**"What is actually failing, and the true root cause?"** (run `eye-care-ward-end-<draft-name>-2026-09-20-015848`)
 
 | Group | Symptoms | Root cause (evidence) | Smallest fix |
 |---|---|---|---|
@@ -19,7 +19,7 @@ Yes. It exists and works. It is not switched on. The evaluator turns the draft s
 | 5. Not proven | 26 transparent buttons; overall fidelity | No Stage 11.6 result and no live computed-style capture in that run | Measure first; do not fix until a cause is shown |
 
 **"Does the pipeline ignore parts of the draft files?"** Yes, and silently. Ranked by consequence (each has an existing function to extend, no new stage):
-1. `<sc-if>` conditions are never evaluated: both branches convert (95 in Eye Care). Fix: gap row per non-trivial condition; tag non-chosen branches.
+1. `<sc-if>` conditions are never evaluated: both branches convert (95 in the optician client). Fix: gap row per non-trivial condition; tag non-chosen branches.
 2. `style-hover` (64) never reaches block settings; only the theme colour census reads it. Fix: feed it to `state_value_lift.py`.
 3. `--resolve-js-content` off by default, so JS-array content vanishes without a gap row.
 4. Multi-field JS items are dropped: the resolver keeps only `text` and `iconPath`. This is the bulk of the site: PRODUCTS (16 items, 21 fields), REVIEWS (13), FAQS (8), REASONS (4), BRANDS (44), SHAPES (6). None of that copy exists as HTML text.
@@ -74,7 +74,7 @@ The checker only catches what it has a rule for, so every rule ships with a plan
 **Track A: close the real gaps in existing functions (no new stage).** In this order:
 - A1. Wire the evaluator. Per the 2026-09-20 note's option (d), with the code-level corrections from this council: apply the tier map as an overlay AFTER the `@media` fold (inline is base-only and top priority in the converter's cascade); honour `include_inline=False`; key by the `{{ name }}` text after dc-import splicing; leave state and loop names unresolved and gap-logged. 10px snap decided per section 7 question 1. Residuals on a classless nested element need the D1129 scoping answer (a section root already works: `_residual_selector_for` returns '' so it targets the block wrapper).
 - A2. JS-array content, the bulk of the copy: make it default-on with the existing fail-soft; write a gap row for every skipped `<sc-for>`; carry all item fields, not two (the render already returns whole items). Boundary detection for the ticker is a shared mechanism, so it needs its own rule 7 design gate first.
-- A3 to A8, one small commit each: `<sc-if>` gap rows and branch tagging; `style-hover` to `state_value_lift`; `data:` URI sideload (deterministic: base64 is a lossless encoding, so decoding returns the exact embedded bytes; measured on Eye Care's `LOGOS`: 40 data URIs, 35 JPEG, 3 PNG, 2 SVG, all decode, no duplicates, 1.2 to 34KB, about 65 to 180px wide, so they are small thumbnails and only the embedded resolution is recoverable, not a larger original; name each file by the SHA-256 of its bytes so a re-run never uploads a duplicate, and swap in real logo files when supplied); `data-reveal`/`data-rm` recognised; call `draft-manifest` read-only at Stage -2 and attach its rows to the gap report; fix the halt message.
+- A3 to A8, one small commit each: `<sc-if>` gap rows and branch tagging; `style-hover` to `state_value_lift`; `data:` URI sideload (deterministic: base64 is a lossless encoding, so decoding returns the exact embedded bytes; measured on the optician client's `LOGOS`: 40 data URIs, 35 JPEG, 3 PNG, 2 SVG, all decode, no duplicates, 1.2 to 34KB, about 65 to 180px wide, so they are small thumbnails and only the embedded resolution is recoverable, not a larger original; name each file by the SHA-256 of its bytes so a re-run never uploads a duplicate, and swap in real logo files when supplied); `data-reveal`/`data-rm` recognised; call `draft-manifest` read-only at Stage -2 and attach its rows to the gap report; fix the halt message.
 - A9. Add `--sc-var-responsive-correlated` to the documented run command.
 - Group 3 (b3, b4, b6) and Group 5 (buttons, fidelity) stay in their own queues; Group 5 starts by running Stage 11.6.
 
@@ -85,7 +85,7 @@ The checker only catches what it has a rule for, so every rule ships with a plan
 - Outside the block: an SGS-BEM class on every section root (`sgs-<block>`; existing recogniser, zero new code) and the sections listed in page order; where convenient, width-dependent layout as ordinary `@media` at 768 and 1024, mobile-first (optional, since the evaluator already reads the script's own rules); no `{{ }}` inside a style value (optional for the same reason); no inline base64 (optional).
 - NOT required (code already reads them): datasets and their counts, scope-name kinds, breakpoints, colour and font tokens, site info, links between pages, entity kinds.
 - The README shrinks to intent that has no machine form ("do not paraphrase reviews").
-Not in the standard: `data-slot` (not in Spec 00; Mama's uses none). Lives at `.claude/specs/46-SGS-DRAFT-STANDARD.md` plus the checker at `plugins/sgs-blocks/scripts/draft-standard/`, reading class rules from `scripts/lint-naming-conventions.py` so it cannot drift from Spec 00.
+Not in the standard: `data-slot` (not in Spec 00; the bakery client uses none). Lives at `.claude/specs/46-SGS-DRAFT-STANDARD.md` plus the checker at `plugins/sgs-blocks/scripts/draft-standard/`, reading class rules from `scripts/lint-naming-conventions.py` so it cannot drift from Spec 00.
 
 **Track C: layered verification** (the answer to your two-layer question, section 1). Plus one structural gate against silent ignores: a "draft construct coverage" test that lists every construct category in section 1 and asserts each has a reader or emits a gap row, with a negative control (remove a reader, the test must fail). This is the permanent fix for "functions that ignore parts of files".
 
@@ -96,36 +96,36 @@ Not in the standard: `data-slot` (not in Spec 00; Mama's uses none). Lives at `.
 - The converter matches `@media` to an element by class or tag only; inline `style` is its top-priority layer (`styling_helpers.py::collect_css_decls_for_element`). So a per-device value cannot be carried by inline style; the tier map is applied as an overlay.
 - Stage 4i resolves images against `args.mockup.parent`: nothing may repoint `args.mockup`. Stage 11.6 already scores against the ORIGINAL draft (served from its folder) for DSL drafts; for a static draft it currently scores the run copy if a resolver fired (a small fix: use `_draft_path`).
 - Residual scope: for a classless section root the residual targets the block wrapper (correct); for a nested classless element it would restyle the whole section (open, D1129).
-- Mama's has non-device breakpoints (600, 640, 1280): the standard must allow them, so "only 768 and 1024" is not a rule.
+- The bakery client has non-device breakpoints (600, 640, 1280): the standard must allow them, so "only 768 and 1024" is not a rule.
 
 ## 4. The Claude Design bundle
 
-The Eye Care bundle from Claude Design is `sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2`, beside the original bundle; the checker reads it.
+The optician client bundle from Claude Design is `sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2`, beside the original bundle; the checker reads it.
 
-## 5. Phases (each verified on the real Eye Care page; Mama's markup identical)
+## 5. Phases (each verified on the real the optician client page; the bakery client's markup identical)
 
 | Phase | Deliverable | Verification | Size |
 |---|---|---|---|
 | 0 (parallel, first action) | You run the closing prompt in Claude Design. I run Stage 11.6 on the current clone for a baseline, count the evaluator's thresholds (settles how many names the 10px rule touches), and probe the original at 762 and 766 | Numbers in one short report | small |
-| 1: A1 | Evaluator wired at the substitution point, tier overlay, gap rows | Eye Care: padding, grid columns, h1/h2 sizes match the draft at 375/768/1440 keyed by text (rule 4a); `{{` in style values 0; `audit-inline-styling.js --check` exits 0; Mama's markup identical (32,767 chars) with the change on and off; the three P13 values (`clamp()`, `repeat(2,minmax(0,1fr))`, `minmax(0,1.1fr) minmax(0,1fr)`) shown to pass the resolvers | medium |
+| 1: A1 | Evaluator wired at the substitution point, tier overlay, gap rows | The optician client: padding, grid columns, h1/h2 sizes match the draft at 375/768/1440 keyed by text (rule 4a); `{{` in style values 0; `audit-inline-styling.js --check` exits 0; the bakery client's markup identical (32,767 chars) with the change on and off; the three P13 values (`clamp()`, `repeat(2,minmax(0,1fr))`, `minmax(0,1.1fr) minmax(0,1fr)`) shown to pass the resolvers | medium |
 | 2: A2 | JS content default-on, all fields, gap rows | `'100% genuine'` and a product name found in `block_markup` and in the live page's `innerText`; rule 7 gate for ticker boundary approved first | medium |
 | 3: A3 to A9 | One commit each | Each proved by one string or attribute found in emitted markup | small each |
-| 4: B + C | Checker, coverage test, Spec 46 v1 (only after Phase 0 shows Claude Design follows it), Spec 00 cross-check | Checker green on Mama's, red on Eye Care, planted violation per rule fails | small to medium |
+| 4: B + C | Checker, coverage test, Spec 46 v1 (only after Phase 0 shows Claude Design follows it), Spec 00 cross-check | Checker green on the bakery client's, red on the optician client, planted violation per rule fails | small to medium |
 | 5: D | Design gate for entity registry, creation, references | Bean approves before any build | design only |
 
 Kill condition for Track B: if Claude Design ignores the closing prompt in two tries, Spec 46 stays an outline, and Tracks A and C carry everything (they do not depend on Claude Design).
 
 ## 6. Risks against the seven rules (compact)
 
-Rule 1: no classes are generated; standard classes come from Claude Design and are consumed, not mirrored. Rule 2: none introduced. Rule 3: the fallback paths (evaluator, recognisers, guard) keep running on every draft, and both conforming and non-conforming drafts run on both controls each commit. Rule 4: the accounting unit for a classless draft is name x element x property; every unresolved one is logged with a reason; the coverage test makes silent drops fail. Rule 5: every phase closes on the live Eye Care page. Rule 6: values go to tier attributes, never inline. Rule 7: this document is the gate for Track A1; A2's ticker boundary and D each get their own. R-31-11: fidelity stays against the original draft (a small fix for static drafts).
-Earlier-council findings that survive: no generated classes (rejected design option (b)); Mama's is the wrong positive control for a strict breakpoint rule; snapping invents 8px of behaviour at 760 to 767 (probe first); a checker is both instruction and oracle, hence the planted-violation controls; the unproven items (P10 to P14) are tested in Phase 0 and Phase 1.
+Rule 1: no classes are generated; standard classes come from Claude Design and are consumed, not mirrored. Rule 2: none introduced. Rule 3: the fallback paths (evaluator, recognisers, guard) keep running on every draft, and both conforming and non-conforming drafts run on both controls each commit. Rule 4: the accounting unit for a classless draft is name x element x property; every unresolved one is logged with a reason; the coverage test makes silent drops fail. Rule 5: every phase closes on the live the optician client page. Rule 6: values go to tier attributes, never inline. Rule 7: this document is the gate for Track A1; A2's ticker boundary and D each get their own. R-31-11: fidelity stays against the original draft (a small fix for static drafts).
+Earlier-council findings that survive: no generated classes (rejected design option (b)); the bakery client is the wrong positive control for a strict breakpoint rule; snapping invents 8px of behaviour at 760 to 767 (probe first); a checker is both instruction and oracle, hence the planted-violation controls; the unproven items (P10 to P14) are tested in Phase 0 and Phase 1.
 
 ## 7. Open questions for you (only these)
 
-1. **The 10px snap: ANSWERED (Bean, 2026-09-20): keep the rule, and also normalise the draft platform's own stated breakpoints to ours.** The Eye Care draft states four, each with its own name, in its script and README: `mob` (below 760), `narrow` (below 1024), `wide` (1280 and up) and `lensStack` (below 700). Proposed mapping, applied as data read from the draft (the evaluator already reads the flags from the script, never assumes them): `mob` 760 to our 768 edge; `narrow` 1024 already equals our 1024 edge; `lensStack` 700 to our 768 edge (a below-768 stack point is where the mobile layout ends; the 700 to 767 band is 68px wide and no common device sits in it, since tablets start at 768); `wide` 1280 stays a bounded visual breakpoint (there is no device tier above 1024, moving it would change 3-versus-4 columns across 1024 to 1279). The rule: a declared breakpoint below our tablet edge moves up to 768; one at or above 1024 is never moved. Undeclared ad-hoc thresholds (620, 1060, 1100, 1160) stay residuals. Effect on the 75 resolved names: 17 clean, 37 (760) plus 14 (700) snap, 7 keep a residual (1060 x2, 1100 x2, 1160, 1280, 620). Every snap is logged with its band. **CONFIRMED by Bean (2026-09-20): 700 to 768, and 1280 stays.**
-2. Will you run the closing prompt on the current Eye Care draft in Claude Design (Phase 0)? Nothing else needs you until Phase 2's ticker design gate. **Attach the logo file to the prompt** (see section 4).
+1. **The 10px snap: ANSWERED (Bean, 2026-09-20): keep the rule, and also normalise the draft platform's own stated breakpoints to ours.** The optician client draft states four, each with its own name, in its script and README: `mob` (below 760), `narrow` (below 1024), `wide` (1280 and up) and `lensStack` (below 700). Proposed mapping, applied as data read from the draft (the evaluator already reads the flags from the script, never assumes them): `mob` 760 to our 768 edge; `narrow` 1024 already equals our 1024 edge; `lensStack` 700 to our 768 edge (a below-768 stack point is where the mobile layout ends; the 700 to 767 band is 68px wide and no common device sits in it, since tablets start at 768); `wide` 1280 stays a bounded visual breakpoint (there is no device tier above 1024, moving it would change 3-versus-4 columns across 1024 to 1279). The rule: a declared breakpoint below our tablet edge moves up to 768; one at or above 1024 is never moved. Undeclared ad-hoc thresholds (620, 1060, 1100, 1160) stay residuals. Effect on the 75 resolved names: 17 clean, 37 (760) plus 14 (700) snap, 7 keep a residual (1060 x2, 1100 x2, 1160, 1280, 620). Every snap is logged with its band. **CONFIRMED by Bean (2026-09-20): 700 to 768, and 1280 stays.**
+2. Will you run the closing prompt on the current the optician client draft in Claude Design (Phase 0)? Nothing else needs you until Phase 2's ticker design gate. **Attach the logo file to the prompt** (see section 4).
 3. Carrier: the plan uses one embedded JSON manifest block plus standard section classes. You did not choose between classes and data attributes; say if you want data attributes instead of the manifest block (that needs a new reader per attribute).
-4. The three judgement calls from section 1b that are yours, not code's: (a) section identity for the existing Eye Care draft goes through the review queue once (b3, b4, b6) instead of more inference code; (b) a collection such as best sellers is a WooCommerce product query or a fixed list; (c) which README behavioural rules matter to a static clone and which are notes. I recommend answering (a) now and (b), (c) when Phase 2 reaches them.
+4. The three judgement calls from section 1b that are yours, not code's: (a) section identity for the existing the optician client draft goes through the review queue once (b3, b4, b6) instead of more inference code; (b) a collection such as best sellers is a WooCommerce product query or a fixed list; (c) which README behavioural rules matter to a static clone and which are notes. I recommend answering (a) now and (b), (c) when Phase 2 reaches them.
 
 ## 8. Housekeeping
 

@@ -2,7 +2,7 @@
 
 Run:  cd plugins/sgs-blocks/scripts && python -m pytest theme-extractor/tests/test_presets_classless.py -q
 
-(a) synthetic facts -> slots and hover keys; (b) Mama's regression: class-bearing behaviour is
+(a) synthetic facts -> slots and hover keys; (b) bakery-client regression: class-bearing behaviour is
 unchanged; (c) a live run of measure.js on a tiny classless fixture (skipped without node/Playwright).
 """
 from __future__ import annotations

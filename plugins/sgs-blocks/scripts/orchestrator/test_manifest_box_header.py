@@ -6,7 +6,7 @@ would misfire, and the result must change):
 
 * synthetic drafts + an injected lookup (`RevLookup`, the shape of the real block's facts: item schema with a
   `rating` and a `colour-background` field, scalar attributes with their DB roles, the element slots it styles);
-* the REAL Eye Care run artefact and draft, the REAL framework database (a COPY with the review roles applied, so
+* the REAL optician client's run artefact and draft, the REAL framework database (a COPY with the review roles applied, so
   the tests do not depend on which seed the live DB holds), and the UNCHANGED converter.
 
 Run from plugins/sgs-blocks/scripts:
@@ -38,10 +38,11 @@ REPO = HERE.parents[3]
 RUN = REPO / "pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-21-134838"
 RUN_COPY = RUN / "site-info-resolved.html"
 V2 = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2"
-needs_run = pytest.mark.skipif(not RUN_COPY.exists(), reason="needs the local Eye Care run in pipeline-state")
+V2_DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html"
+needs_run = pytest.mark.skipif(not RUN_COPY.exists(), reason="needs the local optician client's run in pipeline-state")
 needs_db = pytest.mark.skipif(not DbBlockLookup.DEFAULT_DB.exists(), reason="needs the framework database")
-needs_draft = pytest.mark.skipif(shutil.which("node") is None or not (V2 / "Eye Care Birmingham.dc.html").exists(),
-                                 reason="needs node and the Eye Care v2 bundle")
+needs_draft = pytest.mark.skipif(shutil.which("node") is None or not V2_DRAFT.exists(),
+                                 reason="needs node and the optician client's v2 bundle")
 
 # --------------------------------------------------------------------------------------------------------------
 # A lookup with the facts of a reviews block, and a draft builder
@@ -413,7 +414,7 @@ def test_unexplained_header_text_withholds_the_section_with_its_reason_and_keep_
 
 
 def test_a_caption_that_is_not_the_blocks_own_name_maps_to_the_identity_attribute():
-    out, row = run(rev_draft(header=HEADER.replace("Google Reviews", "Ward End Eye Care")))
+    out, row = run(rev_draft(header=HEADER.replace("Google Reviews", "Example Opticians")))
     assert 'class="sgs-google-reviews__business-name"' in out and "businessName" in row["header_fields"]
 
 
@@ -525,8 +526,8 @@ def test_a_row_with_the_new_keys_is_logged_once_per_run_and_the_log_row_is_uncha
     import manifest_decisions_log as log
     _, row = run(rev_draft())
     path = tmp_path / "log.jsonl"
-    assert log.append_manifest_decisions([row], "eye-care", "run-1", path) == 1
-    assert log.append_manifest_decisions([row], "eye-care", "run-1", path) == 0          # idempotent per run label
+    assert log.append_manifest_decisions([row], "example-client", "run-1", path) == 1
+    assert log.append_manifest_decisions([row], "example-client", "run-1", path) == 0          # idempotent per run label
     logged = json.loads(path.read_text(encoding="utf-8").splitlines()[0])
     assert logged["target"] == "ancestor" and logged["outcome"] == "applied" and logged["fields"] == row["fields"]
     assert log.LOG_PATH != path                                                             # this test never touches the live log
@@ -538,7 +539,7 @@ def test_rejected_and_queued_rows_keep_their_exact_key_set():
 
 
 # --------------------------------------------------------------------------------------------------------------
-# 6. The real Eye Care run, the real database (with the review roles applied), the UNCHANGED converter
+# 6. The real optician client's run, the real database (with the review roles applied), the UNCHANGED converter
 # --------------------------------------------------------------------------------------------------------------
 
 def _db_copy(tmp_path_factory) -> Path:
@@ -561,7 +562,7 @@ def roles_db(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def eye_care(roles_db):
+def optician(roles_db):
     raw = RUN_COPY.read_text(encoding="utf-8", newline="")
     lookup = DbBlockLookup(db_path=roles_db)
     out, rows = annotate_from_manifest(raw, lookup)
@@ -584,8 +585,8 @@ def _google_reviews_block(markup: str) -> dict:
 
 @needs_db
 @needs_run
-def test_eye_care_the_block_root_is_the_bordered_card_that_holds_the_header_and_the_rail(eye_care):
-    row, out = eye_care["rows"]["sgs-google-reviews"], eye_care["out"]
+def test_optician_the_block_root_is_the_bordered_card_that_holds_the_header_and_the_rail(optician):
+    row, out = optician["rows"]["sgs-google-reviews"], optician["out"]
     assert row["status"] == "applied" and row["target"] == "ancestor" and row["climbed"] == 2 and row["items"] == 13
     card = re.search(r'<div class="sgs-google-reviews" data-reveal="1" style="border:1px solid #DADCE0;border-radius:12px;background:#fff;[^"]*"[^>]*>', out)   # + layout markers (manifest_layout_choices)
     assert card is not None                                            # the class is on the div that carries the border
@@ -597,8 +598,8 @@ def test_eye_care_the_block_root_is_the_bordered_card_that_holds_the_header_and_
 
 @needs_db
 @needs_run
-def test_eye_care_header_rows_and_every_header_unit_is_accounted_for(eye_care):
-    row = eye_care["rows"]["sgs-google-reviews"]
+def test_optician_header_rows_and_every_header_unit_is_accounted_for(optician):
+    row = optician["rows"]["sgs-google-reviews"]
     assert row["fields"] == ["author", "text", "date", "meta", "rating"]
     skipped = _skipped(row)
     for label in ("header image 'google-g.svg'", "header button 'Previous reviews'", "header button 'More reviews'"):
@@ -609,7 +610,7 @@ def test_eye_care_header_rows_and_every_header_unit_is_accounted_for(eye_care):
     assert "header text 'Google Reviews'" in skipped or "sourceLabel" in fields
     assert any(f.startswith("header star bar") for f in skipped)
     assert any(f.startswith("header text 'Scroll for more") for f in skipped) or "footnote" in fields
-    out = eye_care["out"]
+    out = optician["out"]
     assert re.search(r'<span class="sgs-google-reviews__average-rating"[^>]*>4\.7</span>', out)
     assert re.search(r'<span class="sgs-google-reviews__review-count"[^>]*>15 reviews</span>', out)
     assert re.search(r'<a class="sgs-google-reviews__review-request-url" href="[^"]+"[^>]*>Write a review</a>', out)
@@ -617,8 +618,8 @@ def test_eye_care_header_rows_and_every_header_unit_is_accounted_for(eye_care):
 
 @needs_db
 @needs_run
-def test_eye_care_every_review_star_row_is_the_rating_class_and_the_converter_lifts_five_for_all_thirteen(eye_care):
-    out = eye_care["out"]
+def test_optician_every_review_star_row_is_the_rating_class_and_the_converter_lifts_five_for_all_thirteen(optician):
+    out = optician["out"]
     assert out.count('class="sgs-google-reviews__rating"') == 13
     markup = _convert(out, "sgs-google-reviews")
     block = _google_reviews_block(markup)
@@ -627,10 +628,10 @@ def test_eye_care_every_review_star_row_is_the_rating_class_and_the_converter_li
 
 @needs_db
 @needs_run
-def test_eye_care_the_unchanged_converter_emits_one_google_reviews_block_with_the_thirteen_reviews_and_the_header_is_inside_it(eye_care):
+def test_optician_the_unchanged_converter_emits_one_google_reviews_block_with_the_thirteen_reviews_and_the_header_is_inside_it(optician):
     """Recognition of the descendant card is not subject to the R1 gate: the converter (unchanged) emits the block for
     the card, so the header text no longer falls into generic text blocks."""
-    markup = _convert(eye_care["out"], "sgs-google-reviews")
+    markup = _convert(optician["out"], "sgs-google-reviews")
     assert markup.count("wp:sgs/google-reviews ") == 1
     block = _google_reviews_block(markup)
     assert len(block["reviews"]) == 13 and block["reviews"][0]["author"] == "Anonymous M."
@@ -642,13 +643,13 @@ def test_eye_care_the_unchanged_converter_emits_one_google_reviews_block_with_th
     assert block.get("sourceLabel") == "Google Reviews"
     assert block.get("seeAllLabel") == "See all reviews"
     assert "What people say" in markup                                  # the heading above the card stays its own block
-    assert markup.count("wp:sgs/text") <= _convert(eye_care["raw"], "sgs-google-reviews").count("wp:sgs/text") // 2
+    assert markup.count("wp:sgs/text") <= _convert(optician["raw"], "sgs-google-reviews").count("wp:sgs/text") // 2
 
 
 @needs_db
 @needs_run
-def test_eye_care_negative_control_the_un_annotated_section_strands_the_header_in_generic_blocks(eye_care):
-    markup = _convert(eye_care["raw"], "sgs-google-reviews")
+def test_optician_negative_control_the_un_annotated_section_strands_the_header_in_generic_blocks(optician):
+    markup = _convert(optician["raw"], "sgs-google-reviews")
     assert "wp:sgs/google-reviews" not in markup
     for text in ("4.7", "15 reviews", "Write a review", "Scroll for more"):
         assert text in markup
@@ -656,30 +657,30 @@ def test_eye_care_negative_control_the_un_annotated_section_strands_the_header_i
 
 @needs_db
 @needs_run
-def test_eye_care_annotation_is_deterministic_a_second_pass_changes_nothing_and_only_classes_were_added(eye_care, roles_db):
+def test_optician_annotation_is_deterministic_a_second_pass_changes_nothing_and_only_classes_were_added(optician, roles_db):
     lookup = DbBlockLookup(db_path=roles_db)
     try:
-        same, rows = annotate_from_manifest(eye_care["raw"], lookup)
-        again, _ = annotate_from_manifest(eye_care["out"], lookup)
+        same, rows = annotate_from_manifest(optician["raw"], lookup)
+        again, _ = annotate_from_manifest(optician["out"], lookup)
     finally:
         lookup.close()
-    assert same == eye_care["out"] and {r["root_class"]: r for r in rows} == eye_care["rows"]
-    assert again == eye_care["out"]
+    assert same == optician["out"] and {r["root_class"]: r for r in rows} == optician["rows"]
+    assert again == optician["out"]
     section = lambda page: re.search(r'<section class="sgs-google-reviews".*?</section>', page, re.S).group(0)  # noqa: E731
-    undone = section(eye_care["out"])
+    undone = section(optician["out"])
     for _ in range(3):                                                  # an element may carry an element class AND its layout modifier
         undone = re.sub(r'(?<=class=")sgs-google-reviews__[a-z-]+ ', "", undone)                # an annotation class first in an existing list
         undone = re.sub(r' class="sgs-google-reviews__[a-z-]+"', "", undone)
     undone = re.sub(r' data-sgs-(?!manifest)[a-z-]+="[^"]*"', "", undone)   # the layout carriers on the block root (manifest_layout_choices)
     undone = undone.replace('<div class="sgs-google-reviews" data-reveal="1"', '<div data-reveal="1"')
-    assert undone == ma.strip_field_markers(section(eye_care["raw"]))       # only the annotation classes were added
+    assert undone == ma.strip_field_markers(section(optician["raw"]))       # only the annotation classes were added
 
 
 @needs_db
 @needs_draft
-def test_eye_care_avatar_colours_are_classed_and_lifted_per_review_from_the_draft_the_real_runtime_rendered(roles_db):
+def test_optician_avatar_colours_are_classed_and_lifted_per_review_from_the_draft_the_real_runtime_rendered(roles_db):
     from js_content_resolver import resolve_js_array_content_with_report
-    raw = (V2 / "Eye Care Birmingham.dc.html").read_text(encoding="utf-8")
+    raw = V2_DRAFT.read_text(encoding="utf-8")
     html, count, report = resolve_js_array_content_with_report(raw, V2)
     if count == 0:
         pytest.skip("no browser available here: %s" % report)
@@ -776,7 +777,7 @@ def test_finding_1_a_containing_box_is_a_full_border_a_radius_with_a_border_a_sh
     assert bool(ma._makes_box(declared, IDENTITY | {"box-shadow"})) is is_box
 
 
-def test_finding_1_the_real_eye_care_card_shape_still_climbs_to_the_bordered_card():
+def test_finding_1_the_real_optician_card_shape_still_climbs_to_the_bordered_card():
     out, row = run(rev_draft())
     assert row["climbed"] == 2 and row["status"] == "applied"
 
@@ -787,11 +788,11 @@ def test_finding_1_safety_net_reports_header_units_beside_the_block_when_no_elem
     declaration is withheld; with a header of nothing shape-mapped the rest is reported."""
     _, row = run(rev_draft(card_style="padding:20px"))
     assert row["status"] == "rejected" and "outside the block root" in row["reason"] and "'4.7'" in row["reason"]
-    header = '<div><span>Ward End Eye Care</span><a href="https://x.test/r">Write a review</a></div>'
+    header = '<div><span>Example Opticians</span><a href="https://x.test/r">Write a review</a></div>'
     out, row = run(rev_draft(card_style="padding:20px", header=header))              # nothing shape-mapped: reported only
     assert row["status"] == "applied" and row["climbed"] == 0
     skipped = _skipped(row)
-    assert "sits outside the block root" in skipped["header text 'Ward End Eye Care'"]
+    assert "sits outside the block root" in skipped["header text 'Example Opticians'"]
     assert "sits outside the block root" in skipped["header link 'Write a review'"]
     assert "sits outside the block root" in next(r for f, r in skipped.items() if f.startswith("header text 'Scroll for more"))
 
@@ -802,10 +803,10 @@ def test_finding_1_negative_control_the_heading_region_and_units_inside_the_bloc
     html = rev_draft().replace("<h2>What people say</h2>", f"<div>{heading}</div>")
     _, row = run(html)
     assert row["status"] == "applied" and not any("sits outside" in r for r in _skipped(row).values())
-    _, row = run(rev_draft(card_style="padding:20px", header="<span>Ward End Eye Care</span>", controls="").replace(
+    _, row = run(rev_draft(card_style="padding:20px", header="<span>Example Opticians</span>", controls="").replace(
         "<h2>What people say</h2>", f"<div>{heading}</div>"))
     assert not any("What people say" in f or "From the clinic" in f for f in _skipped(row))
-    assert any("Ward End Eye Care" in f for f in _skipped(row))                     # ...while the header beside the block is
+    assert any("Example Opticians" in f for f in _skipped(row))                     # ...while the header beside the block is
 
 
 @needs_db
@@ -891,7 +892,7 @@ def test_finding_4_the_business_name_attribute_is_found_on_the_live_database_by_
     assert row == ("text-content", ".sgs-google-reviews__business-name")                 # pin the fixture to the live shape
     lookup = DbBlockLookup(db_path=live_db)
     try:
-        out, row = run(rev_draft(header=HEADER.replace("Google Reviews", "Ward End Eye Care")), lookup)
+        out, row = run(rev_draft(header=HEADER.replace("Google Reviews", "Example Opticians")), lookup)
         assert row["status"] == "applied" and "businessName" in row["header_fields"]
         assert 'class="sgs-google-reviews__business-name"' in out
         out, row = run(rev_draft(), lookup)                                                # the block's own name is never a business name
@@ -902,7 +903,7 @@ def test_finding_4_the_business_name_attribute_is_found_on_the_live_database_by_
 
 @needs_db
 def test_finding_4_negative_controls_two_candidates_or_no_declared_selector_withhold_the_caption(live_db):
-    header = HEADER.replace("Google Reviews", "Ward End Eye Care")
+    header = HEADER.replace("Google Reviews", "Example Opticians")
     conn = sqlite3.connect(str(live_db))
     conn.execute("INSERT INTO block_attributes (block_slug, attr_name, attr_type, role, derived_selector, emit_shape) VALUES "
                  "('sgs/google-reviews', 'outletName', 'string', 'text-content', '.sgs-google-reviews__outlet-name', 'nested')")
@@ -911,7 +912,7 @@ def test_finding_4_negative_controls_two_candidates_or_no_declared_selector_with
     lookup = DbBlockLookup(db_path=live_db)
     try:
         out, row = run(rev_draft(header=header), lookup)                                    # two name-like text attributes
-        assert row["status"] == "rejected" and "'Ward End Eye Care'" in row["reason"] and "business-name" not in out
+        assert row["status"] == "rejected" and "'Example Opticians'" in row["reason"] and "business-name" not in out
     finally:
         lookup.close()
     conn = sqlite3.connect(str(live_db))
@@ -922,7 +923,7 @@ def test_finding_4_negative_controls_two_candidates_or_no_declared_selector_with
     lookup = DbBlockLookup(db_path=live_db)
     try:
         out, row = run(rev_draft(header=header), lookup)                                    # no selector: not scalar-liftable
-        assert row["status"] == "rejected" and "'Ward End Eye Care'" in row["reason"]
+        assert row["status"] == "rejected" and "'Example Opticians'" in row["reason"]
     finally:
         lookup.close()
 
@@ -930,7 +931,7 @@ def test_finding_4_negative_controls_two_candidates_or_no_declared_selector_with
 def test_finding_4_the_identity_role_is_not_a_business_name():
     """On the live database `identity` names icon identities (iconName, iconSource), so a caption is never mapped to one."""
     scalars = [ScalarAttr("iconName", "identity", "string", False, ".sgs-google-reviews__icon-name")]
-    out, row = run(rev_draft(header=HEADER.replace("Google Reviews", "Ward End Eye Care")),
+    out, row = run(rev_draft(header=HEADER.replace("Google Reviews", "Example Opticians")),
                    RevLookup(scalars=scalars + [a for a in SCALARS if a.name != "businessName"]))
     assert row["status"] == "rejected" and "icon-name" not in out
 
@@ -992,7 +993,7 @@ def test_finding_7_negative_control_the_same_text_without_aria_hidden_withholds_
 
 
 def test_finding_7_an_aria_hidden_unit_does_not_count_against_the_only_caption_rule():
-    header = HEADER.replace("Google Reviews", "Ward End Eye Care").replace(
+    header = HEADER.replace("Google Reviews", "Example Opticians").replace(
         '<span style="font-size:13.5px">15 reviews</span>', '<span style="font-size:13.5px">15 reviews</span><p aria-hidden="true">decorative words</p>')
     out, row = run(rev_draft(header=header), RevLookup(scalars=SCALARS))
     assert row["status"] == "applied" and "businessName" in row["header_fields"]
@@ -1002,8 +1003,8 @@ RUN_NEW = REPO / "pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-2
 
 
 @needs_db
-@pytest.mark.skipif(not (RUN_NEW / "site-info-resolved.html").exists(), reason="needs the local Eye Care run in pipeline-state")
-def test_the_real_eye_care_run_reviews_row_is_unchanged_by_the_fix_wave():
+@pytest.mark.skipif(not (RUN_NEW / "site-info-resolved.html").exists(), reason="needs the local optician client's run in pipeline-state")
+def test_the_real_optician_run_reviews_row_is_unchanged_by_the_fix_wave():
     """The recorded report of run 175447 (`climbed: 2`) is what the annotator still produces from that run's input."""
     raw = (RUN_NEW / "site-info-resolved.html").read_text(encoding="utf-8", newline="")
     lookup = DbBlockLookup()

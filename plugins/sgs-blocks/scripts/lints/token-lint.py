@@ -1525,7 +1525,7 @@ def apply_write_plan(
     plan:
         A TokenWritePlan produced by one of the lint_* functions.
     style_variation_path:
-        Path to the client style variation JSON file (e.g. mamas-munches.json).
+        Path to the client style variation JSON file (e.g. <client>.json).
     dry_run:
         When True, compute and return the diff plan without writing to disk.
 

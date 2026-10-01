@@ -211,7 +211,7 @@
   ],
   "marquee-toggle": [
     "styling-behaviour",
-    "A BOOLEAN attr that switches the block's own seamless marquee (an endlessly translating row of its repeated items) ON. Consumer: converter/resolvers/marquee.py, joined by block_attributes.role = 'marquee-toggle' -- no block name in code (R-31-1). It is the marquee's presence signal: the resolver only runs for a block that declares one. Holders: sgs/trust-bar.autoScroll, sgs/brand-strip.scrolling. Added 2026-09-21 (Eye Care ticker + brand strip: the draft's `animation: marquee Ns linear infinite` over `@keyframes marquee {to {transform: translateX(-50%)}}` had no destination). Styling-behaviour: not content, and deliberately not css-gate (its value is never derived from a raw CSS declaration by the generic css_property join, it is derived from the SHAPE of the element's animation across the device tiers)."
+    "A BOOLEAN attr that switches the block's own seamless marquee (an endlessly translating row of its repeated items) ON. Consumer: converter/resolvers/marquee.py, joined by block_attributes.role = 'marquee-toggle' -- no block name in code (R-31-1). It is the marquee's presence signal: the resolver only runs for a block that declares one. Holders: sgs/trust-bar.autoScroll, sgs/brand-strip.scrolling. Added 2026-09-21 (optician client ticker + brand strip: the draft's `animation: marquee Ns linear infinite` over `@keyframes marquee {to {transform: translateX(-50%)}}` had no destination). Styling-behaviour: not content, and deliberately not css-gate (its value is never derived from a raw CSS declaration by the generic css_property join, it is derived from the SHAPE of the element's animation across the device tiers)."
   ],
   "marquee-below": [
     "styling-behaviour",

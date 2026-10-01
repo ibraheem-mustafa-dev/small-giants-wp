@@ -305,7 +305,7 @@ _DB_ATTRS_CACHE: dict[str, list[str]] = {}
 # (db-sourced attrs, or auto-derived attrs whose legitimate "unset" default
 # is falsy — e.g. paddingTopTablet default='', shadow default=None) still
 # got flagged "no value extracted" even when the draft never carried a CSS
-# declaration for that property at all. On the 2026-07-09 mamas-munches
+# declaration for that property at all. On the 2026-07-09 bakery-client
 # homepage run this produced 614 extraction_failed entries, ALL reason
 # "no value extracted" — noise drowning genuine gaps.
 #

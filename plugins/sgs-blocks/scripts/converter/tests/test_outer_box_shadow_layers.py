@@ -9,7 +9,7 @@ GROUND-TRUTH: spec=31 §13.1 R-31-1/R-31-9; design=`.claude/reports/
   Real draft values (mega-panel box-shadow), quoted verbatim from the mockups:
     Halcyon  (sites/Mega-menu design/Mega Menu.dc.html, line 71):
       '0 30px 80px -30px rgba(0,0,0,.35),0 2px 8px -2px rgba(0,0,0,.1)'
-    Indus    (sites/Indus Foods Mega Menu Design/Indus Foods Mega Menu.dc.html, line 68):
+    the wholesale-food client    (sites/Indus Foods Mega Menu Design/Indus Foods Mega Menu.dc.html, line 68):
       '0 30px 80px -30px rgba(20,25,35,.28),0 2px 8px -2px rgba(0,0,0,.08)'
   Neither matches a design_tokens shadow preset (verified: no preset default_value
   equals either normalised literal) — before this task both gapped NO_DESTINATION.
@@ -321,7 +321,7 @@ def test_indus_shape_and_colour_round_trip_through_php_composer(php_available):
     parsed = shadow_layers.parse_draft_box_shadow(INDUS_MEGA_PANEL_SHADOW)
     expected = _php_compose(INDUS_MEGA_PANEL_SHADOW, None)
     actual = _php_compose(parsed.shape, parsed.colour)
-    _assert_shadows_equivalent(expected, actual, "Indus mega-panel shadow")
+    _assert_shadows_equivalent(expected, actual, "the wholesale-food client's mega-panel shadow")
 
 
 def test_folded_shape_round_trips_byte_identical_when_no_colour_sibling(php_available):

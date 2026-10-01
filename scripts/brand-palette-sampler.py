@@ -8,7 +8,7 @@
 #
 # Usage:
 #   python scripts/brand-palette-sampler.py \
-#     --client mamas-munches \
+#     --client <client> \
 #     --brand-dir sites/mamas-munches/research/brand \
 #     --mockup-css sites/mamas-munches/mockups/homepage/index.html \
 #     --output sites/mamas-munches/research/brand-palette.json

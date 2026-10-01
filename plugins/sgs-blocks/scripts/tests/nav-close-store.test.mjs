@@ -151,7 +151,7 @@ check( 'scroll intent window constant is 150ms (design §4.6)', SCROLL_INTENT_WI
 	const scrollAt = 1020;
 	const intentional = isIntentionalScroll( scrollAt, wheelAt );
 	const distance = 30;
-	const threshold = 24; // lamalama's clone value (§3 exit-cell row).
+	const threshold = 24; // the reference site's clone value (§3 exit-cell row).
 	const closes = intentional && crossedScrollDistance( distance, threshold );
 	check( 'scroll-close: a wheel-led 30px scroll past a 24px threshold CLOSES', closes, true );
 }

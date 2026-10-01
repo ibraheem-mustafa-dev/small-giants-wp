@@ -6,7 +6,7 @@ plan_label: opus
 docscore_grade: B+ (self-assessed)
 generated: 2026-05-23
 generator: /phase-planner (inline, parent session opus)
-primary_goal: "Build a specialised one-shot cloner that converts source mockup headers + footers into Spec 17 architecture (template-part patterns + Sgs_Site_Info store + Customiser-controlled behaviours), bypassing the generic page-clone pipeline. Validate on Mama's Munches; defer per-page-pipeline integration until standalone path is proven."
+primary_goal: "Build a specialised one-shot cloner that converts source mockup headers + footers into Spec 17 architecture (template-part patterns + Sgs_Site_Info store + Customiser-controlled behaviours), bypassing the generic page-clone pipeline. Validate on the bakery client; defer per-page-pipeline integration until standalone path is proven."
 ---
 
 > **⚠ ARCHIVED 2026-06-10 — SUPERSEDED (plans-folder consolidation).** Never-started build; preserved here for its 12 steps + 5 locked KJCs, pointed to from parking P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER. Live canonical cloning plan: `../2026-06-09-clone-fix-build-plan.md` + `../2026-06-09-clone-fix-sign-off-ledger.md`. Remaining open work tracked in `../../parking.md`. Kept for historical detail (shipped-state, locked decisions, methodology).
@@ -38,9 +38,9 @@ If any pre-condition fails, surface to Bean before proceeding — don't start th
 
 ## Phase success criteria (done when)
 
-- [ ] `scripts/clone-header-footer.py` exists, runs end-to-end on Mama's Munches mockup, exits 0
-- [ ] Output: NEW pattern files at `theme/sgs-theme/patterns/client-mamas-munches-header.php` + `client-mamas-munches-footer.php` registered with `blockTypes: ['core/template-part/header']` / `[footer]`
-- [ ] `wp_options['sgs_site_info']` populated on sandybrown with Mama's Munches logo + phone + email + socials + address (whichever exist in source)
+- [ ] `scripts/clone-header-footer.py` exists, runs end-to-end on the bakery client mockup, exits 0
+- [ ] Output: NEW pattern files at `theme/sgs-theme/patterns/client-bakery-client-header.php` + `client-bakery-client-footer.php` registered with `blockTypes: ['core/template-part/header']` / `[footer]`
+- [ ] `wp_options['sgs_site_info']` populated on sandybrown with the bakery client logo + phone + email + socials + address (whichever exist in source)
 - [ ] Behaviour detected + applied: source header sticky-on-scroll → `Sgs_Header_Rules` rule with `behaviour: sticky`, body_class engages on the live page
 - [ ] **Stage 11 pixel-diff: ≤ 1% on every (selector × viewport) cell** — aligned to Phase 1's 1%-per-section standard. The full matrix that must hold:
     - `header.sgs-header` × {375, 768, 1440} all ≤ 1% (baseline 25.4% / 82.5% / 26.7%)
@@ -48,7 +48,7 @@ If any pre-condition fails, surface to Bean before proceeding — don't start th
     - **Why this is realistic:** the high baseline numbers reflect "no real footer rendered on sandybrown today + skeletal header" — they are not measuring a near-match drifting by 96%. Once the cloner emits real pattern markup + Site Info bindings + behaviour layer, the comparison becomes "rendered chrome vs mockup chrome" — same standard Phase 1 holds the body to. Bean's binding directive (2026-05-23): hold every section to the same 1% bar.
 - [ ] Sticky behaviour visually verified: scroll the deployed page, header stays pinned with `body.is-header-scrolled` class active
 - [ ] Re-run idempotent: second invocation produces identical output (no duplicate patterns, no Site Info wipe)
-- [ ] Universal test: same script on a synthetic 2nd mockup (Indus Foods, if available; else a minimal hand-written HTML) produces a valid pattern + Site Info — proves the cloner is universal, not Mama's-specific (blub.db row 269 discipline)
+- [ ] Universal test: same script on a synthetic 2nd mockup (the wholesale-food client, if available; else a minimal hand-written HTML) produces a valid pattern + Site Info — proves the cloner is universal, not Mama's-specific (blub.db row 269 discipline)
 - [ ] `/qc-council` Stage 5 verdict = proceed before merge to main
 - [ ] Phase 2 close handoff updates `state.md` → `phase-3-parking-sweep`
 
@@ -63,7 +63,7 @@ If any pre-condition fails, surface to Bean before proceeding — don't start th
 7. `plugins/sgs-blocks/includes/class-sgs-header-behaviours.php` — body_class behaviour layer + CSS asset
 8. `theme/sgs-theme/patterns/framework-header-default.php` + `framework-footer-default.php` — pattern shape to mirror
 9. `sites/mamas-munches/mockups/homepage/index.html` — source mockup (test input)
-10. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json` — header/footer baseline (44.9% / 96.3% mean)
+10. `pipeline-state/bakery-client-homepage-2026-05-23-145045/stage-11-pixel-diff.json` — header/footer baseline (44.9% / 96.3% mean)
 11. `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` — Phase 1 orchestrator (read only if KJC 1 picks integration mode)
 12. `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` — walker output shape (read only if KJC 1 picks integration; cloner reuses NOTHING from cv2 unless integration mode wins)
 13. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map (binding rule discipline)
@@ -129,7 +129,7 @@ Step 2.1 — Read all entry-context artefacts + confirm Phase 1 closed
     Integration: standalone (no system test needed)
 ```
 
-## Step 2.2 — Source DOM capture from Mama's Munches mockup
+## Step 2.2 — Source DOM capture from the bakery client mockup
 
 ```
 Step 2.2 — Extract <header> + <footer> + their associated CSS from the source mockup
@@ -208,7 +208,7 @@ Step 2.5 — Build scripts/clone-header-footer.py (universal cloner, NOT Mama's-
                 6. Build deploy actions list: WP-CLI commands the deploy stage will run on the target host (Step 2.8 consumes this — separation lets the script be tested locally without deploying)
                 7. Idempotence: hash source-dom + mapping-plan, write `_sgs_cloned_from_pattern_slug` equivalent metadata into pattern PHP header comment, skip generation when hash matches existing pattern file's recorded hash
                 Universal-extraction discipline (row 269): NO Mama's-specific branches. Every source-to-destination rule applies to ANY client mockup. Mama's IS the test input, not the spec.
-  Files:       Write: scripts/clone-header-footer.py + theme/sgs-theme/patterns/client-mamas-munches-header.php + client-mamas-munches-footer.php + pipeline-state/header-footer-cloner-mamas/site-info.json + header-rules.json
+  Files:       Write: scripts/clone-header-footer.py + theme/sgs-theme/patterns/client-bakery-client-header.php + client-bakery-client-footer.php + pipeline-state/header-footer-cloner-mamas/site-info.json + header-rules.json
   Inputs:      Step 2.4 mapping-plan.md, KJC 1 decision (standalone vs integrated)
   Outcome:     Cloner script + 2 pattern files + 2 sidecar JSONs exist; second run produces 0-diff against first run (idempotent)
   Exec:        SEQUENTIAL
@@ -229,7 +229,7 @@ Step 2.5 — Build scripts/clone-header-footer.py (universal cloner, NOT Mama's-
 
     Inputs:
     - Source HTML mockup file
-    - Client slug (e.g. "mamas-munches")
+    - Client slug (e.g. "the bakery client")
     - Optional deploy target (SSH host; omit for local-only dry run)
 
     Outputs:
@@ -281,8 +281,8 @@ Step 2.5 — Build scripts/clone-header-footer.py (universal cloner, NOT Mama's-
     Match `theme/sgs-theme/patterns/framework-header-default.php` exactly for the header-comment block. Include `_sgs_cloned_from_pattern_slug` equivalent provenance:
     ```
     /**
-     * Title: Mama's Munches Header
-     * Slug: sgs/client-mamas-munches-header
+     * Title: the bakery client Header
+     * Slug: sgs/client-bakery-client-header
      * Categories: header
      * Block Types: core/template-part/header
      * Description: Auto-generated by clone-header-footer.py from sites/mamas-munches/mockups/homepage/index.html on YYYY-MM-DD
@@ -307,12 +307,12 @@ Step 2.5 — Build scripts/clone-header-footer.py (universal cloner, NOT Mama's-
     - File length limit: scripts/clone-header-footer.py ≤ 250 lines per CLAUDE.md; refactor into a package under scripts/clone_header_footer/ if it grows beyond.
 
     UNIVERSAL DISCIPLINE (blub.db row 269):
-    NO Mama's-specific branches. NO `if client == "mamas-munches"` anywhere. The script must work on ANY mockup with `<header>` + `<footer>` tags. Mama's is the test input, not the spec target.
+    NO Mama's-specific branches. NO `if client == "bakery-client"` anywhere. The script must work on ANY mockup with `<header>` + `<footer>` tags. Mama's is the test input, not the spec target.
 
     OUTPUT for this dispatch:
     1. The 7 output artefacts listed above
     2. A list of every file touched with line ranges
-    3. End-to-end test run on Mama's Munches mockup — script exits 0, summary.log shows no errors, hash recorded
+    3. End-to-end test run on the bakery client mockup — script exits 0, summary.log shows no errors, hash recorded
     4. Idempotence test: run twice, second run reports "skipped (hash match)"
     5. Universal test: hand-construct a 20-line synthetic 2nd mockup, run script with `--client synthetic-test`, confirm valid pattern files emitted without code changes
     6. Any new architectural rules surfaced → flag for /capture-lesson at Step 2.11
@@ -332,7 +332,7 @@ QA Gate 2.B — Local cloner output validation (no deploy yet)
   Model:   inline (PHP lint) + Haiku (markup sanity check)
   Exec:    SEQUENTIAL
   Deps:    Step 2.5 commit (script + pattern files staged)
-  Check:   Run: (a) `php -l theme/sgs-theme/patterns/client-mamas-munches-header.php` — parse-error free; (b) `php -l theme/sgs-theme/patterns/client-mamas-munches-footer.php` — same; (c) **dry-run block-parse validation via WP-CLI over SSH:** `wp eval 'echo parse_blocks(file_get_contents("/path/to/pattern.php")) ? "ok" : "fail";'` for each pattern — must output `ok` (or use the existing `validate-stage-artifact.py` if its schema covers raw block markup; consult the script before invoking); (d) site-info.json schema: every key in the FR-S4-2 well-known list (`logo_url`, `phone`, `email`, `socials.*`, `address`, `opening_hours.*`, `copyright`) is either present-with-value OR absent (no nulls); (e) header-rules.json: at least one entry with valid `behaviour` enum (`sticky|transparent|shrink|static|sticky,shrink`); (f) deploy-actions.sh contains ONLY Spec 19 §4 commands — `grep -vE "^(wp sgs (site-info|header-rules|footer-rules|seed-template-parts|reset-template-parts|seeding-arm|migrations) |#|$)" deploy-actions.sh` returns 0 lines.
+  Check:   Run: (a) `php -l theme/sgs-theme/patterns/client-bakery-client-header.php` — parse-error free; (b) `php -l theme/sgs-theme/patterns/client-bakery-client-footer.php` — same; (c) **dry-run block-parse validation via WP-CLI over SSH:** `wp eval 'echo parse_blocks(file_get_contents("/path/to/pattern.php")) ? "ok" : "fail";'` for each pattern — must output `ok` (or use the existing `validate-stage-artifact.py` if its schema covers raw block markup; consult the script before invoking); (d) site-info.json schema: every key in the FR-S4-2 well-known list (`logo_url`, `phone`, `email`, `socials.*`, `address`, `opening_hours.*`, `copyright`) is either present-with-value OR absent (no nulls); (e) header-rules.json: at least one entry with valid `behaviour` enum (`sticky|transparent|shrink|static|sticky,shrink`); (f) deploy-actions.sh contains ONLY Spec 19 §4 commands — `grep -vE "^(wp sgs (site-info|header-rules|footer-rules|seed-template-parts|reset-template-parts|seeding-arm|migrations) |#|$)" deploy-actions.sh` returns 0 lines.
   Pass:    All 5 checks pass; deploy-actions.sh is non-empty and shell-syntax-valid
   Fail:    Any check fails → revert Step 2.5 commit, surface root cause to Bean, return to Step 2.5 with fix
   Marker:  QA
@@ -396,7 +396,7 @@ QA Gate 2.C — Sandybrown frontend renders the new header + footer
   Model:   inline + Playwright MCP
   Exec:    SEQUENTIAL
   Deps:    Step 2.8 deploy
-  Check:   Open https://sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/ in Playwright. Assert: (a) `<header class*="sgs-header">` exists in rendered DOM; (b) `<footer class*="sgs-footer">` exists; (c) `body` has class `sgs-has-header` + `sgs-header-behaviour-<detected>` (Phase 2A behaviour layer fired); (d) Site Info bindings rendered as real values (phone link is `<a href="tel:...">`, not friendly hint); (e) browser console: no JS errors; (f) scroll the page: header pinned + `body.is-header-scrolled` toggles (if behaviour=sticky was detected). Capture full-page screenshot to pipeline-state/header-footer-cloner-mamas/sandybrown-after-deploy.png.
+  Check:   Open https://sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-bakery-client/ in Playwright. Assert: (a) `<header class*="sgs-header">` exists in rendered DOM; (b) `<footer class*="sgs-footer">` exists; (c) `body` has class `sgs-has-header` + `sgs-header-behaviour-<detected>` (Phase 2A behaviour layer fired); (d) Site Info bindings rendered as real values (phone link is `<a href="tel:...">`, not friendly hint); (e) browser console: no JS errors; (f) scroll the page: header pinned + `body.is-header-scrolled` toggles (if behaviour=sticky was detected). Capture full-page screenshot to pipeline-state/header-footer-cloner-mamas/sandybrown-after-deploy.png.
   Pass:    All 6 assertions pass; screenshot captured
   Fail:    If any assertion fails, surface specific failure (which assertion + observed value) + return to Step 2.7 or Step 2.5 depending on which layer broke
   Marker:  QA
@@ -407,7 +407,7 @@ QA Gate 2.C — Sandybrown frontend renders the new header + footer
 ```
 Step 2.10 — Stage 11-style per-element pixel-diff for header + footer
   Model:       inline
-  Action:      Invoke `python scripts/pixel-diff.py --mockup file:///.../sites/mamas-munches/mockups/homepage/index.html --sgs https://sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/ --selector "header.sgs-header" --viewports 375,768,1440 --out pipeline-state/header-footer-cloner-mamas/header-diff/` then re-run with `--selector "footer.sgs-footer" --out .../footer-diff/`. Aggregate results into `pipeline-state/header-footer-cloner-mamas/stage-11-pixel-diff.json` mirroring the Phase 1 schema. Compare against Phase 2 success criteria thresholds. If any threshold not met: invoke `/verify-loop` to apply the measurement-vs-eye discipline — extend the measurement set (backgroundImage, filter, mixBlendMode, pseudo-elements, parent chain per `~/.claude/rules/measurement-vs-eye.md`) before claiming the diff is "real" (vs measurement-incomplete).
+  Action:      Invoke `python scripts/pixel-diff.py --mockup file:///.../sites/mamas-munches/mockups/homepage/index.html --sgs https://sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-bakery-client/ --selector "header.sgs-header" --viewports 375,768,1440 --out pipeline-state/header-footer-cloner-mamas/header-diff/` then re-run with `--selector "footer.sgs-footer" --out .../footer-diff/`. Aggregate results into `pipeline-state/header-footer-cloner-mamas/stage-11-pixel-diff.json` mirroring the Phase 1 schema. Compare against Phase 2 success criteria thresholds. If any threshold not met: invoke `/verify-loop` to apply the measurement-vs-eye discipline — extend the measurement set (backgroundImage, filter, mixBlendMode, pseudo-elements, parent chain per `~/.claude/rules/measurement-vs-eye.md`) before claiming the diff is "real" (vs measurement-incomplete).
   Files:       Write: pipeline-state/header-footer-cloner-mamas/header-diff/ + footer-diff/ + stage-11-pixel-diff.json
   Inputs:      Step 2.9 sandybrown render confirmed
   Outcome:     Pixel-diff JSON exists, every (selector, viewport) combination measured; thresholds met OR specific failures identified with extended-measurement-set evidence
@@ -429,7 +429,7 @@ Step 2.10 — Stage 11-style per-element pixel-diff for header + footer
 ```
 Step 2.11 — Multi-rater /qc-council before merging Phase 2 work to main
   Model:       inline /qc-council
-  Action:      Run /qc-council on the Phase 2 deliverable. Fix-shape proposals to validate: (a) the cloner script's universal-extraction discipline (no client-specific branches — grep proves it); (b) the pattern-file shape matches framework defaults; (c) the deploy bridge is idempotent. Predicted-delta gate: pixel-diff thresholds per Step 2.10 success criteria. Empirical evidence required: stage-11-pixel-diff.json from Step 2.10 + grep output for "mamas-munches" in scripts/clone-header-footer.py (must return ZERO match outside test fixture path).
+  Action:      Run /qc-council on the Phase 2 deliverable. Fix-shape proposals to validate: (a) the cloner script's universal-extraction discipline (no client-specific branches — grep proves it); (b) the pattern-file shape matches framework defaults; (c) the deploy bridge is idempotent. Predicted-delta gate: pixel-diff thresholds per Step 2.10 success criteria. Empirical evidence required: stage-11-pixel-diff.json from Step 2.10 + grep output for "the bakery client" in scripts/clone-header-footer.py (must return ZERO match outside test fixture path).
   Files:       (no edits — council reads + verdicts)
   Inputs:      All Phase 2 commits to date + Step 2.10 pixel-diff
   Outcome:     /qc-council Stage 5 verdict = proceed | refine | falsified
@@ -441,7 +441,7 @@ Step 2.11 — Multi-rater /qc-council before merging Phase 2 work to main
   On-Fail:     Verdict = refine → address the specific findings, re-run council. Verdict = falsified → STOP, surface to Bean, may indicate cloner approach is wrong
   Test:
     Happy:       Verdict = proceed; commit lands on main
-    Edge:        Council surfaces a universal-discipline violation (e.g. hard-coded "mamas-munches" string in script) → fix + re-run
+    Edge:        Council surfaces a universal-discipline violation (e.g. hard-coded "the bakery client" string in script) → fix + re-run
     Fail:        Council finds the cloner's extraction is too lossy → return to Step 2.4 mapping-plan + Step 2.5 implementation
     Integration: Gates merge-to-main
 ```

@@ -24,7 +24,7 @@ const stepperBuilt = new WeakSet();
 
 /**
  * Build the 'circles' progress variant's N circle+connector items once per
- * flow instance (AthleanX reference pattern — see style.css's own comment).
+ * flow instance (reference-site pattern — see style.css's own comment).
  *
  * @param {HTMLElement}   flowRoot Flow wrapper element.
  * @param {HTMLElement[]} steps    This flow's question steps.

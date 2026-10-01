@@ -41,7 +41,7 @@ Query them live:
 | Frontend JS | Vanilla ES modules + WordPress Interactivity API | No jQuery anywhere. `viewScriptModule` for interactive blocks |
 | Motion | Four-tier doctrine (V/G/H/W) — see §6 | All npm-bundled, conditionally loaded, zero CDN |
 | Data layer | `sgs-framework.db` (SQLite) | Source of truth for block schema, composition, slots, roles — see §5 |
-| Hosting | Hostinger, three sites: the `sandybrown` canary (`sandybrown-nightingale-600381.hostingersite.com`), the `indus-test` Indus Foods test site (`lavender-dinosaur-183533.hostingersite.com`) and the `eye-care-test` Eye Care Birmingham test site (`darkcyan-grouse-898606.hostingersite.com`) | Deploy targets are the `TARGETS` dict in `plugins/sgs-blocks/scripts/build-deploy.py`. Each test site exists because the active header, footer, drawer and theme-snapshot pointers are single global options per WordPress site, so two clients cannot share one site |
+| Hosting | Hostinger, three sites: the `sandybrown` canary (`sandybrown-nightingale-600381.hostingersite.com`), the `indus-test` the wholesale-food client test site (`lavender-dinosaur-183533.hostingersite.com`) and the `eye-care-test` the optician client test site (`darkcyan-grouse-898606.hostingersite.com`) | Deploy targets are the `TARGETS` dict in `plugins/sgs-blocks/scripts/build-deploy.py`. Each test site exists because the active header, footer, drawer and theme-snapshot pointers are single global options per WordPress site, so two clients cannot share one site |
 
 ## 3. Directory structure
 
@@ -302,7 +302,7 @@ Real, current items only. `.claude/LEDGER.md` carries the live status of each.
 
 | Service | Purpose |
 |---|---|
-| Hostinger | Web hosting for the canary and the Indus test site (`ssh hd` alias) |
+| Hostinger | Web hosting for the canary and the wholesale-food client test site (`ssh hd` alias) |
 | FluentSMTP | Per-site SMTP for `wp_mail()`, with email logs (`provision-site-mail.py`) |
 | N8N | Optional automation events (`sgs_n8n_webhook_url`); never the email path |
 | Playwright | Visual/live-DOM verification, MCP + CLI |

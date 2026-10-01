@@ -17,9 +17,9 @@ import pytest
 
 SCRIPTS = Path(__file__).resolve().parents[1]
 REPO = SCRIPTS.parents[2]
-MAMAS_DRAFT = REPO / "sites" / "mamas-munches" / "mockups" / "homepage" / "index.html"
+MAMAS_DRAFT = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 EYE_DRAFT = (
-    REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care" / "Eye Care Birmingham.dc.html"
+    REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
 )
 
 
@@ -46,7 +46,7 @@ def _script(data_object: str) -> str:
 
 # --- regression: static-draft output must not change --------------------------------
 
-# Recorded from the extractor BEFORE the Spec 33 upgrade (2026-09-19), Mama's homepage draft.
+# Recorded from the extractor BEFORE the Spec 33 upgrade (2026-09-19), the bakery client's homepage draft.
 MAMAS_EXPECTED = {
     "email": "Zainab@mamasmunches.com",
     "socials.instagram": "https://www.instagram.com/mamasmunches/",
@@ -61,10 +61,10 @@ def test_mamas_output_unchanged():
     assert sbi.find_unmapped(html) == {}
 
 
-# --- the real Eye Care draft ---------------------------------------------------------
+# --- the real optician-client draft ---------------------------------------------------------
 
-@pytest.mark.skipif(not EYE_DRAFT.is_file(), reason="Eye Care draft absent")
-def test_eye_care_real_draft():
+@pytest.mark.skipif(not EYE_DRAFT.is_file(), reason="optician-client draft absent")
+def test_optician_real_draft():
     html = EYE_DRAFT.read_text(encoding="utf-8", errors="replace")
     fields = sbi.extract_business_info(html)
     expected = {
@@ -105,7 +105,7 @@ def test_email_label_accepts_email_shape():
 
 
 def test_social_on_unknown_host_is_rejected():
-    html = _script("igHref:'https://evil.example/eyecare'")
+    html = _script("igHref:'https://evil.example/acme'")
     assert "socials.instagram" not in sbi.extract_business_info(html)
 
 
@@ -354,7 +354,7 @@ def test_repo_root_resolves_to_the_repository():
 
 from business_info import push as bi_push  # noqa: E402
 
-INDUS_FORM = REPO / "sites" / "indus-foods" / "mockups" / "Indus-Foods-Trade-Application-V2.html"
+INDUS_FORM = REPO / "sites/indus-foods/mockups/Indus-Foods-Trade-Application-V2.html"
 
 
 # --- 4. one bad secrets file must not break resolution for every target --------------
@@ -485,9 +485,9 @@ def test_information_is_not_mistaken_for_the_word_form():
     assert bi_extract._from_labels('<div class="information-panel">' + CONTACT_LIST + "</div>")
 
 
-def test_the_real_indus_application_form_no_longer_yields_the_sample_applicants_details():
+def test_the_real_wholesale_food_application_form_no_longer_yields_the_sample_applicants_details():
     if not INDUS_FORM.is_file():
-        pytest.skip("Indus application mockup not present")
+        pytest.skip("wholesale-food client application mockup not present")
     fields = bi_extract.extract_business_info(INDUS_FORM.read_text(encoding="utf-8", errors="replace"))
     assert "email" not in fields and "phone" not in fields
 

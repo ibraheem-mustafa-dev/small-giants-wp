@@ -600,7 +600,7 @@ def target_27_design_tokens(conn: sqlite3.Connection, repo_path: Path | None, dr
 # Industry slugs we track
 INDUSTRIES = [
     "restaurant", "wholesale-food", "healthcare", "construction",
-    "mosque", "professional-services", "eye-care", "wedding",
+    "mosque", "professional-services", "optician", "wedding",
 ]
 
 # Section types for industry coverage matrix

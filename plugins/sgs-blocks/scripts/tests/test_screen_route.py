@@ -120,8 +120,8 @@ def test_a_phrase_matching_two_boundaries_labels_neither(tmp_path):
     assert labels["b3"] is None and labels["b4"] is None  # "four reasons" is in both, so it labels neither
 
 
-def test_the_real_eye_care_draft_readme_routes_home_to_slash():
-    draft = REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care"
+def test_the_real_optician_draft_readme_routes_home_to_slash():
+    draft = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care"
     readme = (draft / "README.md").read_text(encoding="utf-8")
     routes = sr.read_readme_routes(readme)
     screens = [{"label": "Home", "flag": "isHome", "default_marker": True}, {"label": "Lenses", "flag": "isLenses", "default_marker": False},

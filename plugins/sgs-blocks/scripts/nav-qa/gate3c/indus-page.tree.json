@@ -94,7 +94,7 @@
             "name": "sgs/nav-bar-menu",
             "attributes": {
               "ref": 132,
-              "navLabel": "QA copy Indus",
+              "navLabel": "QA copy mega",
               "collapsePoint": 1024,
               "scrimColour": "#141923",
               "scrimOpacity": {
@@ -238,7 +238,7 @@
       {
         "name": "sgs/heading",
         "attributes": {
-          "content": "Indus Foods — Gate 3C QA copy"
+          "content": "Wholesale-food client mega menu — Gate 3C QA copy"
         }
       },
       {

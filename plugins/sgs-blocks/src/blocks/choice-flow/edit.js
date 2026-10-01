@@ -577,7 +577,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						] }
 						onChange={ ( val ) => setAttributes( { progressStyle: val } ) }
 						help={ __(
-							'Plain bar matches the real lens-configurator reference; Numbered circles matches AthleanX; Badge on bar matches Invisalign.',
+							'Plain bar matches the real lens-configurator reference; Numbered circles matches a reference quiz; Badge on bar matches another reference quiz.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

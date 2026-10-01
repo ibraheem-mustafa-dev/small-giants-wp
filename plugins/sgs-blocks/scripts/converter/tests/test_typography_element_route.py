@@ -442,19 +442,19 @@ def test_the_colour_pair_is_not_in_the_element_route():
 
 
 # ---------------------------------------------------------------------------
-# The real Eye Care ticker (skips when the local run artefacts are absent)
+# The real optician client's ticker (skips when the local run artefacts are absent)
 # ---------------------------------------------------------------------------
 
 REPO = Path(__file__).resolve().parents[5]
 RUN = REPO / "pipeline-state" / "eye-care-ward-end-eye-care-birmingham-2026-09-21-134838"
 needs_run = pytest.mark.skipif(
     not (RUN / "tagged-mockup.html").exists() or not (RUN / "script-bindings.json").exists(),
-    reason="needs the local Eye Care run artefacts in pipeline-state",
+    reason="needs the local optician client's run artefacts in pipeline-state",
 )
 
 
 @needs_run
-def test_the_real_eye_care_ticker_carries_its_font_size_and_letter_spacing():
+def test_the_real_optician_ticker_carries_its_font_size_and_letter_spacing():
     soup = BeautifulSoup((RUN / "tagged-mockup.html").read_text(encoding="utf-8"), "html.parser")
     css = "\n\n".join(t.get_text() for t in soup.find_all("style"))
     variation = RUN / "variation-d0-d2.css"

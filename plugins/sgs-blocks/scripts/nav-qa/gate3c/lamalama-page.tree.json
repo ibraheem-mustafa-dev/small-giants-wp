@@ -175,7 +175,7 @@
             "attributes": {
               "ref": 130,
               "drawerRef": 4428,
-              "navLabel": "Lama Lama menu",
+              "navLabel": "QA copy pill menu",
               "collapsePoint": 99999,
               "triggerSurface": {
                 "desktop": "on",
@@ -251,14 +251,14 @@
       {
         "name": "sgs/heading",
         "attributes": {
-          "content": "Gate 3C item 4 -- lamalama pill/drawer copy",
+          "content": "Gate 3C item 4 -- reference-site pill/drawer copy",
           "textColour": "#ffffff"
         }
       },
       {
         "name": "sgs/text",
         "attributes": {
-          "text": "Dark page ground standing in for lamalama's near-black canvas background, so the header's backdrop-blur and 60% black fill read the same way they do on the reference.",
+          "text": "Dark page ground standing in for the reference site's near-black canvas background, so the header's backdrop-blur and 60% black fill read the same way they do on the reference.",
           "textColour": "#ffffff"
         }
       }

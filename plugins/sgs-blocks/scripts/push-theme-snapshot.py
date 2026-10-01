@@ -42,25 +42,25 @@ Credential lookup order (for the REST write):
 
 Safety defaults:
   - `--no-push` / `--dry-run` only print the diff and exit; no REST write
-  - On sandybrown / palestine-lives.org targets, `--no-push` is forced unless
+  - On sandybrown / the campaign-site client's staging targets, `--no-push` is forced unless
     `--yes` is supplied explicitly (prevents accidental overwrites on the
     shared dev/staging sites)
   - Operator overrides (keys present in `wp_global_styles` but absent from the
     local snapshot) are surfaced in the diff output
 
 Examples:
-    # Diff Mama's Munches snapshot against sandybrown (safe — never pushes)
+    # Diff a client's snapshot against sandybrown (safe — never pushes)
     python push-theme-snapshot.py \\
-        --client mamas-munches \\
+        --client <client> \\
         --target u945238940@141.136.39.73 \\
         --target-domain sandybrown-nightingale-600381.hostingersite.com \\
         --no-push
 
-    # Push Indus Foods snapshot to live indusfoods.co.uk (explicit confirmation)
+    # Push a client's snapshot to its live domain (explicit confirmation)
     python push-theme-snapshot.py \\
-        --client indus-foods \\
+        --client <client> \\
         --target u945238940@141.136.39.73 \\
-        --target-domain indusfoods.co.uk \\
+        --target-domain <client-domain> \\
         --yes
 """
 from __future__ import annotations
@@ -174,8 +174,8 @@ def resolve_app_credentials(
             "WP_USER_SANDYBROWN",
             "WP_APP_PWD_SANDYBROWN",
         ),
-        # palestine-lives.org is Indus Foods Ltd's staging site (see the header of
-        # palestine-lives.env). Without this entry the wp_global_styles read 401s and
+        # The campaign-site client's staging domain is the wholesale-food client's staging site (see the
+        # header of its env file). Without this entry the wp_global_styles read 401s and
         # the drift check silently degrades to "proceeding blind" — which is exactly
         # the state a push must never be run in, since that layer overrides theme.json
         # and is the only thing a rollback could restore from.
@@ -267,7 +267,7 @@ def fetch_server_theme_json(target: str, port: int, server_path: str) -> tuple[d
 
 
 # Hostinger's WAF returns 403 to the DEFAULT `Python-urllib/x.y` User-Agent, before the
-# request ever reaches WordPress. PROVEN 2026-07-16 on palestine-lives: identical URL +
+# request ever reaches WordPress. PROVEN 2026-07-16 on the campaign-site client's staging site: identical URL +
 # identical app-password credentials → curl default UA 200, `-A "Python-urllib/3.13"` 403,
 # `-A "Mozilla/5.0"` 200. Every urllib call in this file MUST therefore send an explicit
 # UA, or the whole REST layer (read AND write) silently fails closed on every Hostinger
@@ -282,7 +282,7 @@ def fetch_global_styles(target_domain: str, post_id: int, auth_header: str | Non
     previously read `/global-styles/themes/{stylesheet}`, which is the theme's RESOLVED
     styles (a different, read-only layer) — so the backup captured a layer the write
     never touched (rollback could not undo the write) and the drift check compared the
-    wrong thing. Both now key on the user-layer post id. Proven on palestine-lives: post
+    wrong thing. Both now key on the user-layer post id. Proven on the campaign-site client's staging site: post
     7 (`isGlobalStylesUserThemeJSON:true`) is the layer holding the live `Source Sans 3`
     override that paints over theme.json.
 
@@ -496,7 +496,7 @@ def discover_global_styles_state(target: str, port: int, wp_root: str) -> tuple[
 # Deliberately NOT stripped -- these are genuinely per-client and the user layer is the
 # only place a Site-Editor edit to them can live:
 #   color.palette / color.gradients   -- per-client brand colours (Spec 33 Pass A/B)
-#   typography.fontSizes              -- per-client scales really do differ (eye-care and
+#   typography.fontSizes              -- per-client scales really do differ (the optician client and
 #                                        the sgs-* templates use a 6-slug clamp() scale
 #                                        with an `xxx-large` the framework has no slug for)
 #   typography.fontFamilies           -- Font Library installs land here

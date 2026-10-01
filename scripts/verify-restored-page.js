@@ -12,7 +12,7 @@
  * yesterday's DOM.
  *
  * Usage (node runs via PowerShell on this machine — the nvm shim is broken in Git Bash):
- *   node scripts/verify-restored-page.js https://palestine-lives.org/ [--json out.json]
+ *   node scripts/verify-restored-page.js https://example.com/ [--json out.json]
  *
  * Exit 0 = every gate passed. Exit 1 = a gate failed (numbers printed).
  */

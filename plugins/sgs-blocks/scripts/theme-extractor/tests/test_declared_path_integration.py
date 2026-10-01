@@ -23,10 +23,10 @@ sys.path.insert(0, str(PKG.parent))
 import extract  # noqa: E402
 from schema_validate import validate_theme_json  # noqa: E402
 
-DRAFT_DIR = REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care"
-DRAFT = DRAFT_DIR / "Eye Care Birmingham.dc.html"
+DRAFT_DIR = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care"
+DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
 FACTS = HERE / "fixtures" / "eye-care-computed-facts.json"
-MAMAS = REPO / "sites" / "mamas-munches" / "mockups" / "homepage" / "index.html"
+MAMAS = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 
 EXPECTED = {"surface": "#FAF8F5", "surface-alt": "#FFFFFF", "text": "#141414", "text-inverse": "#FAF8F5",
             "primary": "#141414", "primary-text": "#FAF8F5", "text-muted": "#5E584F",
@@ -45,10 +45,10 @@ def _baseline() -> dict:
     return json.loads((REPO / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
 
 
-def _eye_care(trace: list | None = None) -> dict:
+def _optician(trace: list | None = None) -> dict:
     html = DRAFT.read_text(encoding="utf-8")
     facts = json.loads(FACTS.read_text(encoding="utf-8"))
-    return extract.build_snapshot("eye-care", extract.extract_css(html), facts, html, _baseline(),
+    return extract.build_snapshot("optician-client", extract.extract_css(html), facts, html, _baseline(),
                                   [] if trace is None else trace, REPO, draft_dir=DRAFT_DIR)
 
 
@@ -62,7 +62,7 @@ def test_fixture_carries_the_rendered_accent_custom_property():
 
 
 def test_palette_overlay_holds_the_declared_roles_and_drops_the_drifting_colours():
-    snap = _eye_care()
+    snap = _optician()
     pal = _palette(snap)
     assert {slug: pal[slug]["color"] for slug in EXPECTED} == EXPECTED
     assert not ABSENT & {e["color"].upper() for e in pal.values()}
@@ -73,13 +73,13 @@ def test_palette_overlay_holds_the_declared_roles_and_drops_the_drifting_colours
 
 
 def test_unmentioned_base_slugs_are_untouched():
-    pal, base = _palette(_eye_care()), {e["slug"]: e for e in _baseline()["settings"]["color"]["palette"]}
+    pal, base = _palette(_optician()), {e["slug"]: e for e in _baseline()["settings"]["color"]["palette"]}
     for slug in ("success-light", "error", "error-light", "info", "info-light", "border-light"):
         assert pal[slug] == base[slug]
 
 
 def test_page_background_row_that_names_the_footer_also_fills_footer_bg():
-    pal = _palette(_eye_care())
+    pal = _palette(_optician())
     assert pal["footer-bg"]["color"] == pal["surface"]["color"] == "#FAF8F5"
     assert pal["footer-bg"]["_source"] == "declared" and pal["footer-bg"]["_baseline_color"] == "#0F172A"
 
@@ -94,7 +94,7 @@ def test_footer_word_alone_does_not_fill_footer_bg():
 
 
 def test_accent_sets_layout_and_radius():
-    settings = _eye_care()["settings"]
+    settings = _optician()["settings"]
     sets = settings["custom"]["accentSets"]
     assert set(sets) == {"taupe", "sage", "navy"} and sets["navy"]["accent"] == "#3A4A6B"
     assert settings["layout"]["contentSize"] == "1440px"
@@ -111,7 +111,7 @@ def _resolve(value: str, palette: dict) -> str:
 
 def test_styles_and_buttons_resolve_to_palette_slugs():
     trace: list = []
-    snap = _eye_care(trace)
+    snap = _optician(trace)
     assert snap["styles"]["color"] == {"background": "var:preset|color|surface", "text": "var:preset|color|text"}
     presets = snap["settings"]["custom"]["buttonPresets"]
     assert presets["primary"]["background"] == "var(--wp--preset--color--primary)"
@@ -130,7 +130,7 @@ def test_styles_and_buttons_resolve_to_palette_slugs():
 
 
 def test_measured_primary_hover_is_the_declared_2a2a2a():
-    snap = _eye_care()
+    snap = _optician()
     palette = _palette(snap)
     primary = snap["settings"]["custom"]["buttonPresets"]["primary"]
     assert _resolve(primary["background"], palette) == "#141414"
@@ -140,18 +140,18 @@ def test_measured_primary_hover_is_the_declared_2a2a2a():
 
 
 def test_schema_valid_and_two_runs_byte_identical():
-    a = _eye_care()
+    a = _optician()
     assert validate_theme_json(a)[0]
     dump = lambda snap: json.dumps(snap, indent=2, ensure_ascii=False)  # noqa: E731
-    assert dump(a) == dump(_eye_care())
+    assert dump(a) == dump(_optician())
     t1, t2 = [], []
-    _eye_care(t1), _eye_care(t2)
+    _optician(t1), _optician(t2)
     assert json.dumps(t1) == json.dumps(t2)
 
 
 def test_trace_explains_every_decision_kind():
     trace: list = []
-    _eye_care(trace)
+    _optician(trace)
     assert {"declared", "skip", "overlay"} <= {t["kind"] for t in trace}
     reasons = " ".join(t.get("reason", "") for t in trace)
     assert "placeholder-tier" in reasons and "third-party widget" in reasons
@@ -163,8 +163,8 @@ def test_static_draft_with_a_root_palette_is_identical_with_or_without_draft_dir
     html = MAMAS.read_text(encoding="utf-8")
     facts = json.loads((PKG / "mamas-computed-facts.json").read_text(encoding="utf-8"))
     css = extract.extract_css(html)
-    plain = extract.build_snapshot("mamas-munches", css, facts, html, _baseline(), [], REPO)
-    with_dir = extract.build_snapshot("mamas-munches", css, facts, html, _baseline(), [], REPO,
+    plain = extract.build_snapshot("bakery-client", css, facts, html, _baseline(), [], REPO)
+    with_dir = extract.build_snapshot("bakery-client", css, facts, html, _baseline(), [], REPO,
                                       draft_dir=MAMAS.parent)
     assert json.dumps(plain) == json.dumps(with_dir)
 
@@ -192,6 +192,6 @@ def test_extractor_refuses_to_overwrite_a_snapshot_from_a_different_source_draft
 def test_the_snapshot_records_its_source_draft():
     html = DRAFT.read_text(encoding="utf-8")
     facts = json.loads(FACTS.read_text(encoding="utf-8"))
-    snap = extract.build_snapshot("eye-care", extract.extract_css(html), facts, html, _baseline(), [], REPO,
+    snap = extract.build_snapshot("optician-client", extract.extract_css(html), facts, html, _baseline(), [], REPO,
                                   draft_dir=DRAFT_DIR, draft_name=DRAFT.name)
-    assert snap["_sgsExtractor"]["source_draft"] == "Eye Care Birmingham.dc.html"
+    assert snap["_sgsExtractor"]["source_draft"] == DRAFT.name

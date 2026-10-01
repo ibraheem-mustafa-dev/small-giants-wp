@@ -14,7 +14,7 @@ sys.path.insert(0, str(_SCRIPTS / "orchestrator"))
 import site_info_values as siv  # noqa: E402
 
 REPO = _SCRIPTS.parents[2]
-EYE_CARE_V2 = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html"
+OPTICIAN_V2 = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html"
 MAMAS = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 
 DRAFT = (
@@ -62,9 +62,9 @@ def test_a_name_inside_a_loop_or_condition_tag_is_never_replaced() -> None:
 def test_the_drafts_own_script_wins_over_a_sample_default_in_another_script() -> None:
     """QC council: a form's demo `email:` in an earlier <script> beat the business's own value."""
     html = ('<script>const FORM = {email:\'you@example.com\'};</script><p>{{ email }}</p>'
-            '<script type="text/x-dc">const C = {email:\'hello@eyecare.example\'};</script>')
+            '<script type="text/x-dc">const C = {email:\'hello@acme.example\'};</script>')
     out, counts = siv.resolve_site_info_bindings(html)
-    assert counts == {"email": 1} and "<p>hello@eyecare.example</p>" in out
+    assert counts == {"email": 1} and "<p>hello@acme.example</p>" in out
 
 
 def test_a_value_that_fails_its_shape_check_is_not_used() -> None:
@@ -90,14 +90,14 @@ def test_the_value_is_escaped_for_the_attribute_it_lands_in() -> None:
     assert 'href="https://g.page/r/a?b=1&amp;c=&quot;2&quot;"' in out
 
 
-def test_mamas_munches_is_byte_identical() -> None:
+def test_bakery_client_is_byte_identical() -> None:
     html = MAMAS.read_text(encoding="utf-8")
     out, counts = siv.resolve_site_info_bindings(html)
     assert counts == {} and out == html
 
 
-def test_the_eye_care_v2_draft_loses_every_gmb_binding_and_keeps_its_script() -> None:
-    html = EYE_CARE_V2.read_text(encoding="utf-8")
+def test_the_optician_v2_draft_loses_every_gmb_binding_and_keeps_its_script() -> None:
+    html = OPTICIAN_V2.read_text(encoding="utf-8")
     out, counts = siv.resolve_site_info_bindings(html)
     assert counts["gmbHref"] == html.count("{{ gmbHref }}") == 7
     assert "{{ gmbHref }}" not in out

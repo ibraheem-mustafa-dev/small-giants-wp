@@ -1,6 +1,6 @@
 """FR-33-19: the site's contentSize / wideSize come from the draft's RENDERED content boxes.
 
-Proven need on Eye Care: the README says "max width 1440px", but that is the PADDED section box. The
+Proven need on the optician client: the README says "max width 1440px", but that is the PADDED section box. The
 content sits 1336px wide in four home bands and 1440px wide in three (an inner div with no padding),
 and SGS_Container_Wrapper applies contentSize to the content band, inside the section padding.
 

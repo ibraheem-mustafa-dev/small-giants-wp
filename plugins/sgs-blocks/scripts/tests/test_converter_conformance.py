@@ -241,7 +241,7 @@ _REAL_DRAFT_SECTIONS_CACHE: dict[str, tuple["Tag", str]] | None = None
 
 
 def _real_draft_sections_by_id() -> dict[str, tuple["Tag", str]]:
-    """Lazily parse the real mamas-munches draft once per test session and
+    """Lazily parse the real bakery-client draft once per test session and
     index its 9 top-level sections by golden_id."""
     global _REAL_DRAFT_SECTIONS_CACHE
     if _REAL_DRAFT_SECTIONS_CACHE is None:

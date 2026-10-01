@@ -99,8 +99,8 @@ except Exception:
 # not distinguish 'clean' from 'saw nothing'. Either re-seed, or make the gate
 # fail when a canary URL yields zero sgs blocks - do not simply drop the URL.
 CANARY_URLS = [
-    "https://lavender-dinosaur-183533.hostingersite.com/",                     # Indus Foods test site (indus-test) front page
-    "https://sandybrown-nightingale-600381.hostingersite.com/",                # Mama's (staging canary)
+    "https://lavender-dinosaur-183533.hostingersite.com/",                     # wholesale-food client test site front page
+    "https://sandybrown-nightingale-600381.hostingersite.com/",                # bakery client (staging canary)
     "https://sandybrown-nightingale-600381.hostingersite.com/spec32-guard-capture-canary/",  # seeded 2026-08-07, page 2164
 ]
 

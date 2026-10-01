@@ -19,8 +19,8 @@ import declared_sources as ds  # noqa: E402
 import variant_sets as vs  # noqa: E402
 
 FIXTURES = HERE / "fixtures"
-EYE_CARE = REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care"
-MAMAS = REPO / "sites" / "mamas-munches" / "mockups" / "homepage"
+OPTICIAN = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care"
+MAMAS = REPO / "sites/mamas-munches/mockups/homepage"
 
 
 @pytest.fixture()
@@ -146,14 +146,14 @@ def test_variant_sets_no_enum_prop_or_bad_json():
     assert vs.read_script_variant_sets('<div data-props="{not json"></div>') == {}
 
 
-# ---- (c) real Eye Care draft -------------------------------------------------------------------
+# ---- (c) real optician-client draft -------------------------------------------------------------------
 
-_SKIP_EYE = pytest.mark.skipif(not EYE_CARE.is_dir(), reason=f"Eye Care draft folder absent: {EYE_CARE}")
+_SKIP_EYE = pytest.mark.skipif(not OPTICIAN.is_dir(), reason=f"optician-client draft folder absent: {OPTICIAN}")
 
 
 @_SKIP_EYE
-def test_eye_care_readme():
-    out = ds.read_readme_tokens(EYE_CARE)
+def test_optician_readme():
+    out = ds.read_readme_tokens(OPTICIAN)
     assert out["found"] is True
     hexes = {h for row in out["colours"] for h in row["hexes"]}
     assert {"#FAF8F5", "#9C8B78", "#6F6152", "#EFEAE2", "#25D366"} <= hexes
@@ -164,8 +164,8 @@ def test_eye_care_readme():
 
 
 @_SKIP_EYE
-def test_eye_care_variant_sets():
-    html = (EYE_CARE / "Eye Care Birmingham.dc.html").read_text(encoding="utf-8")
+def test_optician_variant_sets():
+    html = (REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html").read_text(encoding="utf-8")
     accent = vs.read_script_variant_sets(html)["accent"]
     assert accent["default"] == "taupe"
     assert accent["options"] == ["taupe", "sage", "navy"]
@@ -173,9 +173,9 @@ def test_eye_care_variant_sets():
     assert accent["sets"]["taupe"] == {"acc": "#9C8B78", "ink": "#6F6152", "soft": "#EFEAE2"}
 
 
-# ---- (d) static-draft client (Mama's) ----------------------------------------------------------
+# ---- (d) static-draft client (the bakery client) ----------------------------------------------------------
 
-@pytest.mark.skipif(not MAMAS.is_dir(), reason=f"Mama's mockup folder absent: {MAMAS}")
+@pytest.mark.skipif(not MAMAS.is_dir(), reason=f"bakery-client mockup folder absent: {MAMAS}")
 def test_static_draft_declares_nothing():
     assert ds.read_readme_tokens(MAMAS) == {"found": False}
     html = (MAMAS / "index.html").read_text(encoding="utf-8")

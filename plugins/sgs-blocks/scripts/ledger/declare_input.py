@@ -170,7 +170,7 @@ _CONTENT_VOID_TAGS = {
 # Line-break void elements — insert a word-boundary space into the enclosing
 # element's direct-text buffer so "mum<br>who" normalises to "mum who", not
 # "mumwho" (a genuine parser gap, not a coverage-check join hack: verified
-# against the real Mama's Munches draft hero heading, 2026-07-04).
+# against the bakery client's real draft hero heading, 2026-07-04).
 _CONTENT_LINE_BREAK_TAGS = {"br", "hr"}
 
 # Top-level chrome tags — FR-31-3 walker exception 2 (top-level chrome-skip).

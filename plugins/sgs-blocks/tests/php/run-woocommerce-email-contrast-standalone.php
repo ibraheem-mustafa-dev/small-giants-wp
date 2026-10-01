@@ -11,8 +11,8 @@
  *     proving the fix removes the accent from the link/heading colour path
  *     rather than merely adding an extra rule beside it;
  *   - the appended colour is high-contrast against the body background for
- *     all three current client palettes (Mama's Munches, Eye Care, Indus
- *     Foods), each measured with the real WCAG relative-luminance formula;
+ *     all three current client palettes (bakery, optician and wholesale-food),
+ *     each measured with the real WCAG relative-luminance formula;
  *   - NEGATIVE CONTROL: an invalid/missing `woocommerce_email_text_color`
  *     option leaves the compiled CSS untouched — proving the guard clause
  *     actually guards, not just that the happy path works.
@@ -87,7 +87,7 @@ Sgs_Woocommerce_Email_Contrast::register();
 ok( isset( $GLOBALS['sgs_test_filters']['woocommerce_email_styles'] ), 'registers the woocommerce_email_styles filter' );
 $callback = $GLOBALS['sgs_test_filters']['woocommerce_email_styles'];
 
-// -- Happy path: Mama's Munches's real, currently-live option values --------
+// -- Happy path: the bakery client's real, currently-live option values --------
 
 $GLOBALS['sgs_test_options'] = array(
 	'woocommerce_email_base_color'          => '#f5d050', // The accent — must not reach links/headings.
@@ -108,8 +108,8 @@ ok( substr_count( $after, '#f5d050' ) === substr_count( $before, '#f5d050' ), 't
 
 $palettes = array(
 	'Mama\'s Munches' => array( 'text' => '#3a2e26', 'surface' => '#fbf3dc' ),
-	'Eye Care'        => array( 'text' => '#141414', 'surface' => '#FAF8F5' ),
-	'Indus Foods'     => array( 'text' => '#2C3E50', 'surface' => '#FFFFFF' ),
+	'The optician client' => array( 'text' => '#141414', 'surface' => '#FAF8F5' ),
+	'The wholesale-food client' => array( 'text' => '#2C3E50', 'surface' => '#FFFFFF' ),
 );
 foreach ( $palettes as $client => $colours ) {
 	$ratio = wcag_contrast( $colours['text'], $colours['surface'] );

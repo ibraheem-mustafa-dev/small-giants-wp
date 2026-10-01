@@ -23,7 +23,7 @@ Real transfers (this resolver OWNS the OUTER layer):
     → ``"md"``). Preset list is read from DB at call-time, never hardcoded.
     On NO preset match (Task 4f-2, ``.claude/services/shadow_layers.py``): the draft
     value is parsed into a LAYERED shadow instead of an immediate gap — a multi-layer
-    shadow (e.g. Halcyon's/Indus's two-layer mega-panel shadows) writes its shape list
+    shadow (e.g. Halcyon's/the wholesale-food client's two-layer mega-panel shadows) writes its shape list
     to the shadow attr and its colour list to the block's ``box-shadow-color`` sibling
     attr (DB-resolved, never name-guessed), in ONE ``list[Write]``. A block with no
     colour sibling folds the colours into the shape text itself (the composer's
@@ -399,7 +399,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             return Write(attr=attr, value=slug, property=prop, tier=decl.tier)
 
         # --- Task 4f-2: no preset matched — parse the draft value into a
-        # LAYERED shadow (Halcyon's/Indus's two-layer mega-panel shadows never
+        # LAYERED shadow (Halcyon's/the wholesale-food client's two-layer mega-panel shadows never
         # reach the block through the preset-only path). The shadow attr's
         # OWN grammar (`includes/helpers-shadow-layers.php::sgs_shadow_layers`)
         # accepts a layer list directly (same attr the preset slug uses — the

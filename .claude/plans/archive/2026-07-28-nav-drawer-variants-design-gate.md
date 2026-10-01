@@ -23,7 +23,7 @@ evidence: .claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md (Tas
 
 **Bean's binding variant principle:** a variant is a complete-clone preset — it sets DEFAULTS
 (geometry, panel treatment, menu look, child-block roster) and hardcodes NOTHING. Every value
-stays editable after selection; children deletable; any block insertable. (His lamalama example:
+stays editable after selection; children deletable; any block insertable. (His the reference site example:
 columns defaults to 2, remains a normal setting.)
 
 ## 1. Variants = `registerBlockVariation` on `sgs/nav-drawer` — 7, one per reference design

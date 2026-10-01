@@ -99,8 +99,8 @@ Options:
 
 Examples:
   node scripts/audit-shrink-to-fit.js --url https://sandybrown-nightingale-600381.hostingersite.com/
-  node scripts/audit-shrink-to-fit.js --url https://palestine-lives.org/some-page/ --block sgs/testimonial-slider
-  node scripts/audit-shrink-to-fit.js --url https://palestine-lives.org/some-page/ --tiers 375,1440 --json
+  node scripts/audit-shrink-to-fit.js --url https://example.com/some-page/ --block sgs/testimonial-slider
+  node scripts/audit-shrink-to-fit.js --url https://example.com/some-page/ --tiers 375,1440 --json
 ` );
 }
 

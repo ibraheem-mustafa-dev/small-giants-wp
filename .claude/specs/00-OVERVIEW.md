@@ -64,9 +64,9 @@ A custom WordPress development framework built and maintained by Claude Code for
 The framework uses CSS custom properties (design tokens) defined in `theme.json` and overridden per site. Every component reads from these tokens — never hardcoded colours, fonts, or spacing.
 
 ```
-Site A (Indus Foods):  --primary: #1A3A5C; --accent: #D4A843; --font-heading: 'DM Serif Display'
+Site A (the wholesale-food client):  --primary: #1A3A5C; --accent: #D4A843; --font-heading: 'DM Serif Display'
 Site B (Dream Wedding): --primary: #2D1B4E; --accent: #C9A96E; --font-heading: 'Playfair Display'
-Site C (Workwear Now):  --primary: #1B3D2F; --accent: #E87121; --font-heading: 'Montserrat'
+Site C (the retail client):  --primary: #1B3D2F; --accent: #E87121; --font-heading: 'Montserrat'
 ```
 
 Same blocks, same theme, completely different look.
@@ -136,8 +136,8 @@ No "it works on desktop but breaks on mobile" — mobile is the starting point.
 - **Deployment:** **`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`** — the ONE path for every target (ceremony/gates via `/wp-sgs-deploy`). It builds, gates on a dirty working tree, verifies fail-closed, and rotates a `.bak` for rollback. ⛔ **Not SFTP, and never a hand-rolled tar/`scp -r`/`ssh rm -rf`** — that recipe took two client sites down for ~2.5h on 2026-07-14 (D336).
 - **Per-client tokens:** `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` (Spec 33), never a framework deploy.
 - **Local testing:** WordPress Playground or Local by Flywheel
-- **Dev sites:** `build-deploy.py` targets are `sandybrown` (sandybrown-nightingale-600381.hostingersite.com, the canary) `indus-test` (lavender-dinosaur-183533.hostingersite.com, the Indus Foods test site) and `eye-care-test` (darkcyan-grouse-898606.hostingersite.com, the Eye Care Birmingham test site); the last two deploy only when named with `--target`
-- **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com — Mama's Munches canary. The native-block homepage is **page 2742** (`/`), posts page **2741** (`/blog/`). ⛔ Page 144 was hard-deleted; keep the number only as the provenance that locates the clone, and verify any post ID exists before pointing anything at it.
+- **Dev sites:** `build-deploy.py` targets are `sandybrown` (sandybrown-nightingale-600381.hostingersite.com, the canary) `indus-test` (lavender-dinosaur-183533.hostingersite.com, the wholesale-food client test site) and `eye-care-test` (darkcyan-grouse-898606.hostingersite.com, the optician client test site); the last two deploy only when named with `--target`
+- **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com — the bakery client canary. The native-block homepage is **page 2742** (`/`), posts page **2741** (`/blog/`). ⛔ Page 144 was hard-deleted; keep the number only as the provenance that locates the clone, and verify any post ID exists before pointing anything at it.
 - **WP version:** **7.1** (verified 2026-08-20 via `wp core version` over SSH — re-check, don't trust this line)
 - **Automation:** N8N workflows on VPS (72.62.212.169) for notifications, webhooks, scheduled tasks
 - **Updates:** theme/plugin updates are code changes deployed via `build-deploy.py`, not WordPress auto-updates.

@@ -37,8 +37,7 @@ import render_repeater_recogniser as stage_a  # noqa: E402
 
 LIVE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 REPO = Path(__file__).resolve().parents[4]
-DRAFT = (REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care"
-         / "Eye Care Birmingham.dc.html")
+DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
 
 F = mod.DraftField
 G = mod.DraftItemGroup
@@ -125,7 +124,7 @@ def test_five_fixtures_trace_to_the_real_draft() -> None:
                     "({no:r[0], title:r[1], body:r[2]})", "lineLabel"):
         assert builder in text, f"builder fragment {builder!r} is no longer in the draft"
     print("  PASS  provenance: all six fixture groups and their JS builders found in "
-          "the real Eye Care Birmingham draft")
+          "the real optician client's draft")
 
 
 def test_stage_b_import_does_not_mutate_the_live_db() -> None:

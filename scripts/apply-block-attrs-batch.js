@@ -2,7 +2,7 @@
 /**
  * apply-block-attrs-batch.js
  *
- * One-off companion to wp-update-block-attrs.js for the Indus homepage
+ * One-off companion to wp-update-block-attrs.js for the wholesale-food client's homepage
  * attribute-mirror task (2026-07-16). Handles the case wp-update-block-attrs.js
  * doesn't: several DIFFERENT attribute sets applied to DIFFERENT instances of
  * the SAME block name in ONE post, matched by an existing attribute value

@@ -287,7 +287,7 @@ def test_a_reverse_marquee_is_still_a_marquee():
     assert _marquee(attrs) == {"autoScroll": True, "autoScrollDuration": 30} and gaps == []
 
 
-def test_the_eye_care_shapes_still_lift():
+def test_the_optician_shapes_still_lift():
     ticker = _kf("marquee", "-50%") + "@media (max-width:767px){.sgs-trust-bar__track{animation:marquee 30s linear infinite}}"
     attrs, gaps = _block(ticker)
     assert _marquee(attrs) == {"autoScroll": True, "autoScrollBelow": 768, "autoScrollDuration": 30} and gaps == []

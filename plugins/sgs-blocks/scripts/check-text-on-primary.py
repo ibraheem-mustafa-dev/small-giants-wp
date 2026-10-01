@@ -6,7 +6,7 @@ text-on-primary colour.
 A rule that paints `background` or `background-color` with the `primary` preset and
 sets `color` from `text-inverse` pairs the wrong tokens: `text-inverse` is text on the
 dark text colour, while `primary-text` is the palette's slot for text on `primary`. On a
-light brand colour (Mama's Munches pink, #e68a95) text-inverse cream measures 2.4:1.
+light brand colour (the bakery client's pink, #e68a95) text-inverse cream measures 2.4:1.
 The accepted form keeps text-inverse only as a fallback:
     color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff));
 

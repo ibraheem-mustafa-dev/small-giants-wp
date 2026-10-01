@@ -62,8 +62,7 @@ def _live_repeater_row_count() -> int:
 _LIVE_ROWS_BEFORE_THIS_RUN = _live_repeater_row_count()
 
 REPO = Path(__file__).resolve().parents[4]
-DRAFT = (REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care"
-         / "Eye Care Birmingham.dc.html")
+DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
 
 BUYBOX = "sgs/buybox"
 PRODUCT_CARD = "sgs/product-card"

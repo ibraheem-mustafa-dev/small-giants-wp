@@ -4,8 +4,8 @@
   "_known_fidelity_limits": [
     "sgs/social-icons has no Vimeo or Dribbble platform slug (render.php $platform_icons). buck uses Vimeo, dogstudio uses Dribbble — both mapped to platform 'website' with a label override. This is a real framework gap vs the references, recorded not hidden.",
     "dogstudio's decorative index numbers (01-05) beside each link are out of scope by the design gate's own out-of-scope list.",
-    "lamalama's 'What we do' has a collapsed submenu (Branding/Websites/E-commerce/Marketing) at height:0 — excluded, as it is not part of the default open state.",
-    "Two harvested values are dynamic, not fixed strings (studionamma's live city+clock, lamalama's rotating tagline); the mechanism was recorded in the harvest and a stable snapshot is used here."
+    "the reference site's 'What we do' has a collapsed submenu (Branding/Websites/E-commerce/Marketing) at height:0 — excluded, as it is not part of the default open state.",
+    "Two harvested values are dynamic, not fixed strings (studionamma's live city+clock, the reference site's rotating tagline); the mechanism was recorded in the harvest and a stable snapshot is used here."
   ],
   "variants": [
     {

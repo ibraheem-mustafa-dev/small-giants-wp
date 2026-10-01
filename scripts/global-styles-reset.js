@@ -15,7 +15,7 @@
  *   node scripts/global-styles-reset.js \
  *     --site sandybrown-nightingale-600381.hostingersite.com \
  *     --theme sgs-theme \
- *     --variation mamas-munches \
+ *     --variation <client> \
  *     [--dry-run] \
  *     [--skip-ssh] \
  *     [--ssh-host hd] [--ssh-user u945238940] [--ssh-port 65002] \
@@ -284,7 +284,7 @@ async function main() {
 
     if (!args.site) fail('--site is required (e.g. --site sandybrown-nightingale-600381.hostingersite.com)');
     if (!args.theme) fail('--theme is required (e.g. --theme sgs-theme)');
-    if (!args.variation) fail('--variation is required (e.g. --variation mamas-munches)');
+    if (!args.variation) fail('--variation is required (e.g. --variation <client>)');
 
     if (args.dryRun) console.log('=== DRY RUN — no changes will be made ===\n');
 

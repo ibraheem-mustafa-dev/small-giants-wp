@@ -557,7 +557,7 @@ def run_self_test() -> int:
     # --- 5. REAL-CLONE-RUN REGRESSION + INJECT/REVERT PROOF (brief
     # requirement #5): a CHECKED-IN fixture holding the verbatim
     # block_markup from a real historical clone run
-    # (pipeline-state/mamas-munches-homepage-qa-2849-2026-08-26-223048,
+    # (the bakery client's homepage QA run of 2026-08-26 in pipeline-state/,
     # 77 block instances, verified 2026-08-27 to score zero violations
     # against the live block.json tree at commit time — see the fixture's
     # own _fixture_purpose) must score CLEAN (proves the gate does not

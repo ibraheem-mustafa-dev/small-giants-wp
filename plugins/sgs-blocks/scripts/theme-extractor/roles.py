@@ -2,7 +2,7 @@
 
 Role is inferred from WHERE a colour is used (which CSS property, on which selector role) + its
 within-role frequency — NEVER from the token NAME and NEVER from cross-role raw frequency (the
-corpus proves names are unreliable: ``#2E7D4F`` is ``--success`` on Mama's and ``--green`` on Indus;
+corpus proves names are unreliable: ``#2E7D4F`` is ``--success`` on the bakery client and ``--green`` on the wholesale-food client;
 and raw frequency inverts a palette — the most-frequent colour is body-text/border-grey, not the
 brand primary). Frequency ranks only WITHIN a role bucket.
 
@@ -33,13 +33,13 @@ _SEL_NON_RESTING = re.compile(r"::(-webkit-|-moz-|selection|placeholder|marker)|
 # "error", which also occurs in every theme's not-found-page container (WP core's body class is
 # `.error404`; Astra emits `.error-404`). That container's background is just the site's ordinary
 # brand colour, so classifying it as the `error` role hands the semantic error slug (validation /
-# form-invalid red) a brand colour — proven on Indus: `.ast-separate-container .error-404` scored
+# form-invalid red) a brand colour — proven on the wholesale-food client: `.ast-separate-container .error-404` scored
 # role=error conf=0.95 and redefined `error` from #DC2626 (red) to #d8ca50 (brand gold), which would
 # have silently rendered every form-validation state gold.
 #
 # Same failure mode as the `[class*="header"]` matching Astra's `ast-hfb-header` body flag: an
 # unanchored substring match on a name that means something else. Universal + draft-agnostic — 404
-# is the HTTP status / standard WP body class, not an Indus-specific string.
+# is the HTTP status / standard WP body class, not a client-specific string.
 _SEL_PAGE_404 = re.compile(r"error[-_]?404", re.I)
 
 

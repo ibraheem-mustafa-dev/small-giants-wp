@@ -1,4 +1,4 @@
-// The walker's catch-rate benchmark: six Eye Care gaps the walker passed and Bean found by eye
+// The walker's catch-rate benchmark: six optician-client gaps the walker passed and Bean found by eye
 // (2026-09-27/28). Each case replays the gap's pre-fix state on today's live site (CSS or an init
 // script injected on the live side only) and runs it against the page config as it stood before
 // the gap was found (a "blind" config: no pair written with the gap in mind). `states` are where the

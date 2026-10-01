@@ -67,7 +67,7 @@ Nav is owned by Spec 36 (`sgs/nav-bar-menu`, `sgs/nav-drawer-menu`, `sgs/nav-dra
 
 Source of truth: `theme/sgs-theme/theme.json` `settings.color.palette`. Copies of a token value elsewhere (block `style.css` fallbacks) must match it; see `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`.
 
-Clients override tokens via their theme snapshot. Indus Foods uses teal (#0a7ea8) + gold (#d8ca50).
+Clients override tokens via their theme snapshot. The wholesale-food client uses teal (#0a7ea8) + gold (#d8ca50).
 
 ### Layout
 - `contentSize`: 1200px
@@ -108,7 +108,7 @@ Chrome/Edge 90+, Firefox 90+, Safari 15+, iOS Safari 15+, Samsung Internet 18+. 
 
 ## Version and open priorities
 
-Current theme version: read `style.css`; deployed to the sandybrown canary and the Indus test site.
+Current theme version: read `style.css`; deployed to the sandybrown canary and the wholesale-food client test site.
 
 Open theme priorities:
 - `prefers-contrast` high-contrast support

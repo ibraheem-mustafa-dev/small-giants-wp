@@ -11,7 +11,7 @@
  *   exit-cells  drawer: lusion's corner panel at desktop (310px, 12.8px below the burger), away's
  *               390px side panel at tablet, lusion's header-content panel at mobile; lusion's item
  *               pitch (gap 14px, 0 at mobile, on 44px rows). Modal, as away's drawer is. Bar: mega panels centred on the page 10px below
- *               the header (halcyon), dropdowns centred on the page (indus-foods' More).
+ *               the header (halcyon), dropdowns centred on the page (the wholesale-food client's More).
  *   restore     put the pre-fixture bodies back.
  */
 

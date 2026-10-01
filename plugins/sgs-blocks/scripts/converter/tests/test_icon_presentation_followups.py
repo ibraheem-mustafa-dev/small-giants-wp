@@ -10,7 +10,7 @@
     stripped from each item's stored ``<svg>`` (a draft custom property such as ``var(--acc,#9C8B78)`` is dead and
     draft-coupled on the clone); a value that was NOT lifted stays in the markup.
 
-Synthetic, draft-agnostic HTML; the real Eye Care ticker is at the bottom (skips without the local run artefacts).
+Synthetic, draft-agnostic HTML; the real optician client's ticker is at the bottom (skips without the local run artefacts).
 Every behaviour carries a negative control. Run from plugins/sgs-blocks/scripts:
     python -m pytest converter/tests/test_icon_presentation_followups.py -q -p no:cacheprovider
 """
@@ -237,14 +237,14 @@ def test_a_stroke_that_inherits_is_left_alone():
 
 
 # ---------------------------------------------------------------------------
-# The real Eye Care ticker (skips when the local run artefacts are absent)
+# The real optician client's ticker (skips when the local run artefacts are absent)
 # ---------------------------------------------------------------------------
 
 REPO = Path(__file__).resolve().parents[5]
 RUN = REPO / "pipeline-state" / "eye-care-ward-end-eye-care-birmingham-2026-09-21-175447"
 needs_run = pytest.mark.skipif(
     not (RUN / "tagged-mockup.html").exists() or not (RUN / "script-bindings.json").exists(),
-    reason="needs the local Eye Care run artefacts in pipeline-state",
+    reason="needs the local optician client's run artefacts in pipeline-state",
 )
 
 

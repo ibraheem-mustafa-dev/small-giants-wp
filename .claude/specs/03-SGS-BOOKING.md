@@ -30,7 +30,7 @@ Rebuilding any of this in PHP would create two sources of truth, two availabilit
 | **GP/Doctor appointments** | Patient appointment booking | Multiple doctors | None or Stripe |
 | **Mosque Web Design** | Performance, nikah, and more booking enquiries | 1 | Deposit via Stripe |
 | **Muslims in Construction** | Event tickets (replacing MEC Pro) | N/A (event-based) | Stripe / Mollie |
-| **HelpingDoctors EHR** | Patient appointments, online and in-person | Multiple clinicians | N/A |
+| **Charity client EHR** | Patient appointments, online and in-person | Multiple clinicians | N/A |
 
 **Note on events:** The booking system does not yet support events/ticketing. The Muslims in Construction use case is deferred until event support is added to the booking system. See Phase 3 below.
 

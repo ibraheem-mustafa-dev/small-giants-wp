@@ -1,6 +1,6 @@
 """A self-hosted VARIABLE Google font must be emitted with a weight RANGE, never one weight.
 
-Proven live on the Eye Care test site: Outfit and Playfair Display were self-hosted from their
+Proven live on the optician client's test site: Outfit and Playfair Display were self-hosted from their
 variable files but written with ``fontWeight`` "300" / "400", so the browser synthesised bold for
 every heavier weight. These tests replace ``urllib.request.urlopen`` (no real request is ever made;
 an unexpected URL raises) and pass a ``tmp_path`` repo root (nothing is written into the real
@@ -327,9 +327,9 @@ def test_a_link_on_another_host_is_never_fetched(monkeypatch, tmp_path, real_fon
     assert faces[0]["fontWeight"] == "400 900"
 
 
-# ── Mama's stays byte-identical ────────────────────────────────────────────────────────────────
-def test_mamas_fraunces_face_equals_the_committed_snapshot(monkeypatch, tmp_path, real_fonts_snapshot):
-    """Mama's draft link already asks for a range, so the response is used as it always was and the
+# ── the bakery client's output stays byte-identical ────────────────────────────────────────────────────────────────
+def test_bakery_fraunces_face_equals_the_committed_snapshot(monkeypatch, tmp_path, real_fonts_snapshot):
+    """The bakery client's draft link already asks for a range, so the response is used as it always was and the
     variable-axis probe is never sent. The emitted Fraunces face must equal the committed one."""
     html = (REPO / "sites/mamas-munches/mockups/homepage/index.html").read_text(encoding="utf-8")
     links = presets.font_links(html)

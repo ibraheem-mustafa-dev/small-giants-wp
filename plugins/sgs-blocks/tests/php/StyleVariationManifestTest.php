@@ -42,17 +42,17 @@ class StyleVariationManifestTest extends TestCase {
 	 */
 	public static function client_variations_provider(): array {
 		return array(
-			"Mama's Munches"  => array(
+			"The bakery client" => array(
 				'mamas-munches.json',
 				'sgs/framework-header-default',
 				'sgs/framework-footer-default',
 			),
-			'Indus Foods'     => array(
+			'The wholesale-food client' => array(
 				'indus-foods.json',
 				'sgs/framework-header-default',
 				'sgs/framework-footer-default',
 			),
-			'Helping Doctors' => array(
+			'The charity client' => array(
 				'helping-doctors.json',
 				'sgs/framework-header-default',
 				'sgs/framework-footer-default',
@@ -63,7 +63,7 @@ class StyleVariationManifestTest extends TestCase {
 	/**
 	 * Read and decode a variation JSON file from the styles directory.
 	 *
-	 * @param string $filename Bare filename (e.g. mamas-munches.json).
+	 * @param string $filename Bare filename (e.g. a client variation file).
 	 * @return array<mixed> Decoded JSON data.
 	 */
 	private function load_variation( string $filename ): array {
@@ -241,7 +241,7 @@ class StyleVariationManifestTest extends TestCase {
 	 */
 	public static function internal_variations_provider(): array {
 		return array(
-			'Eye Care'     => array( 'eye-care-ward-end.json' ),
+			'The optician client' => array( 'eye-care-ward-end.json' ),
 			'Construction' => array( 'sgs-construction.json' ),
 			'Healthcare'   => array( 'sgs-healthcare.json' ),
 			'Mosque'       => array( 'sgs-mosque.json' ),

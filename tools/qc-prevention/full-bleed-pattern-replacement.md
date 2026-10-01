@@ -16,7 +16,7 @@ This only renders edge-to-edge when the parent's content-area padding is exactly
 24px. Any non-default page template, custom container padding, or post-content
 wrapper at 16px / 0 / clamp() value left an 8-16px gap on each side.
 
-Workaround for Mama's Munches (commit `22df0a6`) was a per-instance override
+Workaround for the bakery client (commit `22df0a6`) was a per-instance override
 keyed on `body.page-id-29` — fragile, doesn't scale to other client sites,
 needs duplicating on every page that hosts a hero.
 

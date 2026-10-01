@@ -91,11 +91,11 @@ OTHER_SURFACE_L_MAX = 0.27
 MAX_SURFACE_CHROMA = 0.03
 
 # A surface already this dark or darker in the LIGHT theme (e.g. a footer band
-# deliberately authored dark, like Mama's Munches' `footer-bg` #3A2E26, OKLCh
+# deliberately authored dark, like the bakery client's `footer-bg` #3A2E26, OKLCh
 # L=0.312) is left byte-identical rather than pushed further into the dark band —
 # measured fact, not the design note's original 0.27 guess: the real gap between
 # such surfaces and the next-lightest "normal" surface in the wild is enormous
-# (Mama's Munches: 0.312 vs 0.808), so 0.4 gives headroom on both sides without
+# (the bakery client: 0.312 vs 0.808), so 0.4 gives headroom on both sides without
 # ever mistaking a genuinely light surface for an already-dark one.
 ALREADY_DARK_SURFACE_L_MAX = 0.4
 
@@ -418,7 +418,7 @@ def _guessed_fill(slug: str, palette: dict) -> Optional[str]:
     """The fill a text slug's NAME says it sits on (`_text_pairs_with_fill`), kept
     only when that pairing already reads in the LIGHT theme (4.5:1 with both light
     values). A name-guessed pairing that fails in light mode is not how the site
-    uses the colour (Mama's Munches' cream `text-inverse` on its pink `primary`
+    uses the colour (the bakery client's cream `text-inverse` on its pink `primary`
     measures 2.4:1), so it cannot be a dark-mode constraint: `derive()` reports it
     as a light-mode warning instead."""
     fill = _text_pairs_with_fill(slug, palette)
@@ -564,8 +564,7 @@ def collect_scoped_usage(
     """Every real (foreground-slug, background-slug, kind) pair the client's own
     snapshot actually declares. This is what catches a slug used in more than the
     one role-guessed context its name suggests — D.2's `text-inverse` rule was
-    only ever a guess at ONE such context (text on the brand fill); Mama's
-    Munches also uses it as footer text, which this collects as a real pair
+    only ever a guess at ONE such context (text on the brand fill); the bakery client also uses it as footer text, which this collects as a real pair
     wherever the snapshot's own declared styles show it."""
     styles = snapshot.get("styles") or {}
     root_color = styles.get("color") or {}

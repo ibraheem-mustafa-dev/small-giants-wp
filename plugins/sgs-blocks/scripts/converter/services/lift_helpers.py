@@ -224,7 +224,7 @@ def resolve_media_url(src: str, media_map: dict) -> str:
 # is_decorative_img / first_content_img — a decorative <img> is never content
 # ---------------------------------------------------------------------------
 
-# Why this exists (measured, Eye Care draft, 2026-09-21): each of 13 review cards holds one
+# Why this exists (measured, the optician client's draft, 2026-09-21): each of 13 review cards holds one
 # ``<img src="assets/google-g.svg" alt="" aria-hidden="true" width="17">`` — the Google "G"
 # source mark. The image-object lift took "the first <img> in the item" as the reviewer's
 # ``photo``, so 13 reviews carried a dead relative URL as their photo.

@@ -460,7 +460,7 @@ NEW_STANDALONE_ROWS: list[tuple[str, list[str], str, dict, str]] = [
     # Recognition: BEM element __pill-group on any parent block (e.g.
     # sgs-product-card__pill-group, sgs-featured-product__pill-group).
     # Aliases cover variant naming across clients; pill-group is the active
-    # Mama's Munches draft term.
+    # A bakery-client draft term.
     # standalone_block_default_attrs: pillStyle=filled is the product-card
     # default (D144.3); typeKey="" signals authors to fill it post-clone.
     (

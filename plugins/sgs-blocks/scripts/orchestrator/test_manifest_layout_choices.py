@@ -1,5 +1,5 @@
 """manifest_layout_choices: layout choices read from the draft's structure (design 2026-09-23-google-reviews-baseline-and-slider-nav
-section 4). Every rung has fixtures that DIFFER from the Eye Care draft (so the mechanism must write a non-default value) and a
+section 4). Every rung has fixtures that DIFFER from the optician client's draft (so the mechanism must write a non-default value) and a
 negative control that breaks one half and checks the result changes. The lookup is a fake carrying the attribute CONTRACT the
 redesign gives `sgs/google-reviews` (roles, element classes, enum values, defaults); nothing in the module names it.
 
@@ -24,7 +24,7 @@ from test_manifest_reviews_header import EYE_FOOTER, EYE_HEADER, SLOTS, HdrLooku
 LA = ma._layout.LayoutAttr
 P = ".sgs-google-reviews__"
 NAV = ["below-end", "below-center", "below-split", "sides", "overlay-inset"]
-BASELINE = [   # the contract, defaults = the Eye Care draft
+BASELINE = [   # the contract, defaults = the optician client's draft
     LA("navPosition", "string", "css-modifier", P + "arrow", tuple(NAV), "below-end"),
     LA("pagination", "string", "behaviour", P + "rail", ("scrollbar", "dots", "none"), "scrollbar"),
     LA("logoPosition", "string", "css-modifier", P + "google-logo", ("leading", "trailing"), "leading"),
@@ -86,10 +86,10 @@ def root_tag(out):
 
 
 # --------------------------------------------------------------------------------------------------------------------
-# 0. The Eye Care draft matches the baseline: everything decided, nothing written
+# 0. The optician client's draft matches the baseline: everything decided, nothing written
 # --------------------------------------------------------------------------------------------------------------------
 
-def test_the_eye_care_draft_decides_every_choice_and_writes_nothing_when_they_equal_the_defaults():
+def test_the_optician_draft_decides_every_choice_and_writes_nothing_when_they_equal_the_defaults():
     out, row, ch = run(draft())
     assert {k: v["value"] for k, v in ch.items()} == {"navPosition": "below-end", "pagination": "scrollbar",
                                                       "logoPosition": "leading", "showCardLogo": True}
@@ -315,15 +315,15 @@ def test_which_rung_reads_an_attribute_is_decided_by_its_enum_values(enum, rung)
 
 
 # --------------------------------------------------------------------------------------------------------------------
-# 6. The REAL Eye Care draft, the real database, the unchanged converter
+# 6. The REAL optician client's draft, the real database, the unchanged converter
 # --------------------------------------------------------------------------------------------------------------------
 
 REPO = HERE.parents[3]
 RUNS = sorted(REPO.glob("pipeline-state/eye-care-ward-end-eye-care-birmingham-*/site-info-resolved.html"))
 
 
-@pytest.mark.skipif(not RUNS or not DbBlockLookup.DEFAULT_DB.exists(), reason="needs a local Eye Care run and the framework database")
-def test_eye_care_real_draft_every_decided_value_reaches_the_block_and_nothing_else_changes():
+@pytest.mark.skipif(not RUNS or not DbBlockLookup.DEFAULT_DB.exists(), reason="needs a local the optician client's run and the framework database")
+def test_optician_real_draft_every_decided_value_reaches_the_block_and_nothing_else_changes():
     raw = RUNS[-1].read_text(encoding="utf-8", newline="")
     lookup = DbBlockLookup()
     try:
@@ -345,7 +345,7 @@ def test_eye_care_real_draft_every_decided_value_reaches_the_block_and_nothing_e
 
 
 def test_presence_the_mark_is_not_classed_inside_items_whose_fields_are_not_classed():
-    """Measured on the 2026-09-20 Eye Care run under keep_unmapped_text: one class inside an unclassed item switched the
+    """Measured on the 2026-09-20 the optician client's run under keep_unmapped_text: one class inside an unclassed item switched the
     converter's item lift from role matching to class matching and 12 of 13 reviews came back empty. The value still
     travels on the block root; the mark is left alone."""
     unmarked = lambda i: re.sub(r' data-src-field(?:-style)?="[^"]*"', "", _card(i))  # noqa: E731
@@ -361,7 +361,7 @@ def test_presence_negative_control_class_driven_items_do_get_the_mark_class():
 
 
 # --------------------------------------------------------------------------------------------------------------------
-# 5. PRESENCE: a per-item LINK the block draws itself (2026-09-23, the Eye Care "Read the full review" link)
+# 5. PRESENCE: a per-item LINK the block draws itself (2026-09-23, the optician client "Read the full review" link)
 # --------------------------------------------------------------------------------------------------------------------
 
 REVIEW_LINK = LA("showReviewLink", "boolean", "presence-boolean", P + "review-link", (), False)

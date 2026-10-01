@@ -319,7 +319,7 @@ check(
 	);
 	// New placements.
 	check(
-		'indus-foods More: a 300px dropdown centred on the page sits at 570',
+		'wholesale-food client More: a 300px dropdown centred on the page sits at 570',
 		placePanel( { ...base, align: 'page-centred', isDropdown: true, bounds: vp } ).left === 570
 	);
 	check(

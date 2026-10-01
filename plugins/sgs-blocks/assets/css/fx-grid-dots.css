@@ -37,8 +37,8 @@
 	   ⚠ CORRECTED 2026-08-28. This comment used to claim primary "measures
 	   ~7:1" against the same cream. That number was measured on the FALLBACK
 	   teal #1F7A7A and then generalised to "primary" — which is not a colour,
-	   it is whatever the client's palette says. Measured live on Mama's
-	   Munches, primary is #e68a95 and scores **2.25:1** against the cream, not
+	   it is whatever the client's palette says. Measured live on
+	   the bakery client, primary is #e68a95 and scores **2.25:1** against the cream, not
 	   7:1. Do not restate a token's contrast as if it were fixed: a palette
 	   slug's ratio is a per-client fact, and the only safe general claim is
 	   that primary is chosen to be READ against the surface while accent is

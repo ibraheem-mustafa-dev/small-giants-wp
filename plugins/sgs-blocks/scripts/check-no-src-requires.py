@@ -4,7 +4,7 @@ Only build/ ships a block's files to the server (build-deploy.py), so a
 require/include of a `src/...` path from includes/ or the plugin's root PHP
 works locally and fatals every page on the live site. That happened on
 2026-09-25: includes/class-sgs-blocks.php required
-src/blocks/choice-flow-question/editor-data.php and eye-care-test went HTTP 500.
+src/blocks/choice-flow-question/editor-data.php and the optician client's test site went HTTP 500.
 
 Block render.php files are not scanned: they are copied into build/blocks/<slug>/
 and their `__DIR__`-relative requires resolve there.

@@ -92,8 +92,8 @@ sits inside a repeated array attribute on that block (e.g.
 
 > **Cross-reference (Spec 31 FR-31-26):** this tier's per-item field matching
 > presupposes the item content is already resolvable from the DOM. When a repeated group's
-> content lives only in a draft JS `static ARRAY = [...]` class property (e.g. Eye Care
-> Birmingham's ticker), there is no DOM field to match against at
+> content lives only in a draft JS `static ARRAY = [...]` class property (e.g. the optician client's
+> ticker), there is no DOM field to match against at
 > all — a precondition gap, not a defect in this tier's own logic. Spec 31 FR-31-26 resolves it
 > upstream (renders the draft with its own JS runtime, splices resolved text into the mockup
 > before this spec ever runs), so this tier's field-matching logic is unchanged — it just
@@ -133,7 +133,7 @@ as if no array-attribute existed on this block. A non-matching plain scalar is n
    plain-English array-item FIELD keys (e.g. draft `title`/`body`/`text` vs
    `array_item_schema.field_key`) is a genuinely different, unmeasured
    question — do not assume either a high or low hit rate. **Prerequisite for
-   build:** run direct-key matching against the real Eye Care draft's
+   build:** run direct-key matching against the real optician client draft's
    `sc-for` groups whose resolved parent is one of the 13 covered blocks, and
    record the real hit rate before treating this as the primary path.
 2. **Role-based fallback** — only when a role-populated row exists on that pair (25 of 88) and the field's value passes a defined value-shape check for that role (`url-href` → matches a URL-shaped string; `image-object` → matches a media-reference shape; `text-content` → matches a plain string with no other signal). **This value-shape check is small, new code** (`classless_field_resolver.py::_role_value_shape_matches`: URL-shaped string, media-reference shape, default-to-text) — Spec 44 §5.2's "content-value-shape detectors (relative-date, FAQ-question-mark, SVG icon-path)" are not a shared library it reuses (`recogniser/array_schema_eliminator.py` builds its own shape table).
@@ -183,7 +183,7 @@ unresolved (§6), the same discipline `db_lookup.py::_variant_modifier_tiebreak`
 already applies ("returns None — no change — when zero or 2+ candidates
 match... an unresolved ambiguity is never guessed at").
 
-**Prerequisite for build:** the content-bearing match rate (217 rows), measured per-block (not pooled) against the real Eye Care draft, must be written to a report before this tier is relied on for auto-placement.
+**Prerequisite for build:** the content-bearing match rate (217 rows), measured per-block (not pooled) against the real optician client draft, must be written to a report before this tier is relied on for auto-placement.
 
 ## 5. Non-negotiable discipline
 
@@ -258,8 +258,7 @@ together.
 
 **Definition of done, per tier:**
 
-- **Tier 1:** the direct-key-match hit rate, measured against the real Eye
-  Care draft's `sc-for` groups whose parent resolves to one of the 13 covered
+- **Tier 1:** the direct-key-match hit rate, measured against the real optician client draft's `sc-for` groups whose parent resolves to one of the 13 covered
   blocks, recorded in a report (not assumed beforehand).
 - **Tier 2:** the content-bearing match rate (§4.2, scoped to the 217-row
   subset, per-block not pooled) recorded in a report before the tier is
@@ -277,7 +276,7 @@ together.
   (§10.1) lands and is self-tested FIRST — Tier 4 does not ship on the two
   already-unambiguous guesses alone if the fix is in scope for the same pass.
 - **All tiers:** pass their fixture tests (§11) including every required
-  negative control. A live run against the real Eye Care draft with the flag
+  negative control. A live run against the real optician client draft with the flag
   on produces either real field placements or honest review-queue entries for
   every field inside a Tier-1-through-4-eligible group — confirmed via the
   named surfaces in §6, not terminal scrollback.
@@ -372,7 +371,7 @@ exactly once, outside both a `foreach` and a `render_block()` call.
 the classifier-guessed slug's singleton rows and attached as
 `Tier4Resolution.static_corroboration`. **Deliberately informational only**:
 `confidence` and `review_pending` (§10.3, below) are untouched by it — see Spec
-31 §13.10 for the full mechanism and its measured result (0 of 39 real groups on the Eye Care Birmingham draft carry this signal — a null result for that draft; it works against real and synthetic positive controls). Tier 3 is not a consumer of this table — see the composition paragraph above.
+31 §13.10 for the full mechanism and its measured result (0 of 39 real groups on the optician client draft carry this signal — a null result for that draft; it works against real and synthetic positive controls). Tier 3 is not a consumer of this table — see the composition paragraph above.
 
 - If `accepts_allowed_blocks` is a genuine non-empty list (20 of 216
   `block_composition` rows today — e.g. `sgs/accordion → [sgs/accordion-item]`,
@@ -599,7 +598,7 @@ With this isolation, a Tier-4 row can influence neither Spec 44's trust gate nor
 
 ## 11. Test plan
 
-- **Tier 1 fixtures:** the real Eye Care draft's groups resolving to each of
+- **Tier 1 fixtures:** the real optician client draft's groups resolving to each of
   the 13 covered blocks; a negative control where a draft field key matches
   NOTHING in `array_item_schema` for that pair (must report a gap, never
   guess); a negative control asserting a block NOT in the 13-block coverage
@@ -674,7 +673,7 @@ With this isolation, a Tier-4 row can influence neither Spec 44's trust gate nor
   clears. Separately: a Tier-4 boundary with NO Spec-44 entry at all; assert
   Tier 4 creates its own new review row rather than erroring on a missing
   entry to append to.
-- **Live verification:** re-run against the real Eye Care Birmingham draft with
+- **Live verification:** re-run against the real optician client draft with
   `--classless-field-resolve` on; confirm real placements or honest
   review-queue entries via the named surfaces (§6) for every tier; confirm
   the existing BEM-path baseline is unaffected.

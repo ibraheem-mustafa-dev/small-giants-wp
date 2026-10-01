@@ -40,8 +40,8 @@ def _fake_catalogue(monkeypatch):
 
 def test_real_d1061_shape_places_tier_object_padding():
     """The one real, live-verified correlator hit (D1061): sgs/card-grid's
-    per-card padding-top measured 28px@375 / 34px@768 on the Ward End Eye
-    Care draft. Must land in cardPadding's {desktop,tablet,mobile} tier-
+    per-card padding-top measured 28px@375 / 34px@768 on the optician
+    client's draft. Must land in cardPadding's {desktop,tablet,mobile} tier-
     object shape, side-keyed, never a flat scalar."""
     record = {
         "sc_var_hint": {"block": "sgs/card-grid", "confidence": 0.37},

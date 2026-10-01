@@ -4,7 +4,7 @@ A `<sc-for>` item template binds to `{{ r.title }}` / `{{ r.body }}` mustaches a
 draft `static ARRAY = [...]` class property, resolved at runtime by the draft's own `support.js`. The module
 renders the draft in a real browser (subprocess to `resolve-js-content.js`), captures each field of each row
 by marker, and expands the loop into real items. These tests mock the subprocess boundary for the module's own
-logic (slot detection, marker injection, splice, fail-soft); `test_the_eye_care_v2_draft_...` runs the real
+logic (slot detection, marker injection, splice, fail-soft); `test_the_optician_v2_draft_...` runs the real
 browser against the real draft when it is present.
 
 Each guard has a negative control: what must NOT be touched is asserted as carefully as what must.
@@ -36,7 +36,8 @@ from js_content_resolver import (  # noqa: E402
 )
 
 REPO = Path(__file__).resolve().parents[4]
-EYE_CARE_V2 = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2"
+OPTICIAN_V2 = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2"
+OPTICIAN_V2_DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html"
 
 _TICKER = """
 <div>
@@ -253,11 +254,11 @@ def test_it_runs_by_default_and_can_be_switched_off():
     assert '"--resolve-js-content", action=argparse.BooleanOptionalAction, default=True' in src
 
 
-@pytest.mark.skipif(shutil.which("node") is None or not (EYE_CARE_V2 / "Eye Care Birmingham.dc.html").exists(),
-                    reason="needs node and the Eye Care v2 bundle")
-def test_the_eye_care_v2_draft_gets_real_copy_in_a_real_browser():
-    html = (EYE_CARE_V2 / "Eye Care Birmingham.dc.html").read_text(encoding="utf-8")
-    out, count, report = resolve_js_array_content_with_report(html, EYE_CARE_V2)
+@pytest.mark.skipif(shutil.which("node") is None or not OPTICIAN_V2_DRAFT.exists(),
+                    reason="needs node and the optician client's v2 bundle")
+def test_the_optician_v2_draft_gets_real_copy_in_a_real_browser():
+    html = OPTICIAN_V2_DRAFT.read_text(encoding="utf-8")
+    out, count, report = resolve_js_array_content_with_report(html, OPTICIAN_V2)
     if count == 0:
         pytest.skip("no browser available here: %s" % report)
     done = {r["loop"]: r["items"] for r in report["resolved"]}
@@ -422,13 +423,13 @@ def test_is_exact_repeat_needs_an_even_length_and_every_field_equal():
     assert not is_exact_repeat([])
 
 
-@pytest.mark.skipif(shutil.which("node") is None or not (EYE_CARE_V2 / "Eye Care Birmingham.dc.html").exists(),
-                    reason="needs node and the Eye Care v2 bundle")
-def test_the_eye_care_v2_marquee_is_collapsed_to_sixteen_brands_and_the_reviews_are_marked():
+@pytest.mark.skipif(shutil.which("node") is None or not OPTICIAN_V2_DRAFT.exists(),
+                    reason="needs node and the optician client's v2 bundle")
+def test_the_optician_v2_marquee_is_collapsed_to_sixteen_brands_and_the_reviews_are_marked():
     """Real draft, real browser. The script builds `mBrands.concat(mBrands)` (16 brands twice = 32) and the strip
     runs `animation: marquee 64s linear infinite` over `translateX(-50%)` keyframes: both kinds of evidence exist."""
-    html = (EYE_CARE_V2 / "Eye Care Birmingham.dc.html").read_text(encoding="utf-8")
-    out, count, report = resolve_js_array_content_with_report(html, EYE_CARE_V2)
+    html = OPTICIAN_V2_DRAFT.read_text(encoding="utf-8")
+    out, count, report = resolve_js_array_content_with_report(html, OPTICIAN_V2)
     if count == 0:
         pytest.skip("no browser available here: %s" % report)
     marquee = next(r for r in report["resolved"] if r["loop"] == "{{ marquee }}")

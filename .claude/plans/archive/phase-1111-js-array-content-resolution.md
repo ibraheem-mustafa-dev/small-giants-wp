@@ -9,7 +9,7 @@ docscore_grade: not run (in-flight doc_type has no template — see phase-planne
 
 # Phase 1111 — JS-array-sourced repeated content resolution (FR-31-26)
 
-**USP:** 12 of the Eye Care Birmingham draft's repeated content groups (ticker, reasons, reviews,
+**USP:** 12 of the optician client Birmingham draft's repeated content groups (ticker, reasons, reviews,
 FAQs, brands, products...) exist ONLY in JS, invisible to every extraction signal the pipeline
 has today. This closes that gap once, for all 12 and any future draft's arbitrary array, using the
 draft's own real runtime instead of a bespoke JS parser — proven this session, not guessed.
@@ -111,7 +111,7 @@ Step 1 — Eligibility check: does this `<sc-for>` already have usable content?
                  NOT having usable content, still a candidate (zero is not "has content").
     Fail:        A `<sc-for>` with literal text alongside `{{ }}` bindings (e.g. `<span>Free
                  delivery over {{ t.amount }}</span>`) → NOT returned (has usable static content).
-    Integration: Run against the real Eye Care Birmingham mockup; assert the ticker's `<sc-for>`
+    Integration: Run against the real the optician client Birmingham mockup; assert the ticker's `<sc-for>`
                  (list contains `ticker`) IS in the returned candidates.
 
 Step 2 — Marker injection into a temporary served copy
@@ -140,7 +140,7 @@ Step 2 — Marker injection into a temporary served copy
                  `style="..."`) → marker is appended, existing attributes untouched.
     Fail:        Zero candidates → returns the input HTML unchanged, empty marker map (no-op,
                  matches FR-31-26.3 #1's "byte-identical when nothing eligible" guarantee).
-    Integration: Feed Step 1's real Eye Care Birmingham candidates through; assert the ticker's
+    Integration: Feed Step 1's real the optician client Birmingham candidates through; assert the ticker's
                  `<span>` (the item template at line ~46) carries the injected marker.
 
 Step 3 — Render + resolve: serve, execute, read by marker
@@ -161,7 +161,7 @@ Step 3 — Render + resolve: serve, execute, read by marker
   Files:       plugins/sgs-blocks/scripts/orchestrator/resolve-js-content.js (new)
   Inputs:      Step 2's marked temp HTML file path (served directory = its parent, so sibling
                `support.js`/`image-slot.js`/other `.dc.html` files are reachable).
-  Outcome:     Given the real marked Eye Care Birmingham copy, running this script prints JSON
+  Outcome:     Given the real marked the optician client Birmingham copy, running this script prints JSON
                whose ticker marker's array has exactly 4 entries with the real ticker strings.
   Exec:        SEQUENTIAL
   Deps:        step 2 complete
@@ -248,7 +248,7 @@ Step 4 — Splice resolved content back + fail-soft orchestration
                file in a `finally` block.
   Files:       plugins/sgs-blocks/scripts/orchestrator/js_content_resolver.py
   Inputs:      Steps 1-3's functions; the original (unmarked) mockup HTML string.
-  Outcome:     Given the real Eye Care Birmingham mockup, `resolve_js_array_content()` returns
+  Outcome:     Given the real the optician client Birmingham mockup, `resolve_js_array_content()` returns
                modified HTML where the ticker's `<sc-for>` body now contains 4 literal `<span>`s
                with real text, and the count of resolved groups is ≥1.
   Exec:        SEQUENTIAL
@@ -342,7 +342,7 @@ Step 6 — Wire into the orchestrator: Stage -1.5 + new flag
                cannot affect any existing flag's behaviour.
   Cold-Entry:  n/a
   Test:
-    Happy:       Run WITH `--resolve-js-content` against Eye Care Birmingham → `js-content-
+    Happy:       Run WITH `--resolve-js-content` against the optician client Birmingham → `js-content-
                  resolved.html` is written, `args.mockup` points to it, downstream stages see real
                  ticker/REASONS content.
     Edge:        Run WITH the flag against a draft with zero JS-array-sourced groups → block runs
@@ -357,7 +357,7 @@ Step 6 — Wire into the orchestrator: Stage -1.5 + new flag
 
 Step 7 — Live verification, flag ON
   Model:       inline
-  Action:      Re-run the real orchestrator against Eye Care Birmingham with
+  Action:      Re-run the real orchestrator against the optician client Birmingham with
                `--resolve-js-content` added to the EXACT invocation that produced the current
                41/74 baseline (`--sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0
                --classless-match --classless-auto-complete` + the standard `--client`/`--page`/

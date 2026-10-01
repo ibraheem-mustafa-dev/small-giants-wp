@@ -1,7 +1,7 @@
 # Draft-versus-live gap checklist
 
 The standard method for proving a hand-built or cloned page matches its design draft, for any client.
-The tool is `scripts/parity/draft-live-walk.mjs` (the walker); each page has one config (for Eye Care:
+The tool is `scripts/parity/draft-live-walk.mjs` (the walker); each page has one config (for the optician client:
 `sites/eye-care-ward-end/build/qa/parity/<page>.mjs`). A page matches only when the walker exits 0:
 config lint passes, 0 open differences, 0 unreviewed shots, 0 live console errors.
 
@@ -169,7 +169,7 @@ Each check below missed rows the eye caught; each has a negative control (run a 
   `text changes mid-hover` (a scramble, read at 60 and 200ms).
 - **Taps:** `h.tap(finder)` clicks with the real mouse at the element's centre, so an overlay or a label that is
   a link takes it; its outcome (`navigated`, `opened`, `nothing`) is compared as a `drive` difference.
-- **Phone widths:** below 500px the context is an iPhone 13 (touch, mobile user agent): lamalama hides its pill
+- **Phone widths:** below 500px the context is an iPhone 13 (touch, mobile user agent): the reference site hides its pill
   message by device, not width. A phone has no hover, so no hover end state is compared there (Bean 2026-09-28).
 - **Viewport-scaled sizes:** put a width above 1440 in `widths` (1920): rem-fluid sites grow past 1440.
 - **`--self draft|live`:** points both sides at one side; the baseline every header check must read 0 on.
@@ -177,7 +177,7 @@ Each check below missed rows the eye caught; each has a negative control (run a 
 **Exceptions, checked another way:** a canvas logo (content not in the DOM: presence and box, then the shot);
 a rotating message (`inventoryIgnore` drops its words; presence, type and place are compared, and its inset is
 accepted); scrambled characters (random, so only "text changes mid-hover" is compared); video content (presence
-and box only). The Indus draft's declared entrances never run in its runtime (`componentDidUpdate` gets no
+and box only). The wholesale-food client's draft's declared entrances never run in its runtime (`componentDidUpdate` gets no
 previous state). Bean (2026-09-28): the source intent is the reference; those entrances are proved on the copy
 alone against their declared timings, not compared with the draft.
 

@@ -379,7 +379,7 @@ def _match_child(
                 return ch
     # L3b — inline-<svg> SHAPE match for an icon-role field (Spec 31 §3.B.0: the icon handler already
     # reads "an inline <svg>" as icon content, see field_extractors' icon-slug chain). A draft may put
-    # the icon in the item as a BARE ``<svg>`` with no BEM class (measured: the Eye Care ticker's four
+    # the icon in the item as a BARE ``<svg>`` with no BEM class (measured: the optician client's ticker's four
     # items), so no tier above can bind it: L1/L1b need a BEM token, L2 derives the child's role from
     # that token, and the tag map (L3) has no entry for ``svg``. Without this the whole icon was lost
     # even though the item's label lifted. Runs LAST and only for an icon-role field, so it cannot

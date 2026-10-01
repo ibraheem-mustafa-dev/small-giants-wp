@@ -13,7 +13,7 @@
  *     output must be byte-identical to the old strip.
  *  2. Wrapper renders proving the keyword reaches the emitted rule, that an injection attempt
  *     cannot break out of the declaration, and that ordinary lengths are unchanged (the
- *     Mama's Munches container output is all ordinary lengths).
+ *     the bakery client's container output is all ordinary lengths).
  *
  * Self-contained: the WP stubs are the same deterministic ones ContainerWrapperTest.php declares
  * (guarded, so they compose in either load order).

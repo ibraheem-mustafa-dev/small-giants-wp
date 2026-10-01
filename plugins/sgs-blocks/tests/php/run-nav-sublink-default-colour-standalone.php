@@ -5,7 +5,7 @@
  * The base `.{bem}__sublink` rule in includes/nav-menu-submenu-css.php paints
  * the palette's `text` token, shared by the bar's dropdown and the drawer's
  * nested submenu. A brand `primary` there fails 4.5:1 on light-brand palettes
- * (Mama's Munches #e68a95 on #fbf3dc measures 2.24:1); the brand colour
+ * (the bakery client's #e68a95 on #fbf3dc measures 2.24:1); the brand colour
  * belongs to the Hover row fill (`submenuLinkBgHover`).
  *
  * The runner reads the real shipped file, so a change to it is a change to

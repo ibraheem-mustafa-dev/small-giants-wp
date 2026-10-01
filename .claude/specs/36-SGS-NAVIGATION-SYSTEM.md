@@ -328,7 +328,7 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
 
 **The featured flag renders in two forms.** `featuredColour` alone gives the LABEL form (a coloured label).
 Setting `featuredBg` gives the PILL form (a filled pill on the base link's radius) — which is how a draft
-typically authors a featured nav item, and the form the Mama's draft uses (`.sgs-header__nav-featured` =
+typically authors a featured nav item, and the form the bakery client draft uses (`.sgs-header__nav-featured` =
 `background:var(--primary)` + `color:var(--text)` + weight 600). `featuredBg` defaults to `''` so the label
 form is the default. **The pill's foreground is contrast-checked against the resolved fill** by the shared
 `sgs_wcag_preferred_text_colour_for_bg()` helper — the operator's colour wins when it clears AA, else the
@@ -553,7 +553,7 @@ through the same shared chain as the bar); the inspector shows *which menu is bo
   (`publishHeaderBox`) publishes `--sgs-drawer-hb-*` on open and resize and marks the header
   `data-sgs-drawer-grown`, which drops the header's fill, blur and shadow (`site-header/style.css`) so the two read
   as one card, and pauses hide-on-scroll. Any tier on `header-box` forces the drawer non-modal (a modal dialog is
-  top-layer and would cover the burger). lamalama's pill growing into its menu card.
+  top-layer and would cover the burger). The reference site's pill growing into its menu card.
 - **Item pitch.** The menu item `gap` (`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` `block.json::gap`) is a
   per-device tier object on both menu blocks, so a reference's tight pitch (a 0 gap on 44px rows) is reachable
   without changing padding. Stored flat values were folded into the tier shape by
@@ -607,7 +607,7 @@ tag, title, description, link): the frame becomes a square thumbnail (`drawerCar
 spanning the tag, title and link rows, the description is hidden, and `drawerCardBg`,
 `drawerCardBorderColour`, `drawerCardRadius`, `drawerCardPadding`, `drawerCardGap` (default 14px),
 `drawerCardTagSize`/`drawerCardTagPadding`/`drawerCardTagMargin` (unset `0 0 6px`), `drawerCardTitleSize`/`drawerCardTitleLineHeight` (unset `normal`), `drawerCardLinkSize` and
-`drawerCardSpacing` (below the card when first, above when last) size it. The Indus About panel's values
+`drawerCardSpacing` (below the card when first, above when last) size it. The wholesale-food client's About panel values
 are set in `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-mega-about.tree.json`.
 Every drawer colour takes a gradient sibling (`drawerBgGradient`, `drawerLinkNumColourGradient`, `drawerLinkLabelColourGradient`, `drawerLinkDescColourGradient`, `drawerLinkDividerGradient`, `drawerCardBgGradient`, `drawerCardBorderColourGradient`; a gradient wins over its flat colour) and reaches the page through the shared helpers: the two grounds through `sgs_custom_property_gradient_decls()` (`--sgs-mm-drawer-bg`, `--sgs-mm-drawer-card-bg`), the three link text colours through `sgs_resolve_text_colour_or_gradient()` / `sgs_text_colour_decl()` / `sgs_text_colour_gradient_fallback_rule()`, the hairline and the card border through `sgs_border_states_css()`. The inspector's "Preview in the editor as" toggle (Desktop / Drawer, editor state only, never saved) makes the canvas paint the drawer copy: `mega-panel/edit.js` adds `sgs-mega-panel--in-drawer`, paints the ground on the wrapper, and renders `mega-panel/drawer-preview.js::drawerPreviewCss()`, the editor twin of the `$sgs_mm_in_drawer` rules (a gradient border previews as a `border-image`, not the front end's masked ring).
 `link` (or a panel that resolves to nothing) gives a plain link. `megaDrawerFallbackIds` takes precedence
@@ -714,7 +714,7 @@ operator's border and radius rules, so any operator border, radius or shadow win
 opener-live flag clears only once the dialog has closed, so the × never reappears during the exit
 animation.
 
-**The scrim (Wave 3C U-2, M-14, D1148).** The drawer and the menu bar (`sgs/nav-bar-menu`, for every dropdown and mega panel it opens) carry the shared scrim: `supports.sgs.scrim` plus `scrimColour`, `scrimColourGradient` and per-device `scrimOpacity` and `scrimBlur`, rendered by `includes/helpers-scrim.php::sgs_scrim_render` (tint on `::before`, blur on the element, open state from CSS `:root:has(<open selector>)`, printed at `wp_footer`). Defaults: the drawer is black at 0.55; the bar has none unless set. A click on the scrim closes the surface and is absorbed, so a dismiss never follows a link underneath (lamalama's click-through is an accepted divergence). The same helper serves `sgs/modal`, the `sgs/cart` drawer, the `sgs/gallery` lightbox and `sgs/product-search`; `scripts/scrim/check-scrim.py` fails the build on any dimming block that paints its own. The earlier "NO scrim element, 8/8 references have none" held for the eight drawer-variant references only; M-14's six references show part-width drawers and panels with one. 
+**The scrim (Wave 3C U-2, M-14, D1148).** The drawer and the menu bar (`sgs/nav-bar-menu`, for every dropdown and mega panel it opens) carry the shared scrim: `supports.sgs.scrim` plus `scrimColour`, `scrimColourGradient` and per-device `scrimOpacity` and `scrimBlur`, rendered by `includes/helpers-scrim.php::sgs_scrim_render` (tint on `::before`, blur on the element, open state from CSS `:root:has(<open selector>)`, printed at `wp_footer`). Defaults: the drawer is black at 0.55; the bar has none unless set. A click on the scrim closes the surface and is absorbed, so a dismiss never follows a link underneath (the reference site's click-through is an accepted divergence). The same helper serves `sgs/modal`, the `sgs/cart` drawer, the `sgs/gallery` lightbox and `sgs/product-search`; `scripts/scrim/check-scrim.py` fails the build on any dimming block that paints its own. The earlier "NO scrim element, 8/8 references have none" held for the eight drawer-variant references only; M-14's six references show part-width drawers and panels with one. 
 
 **Motion: how the drawer and the panels arrive and leave (Wave 3C U-5, M-31, M-32).** One vocabulary across
 the drawer and every dropdown and mega panel: a shape, an opening and a closing time, a speed curve and an item
@@ -907,7 +907,7 @@ default 200) and `burgerMorphEasing` (named curves from the theme easing tokens 
 under every `burgerMorph` value (wearecollins' two bars cross into an X). `burgerSize` is the button's height
 and `burgerWidth` (per tier, empty = square) its width; a button under 44px keeps a 44x44 tap area on its
 `::after`. The bar-stack BOX is `burgerIconWidth` (bar length) and `burgerIconHeight` (bar stack height), both
-per tier and both empty by default, which keeps the box at 24x18 (U-18 G6; lamalama's bars are 16px in a 12px
+per tier and both empty by default, which keeps the box at 24x18 (U-18 G6; the reference site's bars are 16px in a 12px
 stack). They write `--sgs-nbm-icon-w` and `--sgs-nbm-icon-h` rather than bare `width`/`height`, because every
 `burgerMorph` pose derives its open travel from `--sgs-nbm-icon-h` through `calc()`, so one property reaches
 every pose. `burgerBarGap` (per tier, empty by default) is the space between the bars: it writes
@@ -1598,23 +1598,23 @@ next reader checking.
 
 **Specs 36+37 complete first; the cloning header/footer pipeline (Spec 33 Part 2) consumes them.** FR-36-15
 FEEDS Part 2 (its job is documenting the architecture) and is blocked by nothing; FR-36-25 depends on
-FR-36-21/22/23, not Part 2; only the *branded* Indus header sliver of FR-36-18 waits for Part 2. See Spec 37
+FR-36-21/22/23, not Part 2; only the *branded* header sliver for the wholesale-food client of FR-36-18 waits for Part 2. See Spec 37
 §6.
 
 ## 7. Phasing — MVP first, prove before the plumbing
 
 Each phase ships something demoable + has a pre-registered exit gate (Bean's eye + §8) before the next. The
 utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo builder knows the sequence.
-- **Phase 1 (MVP) — Mama's end-to-end (classic menu):** flat bar + burger (`sgs/nav-bar-menu`) →
+- **Phase 1 (MVP) — the bakery client end-to-end (classic menu):** flat bar + burger (`sgs/nav-bar-menu`) →
   `sgs/nav-drawer` full-screen modal accordion (`sgs/nav-drawer-menu` inside it) + the shared utility +
   converter-emit of those + FR-36-17 crawlability; **plus the cart badge (`role="status"`, FR-36-19) + logo
   basics (FR-36-22).** NO mega CPT, NO safe-triangle (a flat bar has no submenus),
-  NO mini-cart drawer. **Gate-1** (Mama's live + drawer a11y + crawl + Bean's eye) is the pre-registered
+  NO mini-cart drawer. **Gate-1** (the bakery client live + drawer a11y + crawl + Bean's eye) is the pre-registered
   exit.
-- **Phase 2 — Indus + rich desktop + mobile modes + the pieces:** the `sgs_mega_menu` CPT + native (classic)
+- **Phase 2 — the wholesale-food client + rich desktop + mobile modes + the pieces:** the `sgs_mega_menu` CPT + native (classic)
   attach + real-position render + mobile-in-drawer (the panel inside the drawer accordion by default, `megaDrawerMode` `link` available — FR-36-6);
   safe-triangle + hover-intent; the collapse mode (burger→drawer, built — FR-36-8); **the utility pieces — search, social, business-info, and the cart mini-cart
-  (FR-36-19..23).** **Gate-2** = the full §8 incl. the Indus mega. **After Gate-2 passes, before Phase 3:**
+  (FR-36-19..23).** **Gate-2** = the full §8 incl. the wholesale-food client mega. **After Gate-2 passes, before Phase 3:**
   update **Spec 33 Part 2** with the true header/footer setup (the clone pipeline comes after the nav is
   built + tested — FR-36-15).
 - **Phase 3 (follow-on extras) — competitive breadth + the moves:** **block-based `wp_navigation` menu
@@ -1630,9 +1630,9 @@ utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo bui
 ## 8. Acceptance — the concrete live-QC gate
 
 ### FR-36-16 — Reproduce both menus + the regression gate + Bean's eye (R-31-13)
-- **Mama's (gate-1):** flat 5-item classic-menu bar + a **featured** item + a **cart badge** (`sgs/cart` with
+- **The bakery client (gate-1):** flat 5-item classic-menu bar + a **featured** item + a **cart badge** (`sgs/cart` with
   the `role="status"` badge); mobile → burger → drawer (accordion) + CTA + logo basics.
-- **Indus (gate-2):** a 7-item bar of plain links + **3 dropdowns + at least one mega ("Brands"), rendered at
+- **The wholesale-food client (gate-2):** a 7-item bar of plain links + **3 dropdowns + at least one mega ("Brands"), rendered at
   its real menu position** (not last). The framework supports **5 mega layout templates**.
 
   ⛔ **The mega COUNT is derived at gate time, never pre-known.** A criterion that names a number the spec
@@ -1690,7 +1690,7 @@ diff as a defect of this gate.
 returns the toggle/close control** (not BODY or the scrim); **every drawer link probed at its own centre
 returns itself**; **everything below the header is unreachable** (probe a hero link → returns the scrim /
 `inert` layer, never the underlying link). PASS = every probe returns its expected node: **baseline 10/10
-Mama's, 18/18 Indus**. Geometry: a partial drawer's `getBoundingClientRect().top` === header bottom ±1px at
+the bakery client, 18/18 the wholesale-food client**. Geometry: a partial drawer's `getBoundingClientRect().top` === header bottom ±1px at
 all three widths; the frame sweep during open shows width/anchor CONSTANT (the scrollbar-bounce test — run on
 a **real desktop width with a classic scrollbar**; device emulation cannot reproduce the scrollbar-vanish
 bounce, so the check is otherwise vacuous). Cache: clear the CDN/LiteSpeed cache FIRST
@@ -1739,9 +1739,9 @@ grounds the owner's eye checks on drawer clones (`.claude/reports/2026-07-29-nav
    is unchanged: only the eye closes.
 
 ### FR-36-18 — Live production instances render from CPTs
-Every live site (the sandybrown canary and the Indus test site, `lavender-dinosaur-183533`, deploy target
+Every live site (the sandybrown canary and the wholesale-food client test site, `lavender-dinosaur-183533`, deploy target
 `indus-test`) renders its header and footer from CPTs (`sgs_header` / `sgs_footer`) built on the current nav
-blocks; both currently render generic proof headers, and the faithful branded Indus header is delivered by
+blocks; both currently render generic proof headers, and the faithful branded header for the wholesale-food client is delivered by
 the Spec 33 Part 2 header/footer cloning pipeline — a cloning concern, not a gate on anything here. Any
 re-authoring of a live header is done **via the editor** (never WP-CLI `post_content`), **canary-first**,
 with a before/after computed check that both menus render + collapse.

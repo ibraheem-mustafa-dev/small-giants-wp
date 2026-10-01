@@ -380,7 +380,7 @@ def test_destination_fold_non_box_dict_attr_written_twice_raises_collision(conn,
 # file each write under its own tier, like ElementResult.attrs() does; merging
 # the sides of every tier into one flat dict raised a false DESTINATION
 # COLLISION whenever a band's padding differed by device, and the whole
-# section was dropped (Eye Care ticker, `0 24px` desktop vs `0` mobile).
+# section was dropped (the optician client's ticker, `0 24px` desktop vs `0` mobile).
 # ---------------------------------------------------------------------------
 
 def test_destination_fold_tier_of_boxes_files_each_write_under_its_own_tier(conn, monkeypatch):

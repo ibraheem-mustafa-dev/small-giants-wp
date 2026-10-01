@@ -80,7 +80,7 @@ preg_match_all( "/value: '([a-z-]+)' \\}/", read_file( 'src/components/MotionEas
 ok( $m[1] === $values, 'MotionEasingControl.js options list the same values in the same order' );
 
 ok( 'ease-out' === sgs_motion_easing_css( 'ease-out-css' ), 'ease-out-css resolves to the CSS keyword' );
-ok( 'cubic-bezier(0.16, 0.84, 0.32, 1)' === sgs_motion_easing_css( 'drafts' ), 'drafts resolves to the drafts curve (halcyon, indus-foods)' );
+ok( 'cubic-bezier(0.16, 0.84, 0.32, 1)' === sgs_motion_easing_css( 'drafts' ), 'drafts resolves to the drafts curve (halcyon, the wholesale-food client)' );
 ok( 'cubic-bezier(0.4, 0, 0.2, 1)' === sgs_motion_easing_css( 'standard' ), 'standard resolves to butcherbox\'s measured curve' );
 ok( 'var(--wp--custom--easing--ease-out)' === sgs_motion_easing_css( 'ease-out' ), 'ease-out is the expo-out theme token' );
 ok( 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' === sgs_motion_easing_css( 'custom', 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' ), 'a valid custom curve passes through' );
@@ -138,7 +138,7 @@ $lusion = sgs_nav_drawer_motion(
 );
 ok( in_array( 'sgs-nav-drawer--stagger', $lusion['classes'], true ) && in_array( 'sgs-nav-drawer--stagger-close', $lusion['classes'], true ), 'lusion: stagger with reverse-on-close' );
 ok( has( $lusion['css'], '--sgs-nd-stagger-step:20ms;' ) && has( $lusion['css'], '--sgs-nd-stagger-dist:88px;' ), 'the step and distance reach the drawer' );
-ok( ! has( $lusion['css'], '--sgs-nd-stagger-max' ), 'no cap is emitted unless set (fantasy, lamalama, studionamma are uncapped)' );
+ok( ! has( $lusion['css'], '--sgs-nd-stagger-max' ), 'no cap is emitted unless set (fantasy, the reference site, studionamma are uncapped)' );
 
 $drafts = sgs_nav_drawer_motion( array( 'itemStagger' => 55, 'itemStaggerMax' => 320 ), $sel, array(), $anchors );
 ok( has( $drafts['css'], '--sgs-nd-stagger-max:320ms;' ), 'the drafts\' 320ms cap is emitted when set' );

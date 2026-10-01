@@ -2,7 +2,7 @@
 
 Run:  cd plugins/sgs-blocks/scripts && python -m pytest theme-extractor/tests/test_freshness_source_hash.py -q
 
-Browser-free and network-free: the snapshot tests reuse the checked-in Mama's facts fixture.
+Browser-free and network-free: the snapshot tests reuse the checked-in bakery-client facts fixture.
 """
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ import extract  # noqa: E402
 import shared_utils  # noqa: E402
 from shared_utils import draft_css_sha256, draft_source_sha256, read_readme_text  # noqa: E402
 
-MAMAS = REPO / "sites" / "mamas-munches" / "mockups" / "homepage" / "index.html"
+MAMAS = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 FACTS = PKG / "mamas-computed-facts.json"
 
 CLAUDE_DESIGN = """<!doctype html>
@@ -97,7 +97,7 @@ def test_data_style_attribute_is_not_read_as_an_inline_style():
 
 
 def test_css_hash_is_untouched_by_the_new_function():
-    # draft_css_sha256 must keep hashing the <style> text only (Mama's key stays as it was).
+    # draft_css_sha256 must keep hashing the <style> text only (the bakery client's key stays as it was).
     html_a = CLAUDE_DESIGN
     html_b = CLAUDE_DESIGN.replace("color: #111111", "color: #999999")
     assert draft_css_sha256(html_a) == draft_css_sha256(html_b)
@@ -120,7 +120,7 @@ def _baseline():
 def _build(html, draft_dir):
     facts = json.loads(FACTS.read_text(encoding="utf-8"))
     css = shared_utils.extract_css(MAMAS.read_text(encoding="utf-8"))
-    return extract.build_snapshot("mamas-munches", css, facts, html, _baseline(), [], REPO, draft_dir=draft_dir)
+    return extract.build_snapshot("bakery-client", css, facts, html, _baseline(), [], REPO, draft_dir=draft_dir)
 
 
 def _dsl_html():

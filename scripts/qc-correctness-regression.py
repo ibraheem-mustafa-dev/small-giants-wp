@@ -9,7 +9,7 @@ Usage:
   python scripts/qc-correctness-regression.py
     Run all fixtures, compare to baselines, exit 1 on drift.
 
-  python scripts/qc-correctness-regression.py --bootstrap mamas-munches-homepage
+  python scripts/qc-correctness-regression.py --bootstrap <fixture-name>
     Re-run the named fixture, overwrite its baseline with current output.
 
   python scripts/qc-correctness-regression.py --json

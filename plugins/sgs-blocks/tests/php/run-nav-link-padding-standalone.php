@@ -1,7 +1,7 @@
 <?php
 /**
  * Standalone runner for `itemPadding` on sgs/nav-bar-menu (the top-level link
- * padding, handed to lane A by the Eye Care build: 8px 12px was hardcoded).
+ * padding, handed to lane A by the optician client's build: 8px 12px was hardcoded).
  *
  * Calls the REAL includes/nav-menu-css.php::sgs_nav_shared_item_state_css()
  * and checks: per-side padding per tier on the link, the left side published

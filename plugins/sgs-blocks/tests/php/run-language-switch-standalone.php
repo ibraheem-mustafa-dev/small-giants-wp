@@ -198,7 +198,7 @@ ok( 'FR' === sgs_language_switch_visible_label( 'fr', 'custom', '', null ), 'cus
 
 // ---------------------------------------------------------------------------
 // 4. Accessible name for "code" style — the hidden span text is the autonym,
-// not the visible code (lamalama's "NL" link, accessible name "Nederlands").
+// not the visible code (the reference site's "NL" link, accessible name "Nederlands").
 // ---------------------------------------------------------------------------
 
 ok( 'Nederlands' === sgs_language_switch_accessible_name( 'nl', '', null ), 'code style accessible name: "nl" -> "Nederlands"' );

@@ -1,4 +1,4 @@
-"""render_reads_attr follows require/include transitively (Eye Care sgs/google-reviews, 2026-09-21).
+"""render_reads_attr follows require/include transitively (the optician client's sgs/google-reviews, 2026-09-21).
 
 Cause, proven: stage 1 seeds `block_attributes.emit_shape` from `render_emits.render_reads_attr`, which read
 `_render_source(slug)`, and that follows ONE `require` hop (render.php -> includes/render-helpers.php). sgs/google-reviews

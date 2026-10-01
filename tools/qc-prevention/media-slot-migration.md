@@ -160,7 +160,7 @@ echo $html; // Already escaped inside sgs_render_media().
 ### 6. Verification command (live)
 
 ```bash
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp post get <id> --field=post_content"
+ssh hd "cd ~/domains/<site-domain>/public_html && wp post get <id> --field=post_content"
 ```
 
 Expect to see the new `splitMedia` JSON in the block comment, and on the

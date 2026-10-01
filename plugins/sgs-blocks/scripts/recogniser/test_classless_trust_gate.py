@@ -48,7 +48,7 @@ import simple_html_review_report as review  # noqa: E402
 LIVE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 BUYBOX = "sgs/buybox"
 CLIENT = "eye-care-ward-end"
-OTHER_CLIENT = "mamas-munches"
+OTHER_CLIENT = "other-client"
 
 # gallery-col.php's real seeded per-item sequence (Task 2 measured it; asserted below
 # rather than trusted, so a reseed that changes shape fails here loudly).

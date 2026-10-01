@@ -4,10 +4,10 @@
 Reads a draft mockup, MEASURES computed values on the rendered page (measure.js), parses the
 DECLARED CSS for names/roles (token_map/roles), reconciles them (COMPUTED VALUE WINS — the iron
 law), and emits a complete, valid ``theme-snapshot.json`` (theme.json v3) + a provenance
-``theme-extract-trace.json``. Proves on Mama's; kills the D303 base-inheritance drift.
+``theme-extract-trace.json``. Proves on the bakery client; kills the D303 base-inheritance drift.
 
 Usage:
-  python extract.py --client mamas-munches --draft <index.html> [--facts <computed-facts.json>]
+  python extract.py --client <client-slug> --draft <index.html> [--facts <computed-facts.json>]
                     [--out <snapshot.json>] [--repo-root <path>]
 
 If ``--facts`` is omitted, measure.js is run live (needs Playwright). Passing a cached facts file
@@ -174,7 +174,7 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
     """Fetch + self-host a font family the framework does NOT already bundle — the SAME code path
     for every font, whether it happens to be one the framework ships (Inter/DM Sans/DM Serif
     Display, resolved via ``_bundled_faces_by_family`` instead) or one a client draft introduces
-    first (e.g. Fraunces for Mama's Munches). No special-casing "fonts we happened to bundle"
+    first (e.g. Fraunces for the bakery client). No special-casing "fonts we happened to bundle"
     (R-31-9). Root cause fixed here: previously only bundled fonts got a working fontFace at all —
     a fresh font's NAME was written with nothing loading it, so the browser silently fell back to
     its default serif/sans-serif stack.
@@ -428,10 +428,10 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     # same principle as the buttonPresets merge below: the extractor may only overwrite what it has
     # actually measured. Deleting the baseline instead would STRIP that heading level from the live
     # site, because push-theme-snapshot replaces theme.json wholesale — proven against the live
-    # palestine-lives theme.json, which carries h5 (medium/700) + h6 (small/700/uppercase/0.08em)
-    # that the Indus draft never renders and therefore cannot speak for.
+    # the campaign-site client's theme.json, which carries h5 (medium/700) + h6 (small/700/uppercase/0.08em)
+    # that the wholesale-food client's draft never renders and therefore cannot speak for.
     #
-    # Chrome exclusion still holds, and is the POINT: Mama's renders h5 ONLY in its footer at 11px,
+    # Chrome exclusion still holds, and is the POINT: the bakery client renders h5 ONLY in its footer at 11px,
     # and that chrome value must never drive the global h5 scale. Skipping the override achieves that
     # WITHOUT deleting the baseline — the two are independent, and conflating them was the bug.
     #
@@ -472,11 +472,11 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
 
     # BUTTON PRESETS (FR-33-4 open bag) — MERGED onto the framework baseline, never replaced.
     #
-    # Two distinct non-destructive requirements, both proven necessary on Indus:
-    #   (a) SLOT level — the draft defines only the slots it happens to use (Indus derives `outline`
+    # Two distinct non-destructive requirements, both proven necessary on the wholesale-food client:
+    #   (a) SLOT level — the draft defines only the slots it happens to use (the wholesale-food client derives `outline`
     #       alone). A wholesale replace DELETED the baseline's `primary` + `secondary` presets; since
     #       push-theme-snapshot REPLACES the live theme.json, that strips them from the site — and
-    #       Indus's buttons use exactly those.
+    #       the wholesale-food client's buttons use exactly those.
     #   (b) KEY level — even for a slot the draft DOES define, `_rest_entry` only ever derives
     #       background/text/border/border-width/border-radius/font-size/font-weight/min-height
     #       (presets.py). `padding` is NOT in that vocabulary at all, so a slot-level replace drops
@@ -568,7 +568,7 @@ def validate_font_faces(snapshot: dict):
     is a cross-reference check ("does a name have a matching face anywhere in the array"), not a
     structural JSON-shape check, and it is specific to this extractor's own fail-closed contract.
 
-    Catches the bug class a live Mama's Munches clone shipped with: a font-family NAME written
+    Catches the bug class a live bakery-client clone shipped with: a font-family NAME written
     into theme.json with nothing anywhere in the file to load it. WP emits the family into the
     generated CSS regardless (``font-family: Fraunces, serif``); the browser silently falls back
     to its own default serif stack (Times New Roman) with no error, no warning, nothing in the
@@ -603,7 +603,7 @@ def drop_inherited_heading_colour(snap: dict, trace: list) -> dict:
     WordPress prints ``elements.heading.color`` as ``h1, h2, h3, h4, h5, h6 { color: … }``, a rule
     on the heading itself, so it beats the colour a heading would INHERIT from its section. When
     that colour is the body text colour it changes nothing on a plain section and breaks every
-    coloured one: on the Eye Care draft's black "why buy" band the heading and the four card titles
+    coloured one: on the optician client's draft, the black "why buy" band the heading and the four card titles
     painted near-black on black, while the band's text colour reached the paragraphs. In the draft
     the headings inherit. Same value as the body means "inherit", so the key is dropped and the
     headings take the colour of whatever they sit in. A DIFFERENT heading colour is a real design
@@ -803,7 +803,7 @@ def main(argv=None) -> int:
     # FR-33-14 — fail-closed unless every declared typography.fontFamilies[] entry has a matching
     # fontFace SOMEWHERE in the array. A name with nothing loading it silently falls back to the
     # browser default font on every element that declares it — this is the root cause a live
-    # Mama's Munches clone shipped with (Fraunces on 14 elements silently rendering Times New
+    # bakery-client clone shipped with (Fraunces on 14 elements silently rendering Times New
     # Roman). Same pattern as the FR-33-12 freshness gate: fail the run closed, name the fix.
     ok_faces, face_errors = validate_font_faces(snap)
     if not ok_faces:

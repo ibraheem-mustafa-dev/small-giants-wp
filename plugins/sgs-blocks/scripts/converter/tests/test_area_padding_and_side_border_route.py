@@ -1,4 +1,4 @@
-"""Two per-area routes found missing on the live Eye Care reviews card (2026-09-22).
+"""Two per-area routes found missing on the live optician client's reviews card (2026-09-22).
 
 1. PILL PADDING. The draft's two header pills (`.sgs-google-reviews__review-request-url`,
    `.sgs-google-reviews__see-all-url`) declare `padding: 0 22px`. The block holds that in the

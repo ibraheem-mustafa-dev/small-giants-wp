@@ -1,6 +1,6 @@
 """test_decorative_img_lift -- a decorative <img> is never lifted as a content image.
 
-Measured on the live Eye Care page (2026-09-21): each of 13 review cards holds
+Measured on the live optician client's page (2026-09-21): each of 13 review cards holds
 ``<img src="assets/google-g.svg" alt="" aria-hidden="true" width="17">`` (the Google "G" source mark),
 and the image-object lift took "the first <img> in the item" as the reviewer's ``photo``, so 13 reviews
 carried a dead relative URL (the media endpoint also refuses ``.svg``, so it could never be hosted).
@@ -175,16 +175,16 @@ def test_scalar_bare_tag_fallback_never_claims_a_decorative_img():
 
 
 # ---------------------------------------------------------------------------
-# Mama's committed draft: nothing there is decorative, so its output cannot change
+# the bakery client's committed draft: nothing there is decorative, so its output cannot change
 # ---------------------------------------------------------------------------
 
 REPO = Path(__file__).resolve().parents[5]
-MAMAS = REPO / "sites" / "mamas-munches" / "mockups" / "homepage" / "index.html"
+BAKERY_DRAFT = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 
 
-@pytest.mark.skipif(not MAMAS.exists(), reason="needs the committed Mama's homepage draft")
+@pytest.mark.skipif(not BAKERY_DRAFT.exists(), reason="needs the committed bakery client's homepage draft")
 def test_mamas_draft_output_is_identical_with_the_decorative_rule_off(monkeypatch):
-    soup = BeautifulSoup(MAMAS.read_text(encoding="utf-8"), "html.parser")
+    soup = BeautifulSoup(BAKERY_DRAFT.read_text(encoding="utf-8"), "html.parser")
     decorative = [i for i in soup.find_all("img") if is_decorative_img(i)]
     css = "\n".join(t.get_text() for t in soup.find_all("style"))
     sections = [s for s in soup.find_all("section")][:6]
@@ -206,22 +206,22 @@ def test_mamas_draft_output_is_identical_with_the_decorative_rule_off(monkeypatc
     monkeypatch.setattr(sc, "has_only_decorative_imgs", lambda _e: False)
     without_rule = run()
     assert with_rule == without_rule
-    assert decorative == [], "Mama's homepage now carries a decorative <img>: %s" % decorative
+    assert decorative == [], "the bakery client's homepage now carries a decorative <img>: %s" % decorative
 
 
 # ---------------------------------------------------------------------------
-# The real Eye Care run: 13 reviews, none carrying the G mark as a photo
+# The real optician client's run: 13 reviews, none carrying the G mark as a photo
 # ---------------------------------------------------------------------------
 
 RUN = REPO / "pipeline-state" / "eye-care-ward-end-eye-care-birmingham-2026-09-21-131739"
 needs_run = pytest.mark.skipif(
     not (RUN / "manifest-annotated.html").exists() or not (RUN / "script-bindings.json").exists(),
-    reason="needs the local Eye Care run artefacts in pipeline-state",
+    reason="needs the local optician client's run artefacts in pipeline-state",
 )
 
 
 @needs_run
-def test_the_real_eye_care_reviews_carry_no_google_g_photo():
+def test_the_real_optician_reviews_carry_no_google_g_photo():
     soup = BeautifulSoup((RUN / "manifest-annotated.html").read_text(encoding="utf-8"), "html.parser")
     css = "\n\n".join(t.get_text() for t in soup.find_all("style"))
     variation = RUN / "variation-d0-d2.css"

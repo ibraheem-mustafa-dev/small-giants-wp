@@ -1298,5 +1298,23 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 143
+  },
+  {
+    "id": "check-no-client-names",
+    "cmd": "python ../../scripts/check-no-client-names.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 20000,
+    "order": 144
+  },
+  {
+    "id": "check-no-client-names-selftest",
+    "cmd": "python ../../scripts/check-no-client-names.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 5000,
+    "order": 145
   }
 ]

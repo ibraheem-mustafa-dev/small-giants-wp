@@ -1,6 +1,6 @@
 ---
 doc_type: handover
-from: Mama's-clone / mobile + converter track
+from: bakery-client clone / mobile + converter track
 to: the media-panel standardisation track
 date: 2026-08-26
 subject: sgs/product-card typed mode has no replace control and no media panel
@@ -13,7 +13,7 @@ without first removing.** Everything below is context for why.
 
 ## What we found
 
-While cloning the Mama's Munches homepage we hit a gap in `sgs/product-card` that belongs in
+While cloning the bakery client homepage we hit a gap in `sgs/product-card` that belongs in
 your standardisation rather than as a one-off fix on our side.
 
 In **typed mode** the block offers only a **"Remove image"** button. There is no replace

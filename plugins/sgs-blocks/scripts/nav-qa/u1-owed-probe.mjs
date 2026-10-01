@@ -125,7 +125,7 @@ const lift = await group.evaluate( ( el ) => getComputedStyle( el ).transform );
 const hoverTop = ( await group.boundingBox() ).y;
 console.log( `card transform hovered ${ lift }; top ${ restTop.toFixed( 2 ) } -> ${ hoverTop.toFixed( 2 ) }` );
 if ( 'on' === expect ) {
-	check( /matrix\(1, 0, 0, 1, 0, -6\)/.test( lift ), 'card lift: translateY(-6px) (indus-foods)' );
+	check( /matrix\(1, 0, 0, 1, 0, -6\)/.test( lift ), 'card lift: translateY(-6px) (wholesale-food client)' );
 	check( Math.abs( restTop - hoverTop - 6 ) < 0.5, 'card lift: the box rises 6px' );
 } else {
 	// An empty lift resolves to translateY(0): `none` or a zero-offset matrix both mean no lift.

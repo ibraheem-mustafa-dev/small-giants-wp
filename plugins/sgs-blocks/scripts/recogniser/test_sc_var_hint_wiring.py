@@ -113,7 +113,7 @@ def test_unresolved_sc_for_still_carries_structural_context_regression() -> None
     (count<2, no slots.aliases hit -- the exact case sc_var_haiku_batch.py
     exists to classify) got `sc_var_child_tag_skeleton`/`sc_var_text`
     silently absent, exactly when a Tier B classifier needs them most.
-    Caught live against the real "bagItems" sc-for in the Ward End Eye Care
+    Caught live against the real "bagItems" sc-for in the optician client's
     draft, which produced a Haiku batch item with `child_tag_skeleton: null`."""
     html = (
         '<sc-for list="{{ bagItems }}" as="b" hint-placeholder-count="1">'
@@ -132,8 +132,8 @@ def test_tier_b_cache_resolves_an_unresolved_boundary() -> None:
     """End-to-end Tier B: a boundary Tier A cannot resolve (bespoke name,
     count<2, no slots.aliases hit) stays unresolved with no cache, then
     resolves via `hint_from_cache` once a committed classification is
-    passed in through `sc_var_cache` -- verified live against the real Ward
-    End Eye Care draft's "bagItems" sc-for + a real sc_var_haiku_batch.py
+    passed in through `sc_var_cache` -- verified live against the real optician
+    client draft's "bagItems" sc-for + a real sc_var_haiku_batch.py
     round trip before this test was written (see D-log)."""
     _scripts_root = HERE.parent
     if str(_scripts_root) not in sys.path:

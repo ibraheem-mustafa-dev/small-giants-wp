@@ -135,7 +135,7 @@ Three reasons, in order of weight:
 
 Today's block.json has burger colour/bg/hover/size — but NO way to change what the trigger IS.
 The references make this table stakes: studionamma renders the word "MENU", fantasy a symbol,
-lamalama a morphing glyph. New attrs on nav-menu (all inspector-controlled, Spec 35-conformant):
+The reference site a morphing glyph. New attrs on nav-menu (all inspector-controlled, Spec 35-conformant):
 
 | Attr | Type | What the client sets |
 |---|---|---|
@@ -174,7 +174,7 @@ fails on unmanifested controls, giving this mechanical teeth for home #2.
 - Bean's eye on that ONE clone before any of the other six are attempted. Seven parallel
   half-clones is the exact shape that produced the 2026-07-29 rejection.
 - **Each accepted clone yields a header preset + footer preset + drawer starter** — B3's roster
-  stops being a separate authoring job: 7 cloned pairs (buck, dogstudio, fantasy, lamalama, lusion,
+  stops being a separate authoring job: 7 cloned pairs (buck, dogstudio, fantasy, the reference site, lusion,
   studionamma, wearecollins) + invented fills only where the references leave a gap (**Utility**
   commerce header/footer, **Overlay** hero-contrast header, **Directory** footer). resn is
   WebGL — reference-only, excluded.

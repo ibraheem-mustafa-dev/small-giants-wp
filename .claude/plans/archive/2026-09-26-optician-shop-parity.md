@@ -1,9 +1,9 @@
-# Eye Care shop archive: parity with the draft
+# The optician client shop archive: parity with the draft
 
 **Status:** DONE 2026-09-27. `shop.mjs` exits 0 (0 open, 21 of 21 shots reviewed, 0 live console errors) after
 Bean's review items (Remaining 8). States: opening, filters open, Women, Black, Ray-Ban and a Pilot chip each chosen
 by clicking on both sides (the last with the drawer left open), and scrolled 1200px. Part of the parity re-review in
-`plans/2026-09-24-eye-care-hand-build-design.md` (Status, "Parity re-review owed before Wave D").
+`plans/2026-09-24-optician-hand-build-design.md` (Status, "Parity re-review owed before Wave D").
 **Verify with:** `node ../../scripts/parity/draft-live-walk.mjs ../../sites/eye-care-ward-end/build/qa/parity/shop.mjs`
 from `plugins/sgs-blocks` with `NODE_EXTRA_CA_CERTS` set to certifi's bundle (exit 0 = matches).
 
@@ -44,7 +44,7 @@ Framework (any client, each with a control):
    attribute ID): replace with attribute-agnostic defaults. The grid container query is fixed
    (4ca121b54).
 
-Content (Eye Care, in `build/gen_archive_product.py` and the product seed):
+Content (the optician client, in `build/gen_archive_product.py` and the product seed):
 9. Gender and Size attributes on every product (unisex frames carry Women and Men; Size from the
    lens width), colour term hexes, product order (menu_order) matching the draft's Featured order.
 10. Groups in the draft's order and open state, the toggle on, the Lenses chips removed, 270px
@@ -64,10 +64,10 @@ All answered (recorded in `shop.mjs` as "Accepted (Bean 2026-09-27)"). Card pric
       cart and checkout keep theirs. The shop's pennies accepts are gone; the lens flow's stays (not a card).
    b. The Polarised tag keeps its width at the right of the name row, 17px in from the card edge, at every width; in
       a card body under 200px (the phone grid) it takes its own line under the name, right-aligned (Bean), so no
-      name breaks mid-word. New Typography target for the tag (size, weight, letter spacing); Eye Care sets weight
+      name breaks mid-word. New Typography target for the tag (size, weight, letter spacing); the optician client sets weight
       400 and the `border-strong` border as in the draft. Pairs `tag-holbrook` and `tag-lewis` anchored to their
       cards; the walker's new `anchorX` measures the right-edge gap.
-   c. Customizer "Show a floating Filter button" (default on), off for Eye Care; `shop.mjs` has a `scrolled` state
+   c. Customizer "Show a floating Filter button" (default on), off for the optician client; `shop.mjs` has a `scrolled` state
       with the button as a pair.
    d. Thin price slider inset 4px both sides: each handle paints 2px past its input, so flush right the scroll
       area clipped it to 12px (measured in the drawer and the desktop column; 14px after).
@@ -79,7 +79,7 @@ All answered (recorded in `shop.mjs` as "Accepted (Bean 2026-09-27)"). Card pric
 
 The record of what items 0-7 did:
 
-0. **DONE 2026-09-27 (7240cb28d).** The duplicate brand search is gone: Eye Care's Brand group holds Spec 30
+0. **DONE 2026-09-27 (7240cb28d).** The duplicate brand search is gone: the optician client's Brand group holds Spec 30
    FR-30-6's `sgs/filter-search` block (now able to search a core taxonomy filter, placeholder "Search brands",
    threshold 2); the theme's `sgs-filter-search` class, its CSS and the `sgs_shop_filter_search_label` setting are
    deleted (theme mod removed on eye-care-test). Live: "ray" narrows 14 brands to 1; ticking Ray-Ban loads
@@ -99,7 +99,7 @@ The record of what items 0-7 did:
    - sgs/product-card: opted in (4px lift, Lifted shadow); the brown hover shadow is gone; `--flat` clears only the
      resting shadow. New controls: card border colour on hover, RRP colour, dot size, dot grow on hover (Colour dots
      panel), price line height. The Typography panel now shows in bound mode too (bound cards had no size controls).
-   - A framework Diffuse shadow preset (0 18px 44px, 9%) in every snapshot; Eye Care `border-hover` #CFC7BB.
+   - A framework Diffuse shadow preset (0 18px 44px, 9%) in every snapshot; the optician client `border-hover` #CFC7BB.
    - Follow-ups: parked below.
 2. **DONE 2026-09-27.** Title steps 48px to 34px (one clamp); count 13.5px `text-subtle`; the sort menu takes the
    browser's own arrow with 14px sides (Customizer "Sort menu arrow").
@@ -112,7 +112,7 @@ The record of what items 0-7 did:
    drawer is the page surface with a ruled header and the site's button presets on its footer ("Show 16 frames",
    "Clear", capitals by a Customizer switch).
 5. **DONE 2026-09-27.** The theme's `archive-product.html` carries Price, Category and Brand only (no attribute IDs).
-   The Mama's Munches follow-up is parked below.
+   The bakery client follow-up is parked below.
 6. **DONE 2026-09-27.** Bean's answers recorded in `shop.mjs`. The sort menu's extra 11px was its 15px text against
    the draft's 13.5px, not a "Sort by" prefix (the live options carry none): Customizer "Sort menu text size".
 7. **DONE 2026-09-27** (method: `scripts/parity/GAP-CHECKLIST.md`).
@@ -140,7 +140,7 @@ The record of what items 0-7 did:
 
 - card-grid's zoom amount has no control (it keeps its own toggle, not the shared hover panel).
 - `scripts/surveys/survey-inspector-surface.js` doesn't follow the hover panels into `panels/*.js` (census only).
-- Mama's Munches needs a site copy of `archive-product.html` for its Flavour and Size groups (as Eye Care's
+- The bakery client needs a site copy of `archive-product.html` for its Flavour and Size groups (as the optician client's
   `build/gen_archive_product.py`); until then the canary shop shows the generic groups.
 
 Found and fixed along the way (framework): the drawer's live result count re-requested the Store API every 400ms
