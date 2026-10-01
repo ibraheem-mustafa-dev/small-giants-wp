@@ -587,26 +587,6 @@
 		},
 		{
 			"slug": "sgs/brand-strip",
-			"attr": "brandTextSeparatorColour",
-			"fields": {
-				"css_property": "border-right-color",
-				"css_element": "brand-text",
-				"derived_selector": ".sgs-brand-strip__item--text"
-			},
-			"_why": "2026-09-29. Text-mode brand item setting (brand-display-render.php::sgs_brand_strip_text_style_css), matching block.json supports.sgs.elements.brand-text.attrMap. The emission scanner cannot pair it: the value is resolved into a variable (sgs_css_length_value / sgs_colour_value inside a conditional) and the selector string is built with the root scope variable, so no literal property/selector pair sits in one statement. min-width is delivered through --sgs-brand-text-min-width, read by style.css .sgs-brand-strip__item--text. The deploy gate check-colour-attr-css-property refused brandTextSeparatorColour with no css_property."
-		},
-		{
-			"slug": "sgs/brand-strip",
-			"attr": "brandTextSeparatorWidth",
-			"fields": {
-				"css_property": "border-right-width",
-				"css_element": "brand-text",
-				"derived_selector": ".sgs-brand-strip__item--text"
-			},
-			"_why": "2026-09-29. Text-mode brand item setting (brand-display-render.php::sgs_brand_strip_text_style_css), matching block.json supports.sgs.elements.brand-text.attrMap. The emission scanner cannot pair it: the value is resolved into a variable (sgs_css_length_value / sgs_colour_value inside a conditional) and the selector string is built with the root scope variable, so no literal property/selector pair sits in one statement. min-width is delivered through --sgs-brand-text-min-width, read by style.css .sgs-brand-strip__item--text. The deploy gate check-colour-attr-css-property refused brandTextSeparatorColour with no css_property."
-		},
-		{
-			"slug": "sgs/brand-strip",
 			"attr": "brandTextMinWidth",
 			"fields": {
 				"css_property": "min-width",
@@ -3485,38 +3465,6 @@
 				"role": "colour-gradient",
 				"css_property": "background-image",
 				"css_element": "submenu-panel"
-			}
-		},
-		{
-			"slug": "sgs/nav-bar-menu",
-			"attr": "itemSeparatorHoverTreatment",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-09-14 (FR-41-37 follow-up, directional sweep generalisation). Same shape as the pre-existing itemBorderHoverTreatment/itemColourHoverTreatment on this same block: a pure treatment-selector enum (none/swap/sweep) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all sgs/nav-menu)."
-			}
-		},
-		{
-			"slug": "sgs/nav-bar-menu",
-			"attr": "itemSeparatorSweepAngle",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-09-14 (FR-41-37 follow-up). A numeric CSS gradient-angle parameter consumed entirely inside includes/sweep-css.php's PHP maths (sin/cos position derivation) -- never emitted as a paintable colour/typography/box value of its own, matching the established 'behaviour' role for pure-configuration numeric attrs with no direct visual property mapping (precedent: sgs/buybox.triggerMagnetRadius-class numeric behaviour params)."
-			}
-		},
-		{
-			"slug": "sgs/nav-drawer-menu",
-			"attr": "itemSeparatorHoverTreatment",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-09-29 (drawer item-level parity with sgs/nav-bar-menu). The same treatment-selector (none/swap/sweep) as sgs/nav-bar-menu.itemSeparatorHoverTreatment, for the drawer's row divider: it chooses WHICH hover mechanism paints, not a paintable value. 'behaviour', matching the bar and the drawer's own itemColourHoverTreatment/itemBgHoverTreatment/itemBorderHoverTreatment."
-			}
-		},
-		{
-			"slug": "sgs/nav-drawer-menu",
-			"attr": "itemSeparatorSweepAngle",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-09-29 (drawer item-level parity). The same gradient-angle parameter as sgs/nav-bar-menu.itemSeparatorSweepAngle, consumed inside the sweep maths (includes/nav-drawer-menu-separator-css.php via includes/sweep-css.php), never painted as a value of its own. 'behaviour', matching the bar."
 			}
 		},
 		{
@@ -6652,14 +6600,6 @@
 			"_why": "2026-10-01 (deploy gate, orphan_unclassified). How many instalments the mini-cart note divides the total by; a whole number the render reads, no CSS property."
 		},
 		{
-			"slug": "sgs/nav-drawer-menu",
-			"attr": "itemSeparatorPosition",
-			"fields": {
-				"role": "behaviour"
-			},
-			"_why": "2026-09-30 (Gate 3C Indus drawer). Chooses WHERE the row divider draws (between rows, or as each row's own bottom border); a placement enum, same role as itemSeparatorHoverTreatment."
-		},
-		{
 			"slug": "sgs/nav-bar-menu",
 			"attr": "scrimFadeEasingCustom",
 			"fields": {
@@ -6825,14 +6765,6 @@
 		},
 		{
 			"slug": "sgs/icon-list",
-			"attr": "dividerColour",
-			"fields": {
-				"css_property": "border-color"
-			},
-			"_why": "2026-09-25. The divider colour paints the item rows' border lines (drawn with border-top/border-bottom shorthands, which the analyser reads literally); the property it sets is border-color, the mechanism the colour census resolves."
-		},
-		{
-			"slug": "sgs/icon-list",
 			"attr": "descriptionColour",
 			"fields": {
 				"derived_selector": ".sgs-icon-list__description",
@@ -6874,6 +6806,62 @@
 			"fields": {
 				"role": "boolean-visibility",
 				"_reason": "2026-09-28 (U-18 drawer chrome row, Spec 36 FR-36-6). Per-device show/hide of the drawer top row free slot (tier object of booleans, painted as display). The trailing 'Show' is outside the show*/hide* prefix rule, so no role was derived."
+			}
+		},
+		{
+			"slug": "sgs/container",
+			"attr": "separators",
+			"fields": {
+				"role": "visual",
+				"_reason": "2026-10-01 (Separators). The shared lines-between-items setting object (includes/helpers-separators.php); painted as border / gap-rule lines, so 'visual'. Classified explicitly because a nested object has no derivable role."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "separators",
+			"fields": {
+				"role": "visual",
+				"_reason": "2026-10-01 (Separators). The shared lines-between-items setting object (includes/helpers-separators.php); painted as border / gap-rule lines, so 'visual'. Classified explicitly because a nested object has no derivable role."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "submenuSeparators",
+			"fields": {
+				"role": "visual",
+				"_reason": "2026-10-01 (Separators). The shared lines-between-items setting object (includes/helpers-separators.php); painted as border / gap-rule lines, so 'visual'. Classified explicitly because a nested object has no derivable role."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "separators",
+			"fields": {
+				"role": "visual",
+				"_reason": "2026-10-01 (Separators). The shared lines-between-items setting object (includes/helpers-separators.php); painted as border / gap-rule lines, so 'visual'. Classified explicitly because a nested object has no derivable role."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "submenuSeparators",
+			"fields": {
+				"role": "visual",
+				"_reason": "2026-10-01 (Separators). The shared lines-between-items setting object (includes/helpers-separators.php); painted as border / gap-rule lines, so 'visual'. Classified explicitly because a nested object has no derivable role."
+			}
+		},
+		{
+			"slug": "sgs/icon-list",
+			"attr": "separators",
+			"fields": {
+				"role": "visual",
+				"_reason": "2026-10-01 (Separators). The shared lines-between-items setting object (includes/helpers-separators.php); painted as border / gap-rule lines, so 'visual'. Classified explicitly because a nested object has no derivable role."
+			}
+		},
+		{
+			"slug": "sgs/brand-strip",
+			"attr": "separators",
+			"fields": {
+				"role": "visual",
+				"_reason": "2026-10-01 (Separators). The shared lines-between-items setting object (includes/helpers-separators.php); painted as border / gap-rule lines, so 'visual'. Classified explicitly because a nested object has no derivable role."
 			}
 		}
 	]
