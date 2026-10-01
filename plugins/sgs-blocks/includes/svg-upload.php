@@ -13,10 +13,16 @@
  *      Scripts, event handlers (on*), <foreignObject> and every HTML element
  *      are removed.
  *   2. Every href / xlink:href that is not an in-file fragment (`#id`) is
- *      removed, so a file can neither load nor link to anything outside itself
- *      (wp_kses() does not check the protocol of xlink:href).
+ *      removed, and so is any attribute whose value holds a url() that is not
+ *      an in-file fragment, so a file can neither load nor link to anything
+ *      outside itself (wp_kses() checks neither the protocol of xlink:href nor
+ *      a url() inside a value).
  *   3. The XML prolog, DOCTYPE and any entity declarations are dropped
  *      (no external entities), and a file with no <svg> root left is refused.
+ *
+ * The same sanitising runs on both ways a file reaches the media library: an
+ * upload (wp_handle_upload) and a sideload from a URL (wp_handle_sideload, used
+ * by importers and WooCommerce's remote product images).
  *
  * The attachment's width and height are read from the root's width/height
  * or viewBox, so blocks that size by the image's own ratio work as for a
@@ -51,6 +57,18 @@ if ( ! function_exists( 'sgs_svg_upload_sanitise' ) ) {
 			static function ( $match ) {
 				$value = '' !== ( $match[3] ?? '' ) ? $match[3] : ( $match[4] ?? '' );
 				return 0 === strpos( trim( $value ), '#' ) ? $match[0] : '';
+			},
+			(string) $markup
+		);
+
+		// No url() reference to anything outside the file, in any attribute
+		// (fill, filter, mask, clip-path, style): an attribute holding a url()
+		// that is not an in-file fragment (#id) is removed.
+		$markup = preg_replace_callback(
+			'/\s[a-zA-Z:-]+\s*=\s*("([^"]*)"|\'([^\']*)\')/',
+			static function ( $match ) {
+				$value = '' !== ( $match[2] ?? '' ) ? $match[2] : ( $match[3] ?? '' );
+				return preg_match( '/url\(\s*[\'"]?\s*(?!#)/i', $value ) ? '' : $match[0];
 			},
 			(string) $markup
 		);
@@ -120,6 +138,7 @@ function sgs_svg_upload_prefilter( $file ) {
 	return $file;
 }
 add_filter( 'wp_handle_upload_prefilter', 'sgs_svg_upload_prefilter' );
+add_filter( 'wp_handle_sideload_prefilter', 'sgs_svg_upload_prefilter' );
 
 /**
  * Record an SVG attachment's width and height from its root element, so blocks
