@@ -8,7 +8,7 @@
  *
  * A colour or gradient overlay painted between a card's photo and its
  * glyph/title text, so light text and a glyph stay legible over the photo —
- * the Eye Care "Shop by shape" tiles gap (wave B round 2): the draft's own
+ * the "Shop by shape" tiles: the design's own
  * tile paints `linear-gradient(180deg,rgba(20,20,20,0) 38%,rgba(20,20,20,.72) 100%)`
  * over the photo, and nothing over the flat fallback tile. Block-wide, one
  * treatment for every card (same scope as glyphColour/glyphSize), off by

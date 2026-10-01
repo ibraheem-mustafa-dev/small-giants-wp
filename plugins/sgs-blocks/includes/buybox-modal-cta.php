@@ -1,6 +1,6 @@
 <?php
 /**
- * Sgs/buybox — "open a modal" Add to Cart mode (Spec 43 FR-43-22, e.g. Mama's
+ * Sgs/buybox — "open a modal" Add to Cart mode (Spec 43 FR-43-22, e.g. a
  * "Choose your flavours").
  *
  * Builds the CTA markup rendered instead of the cart-submitting `<form>` when

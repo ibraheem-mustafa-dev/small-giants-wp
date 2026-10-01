@@ -133,7 +133,7 @@ function resolveColourVec3( root, name, fallback ) {
  * A duotone maps luminance across TWO colours, and it only reads as a duotone
  * when those two have real tonal distance. A brand palette rarely supplies
  * that: it supplies one mid-tone hue. Using that hue raw at both ends produces
- * a flat ramp and an image that looks untouched — measured on the Mama's
+ * a flat ramp and an image that looks untouched — measured on a
  * Munches canary, whose primary (#e68a95) is a mid pink.
  *
  * So take the hue and derive a deep end and a pale end from it. The result has

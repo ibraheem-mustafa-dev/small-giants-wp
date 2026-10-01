@@ -319,19 +319,19 @@
  * D459 (2026-08-01) — the ring's COLOUR now defaults to `accent`, rendered as
  * a soft glow, not `primary-dark` as a hard outline. Bean's call: the old
  * `primary-dark` outline read as too dark/heavy across several client
- * palettes (several brand `primary`s — e.g. eye-care-ward-end #0D1B2A,
+ * palettes (several brand `primary`s — e.g. a navy #0D1B2A,
  * sgs-construction #1C1C1C, sgs-professional #1E2D5E — are near-black, and
  * `primary-dark` compounds that). `accent` alone FAILS the WCAG 2.4.11 3:1
  * floor against the input's own painted background (`--wp--preset--color
  * --surface`, not white — measured 2026-08-01) in 6 of 8 client palettes:
- * eye-care-ward-end 2.29:1, helping-doctors 2.22:1, indus-foods 1.68:1,
- * mamas-munches 1.35:1 (vs its own cream `#fbf3dc` surface, not the 1.50:1
+ * a navy palette 2.29:1, a teal palette 2.22:1, a gold palette 1.68:1,
+ * a pink palette 1.35:1 (vs its own cream `#fbf3dc` surface, not the 1.50:1
  * a white-background check would show), sgs-healthcare 2.69:1, sgs-mosque
  * 2.45:1. Only sgs-construction (3.11:1) and sgs-professional (6.38:1) clear
  * the floor on accent alone.
  *
  * So the ring is now TWO layers: a thin NEUTRAL `outline` (still
- * `primary-dark`, proven ≥3:1 in all 8 palettes — Mama's worst case 3.32:1)
+ * `primary-dark`, proven ≥3:1 in all 8 palettes — worst case 3.32:1)
  * carries the WCAG floor, and the `border-color` + `box-shadow` glow carry
  * `accent` as the visible feedback colour on top. Losing accent's own
  * contrast in the 6 failing palettes never makes the indicator invisible —

@@ -9,7 +9,7 @@
  *
  * The two surfaces get DIFFERENT rules, and that is measured, not assumed:
  *   - MEGA panel → MATCHES the box. The only reference with a real pill
- *     (lamalama) opens a panel at exactly the pill's left and width, ratio
+ *     opens a panel at exactly the pill's left and width, ratio
  *     1.000 at both 1440 and 390, with no gap between the two.
  *   - DROPDOWN → CLAMPS inside the box, keeping its own width. ButcherBox
  *     proves the distinction on a single site: its mega panel is the bar's full

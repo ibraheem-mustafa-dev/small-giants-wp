@@ -603,7 +603,7 @@
 /* ================================================================
    TILE style — a vertical, image-forward option card (e.g. a frame-size
    or lens tile) instead of the horizontal pill row. Draft precedent:
-   Eye Care Birmingham's colour-tile picker (image top, caption below,
+   A colour-tile picker (image top, caption below,
    1px border, hover lift) — sizes below mirror its 88px medium tile and
    8px gap; colours are framework-neutral tokens, never the draft's hex.
    Colours/border/radius/selected-state all reuse the SAME --sgs-op-* custom

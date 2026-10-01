@@ -148,7 +148,7 @@ $buybox_rrp_format = sanitize_key( (string) ( $attributes['rrpSavingFormat'] ?? 
 if ( ! in_array( $buybox_rrp_format, array( 'amount', 'percentage' ), true ) ) {
 	$buybox_rrp_format = 'amount';
 }
-// Eye Care Wave C: customisable saving-pill prefix ("Save" / "You save" / …).
+// Customisable saving-pill prefix ("Save" / "You save" / …).
 // '' would still resolve to the translated "Save" inside the helper, but the
 // block.json default is the literal "Save" (matches soldOutLabel/
 // unavailableLabel's own literal-default convention on this block).
@@ -162,7 +162,7 @@ $buybox_rrp        = sgs_product_rrp_saving(
 	$buybox_rrp_prefix
 );
 
-// Eye Care Wave C: struck-through "RRP <amount>" beside the price, shown only
+// Struck-through "RRP <amount>" beside the price, shown only
 // when the saving pill itself applies (same DEFAULT-combo-only, SSR-only
 // scope as the pill).
 $buybox_rrp_show_price = (bool) ( $attributes['rrpShowPrice'] ?? false );
@@ -173,14 +173,14 @@ $buybox_show_stock_status = (bool) ( $attributes['showStockStatus'] ?? false );
 $buybox_stock_in_label    = sanitize_text_field( (string) ( $attributes['stockInStockLabel'] ?? '' ) );
 $buybox_stock_status      = sgs_buybox_stock_status( (int) $def['variationId'], (bool) $def['inStock'], $stock_text, $buybox_stock_in_label );
 
-// Eye Care F1: computed early (ahead of $wrapper_attrs below, which embeds the
+// Computed early (ahead of $wrapper_attrs below, which embeds the
 // term-label map as a data attribute) rather than inline in the §8b picker
 // loop where it is also read.
 $buybox_picker_show_selected_value = (bool) ( $attributes['pickerShowSelectedValue'] ?? false );
 $buybox_picker_term_label_map      = $buybox_picker_show_selected_value ? sgs_buybox_picker_term_label_map( $manifest['axes'] ?? array() ) : array();
 
-// Eye Care F2: "Which size am I?"-style link at the right of ONE named axis's
-// label row. Computed early for the same reason as F1 above (the scoped-CSS
+// "Which size am I?"-style link at the right of ONE named axis's
+// label row. Computed early for the same reason as the early computation above (the scoped-CSS
 // section below needs to know whether the shared '.sgs-buybox__picker-label-row'
 // markup is needed at all, for EITHER F1 or F2).
 $buybox_picker_link_axis = sanitize_key( (string) ( $attributes['pickerLabelLinkAxis'] ?? '' ) );
@@ -479,7 +479,7 @@ $add_to_cart_opens_modal = $buybox_linked_flow_wire['opens_modal'];
 $buybox_linked_flow_post = $buybox_linked_flow_wire['flow'];
 $add_to_cart_label       = '' !== $buybox_linked_flow_wire['label'] ? $buybox_linked_flow_wire['label'] : $add_to_cart_label;
 
-// Eye Care Wave C: add-to-cart button style preset + optional price display.
+// Add-to-cart button style preset + optional price display.
 // sgs_buybox_add_to_cart_class() allowlists to '' (today's look) or
 // primary|secondary|outline (extras.php) — style.css's
 // `.buybox__add-to-cart--{style}` rules read the SAME
@@ -488,7 +488,7 @@ $add_to_cart_label       = '' !== $buybox_linked_flow_wire['label'] ? $buybox_li
 // stylesheet being enqueued on this page.
 $add_to_cart_style_class = sgs_buybox_add_to_cart_class( sanitize_key( (string) ( $attributes['addToCartStyle'] ?? '' ) ) );
 $add_to_cart_show_price  = (bool) ( $attributes['addToCartShowPrice'] ?? false );
-// Eye Care F4: cart icon show/hide (cart-mode form only — buybox-modal-cta.php's
+// Cart icon show/hide (cart-mode form only — buybox-modal-cta.php's
 // own markup is outside this block's file scope) and the hover-lift modifier
 // (style.css pairs this class with a translateY(-2px), timed to match a
 // beside-it sgs/button CTA's own hover-transform — see style.css's comment).
@@ -657,7 +657,7 @@ if ( $buybox_is_guided ) {
 
 // Wrapper attributes — includes Interactivity API bindings. uid CLASS added
 // (no 'style' key — the root carries ZERO inline property declarations;
-// every declaration lives in the scoped <style> below). Eye Care F1: when
+// every declaration lives in the scoped <style> below). When
 // pickerShowSelectedValue is on, the product id + slug->label map ride as
 // data attributes so picker-label-view.js can match this instance against
 // sgs/product-card's window-level `sgs-variation-change` event (which
@@ -764,7 +764,7 @@ $scoped_css = array_merge(
 	sgs_buybox_extras_scoped_css( $attributes, $root_sel, $buybox_rrp, $buybox_sticky )
 );
 
-// Eye Care Wave C: price typography (font-family/size/weight) — shared
+// Price typography (font-family/size/weight) — shared
 // TypographyControls prefix 'price', scoped to the current-price figure only
 // (mirrors sgs/product-card's own priceFontFamily/priceFontSize/
 // priceFontWeight trio and sgs_typography_css_rule() call).
@@ -774,9 +774,9 @@ if ( '' !== $sgs_bb_price_typo_css ) {
 }
 // priceLineHeight/priceLineHeightUnit are already read by the call above —
 // sgs_typography_css_rule() emits every set property for the given prefix
-// unconditionally, so line-height needed no separate call (Eye Care F8).
+// unconditionally, so line-height needed no separate call.
 
-// Eye Care F4: add-to-cart button typography (transform/letter-spacing/
+// Add-to-cart button typography (transform/letter-spacing/
 // weight/size) — same shared helper, prefix 'addToCart', scoped to the
 // button's label text. Minimum height is a plain CSS length, not a
 // typography property, so it is emitted as its own declaration on the same
@@ -789,7 +789,7 @@ $sgs_bb_add_to_cart_min_height = sgs_css_length_value( (string) ( $attributes['a
 if ( '' !== $sgs_bb_add_to_cart_min_height ) {
 	$scoped_css[] = $root_sel . ' .buybox__add-to-cart{min-height:' . $sgs_bb_add_to_cart_min_height . ';}';
 }
-// Eye Care F4b: add-to-cart background/border override — colour-emission.md's
+// Add-to-cart background/border override — colour-emission.md's
 // "background/border only, no text" row, flat colour only (no hover/gradient
 // requested), same shape as sgs_buybox_extras_scoped_css()'s RRP-pill colours.
 // Unset attributes emit nothing (both helpers early-return ''), leaving the
@@ -803,7 +803,7 @@ if ( '' !== $sgs_bb_add_to_cart_border_css ) {
 	$scoped_css[] = $sgs_bb_add_to_cart_border_css;
 }
 
-// Eye Care F1/F2: picker-label typography, OWN-RENDER path only. When
+// Picker-label typography, OWN-RENDER path only. When
 // pickerShowSelectedValue (F1) OR pickerLabelLinkAxis (F2) replaces
 // sgs/option-picker's visible legend with this block's own label(+value/+link)
 // row for at least one axis (render.php §8b below), the forwarded
@@ -827,7 +827,7 @@ if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
 	}
 }
 
-// Eye Care F5: optional hairline between the price row and an above-pickers
+// Optional hairline between the price row and an above-pickers
 // stock line (render.php §8a/§8c below decide WHERE the stock line renders;
 // this only decides whether the rule paints). 'border' is this theme's own
 // semantic border-colour preset slug (theme.json settings.color.palette) —
@@ -840,7 +840,7 @@ if ( 'above' === $buybox_stock_position && ! empty( $attributes['stockLineHairli
 	$scoped_css[] = $root_sel . ' .sgs-buybox__stock-hairline{border-top:1px solid ' . sgs_colour_value( 'border' ) . ';margin:8px 0;}';
 }
 
-// Eye Care F7: gallery/config grid ratio + gap override — style.css's own
+// Gallery/config grid ratio + gap override — style.css's own
 // unscoped `.sgs-buybox{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
 // gap:clamp(1.5rem,4vw,3rem);}` (at min-width:768px) stays the default;
 // emitted here only when a value is set, scoped to THIS instance's root
@@ -877,7 +877,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 
 	<?php
 	// ── 8-gallery. Gallery column (FR-30-10 Step-10a) — left column, sticky on
-	// desktop. Eye Care F6: an optional saving badge over the main photo, using
+	// desktop. An optional saving badge over the main photo, using
 	// the SAME genuine-saving rule as the price row's pill (gallery-saving-
 	// badge.php) — hidden automatically when there is no saving.
 	$buybox_gallery_badge_on   = (bool) ( $attributes['gallerySavingBadge'] ?? false );
@@ -912,7 +912,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	// extrasBeforeCount (FR-Wave-B extension): when set, the extras slot's
 	// first N children render here, above the price, instead of all of them
 	// dropping below the add-to-cart form (8g below). extrasBeforeCartCount
-	// (Eye Care Wave C): the NEXT M children render between the pickers/stock
+	// The NEXT M children render between the pickers/stock
 	// status and the add-to-cart form (8c-iii below). Both 0 keeps the
 	// original $content path byte-identical — see sgs_buybox_split_extras()
 	// docblock.
@@ -938,7 +938,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	<?php endif; ?>
 
 	<?php
-	// ── 8a-0. Stock line markup, built once (Eye Care F5, stockLinePosition) —
+	// ── 8a-0. Stock line markup, built once (stockLinePosition) —
 	// buffered here, ahead of both places that can print it: §8a-v below
 	// (position 'above', before the pickers) or §8c (position 'below', the
 	// default, byte-identical placement it has always rendered at).
@@ -980,7 +980,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 			data-wp-text="context.pctDisplay"
 		><?php echo esc_html( $pct_display ); ?></span>
 		<?php
-		// ── 8a-iii. Struck-through "RRP <amount>" (Eye Care Wave C, rrpShowPrice) —
+		// ── 8a-iii. Struck-through "RRP <amount>" (rrpShowPrice) —
 		// same DEFAULT-combo-only, SSR-only scope as the pill directly below.
 		?>
 		<?php if ( $buybox_rrp_show_price && ! $buybox_rrp['hidden'] ) : ?>
@@ -1045,7 +1045,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	<?php endif; ?>
 
 	<?php
-	// ── 8a-v. Stock line, ABOVE-pickers position (Eye Care F5, stockLinePosition
+	// ── 8a-v. Stock line, ABOVE-pickers position (stockLinePosition
 	// 'above') — the draft's price / hairline / stock / colour order. The
 	// markup itself is built once, up in §8a-0 above; 'below' (the default)
 	// echoes it in §8c instead, byte-identical to before this feature existed.
@@ -1059,7 +1059,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 
 	<?php
 	// ── 8b. Per-axis option-picker blocks (single-variant suppression: skip axes with <2 terms) ──
-	// Eye Care Wave C: pickerSwatchStyle/pickerStyle/pickerSubLabelMetaKey/
+	// pickerSwatchStyle/pickerStyle/pickerSubLabelMetaKey/
 	// pickerShowSelectedTick forwarded to every rendered picker below — only a
 	// non-empty override is passed on, so an unset value leaves option-picker's
 	// OWN default governing (block.json's own contract for these attrs).
@@ -1071,16 +1071,16 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	$buybox_picker_sub_label_key  = sanitize_key( (string) ( $attributes['pickerSubLabelMetaKey'] ?? '' ) );
 	$buybox_picker_show_tick      = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
 
-	// Eye Care F1: axes that always show their picker (single-variant
+	// Axes that always show their picker (single-variant
 	// suppression bypass) and the size-band axis + scale (picker-band.php).
 	$buybox_always_show_axes = array_map( 'sanitize_key', array_filter( (array) ( $attributes['pickerAlwaysShowAxes'] ?? array() ), 'is_string' ) );
 	$buybox_band_axis        = sanitize_key( (string) ( $attributes['pickerBandAxis'] ?? '' ) );
 	$buybox_band_scale       = '' !== $buybox_band_axis ? sgs_buybox_parse_band_scale( (string) ( $attributes['pickerBandScale'] ?? '' ) ) : array();
 
-	// Eye Care F9: variation-photo swatch toggle (picker-variation-swatch.php).
+	// Variation-photo swatch toggle (picker-variation-swatch.php).
 	$buybox_variation_swatch_on = (bool) ( $attributes['pickerVariationSwatch'] ?? false );
 
-	// Eye Care F1: picker-label typography — forwarded to sgs/option-picker's
+	// Picker-label typography — forwarded to sgs/option-picker's
 	// OWN labelFontSize/labelLetterSpacing/labelTextTransform/labelColour
 	// attributes (block.json already declares all four) rather than emitting
 	// new CSS, same "only a non-empty override is passed on" contract as the
@@ -1130,7 +1130,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 
 			// Single-variant suppression (QA Gate B from design doc): skip axes where
 			// there is only one selectable term — no meaningful choice to present.
-			// Eye Care F1: an axis named in pickerAlwaysShowAxes always shows, even
+			// An axis named in pickerAlwaysShowAxes always shows, even
 			// with one term (a one-size frame still shows its single band tile).
 			if ( count( $terms ) < 2 && ! in_array( $buybox_axis_taxonomy, $buybox_always_show_axes, true ) ) {
 				continue;
@@ -1141,13 +1141,13 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 				? $buybox_picker_swatch_style
 				: $buybox_picker_plain_style;
 
-			// Eye Care F1: band-letter labels for the configured axis only —
+			// Band-letter labels for the configured axis only —
 			// every other axis's terms keep their own raw labels.
 			$buybox_axis_band_labels = ( $buybox_axis_taxonomy === $buybox_band_axis && ! empty( $buybox_band_scale ) )
 				? sgs_buybox_band_labels( $terms, $buybox_band_scale )
 				: array();
 
-			// Eye Care F9: variation-photo swatch map for this axis only when it
+			// Variation-photo swatch map for this axis only when it
 			// carries a colour/image swatch AND the toggle is on.
 			$buybox_axis_variation_images = ( $buybox_variation_swatch_on && $buybox_axis_has_swatch )
 				? sgs_buybox_variation_image_map( $manifest, $buybox_axis_taxonomy, $buybox_img_src )
@@ -1180,7 +1180,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 				$buybox_picker_attrs['subLabelMetaKey'] = $buybox_picker_sub_label_key;
 			}
 
-			// Eye Care F2: this specific axis gets the label-row LINK instead of
+			// This specific axis gets the label-row LINK instead of
 			// the selected-value text — mutually exclusive per axis (the draft
 			// itself never shows both on the same row).
 			$buybox_axis_has_link = $buybox_picker_has_link && $buybox_axis_taxonomy === $buybox_picker_link_axis;
@@ -1244,7 +1244,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	<?php
 	// ── 8c. Stock status (FR-Wave-B), 'below' position (today's default,
 	// byte-identical placement). Built once in §8a-0 above; the 'above'
-	// position (Eye Care F5) prints the same buffered markup earlier instead,
+	// position prints the same buffered markup earlier instead,
 	// in §8a-v.
 	if ( 'below' === $buybox_stock_position ) {
 		echo $buybox_stock_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value inside is already esc_html()/esc_attr()'d before buffering in §8a-0 above.
@@ -1272,7 +1272,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 
 	<?php
 	// ── 8c-iii. Extras between the pickers/stock status and the add-to-cart
-	// form (Eye Care Wave C, extrasBeforeCartCount) — the same rendered-child
+	// form (extrasBeforeCartCount) — the same rendered-child
 	// markup sgs_buybox_split_extras() already produced above (8-config).
 	?>
 	<?php if ( '' !== trim( (string) $buybox_extras_before_cart_html ) ) : ?>

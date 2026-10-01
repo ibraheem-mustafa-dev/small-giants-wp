@@ -7,7 +7,7 @@
  * directory per the wave-B shared brief (touch only the files a task names,
  * or new files inside the block's own directory).
  *
- * Two related additions for the Eye Care "Shop by shape" tiles, both
+ * Two related additions for "Shop by shape" tiles, both
  * generic — no client words/colours hardcoded:
  *
  *   1. A per-item glyph icon (`items[].glyph`, a Lucide slug) shown inside

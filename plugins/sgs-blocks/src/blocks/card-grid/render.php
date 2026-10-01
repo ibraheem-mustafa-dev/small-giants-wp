@@ -110,7 +110,7 @@ $hover_grayscale     = ! empty( $attributes['grayscaleHover'] );
 $query_post_type     = sanitize_key( $attributes['queryPostType'] ?? 'post' );
 $query_per_page      = absint( $attributes['queryPostsPerPage'] ?? 6 );
 $query_category      = absint( $attributes['queryCategory'] ?? 0 );
-// Per-item glyph icon + image-fallback tile (Eye Care "Shop by shape" gap) —
+// Per-item glyph icon + image-fallback tile ("Shop by shape") —
 // block-wide size/colour, per-item glyph slug read inside the items loop
 // below. glyph-fallback.php holds the emission helpers. glyphSize is a CSS
 // LENGTH string (Spec 35 C5 — a UnitControl, not a raw-px number), sanitised
@@ -122,7 +122,7 @@ $image_fallback_colour = (string) ( $attributes['imageFallbackColour'] ?? '' );
 // The fallback tile's label ("Photo to come"), as sgs/product-card's noImageLabel.
 $no_image_label        = trim( (string) ( $attributes['noImageLabel'] ?? '' ) );
 
-// Block-wide image overlay (Eye Care "Shop by shape" gap, wave B round 2) — a
+// Block-wide image overlay ("Shop by shape") — a
 // colour/gradient layer painted between every card's photo and its
 // glyph/title, off by default. image-overlay.php holds the emission
 // helpers; $card_grid_overlay_decls is computed once here and reused both for
@@ -535,7 +535,7 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // padding:var(--wp--preset--spacing--30)}` default renders unchanged.
 // The same padding reaches the OVERLAY variant's text area (.sgs-card-grid__overlay,
 // 2026-09-29): it has no __body, so the setting was dead there and its 16px default
-// could not be changed (Eye Care's shape tiles need 18px under the title).
+// could not be changed (shape tiles can need 18px under the title).
 $card_pad_sel            = ' .sgs-card-grid__body,' . $root_sel . ' .sgs-card-grid__overlay';
 $card_padding_tiers      = sgs_responsive_normalise_object( $attributes['cardPadding'] ?? null, true );
 $card_padding_obj        = is_array( $card_padding_tiers['desktop'] ) ? $card_padding_tiers['desktop'] : array();
@@ -1056,7 +1056,7 @@ foreach ( $items as $index => $item ) :
 			1
 		);
 	}
-	// Per-item glyph icon (Eye Care "Shop by shape" gap) — shown OVER the
+	// Per-item glyph icon ("Shop by shape") — shown OVER the
 	// photo when there is one, or inside the image-fallback tile when
 	// there isn't. An unknown/missing slug renders nothing (never a broken
 	// icon). `imageFallback` gates the fallback tile itself (default off —
@@ -1077,7 +1077,7 @@ foreach ( $items as $index => $item ) :
 	$item_use_fallback = $image_fallback && ! $item_has_media;
 	$image_wrap_class  = 'sgs-card-grid__image-wrap' . ( $item_use_fallback ? ' sgs-card-grid__image-wrap--fallback' : '' );
 	// Image overlay (wave B round 2) — only over a real photo, never the flat
-	// image-fallback tile, matching the Ward End Eye Care draft's own
+	// image-fallback tile, matching the design's own
 	// `s.hasImg` gate. Rendered BEFORE the glyph/title markup below so it
 	// sits behind them (DOM order = paint order for these
 	// position:absolute siblings — same technique as the existing

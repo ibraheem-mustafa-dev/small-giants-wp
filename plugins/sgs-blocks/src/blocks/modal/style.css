@@ -242,8 +242,7 @@
 }
 
 /*
- * Glyph close style (closeStyle:'glyph' attribute, Eye Care size-guide
- * parity) — a plain "×" text character, no background disc. Same 44px touch
+ * Glyph close style (closeStyle:'glyph' attribute) — a plain "×" text character, no background disc. Same 44px touch
  * target and accessible name (aria-label) as the icon style above; only the
  * visual treatment differs. The glyph inherits `color` from `.sgs-modal__close`
  * (closeColourText paints that same property), so no separate colour wiring

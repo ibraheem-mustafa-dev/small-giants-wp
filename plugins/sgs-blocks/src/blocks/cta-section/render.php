@@ -396,7 +396,7 @@ if ( ! empty( $cta_style_engine_args ) ) {
 // So inheritance carries only the properties theme.json does NOT declare on
 // the element — text-align among them. For font-size on a heading child the
 // container would need a descendant-scoped rule or a CSS custom property
-// the child consumes, which is exactly what the Mama's Munches draft does
+// the child consumes, which is exactly what a typical design does
 // (`.sgs-featured-product .sgs-section-heading__intro{font-size:16px}`).
 // Not built here: no defect currently demands it, and adding it would put
 // the container back to out-declaring its children.

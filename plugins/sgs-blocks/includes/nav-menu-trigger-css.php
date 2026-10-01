@@ -126,7 +126,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 
 			/*
 			 * `burgerWidth` lets the button be non-square (e.g. 30px wide x
-			 * 36px tall, lamalama.com) — WIDTH only; `height`/`min-height`
+			 * 36px tall) — WIDTH only; `height`/`min-height`
 			 * stay tied to `burgerSize`. A tier's own (sanitised) value wins,
 			 * an unset tier climbs to the tier above (sgs_resolve_tier()), and
 			 * desktop falls back to `$burger_size`. `min-width` follows the

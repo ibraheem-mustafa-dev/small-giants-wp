@@ -127,7 +127,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_separator_below_css' ) ) {
 	 * `itemSeparatorPosition` `below`: every top-level row, the last included, carries
 	 * the divider as its own bottom border, so the line runs under the row AND its open
 	 * section and takes its width in layout (a row wrapper's `border-bottom`, as the
-	 * Indus draft draws it). The line belongs to its own row only, so the hover colour
+	 * the design draws it). The line belongs to its own row only, so the hover colour
 	 * follows that row's head; a sweep has no border to band, so it swaps instead.
 	 *
 	 * @param string $bar       The instance's bar selector.

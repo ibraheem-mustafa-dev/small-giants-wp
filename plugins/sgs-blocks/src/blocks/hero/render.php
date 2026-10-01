@@ -613,7 +613,7 @@ if ( $is_split ) {
 	$band     = '';
 	if ( 'normal' === $cw_raw ) {
 		// Tie to the theme.json global (framework default 1200px; per-site
-		// override in the snapshot, e.g. Indus 1140px) — no hardcoded px
+		// override in the snapshot, e.g. 1140px) — no hardcoded px
 		// fallback, which would mask the theme value if the var ever resolved.
 		$band = 'var(--wp--style--global--content-size)';
 	} elseif ( 'wide' === $cw_raw ) {
@@ -1171,7 +1171,7 @@ if ( '' !== $hero_preset_text_slug ) {
 // gradient is `background-image`, while the resting colour is painted as
 // `background-color` on the block's own `.{uid}` rule — two DIFFERENT properties,
 // so they never compete and no amount of `:where()` de-specification helps: the
-// image always paints over the colour. Measured live on the Mama's homepage
+// image always paints over the colour. Measured live on a homepage
 // clone, where a correct `background-color: surface-pink` sat invisible beneath
 // the framework's primary-dark->primary gradient.
 // `sgs/cta-section` already sets `has-background` from its own `backgroundColour`

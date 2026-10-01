@@ -254,7 +254,7 @@ export default function BurgerPanel( {
 
 			{ /* Width only — burgerSize above is the height (and the width
 			   while this is empty), so the button can be non-square (e.g.
-			   30px wide x 36px tall, lamalama.com). Per device through the
+			   30px wide x 36px tall). Per device through the
 			   global device toggle (ResponsiveOverride), like `triggerMode`. */ }
 			<ResponsiveOverride
 				label={ __( 'Width', 'sgs-blocks' ) }
@@ -276,7 +276,7 @@ export default function BurgerPanel( {
 			</ResponsiveOverride>
 
 			{ /* U-18 G6 — the default glyph's bar-stack BOX size, distinct from the
-			   button's own Width/Height above (lamalama.com: 16px-long bars in a
+			   button's own Width/Height above (e.g. 16px-long bars in a
 			   12px stack). Same ResponsiveOverride + SgsLengthControl shape as
 			   Width, on the same global device toggle. */ }
 			<ResponsiveOverride

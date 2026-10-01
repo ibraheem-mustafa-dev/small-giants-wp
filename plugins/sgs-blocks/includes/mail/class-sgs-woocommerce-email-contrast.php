@@ -10,7 +10,7 @@
  * is enabled — verified against WooCommerce trunk on sandybrown 2026-09-27
  * (`$link_color = $base;` when the feature flag is on, regardless of the
  * base/body pairing's own contrast). A client's brand accent doubles as that
- * base colour, so a light accent on a light body can fail contrast: Mama's
+ * base colour, so a light accent on a light body can fail contrast: a
  * Munches measures `#f5d050` on `#fbf3dc` at 1.35:1. Bean's decision
  * (2026-09-26): links and headings always take the text colour; the accent
  * stays a background only.

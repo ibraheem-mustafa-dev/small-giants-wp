@@ -439,7 +439,7 @@ $scoped_css_parts[] = ".{$uid}.sgs-button{transition:all {$transition_duration}m
 // 'whole' (default) scales the button element itself — border, fill and
 // label move together, the original behaviour. 'face' scales only the
 // `.sgs-button__face` wrapper around the label/icon (see step 7 below),
-// leaving the border and background fill in place — the lamalama-style
+// leaving the border and background fill in place — the outlined-pill
 // inner-face-only scale (G-14).
 if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 	$scale_val = round( $hover_scale, 3 );

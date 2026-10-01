@@ -6,7 +6,7 @@
  * a full editable title + sub-line (RichText, matching the block's existing
  * `label` RichText pattern) with its own colour + typography controls.
  *
- * Draft precedent (Eye Care Birmingham.dc.html, e.g. the "Need advice?" /
+ * Draft precedent (e.g. the "Need advice?" /
  * "Message me on WhatsApp — I'm an optician…" card): icon badge + two-line
  * text block, linking to the same wa.me URL as every other variant.
  *

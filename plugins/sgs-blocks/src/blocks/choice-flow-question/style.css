@@ -20,7 +20,7 @@
  * ⚑ CORRECTED 2026-09-15 (Bean-directed consistency pass). The option-card
  * hover used to fill the whole card with `surface-alt` + darken the border to
  * `primary` — invented before the real reference was read. Real evidence
- * (Eye Care Birmingham.dc.html:1368, the client's own lens-configurator
+ * (a reference lens-configurator
  * source): the hover rule is `border-color:#141414;transform:translateY(-3px);
  * box-shadow:0 14px 32px rgba(20,20,20,.09)` — the background NEVER changes;
  * only the border darkens (to near-black — this theme's `text` token, the
@@ -281,7 +281,7 @@
  * The ancestor class lives on the root `sgs/choice-flow` wrapper
  * (choice-flow/style.css) — every rule here reaches down into this block's
  * own classes through it, so compact's rules above stay untouched. Card
- * motion follows the Eye Care draft: border and lift over 0.25s, shadow
+ * motion follows the reference design: border and lift over 0.25s, shadow
  * over 0.3s; the '?' over 0.2s; its answer fades in over 0.25s.
  */
 

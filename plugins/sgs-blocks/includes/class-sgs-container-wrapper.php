@@ -3557,7 +3557,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					/*
 					 * Per-tier count fallback, resolved BEFORE this reaches
 					 * sgs_emit_responsive_css() (D-follow-up, 2026-09-18 —
-					 * Mama's Munches footer fix).
+					 * footer fix).
 					 *
 					 * sgs_emit_responsive_css()'s cascade null-coalesces a
 					 * MISSING tier UP from the tier below it (mobile -> tablet
@@ -3571,7 +3571,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					 * that tier. Before this fix, setting gridTemplateColumns
 					 * for desktop+tablet only (exactly what an operator wanting
 					 * "N columns down to tablet, THEN collapse per `columns`"
-					 * would author — see sites/mamas-munches footer, post
+					 * would author — see a site footer, post
 					 * 3649) meant $object_grid gated OFF the pre-existing
 					 * tier-count fallback (~:2894) entirely, so mobile
 					 * inherited the tablet template verbatim via the generic
@@ -3603,7 +3603,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					 * 1024 by the default repeat(2,1fr) and then one column,
 					 * instead of inheriting (the scalar path's rule: a set base
 					 * template governs every narrower tier). An authored count
-					 * (Mama's footer: columns {3,3,1} + a desktop/tablet
+					 * (a footer: columns {3,3,1} + a desktop/tablet
 					 * template) still collapses the tier, as before.
 					 */
 					$sgs_gtc_obj            = sgs_responsive_normalise_object( $attributes['gridTemplateColumns'] );

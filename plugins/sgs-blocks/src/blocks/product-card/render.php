@@ -218,7 +218,7 @@ $classes[] = $sgs_card_uid;
 // prior version of this comment (and the matching block.json description) claimed
 // a blank title font-family should inherit the BODY font, reasoning that "the
 // draft's plain heading has no explicit font-family". That was checked against
-// the Mama's Munches draft's actual CSS and found wrong: the draft declares a
+// a draft's actual CSS and found wrong: the draft declares a
 // GLOBAL `h1, h2, h3 { font-family: 'Fraunces', serif }` rule, and the product
 // card's own `.sgs-product-card h3` rule (size/weight/colour/margin only) never
 // overrides font-family — so a blank value correctly falls through to Fraunces,

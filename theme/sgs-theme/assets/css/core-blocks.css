@@ -433,7 +433,7 @@ footer .wp-block-list a:focus-visible {
 /*
  * MOBILE + TABLET GRID FOR INFO-BOX FEATURE GRIDS - H22 follow-up.
  * The "Why Choose" style feature-grid pattern (icon + heading + text
- * repeated in columns, e.g. Indus Foods "Why Choose Indus Foods?") is
+ * repeated in columns, e.g. a "Why Choose Us?" heading) is
  * authored with `sgs/info-box` blocks. Its 2-col grid target spans the
  * full mobile+tablet range (0–768px, the project's standard tablet
  * boundary — `~/.claude/rules/visual-standards.md`), unlike `.sgs-icon-list`
@@ -714,7 +714,7 @@ footer .is-style-no-bullets a {
  * photo renders a visibly taller image than a wider-sourced one in the same
  * card grid. A fixed aspect-ratio + object-fit:cover normalises every card
  * image to the same box regardless of the source photo's proportions. 3/2
- * is a sensible default for card/product photography (matches the Indus
+ * is a sensible default for card/product photography (matches the
  * Foods service-card source images, measured ~237:158-179px on the live
  * client site); a client whose source imagery needs a different ratio can
  * override the custom property in that client's theme-overrides.css.
@@ -806,9 +806,9 @@ footer .is-style-no-bullets a {
 /* ─── BUTTON TEXT CONTRAST — H4 ─── */
 
 /*
- * White text on the Indus Foods gold/accent (#d8ca50) fails WCAG AA at 1.68:1.
+ * White text on a gold/accent (#d8ca50) fails WCAG AA at 1.68:1.
  * When a button sits on an accent background, force text to dark (#2c3e50).
- * Uses the footer-bg token which is #2c3e50 on Indus Foods.
+ * Uses the footer-bg token which is e.g. #2c3e50.
  */
 .wp-block-button__link.has-accent-background-color:not([style*="color"]) {
 	color: var(--wp--preset--color--text, #1e1e1e);

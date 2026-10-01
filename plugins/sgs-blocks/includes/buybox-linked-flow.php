@@ -28,7 +28,7 @@ if ( ! function_exists( 'sgs_buybox_linked_flow_modal_anchor' ) ) {
 	 * the flow's slug so it's stable and unique per flow.
 	 *
 	 * @param string $flow_slug The linked `sgs_choice_flow` post's slug.
-	 * @return string A `sgs_modal` block anchor value, e.g. "sgs-flow-mamas-munches".
+	 * @return string A `sgs_modal` block anchor value, e.g. "sgs-flow-my-product".
 	 */
 	function sgs_buybox_linked_flow_modal_anchor( string $flow_slug ): string {
 		return 'sgs-flow-' . sanitize_title( $flow_slug );

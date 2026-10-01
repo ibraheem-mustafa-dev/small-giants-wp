@@ -23,7 +23,7 @@
  * The Google mark is the one exception: when `colourMode` is 'brand' the
  * official four-colour "G" (Google's own multi-path mark — blue/green/
  * yellow/red, each path with its own fixed `fill`) renders instead of the
- * single-colour Simple Icons glyph above, matching how the Eye Care draft
+ * single-colour Simple Icons glyph above, matching how the reference design
  * shows Google everywhere (footer, mobile menu, reviews strip). A flat
  * `currentColor` "G" can never be officially multi-coloured, so the theme
  * mode's currentColor glyph stays the fallback for every other colour mode.

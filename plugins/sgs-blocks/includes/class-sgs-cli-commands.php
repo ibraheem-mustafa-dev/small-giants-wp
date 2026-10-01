@@ -39,7 +39,7 @@ defined( 'ABSPATH' ) || exit;
  *     wp sgs site-info set phone "+44 121 000 0000" --user=1
  *     wp sgs site-info update /tmp/data.json --user=1
  *     wp sgs site-info reset --user=1
- *     wp sgs seed-template-parts --variation=mamas-munches --user=1
+ *     wp sgs seed-template-parts --variation=<slug> --user=1
  *     wp sgs reset-template-parts --header --user=1
  *     wp sgs header-rules list
  *     wp sgs header-rules add '{"pattern_slug":"sgs/framework-header-default"}' --user=1
@@ -115,7 +115,7 @@ final class Sgs_Cli_Commands {
 	 * ## EXAMPLES
 	 *
 	 *     wp sgs seed-template-parts --user=1
-	 *     wp sgs seed-template-parts --variation=mamas-munches --user=1
+	 *     wp sgs seed-template-parts --variation=<slug> --user=1
 	 *
 	 * @param string[] $args       Positional arguments (unused).
 	 * @param string[] $assoc_args Named arguments.

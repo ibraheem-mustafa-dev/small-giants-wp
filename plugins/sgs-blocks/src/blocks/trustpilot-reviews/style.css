@@ -254,8 +254,8 @@
 .sgs-trustpilot-reviews--card-elevated .sgs-trustpilot-reviews__card:hover,
 .sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card:hover,
 .sgs-trustpilot-reviews--card-flat .sgs-trustpilot-reviews__card:hover {
-	/* Border colour prefers the host site's primary token (Mama's = pink,
-	   Indus Foods = teal, etc.), falls back to Trustpilot green when no
+	/* Border colour prefers the host site's primary token (e.g. pink,
+	   teal, etc.), falls back to Trustpilot green when no
 	   theme primary is defined. Slight scale + lift to invite the click. */
 	transform: scale(1.02);
 	border-color: var(--wp--preset--color--primary, var(--sgs-tp-green));

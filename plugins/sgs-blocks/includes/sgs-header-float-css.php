@@ -77,7 +77,7 @@ if ( ! function_exists( 'sgs_header_float_inset_for_tier' ) ) {
 			$order[] = 'mobile';
 		}
 
-		// The measured reference value (lamalama, 16px at both 1440 and 390) in
+		// The measured reference value (16px at both 1440 and 390) in
 		// a RELATIVE unit: a bare px inset fails WCAG 1.4.4 at 200% zoom.
 		$sides = array(
 			'top'   => '1rem',

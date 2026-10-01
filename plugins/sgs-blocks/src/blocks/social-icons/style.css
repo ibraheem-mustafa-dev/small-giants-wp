@@ -81,7 +81,7 @@
 }
 
 /* Boxed style — outlined's square sibling. A bordered square box around
- * each glyph (e.g. the Eye Care draft's footer + mobile-menu social row),
+ * each glyph (e.g. a footer + mobile-menu social row),
  * rather than outlined's circle. Reads the same --sgs-social-border custom
  * property as outlined; the only difference is border-radius. */
 .sgs-social-icons--boxed .sgs-social-icons__item {

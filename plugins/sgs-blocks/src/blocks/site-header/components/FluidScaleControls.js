@@ -4,7 +4,7 @@
  * "Scale with the viewport above a width" — off by default. When on, every
  * size already inside the header (padding, radius, font sizes, the floating
  * pill's own inset) grows smoothly past the chosen breakpoint, matching a
- * reference header built on a fluid rem root (lamalama.com: 16px root up to
+ * reference header built on a fluid rem root (e.g. 16px root up to
  * 1440px viewport, then roughly 1.111vw — 21.33px at 1920px).
  *
  * Mechanism (see includes/sgs-header-fluid-scale.php for the full contract):

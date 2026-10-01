@@ -945,7 +945,7 @@ $css .= '@media (max-width: 1023px){' . $stack_rules . '}';
 // without `!important`.
 //
 // Structure the rules key on (the "link rows + one feature card" preset the
-// Indus About panel is built from):
+// an About panel is built from):
 //   link row     = a direct-child sgs/container of `.sgs-mega-group`
 //   row number   = the row's direct-child sgs/text
 //   row label    = an sgs/heading inside the row

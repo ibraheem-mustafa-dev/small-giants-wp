@@ -8,7 +8,7 @@ const STOCK_LINE_POSITION_OPTIONS = [
 
 /**
  * Settings-tab (default InspectorControls group) extra panels for
- * sgs/buybox, Eye Care Wave C — the picker's second caption line, RRP price
+ * sgs/buybox, the picker's second caption line, RRP price
  * display, extras placed above the add-to-cart button, and the in-stock
  * wording override. Split from inspector-extra.js/edit.js — both already at
  * or past this block's 250-line JS budget (option-picker's own

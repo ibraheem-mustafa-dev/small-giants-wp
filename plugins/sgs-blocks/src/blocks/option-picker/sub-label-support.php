@@ -21,7 +21,7 @@ if ( ! function_exists( 'sgs_option_picker_resolve_sub_label' ) ) {
 	 *
 	 * Generic by design: any client points `subLabelMetaKey` at any term-meta
 	 * key on the picker's resolved WooCommerce attribute taxonomy — nothing
-	 * here is Eye-Care-specific. Returns '' when the setting is unset, the
+	 * here is site-specific. Returns '' when the setting is unset, the
 	 * term carries no such meta, or the meta value is not a scalar, so the
 	 * caller renders no second line (additive-safe, matches the swatch
 	 * no-meta fallback already shipped for colour/image swatches).

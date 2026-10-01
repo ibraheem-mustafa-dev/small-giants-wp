@@ -1,7 +1,7 @@
 /**
  * sgs/choice-flow — root chrome inspector panel (Spec 43 Phase 3/4 §5).
  *
- * Owed Eye Care hand-build design items: the progress bar fill's colour, an
+ * Design items: the progress bar fill's colour, an
  * optional header (logo, "Step N of M" eyebrow, Close), and a sticky footer.
  * Kept as its OWN component (never inlined into edit.js) — edit.js is at its
  * size cap and the build contract forbids adding logic to it; the main

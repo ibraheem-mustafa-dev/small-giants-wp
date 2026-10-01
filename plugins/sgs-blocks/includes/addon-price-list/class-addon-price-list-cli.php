@@ -38,7 +38,7 @@ final class Addon_Price_List_CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp sgs addon-prices seed sites/eye-care-ward-end/woo-seed/addon-prices.json
+	 *     wp sgs addon-prices seed path/to/addon-prices.json
 	 *
 	 * @param array $args Positional args ([0] = file path).
 	 */

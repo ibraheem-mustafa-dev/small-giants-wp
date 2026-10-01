@@ -20,7 +20,7 @@ const ADD_TO_CART_STYLE_OPTIONS = [
 
 /**
  * Styles-tab (InspectorControls group="styles") extra panels for
- * sgs/buybox, Eye Care Wave C — picker pill-style forwarding (mirrors
+ * sgs/buybox, picker pill-style forwarding (mirrors
  * sgs/option-picker's own pillStyle/showSelectedTick Styles-tab placement),
  * price typography, and the add-to-cart button's style preset. Split out for
  * the same file-budget reason as inspector-extra-2.js.
@@ -92,7 +92,7 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 				title={ __( 'Picker label typography', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				{ /* Eye Care F1. Font size/letter-spacing/case/colour forward to
+				{ /* Font size/letter-spacing/case/colour forward to
 				     sgs/option-picker's OWN labelFontSize/labelLetterSpacing/
 				     labelTextTransform/labelColour when the toggle below is off
 				     (option-picker renders its usual visible legend). When the

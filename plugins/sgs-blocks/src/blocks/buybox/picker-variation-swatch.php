@@ -1,7 +1,7 @@
 <?php
 /**
- * Sgs/buybox — variation-photo swatch map (Eye Care F9,
- * pickerVariationSwatch).
+ * Sgs/buybox — variation-photo swatch map
+ * (pickerVariationSwatch).
  *
  * Data prep only, no CSS. `_sgs_swatch_color`/`_sgs_swatch_image_id` term
  * meta (read by sgs/option-picker itself) are PER TERM, shared by every

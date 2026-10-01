@@ -63,7 +63,7 @@ if ( ! function_exists( 'sgs_buybox_stock_status' ) ) {
 	 * @param bool   $in_stock           The default combo's in-stock flag (manifest).
 	 * @param string $fallback_text      The manifest's own out-of-stock text (e.g. "Out of stock"
 	 *                                   or the JS store's "Unavailable" — see product-card/view.js).
-	 * @param string $custom_in_stock_label Optional (Eye Care Wave C, stockInStockLabel). Replaces
+	 * @param string $custom_in_stock_label Optional (stockInStockLabel). Replaces
 	 *                                   the IN-STOCK label only when non-empty — low-stock and
 	 *                                   out-of-stock wording are untouched by this parameter.
 	 * @return array{class: string, label: string}
@@ -233,7 +233,7 @@ if ( ! function_exists( 'sgs_buybox_split_extras' ) ) {
 	 * Split the extras slot's rendered child markup into three groups: "before"
 	 * (the first N children, shown above the price row), "beforeCart" (the NEXT
 	 * M children, shown between the pickers/stock status and the add-to-cart
-	 * form — Eye Care Wave C, extrasBeforeCartCount), and "after" (the rest,
+	 * form, extrasBeforeCartCount), and "after" (the rest,
 	 * shown below the add-to-cart form — today's default position).
 	 *
 	 * Renders each child individually via WP_Block::render() rather than

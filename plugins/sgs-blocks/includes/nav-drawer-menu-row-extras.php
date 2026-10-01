@@ -18,7 +18,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_has_real_destination' ) ) {
 	 * I-D9 (2026-09-28): whether a menu item's URL is a genuine, visitable
 	 * destination — not just a non-empty string. Beyond the existing empty/'#'
 	 * check (SGS_Nav_Menu_Source::is_destination_url()), an item can point at a
-	 * real post whose POST TYPE is not publicly queryable (e.g. Indus's "About"
+	 * real post whose POST TYPE is not publicly queryable (e.g. an "About"
 	 * pointing at an sgs_mega_menu post — WordPress still generates it a
 	 * permalink, but publicly_queryable=>false means that permalink 404s for a
 	 * visitor). Such an item has no destination of its own; its whole row

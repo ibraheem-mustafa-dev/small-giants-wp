@@ -2,8 +2,7 @@
 /**
  * sgs/choice-flow — root chrome helpers (Spec 43 Phase 3/4 §5).
  *
- * Owed design items from the Eye Care hand build
- * (.claude/plans/2026-09-24-eye-care-hand-build-design.md, "chrome"):
+ * Design items for the flow chrome:
  *   - the progress bar fill's colour (an operator control; it painted a
  *     hardcoded black-on-brand default before this)
  *   - an optional header: logo, a "Step N of M" eyebrow, a labelled Close
@@ -71,9 +70,9 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 	 * untouched — chrome.js's wireClose() still finds this same
 	 * `.sgs-choice-flow__chrome-close` selector.
 	 *
-	 * FIXES item 3 (2026-09-26 Eye Care/showcase pass): `closeStyle` ("icon",
+	 * `closeStyle` ("icon",
 	 * default, unchanged above) or "text" — the draft's bordered rectangular
-	 * button (Eye Care Birmingham.dc.html:1317), styled by style.css's
+	 * button, styled by style.css's
 	 * `.sgs-choice-flow__chrome-close--text`. Both variants keep an
 	 * accessible name: "icon" via the visually-hidden label span above,
 	 * "text" via its own visible label text (the decorative '×' glyph

@@ -353,7 +353,7 @@ final class Sgs_Template_Part_Resetter {
 		if ( '' === $slug ) {
 			return \__( 'default', 'sgs-blocks' );
 		}
-		// Convert slug to a readable label (e.g. "mamas-munches" → "Mamas Munches").
+		// Convert slug to a readable label (e.g. "my-site" → "My Site").
 		return \ucwords( \str_replace( '-', ' ', $slug ) );
 	}
 }

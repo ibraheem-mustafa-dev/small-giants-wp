@@ -49,7 +49,7 @@
 	   outline, which genuinely need the box reserved for their border-colour
 	   look) and per-INSTANCE by render.php's higher-specificity .uid.sgs-button
 	   rule when an operator sets a custom border. A button with neither —
-	   found live 2026-08-27 on the Mama's Munches clone's "Find out more"
+	   seen on a "Find out more"
 	   button, which had no preset class and no custom border yet still
 	   computed border:2px solid transparent — now renders no border at all,
 	   matching the draft. */
@@ -57,7 +57,7 @@
 	   hardcoded-default bug as the border-width/border-style pair above, one
 	   line apart, and was missed by that 2026-08-27 fix. It painted rounded
 	   corners on every preset-less button whose draft declared no radius at
-	   all — found live 2026-09-07 on the same Mama's Munches "Find out more"
+	   all — seen on the same "Find out more"
 	   button, whose draft has no border-radius yet which computed 10px. The
 	   group-default var tier is retained (it is a real operator mechanism,
 	   D638 §4); only the literal is gone, so absence now renders as absence.

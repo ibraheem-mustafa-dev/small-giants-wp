@@ -197,7 +197,7 @@
  * context class `.sgs-media--sgs-brand-strip` instead — target both so the
  * height cap (and greyscale below) apply identically in editor + frontend.
  * Without the frontend selector the cap misses the <img> and large-source
- * logos render at natural size (the ~500px Indus logo bug, 2026-07-17).
+ * logos render at natural size (not stretched to ~500px).
  *
  * `height` (not `max-height`) is deliberate — Bean's requirement is every
  * logo renders at the EXACT SAME height regardless of source aspect ratio.

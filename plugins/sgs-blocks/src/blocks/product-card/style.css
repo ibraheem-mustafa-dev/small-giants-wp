@@ -1,6 +1,6 @@
 /*
- * SGS Product Card — visual clone of the Mama's Munches mockup.
- * CSS rules ported from sites/mamas-munches/mockups/homepage/index.html
+ * SGS Product Card — visual clone of the reference product-card mockup.
+ * CSS rules ported from the reference mockup
  * lines 388-455 (product-card, pill-group, price-row, trial-card, btn).
  *
  * Uses theme.json palette tokens via WordPress preset CSS custom properties
@@ -23,7 +23,7 @@
 	 * Framework palette: primary-dark = #0F4C4C → white text = 9.73:1 ✓ PASS.
 	 * Style variations with a LIGHT primary-dark colour MUST override both vars
 	 * to a bg dark enough that white text passes 4.5:1 against it.
-	 * e.g. Mama's Munches: override --sgs-product-card-btn-hover-bg to #8B3A47
+	 * e.g. a client palette: override --sgs-product-card-btn-hover-bg to #8B3A47
 	 * (#8B3A47 + white = 7.52:1 ✓ PASS).
 	 */
 	--sgs-product-card-btn-hover-bg:   var(--wp--preset--color--primary-dark, #0F4C4C);
@@ -993,7 +993,7 @@
 	/*
 	 * Use the theme's body/contrast text colour, NOT the brand primary: a light
 	 * primary (e.g. a pink/pastel brand) fails WCAG AA on a light card surface
-	 * (live-measured 2.25:1 on Mama's pink-on-cream). The contrast preset is the
+	 * (live-measured 2.25:1 on pink-on-cream). The contrast preset is the
 	 * theme's accessible-on-surface text colour; #1a1a1a is a near-black fallback.
 	 * Emphasis comes from weight, not a low-contrast hue (not colour-only either).
 	 */
@@ -1589,14 +1589,14 @@
 
 /*
  * ── "Frame Card" style variation (`is-style-frame-card`) ────────────────────
- * Tunes the SAME markup/attributes toward sites/eye-care-ward-end's Frame
+ * Tunes the SAME markup/attributes toward a frame-style
  * Card design — square image with a taupe/cream placeholder tint, square
  * corners throughout (the design is deliberately radius:0 almost
  * everywhere), and a bottom-left saving badge matching the real
  * Frame Card.dc.html markup (README's "top-right" is stale prose — see the
  * block.json `savingBadge` element note). The default "Classic" style
  * (`is-style-classic`, isDefault:true) emits NO extra rules here — it is
- * the card's pre-existing look (Mama's Munches), unchanged.
+ * the card's pre-existing look, unchanged.
  */
 .wp-block-sgs-product-card.is-style-frame-card .sgs-product-card__media-wrap,
 .wp-block-sgs-product-card.is-style-frame-card .product-card__media {

@@ -120,9 +120,8 @@ $css_vars = array_merge( $css_vars, sgs_custom_property_gradient_decls( 'sgs-pan
 
 $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 
-// ── Tab button padding / min-height / indicator thickness (Eye Care
-// product-page parity, 2026-09-28). tabPadding is a flat box {top,right,
-// bottom,left} — mirrors sgs/form's submitPadding exactly, resolved to a CSS
+// ── Tab button padding / min-height / indicator thickness.
+// tabPadding is a flat box {top,right,bottom,left} — mirrors sgs/form's submitPadding exactly, resolved to a CSS
 // shorthand via the shared sgs_box_object_shorthand() helper and emitted as a
 // real scoped declaration below (element-manifest conformance requires
 // css:padding to reach a real `padding` property, not a custom-property
@@ -239,7 +238,7 @@ if ( ! empty( $tabs_style_engine_args ) ) {
 // D636 border-colour gradient rollout — masked ::before ring per state.
 // Resting/active are distinct static selectors (aria-selected), never a CSS
 // `:hover`, so hover_paint stays null on every call here. The ring thickness
-// follows tabIndicatorThickness (Eye Care parity, 2026-09-28) so a client who
+// follows tabIndicatorThickness so a client who
 // sets a custom thickness gets it painted for the gradient path too, not just
 // the flat-colour box-shadow path below; '2px' stays the fallback so this is
 // byte-identical to before when unset.
@@ -280,7 +279,7 @@ if ( '' !== $tab_text_decl ) {
 	$tabs_responsive_css .= sgs_text_colour_gradient_fallback_rule( $tab_text_sel, $tab_text_effective );
 }
 
-// Tab button typography (Eye Care product-page parity, 2026-09-28) — shared
+// Tab button typography — shared
 // TypographyControls/sgs_typography_css_rule() mechanism, prefix 'tab'.
 // Every tab button shares one inherited default (no per-tab typography attr
 // exists), same shape as tabTextColour above. Applies to every tab button
@@ -288,7 +287,7 @@ if ( '' !== $tab_text_decl ) {
 // are not state-dependent in the draft.
 $tabs_responsive_css .= sgs_typography_css_rule( $attributes, 'tab', "{$root_sel} .sgs-tabs__tab" );
 
-// Tab button padding (Eye Care product-page parity, 2026-09-28) — a real
+// Tab button padding — a real
 // `padding` declaration (mirrors sgs/form's submitPadding mechanism exactly),
 // scoped to $root_sel so it beats style.css's `.sgs-tabs__tab{padding:12px
 // 20px}` default by specificity ((0,3,0) vs (0,1,0)) regardless of source

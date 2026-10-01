@@ -237,7 +237,7 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 				) }
 				__nextHasNoMarginBottom
 			/>
-			{ /* Per-item glyph icon (Eye Care "Shop by shape" gap) — reuses the
+			{ /* Per-item glyph icon — reuses the
 			   shared framework icon registry (same IconPicker as sgs/icon and
 			   sgs/trust-bar's icon-circle items), never a second icon system.
 			   Shown over the photo, or over the image-fallback tile below when
@@ -1126,7 +1126,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 				) }
 
-				{ /* Glyph + image-fallback structural controls (Eye Care "Shop by
+				{ /* Glyph + image-fallback structural controls ("Shop by
 				   shape" gap) — one shared size for every card's glyph/initial,
 				   and the fallback-tile toggle. Colour rows for both live in the
 				   shared SgsColourPanel mount above (THE PLACEMENT RULE). */ }

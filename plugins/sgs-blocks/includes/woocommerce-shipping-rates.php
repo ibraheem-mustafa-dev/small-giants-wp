@@ -5,7 +5,7 @@
  * WooCommerce lists every method a zone has and pre-selects the first, so a
  * £139 order on a shop with "free delivery over £75" arrived at checkout with
  * paid "Tracked UK delivery £3.95" chosen and Free beside it (found on
- * eye-care-test, 2026-09-25): the shopper pays unless they notice. Once a
+ * a test site): the shopper pays unless they notice. Once a
  * free_shipping rate is available, every rate that costs money is dropped;
  * free options (free delivery, free collection) stay. A shop that wants its
  * paid options shown anyway returns false from `sgs_hide_paid_rates_when_free`.

@@ -6,7 +6,7 @@
  * WooCommerce's block checkout (11.1) silently refuses to place an order when
  * the optional County is left empty: Place order does nothing and the only
  * message is "Please enter a valid state/county" on a field nobody has to
- * fill (reproduced on eye-care-test with Cash on Delivery; reported upstream
+ * fill (reproduced with Cash on Delivery; reported upstream
  * as woocommerce/woocommerce-gateway-stripe#5974). Hiding the field for GB
  * removes both the needless question and the block. A shop that wants the
  * County back returns false from `sgs_checkout_hide_uk_county`.

@@ -1,7 +1,6 @@
 <?php
 /**
  * Sgs/buybox — saving-amount-only reader for the gallery's main-photo badge
- * (Eye Care F6).
  *
  * Deliberately does NOT call includes/product-rrp.php's
  * sgs_product_rrp_saving() — that helper always prefixes its returned `text`

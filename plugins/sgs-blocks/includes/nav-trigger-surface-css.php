@@ -5,7 +5,7 @@
  *
  * At an ON tier, below the collapse point (the only place the burger shows,
  * so the bar and its panels are not in play), the burger's `::after`
- * stretches over its `.sgs-site-header-row`: lamalama's `inset-0` overlay.
+ * stretches over its `.sgs-site-header-row`: an `inset-0` overlay.
  * Being part of the button, a click on it IS a click on the button — the same
  * toggle, focus return, `aria-expanded` and 44px floor, with no JS.
  *
@@ -21,7 +21,7 @@
  * its own and paints above ordinary in-flow content by default (an
  * absolutely-positioned box over static siblings), so anything NOT raised
  * stays reachable through the overlay: a tap anywhere on a plain-text block
- * (lamalama's pill message, a notice-banner with no link) opens the menu, the
+ * (a pill message, a notice-banner with no link) opens the menu, the
  * same as a tap on empty row space, while a link or button inside that same
  * block keeps its own click. Raising the WHOLE block (the pre-G-2 shape)
  * meant a tap on bare text never reached the trigger at all.

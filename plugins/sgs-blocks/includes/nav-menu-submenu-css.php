@@ -137,7 +137,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * the BAR (`.{bem}__bar` is already position:relative in style.css
 		 * for the indicator pill), not to the <li>-level hover bridge, so the panel
 		 * can exceed a single menu item's width. The draft designs (sites/Mega-menu
-		 * design + Indus Foods Mega Menu Design, both at
+		 * design, both at
 		 * "position:absolute;top:100%;left:0;right:0" on the header container with
 		 * an 1120px-capped centred panel) anchor a wide centred band, so the wrap
 		 * centres on the bar and may exceed the bar's width up to the draft's
@@ -583,7 +583,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * Submenu text defaults to the palette's `text` token, the same default the
 		 * drawer's sublinks use: the row paints `surface` at rest (FR-41-36), and `text`
 		 * on `surface` is readable on every palette, where a brand `primary` on a light
-		 * surface is not (Mama's Munches pink on cream measures 2.24:1). The brand
+		 * surface is not (pink on cream measures 2.24:1). The brand
 		 * colour reaches the dropdown as the Hover row fill (`submenuLinkBgHover`).
 		 * The operator's own `submenuColour` still overrides, below. It must not be
 		 * `color:...,inherit`, which out-specifies the theme's global link rule and
@@ -622,7 +622,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * else the '16px' literal above. Shared by the bar's dropdown AND the
 		 * drawer's accordion submenu link — this function is `$bem_root`-templated
 		 * and called by both blocks' render.php, so one emission covers both
-		 * targets in the design report's M-21 row (halcyon minimal, indus-foods
+		 * targets in the design report's M-21 row (halcyon minimal,
 		 * dropdown). The SAME attribute the `item` element (nav-menu-css.php)
 		 * reads — see that file's own note for why one attribute, not two,
 		 * covers both elements. Validated through sgs_css_single_length_value();

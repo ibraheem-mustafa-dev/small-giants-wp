@@ -460,8 +460,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					{ /* CloseStyleControl (dialog-style-controls.js, Eye Care
-					   size-guide parity, 2026-09-28) — 'icon' (default, the
+					{ /* CloseStyleControl (dialog-style-controls.js) — 'icon' (default, the
 					   existing round SVG button) or 'glyph' (a plain "×" text
 					   character, no background disc). */ }
 					<CloseStyleControl attributes={ attributes } setAttributes={ setAttributes } />
@@ -498,7 +497,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				>
 					<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
 				</ToolsPanel>
-				{ /* Dialog size + border (Eye Care size-guide parity, 2026-09-28)
+				{ /* Dialog size + border
 				   — block-private Shape B border, same shape as sgs/accordion's
 				   SgsBorderControl mount. 'none' border style (block.json
 				   default) keeps every existing modal's borderless look. */ }

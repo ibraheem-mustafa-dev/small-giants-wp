@@ -43,7 +43,7 @@ $modal_background_gradient = sgs_css_gradient_value( $attributes['modalBackgroun
 $close_style        = in_array( $attributes['closeStyle'] ?? 'icon', array( 'icon', 'glyph' ), true ) ? $attributes['closeStyle'] : 'icon';
 $close_button_class = 'glyph' === $close_style ? 'sgs-modal__close sgs-modal__close--glyph' : 'sgs-modal__close';
 
-// Dialog custom width (Eye Care size-guide parity, 2026-09-28) — overrides
+// Dialog custom width — overrides
 // the maxWidth variant class's `width` when set; empty keeps every existing
 // modal's maxWidth-driven width unchanged. sgs_css_length_value() would
 // treat a bare number as a spacing-preset lookup, which is wrong for a
@@ -258,8 +258,8 @@ if ( $border_colour_css ) {
 	$scoped_css_rules[] = $border_colour_css;
 }
 // Dialog shadow — only when the operator has set one; empty leaves
-// style.css's hardcoded box-shadow untouched (Eye Care size-guide parity:
-// dialogShadow="0 30px 70px", dialogShadowColour="site 30%").
+// style.css's hardcoded box-shadow untouched
+// (dialogShadow="0 30px 70px", dialogShadowColour="site 30%").
 if ( '' !== $dialog_shadow_raw ) {
 	$dialog_shadow_decls = sgs_shadow_box_decls( $dialog_shadow_raw, isset( $attributes['dialogShadowColour'] ) ? (string) $attributes['dialogShadowColour'] : '' );
 	if ( ! empty( $dialog_shadow_decls ) ) {

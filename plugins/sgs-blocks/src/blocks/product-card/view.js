@@ -349,7 +349,7 @@ function recordDemandAttempt( ctx, comboKey, reason ) {
  *
  * Thousands-grouping follows the browser locale — for prices >= the thousands
  * boundary this may differ slightly from WC's server format. Acceptable for
- * Phase 1: all Mama's prices are < £100. The cart price is always
+ * Phase 1: prices are assumed < £100. The cart price is always
  * server-authoritative.
  *
  * @param {number} minor Amount in minor currency units (pence).

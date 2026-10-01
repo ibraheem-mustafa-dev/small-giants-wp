@@ -1,7 +1,7 @@
 <?php
 /**
- * Sgs/buybox — axis picker slug-to-label lookup (Eye Care F1,
- * pickerShowSelectedValue).
+ * Sgs/buybox — axis picker slug-to-label lookup
+ * (pickerShowSelectedValue).
  *
  * Data prep only, no CSS — kept out of render.php per this block's own file
  * cap and the CSS-emission-stays-in-render.php contract (see render.php's own

@@ -52,7 +52,7 @@
 	opacity: 0.8;
 }
 
-/* ── Struck-through RRP (Eye Care Wave C, rrpShowPrice) ──────────────────── */
+/* ── Struck-through RRP (rrpShowPrice) ──────────────────── */
 
 .sgs-buybox .buybox__rrp-price {
 	font-size: 0.95rem;
@@ -189,7 +189,7 @@
 	flex-shrink: 0;
 }
 
-/* ── Add-to-cart style presets (Eye Care Wave C, addToCartStyle) ─────────
+/* ── Add-to-cart style presets (addToCartStyle) ─────────
    Self-contained: reads the SAME --wp--custom--button-presets--{style}--*
    design tokens sgs/button's own .sgs-button--{style} rules do (Spec 32
    Component Styling Token Contract), so an addToCartStyle choice visually
@@ -240,7 +240,7 @@
 	color: var(--wp--custom--button-presets--outline--hover-text, var(--wp--preset--color--text));
 }
 
-/* ── Add-to-cart price display (Eye Care Wave C, addToCartShowPrice) ─────
+/* ── Add-to-cart price display (addToCartShowPrice) ─────
    Label group stays centred as its own flex item; the price sits at the
    opposite end via justify-content:space-between on the button itself. */
 
@@ -259,7 +259,7 @@
 	white-space: nowrap;
 }
 
-/* ── Add-to-cart hover lift (Eye Care F4, addToCartHoverLift) ─────────────
+/* ── Add-to-cart hover lift (addToCartHoverLift) ─────────────
    0.18s ease matches button/style.css's own `--sgs-btn-transform-hover`
    transition timing (that file's `transition:` declaration, ~line 71) — the
    beside-it "Add my prescription" CTA is an sgs/button instance reading that
@@ -296,8 +296,8 @@
 	color: var(--wp--preset--color--text-muted, currentColor);
 }
 
-/* Measured on the Eye Care draft's "Which size am I?" link (2026-09-28,
-   1440px): 13px, a secondary/muted text colour, a 1px bottom border (NOT a
+/* Measured on a reference "Which size am I?" link
+   (1440px): 13px, a secondary/muted text colour, a 1px bottom border (NOT a
    text-decoration underline) in a light neutral border colour, with a 1px
    gap from the text via padding-bottom. Reproduced with theme tokens rather
    than the draft's exact bespoke hex (DEFAULT-vs-HARDCODE test, Spec 32
@@ -315,7 +315,7 @@
 	outline-offset: 2px;
 }
 
-/* ── Stock-line hairline (Eye Care F5, stockLineHairline) ─────────────────
+/* ── Stock-line hairline (stockLineHairline) ─────────────────
    Resets the <hr> UA default (border/height) to nothing so ONLY the scoped
    border-top declaration render.php emits (in the theme's border-colour
    token) paints the line — an unstyled <hr> would otherwise double it with
@@ -740,8 +740,8 @@
 	min-width: 0;
 }
 
-/* ── Gallery saving badge (Eye Care F6, gallerySavingBadge) ────────────────
-   Measured on the Eye Care draft's main-photo badge (2026-09-28, 1440px):
+/* ── Gallery saving badge (gallerySavingBadge) ────────────────
+   Measured on a reference main-photo badge (1440px):
    dark (text-colour) fill, 8px/12px padding, cream/inverse text, 12px
    uppercase capitals at 0.1em tracking, 18px inset from the photo's corner.
    Reproduced with theme tokens (DEFAULT-vs-HARDCODE test). */

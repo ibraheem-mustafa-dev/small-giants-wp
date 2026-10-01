@@ -689,7 +689,7 @@ function openDrawerFor( ctx, trigger ) {
 	 * §4.6 (DEC-02 carve-out) — closeOnScrollDistance (render.php's
 	 * `data-sgs-nav-scroll-distance`) DROPS the scroll lock, because a locked
 	 * page cannot scroll at all so the carve-out could never fire. Skipped on
-	 * a touch input regardless of the distance set (lamalama's reference only
+	 * a touch input regardless of the distance set (a reference design only
 	 * closed on scroll with a mouse; on touch, swiping IS how people read the
 	 * menu, so a swipe-close would take that away by accident — Bean,
 	 * 2026-09-24 sign-off §8.3).

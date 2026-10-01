@@ -1,6 +1,6 @@
 /**
  * sgs/buybox — updates the "show the chosen value" text beside a picker
- * label (Eye Care F1, pickerShowSelectedValue) when the shopper picks a
+ * label (pickerShowSelectedValue) when the shopper picks a
  * different pill.
  *
  * Self-contained ES module, no @wordpress/interactivity import — mirrors
@@ -14,7 +14,7 @@
  * buyboxes (or a buybox alongside a product-card for a DIFFERENT product)
  * never cross-updates the wrong one.
  *
- * @since 1.19.0 (Eye Care Wave C2, F1)
+ * @since 1.19.0
  */
 
 /**

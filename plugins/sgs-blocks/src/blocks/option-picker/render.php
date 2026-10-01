@@ -739,7 +739,7 @@ foreach ( $valid_items as $item ) {
 	$swatch_chip_html  = '';
 	$pill_extra_class  = '';
 
-	// Eye Care F9 (sgs/buybox pickerVariationSwatch): a caller-supplied
+	// (sgs/buybox pickerVariationSwatch): a caller-supplied
 	// per-item image URL wins over the term-meta swatch lookup below — see
 	// block.json's optionItems.items.image docblock for why a raw URL is
 	// needed here (term meta is shared by every product using that term, so

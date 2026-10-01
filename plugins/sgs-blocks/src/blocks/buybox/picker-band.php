@@ -1,15 +1,15 @@
 <?php
 /**
- * Sgs/buybox — size-band labels for one axis picker (Eye Care F1).
+ * Sgs/buybox — size-band labels for one axis picker.
  *
  * Data prep only, no CSS — see render.php's own "picker band labels" comment
  * for why the band-letter swap happens in the per-axis loop rather than here.
  * Guarded with function_exists() like every other include this block requires
  * (a render.php include runs once per rendered instance of this block).
  *
- * GENERIC, NOT EYE-CARE-ONLY: any block instance can name any axis taxonomy
- * and any ordered band scale — Eye Care's own values ("pa_frame-size",
- * "S:52,M:57,L") live in the site's build script (sites/eye-care-ward-end),
+ * GENERIC: any block instance can name any axis taxonomy
+ * and any ordered band scale — e.g. ("pa_frame-size",
+ * "S:52,M:57,L") live in the site's build script,
  * never hardcoded here. The shop-wide `pa_size` facet (woo-seed/seed-facets.php)
  * is a SEPARATE, coarser per-product filter attribute (one Small/Medium/Large
  * term per product, for shop filtering) and cannot drive this control: this

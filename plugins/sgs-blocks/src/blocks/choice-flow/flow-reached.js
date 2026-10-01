@@ -4,7 +4,7 @@
  * A pre-selected default (`isDefault`) counts as an answer from the start,
  * so Continue is live and the purchase carries it, but the stage lists it
  * only once the shopper has reached its question: until then that line
- * reads as not chosen yet, as in the Eye Care draft. Going Back keeps a
+ * reads as not chosen yet, as in the reference design. Going Back keeps a
  * step reached.
  *
  * @package SGS\Blocks

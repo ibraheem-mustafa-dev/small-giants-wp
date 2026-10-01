@@ -1,6 +1,6 @@
 /**
  * Modal — dialog size/border/shadow controls plus the close-button style
- * toggle (Eye Care size-guide parity, 2026-09-28). Extracted out of edit.js,
+ * toggle. Extracted out of edit.js,
  * which is already over the framework's 250-line JS file limit — new logic
  * goes in a new file rather than growing it further (same pattern as
  * anchor-open-controls.js in this block).

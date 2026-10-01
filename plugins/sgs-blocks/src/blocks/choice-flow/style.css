@@ -13,7 +13,7 @@
  * start empty and are filled by view.js's showStepByIndex() on every step
  * change. Colour: the real lens-configurator source uses its own darker
  * "accent-ink" token for every small-caps kicker label on the page
- * (Eye Care Birmingham.dc.html — `color:var(--accInk,#6F6152)`, e.g. line
+ * (a reference design — `color:var(--accInk,#6F6152)`, e.g. line
  * 1362's "Question 1 of 3") — mapped here to this theme's own darker-accent
  * token (`primary-dark`), the same role, not the muted-grey text token this
  * file used before that evidence was read (2026-09-15).
@@ -61,7 +61,7 @@
 
 /* ===== Footer: Back button + right-hand actions (D1/D2/D3, Bean's
  * 2026-09-26 review; user-reported gap, 2026-09-15) =====
- * Real evidence (Eye Care Birmingham.dc.html:1529-1532) puts Back in a
+ * Reference design evidence puts Back in a
  * bottom sticky footer strip with a border-top divider — the same placement
  * AthleanX uses; Invisalign's top-of-page text-link placement was explicitly
  * ruled out (Bean, "the invisalign one is definitely the outlier"). Bean's
@@ -348,7 +348,7 @@
 	transition: width 250ms ease-out;
 }
 
-/* ===== Root chrome: optional header (Eye Care hand-build design gap) =====
+/* ===== Root chrome: optional header =====
  * Logo + "Step N of M" eyebrow (client-filled by chrome.js's
  * mirrorStepEyebrow(), mirroring the existing `.sgs-choice-flow__step-count`
  * text) + a Close button, shown only when `showHeader` is on
@@ -440,7 +440,7 @@
 }
 
 /* `closeStyle:"text"` (FIXES item 3) — the draft's bordered rectangular
-   button (Eye Care Birmingham.dc.html:1317) instead of the round icon
+   button instead of the round icon
    button above. Overrides every icon-only sizing/shape declaration; hover
    BRIGHTENS (never darkens, this codebase's own hover-direction rule) —
    the draft's own hover darkens the border, which this deliberately does
@@ -471,7 +471,7 @@
 	line-height: 1;
 }
 
-/* ===== Root chrome: sticky footer (Eye Care hand-build design gap) =====
+/* ===== Root chrome: sticky footer =====
  * `stickyFooter:true` pins this file's EXISTING footer (Back plus, since
  * D1/D2/D3, whichever right-hand action is showing — see the
  * `.sgs-choice-flow__footer` rule above) to the bottom of the viewport, with
@@ -990,7 +990,7 @@
  * on the page background (surface), the stage and a chosen card on
  * `--sgs-choice-flow-stage` (render.php, the `stageColour` setting).
  *
- * Motion (the Eye Care draft's values, all off under reduced motion): the
+ * Motion (the reference design's values, all off under reduced motion): the
  * progress line eases over 0.5s, a step rises in over 0.4s, the total pops
  * over 0.35s when it changes, the stage photo's treatment eases over 0.6s.
  *

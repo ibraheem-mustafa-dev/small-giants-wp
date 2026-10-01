@@ -202,7 +202,7 @@
 /*
  * FR-U18-G1 touch-target floor. `burgerWidth` (render.php scoped) can now
  * shrink the button's own box below 44px on one or both axes (e.g. 30px wide
- * x 36px tall, lamalama.com) — WCAG 2.2's 44x44px target still has to be met,
+ * x 36px tall) — WCAG 2.2's 44x44px target still has to be met,
  * so an invisible hit-area sits on a `::after` pseudo-element that extends
  * each side outward only as far as reaching 44px needs, per axis (0 when the
  * box is already 44px or more), so it stays centred in either text
@@ -401,7 +401,7 @@
 }
 
 /*
- * `line` (lamalama) — the top and bottom bars slide ONTO the middle bar
+ * `line` — the top and bottom bars slide ONTO the middle bar
  * rather than crossing into an X. The travel distance is DERIVED from the
  * icon box via `calc()`, never a hardcoded px: half of (the icon box's own
  * height minus one bar's own height), read from `--sgs-nbm-icon-h` (declared
@@ -419,7 +419,7 @@
 }
 
 /*
- * Two bars (`burgerBarCount: 2`, wearecollins, halcyon, indus-foods). The
+ * Two bars (`burgerBarCount: 2`). The
  * icon box shrinks to 8.5px so the two 2px bars sit 6.5px apart centre to
  * centre, the references' spacing. Every pose is restated for two bars at a
  * higher specificity than the three-bar rules above: `:nth-child(2)` is the

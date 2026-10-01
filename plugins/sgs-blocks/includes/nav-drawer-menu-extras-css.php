@@ -125,7 +125,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_extras_css' ) ) {
 		if ( '' !== $orn_hover ) {
 			$css .= sgs_hover_state_rules( $link, 'color:' . sgs_colour_value( $orn_hover ), ':focus-visible', ' .sgs-nav-drawer-menu__ornament' );
 		}
-		// The hover glyph crossfades in (lamalama), only when one is set.
+		// The hover glyph crossfades in, only when one is set.
 		if ( '' !== (string) ( $attributes['itemOrnamentIconHover']['name'] ?? '' ) ) {
 			$css .= sgs_hover_state_rules( $link, 'opacity:0', ':focus-visible', ' .sgs-nav-drawer-menu__ornament--swap > .sgs-nav-drawer-menu__ornament-glyph:first-child' );
 			$css .= sgs_hover_state_rules( $link, 'opacity:1', ':focus-visible', ' .sgs-nav-drawer-menu__ornament--swap > .sgs-nav-drawer-menu__ornament-glyph--hover' );

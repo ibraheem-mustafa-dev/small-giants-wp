@@ -11,7 +11,7 @@ const SAVING_BADGE_POSITION_OPTIONS = [
 
 /**
  * Settings-tab (default InspectorControls group) extra panels for
- * sgs/buybox, Eye Care Wave C2 — size-band tiles (F1), a picker-label link
+ * sgs/buybox, size-band tiles (F1), a picker-label link
  * (F2), the gallery saving badge (F6), and the variation-photo swatch toggle
  * (F9). Split from inspector-extra.js/-2.js/-3.js — all already at or past
  * this block's 250-line JS budget.

@@ -13,9 +13,9 @@
  * of those is DISPLAY ONLY client-side; FR-43-18's price list stays the sole
  * price authority for what is actually charged.
  *
- * FIXES item 4 (2026-09-26 Eye Care/showcase pass): the base row's label is
+ * The base row's label is
  * an operator control (`summaryBaseLabel`, default "Base price") rather than
- * a hardcoded string — Eye Care sets it to "Frame". Carried to `summary.js`
+ * a hardcoded string (a site might set it to "Frame"). Carried to `summary.js`
  * via `data-base-label` on the `<aside>`, the same seed-attribute pattern
  * `data-fallback-image`/`data-product-name` already use here.
  *

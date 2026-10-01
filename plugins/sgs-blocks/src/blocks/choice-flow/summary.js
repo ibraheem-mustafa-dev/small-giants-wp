@@ -143,7 +143,7 @@ function buildLine( label, value, muted ) {
 /**
  * Show the chosen option's photo treatment on the stage image (style.css's
  * `.is-effect-*` rules, a filter that eases over 0.6s) and name it in a small
- * tag on the photo, as the Eye Care draft does for the lens finish.
+ * tag on the photo, as the reference design does for the lens finish.
  *
  * @param {HTMLElement} panelEl     Stage `<aside>`.
  * @param {string}      effect      One of EFFECTS, or '' for none.

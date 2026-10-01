@@ -531,8 +531,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				{ /* Tab button typography — Eye Care product-page parity
-				   (2026-09-28). Shared TypographyControls component + the
+				{ /* Tab button typography.
+				   Shared TypographyControls component + the
 				   sgs_typography_css_rule() render.php helper, prefix "tab" so
 				   it drives tabFontSize/tabFontWeight/tabTextTransform/
 				   tabLetterSpacing (one inherited default across every tab

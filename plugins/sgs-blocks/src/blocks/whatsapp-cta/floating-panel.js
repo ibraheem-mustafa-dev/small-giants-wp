@@ -4,7 +4,7 @@
  * Extracted out of edit.js to keep that file under the 250-line JS budget
  * (Spec 32 / CLAUDE.md file-length rule).
  *
- * Draft precedent (Eye Care Birmingham.dc.html `.sgs-whatsapp-fab`): a fixed
+ * Draft precedent (`.sgs-whatsapp-fab`): a fixed
  * pill that appears after scroll and hides its visible label on narrow
  * viewports (`hideOnMobile`), keeping the icon-only circle. Both settings are
  * OFF by default (0) so an existing floating button renders unchanged.

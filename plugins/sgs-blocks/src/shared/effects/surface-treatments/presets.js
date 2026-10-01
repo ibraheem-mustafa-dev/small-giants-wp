@@ -132,7 +132,7 @@ export const TREATMENT_PRESETS = {
 				// Prefer the CLIENT'S OWN brand colour over this hard-coded
 				// navy. A duotone exists to make an image look on-brand; a
 				// duotone in colours that are not the client's just looks
-				// like a filter. Measured 2026-08-21 on the Mama's Munches
+				// like a filter. Measured on a
 				// canary: with the navy/cream defaults the owner read the
 				// result as "just the black and white one" — correct, because
 				// navy -> cream across a warm-brown photograph lands almost
@@ -140,7 +140,7 @@ export const TREATMENT_PRESETS = {
 				// unused the whole time.
 				paletteFallback: 'primary',
 				// DERIVE a deep end from the brand hue rather than using it
-				// raw. Measured on the Mama's canary: the palette primary
+				// raw. Measured on a canary: the palette primary
 				// (#e68a95) is a MID-tone, so using it raw as the shadow gave
 				// a ramp with no depth and the treated photo looked barely
 				// touched — trading "looks black and white" for "looks like

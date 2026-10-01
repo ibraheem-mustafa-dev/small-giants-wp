@@ -140,7 +140,7 @@
 }
 
 /* Showcase (FR-43-24): a result reads as a quiet confirmation panel, as in
-   the Eye Care draft — a bordered card on the raised background, a plain
+   the reference design — a bordered card on the raised background, a plain
    lead line and a muted body — not a page heading. */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-result {
 	padding: 22px;

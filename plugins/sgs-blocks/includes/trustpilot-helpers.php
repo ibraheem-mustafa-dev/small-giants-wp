@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  * Map a Trustpilot score to its official text label.
  *
  * Thresholds verified against the public Trustpilot business review page
- * label thresholds (2026-05-11 verification on mamasmunches.com page).
+ * label thresholds.
  *
  * @param float|int|string $score Trustpilot aggregate score (0-5).
  * @return string One of Excellent | Great | Good | Average | Poor | Bad.

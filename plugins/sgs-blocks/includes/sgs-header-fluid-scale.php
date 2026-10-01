@@ -2,7 +2,7 @@
 /**
  * G-1: viewport-fluid header scale — scoped CSS emission for sgs/site-header.
  *
- * Reference (lamalama.com): every header size is authored in rem on a fluid
+ * Reference design: every header size is authored in rem on a fluid
  * root — 16px up to a 1440px viewport, then roughly 1.111vw, giving 21.33px
  * at 1920px (the pill grows from 438x50 at top 16 to 584x67 at top 21).
  *

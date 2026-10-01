@@ -722,8 +722,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// `background-image: linear-gradient(135deg, rgb(197,106,122)…)`.
 	//
 	// This class is what disengages `:where(.sgs-hero):not(.has-background)`,
-	// and render.php has always emitted it (see its own comment at :914-933,
-	// which records the same defect being found on the live Mama's homepage).
+	// and render.php has always emitted it (see its own comment there on the same defect).
 	// The gradient case needs only the inline paint — same property, so it does
 	// override — but the COLOUR case needs both.
 	const hasBackgroundPaint =

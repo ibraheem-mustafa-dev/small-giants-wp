@@ -349,8 +349,8 @@ function preload_fonts(): void {
 	 * Preload the body font for the active site. The WP-style-variation
 	 * overlay was removed 2026-05-22 (Phase 5a Decision 18); per-site
 	 * branding now lives in the site's single theme.json snapshot. Sites
-	 * that use non-Inter heading fonts (e.g. Montserrat for Indus Foods,
-	 * Fraunces for Mama's Munches) should register their own preload via
+	 * that use non-Inter heading fonts (e.g. Montserrat,
+	 * Fraunces) should register their own preload via
 	 * sites/<client>/theme-snapshot.json's customTemplates/typography
 	 * settings — this base preload covers the body font only.
 	 */
@@ -792,11 +792,9 @@ function replace_current_year_token( string $block_content ): string {
 add_filter( 'render_block', __NAMESPACE__ . '\replace_current_year_token' );
 
 
-// Indus Foods style-variation extras DELETED 2026-05-22 (Phase 5a Decision 18).
-// The WP style-variation overlay system was removed. The Indus Foods install
-// now carries its decorative CSS via its per-site theme.json customCSS or via
-// a per-site mu-plugin — not via a base-theme require gated on a theme_mod.
-// Archive of the original extras: plugins/sgs-blocks/_retired/style-variation-indus-foods.php.
+// The base theme carries no per-site style-variation extras. A site's
+// decorative CSS lives in its per-site theme.json customCSS or a per-site
+// mu-plugin, never in a base-theme require gated on a theme_mod.
 
 
 /**
