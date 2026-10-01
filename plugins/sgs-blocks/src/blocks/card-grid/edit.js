@@ -1250,6 +1250,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							<SgsLengthControl
 								presets={ false }
 								label={ __( 'Image height', 'sgs-blocks' ) }
+								hideLabelFromVision
 								help={ __( 'A fixed height for every image area, instead of the aspect ratio (e.g. a row of logos). Empty keeps the aspect ratio.', 'sgs-blocks' ) }
 								value={ ownValue || '' }
 								placeholder={ inherited ? effectiveValue : '' }

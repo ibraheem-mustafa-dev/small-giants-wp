@@ -827,8 +827,18 @@ function requiredStatesFor( elements, attrName ) {
 	for ( const el of Object.values( elements ) ) {
 		if ( ! el || typeof el !== 'object' || ! el.attrMap ) continue;
 		if ( Object.values( el.attrMap ).includes( attrName ) ) {
-			const declared = el.states && typeof el.states === 'object' ? Object.keys( el.states ) : [];
-			return Math.max( 2, 1 + declared.length );
+			// Only a state that paints a colour asks the colour row for one more
+			// state: sgs/heading's `shrunk` state maps css:font-size alone, so it
+			// adds nothing to a colour row. A state with no attrMap still counts.
+			const declared = el.states && typeof el.states === 'object' ? Object.values( el.states ) : [];
+			const colourStates = declared.filter( ( state ) => {
+				const map = state && typeof state === 'object' ? state.attrMap : null;
+				if ( ! map || typeof map !== 'object' ) return true;
+				return Object.keys( map ).some( ( key ) =>
+					Object.prototype.hasOwnProperty.call( MECHANISM_BY_CSS_PROPERTY, key.replace( /^css:/, '' ) )
+				);
+			} );
+			return Math.max( 2, 1 + colourStates.length );
 		}
 	}
 	return 2;

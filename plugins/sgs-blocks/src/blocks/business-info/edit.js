@@ -180,6 +180,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									<SgsLengthControl
 										presets={ false }
 										label={ __( 'Icon size', 'sgs-blocks' ) }
+										hideLabelFromVision
 										help={ __( 'Empty keeps the icon at the text size.', 'sgs-blocks' ) || undefined }
 										value={ ownValue || '' }
 										placeholder={ inherited ? effectiveValue : '1em' }
@@ -198,6 +199,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									<SgsLengthControl
 										presets={ false }
 										label={ __( 'Space between icon and text', 'sgs-blocks' ) }
+										hideLabelFromVision
 										help={ null || undefined }
 										value={ ownValue || '' }
 										placeholder={ inherited ? effectiveValue : '0.5em' }
@@ -216,6 +218,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									<SgsLengthControl
 										presets={ false }
 										label={ __( 'Link minimum height', 'sgs-blocks' ) }
+										hideLabelFromVision
 										help={ __( 'Empty keeps the 44px touch-target height.', 'sgs-blocks' ) || undefined }
 										value={ ownValue || '' }
 										placeholder={ inherited ? effectiveValue : '44px' }

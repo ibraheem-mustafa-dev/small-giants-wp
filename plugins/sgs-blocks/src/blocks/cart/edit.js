@@ -238,6 +238,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								<SgsLengthControl
 									presets={ false }
 									label={ __( 'Minimum height', 'sgs-blocks' ) }
+									hideLabelFromVision
 									help={ __( 'Empty keeps the 44px touch-target height.', 'sgs-blocks' ) }
 									value={ ownValue || '' }
 									placeholder={ inherited ? effectiveValue : '44px' }

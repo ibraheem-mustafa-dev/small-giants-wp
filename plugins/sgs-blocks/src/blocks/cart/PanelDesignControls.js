@@ -103,6 +103,7 @@ export default function PanelDesignControls( { attributes, setAttributes, hasPan
 							<SgsLengthControl
 								presets={ false }
 								label={ label }
+								hideLabelFromVision
 								value={ ownValue || '' }
 								placeholder={ inherited ? effectiveValue : fallback }
 								onChange={ ( val ) => setOwnValue( val || '' ) }
