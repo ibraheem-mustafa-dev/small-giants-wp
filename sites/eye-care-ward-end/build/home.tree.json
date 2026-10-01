@@ -1363,7 +1363,22 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "gapColour": "rgba(250,248,245,.16)",
+          "separators": {
+            "row": {
+              "style": "solid",
+              "width": {
+                "desktop": "1px"
+              },
+              "colour": "rgba(250,248,245,.16)"
+            },
+            "column": {
+              "style": "solid",
+              "width": {
+                "desktop": "1px"
+              },
+              "colour": "rgba(250,248,245,.16)"
+            }
+          },
           "contentWidth": {
             "desktop": "full"
           },

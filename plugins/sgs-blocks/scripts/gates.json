@@ -1280,5 +1280,23 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 141
+  },
+  {
+    "id": "check-separators-through-helper",
+    "cmd": "python scripts/check-separators-through-helper.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 142
+  },
+  {
+    "id": "check-separators-through-helper-selftest",
+    "cmd": "python scripts/check-separators-through-helper.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 143
   }
 ]

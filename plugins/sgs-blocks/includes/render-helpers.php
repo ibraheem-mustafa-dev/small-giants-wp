@@ -22,8 +22,13 @@
  *   helpers-gradient-tone.php       — sgs_resolve_palette_gradient,
  *                                     sgs_gradient_resolve_value, sgs_gradient_tone
  *
- *   helpers-gap-rule.php            — sgs_gap_rule_width, sgs_gap_rule_props,
- *                                     sgs_gap_rule_css (a grid/flex gap colour)
+ *   helpers-separators*.php         — the shared Separators setting (lines between
+ *                                     a list's items): sgs_separators_normalise,
+ *                                     sgs_separators_css and its line / hover /
+ *                                     flow emitters
+ *
+ *   helpers-container-separators.php — sgs/container's Separators wiring:
+ *                                     sgs_container_separators_root / _css
  *
  *   helpers-surface-tone.php        — sgs_surface_tone, sgs_surface_tone_class
  *                                     (a painted surface's dark/light tone from
@@ -115,7 +120,8 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-hover-state.php';
 require_once __DIR__ . '/helpers-responsive.php';
-require_once __DIR__ . '/helpers-gap-rule.php';
+require_once __DIR__ . '/helpers-separators-css.php';
+require_once __DIR__ . '/helpers-container-separators.php';
 require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-media-position.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';

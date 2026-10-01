@@ -1901,6 +1901,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = 'sgs-container--' . esc_attr( $layout );
 			}
 
+			// Lines between items (includes/helpers-container-separators.php): the root
+			// carries the marker the runtime fallback looks for.
+			$sgs_sep_root = sgs_container_separators_root( $attributes, (string) $layout, (bool) $grid_on_inner );
+			if ( '' !== $sgs_sep_root['class'] ) {
+				$classes[]       = $sgs_sep_root['class'];
+				$opt_extra_attrs = array_merge( $opt_extra_attrs, $sgs_sep_root['attrs'] );
+			}
+
 			// Outer max-width — literal only (v0.4 model per spec §0d).
 			// maxWidth non-empty → exact draft value, sanitised via $sgs_css_length.
 			// maxWidth empty → full-width outer; emit nothing (no max-width constraint).
@@ -3844,15 +3852,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					);
 				}
 
-				// Gap colour (includes/helpers-gap-rule.php): rule widths ride the
-				// gap's own tiers; the colour rule is emitted once, below.
-				$gap_colour = isset( $attributes['gapColour'] ) ? trim( (string) $attributes['gapColour'] ) : '';
-				$gap_lines  = '' !== $gap_colour && ( 'grid' === $layout || 'flex' === $layout )
-					&& isset( $attributes['gap'] ) && is_array( $attributes['gap'] ) && array() !== $attributes['gap'];
-				if ( $gap_lines ) {
-					$obj_inner_props = array_merge( $obj_inner_props, sgs_gap_rule_props( $attributes['gap'] ) );
-				}
-
 				if ( $obj_inner_props && '' !== $grid_sel ) {
 					// `container` adds an @container copy of each tier rule ALONGSIDE the
 					// @media one (class-sgs-breakpoints.php:74-81 emits both, never one
@@ -3865,9 +3864,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// explain before they can trust the rest.
 					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => $container_queries ) );
 				}
-				if ( $gap_lines ) {
-					$responsive_css .= sgs_gap_rule_css( $grid_sel, $gap_colour );
-				}
+				// Lines between items (includes/helpers-container-separators.php).
+				$responsive_css .= sgs_container_separators_css( $attributes, (string) $layout, $grid_sel, (bool) $container_queries );
 
 				// grid-template-columns' count-based tier fallback — its own call,
 				// `'container' => false` always. See the reasoning where

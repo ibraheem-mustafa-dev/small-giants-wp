@@ -11,10 +11,10 @@ import {
   TextControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl, gapColourRow, gapColourPreview } from "../../components";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl, SgsSeparatorControl } from "../../components";
 import ScrollSidewaysPanel from "./components/ScrollSidewaysPanel";
 import { resolveOnTiers } from "../../utils/responsive";
-import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar, flattenPresetSetting } from "../../utils";
+import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar, flattenPresetSetting, separatorsFlowPreview } from "../../utils";
 import {
   LayoutPanel,
   WidthPanel,
@@ -212,7 +212,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
 
   const style = {
     gap: gapCssValue( gap, previewTier ),
-    ...( ( layout === "grid" || layout === "flex" ) && gapColourPreview( gapCssValue( gap, previewTier ), attributes.gapColour ) ),
+    ...( ( layout === "grid" || layout === "flex" || layout === "stack" ) && separatorsFlowPreview( attributes.separators, previewTier ) ),
     minHeight: resolveResponsiveTier( attributes.minHeight, previewTier )?.value || undefined,
     aspectRatio: /^\s*\d+(\.\d+)?\s*(\/\s*\d+(\.\d+)?\s*)?$/.test( attributes.boxAspectRatio || '' ) ? attributes.boxAspectRatio : undefined,
     ...(shadow && { boxShadow: resolveShadowPreviewComposed( shadow, attributes.shadowColour ) }),
@@ -555,7 +555,6 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
                 },
               ],
             },
-            ( layout === "grid" || layout === "flex" ) && gapColourRow( { attributes, setAttributes } ),
           ] }
         />
         {/* Typography — replaces the old WP-native supports.typography
@@ -655,6 +654,18 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
               (Spec 35) exists to prevent; the Typography-panel control is kept
               (correct tab per Spec 35 A3/PART O — typography lives in Styles). */}
         </PanelBody>
+
+        {/* Separators — the lines between the items of a grid or flex layout
+            (includes/helpers-separators.php). Offered only where there are items
+            side by side or stacked to separate. */}
+        { ( layout === "grid" || layout === "flex" || layout === "stack" ) && (
+          <PanelBody title={ __( "Separators", "sgs-blocks" ) } initialOpen={ false }>
+            <SgsSeparatorControl
+              value={ attributes.separators }
+              onChange={ ( next ) => setAttributes( { separators: next } ) }
+            />
+          </PanelBody>
+        ) }
 
         {/* Responsive spacing (padding + margin) — Spec 35 / D555 gutter-default
             migration. `padding`/`margin` are now block-OWNED object attrs (no

@@ -1,0 +1,25 @@
+{
+  "files": {
+    "includes/nav-drawer-menu-separator-css.php": {
+      "php-not-first": 1
+    },
+    "includes/nav-menu-item-border-featured-css.php": {
+      "php-not-first": 1
+    },
+    "src/blocks/accordion/style.css": {
+      "last-child-reset": 2
+    },
+    "src/blocks/account/style.css": {
+      "last-child-reset": 1
+    },
+    "src/blocks/business-info/style.css": {
+      "last-child-reset": 1
+    },
+    "src/blocks/icon-list/style.css": {
+      "sibling-border": 1
+    },
+    "src/blocks/pricing-table/style.css": {
+      "last-child-reset": 1
+    }
+  }
+}

@@ -26,6 +26,17 @@
 		"sgs": {
 			"_comment_overlayNotAdopted": "backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*, bgVideo*/bgSvg*/bgParallax/bgKenBurns are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- settled 2026-09-03 (Bean-directed) after this exact question was investigated. A background panel applied to the whole block is a different feature from a client-configurable <img>/<video> element (which the media-atom system in supports.sgs.mediaElements DOES cover), so it is correctly out of scope for that system and is not a deferred migration. Detector rule 37-media-no-handroll (scripts/inspector-scan/rules/37-media-no-handroll.js) encodes this discriminator: a bare `background`/`bg`-prefixed attribute is panel-owned and never flagged; an element-prefixed attribute (e.g. splitMediaObjectFit) still is.",
 			"intrinsicColumns": true,
+			"separators": {
+				"separators": {
+					"axes": [
+						"row",
+						"column"
+					],
+					"edges": false,
+					"hover": false,
+					"sweep": false
+				}
+			},
 			"enabledExtensions": [
 				"width",
 				"layout",
@@ -125,7 +136,6 @@
 					],
 					"attrMap": {
 						"css:gap": "gap",
-						"css:column-rule-color": "gapColour",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-columns:count": "columns",
 						"css:grid-template-rows": "gridTemplateRows",
@@ -257,10 +267,10 @@
 			"type": "object",
 			"default": {}
 		},
-		"gapColour": {
-			"type": "string",
-			"default": "",
-			"description": "Paints the gaps of a grid or flex layout, each line as wide as its gap, and nothing else (CSS gap decorations; browsers without them get the colour behind the tracks, showing through the gaps between opaque items). Empty (default) paints nothing, so the gaps stay transparent. A palette slug or any CSS colour."
+		"separators": {
+			"type": "object",
+			"default": {},
+			"description": "The lines drawn between the items of a grid or flex layout (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `row` is the line between rows, `column` between columns; an axis with no width draws nothing. Drawn centred in the gap by CSS gap decorations (column-rule / row-rule) where the browser has them, and by a small script painting the same lines elsewhere. Spacing only when empty."
 		},
 		"minColumnWidth": {
 			"type": "object",

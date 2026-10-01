@@ -251,7 +251,22 @@
           "gap": {
             "desktop": "1px"
           },
-          "gapColour": "border",
+          "separators": {
+            "row": {
+              "style": "solid",
+              "width": {
+                "desktop": "1px"
+              },
+              "colour": "border"
+            },
+            "column": {
+              "style": "solid",
+              "width": {
+                "desktop": "1px"
+              },
+              "colour": "border"
+            }
+          },
           "borderWidth": {
             "top": "1px",
             "right": "1px",

@@ -4,11 +4,15 @@
  * Handles:
  * - Responsive video background: swaps src to mobile version on narrow viewports.
  * - Parallax: adds no-parallax class on touch devices to prevent iOS fixed-bg jitter.
+ * - Separators: in a browser without CSS gap decorations, paints the lines between a
+ *   grid or flex layout's items (src/shared/separators/); a no-op elsewhere.
  *
  * Loaded only when the container block is on the page (viewScriptModule in block.json).
  *
  * @package SGS\Blocks
  */
+
+import { initSeparators } from '../../shared/separators';
 
 ( function () {
 	'use strict';
@@ -83,6 +87,7 @@
 	 */
 	function init() {
 		disableParallaxOnTouch();
+		initSeparators();
 
 		const responsiveVideos = document.querySelectorAll(
 			'.sgs-container__video-bg--responsive'

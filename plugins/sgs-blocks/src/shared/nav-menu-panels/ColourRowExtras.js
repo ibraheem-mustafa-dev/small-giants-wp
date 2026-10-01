@@ -35,8 +35,8 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { SelectControl, AnglePickerControl } from '@wordpress/components';
 import { sweepEligible, TreatmentSelect, CrossRefNote } from './ColourTreatment';
+import SweepAngleControl from '../../components/SweepAngleControl';
 
 /** Shared option fragments — translated once, reused by every selector below. */
 export const TREATMENT_NONE = { value: 'none', label: __( 'None', 'sgs-blocks' ) };
@@ -70,56 +70,7 @@ const SMART_CONTRAST_NOTE = __(
 	'sgs-blocks'
 );
 
-/**
- * Directional sweep angle control (FR-41-37 follow-up) — one preset
- * SelectControl (UI sugar) plus core's own AnglePickerControl, both writing
- * into the SAME `angle` attribute (CSS gradient-angle convention: 0=to top,
- * 90=to right, 180=to bottom, 270=to left). Exported so the bar-only rows in
- * `BarColourRowExtras.js` (Item separator, Burger icon/bg) can reuse it
- * rather than duplicating this control.
- *
- * @param {Object}   root0               Props.
- * @param {number}   root0.angle         The stored angle, degrees.
- * @param {Function} root0.onAngleChange Receives the next angle, degrees.
- * @return {Object} The node.
- */
-export function SweepAngleControl( { angle, onAngleChange } ) {
-	const current = Number.isFinite( angle ) ? angle : 90;
-	const presets = [
-		{ label: __( 'Horizontal (left to right)', 'sgs-blocks' ), value: 90 },
-		{ label: __( 'Horizontal (right to left)', 'sgs-blocks' ), value: 270 },
-		{ label: __( 'Vertical (top to bottom)', 'sgs-blocks' ), value: 180 },
-		{ label: __( 'Vertical (bottom to top)', 'sgs-blocks' ), value: 0 },
-	];
-	const presetMatch = presets.find( ( p ) => p.value === current );
-	return (
-		<>
-			<SelectControl
-				label={ __( 'Sweep direction', 'sgs-blocks' ) }
-				value={ presetMatch ? String( current ) : 'custom' }
-				options={ [
-					...presets.map( ( p ) => ( {
-						label: p.label,
-						value: String( p.value ),
-					} ) ),
-					{ label: __( 'Custom angle…', 'sgs-blocks' ), value: 'custom' },
-				] }
-				onChange={ ( val ) => {
-					if ( 'custom' !== val ) {
-						onAngleChange( Number( val ) );
-					}
-				} }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
-			<AnglePickerControl
-				label={ __( 'Angle', 'sgs-blocks' ) }
-				value={ current }
-				onChange={ ( val ) => onAngleChange( Number( val ) ) }
-			/>
-		</>
-	);
-}
+export { SweepAngleControl };
 
 /**
  * @param {Object}   root0                    Props.
