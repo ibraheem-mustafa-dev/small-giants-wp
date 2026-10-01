@@ -370,10 +370,16 @@ function repositionPanel( root ) {
 	if ( ! panel ) {
 		return;
 	}
-	panel.style.removeProperty( '--sgs-mm-overflow-left' );
-	panel.style.removeProperty( '--sgs-mm-overflow-right' );
-	panel.style.removeProperty( '--sgs-mm-tx' );
 	window.requestAnimationFrame( () => {
+		/*
+		 * The previous placement is cleared INSIDE this frame, right before it is
+		 * replaced, so an open panel never paints at the stylesheet's default spot
+		 * beside its own menu item between the two. The measurement below reads
+		 * only the panel's width, the anchor and the parent, never these values.
+		 */
+		panel.style.removeProperty( '--sgs-mm-overflow-left' );
+		panel.style.removeProperty( '--sgs-mm-overflow-right' );
+		panel.style.removeProperty( '--sgs-mm-tx' );
 		/*
 		 * Centre the panel on the BAR, clamped to the viewport. The CSS
 		 * `left:50% / translateX(-50%)` default
