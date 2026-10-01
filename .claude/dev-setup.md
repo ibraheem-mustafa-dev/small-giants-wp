@@ -2553,6 +2553,14 @@ This section is **GENERATED** by `plugins/sgs-blocks/scripts/generate-helper-cat
 
 Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, grouped by file, with the one-line purpose from its own docblock (or the adjacent `//` comment when it has no docblock). **UNDOCUMENTED** means neither exists in source — that is a real gap in the code, not a gap in this catalogue; add a docblock rather than inferring a purpose here.
 
+#### `includes/helpers-border-style.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_border_style_allowed` | `function sgs_border_style_allowed(): array` | Every CSS border-style keyword an SGS border may emit. |
+| `sgs_border_style_keyword` | `function sgs_border_style_keyword( $raw ): string` | Resolve a stored border-style value to the keyword a width paints with. |
+| `sgs_border_box_decls` | `function sgs_border_box_decls( $width_box, $style_raw ): array` | Build the border-style + border-width declarations for a 4-side width box and a stored style. |
+
 #### `includes/helpers-box.php` — 9 function(s)
 
 | Function | Signature | Purpose |
@@ -2677,6 +2685,14 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_tab_content_is_empty` | `function sgs_tab_content_is_empty( string $html ): bool` | Whether a rendered tab's HTML carries no visible text and no media. |
+
+#### `includes/helpers-gap-rule.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_gap_rule_width` | `function sgs_gap_rule_width( $raw, string $axis ): string` | One axis of a gap tier value, as a rule width. |
+| `sgs_gap_rule_props` | `function sgs_gap_rule_props( array $gap ): array` | The per-device rule widths, as specs for sgs_emit_responsive_css(). |
+| `sgs_gap_rule_css` | `function sgs_gap_rule_css( string $selector, string $colour ): string` | The rule style and colour for one grid/flex selector, plus the fallback. |
 
 #### `includes/helpers-global-settings.php` — 1 function(s)
 
@@ -3052,7 +3068,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_saving_display` | `function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_pence, string $framing_mode, bool…` | Plain-text saving label for one row of the comparative value ladder (Spec 28 P1). |
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 28 P1). |
 
-**51 files, 244 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**53 files, 250 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -3071,6 +3087,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `FieldLabelLayoutPanel.js` | `FieldLabelLayoutPanel (default)` | "Label and headings" panel for SGS form fields: whether the field's label shows or is read only by screen readers, and (for boxes… |
 | `FlowingGradientRowControls.js` | `isCssOnlyFlowingGradientVariant`, `FlowingGradientRowControls` | FlowingGradientRowControls — shared "flowing gradient" (`wave-gradient`) controls for blocks that reach the effect via a… |
 | `FocalPositionField.js` | `FocalPositionField (default)` | FocalPositionField — the SGS wrapper around WP-native `FocalPointPicker` |
+| `GapColour.js` | `gapColourRow`, `gapColourPreview` | Gap colour: the shared editor pieces for a grid or flex layout's gap colour. |
 | `GradientCapableColourControl.js` | `GradientCapableColourControl (default)`, `isGradientValue` | GradientCapableColourControl — the text-colour gradient rollout's shared control (D636 Task 1b, "text" builder). |
 | `GradientOverlayControl.js` | `GradientOverlayControl (default)`, `gradientOverlayAttrName`, `gradientOverlayAttrKeys` | GradientOverlayControl |
 | `GridDotFieldRowControls.js` | `GridDotFieldRowControls` | GridDotFieldRowControls — shared grid-dot field (FR-38-33) controls for blocks that reach the effect via a block-private escape… |
@@ -3086,6 +3103,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `ResponsiveBoxControl.js` | `ResponsiveBoxControl (default)`, `ResponsiveBorderRadiusControl`, `BOX_UNITS`… | ResponsiveBoxControl / ResponsiveBorderRadiusControl — shared responsive box-family editor controls (Box-object interface… |
 | `ResponsiveBoxControls.js` | `ResponsiveBoxControls (default)` | ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel. |
 | `ResponsiveControl.js` | `ResponsiveControl (default)` | Responsive breakpoint switcher for block sidebar controls. |
+| `ResponsiveLengthControl.js` | `ResponsiveLengthControl (default)` | ResponsiveLengthControl — one per-device CSS length under the global device toggle. |
 | `ResponsiveOverride.js` | `ResponsiveOverride (default)` | ResponsiveOverride — SGS-owned per-device override control (Spec 37 FR-37-16). |
 | `ResponsiveTriStateControl.js` | `ResponsiveTriStateControl (default)` | ResponsiveTriStateControl — the DP1 tri-state on/off control (Spec 35 T1.2). |
 | `RowQuickInsertAppender.js` | `RowQuickInsertAppender (default)` | Promoted quick-insert appender for a freeform row block (site-header-row / site-footer-row). Steering, not gating: the row still… |
@@ -3110,7 +3128,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SurfaceTreatmentPanel.js` | `isSimpleBackgroundImage`, `SurfaceTreatmentPanel` | SurfaceTreatmentPanel — shared surface-treatment (grain/halftone/duotone) controls for blocks that reach the effect via… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**49 files.**
+**51 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 

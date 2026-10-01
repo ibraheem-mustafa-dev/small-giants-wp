@@ -2217,15 +2217,6 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "borderStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/container",
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns:count",
@@ -16206,6 +16197,15 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "borderWidth",
       "fields": {
         "css_property": "border-width",
@@ -16220,6 +16220,15 @@
         "css_property": "aspect-ratio",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "gapColour",
+      "fields": {
+        "css_property": "column-rule-color",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
