@@ -152,5 +152,8 @@ or column of items the block owns (the item draws the line, every browser, no sc
 that wraps, auto-fits, or whose items it does not own (native `column-rule` / `row-rule`, plus the overlay in
 `src/shared/separators/` where the browser lacks them). Never select a flow list's items by position. Gate:
 `scripts/check-separators-through-helper.py` fails a between-item line drawn outside the helper (ratcheted baseline in
-`scripts/check-separators-through-helper-baseline.json`; adopting a block deletes its entry). Design and measurements:
-`.claude/plans/2026-10-01-separators-plan.md`.
+`scripts/check-separators-through-helper-baseline.json`; adopting a block deletes its entry). A composite that mirrors
+`sgs/container` (Spec 31 §13.6) declares `separators` and mounts `SeparatorsPanel`; the wrapper reads `separators` for the
+block's own grid, so a block's OTHER list takes its own name (`featureSeparators`), and a block whose grid is a child element
+(post-grid, gallery) calls the helper itself and hands the wrapper no `separators`. Design and measurements:
+`.claude/plans/archive/2026-10-01-separators-plan.md`.

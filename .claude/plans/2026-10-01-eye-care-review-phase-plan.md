@@ -338,7 +338,7 @@ Step 8 — Write the work plan, by surface
   walker reads `column-rule` there, not a background), so a background-colour row on those grids is expected, not a
   violation. The five trees (`sites/eye-care-ward-end/build/` home, about, help, lenses, single-product) carry
   `separators`, and the Eye Care test site's five pages were rebuilt from them on 2026-10-01
-  (`plans/2026-10-01-separators-plan.md`).
+  (`plans/archive/2026-10-01-separators-plan.md`).
 
 - **Decision:** Which STALE verdicts to spot-check in step 3. **Flagged by:** haiku. **Recommendation:** the first
   STALE claim on each of header, bag, footer, home and product (one per checker group at least). **Why:** those

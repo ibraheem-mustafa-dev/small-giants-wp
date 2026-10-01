@@ -1,6 +1,6 @@
 # Separators: one shared setting for lines between items
 
-**Status (2026-10-01):** built and live on the sandybrown canary and the Eye Care test site; the work below is the residue (remaining adoptions, the name sweep).
+**Status (2026-10-01):** complete and live on the sandybrown canary and the Eye Care test site.
 **Standards:** Spec 35 + 35A (shared inspector primitives, one control per concept, labels), Spec 32 (no inline
 `style=""`; CSS through scoped rules), Spec 41 FR-41-37 (the nav bar's item separator, which this replaces).
 
@@ -62,35 +62,29 @@ colour, `hoverTreatment` (swap / sweep) and `sweepAngle` ride the same object
 (`includes/sweep-css.php::sgs_directional_sweep_css`). The runtime overlay sets each line's position through the CSS
 object model on elements it creates (never in markup), so Spec 32's no-inline-style contract holds.
 
-## Remaining work
+## Outcome (2026-10-01, closed)
 
-1. **Adopt the hardcoded row lists** (pricing-table features, business-info hours, cart items), and decide
-   `sgs/account` (its `src/blocks/account/style.css` has an unexplained last-child border reset: read it, then adopt or
-   record why it stays). Done when each block's own between-row border is gone, it carries `separators` (rows axis,
-   `layout: 'line'`), its entry is deleted from `scripts/check-separators-through-helper-baseline.json` (pricing-table,
-   business-info and account have entries; the cart has none, because its border is emitted by
-   `includes/helpers-cart-panel-css.php`, so grep for it), and the lines show at 375 / 768 / 1440 in Chromium and WebKit.
-   The accordion's baseline entry stays, with the reason in the decisions table below.
-   The cart's rows are rendered by JavaScript (`item-row-template.js`), so its lines need the editor-twin CSS
-   (`src/utils/separators-line.js`) or a shared stylesheet rule, not a PHP rule.
-2. **Fan `separators` out to the wrapper-routed composites** (card-grid, feature-grid, post-grid grid layout, gallery grid
-   layout, multi-button, site-header-row, site-footer-row). Spec 31 §13.6 says a composite mirrors `sgs/container`'s
-   capabilities, and the wrapper (`includes/class-sgs-container-wrapper.php`) already reads `separators` through
-   `includes/helpers-container-separators.php`; the work is declaring the attribute and control per block through the
-   attribute fan-out generators, and marking the root. Open finding: `scripts/sync-container-wrapping-blocks.py
-   --write-block-json` (reseed Stage 10) currently fails its own roster validation (it reports blocks it detects but does not
-   expect, and the reverse), so find out why before relying on it. Done when each listed block draws lines from its own setting and
-   the gate baseline stays unchanged.
-3. **Name sweep.** Framework code, docs, specs and file names carry no client names and no reference-site or inspiration
-   names (for example the lamalama references: scripts under `plugins/sgs-blocks/scripts/nav-qa/`, whose file names carry the
-   name too, plus plans and specs). Client and reference material lives in `sites/<client>/` or `reference/` only. Build the
-   detector first (a script that lists every such name in content and in file names outside those folders, rules at the top,
-   ignoring gitignored capture folders such as `.playwright-mcp/`), record the count, then delegate the mechanical edits and
-   renames to Sonnet subagents in batches and verify against the detector's zero. Own commits.
-4. **Editor canvas overlay for the remaining flow lists** (optional polish; do it only if Bean reports a Safari or Firefox
-   editor missing the lines): the container's canvas runs the overlay in Safari and Firefox editors; the brand-strip canvas is
-   server-rendered and the drawer's multi-column list has none, so those show spacing only there. Done when the overlay runs
-   on those two canvases too and a WebKit editor check shows the lines.
+- **Hardcoded row lists adopted:** pricing-table features (`featureSeparators`), business-info hours (`separators`; the
+  one-line condensed layout keeps its " · " glyph and shows no control) and the mini-cart's item rows (`separators`
+  replaced `itemDividerColour`) draw through the helper, `layout: 'line'`. Verified at 375 / 768 / 1440 in Chromium and
+  WebKit on the canary. `sgs/account` keeps its orders-table cell borders: they are `td` borders inside a
+  WooCommerce-rendered table (no gap, markup the block does not own), the same case as the accordion; its baseline entry stays.
+- **Composites fanned out:** card-grid, feature-grid, multi-button, gallery, post-grid, site-header-row and site-footer-row
+  declare `separators` and draw the flow path. The wrapper draws it where its element is the grid; post-grid and gallery
+  put the grid on a child (`.sgs-post-grid__inner`, `.sgs-gallery__grid`), so those two call the helper themselves and hand
+  the wrapper no `separators`. The shared editor panel is `src/blocks/container/components/SeparatorsPanel.js` (shown only
+  for a block that declares `separators` with a grid, flex or stack layout). A block with its OWN list as well as a wrapper
+  grid names that list's attribute for the list (`featureSeparators`), because the wrapper reads `separators` as the
+  block's own grid. The header and footer rows are checked by their rendered markup (root marker and CSS), not on a live page.
+- **Container-sync roster:** the failure was a hand-kept expected roster that had drifted, plus card-grid reading as a
+  section (its image-overlay attributes match the section pattern; it now declares `containerKind: "layout"`). Hand-rolled
+  blocks (choice-flow, choice-flow-question, notice-banner, notice-message, buybox, process-steps, wishlist-panel,
+  nav-drawer-menu) declare `containerMirror: false`. `--write-block-json` now dry-runs; applying it would add 348 attributes
+  across 19 blocks (existing drift), so it stays report-only.
+- **Deployed:** sandybrown and eye-care-test run the same build (checked by the deploy's own gates; browser checks were on
+  sandybrown only).
+- **Left open (recorded in `LEDGER.md`):** the composites' editor canvases and the cart panel show spacing only in the
+  editor (the lines draw on the page).
 
 ## Progress and decisions (2026-10-01)
 
@@ -103,9 +97,9 @@ and `sgs/brand-strip`. The Eye Care trees moved from `gapColour` to `separators`
 
 | Block | Decision | Why |
 |---|---|---|
-| pricing-table features, business-info hours, cart items | adopt next (item-drawn rows list) | each draws a hardcoded or ad-hoc border on every item with the last removed; the cart's line is JS-rendered, so it needs the editor-twin CSS rather than a PHP rule |
+| pricing-table features, business-info hours, cart items | adopted (item-drawn rows list, `layout: 'line'`) | each drew a hardcoded or ad-hoc border on every item; the cart's rows are JS-filled but the list is server-rendered, so the helper's PHP rule on the panel's item list reaches them |
 | accordion | keep its own borders | three styles (`bordered`, `flush`, `card`) draw boxes and joins that are part of the design, not a line between items |
-| card-grid, feature-grid, post-grid (grid layout), gallery (grid layout), multi-button, site-header-row, site-footer-row | inherit through the container wrapper: the `separators` attribute fans out to wrapper-routed composites (Spec 31 §13.6), flow path | the wrapper already owns their grid / flex; carousel, masonry and marquee layouts draw none |
+| card-grid, feature-grid, post-grid (grid layout), gallery (grid layout), multi-button, site-header-row, site-footer-row | adopted: `separators` declared per block, flow path (the wrapper where its element is the grid; the block's own helper call for post-grid and gallery, whose grid is a child) | the wrapper already owns their grid / flex; carousel, masonry and marquee layouts draw none |
 | process-steps, timeline, `sgs/separator`, breadcrumbs, mega-panel aside and drawer link divider, google-reviews header | out of scope | they draw connectors, glyphs or edges that gap lines cannot |
 
 **Known limits, accepted:** a wrapping `sgs/nav-bar-menu` draws a stray line at the start of a wrapped line (the
@@ -114,7 +108,7 @@ lines; with JavaScript off, Safari and Firefox show spacing only on flow lists.
 
 ## Inventory: what each list drew before this work (2026-10-01, read from the code)
 
-The container, nav bar and drawer (both lists), icon-list and brand-strip now use `separators`; the rest of the table is the work still open or decided out.
+Every list in the table except the accordion, the account orders table and the blocks decided out now uses `separators`.
 
 | List | Item selector | Directions | Count known to CSS | Current line |
 |---|---|---|---|---|
@@ -124,11 +118,11 @@ The container, nav bar and drawer (both lists), icon-list and brand-strip now us
 | nav-drawer-menu sub-items | `.__submenu > .__subitem` | rows | n/a | border on `.__sublink` |
 | icon-list | `.sgs-icon-list > .__item` | rows only | n/a | `item + item` border (`dividers`) |
 | brand-strip | `.sgs-brand-strip__set` (items, or `__tile` when names show) | columns, wraps; marquee mode | no (wrap) | `border-right` (`brandTextSeparator*`, text items only) |
-| container | `.UID > .sgs-container__inner > *` (or the root) | grid, flex row/column, stack | no (`intrinsicColumns`) | `gapColour` |
+| container | `.UID > .sgs-container__inner > *` (or the root) | grid, flex row/column, stack | no (`intrinsicColumns`) | `separators` |
 | accordion | `.sgs-accordion > .__item` | column (wrapper layouts reachable) | n/a | hardcoded border, per style |
-| pricing-table features | `__features > li` | rows | n/a | hardcoded border |
-| business-info hours | `.sgs-business-hours > .__row` | rows (inline mode wraps) | n/a | hardcoded border; inline dot glyph |
-| cart items | `.sgs-cart__panel-items > .__item` | rows | n/a | `itemDividerColour` border, also under the last item |
-| card-grid, feature-grid, post-grid (grid), gallery (grid) | the grid's items | grid | `columns` tiers (post-grid: auto-fit) | none |
-| multi-button | `.sgs-multi-button > *` | row or column per tier | n/a | none |
-| site-header-row / site-footer-row | root or `.sgs-container__inner > *` | flex / grid (footer: intrinsic) | footer no | none |
+| pricing-table features | `__features > li` | rows | n/a | `featureSeparators` |
+| business-info hours | `.sgs-business-hours > .__row` | rows (inline mode wraps) | n/a | `separators`; inline dot glyph stays |
+| cart items | `.sgs-cart__panel-items > .__item` | rows | n/a | `separators` |
+| card-grid, feature-grid, post-grid (grid), gallery (grid) | the grid's items | grid | `columns` tiers (post-grid: auto-fit) | `separators` |
+| multi-button | `.sgs-multi-button > *` | row or column per tier | n/a | `separators` |
+| site-header-row / site-footer-row | root or `.sgs-container__inner > *` | flex / grid (footer: intrinsic) | footer no | `separators` |

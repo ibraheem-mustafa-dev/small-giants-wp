@@ -2348,8 +2348,8 @@ for the verb you happen to have in mind.
 | `recogniser/functionality-gap-detector.py` | manifest+script-call+skill | - Spec 31 Phase 5a.3 (FR8 functionality leg). |
 | `recogniser/gap-review-report.py` | manifest+script-call+skill | - Spec 31 Phase 5a.5 operator-review surface. |
 | `recogniser/leftover-bucket-router.py` | manifest+script-call+skill | - Stage 9 leftover routing. |
-| `recogniser/measure-classless-baseline.py` | script-call | Front C Task 3 — re-measure Spec 44's safety baseline against the real Eye Care |
-| `recogniser/measure-classless-frame-card.py` | — | Spec 44 completion register item 3 — generalisation check: run the real Stage A -> |
+| `sites/eye-care-ward-end/measure/measure-classless-baseline.py` | script-call | Front C Task 3 — re-measure Spec 44's safety baseline against the real Eye Care |
+| `sites/eye-care-ward-end/measure/measure-classless-frame-card.py` | — | Spec 44 completion register item 3 — generalisation check: run the real Stage A -> |
 | `recogniser/per-section-convention-voter.py` | manifest+script-call+skill | - Stage 1 of /sgs-clone pipeline. |
 | `recogniser/render_repeater_recogniser.py` | script-call | Stage A recognition for a repeated, classless draft group — Spec 44 §3.1/§4.1/§4.3/§4.4. |
 | `recogniser/render_repeater_seeder.py` | script-call | Seed `block_render_repeaters` — Spec 44 §4.2/§4.3 Steps 1-2 (2026-09-17). |

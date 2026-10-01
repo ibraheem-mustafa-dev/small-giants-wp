@@ -336,7 +336,7 @@ an untouched item paints no Hover or Current fill.
 
 A line between two items is its own setting, not a border on one of them. Both nav blocks carry two
 instances of the shared Separators setting (`includes/helpers-separators.php`, editor control
-`SgsSeparatorControl`; plan `.claude/plans/2026-10-01-separators-plan.md`):
+`SgsSeparatorControl`; plan `.claude/plans/archive/2026-10-01-separators-plan.md`):
 
 | Attribute | Block | List it draws between | Axis | Offers |
 |---|---|---|---|---|

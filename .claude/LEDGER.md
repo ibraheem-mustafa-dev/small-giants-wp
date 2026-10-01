@@ -53,10 +53,15 @@ yet re-walked. No blockers.
 **Resume from:** `plans/2026-10-01-eye-care-review-phase-plan.md` step 1 (merge the six Eye Care plans into one,
 walk and eye-check every surface, classify, write the work plan by surface).
 
-**Separators.** The shared lines-between-items setting is built and live on sandybrown and eye-care-test. Remaining adoptions,
-the wrapper fan-out and the client and reference name sweep: `plans/2026-10-01-separators-plan.md` § Remaining work. Open
-finding for that plan's step 2: `scripts/sync-container-wrapping-blocks.py --write-block-json` (reseed Stage 10) fails its
-own roster validation, so check why before relying on it.
+**Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared
+lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info
+hours, the mini-cart's items and the seven wrapper composites (`plans/archive/2026-10-01-separators-plan.md`). Open, only if
+asked: the composites' editor canvases and the cart panel show spacing only in the editor (lines draw on the page); the
+container-sync mirror (`scripts/sync-container-wrapping-blocks.py --write-block-json`) now validates and dry-runs but would add
+348 attributes across 19 blocks, so it stays report-only until that drift is reviewed.
+
+**Names in code.** `python scripts/check-no-client-names.py --check` (gated, fast tier) keeps client and reference-site names
+out of code and file names; docs, tests, fixtures, QA captures and dated reports may carry them.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.
