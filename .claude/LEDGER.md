@@ -42,8 +42,10 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-01).** eye-care-test and sandybrown run the plugin and theme deployed at c8e805e73 (deploys verified in
-real browsers; the deploy's own HTTP probe gets the host's 403 bot challenge, so check by browser or checksum). A border
+**Now (2026-10-02).** eye-care-test and sandybrown run acc2a3b6d (deploys verified in real browsers; the deploy's own
+HTTP probe gets the host's 403 bot challenge, so check by browser or checksum). That deploy fixed the header row that
+collapsed to 56px on any header with a width-capped row. The parity walker now also reads underlines, icon colours,
+focus rings, links and load entrances (GAP-CHECKLIST 13-15; benchmark 5 of 5), and every Eye Care config was filled. A border
 width paints solid unless another style is chosen, on every block. The home "Why buy" grid and the about, help and lenses
 grids draw their divider lines from the container's `separators` setting (home's scrolling brand strip draws its dividers
 on its own items); home 208, about 187, help 171, prescription-lenses 168 and the single-product template 423 were rebuilt

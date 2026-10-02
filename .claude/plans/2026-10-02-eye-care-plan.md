@@ -130,9 +130,13 @@ Each section: what is built (checked), what is open, and a Review heading that t
   - the logo group never wraps;
   - phone link hidden below 1160px;
   - menu trigger icon then "Menu" at desktop and tablet, icon only at 375.
-- **Open:**
-  - confirm on the walk that the white space under the trust bar is gone (fixed in the tree);
-  - the trust ticker (hover pause) is not covered by any config.
+- **Fixed 2026-10-02 (acc2a3b6d, live on eye-care-test and the canary):** the header row had collapsed to 56px
+  wide at every width, the logo, nav and phone stacked over each other. The header outer is a column flex
+  container; a row with a width cap carries centring auto margins, which cancel the stretch, and its
+  `container-type: inline-size` leaves it no content width. Rows are now full width at zero specificity
+  (`includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css`). Any client with a capped header row had it.
+- **Open:** confirm on the walk that the white space under the trust bar is gone (fixed in the tree).
+- **Found while writing the configs (classified in step 7):** the live ticker text is 14px against 12.5px.
 - **Review:** (step 7)
 
 ### Mega menus (Sunglasses 165, Brands 176, Lenses 183, Help 186)
@@ -147,6 +151,8 @@ Each section: what is built (checked), what is open, and a Review heading that t
   - Sunglasses promo: an unproven report that `sgs/media` in a grid row stretches its figure to the row height.
     Check on the walk.
   - Mega links to the shop's filters: the new links check proves where each one goes.
+  - The same brand reaches two pages: mega Brands links go to `/shop/?brands=<slug>`, the home brand strip to
+    `/brand/<slug>/` (both confirmed on live 2026-10-02).
 - **Review:** (step 7)
 
 ### Phone drawer (`sgs_drawer` 203, `build/mobile-menu.tree.json`)
@@ -222,7 +228,12 @@ Each section: what is built (checked), what is open, and a Review heading that t
   - Social boxes 40px with a grey border and brand-coloured icons, in the order Instagram, Google, WhatsApp
     (`sgs/social-icons` fixes the order when its source is Site Info: a small setting).
   - A full-width hairline on the bottom bar, with Privacy and Terms on the right.
-- **Walker config:** `build/qa/parity/footer.mjs` (new 2026-10-02).
+- **Walker config:** `build/qa/parity/footer.mjs` (new 2026-10-02, 32 pairs).
+- **Found by the config's first run:**
+  - `/privacy` and `/terms` return 404 on live;
+  - the draft's address links to Google Maps, where live's is plain text;
+  - the Google social link's label differs from the draft's ("Read our reviews on Google" against "Google
+    Business profile").
 - **Review:** (step 7)
 
 ### Home (page 208, front page, `build/home.tree.json`)
@@ -236,6 +247,10 @@ Each section: what is built (checked), what is open, and a Review heading that t
 - **Open:**
   - re-walk;
   - a real clinic photo (carried).
+- **Found while writing the configs:**
+  - live has no Ken Burns and no translated parallax on the hero;
+  - the draft's hero buttons fade in, ours are static;
+  - "Message me on WhatsApp" adds a `?text=` prefill the draft does not have (also about, contact, lens).
 - **Review:** (step 7)
 
 ### Shop (`archive-product` site template, `build/archive-product.tree.json`)
@@ -271,6 +286,10 @@ Each section: what is built (checked), what is open, and a Review heading that t
   - lens height and the Sizing tab's frame diagrams (carried; no data);
   - the reviews-present state;
   - the Klarna and wallets line (Phase 6).
+- **Found while writing the configs:**
+  - the product sections have no scroll reveal on live;
+  - add to bag confirms with inline text where the draft shows a floating toast;
+  - live has one frame size where the draft shows S/M/L for the Gucci.
 - **Review:** (step 7)
 
 ### Lens configurator (Choice Flow 463 in a fullscreen `sgs/modal`, Spec 43)
