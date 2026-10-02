@@ -1,6 +1,6 @@
 # Eye Care gap map re-check (Phase 0, 2026-09-24)
 
-**What this is.** Phase 0 of `plans/2026-09-24-eye-care-hand-build-design.md`: every gap map row graded 1 to 4
+**What this is.** Phase 0 of `plans/archive/2026-09-24-eye-care-hand-build-design.md`: every gap map row graded 1 to 4
 (91 rows, 8 areas) re-checked against the code on `main`. Eight Haiku agents did one area each (read-only); the
 main session then re-checked every doubtful or contradicting claim directly. **Section 2 is the build list Wave B
 and Wave C work from.** The per-area tables (Appendix) are the agents' raw evidence.

@@ -71,7 +71,7 @@ def collection(taxonomy, query_id):
 
 
 # The draft's 17-row Details grid, matched against real product data (2026-09-28 parity fixes, plan
-# 2026-09-28-eye-care-product-page-parity.md, Content C1). Each row is either "bind" (a real
+# plans/archive/2026-09-28-eye-care-product-page-parity.md, Content C1). Each row is either "bind" (a real
 # `sgs-product/field` key: brand, short_description, stock_status, attribute.<taxonomy> or meta.<key>) or
 # "text" (the draft's fixed copy, true of every frame in the shop). The model code is the short description,
 # as the buybox's code line ("GG1566S · 001"); "Lenses as supplied" is seeded from the draft's catalogue

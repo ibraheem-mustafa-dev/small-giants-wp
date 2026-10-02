@@ -50,8 +50,9 @@ on its own items); home 208, about 187, help 171, prescription-lenses 168 and th
 from their trees with no invalid blocks. Header 199, mobile menu 203, megas 165/176/183/186 applied; 40 brand logos set. Not
 yet re-walked. No blockers.
 
-**Resume from:** `plans/2026-10-01-eye-care-review-phase-plan.md` step 1 (merge the six Eye Care plans into one,
-walk and eye-check every surface, classify, write the work plan by surface).
+**The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, every surface built/open/review, carried
+items; the six earlier plans are archived). **Resume from:** `plans/2026-10-01-eye-care-review-phase-plan.md` step 5
+(walk every surface with the upgraded walker, Bean's eye check, classify, work plan by surface).
 
 **Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info

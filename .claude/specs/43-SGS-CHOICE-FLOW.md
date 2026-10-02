@@ -59,7 +59,7 @@ derived_from:
     `sgs/choice-flow-question` today, and neither is lens/pricing-specific: a plain
     qualification quiz benefits from both identically. FR-43-15/FR-43-16 below add them to the
     plain-question step type now, universal to any `sgs/choice-flow`, not deferred to Phase 3.
-  - **2026-09-25 (v1.4.0), owner decision 2026-09-24 (`plans/2026-09-24-eye-care-hand-build-design.md` section 5):**
+  - **2026-09-25 (v1.4.0), owner decision 2026-09-24 (`plans/archive/2026-09-24-eye-care-hand-build-design.md` section 5):**
     eyewear lens prices are ONE site-wide add-on price list, not WooCommerce variations. Variations were rejected
     (every frame would need one variation per colour x size x use x thickness x finish); separate lens products
     were rejected (two bag lines per pair). v1.4.0 adds "add-on price list" as a second priced-step source beside
@@ -597,7 +597,7 @@ basket and Buy now, an editor round trip for every new setting, and the Eye Care
 
 **v1.9.0 showcase parity: SHIPPED 2026-09-26**, live on eye-care-test: the Eye Care lens flow matches the draft at
 1440, 768 and 375 in screenshots and computed motion, with the accepted differences recorded in
-`plans/2026-09-24-eye-care-hand-build-design.md` ("Lens-flow parity").
+`plans/archive/2026-09-24-eye-care-hand-build-design.md` ("Lens-flow parity").
 
 **Phase 5: SHIPPED 2026-09-26** (Spec 42 FR-42-7b, FR-42-9). A choice flow still embedded on a
 page or linked from a product can't be trashed or deleted, by the same guard and the same

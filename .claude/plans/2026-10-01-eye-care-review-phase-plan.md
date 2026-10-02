@@ -4,7 +4,7 @@ plan_id: eye-care-review-phase
 phase_name: Eye Care - one plan, every surface reviewed, a work plan by surface
 project: small-giants-wp
 spec_id: client build (Front F, D1149)
-status: READY (next session)
+status: IN PROGRESS (steps 1-3 done 2026-10-02; walker upgrade and config fills before step 5)
 header: "[PLAN: opus]"
 cost_estimate: "about 1 session; up to 9 Sonnet subagent runs (3 checkers, 1 config author, up to 5 classifiers), the rest inline"
 docscore_grade: see Phase Header
@@ -31,8 +31,8 @@ row classifiers, the rest inline.
 - [ ] The work plan (in the unified doc) orders the fixes by surface, and Bean has approved it.
 
 **Entry context (read before starting):**
-- `.claude/plans/2026-10-01-eye-care-cloud-handover.md`: what the cloud session built and what is still open (§4).
-- `.claude/plans/2026-09-24-eye-care-hand-build-design.md` Status block: the governing build plan (D1149).
+- `.claude/plans/2026-10-02-eye-care-plan.md`: the one Eye Care plan (decisions, every surface built/open/review);
+  it replaced the six earlier plans (step 3, 2026-10-02).
 - `sites/eye-care-ward-end/CLAUDE.md`: the client, the positioning, what the draft must feel like.
 - `scripts/parity/GAP-CHECKLIST.md`: the walker method (exit 0 = lint, 0 open, every shot reviewed).
 - `.claude/plans/2026-10-01-header-nav-thread-plan.md` §2.2: the four-way row classification this phase reuses.
@@ -67,7 +67,7 @@ Step 1 — Read the map and the four decisions below
                "known small accepted differences" (drawer stagger brings the four Shop links in together; review
                stars 2px apart) and KJC 3 (test order for the confirmation page).
   Files:       none
-  Inputs:      this plan; `.claude/plans/2026-10-01-eye-care-cloud-handover.md` §4
+  Inputs:      this plan; `.claude/plans/archive/2026-10-01-eye-care-cloud-handover.md` §4
   Outcome:     Bean's answers recorded in this plan's KJC section.
   Exec:        SEQUENTIAL
   Deps:        none
@@ -105,13 +105,13 @@ Step 2 — Check every Eye Care plan doc for accuracy (3 checkers in parallel)
     > TRUE, STALE (give the current truth and the evidence) or OPEN (still to do). Note any two docs that disagree.
     > Do not edit any repo file. Write the result to OUT as one table per doc: claim | doc section | verdict |
     > evidence. Under 1,200 words. Final reply: counts per verdict per doc, and the list of disagreements.
-    - Checker A: DOCS = `.claude/plans/2026-09-24-eye-care-hand-build-design.md`,
-      `.claude/plans/2026-09-24-eye-care-findings-1-8-9-design.md`; OUT = `...\eye-care-doc-check-a.md`
-    - Checker B: DOCS = `.claude/plans/2026-09-25-eye-care-product-page.md`,
-      `.claude/plans/2026-09-28-eye-care-product-page-parity.md`, `.claude/plans/archive/2026-09-25-eye-care-product-card.md`,
+    - Checker A: DOCS = `.claude/plans/archive/2026-09-24-eye-care-hand-build-design.md`,
+      `.claude/plans/archive/2026-09-24-eye-care-findings-1-8-9-design.md`; OUT = `...\eye-care-doc-check-a.md`
+    - Checker B: DOCS = `.claude/plans/archive/2026-09-25-eye-care-product-page.md`,
+      `.claude/plans/archive/2026-09-28-eye-care-product-page-parity.md`, `.claude/plans/archive/2026-09-25-eye-care-product-card.md`,
       `.claude/plans/archive/2026-09-26-eye-care-shop-parity.md`; OUT = `...\eye-care-doc-check-b.md`
-    - Checker C: DOCS = `.claude/plans/2026-09-25-eye-care-bag-checkout-prescription.md`,
-      `.claude/plans/2026-10-01-eye-care-cloud-handover.md`, `.claude/plans/archive/2026-09-28-eye-care-resume-tracker.md`;
+    - Checker C: DOCS = `.claude/plans/archive/2026-09-25-eye-care-bag-checkout-prescription.md`,
+      `.claude/plans/archive/2026-10-01-eye-care-cloud-handover.md`, `.claude/plans/archive/2026-09-28-eye-care-resume-tracker.md`;
       OUT = `...\eye-care-doc-check-c.md`
   Test:
     Happy:       three files, every claim with a verdict.
@@ -315,6 +315,13 @@ Step 8 — Write the work plan, by surface
   - **Why:** both are below what a visitor notices and the stagger split would cost the nav landmark.
   - **Cost of wrong choice:** small either way.
   - **Who decides:** Bean (step 1).
+  - **Bean, 2026-10-02:**
+    - Stars: accepted.
+    - Stagger: not accepted. The landmark reason was wrong. The drawer's stagger indexes only
+      `sgs/nav-drawer-menu` top-level items, and the Eye Care drawer builds its Shop links from `sgs/button`s
+      in an `sgs/container`.
+    - The stagger is now a foundational gap for the phone-drawer work plan: a CSS-only "stagger items inside
+      groups" drawer setting (research: `~/.claude/memory/research/2026-10-02-nested-drawer-stagger.md`).
 - **Decision:** A real order for the confirmation page.
   - **Options:** A) place a test order on eye-care-test with WooCommerce's test payment method, then cancel it; B) skip
     the confirmation page this phase.
@@ -322,6 +329,7 @@ Step 8 — Write the work plan, by surface
   - **Why:** the confirmation page cannot render its real state without an order; the test site holds no real data.
   - **Cost of wrong choice:** B leaves one surface unreviewed.
   - **Who decides:** Bean (step 1).
+  - **Bean, 2026-10-02:** A. One test order on eye-care-test with the test payment method, cancelled after the walk.
 - **Decision:** 1920 coverage.
   - **Options:** add 1920 to every walker config / eye check only.
   - **Recommendation:** eye check only, with screenshots.
