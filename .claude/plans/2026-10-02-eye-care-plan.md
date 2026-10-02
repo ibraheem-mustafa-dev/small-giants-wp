@@ -36,9 +36,10 @@ re-run by hand). The process for this review is `plans/2026-10-01-eye-care-revie
 
 ## Status
 
-- Every surface except the footer is built and applied from its tree in `sites/eye-care-ward-end/build/` with no
-  invalid blocks.
-- No surface has been re-walked since the 2026-10-01 deploy.
+- Every surface is built and live, the footer included (`sgs_footer` 182), each applied from its tree in
+  `sites/eye-care-ward-end/build/` with no invalid blocks. The footer still uses the banned `core/list` and needs
+  improving to match the draft.
+- Every surface was re-walked on 2026-10-02 ("Review results").
 - The walker was upgraded on 2026-10-02 before the walk (below, "Walker"), so the next walk measures more than any
   earlier one.
 - Then the work plan by surface (section "Work plan", written after the walk) drives the build.
@@ -217,7 +218,7 @@ Each section: what is built (checked), what is open, and a Review heading that t
   - "© 2026 Eye Care Birmingham…" through `sgs/business-info` `copyrightPrefix`;
   - condensed hours;
   - the size guide modal lives once here (anchor `size-guide`, every page).
-- **Open, the footer build:**
+- **Open, improving it to match the draft:**
   - Replace `core/list` (banned) with SGS blocks.
   - The draft is 425px tall against our 304px: about 104px top padding and 52px at the sides.
   - Column headings in small grey Outfit capitals.
@@ -471,7 +472,7 @@ controls, and the skin must stay universal (tokens per client, never Eye Care CS
   - the thumbnail mat colour `itemThumbBg`;
   - the Close icon stroke;
   - Close reachable by Tab (check the drawer's initial focus).
-- **Footer** (`footer.tree.json`, rebuild, 40 min): replace every `core/list` with `sgs/icon-list`:
+- **Footer** (`footer.tree.json`, improve the existing footer, 40 min): replace every `core/list` with `sgs/icon-list`:
   - icon-list: no marker, 14px, `itemLineHeight` 1.5, about 10px gap, hover #6F6152, no underline;
   - `site-footer` padding 52px at the sides; the columns row about 104px on top (58px on mobile);
   - column headings in Outfit 400, `lineHeight` 1.5; wordmark `lineHeight` 1.5; tagline `maxWidth` 294px with a
