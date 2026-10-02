@@ -73,6 +73,13 @@ if ( ! function_exists( 'sgs_header_rows_align_css' ) ) {
 			'center'
 		);
 
+		// Each row stays full width, as a block row is outside a flex column. A row with a width cap
+		// carries centring auto margins, and in a column flex container auto margins cancel the stretch:
+		// the row shrank to its content, which `container-type: inline-size` makes zero (a capped
+		// middle row measured 56px). Zero specificity, so a row's own width setting still wins and its
+		// max-width still caps it.
+		$css .= ':where(' . $root_sel . ' > *){width:100%;}';
+
 		return $css;
 	}
 }
