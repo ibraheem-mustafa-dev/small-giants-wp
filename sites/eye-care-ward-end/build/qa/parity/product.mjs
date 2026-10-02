@@ -14,6 +14,13 @@ const draftOptionGrid = ( label ) => `(r) => { const lbl = [...r.querySelectorAl
 // The draft's tab content: the tablist's sibling div (only one panel is ever in the DOM, swapped by tab state).
 const DPANEL = `(r) => { const tl = r.querySelector('[role="tablist"]'); return tl && tl.parentElement.children[1]; }`;
 
+// The draft has no class names, so its page sections are found as <main>'s direct <section>s by what they hold.
+const dsection = ( test ) => `(r) => [...document.querySelectorAll('main > section')].find((s) => ${ test })`;
+// The draft's "Good to know" accordion buttons (aria-expanded) by their question, and the answer under an open one.
+const dacc = ( re ) => `[...document.querySelectorAll('button[aria-expanded]')].find((b) => /${ re }/i.test(b.innerText.trim()))`;
+// Live's size picker holds one frame size (M, the product's only variation); its chosen pill is the checked one.
+const LSIZE = '[data-type-key="pa_frame-size"] input:checked + .sgs-option-picker__pill';
+
 export default {
 	name: 'product',
 	// Nav-track chrome outside the header and footer on both sides: the draft's floating WhatsApp bubble and
@@ -37,6 +44,15 @@ export default {
 		},
 	},
 	live: { url: LIVE },
+	// Where each link in the product body must go (GAP-CHECKLIST 14), written from the live page's real hrefs (2026-10-02). The draft's
+	// internal links are "#", so only live is judged. Left out: "Which size am I?" and "Add my prescription" (same-page #anchors the
+	// table cannot express).
+	links: {
+		'home': '/',
+		'sunglasses': '/product-category/sunglasses/',
+		'need advice? message me on whatsapp — i’m an optician, and i’m happy to help.': 'https://wa.me/4479605978?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20your%20services.',
+		'symbole': '/product/prada-symbole/',
+	},
 	states: [
 		{ name: 'opening', fullPage: true },
 		{
@@ -60,6 +76,32 @@ export default {
 			name: 'gallery-thumbnail',
 			draft: ( h ) => h.tap( 'button[aria-label="Angle"]', { wait: 600 } ),
 			live: ( h ) => h.tap( '.product-card__thumb[data-index="1"]', { optional: true, wait: 600 } ),
+		},
+		// What a shopper's click on a different colour, a different size, a "Good to know" question and "Add to bag" changes.
+		// A click that re-renders by fetch (live's add to bag) passes { quiet: true } so the snapshot waits for the network.
+		{
+			name: 'pick-colour',
+			draft: ( h ) => h.click( 'button[aria-label="Black"]', { wait: 600 } ),
+			live: ( h ) => h.click( 'label:has(input[value="black"])', { quiet: true, wait: 600 } ),
+		},
+		// The draft sizes the frame S / M / L (M chosen); live's product has one frame size (M), so there is no other size to choose:
+		// the live click is optional and its absence is the finding.
+		{
+			name: 'pick-size',
+			draft: ( h ) => h.clickText( '^S\\s*5\\d', { tag: 'button', wait: 600 } ),
+			live: ( h ) => h.clickText( '^S\\s*5\\d', { tag: '.sgs-option-picker__option', optional: true, wait: 600 } ),
+		},
+		{
+			name: 'accordion-open',
+			draft: ( h ) => h.clickText( '^will prescription lenses work in these', { tag: 'button', wait: 600 } ),
+			live: ( h ) => h.clickText( '^will prescription lenses work in these', { tag: 'summary', wait: 600 } ),
+		},
+		// The draft's toast (a fixed pill: "Added to bag", View bag) lasts 3.2s, so this state settles early; live confirms inline.
+		{
+			name: 'bag-added',
+			settle: 300,
+			draft: ( h ) => h.clickText( '^add to bag as they are', { tag: 'button', wait: 300 } ),
+			live: ( h ) => h.click( '.buybox__add-to-cart', { quiet: true, wait: 300 } ),
 		},
 		// Live's only working "Which size am I?" trigger sits inside the Sizing tab (its buybox has no SIZE
 		// row at all); the draft has one in its SIZE row visible without switching tabs. Reached the way each
@@ -108,6 +150,43 @@ export default {
 		// thumbnail strip has nothing at index 1 (the same real gap "gallery-thumb" reports).
 		{ name: 'gallery-thumb-selected', states: [ 'gallery-thumbnail' ], draft: 'button[aria-label="Angle"]', live: '.product-card__thumb[data-index="1"]', text: false,
 			props: [ 'border-top-width', 'border-top-color' ] },
+		// pick-colour: the swatch the click chose and the "Colour <name>" value beside the label.
+		{ name: 'colour-chosen', states: [ 'pick-colour' ], draft: 'button[aria-label="Black"]', live: 'label:has(input[value="black"]) .sgs-option-picker__pill', text: false,
+			props: [ 'background-color', 'border-top-width', 'border-top-style', 'border-top-color', 'border-radius', 'transform' ] },
+		{ name: 'colour-value', states: [ 'pick-colour' ], box: [ 'h' ],
+			draft: { js: `(r) => { const l = [...r.querySelectorAll('span')].find((s) => /^colour$/i.test(s.textContent.trim())); return l && l.nextElementSibling; }` },
+			live: '.sgs-buybox__picker-selected-value' },
+		// pick-size: the tile the click chose (live has one frame size, M, already chosen). The picker label carries no chosen
+		// value on either side (the draft's row is "SIZE  Which size am I?", live's "FRAME SIZE  Which size am I?").
+		{ name: 'size-chosen', states: [ 'pick-size' ], text: false, props: [ 'background-color', 'color', 'border-top-width', 'border-top-color', 'border-radius' ],
+			draft: { js: `(r) => (${ draftOptionGrid( 'size' ) })(r)?.children[0]` }, live: LSIZE },
+		// Hover end states on the opening view.
+		{ name: 'size-button-m', states: [ 'opening' ], hover: true, text: false, props: [ 'background-color', 'color', 'border-top-width', 'border-top-color', 'border-radius' ],
+			draft: { js: `(r) => (${ draftOptionGrid( 'size' ) })(r)?.children[1]` }, live: LSIZE },
+		// The draft zooms the gallery photo to 1.04 over .9s.
+		{ name: 'gallery-photo-zoom', states: [ 'opening' ], hover: true, hoverWait: 1400, draft: '[role="img"]', live: '.product-card__media img', text: false, structure: false, box: [], props: [ 'transform', 'scale', 'filter' ] },
+		{ name: 'whatsapp-card', states: [ 'opening' ], hover: true, draft: { text: '^need advice', tag: 'a' }, live: '.sgs-whatsapp-cta--card',
+			props: [ 'background-color', 'border-top-color', 'color' ] },
+		// accordion-open: the question that was clicked and its opened answer.
+		{ name: 'accordion-header', states: [ 'accordion-open' ], hover: true, draft: { js: `(r) => ${ dacc( '^will prescription lenses' ) }` }, live: 'details[open] > summary' },
+		{ name: 'accordion-answer', states: [ 'accordion-open' ],
+			draft: { js: `(r) => { const b = ${ dacc( '^will prescription lenses' ) }; return b && b.parentElement.children[1]; }` }, live: 'details[open] .sgs-accordion-item__content-inner',
+			props: [ 'font-family', 'font-size', 'line-height', 'color', 'padding-top', 'padding-bottom' ] },
+		// bag-added: the draft's toast (a fixed "Added to bag" pill with a View bag link) against live's inline confirmation.
+		{ name: 'bag-toast', states: [ 'bag-added' ], structure: false,
+			draft: { js: '(r) => [...document.querySelectorAll("[role=status]")].find((e) => /added to bag/i.test(e.innerText))' }, live: '.buybox__cart-status-region--visible',
+			props: [ 'position', 'background-color', 'color', 'font-size', 'padding-top', 'padding-left', 'box-shadow', 'opacity' ] },
+		// Scroll reveals (GAP-CHECKLIST 5): the draft's [data-reveal] sections against their live counterparts. For this Gucci frame the
+		// draft shows no "More from Gucci" section and no "Read the clinic's reviews" link (it has 12 reviews and one Gucci frame), and
+		// live has neither, so those two have nothing to pair.
+		{ name: 'tabs-reveal', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
+			draft: { js: dsection( '!! s.querySelector("[role=tablist]")' ) }, live: { js: `(r) => document.querySelector('.sgs-tabs')?.closest('section.sgs-container--grid')` } },
+		{ name: 'reviews-reveal', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
+			draft: { js: dsection( '/^reviews\\b/i.test(s.innerText.trim())' ) },
+			live: { js: `(r) => [...document.querySelectorAll('p')].find((p) => /^no reviews on this frame yet/i.test(p.textContent.trim()))?.closest('section.sgs-container--grid')` } },
+		{ name: 'similar-reveal', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
+			draft: { js: dsection( '/^similar shapes/i.test(s.innerText.trim())' ) },
+			live: { js: `(r) => [...document.querySelectorAll('h2')].find((h) => /^similar shapes$/i.test(h.textContent.trim()))?.closest('section')` } },
 		{ name: 'size-guide-box', states: [ 'size-guide' ], draft: 'div[role="dialog"][aria-label="Size guide"]', live: '.sgs-modal__dialog', text: false, box: [ 'w' ],
 			props: [ 'background-color', 'border-top-width', 'border-top-color', 'box-shadow', 'padding-top', 'padding-left' ] },
 		{ name: 'size-guide-close', states: [ 'size-guide' ], hover: true,
@@ -134,6 +213,18 @@ export default {
 		'size-guide@1440': 'Modal open on both: heading "Which size am I?", intro line, 55/18/137 number row with Lens width/Bridge/Temple captions, three measure rows with the same copy, then Small/Medium/Large band rows — all matching in content and order. Differences are chrome only: live\'s modal is wider (800 vs 720) with a soft shadow and no border; live\'s close is a bordered square icon button, the draft\'s a plain "×" glyph flush at the corner.',
 		'size-guide@768': 'Same modal content matching at 768; live modal fills more of the width behind it is dimmed on both; close-button chrome difference as at 1440.',
 		'size-guide@375': 'Modal fills most of the 375 viewport on both; all rows and copy match; live\'s bordered-square close icon against the draft\'s plain "×"; nothing clipped by the viewport edge on either side.',
+		'pick-colour@1440': 'After clicking Black. Draft (left, scrolled to the buybox): COLOUR row reads Black, the Black tile outlined 1px black, M still the filled size, both buttons, Klarna line, WhatsApp card and ticks below. Live (right, still at the top): COLOUR row reads Black, the Black tile outlined 2px and lifted, single M frame size, price row and stock line above. Value label and chosen tile both change on both sides; live is bigger type and a thicker ring. Live header is collapsed to a stacked wordmark.',
+		'pick-colour@768': 'After clicking Black at tablet. Draft: COLOUR Black with the three photo tiles (Black ringed), Colourway note, SIZE row S/M/L with M filled, buttons, Klarna, WhatsApp card, ticks. Live: title, price, stock, COLOUR Black with Black tile ringed 2px, FRAME SIZE with only M, Add my prescription. Both show the chosen colour and its name; live has no S/L tiles; live header is collapsed.',
+		'pick-colour@375': 'After clicking Black at phone width. Draft: gallery with 4 thumbnails, title, stars, price, stock, COLOUR row starting at the foot. Live: title, price, stock, COLOUR Black with the Black tile ringed, FRAME SIZE M only. Live value label and ringed tile show the pick; draft colour row is below the fold in this viewport so its tile is read from the pair, not the shot.',
+		'pick-size@1440': 'After clicking S. Draft: S now filled black (M back to white), COLOUR still Black, buttons below unchanged. Live: no S exists (one frame size, M), so nothing changes; the M tile stays filled and COLOUR still reads Black. The drive check records the missing S; size tile styling otherwise matches in kind (filled when chosen).',
+		'pick-size@768': 'After clicking S at tablet. Draft: S filled, M and L white, colour tiles and buttons unchanged. Live: only M, still filled, no S or L; click absent. Layout of the rows otherwise as before.',
+		'pick-size@375': 'After clicking S at phone width. Draft viewport shows gallery, title, price and stock (its size row is below the fold); live shows FRAME SIZE with M only, still filled. Nothing changes on live because there is no S to click.',
+		'accordion-open@1440': 'After opening Will prescription lenses work in these. Draft: the question with a close glyph, answer paragraph beneath, the other three questions with plus signs, tabs and the Sizing diagram to the left. Live: same question open with a larger close X and a white header strip, the answer in smaller grey type, three collapsed questions with plus signs. Copy matches; header height (64 vs 56), column width and padding differ.',
+		'accordion-open@768': 'After opening the first question at tablet. Draft: Sizing panel above, Good to know heading, open question with answer, three collapsed. Live: Sizing rows above, Good to know, open question in a white strip with a large X, answer, three collapsed. Content and order match; the open header look and spacing differ.',
+		'accordion-open@375': 'After opening the first question at phone width. The viewport shows the top of the page on both sides (the click does not scroll), so the opened answer is below the shot; draft shows gallery, title, price, stock; live shows title, price, stock, colour and size. The opened answer is read by the accordion-answer pair, not the shot.',
+		'bag-added@1440': 'After Add to bag as they are. Draft: a dark Added to bag toast with View bag floats bottom centre, Bag count 1, Good to know accordion above. Live: Bag count 1, no floating toast in the viewport (live confirms with Added to your basket under the button, off screen here), Good to know and Sizing rows visible. The toast is draft only; both bags count 1.',
+		'bag-added@768': 'After Add to bag at tablet. Draft: dark Added to bag toast with View bag at the foot beside the WhatsApp button, Bag 1, accordion above. Live: Bag 1, accordion with the first question open, no toast shown. Toast is draft only; counts match.',
+		'bag-added@375': 'After Add to bag at phone width. Draft: a narrow dark toast Added to bag with View bag wrapped over the stock line, Bag 1. Live: Bag 1, price and colour rows, no toast. Draft toast has no live counterpart; the live inline message sits below the button off screen.',
 		'auto-scrolled@1440': 'Scrolled a screen and a half: description text and bullets match; Good to know accordion (4 items) matches; live has no Reviews section at all where the draft shows a 5.0/12-reviews summary and three written reviews (accepted, no reviews yet); both show "More from Gucci" then "Similar shapes" with the same single Prada card (no other Gucci or shape matches in the real catalogue).',
 		'auto-scrolled@768': 'Same as 1440 reflowed to one column: description/bullets match, live\'s no-reviews panel + Google badge against the draft\'s written reviews (accepted), single Prada card under Similar shapes on both.',
 		'auto-scrolled@375': 'Same at full width; no reviews section on live (accepted), single Prada card on both; nothing clipped at the edge.',

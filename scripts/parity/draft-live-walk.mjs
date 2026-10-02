@@ -71,6 +71,12 @@ if ( self ) {
 	cfg.draft = cfg.live = cfg[ self ];
 	cfg.states.forEach( ( st ) => ( st.draft = st.live = st[ self ] ) );
 	cfg.pairs.forEach( ( pr ) => ( pr.draft = pr.live = pr[ self ] ) );
+	// Per-side roots and exclusions follow too, so both sides look for the same side's elements.
+	const both = ( o ) => o && { draft: o[ self ], live: o[ self ] };
+	cfg.linkRoot = both( cfg.linkRoot );
+	if ( cfg.auto ) {
+		cfg.auto = { ...cfg.auto, root: both( cfg.auto.root ), exclude: both( cfg.auto.exclude ) };
+	}
 }
 
 // The automatic check (GAP-CHECKLIST.md section 12): every word, control and picture compared with no
@@ -223,7 +229,7 @@ for ( const width of widths ) {
 	}
 }
 await browser.close();
-const unseen = false === cfg.links || ! results.runs.length ? [] : unseenLabels( cfg, allLiveLinks ).filter( ( r ) => ! linksSeen.has( r.key ) );
+const unseen = false === cfg.links || ! results.runs.length ? [] : unseenLabels( cfg, allLiveLinks, origins ).filter( ( r ) => ! linksSeen.has( r.key ) );
 if ( unseen.length ) {
 	const last = results.runs.at( -1 );
 	last.pairs[ '(links)' ] ??= { diffs: [] };

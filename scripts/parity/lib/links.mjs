@@ -101,7 +101,8 @@ export function compareLinks( d, l, cfg, origins, seen ) {
 			add( `href "${ x.text }"`, want, mates.map( ( y ) => norm( y.href, origins.live ) ).join( ' | ' ) );
 		}
 	}
-	for ( const [ label, dest ] of Object.entries( cfg.links || {} ) ) {
+	// The table states live destinations: a --self run has no live side to hold to it.
+	for ( const [ label, dest ] of Object.entries( origins.draft === origins.live ? {} : cfg.links || {} ) ) {
 		const wants = ( Array.isArray( dest ) ? dest : [ dest ] ).map( ( v ) => norm( v, origins.live ) );
 		const mates = ( l || [] ).filter( ( y ) => y.text === label.toLowerCase() );
 		const wrong = mates.filter( ( y ) => ! wants.includes( norm( y.href, origins.live ) ) );
@@ -113,7 +114,7 @@ export function compareLinks( d, l, cfg, origins, seen ) {
 }
 
 // A table label no state ever showed is reported once at the end of the run: the table promises a link.
-export function unseenLabels( cfg, allLive ) {
-	return Object.keys( cfg.links || {} ).filter( ( label ) => ! allLive.some( ( y ) => y.text === label.toLowerCase() ) )
+export function unseenLabels( cfg, allLive, origins ) {
+	return Object.keys( origins.draft === origins.live ? {} : cfg.links || {} ).filter( ( label ) => ! allLive.some( ( y ) => y.text === label.toLowerCase() ) )
 		.map( ( label ) => ( { kind: 'link', key: `table "${ label }"`, draft: 'listed in links', live: 'no link with this text' } ) );
 }

@@ -30,6 +30,19 @@ const BRAND_WORDS = new RegExp( '^(?:(?:' + [ ...BRAND_LIST ].sort( ( x, y ) => 
 // (found 2026-09-28). The aspect-ratio check is what makes the match unique (only tile cards carry it).
 const stile = ( name ) => `(r) => [...r.querySelectorAll('button,a')].find((e) => new RegExp('${ name }', 'i').test(e.textContent.trim()) && getComputedStyle(e).aspectRatio && getComputedStyle(e).aspectRatio !== 'auto')`;
 
+// The draft's reveal wrapper (it marks each with [data-reveal]) and live's fade-up container (data-sgs-animation),
+// found by the words that open them. Both finders take the first match in DOM order.
+const dreveal = ( re ) => `(r) => [...document.querySelectorAll('[data-reveal]')].find((e) => /${ re }/i.test(e.innerText.trim()))`;
+const lreveal = ( re ) => `(r) => [...document.querySelectorAll('[data-sgs-animation]')].find((e) => /${ re }/i.test(e.innerText.trim()))`;
+// The hero photo: the draft's carries the Ken Burns zoom and sits in a layer that the scroll parallax translates; live's is one
+// element (.sgs-hero__bg-img) that carries both.
+const DHERO = 'img[alt^="Designer sunglasses resting"]';
+// Scrolls the opening view about 300px, as a shopper starts to read past the hero (the parallax state).
+const scrollHero = async ( h ) => {
+	await h.page.evaluate( () => window.scrollTo( { top: 300, behavior: 'instant' } ) );
+	await h.wait( 900 );
+};
+
 export default {
 	name: 'home',
 	// Nav-track chrome outside the header and footer: the draft's floating WhatsApp bubble and the
@@ -50,8 +63,39 @@ export default {
 	},
 	draft: { url: DRAFT },
 	live: { url: LIVE },
+	// Where each link in the page body must go (GAP-CHECKLIST 14), written once from the live page's real hrefs (2026-10-02). The draft's
+	// internal links are all "#" (a one-page prototype), so only live is judged. Left out: the two shape tiles still showing "Photo to
+	// come" and the "All N styles" link, whose text changes when a photo or a style arrives.
+	links: {
+		'shop sunglasses': '/shop/',
+		'add your prescription': '/prescription-lenses/',
+		...Object.fromEntries( [ 'ray-ban', 'gucci', 'oakley', 'prada', 'versace', 'balenciaga', 'michael kors', 'carrera', 'polaroid', 'police', 'emporio armani', 'ralph lauren', 'coach', 'tiffany', 'superdry' ].map( ( b ) => [ b, `/brand/${ b.replace( ' ', '-' ) }/` ] ) ),
+		'dolce & gabbana': '/brand/dolce-gabbana/',
+		'see everything': '/shop/',
+		'aviator classic': '/product/ray-ban-aviator-classic/',
+		'oversized cat-eye': '/product/gucci-oversized-cat-eye/',
+		'holbrook': '/product/oakley-holbrook/',
+		'symbole': '/product/prada-symbole/',
+		'original wayfarer': '/product/ray-ban-original-wayfarer/',
+		'round metal': '/product/ray-ban-round-metal/',
+		'medusa biggie': '/product/versace-medusa-biggie/',
+		'pld 6003/n': '/product/polaroid-pld-6003-n/',
+		'wayfarer': '/shop/?filter_shape=wayfarer&query_type_shape=or',
+		'round': '/shop/?filter_shape=round&query_type_shape=or',
+		'cat-eye': '/shop/?filter_shape=cat-eye&query_type_shape=or',
+		'square': '/shop/?filter_shape=square&query_type_shape=or',
+		'see all reviews': 'https://share.google/9YZzTiRj2gvW1Xrpr',
+		'write a review': 'https://share.google/9YZzTiRj2gvW1Xrpr',
+		'read the full review': 'https://share.google/9YZzTiRj2gvW1Xrpr',
+		'how lenses work here': '/prescription-lenses/',
+		'message me on whatsapp': 'https://wa.me/4479605978?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20your%20frames.',
+		'my qualifications': '/about/',
+	},
 	states: [
 		{ name: 'opening', fullPage: true },
+		// The hero's scroll parallax: the draft translates the photo layer 0.18 x the scroll (54px at 300px); live pins its photo with
+		// position: fixed. A pair on the photo layer reads the transform each side carries once scrolled.
+		{ name: 'hero-scrolled', draft: scrollHero, live: scrollHero },
 		// The Google reviews rail: both sides scroll one card on "next" (a scroll-snap rail, not a
 		// DOM swap), so the second review card only comes fully into view after the click. The click
 		// itself is a raw DOM el.click() (helpers.mjs), which never scrolls the page — without scrolling
@@ -79,10 +123,23 @@ export default {
 		{ name: 'hero-subtext', draft: { text: `^I${ AP }m an optician in Birmingham`, tag: 'p' }, live: { text: `^I${ AP }m an optician in Birmingham`, tag: 'p' } },
 		{ name: 'hero-btn-shop', draft: { text: '^shop sunglasses$', tag: 'a,button' }, live: { text: '^shop sunglasses$', tag: 'a,button' }, hover: true },
 		{ name: 'hero-btn-prescription', draft: { text: '^add your prescription$', tag: 'a,button' }, live: { text: '^add your prescription$', tag: 'a,button' }, hover: true },
+		// The hero photo's Ken Burns zoom (the draft's kenburns keyframes, 3s, scale 1.08 to 1): the pair reads its keyframes and
+		// declared animation (its transform is mid-zoom at 3s, so a sample of it is noise); `timeline: true` samples it after every click.
+		{ name: 'hero-image', timeline: true, text: false, structure: false, box: [ 'w' ], props: [ 'opacity', 'object-fit' ],
+			draft: DHERO, live: '.sgs-hero__bg-img' },
+		// The scroll parallax, read after the hero-scrolled state's 300px scroll.
+		{ name: 'hero-image-layer', states: [ 'hero-scrolled' ], text: false, structure: false, box: [ 'w' ], props: [ 'transform', 'translate', 'scale' ],
+			draft: { js: `(r) => document.querySelector('${ DHERO }')?.parentElement` }, live: '.sgs-hero__bg-img' },
 
 		// Scrolling brand strip: the draft names its own section (fixed 2026-09-28: the previous js finder
 		// never matched). The words are read by the automatic check; this pair checks its box and background only.
 		{ name: 'brand-strip', draft: 'section[aria-label="Shop by brand"]', live: '.sgs-brand-strip', text: false, box: [ 'w' ], props: [ 'background-color' ], structure: false },
+		// One logo link (the draft's brightens from 0.75 to full opacity) and the marquee track it rides on (the draft's
+		// track pauses while the pointer is over it: animation-play-state).
+		{ name: 'brand-link', states: [ 'opening' ], hover: true, text: false, structure: false, box: [], props: [ 'opacity', 'color' ],
+			draft: 'section[aria-label="Shop by brand"] a', live: '.sgs-brand-strip a' },
+		{ name: 'brand-track', states: [ 'opening' ], hover: true, text: false, structure: false, box: [], props: [ 'animation-name', 'animation-play-state' ], hoverProps: [ 'animation-play-state', 'animation-name' ],
+			draft: 'section[aria-label="Shop by brand"] > div', live: '.sgs-brand-strip__track' },
 
 		// Best sellers.
 		{ name: 'bestsellers-eyebrow', draft: { text: '^moving fastest this month$', tag: 'p' }, live: { text: '^moving fastest this month$', tag: 'p' }, box: [ 'h' ] },
@@ -152,6 +209,13 @@ export default {
 		{ name: 'shapetile-wayfarer-title', anchor: 'shapetile-wayfarer', box: [ 'h' ],
 			draft: { text: '^wayfarer$', tag: 'span' },
 			live: { js: '(r) => [...r.querySelectorAll(".sgs-card-grid__item")].find((a) => /wayfarer/i.test(a.textContent))?.querySelector(".sgs-card-grid__title")' } },
+		// The Wayfarer tile's photo (the draft zooms it to 1.07 over 1s) and its outline glyph.
+		{ name: 'shapetile-wayfarer-photo', states: [ 'opening' ], hover: true, hoverWait: 1400, text: false, structure: false, box: [ 'w' ], props: [ 'transform', 'scale', 'object-fit' ],
+			draft: { js: `(r) => { const t = (${ stile( 'Wayfarer' ) })(r); return t && t.querySelector('span[style*="background-image"]'); }` },
+			live: { js: '(r) => [...r.querySelectorAll(".sgs-card-grid__item")].find((a) => /wayfarer/i.test(a.textContent))?.querySelector("img.sgs-media-el")' } },
+		{ name: 'shapetile-wayfarer-glyph', states: [ 'opening' ], hover: true, text: false, structure: false, box: [], props: [ 'transform', 'scale', 'opacity' ],
+			draft: { js: `(r) => { const t = (${ stile( 'Wayfarer' ) })(r); return t && t.querySelector('svg'); }` },
+			live: { js: '(r) => [...r.querySelectorAll(".sgs-card-grid__item")].find((a) => /wayfarer/i.test(a.textContent))?.querySelector(".sgs-card-grid__glyph")' } },
 		// The last tile (Oversized): its own fade/stagger entrance below the fold.
 		{ name: 'shapetile-oversized', scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
 			draft: { js: stile( 'Oversized' ) },
@@ -165,6 +229,9 @@ export default {
 			live: '.sgs-google-reviews__review' },
 		{ name: 'review-arrow-prev', hover: true, draft: 'button[aria-label="Previous reviews"]', live: '.sgs-google-reviews__arrow--prev' },
 		{ name: 'review-arrow-next', hover: true, draft: 'button[aria-label="More reviews"]', live: '.sgs-google-reviews__arrow--next' },
+		// The two Google links under the rating (the draft's turn to the Google blue/outlined look on hover).
+		{ name: 'reviews-see-all', states: [ 'opening' ], hover: true, draft: { text: '^see all reviews$', tag: 'a' }, live: { text: '^see all reviews$', tag: 'a' } },
+		{ name: 'reviews-write', states: [ 'opening' ], hover: true, draft: { text: '^write a review$', tag: 'a' }, live: { text: '^write a review$', tag: 'a' } },
 		// What the "next" click itself changes: the rail scrolls, so the second review comes into view
 		// (its left edge moves toward the first review's old position). Scoped to the reviews-next state (GAP-CHECKLIST 2).
 		// Fixed 2026-09-28: matching "any element with 5 stars" picked up a Best-sellers PRODUCT card
@@ -173,10 +240,22 @@ export default {
 			draft: { js: '(r) => [...r.querySelectorAll("*")].find((e) => e.children.length >= 2 && /took my mum as emergency appointment/i.test(e.textContent) && e.textContent.length < 900)' },
 			live: '.sgs-google-reviews__review:nth-of-type(2)' },
 
+		// Scroll reveals of the sections not covered by card-7 / shapetile-oversized (GAP-CHECKLIST 5): the draft's [data-reveal]
+		// wrapper against live's fade-up container (data-sgs-animation), found by the words that open each.
+		...[
+			[ 'whybuy-reveal', '^why buy from me' ],
+			[ 'reviews-reveal', '^from the clinic' ],
+			[ 'about-reveal', '^prescription sunglasses' ],
+			[ 'optician-reveal', '^you.re buying from a person' ],
+		].map( ( [ name, re ] ) => ( { name, states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false, draft: { js: dreveal( re ) }, live: { js: lreveal( re ) } } ) ),
+		{ name: 'about-photo-reveal', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
+			draft: { js: `(r) => document.querySelector('main img[alt="Person wearing sunglasses outdoors"]')?.closest('[data-reveal]')` },
+			live: { js: `(r) => document.querySelector('main img[alt="Person wearing sunglasses outdoors"]')?.closest('[data-sgs-animation]')` } },
+
 		// Prescription-sunglasses strip. Fixed 2026-09-28: live's background photo is decorative
 		// (correctly `alt=""` + `aria-hidden`, WCAG-appropriate for a non-informative image), so it
 		// never matches an alt-text finder; find it by its background-image class instead.
-		{ name: 'about-photo', draft: 'main img[alt="Person wearing sunglasses outdoors"]', live: 'main img[alt="Person wearing sunglasses outdoors"]', text: false, box: [ 'w' ] },
+		{ name: 'about-photo', draft: 'main img[alt="Person wearing sunglasses outdoors"]', live: 'main img[alt="Person wearing sunglasses outdoors"]', text: false, box: [ 'w' ], hover: true, hoverWait: 1600 },
 		{ name: 'about-eyebrow', draft: { text: '^prescription sunglasses$', tag: 'p' }, live: { text: '^prescription sunglasses$', tag: 'p' }, box: [ 'h' ] },
 		{ name: 'about-heading', draft: { text: '^any pair here', tag: 'h2' }, live: { text: '^any pair here', tag: 'h2' }, box: [ 'h' ] },
 		{ name: 'about-text', draft: { text: '^three questions with pictures', tag: 'p' }, live: { text: '^three questions with pictures', tag: 'p' } },
@@ -349,6 +428,12 @@ export default {
 			pair, reason: 'Accepted (Bean 2026-09-28, as the palette\'s text-inverse #FAF8F5 used elsewhere for the draft\'s pure white): the arrow\'s background is the palette off-white, not #FFFFFF',
 			when: ( d ) => [ 'background-color', 'painted-ground' ].includes( d.key ) && [ 'rgb(255, 255, 255)', 'rgba(255, 255, 255, 1)' ].includes( d.draft ) && [ 'rgb(250, 248, 245)', 'rgba(250, 248, 245, 1)' ].includes( d.live ),
 		} ) ),
+		// The section reveals (as card-7): the draft plays its 460ms fade-up from its own script and holds each section at the start pose
+		// from load; live's fade-up container (data-sgs-animation, 26px, 460ms) starts once the section is within 200px of view.
+		...[ 'whybuy-reveal', 'reviews-reveal', 'about-reveal', 'optician-reveal', 'about-photo-reveal' ].flatMap( ( pair ) => [
+			{ pair, reason: 'Off screen, nothing paints: the draft holds every section at its start pose (opacity 0, 26px down) from load, the framework only once the section is within 200px of view; both play the same fade-up on reaching view', when: ( d ) => 'opacity' === d.key || /^pre:/.test( d.key ) },
+			{ pair, key: 'running-on-reveal', reason: 'The draft plays the fade-up of this section from its own script (inline styles the walker cannot record); the live fade-up container runs 460ms from 26px down, the draft runs 460ms from translateY(26px)', when: ( d ) => 'none' === d.draft },
+		] ),
 	],
 	// Review notes: region by region, written after opening every shot in out/home (2026-09-28).
 	review: {
@@ -358,6 +443,9 @@ export default {
 		'reviews-next@1440': 'Fixed 2026-09-28 (see home.mjs changes): the state now scrolls the reviews rail into view before clicking "next", so the shot shows the review cards, not the hero. Both rails hold their card widths (319 draft / 340 live, a Google Card standard width) and scroll one card per click.',
 		'reviews-next@768': 'Same fix applied; the rail scrolls one card at this width too.',
 		'reviews-next@375': 'Same fix applied; single-column rail, one card per click on both sides.',
+		'hero-scrolled@1440': 'Scrolled 300px. Left (draft): compact sticky header bar (menu links, wordmark, phone, Bag), the hero photo layer translated down 54px, headline cropped under the header, subtext and both buttons, then the brand strip as text names. Right (live): the header is collapsed into a stacked vertical wordmark with menu words overlapping, the hero photo is pinned (position fixed, no transform) so it reads brighter and lower, headline cropped, subtext and both buttons match in content, brand strip shows logo images. Differences are the pinned versus translated photo, the broken scrolled header and the lighter overlay.',
+		'hero-scrolled@768': 'Scrolled 300px at tablet. Draft: Menu, wordmark and Bag in a compact bar, headline, subtext and both buttons over the dark overlay, brand names beneath. Live: header collapsed to a vertical wordmark with Menu and Bag overlapping, the photo pinned and brighter behind the subtext and buttons, brand logos beneath. Copy and buttons match; the photo motion (translate versus fixed), header and overlay differ.',
+		'hero-scrolled@375': 'Scrolled 300px at phone width. Draft: header bar with burger, wordmark and Bag, headline, subtext, two stacked buttons, brand strip text. Live: stacked vertical wordmark beside the burger and Bag, subtext and stacked buttons over a lighter pinned photo that runs behind the text, brand logo strip. Copy and buttons match; the pinned photo, lighter overlay and collapsed header differ.',
 		'auto-scrolled@1440': 'Scrolled a screen and a half: Best sellers grid visible with real photos loaded (Gucci, Holbrook, Original Wayfarer, Round Metal); Versace ("Medusa Biggie") and Polaroid ("PLD 6003/N") have no real photo on either side — the draft shows its "PHOTO TO COME" label, live shows the framework\'s generic broken-image icon glyph instead of a styled placeholder (a framework polish opportunity, not a parity bug: both sides simply lack a photo for these two products).',
 		'auto-scrolled@768': 'Same as 1440 reflowed to 2 columns; same two photo-less cards (Medusa Biggie, PLD 6003/N) showing the generic icon on live against the draft\'s text label.',
 		'auto-scrolled@375': 'Same at full width; nothing clipped at the edge; same two photo-less cards.',

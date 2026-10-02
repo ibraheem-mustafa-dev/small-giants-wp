@@ -176,7 +176,9 @@ Each check below missed rows the eye caught; each has a negative control (run a 
 - **Phone widths:** below 500px the context is an iPhone 13 (touch, mobile user agent): lamalama hides its pill
   message by device, not width. A phone has no hover, so no hover end state is compared there (Bean 2026-09-28).
 - **Viewport-scaled sizes:** put a width above 1440 in `widths` (1920): rem-fluid sites grow past 1440.
-- **`--self draft|live`:** points both sides at one side; the baseline every header check must read 0 on.
+- **`--self draft|live`:** points both sides at one side; the baseline every header check must read 0 on. The
+  per-side `auto.root`, `auto.exclude` and `linkRoot` follow, so both sides look for the same side's elements, and
+  the links check skips what only a live site has (health and the `links` table).
 
 **Exceptions, checked another way:** a canvas logo (content not in the DOM: presence and box, then the shot);
 a rotating message (`inventoryIgnore` drops its words; presence, type and place are compared, and its inset is

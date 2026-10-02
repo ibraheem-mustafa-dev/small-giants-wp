@@ -14,9 +14,15 @@
 // The walker runs every state at every width (no per-state widths): below desktop the nav items are
 // not shown, so the hover states find nothing (the hover helper is a no-op then) and their pairs read
 // missing on both sides; at desktop the Menu button is not shown, so `drawer-open` is a no-op there.
-// Run the mega states at 1440 and 768 and `drawer-open` at 375:
+// Three runs: the mega states at 1440, `drawer-open` at 375, and the resting header (with the ticker and the
+// scrolled state) at 1440. Each run's links table lists only the labels its states show (see LINK_GROUPS):
 //   node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/header.mjs --widths 1440 --states mega-shop,mega-brands,mega-lenses,mega-help
 //   node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/header.mjs --widths 375 --states drawer-open
+//   node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/header.mjs --widths 1440 --states closed,scrolled
+//
+// `scrolled` (the last state, so no earlier state runs on a scrolled page): the draft shrinks its header once
+// window.scrollY > 40 (middle-row padding 20px to 10px, logo 48px to 40px, wordmark 18px to 15px, each on a .35s
+// transition); live shrinks its middle row past `data-sgs-header-scrolled-offset`.
 const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/?cb={cb}';
 
@@ -67,13 +73,75 @@ const lin = ( inner ) => ( { within: LDRAWER, js: `(r) => (${ inner })(r)` } );
 const dlink = ( src ) => `(p) => [...p.querySelectorAll('a,button')].find((e) => e.offsetParent !== null && new RegExp(${ JSON.stringify( src ) }, 'i').test(e.innerText.trim()))`;
 const llink = ( src ) => `(r) => [...r.querySelectorAll('a')].find((e) => e.offsetParent !== null && new RegExp(${ JSON.stringify( src ) }, 'i').test(e.innerText.trim()))`;
 
+// The header on each side. The draft's rendered markup has no class names (its `sgs-*` names exist only in
+// the source), so it is found by tag; the ticker is its own bar above it (the draft's previous sibling, live's
+// `.sgs-trust-bar`).
+const DHEADER = 'header';
+const LHEADER = 'header.sgs-site-header';
+const ROOT = { draft: DHEADER, live: LHEADER };
+
+// Scrolls the window past the draft's 40px threshold and waits for the .35s transitions to finish.
+const scrollPast = async ( h ) => {
+	await h.page.mouse.move( 700, 880 );
+	await h.page.evaluate( () => window.scrollTo( { top: 400, behavior: 'instant' } ) );
+	await h.wait( 900 );
+};
+
+// The links table (GAP-CHECKLIST 14): each visible label and where it must go on live. The draft is a
+// one-page prototype (its links are "#", its pages change by script), so the table is the live side's.
+// The walker reports a table label no state of the run shows, and a run covers only some states, so each group
+// names the states that show its labels and a run's table holds the groups its --states include.
+const flag = ( name ) => {
+	const i = process.argv.indexOf( name );
+	return -1 === i ? null : process.argv[ i + 1 ];
+};
+const RUN_STATES = flag( '--states' )?.split( ',' ) || null;
+const BRAND = ( slug ) => `/shop/?brands=${ slug }`;
+const FILTER = ( key, value ) => `/shop/?filter_${ key }=${ value }&query_type_${ key }=or`;
+const LINK_GROUPS = [
+	{ states: [ 'closed', 'scrolled', 'mega-shop', 'mega-brands', 'mega-lenses', 'mega-help', 'drawer-open' ], links: {
+		// The logo's link text is its aria-label.
+		'Go to Eye Care Birmingham (SGS test) homepage': '/',
+	} },
+	{ states: [ 'closed', 'scrolled', 'mega-shop', 'mega-brands', 'mega-lenses', 'mega-help' ], links: {
+		'About Eye Care': '/about/',
+		'0121 729 8233': 'tel:01217298233',
+	} },
+	{ states: [ 'mega-shop' ], links: {
+		Pilot: FILTER( 'shape', 'pilot' ), Wayfarer: FILTER( 'shape', 'wayfarer' ), Square: FILTER( 'shape', 'square' ),
+		Rectangle: FILTER( 'shape', 'rectangle' ), Round: FILTER( 'shape', 'round' ), Oval: FILTER( 'shape', 'oval' ),
+		'Cat-eye': FILTER( 'shape', 'cat-eye' ), Butterfly: FILTER( 'shape', 'butterfly' ), Browline: FILTER( 'shape', 'browline' ),
+		Geometric: FILTER( 'shape', 'geometric' ), Shield: FILTER( 'shape', 'shield' ), Oversized: FILTER( 'shape', 'oversized' ),
+		'Best sellers': '/shop/', 'Biggest savings': '/shop/?orderby=sgs_biggest_saving', Polarised: '/shop/?tags=polarised',
+		'Under £100': '/shop/?max_price=100', 'Women\u2019s': FILTER( 'gender', 'women' ), 'Men\u2019s': FILTER( 'gender', 'men' ),
+	} },
+	{ states: [ 'mega-brands' ], links: {
+		'Ray-Ban': BRAND( 'ray-ban' ), Gucci: BRAND( 'gucci' ), Oakley: BRAND( 'oakley' ), Prada: BRAND( 'prada' ),
+		Versace: BRAND( 'versace' ), 'Dolce & Gabbana': BRAND( 'dolce-gabbana' ), Balenciaga: BRAND( 'balenciaga' ),
+		'Michael Kors': BRAND( 'michael-kors' ), Polaroid: BRAND( 'polaroid' ), Police: BRAND( 'police' ), Carrera: BRAND( 'carrera' ),
+		'Ferrari Scuderia': BRAND( 'ferrari-scuderia' ), 'Emporio Armani': BRAND( 'emporio-armani' ), Nike: BRAND( 'nike' ),
+	} },
+	{ states: [ 'mega-help' ], links: {
+		'Delivery & returns': '/help/', 'Frequently asked questions': '/help/', 'How lenses work': '/prescription-lenses/',
+		'Reading your prescription': '/help/', 'Measuring your PD': '/help/', 'Contact & visit us': '/contact/',
+		'WhatsApp me': 'https://wa.me/4479605978',
+	} },
+];
+const LINKS = Object.assign( {}, ...LINK_GROUPS
+	.filter( ( g ) => ! RUN_STATES || g.states.some( ( st ) => RUN_STATES.includes( st ) ) ).map( ( g ) => g.links ) );
+
 export default {
 	name: 'header',
-	// The panels and the drawer are layers over the page: scrolling moves nothing in them.
+	// The panels and the drawer are layers over the page: scrolling moves nothing in them, and the explicit
+	// `scrolled` state covers the header's scrolled look, so the automatic scrolled state would only repeat it
+	// (and would scroll the page under every mega state after it).
 	autoScroll: false,
-	// The automatic whole-page comparison is left to home.mjs (the header is chrome the walker
-	// excludes by default); this config compares the named pop-up pairs only.
-	auto: false,
+	// The automatic whole-header comparison: every painted word, media and position inside the header on both
+	// sides. The root holds the header, so the default header exclusion no longer applies to it.
+	auto: { root: ROOT },
+	// Links are read inside the header only.
+	linkRoot: ROOT,
+	links: LINKS,
 	draft: { url: DRAFT },
 	live: { url: LIVE },
 	states: [
@@ -84,8 +152,29 @@ export default {
 		{ name: 'mega-help', draft: openMega( 'help' ), live: openMega( 'help' ) },
 		// Below desktop only (375 and 768 both show the Menu button when the nav collapses).
 		{ name: 'drawer-open', draft: async ( h ) => { await h.page.mouse.move( 700, 880 ); await openMenu( h ); }, live: async ( h ) => { await h.page.mouse.move( 700, 880 ); await openMenu( h ); } },
+		// Last, so no earlier state runs on a scrolled page. Desktop only in practice: the run is `--widths 1440`.
+		{ name: 'scrolled', draft: scrollPast, live: scrollPast },
 	],
 	pairs: [
+		// The trust ticker above the header: its painted words and icons in order, and its hover (the draft's
+		// track pauses while the pointer is on it).
+		{ name: 'trust-ticker', states: [ 'closed' ], draft: { js: '(r) => document.querySelector("header").previousElementSibling' }, live: '.sgs-trust-bar', inventory: true, hover: true, text: false, box: [ 'h' ],
+			props: [ 'background-color', 'color', 'font-size', 'padding-top', 'padding-bottom' ] },
+
+		// The header at rest and scrolled: the draft's middle row, logo and wordmark shrink past 40px of scroll
+		// (padding 20px to 10px, logo 48px to 40px, wordmark 18px to 15px).
+		{ name: 'header-bar', states: [ 'closed', 'scrolled' ], draft: { js: '(r) => document.querySelector("header > div")' }, live: `${ LHEADER } .sgs-site-header-row--middle`,
+			text: false, box: [ 'h' ], props: [ 'padding-top', 'padding-bottom', 'padding-left', 'padding-right', 'background-color' ] },
+		{ name: 'header-logo', states: [ 'closed', 'scrolled' ], draft: `${ DHEADER } a[aria-label="Eye Care Birmingham home"] img`, live: `${ LHEADER } .sgs-responsive-logo__link img`,
+			text: false, box: [ 'w', 'h' ] },
+		{ name: 'header-wordmark', states: [ 'closed', 'scrolled' ], draft: { text: '^eye care$', tag: 'span', within: DHEADER }, live: { text: '^eye care$', tag: 'h2', within: LHEADER },
+			props: [ 'font-family', 'font-size', 'font-weight', 'letter-spacing', 'line-height', 'color' ], box: [ 'w', 'h' ] },
+
+		// Right-hand controls at rest: hover end state and keyboard focus ring on each.
+		{ name: 'header-about', states: [ 'closed' ], hover: true, draft: { text: '^about eye care$', tag: 'a', within: DHEADER }, live: { text: '^about eye care$', tag: 'a', within: LHEADER } },
+		{ name: 'header-phone', states: [ 'closed' ], hover: true, draft: { text: '^0121 729 8233$', tag: 'a', within: DHEADER }, live: { text: '^0121 729 8233$', tag: 'a', within: LHEADER } },
+		{ name: 'header-bag', states: [ 'closed' ], hover: true, draft: `${ DHEADER } button[aria-label="Bag"]`, live: `${ LHEADER } .sgs-cart__trigger` },
+
 		// Sunglasses: two link columns (By style, Shop by) and a promo card with a picture.
 		triggerPair( 'shop-trigger', 'mega-shop', 'sunglasses' ),
 		panelPair( 'shop-panel', 'mega-shop', 'by style' ),
@@ -139,6 +228,16 @@ export default {
 		{ name: 'drawer-whatsapp', states: [ 'drawer-open' ], hover: true, text: false,
 			draft: din( '(p) => p.querySelector("a[aria-label=\\"WhatsApp\\"]")' ), live: `${ LDRAWER } a.sgs-button[aria-label*="WhatsApp"]` },
 	],
-	// No accept rules: nothing measured yet (no walk run for this config).
+	// No accept rules: nothing measured yet.
 	accept: [],
+	review: {
+		'closed@1440': 'Ticker bar: four trust lines with icons on both sides, live text 14px against 12.5px. Header bar, logo, EYE CARE wordmark, About, phone and Bag button: draft is one row; live header row collapses to 56px wide so the nav items, phone and logo stack in a column over each other. Hero below pushed down 190px on live.',
+		'scrolled@1440': 'Window scrolled 400px: draft header shrinks to a 58px bar (logo 40px, wordmark 15px) and the hero scrolls under it. Live header is still the collapsed stacked column (225px tall), so logo and wordmark pairs read 0 wide and the shrink cannot be judged until the row width is fixed.',
+		'mega-shop@1440': 'Sunglasses panel: draft opens By style and Shop by columns plus the Prescription sunglasses promo card under the header. Live never opens it because the collapsed nav puts the phone link over the Sunglasses trigger, so panel, columns and promo are missing in the live half.',
+		'mega-brands@1440': 'Brands panel: draft shows the Most asked for tile grid with frame counts and the All 40 brands list. Live panel does not open (collapsed header, trigger covered), so tiles and the brand list are absent on the live side.',
+		'mega-lenses@1440': 'Lenses panel: four lens cards (Single vision, Varifocal, Polarised, Light-reactive) with price and copy; live opens the same four cards with the same words. Panel sits lower on live because the header row is taller, and live card padding and ground differ from the draft.',
+		'mega-help@1440': 'Help panel: Buying here, Prescriptions and Talk to me columns with the same links and the green WhatsApp me link on both sides. Live panel is lower because the header row is taller; column words and order match.',
+		'drawer-open@375': 'Phone menu: draft shows EYE CARE, close cross, four large serif links, About, Delivery, Size guide, Contact, then phone box and the three social boxes. Live has the same links in the same order but the close button shows a focus ring (scripted click) and the phone and social block sits lower and is cut off at the bottom.',
+	},
+
 };
