@@ -390,7 +390,8 @@ Each section: what is built (checked), what is open, and a Review heading that t
     - The product gallery zoom is an opt-in of the shared hover-effects image zoom, not a new control.
     - The Brands mega tiles show a 32px logo *and* the name and frame count in the draft
       (`build/qa/parity/mapping-mega-brands-lenses.md`). Live hides the name and count, so the fix keeps the logos.
-- **Bean's eye check (step 6):** pending. The 4-width contact sheet is sent; the notes go here.
+- **Bean's eye check (step 6):** the 4-width sheets (59 pages) were sent on 2026-10-02. Bean is writing his own list to
+  compare with the register; differences get added to the register.
 
 | Surface | Report | Open rows | Unique | Accepted (decided / blind / same paint) | Violations | Foundational | Jitter |
 |---|---|---|---|---|---|---|---|
@@ -422,117 +423,31 @@ adds a setting is followed by rebuilding every tree that uses it before measurin
 
 **Times.** Low estimates.
 
-### 1. Framework: foundational gaps and repairs (`plugins/sgs-blocks`, one deploy at the end)
+### 1-2. The items: `plans/2026-10-02-eye-care-fix-register.md`
 
-| # | What | Where | Type | Time |
-|---|---|---|---|---|
-| F1 | Nested drawer stagger: "Stagger items inside groups", CSS only (design in "Phone drawer" above) | `nav-drawer/block.json`, `includes/helpers-nav-drawer-motion.php`, `nav-drawer-menu/style.css` | new control | 30 min |
-| F2 | Accordion header honours its `fontSize`, `padding`, `gap` and an icon size (today `style.css::.sgs-accordion-item__header` hardcodes them) | `accordion/render.php`, `accordion/style.css` | repair | 20 min |
-| F3 | Brand-strip marquee starts with lazy logos (`view.js::init` waits on every image's `load`, and off-screen lazy images never fire it) | `brand-strip/view.js` | repair | 15 min |
-| F4 | Hero Ken Burns on the standard variant (paints only on a `::before` the standard variant never shows) | `hero/style.css`, `hero/render.php` | repair | 20 min |
-| F5 | Hero parallax: a "move the layer" mode beside today's fixed background | `hero` | new control | 30 min |
-| F6 | Mega panel content inset twice (the tree's 52px `panelPadding` paints about 104px) | `mega-panel` | repair (prove the writer first) | 20 min |
-| F7 | Hover timing: a hover transition duration on `sgs/container`, and "no fade" on `business-info` and `cart` hovers; the cart pill's hover text colour not painting | `container`, `business-info`, `cart` | new control, repair | 30 min |
-| F8 | WhatsApp CTA: icon colour; hover lift, scale and shadow each switchable | `whatsapp-cta` | new control | 20 min |
-| F9 | Links in text: underline offset, thickness and a border-bottom style; link weight | `includes/helpers-typography.php` and the link CSS | new control | 20 min |
-| F10 | Form fields: height, padding, ground and border, set once on `sgs/form` for its fields | `form`, `form-field-*` | new control | 40 min |
-| F11 | Business info: address on stacked lines, address as a Maps link, the map's address strip and Directions link | `business-info` | new control | 40 min |
-| F12 | Add-to-bag toast (a fixed pill with "Added to bag / View bag" that fades out), on the cart | `cart` | new control | 45 min |
-| F13 | Cart: count-pop keyframes and duration; free-delivery text weight and bar fill duration; the line-details format | `cart` | new control | 30 min |
-| F14 | Social icons: per-network hover ring and scale; item order when the source is Site Info | `social-icons` | new control | 30 min |
-| F15 | Buybox: opt in the shared image zoom for the gallery; swatch hover lift; selected border width; price and stock weight; struck-price colour; a single-option picker that a keyboard can reach (accessibility) | `buybox` | adoption, new controls, repair | 45 min |
-| F16 | Product card swatch dots keyboard-focusable (accessibility); Polarised tag beside a two-line name at 375 | `product-card` | repair | 20 min |
-| F17 | Small settings: `sgs/tabs` panel padding; `sgs/modal` width per device; `google-reviews` header gap; `card-grid` title-to-subtitle gap; `choice-flow` focus-ring colour, help-toggle focus colours and skip-link underline | the five blocks | new control | 45 min |
-| F18 | Shop filter drawer header at 375 (a pinned "Filter" heading with Close) | `theme/sgs-theme/assets/js/sgs-shop-filters.js` | new control | 30 min |
-| F19 | WooCommerce checkout skin as settings: section eyebrow headings, field look, summary card, button, section entrances. Also an order-confirmation layout with the tick, thank-you copy and "Back to the shop" link. Every shop client needs both. | theme WooCommerce parts plus snapshot tokens, design first | new control | 90 min |
+The register lists every item to fix: 162 in all, by surface in build order, each with its fix, type and status.
+It replaced this section's first lists after a verification pass (2026-10-02, six agents, each checked against the
+code, the framework DB, the trees and the screenshots).
+- **The verification pass changed a lot.** Of 160 causes it checked:
+  - 79 were confirmed;
+  - 34 had the wrong fix and 20 the wrong cause, now corrected in the register;
+  - 20 were not real, and are listed at the register's end;
+  - 7 still need a live check.
+- **Examples of corrections:**
+  - The mega menus' extra 52px is the inner containers' default content width (a tree setting), not double padding.
+  - The WhatsApp button's hover lift already has controls (its Hover panel).
+  - The footer's link colours and underlines come from the theme's global link style (one per-client snapshot
+    change).
+  - Several "set this attribute" fixes hit hardcoded rules (accordion header, tab panel inset, swatch tile padding,
+    price weight), so they are framework repairs.
 
-F19 needs a short design pass before building: the checkout is WooCommerce's block checkout, which has no SGS
-controls, and the skin must stay universal (tokens per client, never Eye Care CSS).
+**Build order:**
+1. Every framework repair and new control in the register, then one deploy.
+2. The tree settings, surface by surface in the register's order, re-walking each surface after its trees are applied.
+3. Content.
 
-### 2. Tree settings, by surface (existing controls; each file in `sites/eye-care-ward-end/build/`)
-
-- **Header** (`header.tree.json`, 15 min):
-  - nav and About hover colour `sgs/nav-bar-menu.itemColourHover` #6F6152;
-  - trigger fade `itemMotionDuration` 250;
-  - panel fade `submenuAnimationDuration` 0;
-  - trust bar `labelFontSize` 12.5px, weight 400.
-- **Phone drawer** (`mobile-menu.tree.json`, 10 min):
-  - `nav-drawer.chromeRowPadding` 24px each side;
-  - `entryAnimation` fade;
-  - "More" links `icon-list.itemLineHeight` 1.5;
-  - then F1's toggle.
-- **Mega menus** (`mega-*.tree.json`, 20 min):
-  - link hover colour `sgs/button.colourTextHover` #6F6152;
-  - headings and lens-card labels `lineHeight` 1.5;
-  - Brands list buttons `minHeight` 0, weight 400, `lineHeight` 1.5;
-  - Brands tiles keep the 32px logos and restore the name and frame count (`card-grid` `items[].title` and
-    `subtitle`).
-- **Bag** (`header.tree.json` cart, 10 min):
-  - `panelBg` resolving to #FAF8F5;
-  - the thumbnail mat colour `itemThumbBg`;
-  - the Close icon stroke;
-  - Close reachable by Tab (check the drawer's initial focus).
-- **Footer** (`footer.tree.json`, improve the existing footer, 40 min): replace every `core/list` with `sgs/icon-list`:
-  - icon-list: no marker, 14px, `itemLineHeight` 1.5, about 10px gap, hover #6F6152, no underline;
-  - `site-footer` padding 52px at the sides; the columns row about 104px on top (58px on mobile);
-  - column headings in Outfit 400, `lineHeight` 1.5; wordmark `lineHeight` 1.5; tagline `maxWidth` 294px with a
-    14px gap above;
-  - "About Eye Care" with no underline (the handover had this backwards: the draft has none);
-  - hours `fontWeight` 400, `hoursLayout` condensed, `hoursCondensedInline` true;
-  - social boxes on a white ground with the grey border, brand-coloured glyphs, gap 10px; order via F14;
-  - Privacy and Terms in text-label grey, no underline, right-aligned; the bottom row padded 24px.
-- **Home** (`home.tree.json`, 15 min):
-  - hero Shop button `liftHover` 3;
-  - hero buttons `sgsAnimation` fade-up (900ms, 420ms delay);
-  - `brand-strip.logoOpacity` 0.75;
-  - shape tiles `transitionDuration` 1000 with the draft's curve;
-  - WhatsApp `labelColourHover` #0B2B17.
-- **Shop** (`archive-product.tree.json`, 10 min):
-  - Size filter `showCounts` false;
-  - an `sgs/text` "Measured across one lens" after it;
-  - Clear all `textDecoration` none.
-- **Product** (`single-product.tree.json`, 25 min):
-  - `buybox.pickerSwatchStyle` outlined and `pickerVariationSwatch` true;
-  - tab text size and container padding;
-  - accordion `padding` 18px 0, `fontSize` 16, `headerBackgroundOpen` transparent, `transitionDuration` 300;
-  - `sgsAnimation` fade-up on the tabs, reviews and similar sections;
-  - WhatsApp card title and subline greens, and its `url`;
-  - Add my prescription label padding 22px;
-  - size-guide Close `closeStyle` square and transparent;
-  - remove the Google reviews card from the none-yet panel (it contradicts "No reviews yet");
-  - check the Details tab's Availability binding (renders empty).
-- **Lens pop-up** (`gen_lens_configurator.py`, 5 min): Add to bag `borderRadius` 0. The rest is F17.
-- **Lenses** (`lenses.tree.json`, 15 min):
-  - H1 `lineHeight` 1.02;
-  - card text `lineHeight` about 1.6;
-  - both h2 `margin.bottom` 0;
-  - `process-steps` `numberFontSize` 15.5 and `numberFontWeight` 500, with gaps for a 38px number column;
-  - Choose a frame weight 400.
-- **About** (`about.tree.json`, 10 min):
-  - split `gridTemplateColumns` "1.1fr 1fr";
-  - eyebrow, name and credentials margins 10, 12 and 28px;
-  - card headings `lineHeight` 1.5;
-  - Shop the range `shadowLiftOnHover` false;
-  - WhatsApp hover label #0B2B17.
-- **Help** (`help.tree.json`, `gen_size_guide.py`, 15 min):
-  - accordion grounds transparent; answers `maxWidth` 720px;
-  - Call line text-muted, `lineHeight` 1.5, `linkMinHeight` 0; Call and Contact me `shadowLiftOnHover` false;
-  - mobile title `lineHeight` 1.02;
-  - Questions row stacks on mobile;
-  - size guide: lead text-soft, numbers 32px on mobile, the WhatsApp sentence linked.
-- **Contact** (`contact.tree.json`, 15 min):
-  - h1 48px (34px mobile), `lineHeight` 1.02;
-  - margins 10 and 28px;
-  - split "1.1fr 1fr"; details grid 2 / 3 / 1 columns; cell gap 14px;
-  - WhatsApp CTA 56px tall, 26px padding, 15px/500 label in #0B2B17;
-  - map card 1px border; form heading `lineHeight` 1.5; submit button auto width on mobile.
-- **Checkout** (the checkout part, 15 min):
-  - title 48px (34px mobile);
-  - Place order label "Pay now";
-  - remove the coupon form and order note blocks;
-  - hide the apartment and optional phone fields (WooCommerce block attributes);
-  - shipping-method titles and descriptions to the draft's copy (WooCommerce shipping settings).
-- **Confirmation:** after F19.
+The checkout skin and the order-confirmation layout need a short design pass first: the skin must stay universal
+(per-client tokens), never Eye Care-only CSS.
 
 ### 3. Content and data
 
