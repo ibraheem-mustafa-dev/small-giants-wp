@@ -27,7 +27,7 @@ export function lintConfig( cfg ) {
 		if ( ! a.reason || a.reason.trim().length < 12 ) {
 			problems.push( `accept #${ i } has no real reason` );
 		}
-		if ( a.pair && ! names.has( a.pair ) && ! [ '(state)', '(auto)' ].includes( a.pair ) ) {
+		if ( a.pair && ! names.has( a.pair ) && ! [ '(state)', '(auto)', '(entrance)', '(links)' ].includes( a.pair ) ) {
 			problems.push( `accept #${ i } names unknown pair "${ a.pair }"` );
 		}
 	}
@@ -35,6 +35,15 @@ export function lintConfig( cfg ) {
 	for ( const [ i, n ] of ( cfg.auto?.normalise || [] ).entries() ) {
 		if ( ! ( n.from instanceof RegExp ) || 'string' !== typeof n.to || ! n.reason || n.reason.trim().length < 12 ) {
 			problems.push( `auto.normalise #${ i } needs a from regex, a to string and a real reason` );
+		}
+	}
+	// The links table maps a link's visible text to where it must go: a path, a URL, tel: or mailto:.
+	if ( cfg.links && false !== cfg.links ) {
+		for ( const [ label, dest ] of Object.entries( cfg.links ) ) {
+			const bad = ( Array.isArray( dest ) ? dest : [ dest ] ).filter( ( v ) => 'string' !== typeof v || ! /^(\/|https?:|tel:|mailto:)/.test( v ) );
+			if ( ! label.trim() || bad.length ) {
+				problems.push( `links "${ label }" needs a path, URL, tel: or mailto: destination` );
+			}
 		}
 	}
 	// A review note says what was looked at in that shot, not that it "looks fine".

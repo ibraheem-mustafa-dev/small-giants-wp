@@ -1,4 +1,5 @@
 // Compares one pair's draft and live snapshots and returns the differences.
+import { compareFocus } from './focus.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
 
@@ -57,6 +58,14 @@ export function sameValue( prop, a, b, pxTol ) {
 	return normColour( a ) === normColour( b );
 }
 
+// An underline is "<line> <colour>": the lines must be equal and the colours within the usual 2/255.
+const splitDecoration = ( v ) => v.match( /^(.*?)\s+((?:rgba?|color)\(.*)$/ )?.slice( 1 ) || [ v, '' ];
+export const sameDecoration = ( a = 'none', b = 'none' ) => {
+	const [ la, ca ] = splitDecoration( a );
+	const [ lb, cb ] = splitDecoration( b );
+	return la === lb && ( 'none' === la || sameValue( 'color', ca, cb, 0 ) );
+};
+
 const normText = ( t ) => ( t || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase();
 
 // The same words in another DOM order are the same text; where they sit on screen is
@@ -71,6 +80,19 @@ function borderColourIrrelevant( p, d, l ) {
 	}
 	const w = `border-${ m[ 1 ] }-width`;
 	return parseFloat( d[ w ] ?? '1' ) === 0 && parseFloat( l[ w ] ?? '1' ) === 0;
+}
+
+// Parts that paint nothing on their own: an underline's colour, thickness and offset while either side
+// has no underline (the line row says it), an outline's width, colour and offset while either side's
+// style is none, and an icon colour where one side has no svg (presence is the inventory's job).
+function partIrrelevant( p, d, l ) {
+	if ( /^(text-decoration-(color|thickness)|text-underline-offset)$/.test( p ) ) {
+		return 'none' === d[ 'text-decoration-line' ] || 'none' === l[ 'text-decoration-line' ];
+	}
+	if ( /^outline-(width|color|offset)$/.test( p ) ) {
+		return 'none' === d[ 'outline-style' ] || 'none' === l[ 'outline-style' ];
+	}
+	return /^icon-/.test( p ) && ( undefined === d[ p ] || undefined === l[ p ] );
 }
 
 const SAME = { 'text-align': [ [ 'start', 'left' ] ] };
@@ -95,7 +117,7 @@ export function comparePair( pair, d, l, tol ) {
 		}
 	}
 	for ( const p of new Set( [ ...Object.keys( d.styles ), ...Object.keys( l.styles ) ] ) ) {
-		if ( borderColourIrrelevant( p, d.styles, l.styles ) || equivalent( p, d.styles[ p ], l.styles[ p ] ) ) {
+		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || equivalent( p, d.styles[ p ], l.styles[ p ] ) ) {
 			continue;
 		}
 		if ( ! sameValue( p, d.styles[ p ], l.styles[ p ], tol.px ) ) {
@@ -127,6 +149,7 @@ export function comparePair( pair, d, l, tol ) {
 			}
 		}
 	}
+	diffs.push( ...compareFocus( d.focus, l.focus, sameValue, tol.px ) );
 	return diffs;
 }
 

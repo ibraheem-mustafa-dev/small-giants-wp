@@ -4,7 +4,7 @@
 // are paired only for that last check: a draft and a live page build the same control from different
 // elements (a swatch button against a label and input), so their presence, size and place are left to
 // the words around them, the named pairs and the screenshot review.
-import { sameValue } from './compare.mjs';
+import { sameValue, sameDecoration } from './compare.mjs';
 import { lcsPairs, repairRepeats } from './auto-align.mjs';
 
 // Consecutive indices grouped into runs: [[3,4,5],[9]].
@@ -80,10 +80,15 @@ function matchWords( dw, lw ) {
 	return repairRepeats( dw, lw, [ ...first, ...kept, ...crossed ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] ) );
 }
 
-const STYLE_KEYS = [ 'fs', 'fw', 'ff', 'fst', 'tt', 'ls', 'c' ];
-const STYLE_NAMES = { fs: 'font-size', fw: 'font-weight', ff: 'font-family', fst: 'font-style', tt: 'text-transform', ls: 'letter-spacing', c: 'color' };
+const STYLE_KEYS = [ 'fs', 'fw', 'ff', 'fst', 'tt', 'ls', 'c', 'td', 'tsh' ];
+const STYLE_NAMES = { fs: 'font-size', fw: 'font-weight', ff: 'font-family', fst: 'font-style', tt: 'text-transform', ls: 'letter-spacing', c: 'color', td: 'text-decoration', tsh: 'text-shadow' };
 const px0 = ( v ) => ( 'normal' === v ? '0px' : v );
-const sameStyle = ( k, a, b, tol ) => ( 'ls' === k ? sameValue( 'letter-spacing', px0( a ), px0( b ), tol.px ) : sameValue( STYLE_NAMES[ k ], a, b, tol.px ) );
+const sameStyle = ( k, a, b, tol ) => {
+	if ( 'td' === k ) {
+		return sameDecoration( a, b );
+	}
+	return 'ls' === k ? sameValue( 'letter-spacing', px0( a ), px0( b ), tol.px ) : sameValue( STYLE_NAMES[ k ], a, b, tol.px );
+};
 
 // A config's `auto.normalise` ([{ side: 'draft'|'live'|'both', from: /re/, to, reason }]) rewrites words
 // before matching: a decided difference (pennies on every price) stops being reported word by word.

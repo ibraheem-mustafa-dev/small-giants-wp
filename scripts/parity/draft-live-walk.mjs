@@ -1,8 +1,10 @@
 // Draft-versus-live parity walker. Drives the design draft and the live site through
 // the same states (tabs, steps, open panels, filters, modals) at each width and compares
 // named element pairs: rendered text, box size, computed styles, motion (declared and
-// running right after each action), hover end states, scroll-in reveals, structure (which
-// pairs contain each pair and share its row) and how each state was reached (click or URL).
+// running right after each action), hover end states, keyboard focus rings, scroll-in reveals,
+// structure (which pairs contain each pair and share its row) and how each state was reached (click
+// or URL); page-wide, every painted word, links (dead, broken, or not where the config's table says)
+// and load entrances judged by paint.
 // Writes report.json, report.md, draft|live side-by-side screenshots and contact.md (every
 // shot with its review note). Exits 1 on a config lint problem, a difference that is not
 // accepted, or a shot with no review note. The gap classes: scripts/parity/GAP-CHECKLIST.md.
@@ -16,15 +18,19 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { DEFAULT_PROPS, HOVER_PROPS, resolveFinder, collectPair, collectRunning, centreOf, hoverStyles } from './lib/collect.mjs';
-import { comparePair, compareScroll, isAccepted } from './lib/compare.mjs';
+import { DEFAULT_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles } from './lib/collect.mjs';
+import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses } from './lib/state-passes.mjs';
+import { collectLinks, probeLinks, unseenLabels } from './lib/links.mjs';
+import { sampleEntrances } from './lib/entrances.mjs';
+import { isAccepted } from './lib/compare.mjs';
+import { compareState } from './lib/compare-state.mjs';
 import { writeReport, sideBySide } from './lib/report.mjs';
 import { lintConfig } from './lib/lint.mjs';
-import { collectStructure, compareStructure, driveDiffs } from './lib/structure.mjs';
+import { collectStructure } from './lib/structure.mjs';
 import { writeContactSheet } from './lib/review.mjs';
-import { makeHelpers, anchorOffset } from './lib/helpers.mjs';
-import { sampleTimeline, collectChrome, hoverChrome, compareChrome } from './lib/chrome-walk.mjs';
-import { withAutoScroll, collectAutoOn, markClipped, autoPair } from './lib/auto-walk.mjs';
+import { makeHelpers } from './lib/helpers.mjs';
+import { sampleTimeline, collectChrome } from './lib/chrome-walk.mjs';
+import { withAutoScroll, collectAutoOn, markClipped } from './lib/auto-walk.mjs';
 import closeOnExit from '../lib/close-browser-on-exit.js';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -46,7 +52,6 @@ if ( problems.length || argv.includes( '--lint' ) ) {
 	console.log( problems.length ? `${ cfg.name }: config lint failed:\n- ${ problems.join( '\n- ' ) }` : `${ cfg.name }: config lint passed.` );
 	process.exit( problems.length ? 1 : 0 );
 }
-const SCROLL_PROPS = [ 'opacity', 'transform', 'translate', 'scale', 'filter' ];
 const widths = ( flag( '--widths' ) || ( cfg.widths || [ 1440, 768, 375 ] ).join( ',' ) ).split( ',' ).map( Number );
 const onlyStates = flag( '--states' )?.split( ',' );
 const accept = argv.includes( '--no-accept' ) ? [] : cfg.accept || [];
@@ -105,6 +110,9 @@ async function walkSide( browser, side, width ) {
 	} : null;
 	const h = makeHelpers( page, side, { cb, RESOLVE, onAction } );
 	await h.goto( cfg[ side ].url );
+	// Load entrances (GAP-CHECKLIST.md section 15): the page reloaded and sampled as it paints in.
+	const firstState = cfg.states[ 0 ]?.name;
+	const entrances = header && false !== cfg.entrances && ( ! onlyStates || onlyStates.includes( firstState ) ) ? await sampleEntrances( page, side, cfg ) : null;
 	if ( cfg[ side ].open ) {
 		await cfg[ side ].open( h );
 	}
@@ -147,6 +155,20 @@ async function walkSide( browser, side, width ) {
 			snap[ p.name ].scroll = { pre: await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE ] ) };
 		}
 		const auto = autoOn ? await collectAutoOn( page, side, cfg ) : null;
+		// Links (section 14): the live side's same-origin targets are fetched once per run.
+		const links = false === cfg.links ? null : await collectLinks( page, side, cfg );
+		if ( links && 'live' === side ) {
+			await probeLinks( ctx, page, links );
+		}
+		// Scroll-ins first, then (full-page states) the reveal sweep, so the shot shows every revealed section.
+		const y = await page.evaluate( () => window.scrollY );
+		await scrollInPass( page, scrollIns, side, snap, RESOLVE );
+		if ( state.fullPage && false !== cfg.revealSweep ) {
+			await revealSweep( page, y );
+		} else if ( scrollIns.length ) {
+			await page.evaluate( ( t ) => window.scrollTo( { top: t, behavior: 'instant' } ), y );
+			await page.waitForTimeout( 600 );
+		}
 		const shot = path.join( outDir, `${ side }-${ width }-${ state.name }.png` );
 		await page.screenshot( { path: shot, fullPage: !! state.fullPage } );
 		if ( auto ) {
@@ -156,42 +178,11 @@ async function walkSide( browser, side, width ) {
 				fs.writeFileSync( path.join( outDir, `auto-${ side }-${ width }-${ state.name }.json` ), JSON.stringify( auto ) );
 			}
 		}
-		for ( const p of scrollIns ) {
-			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
-			await page.evaluate( centreOf, [ p[ side ], RESOLVE ] );
-			await page.waitForTimeout( 60 );
-			snap[ p.name ].scroll.running = await page.evaluate( collectRunning, [ p[ side ], RESOLVE ] );
-			await page.waitForTimeout( p.scrollWait ?? 1500 );
-			snap[ p.name ].scroll.post = await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE ] );
+		await hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full: header, phone: !! phone.isMobile } );
+		if ( header ) {
+			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 		}
-		// A phone has no hover (Bean 2026-09-28): hover end states are compared at desktop and tablet widths only.
-		for ( const p of pairs.filter( ( q ) => q.hover && ! phone.isMobile ) ) {
-			if ( snap[ p.name ].missing ) {
-				continue;
-			}
-			if ( header ) {
-				// Re-runs the state's action when an earlier hover closed what this pair lives in.
-				const reach = state[ side ] ? async () => {
-					h.log = [];
-					await state[ side ]( h );
-				} : null;
-				snap[ p.name ].hoverChrome = await hoverChrome( page, p, side, RESOLVE, centreOf, reach, p.hoverWait ?? 800, snap[ p.name ].box );
-				if ( snap[ p.name ].hoverChrome.unreached ) {
-					continue;
-				}
-			} else {
-				const at = await page.evaluate( centreOf, [ p[ side ], RESOLVE ] );
-				if ( ! at ) {
-					continue;
-				}
-				await page.mouse.move( at.x, at.y );
-				await page.waitForTimeout( p.hoverWait ?? 800 );
-			}
-			snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE ] );
-			await page.mouse.move( 1, 1 );
-			await page.waitForTimeout( 400 );
-		}
-		states[ state.name ] = { snap, shot, log, structure, auto };
+		states[ state.name ] = { snap, shot, log, structure, auto, links, entrances: state.name === firstState ? entrances : null };
 		if ( state.autoScrolled ) {
 			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
 		}
@@ -213,6 +204,10 @@ const browser = await chromium.launch( {
 	...( process.env.PARITY_CHROMIUM ? { executablePath: process.env.PARITY_CHROMIUM } : {} ),
 } );
 const results = { config: cfg.name, when: new Date().toISOString(), injectCss, injectJs, runs: [], errors: {} };
+// Each link problem is reported once per run, in the first state and width that shows it.
+const linksSeen = new Set();
+const allLiveLinks = [];
+const origins = { draft: new URL( cb( cfg.draft.url ) ).origin, live: new URL( cb( cfg.live.url ) ).origin };
 for ( const width of widths ) {
 	const draft = await walkSide( browser, 'draft', width );
 	const live = await walkSide( browser, 'live', width );
@@ -223,39 +218,17 @@ for ( const width of widths ) {
 		const shot = path.join( outDir, `pair-${ width }-${ state.name }.png` );
 		await sideBySide( browser, d.shot, l.shot, shot, width );
 		const run = { state: state.name, width, shot: path.basename( shot ), pairs: {} };
-		// Box differences are judged first: a notPainted accept holds only while every
-		// box difference on the pair is itself accepted (a 44px touch target, say).
-		const judge = ( name, diffs ) => {
-			const ctx = { pair: name, state: state.name, width, boxMatches: false };
-			const boxes = diffs.filter( ( x ) => 'box' === x.kind );
-			for ( const diff of boxes ) {
-				diff.accepted = isAccepted( accept, ctx, diff )?.reason || null;
-			}
-			ctx.boxMatches = boxes.every( ( x ) => x.accepted );
-			for ( const diff of diffs.filter( ( x ) => 'box' !== x.kind ) ) {
-				diff.accepted = isAccepted( accept, ctx, diff )?.reason || null;
-			}
-			return diffs;
-		};
-		run.pairs[ '(state)' ] = { draft: d.log, live: l.log, diffs: judge( '(state)', driveDiffs( d.log, l.log ) ) };
-		for ( const p of pairsFor( state ) ) {
-			const diffs = [
-				...comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) } ),
-				...compareStructure( p.name, d.structure, l.structure ),
-				...compareScroll( d.snap[ p.name ].scroll, l.snap[ p.name ].scroll ),
-				...anchorOffset( p, d.snap, l.snap, { ...tol, ...( p.tolerance || {} ) } ),
-			];
-			const all = header ? compareChrome( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) }, diffs ) : diffs;
-			run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, all ) };
-		}
-		if ( autoOn ) {
-			const a = autoPair( d.auto, l.auto, cfg );
-			run.pairs[ '(auto)' ] = { words: a.words, diffs: judge( '(auto)', a.diffs ) };
-		}
+		compareState( run, d, l, { state, width, cfg, accept, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks } );
 		results.runs.push( run );
 	}
 }
 await browser.close();
+const unseen = false === cfg.links || ! results.runs.length ? [] : unseenLabels( cfg, allLiveLinks ).filter( ( r ) => ! linksSeen.has( r.key ) );
+if ( unseen.length ) {
+	const last = results.runs.at( -1 );
+	last.pairs[ '(links)' ] ??= { diffs: [] };
+	last.pairs[ '(links)' ].diffs.push( ...unseen.map( ( r ) => ( { ...r, accepted: isAccepted( accept, { pair: '(links)', state: last.state, width: last.width, boxMatches: true }, r )?.reason || null } ) ) );
+}
 const { open, accepted } = writeReport( outDir, cfg, results );
 const unreviewed = argv.includes( '--no-review' ) ? 0 : writeContactSheet( outDir, cfg, results.runs );
 const liveErrors = Object.values( results.errors ).flatMap( ( e ) => e.live );

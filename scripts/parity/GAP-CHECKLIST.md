@@ -138,6 +138,10 @@ Fixed in the walker; keep them in mind when a number looks wrong:
 
 ## 9. Hover end states and motion
 
+- **Read at rest on every pair** (besides type, colour, box and spacing): the underline a visitor sees (from the
+  nearest decorated element at or above the painted text), text shadow, transform/rotate/scale/translate, outline,
+  backdrop filter, all four border colours, and an svg icon's `fill` and `stroke` (`icon-fill`, `icon-stroke`). The
+  automatic check also compares each word's underline and shadow.
 - **Detected by:** `hover: true` pairs (the hover end state after `hoverWait`), declared transitions and
   keyframes (by content, so a namespaced name matches), and the animations running ~60ms after each action.
 - **Accept safely:** an easing or property-name difference with matching durations needs Bean's sign-off
@@ -247,6 +251,13 @@ price"` (whole → right) at 768 and 375; d `text-extra "… £139.00 £171.00"`
 order now and i'll whatsapp you…"`, `"add to bag £418"` and `text-extra "continue"` at every width; f `moved "back →
 add to bag"` (160,0 → 135,64).
 
+**Re-measured 2026-10-02, after sections 13-15:** 5 of 5. Lens noise 0. Shop noise 2, both `moved` rows in
+`auto-scrolled@1440` that are open in the control run too and whose values drift between runs (the shop's scroll
+reveal, retimed by the 2026-10-01 motion batch). The walker before sections 13-15 reads the same values on an identical
+invocation, so the drift is the page's, not the new checks'. The first run of the new checks opened 2 entrance rows
+on a rotating ticker (now left out as a loop) and 8 lens rows, gone on the next run once the focus pass restored every
+scroller it moved (one run: the restore is the suspected cause, not a proven one).
+
 **What no draft comparison can catch:** gap a (the Polarised tag's uneven place) is not scored (`draftHasIt`).
 Measured, the pre-fix tag sat exactly as the draft's at every width (box 77x24, 8px each side, 17px from the card
 edge, past the edge on a one-word name at 375): the draft has the flaw, and Bean's fix went beyond it. A flaw in the
@@ -257,6 +268,50 @@ draft's own faults (tags, overflow, uneven placement), not only for differences.
 nearly all from pairing controls built from different elements and from text in closed groups; after the fixes
 the rows left are real differences. Every one is fixed, or accepted with Bean's dated decision (config `accept`
 entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such as pennies).
+
+## 13. Keyboard focus rings
+
+- **Gap:** a control can match at rest and on hover and still show no ring (or a different one) to a keyboard user.
+- **Detected by:** the focus pass, on every `hover: true` pair (or `focus: true`; `focus: false` opts out) at
+  non-phone widths. Focus is parked on the tabbable control before the pair's own, then a real Tab moves it on (a
+  scripted `el.focus()` after mouse clicks never matches `:focus-visible`). The control's `outline-*`, `box-shadow`,
+  ground, colour and underline are compared (`focus` rows), only where focus changes them on at least one side (a
+  difference already there at rest is the rest rows'). `focus reached` says the Tab landed on one side only. Every
+  scroller the Tab moved (the window, a pop-up's scroll area) is put back instantly, so the next state starts as the
+  last one left the page.
+- **Falsified by:** a `focus` row, or `focusable none` on one side.
+
+## 14. Links
+
+- **Gap:** a link can match in look and words and go nowhere, or to the wrong page. A design draft is often a
+  one-page prototype whose links are `#` and whose pages change by script, so its internal links cannot be
+  compared side by side.
+- **Detected by:** the `(links)` pseudo-pair, each problem reported once per run:
+  - `dead "<text>"`: a visible live link whose href is `#`, empty or `javascript:`.
+  - `broken "<text>"`: a same-origin target that answers 400 or more (a 403, 429 or 503 is the host's bot check and
+    is left unjudged).
+  - `missing` / `href "<text>"`: the draft's real hrefs (tel:, mailto:, an outside site) against the live link of the
+    same text.
+  - `table "<label>"`: the config's `links: { '<visible text>': '<path, URL, tel: or mailto:>' | [ ... ] }` states
+    where each label must go; written once per site from the draft's click handlers. A listed label that no state
+    shows is a row too.
+- **Scope:** the page minus the header and footer (as the automatic check), or `linkRoot: { draft, live }` for a
+  header or footer config. `links: false` turns it off.
+
+## 15. Load entrances, judged by paint
+
+- **Gap:** an entrance on a block no pair names, or one a draft runs by script and the copy by CSS, is not compared
+  by the declared-motion rows.
+- **Detected by:** the `(entrance)` pseudo-pair in the opening state: the page is reloaded and every block in the
+  first screen (an element with its own words, or a picture) is sampled every 40ms for `entranceWindow` ms (1600)
+  from DOMContentLoaded. A block's entrance is when its pose (effective opacity and the transforms on it and its
+  ancestors) first and last changed, timed from that side's own first entrance (a draft that renders by script
+  starts everything later than a server-rendered copy). Animated on one side only, or a start or end more than
+  `entranceTolerance` ms (150) apart, is a row. A block still changing in the window's last 120ms on either side is a
+  loop (a ticker, a marquee, Ken Burns), left out: whether its next turn falls in the window is chance. Loops are
+  compared by their declared motion. `entrances: false` turns it off.
+- **Reveal sweep:** before a `fullPage: true` shot the page is scrolled top to bottom a screen at a time, so every
+  scroll reveal has fired on both sides (`revealSweep: false` turns it off). Reveal timing stays with `scrollIn` pairs.
 
 ## 10. Text, data and draft bugs
 

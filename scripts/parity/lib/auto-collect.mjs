@@ -15,7 +15,10 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 			return [];
 		}
 	} ) ];
-	const excluded = ( el ) => ex.some( ( x ) => x.contains( el ) );
+	// An exclusion that holds the chosen root (a footer config rooted at the footer) never applies: it would
+	// blank the whole check.
+	const live = ex.filter( ( x ) => ! x.contains( root ) );
+	const excluded = ( el ) => live.some( ( x ) => x.contains( el ) );
 	const ctx = document.createElement( 'canvas' ).getContext( '2d' );
 	const srgb = ( v ) => {
 		ctx.fillStyle = '#000';
@@ -132,9 +135,22 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 			const cs = getComputedStyle( el );
 			const r = el.getBoundingClientRect();
 			const skip = 'hidden' === cs.visibility || parseFloat( cs.fontSize ) < 2 || srOnly( el ) || hidden( el, r );
+			// The underline painted on the word: the nearest decorated element at or above it, stopped by an
+			// inline-block, a float or an out-of-flow box (text-decoration paints through, it is not inherited).
+			let td = 'none';
+			for ( let a = el; a && a !== document.documentElement; a = a.parentElement ) {
+				const s = a === el ? cs : getComputedStyle( a );
+				if ( 'none' !== s.textDecorationLine ) {
+					td = `${ s.textDecorationLine } ${ srgb( s.textDecorationColor ) }`;
+					break;
+				}
+				if ( /^inline-/.test( s.display ) || 'none' !== s.cssFloat || /absolute|fixed/.test( s.position ) ) {
+					break;
+				}
+			}
 			styleCache.set( el, skip ? null : {
 				fs: cs.fontSize, fw: cs.fontWeight, ff: cs.fontFamily.split( ',' )[ 0 ].replace( /["']/g, '' ).trim().toLowerCase(),
-				fst: cs.fontStyle, tt: cs.textTransform, ls: cs.letterSpacing, c: srgb( cs.color ), fixed: fixedOf( el ), m: inModal( el ),
+				fst: cs.fontStyle, tt: cs.textTransform, ls: cs.letterSpacing, c: srgb( cs.color ), td, tsh: cs.textShadow, fixed: fixedOf( el ), m: inModal( el ),
 			} );
 		}
 		const st = styleCache.get( el );

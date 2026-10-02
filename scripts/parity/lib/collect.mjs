@@ -9,10 +9,17 @@ export const DEFAULT_PROPS = [
 	'border-left-width', 'border-right-width', 'border-radius', 'box-shadow',
 	'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
 	'grid-template-columns', 'column-gap', 'row-gap', 'justify-content', 'align-items', 'object-fit',
+	'border-left-color', 'border-right-color', 'text-shadow', 'transform', 'rotate', 'scale', 'translate', 'backdrop-filter',
+	'outline-style', 'outline-width', 'outline-color', 'outline-offset',
+	// The underline a visitor sees and an icon's colour: both read by collectPair, not from the element's own style.
+	'text-decoration-line', 'text-decoration-color', 'text-decoration-thickness', 'text-underline-offset', 'icon-fill', 'icon-stroke',
 ];
 
 // Properties read at rest and again at the hover end state.
-export const HOVER_PROPS = [ 'color', 'background-color', 'border-top-color', 'box-shadow', 'transform', 'opacity', 'text-decoration-line', 'filter' ];
+export const HOVER_PROPS = [ 'color', 'background-color', 'border-top-color', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'text-decoration-line', 'text-decoration-color', 'filter' ];
+
+// Properties read on the focused control after a real Tab key reaches it (the keyboard focus ring).
+export const FOCUS_PROPS = [ 'outline-style', 'outline-width', 'outline-color', 'outline-offset', 'box-shadow', 'background-color', 'color', 'text-decoration-line', 'border-bottom-color' ];
 
 // Resolves a finder to one element inside the page. A finder is a CSS selector string,
 // { text: 'regex source', within?: selector, tag?: selector } for the smallest visible
@@ -52,7 +59,7 @@ export function collectPair( [ finder, props, resolveSrc ] ) {
 	const r = el.getBoundingClientRect();
 	// Text properties come from the element that paints the first visible text (a
 	// button's label span, not the button), so a wrapper's unused font-size is ignored.
-	const TEXT_PROPS = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color' ];
+	const TEXT_PROPS = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ];
 	const walker = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, {
 		// The text node's own rects: its parent can be display:contents (no box of its own) and still paint it.
 		acceptNode: ( n ) => {
@@ -85,9 +92,40 @@ export function collectPair( [ finder, props, resolveSrc ] ) {
 	const styles = {};
 	for ( const p of props ) {
 		const src = TEXT_PROPS.includes( p ) ? ccs : cs;
-		if ( src ) {
+		if ( src && ! /^icon-/.test( p ) ) {
 			const v = src.getPropertyValue( p ).trim();
 			styles[ p ] = /color$/.test( p ) ? srgb( v ) : v;
+		}
+	}
+	// The underline: text-decoration is not inherited but paints through every in-flow descendant, so it
+	// comes from the nearest decorated element at or above the painted text. An inline-block, a float or
+	// an out-of-flow box stops it reaching further up.
+	if ( props.includes( 'text-decoration-line' ) ) {
+		let deco = null;
+		for ( let a = carrier || el; a && a !== document.documentElement; a = a.parentElement ) {
+			const s = getComputedStyle( a );
+			if ( 'none' !== s.textDecorationLine ) {
+				deco = s;
+				break;
+			}
+			if ( /^inline-/.test( s.display ) || 'none' !== s.cssFloat || /absolute|fixed/.test( s.position ) ) {
+				break;
+			}
+		}
+		styles[ 'text-decoration-line' ] = deco ? deco.textDecorationLine : 'none';
+		styles[ 'text-decoration-color' ] = deco ? srgb( deco.textDecorationColor ) : 'none';
+		styles[ 'text-decoration-thickness' ] = deco ? deco.textDecorationThickness : 'none';
+		styles[ 'text-underline-offset' ] = deco ? deco.textUnderlineOffset : 'none';
+	}
+	// An icon's colour: the first painted shape of the pair's svg (or the svg the pair is).
+	if ( props.includes( 'icon-fill' ) ) {
+		const svg = 'svg' === el.tagName.toLowerCase() ? el : el.querySelector( 'svg' );
+		const shape = svg && [ ...svg.querySelectorAll( 'path, circle, rect, ellipse, line, polyline, polygon, use, text' ) ]
+			.find( ( s ) => s.getClientRects().length && 'none' !== getComputedStyle( s ).display );
+		if ( shape ) {
+			const ss = getComputedStyle( shape );
+			styles[ 'icon-fill' ] = 'none' === ss.fill ? 'none' : srgb( ss.fill );
+			styles[ 'icon-stroke' ] = 'none' === ss.stroke ? 'none' : srgb( ss.stroke );
 		}
 	}
 	// Keyframes compared by content, so a namespaced name (sgs-x-pop) matches the draft's (pop).
