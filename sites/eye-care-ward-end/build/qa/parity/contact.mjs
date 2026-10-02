@@ -21,7 +21,8 @@ const LPHONE = '#sgs-field-phone';
 const LTOPIC = '#sgs-field-topic';
 const LMESSAGE = '#sgs-field-message';
 
-export default {
+
+const config = {
 	name: 'contact',
 	// Nav-track chrome outside the header and footer on both sides: the draft's floating WhatsApp
 	// bubble and the "100% genuine" trust bar above the header (copied from about.mjs/lenses.mjs:
@@ -174,6 +175,14 @@ export default {
 		{ name: 'social-instagram-link', anchor: 'social-instagram-label', hover: true, draft: { text: '^@eyecare\\.birmingham$', tag: 'a', within: 'main' }, live: { text: '^@eyecare\\.birmingham$', tag: 'a', within: '#sgs-page-contact' },
 			props: [ 'font-size', 'color' ] },
 	],
+	// Links (GAP-CHECKLIST 14), checked against the live page's hrefs (2026-10-02).
+	links: {
+		'WhatsApp 07960 5978': 'https://wa.me/4479605978?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20your%20services.',
+		'0121 729 8233': 'tel:01217298233',
+		'hello@eyecarebirmingham.co.uk': 'mailto:hello@eyecarebirmingham.co.uk',
+		'Reviews & hours': 'https://share.google/9YZzTiRj2gvW1Xrpr',
+		'@eyecare.birmingham': 'https://www.instagram.com/eyecare.birmingham/',
+	},
 	// Screenshot review, region by region (header/footer/trust bar are the nav track); written
 	// after the first run, 2026-09-28. The 1440 opening/auto-scrolled/field-focused/form-submitted
 	// shots all show the still-open detail-grid and form-field single-column collapse (see the
@@ -227,3 +236,5 @@ export default {
 		} ) ),
 	],
 };
+
+export default config;

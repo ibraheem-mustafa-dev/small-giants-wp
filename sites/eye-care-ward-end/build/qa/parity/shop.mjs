@@ -41,6 +41,40 @@ const scrollDown = async ( h, side ) => {
 	await h.wait( 1200 );
 };
 const liveSwatch =( slug ) => ( h ) => h.click( `${ LF } [id="attribute/colour-${ slug }"]`, { quiet: true, wait: 1200 } );
+// What a shopper does with the other filter controls: types into the brand search, chooses a sort, moves the price
+// slider with the keyboard. The brand search takes a real mouse tap (focus) then real key presses; the sort and the
+// slider are logged as clicks so the drive check sees both sides interacting. PageDown moves a range input by a tenth
+// of its span on both sides (the draft's slider steps by 10, live's by 1, so arrow keys would move them unequally).
+const DBRANDS = 'aside input[aria-label="Search brands"]';
+const LBRANDS = `${ LF } .sgs-filter-search__input`;
+const DSORT = 'select[aria-label="Sort"]';
+const LSORT = 'select.orderby';
+const DPRICE = 'aside input[aria-label="Maximum price"]';
+const LPRICE = `${ LF } .wc-block-product-filter-price-slider__range input.max`;
+const typeBrand = ( sel ) => async ( h ) => {
+	await h.tap( sel, { wait: 300, name: 'brand search' } );
+	await h.page.keyboard.type( 'ray', { delay: 70 } );
+	await h.wait( 800 );
+};
+const chooseSort = ( sel, value ) => async ( h ) => {
+	h.log.push( { type: 'click', target: 'sort', hit: true } );
+	await h.page.selectOption( sel, value );
+	await h.quiet();
+	await h.wait( 900 );
+};
+const nudgePrice = ( sel ) => async ( h ) => {
+	h.log.push( { type: 'click', target: 'price slider', hit: true } );
+	await h.page.locator( sel ).focus();
+	for ( let i = 0; i < 3; i++ ) {
+		await h.page.keyboard.press( 'PageDown' );
+	}
+	await h.quiet();
+	await h.wait( 900 );
+};
+// The first card's title after a sort: the grid's first card on each side.
+const DFIRSTNAME = `(r) => { const g = (${ DGRID })(r); const c = g && g.children[0] && g.children[0].firstElementChild.firstElementChild; return c && c.children[2].children[0].querySelector('a'); }`;
+
+const DEXCLUDE = [ 'a[aria-label^="Message Fatima"]', { js: '(r) => { const h = [...document.querySelectorAll("aside button")].find((b) => /^brand/i.test(b.textContent.trim())); return h && h.parentElement; }' }, { js: '(r) => { let e = [...document.querySelectorAll("span")].find((s) => /^100% genuine/i.test(s.textContent.trim())); while (e && e.parentElement && e.getBoundingClientRect().width < innerWidth - 2) e = e.parentElement; return e; }' } ];
 
 export default {
 	name: 'shop',
@@ -52,7 +86,7 @@ export default {
 	auto: { exclude: {
 		// The brand list: live lists the real 14 brands, the draft a made-up 40 (Bean 2026-09-27), so its words
 		// pair badly with card chips; the named brand pairs check its look.
-		draft: [ 'a[aria-label^="Message Fatima"]', { js: '(r) => { const h = [...document.querySelectorAll("aside button")].find((b) => /^brand/i.test(b.textContent.trim())); return h && h.parentElement; }' }, { js: '(r) => { let e = [...document.querySelectorAll("span")].find((s) => /^100% genuine/i.test(s.textContent.trim())); while (e && e.parentElement && e.getBoundingClientRect().width < innerWidth - 2) e = e.parentElement; return e; }' } ],
+		draft: DEXCLUDE,
 		live: [ '.sgs-trust-bar', { js: '(r) => { const l = document.querySelector("#sgs-shop-filters [for^=\\"taxonomy/product_brand\\"]"); return l && ( l.closest("details") || l.closest(".wp-block-woocommerce-product-filter-taxonomy")?.parentElement ); }' } ],
 	} },
 	states: [
@@ -90,6 +124,29 @@ export default {
 			...pick( ( h ) => h.clickText( '^pilot$', { within: 'aside', tag: 'button' } ),
 				( h ) => h.clickText( '^pilot', { within: LF, tag: 'button', quiet: true, wait: 1200 } ), true ),
 		},
+		// A filter group opened by clicking its heading (Size is closed at rest on both sides); the drawer stays open below
+		// desktop so the group's own pairs are measured.
+		{
+			name: 'size-open',
+			...pick( ( h ) => h.clickText( '^size$', { within: 'aside', tag: 'button' } ),
+				( h ) => h.clickText( '^size', { within: LF, tag: 'summary', wait: 600 } ), true ),
+		},
+		// "ray" typed into the brand search: the list narrows to Ray-Ban.
+		{ name: 'brand-typed', ...pick( typeBrand( DBRANDS ), typeBrand( LBRANDS ), true ) },
+		// Sort chosen from the select (drawer closed): the grid reorders, cheapest first.
+		{
+			name: 'sort-low',
+			draft: async ( h ) => {
+				await shopOn.draft( h );
+				await chooseSort( DSORT, 'low' )( h );
+			},
+			live: async ( h ) => {
+				await shopOn.live( h );
+				await chooseSort( LSORT, 'price' )( h );
+			},
+		},
+		// The price slider’s maximum handle moved by keyboard; the drawer stays open below desktop.
+		{ name: 'price-moved', ...pick( nudgePrice( DPRICE ), nudgePrice( LPRICE ), true ) },
 		// Scrolled a screen and a half down: anything fixed that appears only after scrolling (GAP-CHECKLIST 5a).
 		{ name: 'scrolled', draft: ( h ) => scrollDown( h, 'draft' ), live: ( h ) => scrollDown( h, 'live' ) },
 	],
@@ -105,15 +162,30 @@ export default {
 		{ name: 'gender-all', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^all$', within: 'aside', tag: 'button' }, live: `${ LF } .sgs-shop-filters__segment`, hover: true },
 		{ name: 'gender-women', states: [ 'women' ], draft: { text: '^women$', within: 'aside', tag: 'button' }, live: { text: '^women$', within: LF, tag: '.sgs-shop-filters__segment' } },
 		{ name: 'swatch-black', states: [ 'filters-open', 'colour-black', 'panel-after-click' ], draft: 'aside button[aria-label="Black"]', live: `${ LF } [id="attribute/colour-black"]`, text: false, hover: true },
-		{ name: 'brand-search', states: [ 'filters-open', 'panel-after-click' ], draft: 'aside input[aria-label="Search brands"]', live: `${ LF } .sgs-filter-search__input`, text: false },
+		{ name: 'brand-search', states: [ 'filters-open', 'brand-typed', 'panel-after-click' ], draft: 'aside input[aria-label="Search brands"]', live: `${ LF } .sgs-filter-search__input`, text: false },
 		{ name: 'brand-heading', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^brand', within: 'aside', tag: 'button' }, live: { text: '^brand', within: LF, tag: 'summary' }, box: [ 'h' ] },
-		{ name: 'brand-ray-ban', states: [ 'filters-open', 'brand-ray-ban', 'panel-after-click' ], draft: { text: '^ray-ban', within: 'aside', tag: 'label' }, live: `${ LF } label[for="taxonomy/product_brand-ray-ban"]` },
+		{ name: 'brand-ray-ban', states: [ 'filters-open', 'brand-typed', 'brand-ray-ban', 'panel-after-click' ], draft: { text: '^ray-ban', within: 'aside', tag: 'label' }, live: `${ LF } label[for="taxonomy/product_brand-ray-ban"]` },
 		{ name: 'style-chip', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^pilot$', within: 'aside', tag: 'button' }, live: { text: '^pilot', within: LF, tag: 'button' }, hover: true },
-		// Found on the screenshots: the chosen-filter row and the price slider's labels.
+		// Found on the screenshots: the chosen-filter row and the price slider’s labels.
 		{ name: 'active-pill', states: [ 'panel-after-click' ], draft: { js: DCLEAR.replace( 'return c;', 'return c && c.parentElement.firstElementChild;' ) }, live: '.sgs-shop-chosen__pill' },
 		{ name: 'clear-all', states: [ 'panel-after-click' ], draft: { js: DCLEAR }, live: '.sgs-shop-chosen__clear' },
-		{ name: 'price-min', states: [ 'filters-open' ], draft: { text: '^£59$', within: 'aside', tag: 'span' }, live: `${ LF } .wc-block-product-filter-price-slider__left` },
-		{ name: 'price-max', states: [ 'filters-open' ], draft: { text: '^£339$', within: 'aside', tag: 'span' }, live: `${ LF } .wc-block-product-filter-price-slider__right` },
+		{ name: 'price-min', states: [ 'filters-open', 'price-moved' ], draft: { text: '^£59$', within: 'aside', tag: 'span' }, live: `${ LF } .wc-block-product-filter-price-slider__left` },
+		{ name: 'price-max', states: [ 'filters-open', 'price-moved' ], draft: { text: '^£339$', within: 'aside', tag: 'span' }, live: `${ LF } .wc-block-product-filter-price-slider__right` },
+		// The Size group opened by its heading: the heading, a size chip (hover) and the helper line under the chips.
+		{ name: 'size-heading', states: [ 'filters-open', 'size-open' ], draft: { text: '^size$', within: 'aside', tag: 'button' }, live: { text: '^size', within: LF, tag: 'summary' }, box: [ 'h' ] },
+		{ name: 'size-small', states: [ 'size-open' ], draft: { text: '^small$', within: 'aside', tag: 'button' }, live: `${ LF } [id="attribute/size-small"]`, hover: true },
+		{ name: 'size-note', states: [ 'size-open' ], draft: { text: '^measured across one lens$', within: 'aside', tag: 'p' }, live: { text: '^measured across one lens$', within: LF, tag: 'p' }, box: [ 'h' ] },
+		// A brand label's hover (the row lifts or tints on pointer-over).
+		{ name: 'brand-label-hover', states: [ 'filters-open' ], draft: { text: '^ray-ban', within: 'aside', tag: 'label' }, live: `${ LF } label[for="taxonomy/product_brand-ray-ban"]`, hover: true },
+		// "ray" typed: the list under the search narrows to one label on both sides.
+		{ name: 'brand-list', states: [ 'brand-typed' ], text: false, box: [ 'h' ], structure: false,
+			draft: { js: `(r) => { const i = document.querySelector('${ DBRANDS }'); return i && i.nextElementSibling; }` },
+			live: { js: `(r) => { const s = document.querySelector('${ LBRANDS }'); const d = s && s.closest('details'); return d && d.querySelector('.wc-block-product-filter-checkbox-list__items'); }` } },
+		// The sort chosen: the select, and the first card's name (the cheapest frame leads on both).
+		{ name: 'sort-select', states: [ 'sort-low' ], anchor: 'title', draft: DSORT, live: LSORT, hover: true },
+		{ name: 'sort-first-name', states: [ 'sort-low' ], box: [ 'h' ], structure: false, draft: { js: DFIRSTNAME }, live: '.sgs-shop-layout .wc-block-product-template > li:nth-child(1) .product-card__title-link' },
+		// The price slider moved: the range input itself (both handles share it on live).
+		{ name: 'price-slider', states: [ 'filters-open', 'price-moved' ], text: false, box: [ 'h' ], draft: DPRICE, live: LPRICE },
 		{ name: 'polarised-toggle', states: [ 'filters-open', 'panel-after-click' ], draft: { text: '^polarised only$', within: 'aside', tag: 'label,button,div' }, live: `${ LF } .sgs-shop-filters__bool-filter` },
 		{ name: 'grid', anchor: 'title', draft: { js: DGRID }, live: '.sgs-shop-layout .wc-block-product-template', text: false, box: [ 'w' ], props: [ 'grid-template-columns', 'column-gap', 'row-gap' ] },
 		// The floating Filter button live showed once scrolled on narrow screens; the draft has none.
@@ -153,6 +225,15 @@ export default {
 			hover: 'wishlist' === part || 'dot' === part,
 		} ) ),
 	],
+	// Links (GAP-CHECKLIST 14): every product name in the grid goes to its product page. The draft's own links are "#",
+	// so the table is the only statement of where each one must go. Checked against the live page's hrefs (2026-10-02).
+	links: Object.fromEntries( [
+		[ 'Aviator Classic', 'ray-ban-aviator-classic' ], [ 'Oversized Cat-Eye', 'gucci-oversized-cat-eye' ], [ 'Holbrook', 'oakley-holbrook' ],
+		[ 'Symbole', 'prada-symbole' ], [ 'Original Wayfarer', 'ray-ban-original-wayfarer' ], [ 'Round Metal', 'ray-ban-round-metal' ],
+		[ 'Medusa Biggie', 'versace-medusa-biggie' ], [ 'PLD 6003/N', 'polaroid-pld-6003-n' ], [ 'Carrera 1055/S', 'carrera-carrera-1055-s' ],
+		[ 'FZ6001', 'ferrari-scuderia-fz6001' ], [ 'SDS Shockwave', 'superdry-sds-shockwave' ], [ 'Shield', 'balenciaga-shield' ],
+		[ 'Lewis 10', 'police-lewis-10' ], [ 'DG4268', 'dolce-gabbana-dg4268' ], [ 'Chelsea', 'michael-kors-chelsea' ], [ 'EA4033', 'emporio-armani-ea4033' ],
+	].map( ( [ label, slug ] ) => [ label, `/product/${ slug }/` ] ) ),
 	// Screenshot review, region by region; header, footer and chat bubble are the nav track.
 	review: {
 		'opening@1440': 'Title row: eyebrow, h1, count and sort aligned, hairline 24px under it on both. Filter column: segments, swatches in order, slider with both 14px handles whole, brand search and list, Style chips, Polarised toggle. Grid 3 columns; cards: whole-pound prices with the RRP beside, dots right, Polarised tag right of the name on Holbrook. The draft blanks rows 3+ until scrolled (its reveal). The "Every pair is genuine" note starts at the grid’s left edge under the last card on both (2026-09-28).',
@@ -173,6 +254,18 @@ export default {
 		'panel-after-click@1440': 'After clicking Pilot: the panel keeps every look (segments, round swatches, counts, groups), Pilot pill row under the title, 5 frames, same 3 cards; draft retitles "Pilot" (accepted); live slider £99 to £169 for the results, both handles whole.',
 		'panel-after-click@768': 'Drawer left open after Pilot: header, segments, swatches in one row, slider £99 to £169 with both handles whole inside the content width, brand count 5 with Carrera, Ferrari Scuderia, Michael Kors, Police, Ray-Ban, SHOW 5 FRAMES on both.',
 		'panel-after-click@375': 'Drawer left open after Pilot: segments, two swatch rows, slider inside the content width with both handles whole, brand count 5, SHOW 5 FRAMES and CLEAR in the footer on both.',
+		'size-open@1440': 'Size group opened by its heading on both: chevron up, Small, Medium and Large chips in one row (live adds real counts "(4)", "(8)", "(4)", 44px chips), Colour, Price and Brand below. The draft’s "Measured across one lens" line under the chips is missing on live (open). Grid beside the column unchanged.',
+		'size-open@768': 'Drawer left open after clicking Size: Filter header, Gender segments, Size heading with chevron up, three chips in a row (live with counts), the draft’s helper line "Measured across one lens" absent on live (open), Colour swatches in one row, price slider with both handles whole, brand list, CLEAR and SHOW 16 FRAMES footer on both.',
+		'size-open@375': 'Drawer at phone width with Size opened: header and close, segments, Size heading with chevron up, three chips (live adds counts), draft helper line missing on live (open), swatches in two rows, slider with £59 and £339 labels, brand heading, search and first label, CLEAR and SHOW 16 FRAMES footer.',
+		'brand-typed@1440': '"ray" typed into the brand search on both: the field keeps its focus ring, the list narrows to the single Ray-Ban label with its count (48 draft, 3 live, real counts), Style chips follow below; column scrolled with the page, grid unchanged.',
+		'brand-typed@768': 'Drawer left open with "ray" typed: search field ringed on both, one Ray-Ban label with its count, Style chips below (live has 9 in stock against 12), Material, Frame type and Hinge groups closed, CLEAR and SHOW 16 FRAMES footer.',
+		'brand-typed@375': 'Phone drawer scrolled to Brand with "ray" typed: search field focused on both (live adds its clear cross), a single Ray-Ban label with count, Style chips wrapping in rows (9 live, 12 draft), footer CLEAR and SHOW 16 FRAMES.',
+		'sort-low@1440': 'Sort changed to "Price: low to high" from the select on both: toolbar row (16 frames, select showing the choice), filter column at rest, grid now led by PLD 6003/N, SDS Shockwave and Lewis 10 at £59, £59 and £99 with the same Polarised tags.',
+		'sort-low@768': 'Title row with count, outlined FILTER and the sort select showing "Price: low to high" on both; grid two across starting with PLD 6003/N (Polarised tag beside the name) and SDS Shockwave, £59 each with RRP; stars against "No reviews yet" is the accepted difference.',
+		'sort-low@375': 'Count, FILTER and the sort select in one row showing "Price: low to high"; two cards across, PLD 6003/N and SDS Shockwave first on both, prices £59 with RRP and dots; the draft keeps its Polarised tag beside the name where live puts it on its own line (accepted, Bean).',
+		'price-moved@1440': 'Price slider’s maximum handle moved by keyboard (PageDown three times): the draft’s bar reads "up to £250" in its heading with a handle two-thirds across, live reads a £255 label; the chosen-filter row above the grid shows an "Up to" pill and CLEAR ALL on both, 14 frames, grid starting Aviator, Holbrook, Symbole.',
+		'price-moved@768': 'Drawer left open after moving the slider: price bar with the handle at about two-thirds on both (draft heading "up to £250", live label £255), Brand list below, SHOW 14 FRAMES in the footer on both; live brand count falls to 12.',
+		'price-moved@375': 'Phone drawer after moving the slider: handle at about two-thirds across on both, draft heading "up to £250" against live label £255, brand list under it, CLEAR and SHOW 14 FRAMES footer on both; slider ends are whole inside the content width.',
 		'scrolled@1440': 'Scrolled 1200px: the filter column stays beside the grid on both, cards Medusa Biggie to Shield with whole-pound prices; PLD 6003/N tag beside the name at the right. No floating element apart from the chat bubble (nav track).',
 		'scrolled@768': 'Scrolled 1200px: no floating Filter button on either side; Wayfarer and Round Metal rows with price and RRP on one line and dots right, Versace and Polaroid below. Only the chat bubble floats (nav track).',
 		'scrolled@375': 'Scrolled 1200px: no floating Filter button on either side (the draft has none; live switched off). Cards two across, PLD 6003/N tag under the name right-aligned (Bean), RRP under the price with dots beside it; only the chat bubble floats.',

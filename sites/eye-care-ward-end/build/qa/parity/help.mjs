@@ -32,7 +32,8 @@ const lAnswer = ( title ) => `(r) => { const item = (${ lItem( title ) })(r); re
 // Live swaps two icon spans by CSS ([open] shows icon-close, hides icon-open): pick whichever paints.
 const lIcon = ( title ) => `(r) => { const item = (${ lItem( title ) })(r); return [...item.querySelectorAll('.sgs-accordion-item__icon-open, .sgs-accordion-item__icon-close')].find((e) => e.offsetParent !== null); }`;
 
-export default {
+
+const config = {
 	name: 'help',
 	// Nav-track chrome outside the header and footer on both sides: the draft's floating WhatsApp
 	// bubble and "100% genuine" trust bar (copied from shop.mjs/product.mjs: the draft has no class
@@ -145,6 +146,9 @@ export default {
 		{ name: 'call-button', draft: { text: '^call$', tag: 'a' }, live: { text: '^call$', tag: 'a' }, hover: true,
 			props: [ 'background-color', 'border-top-width', 'border-top-color', 'border-radius', 'padding-top', 'padding-bottom' ] },
 	],
+	// Links (GAP-CHECKLIST 14), checked against the live page's hrefs (2026-10-02). "Size guide" opens the site-wide modal by
+	// its #size-guide anchor; a same-page anchor reads as "/" here, so the table cannot tell it from a home link.
+	links: { 'Size guide': '/#size-guide', 'Contact me': '/contact/', '0121 729 8233': 'tel:01217298233', Call: 'tel:01217298233' },
 	// Screenshot review, region by region; written after looking at every shot, 2026-09-28.
 	review: {
 		'opening@1440': 'Title row: eyebrow, h1, 3-card info row (UK delivery, Collect in Birmingham, Returns) match in content and position. Questions row: heading, SIZE GUIDE / CONTACT ME links aligned right on both — box/style differences open on this run trace to my own finder matching the draft\'s decoy footer "Size guide" link instead of the real button (fixed above). Accordion: item 1 open with its answer and "×" on both, items 2-8 closed with "+"; row spacing/font-size differ (draft 17px/20px padding/20px gap, live 16px/16px/12px) — a real tree.json gap (the accordion block supports fontSize/padding/gap; help.tree.json sets none), not a look-alike. "Still not answered?" card, phone line and two buttons match in content; info-card body text and the phone line are near-black on live (rgb(20,20,20)) where the draft uses a muted grey (rgb(74,69,62)) — another tree.json gap (no textColour set on those text blocks).',
@@ -206,3 +210,5 @@ export default {
 		{ pair: 'call-button', kind: 'style', key: 'border-top-color', reason: 'The same near-black border: live\'s outline-button preset paints it at 0.75 opacity (0.0784314 x 255 = 20 = rgb(20,20,20)) where the draft\'s is solid', when: ( d ) => 'rgb(20, 20, 20)' === d.draft && /^color\(srgb 0\.0784314 0\.0784314 0\.0784314 \/ 0\.75\)$/.test( d.live ) },
 	],
 };
+
+export default config;

@@ -20,7 +20,8 @@
 const LIVE_ORDER_URL = process.env.EYECARE_ORDER_URL || '';
 const vis = 'const vis = (e) => e && e.offsetParent !== null;';
 
-export default {
+
+const config = {
 	name: 'confirmation',
 	auto: {
 		exclude: {
@@ -65,10 +66,25 @@ export default {
 			// the order's items and totals in a table.
 			draft: { js: '() => null' },
 			live: '.woocommerce-order-details, table.woocommerce-table--order-details' },
+		// The tick circle (a 64px accent disc with a white ✓) that pops in when the order is placed (keyframes "pop": from 60% size
+		// and clear, past full size, then settling). Live's order-received page has no tick: its status line is plain text.
+		{ name: 'tick-circle', states: [ 'opening' ], box: [ 'w', 'h' ],
+			draft: { js: `(r) => { ${ vis } return [...document.querySelectorAll('div')].find((d) => vis(d) && ! d.children.length && '✓' === d.textContent.trim()); }` },
+			live: '.woocommerce-order .sgs-order-confirmed__tick',
+			props: [ 'background-color', 'color', 'border-radius', 'font-size', 'animation-name', 'animation-duration' ] },
 		{ name: 'continue-link', states: [ 'opening' ], hover: true,
 			draft: { text: '^back to the shop$', tag: 'button,a' },
 			live: { js: `(r) => { ${ vis } return [...document.querySelectorAll('a')].find((a) => vis(a) && /continue shopping|back to shop|return to shop/i.test(a.textContent.trim())); }` } },
 	],
-	// review: left out — no shots taken yet, per the brief.
+	review: {
+		'opening@1440': "Order-confirmed screen: the 64px accent tick circle with its white check, \"Thank you, order EC-10482.\" heading, the collection note, the dark Back to the shop button, then the footer; draft against itself, so only the structure and the tick circle's look and pop motion are compared.",
+		'auto-scrolled@1440': "Scrolled a screen and a half: the confirmation block has gone up and the footer link columns and legal line are in view, with the chat bubble floating over the footer; nothing else appears on scrolling.",
+		'opening@768': "Order-confirmed screen: the 64px accent tick circle with its white check, \"Thank you, order EC-10482.\" heading, the collection note, the dark Back to the shop button, then the footer; draft against itself, so only the structure and the tick circle's look and pop motion are compared.",
+		'auto-scrolled@768': "Scrolled a screen and a half: the confirmation block has gone up and the footer link columns and legal line are in view, with the chat bubble floating over the footer; nothing else appears on scrolling.",
+		'opening@375': "Order-confirmed screen: the 64px accent tick circle with its white check, \"Thank you, order EC-10482.\" heading, the collection note, the dark Back to the shop button, then the footer; draft against itself, so only the structure and the tick circle's look and pop motion are compared.",
+		'auto-scrolled@375': "Scrolled a screen and a half: the confirmation block has gone up and the footer link columns and legal line are in view, with the chat bubble floating over the footer; nothing else appears on scrolling.",
+	},
 	accept: [],
 };
+
+export default config;

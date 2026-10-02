@@ -1,6 +1,6 @@
-// Parity config: checkout, reached with the Gucci Oversized Cat-Eye (Ivory, "as they are")
-// already in the bag, the way each side's own shopper reaches it — add to bag, open the
-// bag/cart panel, click its Checkout link (never a typed /checkout/ URL: on live an EMPTY
+// Parity config: checkout, reached with the Gucci Oversized Cat-Eye (Ivory) already in the bag WITH prescription
+// lenses (Distance, Thin, Polarised, Send it later: £418), the way each side's own shopper reaches it — the lens
+// pop-up's Add to bag, open the bag/cart panel, click its Checkout link (never a typed /checkout/ URL: on live an EMPTY
 // cart's /checkout/ 302s to /cart/, proven with curl 2026-09-28 — GAP-CHECKLIST 1 also wants
 // the click, not the URL).
 //
@@ -20,12 +20,19 @@ const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
 const LIVE_PRODUCT = 'https://darkcyan-grouse-898606.hostingersite.com/product/gucci-oversized-cat-eye/?cb={cb}';
 const LIVE_CHECKOUT = 'https://darkcyan-grouse-898606.hostingersite.com/checkout/?cb={cb}';
 const vis = 'const vis = (e) => e && e.offsetParent !== null;';
+// The lens pop-up on each side (as lens.mjs): the draft's dialog, live's choice flow. The draft's checkout shows its
+// "Prescription" section only when the bag holds a lens, so both sides add one.
+const DLENS = '[aria-label="Add prescription lenses"]';
+const LLENS = 'dialog[open] .sgs-choice-flow';
+// The draft's checkout sections carry no class names; each is found by its heading's words ("3Prescription").
+const dsection = ( re ) => `(r) => [...document.querySelectorAll('main section')].find((s) => ${ re }.test((s.querySelector('h2') || {}).textContent || ''))`;
 // A totals/summary row by its leading label word (Subtotal/Shipping/Delivery/Total), on
 // either side's own component classnames (INFERRED live, see header note).
 const totalsRow = ( label ) => `(r) => { ${ vis } return [...document.querySelectorAll('.wc-block-components-totals-item, .wc-block-components-totals-footer-item, div, span')].find((e) => vis(e) && new RegExp('^${ label }', 'i').test(e.textContent.trim()) && e.textContent.includes('£')); }`;
 const draftTotalsRow = ( label ) => `(r) => { ${ vis } return [...r.querySelectorAll('div')].find((d) => vis(d) && new RegExp('^${ label }', 'i').test(d.textContent.trim()) && d.textContent.includes('£') && d.children.length <= 2); }`;
 
-export default {
+
+const config = {
 	name: 'checkout',
 	auto: {
 		exclude: {
@@ -43,7 +50,12 @@ export default {
 		open: async ( h ) => {
 			await h.clickText( '^sunglasses$', { wait: 900 } );
 			await h.clickText( '^oversized cat-eye$', { wait: 900 } );
-			await h.clickText( '^add to bag as they are', { tag: 'button', wait: 1200 } );
+			await h.clickText( '^add my prescription', { tag: 'button', wait: 1200 } );
+			await h.waitFor( DLENS );
+			for ( const answer of [ 'Distance', 'Thin', 'Polarised' ] ) {
+				await h.clickText( `^${ answer }`, { within: DLENS, tag: 'button', wait: 900 } );
+			}
+			await h.clickText( '^add to bag', { within: DLENS, tag: 'button', wait: 1500 } );
 			await h.clickText( '^bag', { tag: 'button,a', wait: 900 } );
 			// A real SPA route change (GAP-CHECKLIST 1's { nav: true } is for a link that ONLY
 			// navigates; this one runs the checkout view's own mount code, so it stays a click).
@@ -53,7 +65,13 @@ export default {
 	live: {
 		url: LIVE_PRODUCT,
 		open: async ( h ) => {
-			await h.click( '.buybox__add-to-cart', { wait: 1500 } );
+			await h.clickText( '^add my prescription', { tag: 'a,button', wait: 1200 } );
+			await h.waitFor( LLENS );
+			for ( const answer of [ 'Distance', 'Thin', 'Polarised' ] ) {
+				await h.clickText( `^${ answer }`, { within: LLENS, tag: '.sgs-choice-flow-question__option-button', wait: 150 } );
+				await h.click( `${ LLENS } .sgs-choice-flow__continue`, { wait: 900 } );
+			}
+			await h.click( `${ LLENS } .sgs-choice-flow__add-to-basket`, { wait: 2500 } );
 			// A real page navigation either way (the Checkout block always fully re-renders from
 			// the server): the panel's own `.sgs-cart__panel-checkout` link and this goto reach
 			// the identical page, so nothing a click would run is skipped (GAP-CHECKLIST 1).
@@ -79,6 +97,14 @@ export default {
 					h.log.push( { type: 'click', target: 'delivery-toggle (inferred)', hit: false, optional: true } );
 				}
 			},
+		},
+		{
+			name: 'rx-later',
+			// The draft's "Prescription" section (shown because the bag holds a lens) has three modes; "Send it later" swaps the
+			// upload box for a note. Live has no such section (Bean 2026-09-25, D1: the prescription is given per pair in the lens
+			// pop-up), so its click is optional and a missing control is the finding.
+			draft: ( h ) => h.clickText( '^send it later$', { within: 'main', tag: 'button', wait: 700 } ),
+			live: ( h ) => h.clickText( '^send it later$', { within: 'main', tag: 'button', wait: 700, optional: true } ),
 		},
 		{
 			name: 'submit-empty',
@@ -145,6 +171,26 @@ export default {
 		{ name: 'place-order', states: [ 'opening', 'delivery-toggle' ], hover: true,
 			draft: { text: '^pay now', tag: 'button' },
 			live: { text: '^place order', tag: 'button' } },
+		// The draft's "Prescription" section (its third numbered step, shown because the bag holds a lens): the section, its
+		// heading, the "Upload a photo" mode and the dashed upload box (hover). Live builds none of it by design (Bean
+		// 2026-09-25, D1), so every live finder reads nothing and the presence rows are accepted below.
+		{ name: 'rx-section', states: [ 'opening', 'delivery-toggle', 'rx-later' ], text: false, box: [ 'h' ],
+			draft: { js: dsection( '/prescription$/i' ) }, live: '.sgs-checkout-prescription' },
+		{ name: 'rx-heading', states: [ 'opening', 'delivery-toggle', 'rx-later' ], box: [ 'h' ],
+			draft: { js: `(r) => (${ dsection( '/prescription$/i' ) })(r)?.querySelector('h2')` }, live: '.sgs-checkout-prescription h2' },
+		{ name: 'rx-mode-upload', states: [ 'opening', 'delivery-toggle' ], hover: true,
+			draft: { text: '^upload a photo$', within: 'main', tag: 'button' }, live: '.sgs-checkout-prescription button' },
+		{ name: 'rx-upload-label', states: [ 'opening', 'delivery-toggle' ], hover: true, text: false,
+			draft: { js: `(r) => (${ dsection( '/prescription$/i' ) })(r)?.querySelector('label')` }, live: '.sgs-checkout-prescription label' },
+		{ name: 'rx-mode-later', states: [ 'rx-later' ], draft: { text: '^send it later$', within: 'main', tag: 'button' }, live: '.sgs-checkout-prescription button' },
+		{ name: 'rx-later-note', states: [ 'rx-later' ], box: [ 'h' ],
+			draft: { js: `(r) => (${ dsection( '/prescription$/i' ) })(r)?.lastElementChild` }, live: '.sgs-checkout-prescription div' },
+		// The sections rise in one after another on the draft (animation "rise", 0.5s for the express wallets to 0.9s for payment):
+		// the express block and the payment block carry the two ends of that stagger, compared through their declared motion.
+		{ name: 'section-express', states: [ 'opening' ], text: false, box: [ 'h' ], structure: false,
+			draft: { js: '(r) => document.querySelector("main section")' }, live: '.wp-block-woocommerce-checkout-express-payment-block' },
+		{ name: 'section-payment', states: [ 'opening' ], text: false, box: [ 'h' ], structure: false,
+			draft: { js: dsection( '/payment$/i' ) }, live: '.wp-block-woocommerce-checkout-payment-block' },
 		// The empty-submit outcome (GAP-CHECKLIST 10 — a draft bug, not yet an accepted one):
 		// live's own inline required-field error text; the draft has no equivalent element at
 		// all once it has jumped to its mock confirmation screen.
@@ -152,6 +198,32 @@ export default {
 			draft: { js: `(r) => { ${ vis } return [...document.querySelectorAll('*')].find((e) => vis(e) && e.children.length === 0 && /required/i.test(e.textContent || '')); }` },
 			live: { js: `(r) => { ${ vis } return [...document.querySelectorAll('.wc-block-components-validation-error, [class*="error"]')].find((e) => vis(e) && /required/i.test(e.textContent || '')); }` } },
 	],
-	// review: left out — no shots taken yet, per the brief.
-	accept: [],
+	review: {
+		'opening@1440': "Checkout with a prescription lens in the bag (two columns: the form on the left, the \"Your bag\" card on the right): express wallets, 1 Contact, 2 Delivery (Post it to me chosen), 3 Prescription with Upload a photo chosen and the dashed upload box, 4 Payment and the Pay now bar with £418, order summary with the lens line; both sides read the same here because the run compares the draft with itself.",
+		'delivery-toggle@1440': "Collect in Birmingham chosen (two columns: the form on the left, the \"Your bag\" card on the right): the address fields are gone, Collect in Birmingham is the ringed card, the summary's delivery row reads Collection, Free; Prescription and Payment sections follow unchanged.",
+		'rx-later@1440': "Send it later chosen in the 3 Prescription section (two columns: the form on the left, the \"Your bag\" card on the right): Send it later is the filled button, the dashed upload box is replaced by the note \"No problem, I'll WhatsApp you a link\"; Payment and Pay now below it, the Card number field ringed from the earlier focus.",
+		'submit-empty@1440': "Pay now pressed with every field empty: the draft has no validation and goes straight to the mock \"Thank you, order EC-10482\" screen (a tick circle, heading, note, Back to the shop button, footer); no required-field errors appear.",
+		'auto-scrolled@1440': "Scrolled a screen and a half (two columns: the form on the left, the \"Your bag\" card on the right): the Payment fields, Pay now bar and its secure-payment line, the summary card's lower rows, then the footer columns; nothing new floats apart from the chat bubble.",
+		'opening@768': "Checkout with a prescription lens in the bag (one column with the form first and the \"Your bag\" card under it): express wallets, 1 Contact, 2 Delivery (Post it to me chosen), 3 Prescription with Upload a photo chosen and the dashed upload box, 4 Payment and the Pay now bar with £418, order summary with the lens line; both sides read the same here because the run compares the draft with itself.",
+		'delivery-toggle@768': "Collect in Birmingham chosen (one column with the form first and the \"Your bag\" card under it): the address fields are gone, Collect in Birmingham is the ringed card, the summary's delivery row reads Collection, Free; Prescription and Payment sections follow unchanged.",
+		'rx-later@768': "Send it later chosen in the 3 Prescription section (one column with the form first and the \"Your bag\" card under it): Send it later is the filled button, the dashed upload box is replaced by the note \"No problem, I'll WhatsApp you a link\"; Payment and Pay now below it, the Card number field ringed from the earlier focus.",
+		'submit-empty@768': "Pay now pressed with every field empty: the draft has no validation and goes straight to the mock \"Thank you, order EC-10482\" screen (a tick circle, heading, note, Back to the shop button, footer); no required-field errors appear.",
+		'auto-scrolled@768': "Scrolled a screen and a half (one column with the form first and the \"Your bag\" card under it): the Payment fields, Pay now bar and its secure-payment line, the summary card's lower rows, then the footer columns; nothing new floats apart from the chat bubble.",
+		'opening@375': "Checkout with a prescription lens in the bag (one column, express wallets in two rows, the \"Your bag\" card under the payment button): express wallets, 1 Contact, 2 Delivery (Post it to me chosen), 3 Prescription with Upload a photo chosen and the dashed upload box, 4 Payment and the Pay now bar with £418, order summary with the lens line; both sides read the same here because the run compares the draft with itself.",
+		'delivery-toggle@375': "Collect in Birmingham chosen (one column, express wallets in two rows, the \"Your bag\" card under the payment button): the address fields are gone, Collect in Birmingham is the ringed card, the summary's delivery row reads Collection, Free; Prescription and Payment sections follow unchanged.",
+		'rx-later@375': "Send it later chosen in the 3 Prescription section (one column, express wallets in two rows, the \"Your bag\" card under the payment button): Send it later is the filled button, the dashed upload box is replaced by the note \"No problem, I'll WhatsApp you a link\"; Payment and Pay now below it, the Card number field ringed from the earlier focus.",
+		'submit-empty@375': "Pay now pressed with every field empty: the draft has no validation and goes straight to the mock \"Thank you, order EC-10482\" screen (a tick circle, heading, note, Back to the shop button, footer); no required-field errors appear.",
+		'auto-scrolled@375': "Scrolled a screen and a half (one column, express wallets in two rows, the \"Your bag\" card under the payment button): the Payment fields, Pay now bar and its secure-payment line, the summary card's lower rows, then the footer columns; nothing new floats apart from the chat bubble.",
+	},
+	// Links (GAP-CHECKLIST 14): the checkout's body holds no link on live (read with a prescription lens in the bag, 2026-10-02: the
+	// terms and privacy words are plain text; the only links on the page are the header's and footer's), so the table is empty.
+	links: {},
+	accept: [
+		...[ 'rx-section', 'rx-heading', 'rx-mode-upload', 'rx-upload-label', 'rx-mode-later', 'rx-later-note' ].map( ( pair ) => ( {
+			pair, kind: 'presence', reason: 'Accepted (Bean 2026-09-25, D1): the prescription is given per pair in the lens pop-up, so checkout has no Prescription step and shows each pair’s choice in the order summary',
+		} ) ),
+		{ state: 'rx-later', kind: 'drive', reason: 'Accepted (Bean 2026-09-25, D1): live has no Send it later control at checkout; the choice was made in the lens pop-up', when: ( d ) => /send it later/.test( d.key ) },
+	],
 };
+
+export default config;

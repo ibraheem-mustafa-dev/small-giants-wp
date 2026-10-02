@@ -14,7 +14,8 @@ const words = ( t ) => String( t ).replace( /\s+/g, ' ' ).trim().toLowerCase().s
 const draftCardOf = ( heading ) => `(r) => { const h = [...r.querySelectorAll('div')].find((d) => ! d.children.length && d.textContent.trim() === '${ heading }'); return h && h.parentElement; }`;
 const liveCardOf = ( heading ) => `(r) => { const h = [...r.querySelectorAll('h3')].find((x) => x.textContent.trim() === '${ heading }'); return h && h.parentElement.parentElement; }`;
 
-export default {
+
+const config = {
 	name: 'about',
 	// Nav-track chrome outside the header and footer on both sides: the draft's floating WhatsApp
 	// bubble and the "100% genuine" trust bar above the header (copied from shop.mjs/product.mjs:
@@ -76,6 +77,8 @@ export default {
 			draft: { js: draftCardOf( 'DipTp(IP)' ) }, live: { js: liveCardOf( 'DipTp(IP)' ) } },
 		{ name: 'card-paediatric-heading', box: [ 'h' ], draft: { text: '^Paediatric Eye Care$', tag: 'div', within: 'main' }, live: { text: '^Paediatric Eye Care$', tag: 'h3', within: '#sgs-page-about' } },
 	],
+	// Links (GAP-CHECKLIST 14): the two buttons in the bio column (checked against the live page's hrefs, 2026-10-02).
+	links: { 'Message me': 'https://wa.me/4479605978?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20your%20services.', 'Shop the range': '/shop/' },
 	// Screenshot review, region by region; header, footer and chat bubble are the nav track.
 	// Written from the 2026-09-28 --no-review run (report.md, pair-*.png). auto-scrolled reads
 	// identically to opening at every width: the page is too short for the scroll (a screen and a
@@ -107,3 +110,5 @@ export default {
 		} ) ),
 	],
 };
+
+export default config;

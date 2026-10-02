@@ -20,7 +20,7 @@ const lpart = ( name, nth ) => `(r) => { const c = (${ lcard( name ) })(r); cons
 const dlistOf = ( itemRe ) => `(r) => [...r.querySelectorAll('li')].find((li) => ${ itemRe }.test(li.textContent.trim()))?.parentElement`;
 const llistOf = ( itemRe ) => `(r) => [...r.querySelectorAll('li')].find((li) => ${ itemRe }.test(li.textContent.trim()))?.parentElement`;
 
-export default {
+const config = {
 	name: 'lenses',
 	// Nav-track chrome outside the header and footer on both sides: the draft's floating WhatsApp
 	// bubble and the "100% genuine" trust bar above the header (copied from shop.mjs/product.mjs:
@@ -92,10 +92,20 @@ export default {
 			props: [ 'padding-top', 'padding-left' ] },
 		{ name: 'step-1', draft: { js: `(r) => (${ dlistOf( '/choose a frame and tap/i' ) })(r)?.children[0]` }, live: { js: `(r) => (${ llistOf( '/choose a frame and tap/i' ) })(r)?.children[0]` },
 			props: [ 'font-family', 'font-size', 'color' ] },
+		// The draft reveals its [data-reveal] blocks as they scroll into view (opacity 0 and 26px down until reached, then a
+		// 460ms fade-up): the card grid and the steps column, found as the card grid and the steps list's parent (as card-7 in shop.mjs).
+		{ name: 'grid-reveal', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
+			draft: { js: `(r) => (${ dcard( 'Single vision' ) })(r)?.parentElement` },
+			live: { js: `(r) => (${ lcard( 'Single vision' ) })(r)?.parentElement` } },
+		{ name: 'steps-reveal', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
+			draft: { js: `(r) => (${ dlistOf( '/choose a frame and tap/i' ) })(r)?.parentElement` },
+			live: { js: `(r) => (${ llistOf( '/choose a frame and tap/i' ) })(r)?.parentElement` } },
 		{ name: 'choose-a-frame', anchor: 'step-1', hover: true,
 			draft: { text: '^choose a frame$', tag: 'button' }, live: { text: '^choose a frame$', tag: 'a,button' },
 			props: [ 'background-color', 'color', 'padding-left', 'padding-right', 'text-transform', 'letter-spacing' ] },
 	],
+	// Links (GAP-CHECKLIST 14): the page body's one link goes to the shop (checked against the live page, 2026-10-02).
+	links: { 'Choose a frame': '/shop/' },
 	// Screenshot review, region by region (header/footer/trust-bar/WhatsApp bubble are the nav
 	// track, excluded); written after looking at each shot, 2026-09-28. First run, --no-review.
 	review: {
@@ -122,3 +132,5 @@ export default {
 		{ pair: 'choose-a-frame', kind: 'hover', key: 'border-top-color', notPainted: true, reason: 'Measured, not painted: the button has no border (0px, style none) at rest and on hover on both sides, so a declared border colour paints nothing' },
 	],
 };
+
+export default config;

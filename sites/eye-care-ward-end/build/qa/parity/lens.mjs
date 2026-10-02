@@ -154,6 +154,10 @@ export default {
 			props: [],
 		},
 	],
+	// Links (GAP-CHECKLIST 14), read inside the pop-up only (the product page behind it is product.mjs's): the one link in its
+	// body is the WhatsApp help card ("Not sure which to pick?"), checked against the live pop-up's href (2026-10-02).
+	linkRoot: { draft: D, live: L },
+	links: { "Not sure which to pick? Happy to talk it through — message me and we'll choose together.": 'https://wa.me/4479605978' },
 	// Screenshot review, region by region (header chrome aside); written after looking at each shot, 2026-09-28.
 	review: {
 		'q1-use@1440': 'Header, progress (a quarter), stage (photo, Frame £289, Lenses not chosen yet, total), four picture cards two across with prices and ? toggles, skip link. Live adds its Continue button (the flow’s continue model); prices carry pennies (Bean).',
