@@ -168,7 +168,7 @@ A setting whose marker fails `wp-build-page.js` validation is reported as `marke
 **Where and how it renders:**
 - Each site has one calibration page, created once with `wp-build-page.js --create page --title "CR calibration"
   --slug cr-calibration --status private`. Its post ID goes in `scripts/computed-route/calibration-targets.json`
-  (`{ "<site>": { "envFile", "envKey", "postId" } }`; eye-care-test: 668). Later runs replace that page with
+  (`{ "<site>": { "envFile", "envKey", "postId" } }`; eye-care-test: 668, sandybrown: 4750). Later runs replace that page with
   `--post-id`. Private, it is never public, indexed or linked; calibration reads it in a logged-in browser.
 - One build holds a block: one default instance per variant plus one instance per (setting, marker), each wrapped in an
   `sgs/container` with class `cr-cal-<block>-<setting>`. A block with more than `CHUNK` (150) instances is built and read

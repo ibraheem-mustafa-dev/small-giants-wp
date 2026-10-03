@@ -3,5 +3,10 @@
     "envFile": ".claude/secrets/eye-care-test.env",
     "envKey": "EYECARETEST",
     "postId": 668
+  },
+  "sandybrown": {
+    "envFile": ".claude/secrets/sandybrown.env",
+    "envKey": "SANDYBROWN",
+    "postId": 4750
   }
 }
