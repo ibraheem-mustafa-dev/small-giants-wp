@@ -46,9 +46,13 @@ function build( s, treeFile ) {
 	return { ok: true };
 }
 
-// walkStates: the walker states to run (passed as --states); null runs every state the config has.
+// walkStates: the walker states to run (passed as --states); null runs every state the config has. Every round walks
+// lean (only the styles, boxes, hover end states and structure Solve reads), so the first and last walks compare like
+// for like, and the draft side is read once per run and reused (--draft-cache): the draft does not change mid-run.
+export const WALK_FLAGS = [ '--headless', '--no-review', '--lean' ];
 function walk( walker, outDir, walkStates = null ) {
-	spawnSync( 'node', [ 'scripts/parity/draft-live-walk.mjs', walker, '--headless', '--widths', WIDTHS, '--no-review', '--out', outDir, ...( walkStates?.length ? [ '--states', walkStates.join( ',' ) ] : [] ) ], { cwd: REPO, encoding: 'utf8', timeout: 1800000, stdio: 'inherit' } );
+	const cache = path.join( path.dirname( outDir ), 'draft-cache.json' );
+	spawnSync( 'node', [ 'scripts/parity/draft-live-walk.mjs', walker, ...WALK_FLAGS, '--widths', WIDTHS, '--out', outDir, '--draft-cache', cache, ...( walkStates?.length ? [ '--states', walkStates.join( ',' ) ] : [] ) ], { cwd: REPO, encoding: 'utf8', timeout: 1800000, stdio: 'inherit' } );
 	const f = path.join( outDir, 'report.json' );
 	if ( ! fs.existsSync( f ) ) {
 		throw new Error( `the walker wrote no report in ${ outDir }` );

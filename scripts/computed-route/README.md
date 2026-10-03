@@ -167,6 +167,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `closeTrials(trials, blocked)` → settings still under trial when the run ends, reported as unconfirmed reverts.
 
 ### `solve.mjs` (runs `wp-build-page.js` and the walker)
+- `WALK_FLAGS`: every round's walk is lean (`--lean`: only the styles, boxes, hover end states and structure Solve reads) and reuses the run's draft reads (`--draft-cache <run dir>/draft-cache.json`).
 - `USED_VALUES`: computed properties that are used sizes (`width`), reported and never written.
 - `calibrationFor(block)` → the block's calibration file or null.
 - `writeRound(report, tree, { db, snapshot, round, log, blocked, stateMap, calFor? })` → `{ writes, gaps }`; only rows from mapped walker states are written.

@@ -11,7 +11,11 @@
 //
 // Usage: node scripts/parity/draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375]
 //        [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"] [--inject-live-js "js"]
-//        [--headless] [--self draft|live] [--no-auto] [--dump-auto]
+//        [--headless] [--self draft|live] [--no-auto] [--dump-auto] [--lean] [--draft-cache file]
+// --lean reads only what a settings writer uses (styles, boxes, hover end states, structure, scroll-ins): no load
+// entrances, motion timelines, automatic check, links, reveal sweep, screenshots or focus pass (Spec 47 Solve rounds).
+// --draft-cache keeps the draft side's reads per width, state list and mode in a file and reuses them: the draft does not
+// change between the walks of one run.
 // Runs headed unless --headless is passed. Needs NODE_EXTRA_CA_CERTS set to certifi's bundle for the Hostinger sites.
 // --inject-live-css / --inject-live-js are the negative controls: they plant a known difference on the live side
 // (the catch-rate benchmark, scripts/parity/benchmark.mjs, replays past gaps this way).
@@ -57,6 +61,8 @@ if ( problems.length || argv.includes( '--lint' ) ) {
 const widths = ( flag( '--widths' ) || ( cfg.widths || [ 1440, 768, 375 ] ).join( ',' ) ).split( ',' ).map( Number );
 const onlyStates = flag( '--states' )?.split( ',' );
 const accept = argv.includes( '--no-accept' ) ? [] : cfg.accept || [];
+const lean = argv.includes( '--lean' );
+const draftCache = flag( '--draft-cache' );
 const injectCss = flag( '--inject-live-css' );
 const injectJs = flag( '--inject-live-js' );
 const outDir = path.resolve( flag( '--out' ) || path.join( path.dirname( cfgPath ), 'out', cfg.name ) );
@@ -92,7 +98,7 @@ if ( self ) {
 
 // The automatic check (GAP-CHECKLIST.md section 12): every word, control and picture compared with no
 // config naming it, plus a scrolled state. On with the full checks; `auto: false` or --no-auto turns it off.
-const autoOn = header && false !== cfg.auto && ! argv.includes( '--no-auto' );
+const autoOn = header && ! lean && false !== cfg.auto && ! argv.includes( '--no-auto' );
 if ( autoOn ) {
 	withAutoScroll( cfg );
 }
@@ -120,7 +126,7 @@ async function walkSide( browser, side, width ) {
 	page.on( 'pageerror', ( e ) => errors.push( String( e ) ) );
 	page.on( 'console', ( m ) => m.type() === 'error' && errors.push( m.location()?.url ? `${ m.text() } (${ m.location().url })` : m.text() ) );
 	let tracked = [];
-	const onAction = header ? async () => {
+	const onAction = header && ! lean ? async () => {
 		const t = await sampleTimeline( page, tracked, side, RESOLVE );
 		h.timeline = t.samples;
 		return t.spent;
@@ -129,7 +135,7 @@ async function walkSide( browser, side, width ) {
 	await h.goto( cfg[ side ].url );
 	// Load entrances (GAP-CHECKLIST.md section 15): the page reloaded and sampled as it paints in.
 	const firstState = cfg.states[ 0 ]?.name;
-	const entrances = header && false !== cfg.entrances && ( ! onlyStates || onlyStates.includes( firstState ) ) ? await sampleEntrances( page, side, cfg ) : null;
+	const entrances = header && ! lean && false !== cfg.entrances && ( ! onlyStates || onlyStates.includes( firstState ) ) ? await sampleEntrances( page, side, cfg ) : null;
 	if ( cfg[ side ].open ) {
 		await cfg[ side ].open( h );
 	}
@@ -173,21 +179,23 @@ async function walkSide( browser, side, width ) {
 		}
 		const auto = autoOn ? await collectAutoOn( page, side, cfg ) : null;
 		// Links (section 14): the live side's same-origin targets are fetched once per run.
-		const links = false === cfg.links ? null : await collectLinks( page, side, cfg );
+		const links = false === cfg.links || lean ? null : await collectLinks( page, side, cfg );
 		if ( links && 'live' === side ) {
 			await probeLinks( ctx, page, links );
 		}
 		// Scroll-ins first, then (full-page states) the reveal sweep, so the shot shows every revealed section.
 		const y = await page.evaluate( () => window.scrollY );
 		await scrollInPass( page, scrollIns, side, snap, RESOLVE );
-		if ( state.fullPage && false !== cfg.revealSweep ) {
+		if ( state.fullPage && ! lean && false !== cfg.revealSweep ) {
 			await revealSweep( page, y );
 		} else if ( scrollIns.length ) {
 			await page.evaluate( ( t ) => window.scrollTo( { top: t, behavior: 'instant' } ), y );
 			await page.waitForTimeout( 600 );
 		}
-		const shot = path.join( outDir, `${ side }-${ width }-${ state.name }.png` );
-		await page.screenshot( { path: shot, fullPage: !! state.fullPage } );
+		const shot = lean ? null : path.join( outDir, `${ side }-${ width }-${ state.name }.png` );
+		if ( shot ) {
+			await page.screenshot( { path: shot, fullPage: !! state.fullPage } );
+		}
 		if ( auto ) {
 			await markClipped( ctx, shot, auto, !! state.fullPage );
 			// --dump-auto: the words and controls the automatic check compared, for diagnosing a pairing.
@@ -196,7 +204,7 @@ async function walkSide( browser, side, width ) {
 			}
 		}
 		await hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full: header, phone: !! phone.isMobile } );
-		if ( header ) {
+		if ( header && ! lean ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 		}
 		states[ state.name ] = { snap, shot, log, structure, auto, links, entrances: state.name === firstState ? entrances : null };
@@ -225,22 +233,30 @@ const results = { config: cfg.name, when: new Date().toISOString(), injectCss, i
 const linksSeen = new Set();
 const allLiveLinks = [];
 const origins = { draft: new URL( cb( cfg.draft.url ) ).origin, live: new URL( cb( cfg.live.url ) ).origin };
+const cached = draftCache && fs.existsSync( draftCache ) ? JSON.parse( fs.readFileSync( draftCache, 'utf8' ) ) : {};
+const cacheKey = ( width ) => JSON.stringify( { config: cfg.name, width, states: onlyStates || null, lean, self } );
 for ( const width of widths ) {
-	const draft = await walkSide( browser, 'draft', width );
+	const draft = cached[ cacheKey( width ) ] || await walkSide( browser, 'draft', width );
+	if ( draftCache ) {
+		cached[ cacheKey( width ) ] = draft;
+		fs.writeFileSync( draftCache, JSON.stringify( cached ) );
+	}
 	const live = await walkSide( browser, 'live', width );
 	results.errors[ width ] = { draft: draft.errors, live: live.errors };
 	for ( const state of cfg.states.filter( ( s ) => draft.states[ s.name ] ) ) {
 		const d = draft.states[ state.name ];
 		const l = live.states[ state.name ];
-		const shot = path.join( outDir, `pair-${ width }-${ state.name }.png` );
-		await sideBySide( browser, d.shot, l.shot, shot, width );
-		const run = { state: state.name, width, shot: path.basename( shot ), pairs: {} };
+		const shot = d.shot && l.shot ? path.join( outDir, `pair-${ width }-${ state.name }.png` ) : null;
+		if ( shot ) {
+			await sideBySide( browser, d.shot, l.shot, shot, width );
+		}
+		const run = { state: state.name, width, shot: shot ? path.basename( shot ) : null, pairs: {} };
 		compareState( run, d, l, { state, width, cfg, accept, divergences, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks } );
 		results.runs.push( run );
 	}
 }
 await browser.close();
-const unseen = false === cfg.links || ! results.runs.length ? [] : unseenLabels( cfg, allLiveLinks, origins ).filter( ( r ) => ! linksSeen.has( r.key ) );
+const unseen = false === cfg.links || lean || ! results.runs.length ? [] : unseenLabels( cfg, allLiveLinks, origins ).filter( ( r ) => ! linksSeen.has( r.key ) );
 if ( unseen.length ) {
 	const last = results.runs.at( -1 );
 	last.pairs[ '(links)' ] ??= { diffs: [] };
