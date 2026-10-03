@@ -142,10 +142,6 @@
           {
             "name": "sgs/container",
             "attributes": {
-              "layout": "stack",
-              "gap": {
-                "desktop": "6px"
-              },
               "backgroundColour": "surface-alt",
               "padding": {
                 "desktop": {
@@ -221,10 +217,6 @@
           {
             "name": "sgs/container",
             "attributes": {
-              "layout": "stack",
-              "gap": {
-                "desktop": "6px"
-              },
               "backgroundColour": "surface-alt",
               "padding": {
                 "desktop": {
@@ -280,10 +272,6 @@
           {
             "name": "sgs/container",
             "attributes": {
-              "layout": "stack",
-              "gap": {
-                "desktop": "6px"
-              },
               "backgroundColour": "surface-alt",
               "padding": {
                 "desktop": {
@@ -339,10 +327,6 @@
           {
             "name": "sgs/container",
             "attributes": {
-              "layout": "stack",
-              "gap": {
-                "desktop": "6px"
-              },
               "backgroundColour": "surface-alt",
               "padding": {
                 "desktop": {
@@ -569,7 +553,7 @@
                     }
                   },
                   "minHeight": {
-                    "desktop": 52
+                    "desktop": 50
                   },
                   "fontSize": {
                     "desktop": 13
@@ -580,17 +564,32 @@
                   "textTransform": "uppercase",
                   "padding": {
                     "desktop": {
-                      "left": "26px",
-                      "right": "26px"
+                      "top": "0px",
+                      "right": "26px",
+                      "bottom": "0px",
+                      "left": "26px"
                     }
                   },
                   "margin": {
                     "desktop": {
-                      "top": "28px"
+                      "top": "0px"
+                    },
+                    "mobile": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "0px"
+                    },
+                    "tablet": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "0px"
                     }
                   },
                   "letterSpacingUnit": "em",
-                  "className": "cr-ref-lenses-28"
+                  "className": "cr-ref-lenses-28",
+                  "fontWeight": "400"
                 }
               }
             ]

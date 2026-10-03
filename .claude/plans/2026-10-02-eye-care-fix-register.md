@@ -92,7 +92,7 @@
 | S8 | Prices show ".00" | One switch hides ".00" on whole-pound prices across the shop's pages: product page, cards, bag, lens pop-up and the shop's own price text. Emails and admin keep pennies. Checkout total lines: see D4. | framework repair | N9, N34 |
 | S9 | Brand names typed where logos belong | All 40 brands already have a logo saved on the brand. One shared lookup prints the logo, with the brand name as its text alternative, on product cards, the product page top and bag lines. It falls back to the name when a brand has no logo. | framework new + tree | N10, N27-brand, N33A |
 | S10 | Things that should be one link are not | One shared "stretched link" piece: the main link's clickable area covers the whole card or logo row, while buttons inside (wishlist, swatches) sit above it and keep working. Used by product cards (whole card links to the product) and the header logo (logo plus "EYE CARE BIRMINGHAM" as one link). | framework new + tree | N26, N2A |
-| S11 | Gap settings that take presets only | The universal control exists (your point 30): the shared spacing control, whose free-input mode (number plus unit) the button group uses. Today a control is either presets or free input. Small repair: one "Custom" entry beside the presets switches to the number-plus-unit box, so every gap offers both. Link lists and social icons switch to it. Their output accepts a length as well as a preset, checked before it is printed. | framework repair | 30, 40 |
+| S11 | Gap settings that take presets only | The universal control exists (your point 30): the shared spacing control, whose free-input mode (number plus unit) the button group uses. Today a control is either presets or free input. Small repair: one "Custom" entry beside the presets switches to the number-plus-unit box, so every gap offers both. Link lists and social icons switch to it. Their output accepts a length as well as a preset, checked before it is printed. | framework repair | 30, 40; Lenses benefits list (2026-10-03: `icon-list/render.php` turns the tree's `11px` gap into `--wp--preset--spacing--11`, which does not exist, so the gap silently falls back) |
 | S12 | A clicked card or link gets underlined everywhere | The theme draws an underline on any focused link, which beats each block's "no underline". Show it only for keyboard focus, on text links. The keyboard focus ring stays. | framework repair | N6 (and every whole-card link) |
 
 ## Header
@@ -268,10 +268,10 @@
 | Ref | What is wrong | Fix | Type | Status |
 |---|---|---|---|---|
 | 99 | Heading line spacing | line height 1.02 all sizes | tree | Solve closed (2026-10-03) |
-| 100 | Price cards 4px shorter | 4px top margin on each price (page padding does not change card height) | tree | margin Solve closed (2026-10-03); card height still open |
+| 100 | Price cards 4px shorter | 4px top margin on each price (page padding does not change card height) | tree | Solve closed (2026-10-03): the margin; the card height closed once the four price cards dropped their stack layout and 6px gap (a flex-column gap stacked on the price's own margins) |
 | 101 | Gap under section headings 16px too big | heading bottom margin 0 | tree | Solve closed (2026-10-03) |
 | 102 | Step numbers large and bold; text not aligned with its number | numbers 15.5px, weight 500, gaps 16/15px; each step's text aligned to its number's line | tree (check the alignment setting exists) | Solve closed (2026-10-03) |
-| 103 | "Choose a frame" text too bold | weight 400 | tree | proven |
+| 103 | "Choose a frame" text too bold | weight 400 | tree | closed (2026-10-03): weight 400, with the button's draft padding box (0 26px) and 50px height |
 | N39 | Content starts too low | S6 (the top spacing is the main fault: it pushes every page down). Side margins: re-measure at 1280, 1366 and 1920 and fix only if they differ. | tree | proven (top); to prove (sides) |
 | N40 | Gap above the button too big | Match the draft's gap (same cause as 101: a default heading/text bottom margin) | tree | to prove |
 | N41 | "Choose a frame" does not lift | S1 | | |
