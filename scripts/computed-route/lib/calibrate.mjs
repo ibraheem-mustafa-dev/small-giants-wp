@@ -135,7 +135,9 @@ export function buildTree( block, fixture, instances ) {
 		for ( const p of [ ...( fixture.parents || [] ) ].reverse() ) {
 			node = { name: p.name, attributes: { ...( p.attributes || {} ) }, innerBlocks: [ node ] };
 		}
-		return { name: 'sgs/container', attributes: { className: `cr-cal-${ short }-${ inst.key }` }, innerBlocks: [ node ] };
+		// fixture.before: blocks placed ahead of the instance in its wrapper, for a block that reads the rest of the page
+		// (a table of contents lists the page's headings). Reads stay scoped to the instance's own class.
+		return { name: 'sgs/container', attributes: { className: `cr-cal-${ short }-${ inst.key }` }, innerBlocks: [ ...structuredClone( fixture.before || [] ), node ] };
 	} );
 }
 

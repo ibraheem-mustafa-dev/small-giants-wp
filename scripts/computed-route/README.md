@@ -25,7 +25,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page, reads them at 375/768/1440 (hover under a real mouse; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`). |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`). |
-| `calibration-fixtures.json` | Minimum content, inner blocks, parent chain and optional variants per calibrated block. |
+| `calibration-fixtures.json` | Minimum content, inner blocks, parent chain, optional variants and optional `before` blocks (placed ahead of the instance, for a block that reads the page, such as a table of contents) per calibrated block. |
 | `ledger.mjs` | Divergence ledger command: `accept <report.json> <row id>` adds an entry dated today; `stale <report.json>` exits 1 while any entry is stale. |
 | `lib/db.mjs` | Read-only `block_attributes` queries. |
 | `lib/normalise.mjs` | Value parsing and token snapping from `theme-snapshot.json`, with the snap log. |

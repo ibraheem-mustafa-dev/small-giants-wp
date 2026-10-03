@@ -169,22 +169,32 @@
   },
   "sgs/brand-strip": {
     "attributes": {
+      "source": "manual",
       "scrolling": false,
-      "scrollSpeed": "slow",
-      "pauseOnHover": true,
-      "brandLinkToShop": true,
-      "brandMaxItems": 3,
-      "separators": {
-        "column": {
-          "style": "solid",
-          "width": {
-            "desktop": "1px"
+      "logos": [
+        {
+          "_key": "cal-logo-1",
+          "media": {
+            "id": 3459,
+            "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+            "alt": "Sample image",
+            "type": "image",
+            "mime": "image/jpeg"
           },
-          "colour": "#EFEAE2"
+          "name": "Brand one"
+        },
+        {
+          "_key": "cal-logo-2",
+          "media": {
+            "id": 4080,
+            "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
+            "alt": "Second sample image",
+            "type": "image",
+            "mime": "image/png"
+          },
+          "name": "Brand two"
         }
-      },
-      "brandHideEmpty": false,
-      "source": "product-brands"
+      ]
     },
     "variants": [
       {},
@@ -1766,6 +1776,627 @@
       "variant": "inline",
       "message": "Hi, I'd like to know more about your services.",
       "label": "Message me"
+    }
+  },
+  "sgs/account": {
+    "attributes": {}
+  },
+  "sgs/audio": {
+    "attributes": {
+      "audioSource": "internal",
+      "audioId": 4089,
+      "audioUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-tone.wav",
+      "audioMimeType": "audio/wav",
+      "title": "Sample sound"
+    }
+  },
+  "sgs/before-after": {
+    "attributes": {
+      "beforeImageId": 3459,
+      "beforeImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+      "beforeImageAlt": "Before",
+      "afterImageId": 4080,
+      "afterImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
+      "afterImageAlt": "After"
+    }
+  },
+  "sgs/collapsible-text": {
+    "attributes": {
+      "text": "<p>A first sample paragraph.</p><p>A second sample paragraph with enough words to wrap across more than one line at narrow widths.</p>",
+      "collapsible": true,
+      "collapsedLines": 2
+    }
+  },
+  "sgs/countdown-timer": {
+    "attributes": {
+      "targetDate": "2027-12-31T12:00:00"
+    }
+  },
+  "sgs/counter": {
+    "attributes": {
+      "number": 5000,
+      "suffix": "+",
+      "label": "Sample count"
+    }
+  },
+  "sgs/cta-section": {
+    "attributes": {
+      "headline": "A sample headline",
+      "buttons": [
+        {
+          "text": "Get started",
+          "style": "accent",
+          "url": "/"
+        }
+      ]
+    }
+  },
+  "sgs/decorative-image": {
+    "attributes": {
+      "decorMedia": {
+        "id": 3459,
+        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+        "alt": "Sample image",
+        "type": "image",
+        "mime": "image/jpeg"
+      }
+    }
+  },
+  "sgs/feature-grid": {
+    "attributes": {},
+    "inner": [
+      {
+        "name": "sgs/info-box",
+        "attributes": {
+          "heading": "Feature one",
+          "description": "A short description."
+        }
+      },
+      {
+        "name": "sgs/info-box",
+        "attributes": {
+          "heading": "Feature two",
+          "description": "A short description."
+        }
+      }
+    ]
+  },
+  "sgs/form-field-address": {
+    "attributes": {
+      "fieldName": "address",
+      "label": "Address",
+      "required": true
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-checkbox": {
+    "attributes": {
+      "fieldName": "interests",
+      "label": "Which apply?",
+      "options": [
+        "Option one",
+        "Option two"
+      ]
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-consent": {
+    "attributes": {
+      "fieldName": "consent",
+      "label": "I agree to the terms."
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-date": {
+    "attributes": {
+      "fieldName": "date",
+      "label": "Preferred date",
+      "required": true
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-hidden": {
+    "attributes": {
+      "fieldName": "source",
+      "defaultValue": "calibration"
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-radio": {
+    "attributes": {
+      "fieldName": "heard",
+      "label": "Where did you find us?",
+      "options": [
+        "Option one",
+        "Option two"
+      ]
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-tiles": {
+    "attributes": {
+      "fieldName": "kind",
+      "label": "Which kind?",
+      "tiles": [
+        {
+          "label": "One",
+          "icon": "star",
+          "iconSource": "lucide"
+        },
+        {
+          "label": "Two",
+          "icon": "heart",
+          "iconSource": "lucide"
+        }
+      ]
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-review": {
+    "attributes": {
+      "heading": "Review your information"
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/gallery": {
+    "attributes": {
+      "mediaItems": [
+        {
+          "id": 3459,
+          "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+          "alt": "Sample image",
+          "type": "image",
+          "mime": "image/jpeg"
+        },
+        {
+          "id": 4080,
+          "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
+          "alt": "Second sample image",
+          "type": "image",
+          "mime": "image/png"
+        },
+        {
+          "id": 3459,
+          "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+          "alt": "Sample image",
+          "type": "image",
+          "mime": "image/jpeg"
+        }
+      ]
+    },
+    "variants": [
+      {},
+      {
+        "layout": "carousel"
+      }
+    ]
+  },
+  "sgs/icon": {
+    "attributes": {
+      "iconName": "star"
+    },
+    "variants": [
+      {},
+      {
+        "backgroundShape": "circle"
+      }
+    ]
+  },
+  "sgs/image-sequence": {
+    "attributes": {
+      "thumbnail": {
+        "id": 3459,
+        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+        "alt": "Sample image",
+        "type": "image",
+        "mime": "image/jpeg"
+      },
+      "thumbnailAlt": "Sample image"
+    }
+  },
+  "sgs/info-box": {
+    "attributes": {
+      "heading": "A sample heading",
+      "description": "A short supporting statement."
+    }
+  },
+  "sgs/language-switch": {
+    "attributes": {
+      "languages": [
+        {
+          "code": "en",
+          "url": "#",
+          "customLabel": ""
+        },
+        {
+          "code": "es",
+          "url": "#",
+          "customLabel": ""
+        }
+      ]
+    }
+  },
+  "sgs/local-time": {
+    "attributes": {
+      "timeZone": "Europe/London",
+      "label": "London"
+    }
+  },
+  "sgs/mega-aside": {
+    "attributes": {},
+    "inner": [
+      {
+        "name": "sgs/heading",
+        "attributes": {
+          "level": "h3",
+          "content": "Featured"
+        }
+      },
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "Short supporting text."
+        }
+      }
+    ],
+    "parents": [
+      {
+        "name": "sgs/mega-panel",
+        "attributes": {
+          "variant": "general"
+        }
+      }
+    ]
+  },
+  "sgs/nav-drawer-menu": {
+    "attributes": {},
+    "parents": [
+      {
+        "name": "sgs/nav-drawer",
+        "attributes": {}
+      }
+    ]
+  },
+  "sgs/notice-banner": {
+    "attributes": {
+      "variant": "info",
+      "icon": "info",
+      "text": "A short sample notice."
+    }
+  },
+  "sgs/notice-message": {
+    "attributes": {
+      "label": "Slide 1"
+    },
+    "inner": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "A short sample notice."
+        }
+      }
+    ],
+    "parents": [
+      {
+        "name": "sgs/notice-banner",
+        "attributes": {
+          "messageMode": "rotate"
+        }
+      }
+    ]
+  },
+  "sgs/option-picker": {
+    "attributes": {
+      "label": "Size",
+      "optionItems": [
+        {
+          "key": "small",
+          "label": "Small"
+        },
+        {
+          "key": "large",
+          "label": "Large"
+        }
+      ],
+      "defaultSelected": "small"
+    }
+  },
+  "sgs/physics-canvas": {
+    "attributes": {},
+    "inner": [
+      {
+        "name": "sgs/label",
+        "attributes": {
+          "text": "One"
+        }
+      },
+      {
+        "name": "sgs/label",
+        "attributes": {
+          "text": "Two"
+        }
+      }
+    ]
+  },
+  "sgs/post-grid": {
+    "attributes": {
+      "postsPerPage": 2
+    }
+  },
+  "sgs/pricing-table": {
+    "attributes": {}
+  },
+  "sgs/product-faq": {
+    "attributes": {
+      "heading": "Questions"
+    },
+    "inner": [
+      {
+        "name": "sgs/product-faq-item",
+        "attributes": {
+          "question": "A first question?",
+          "isOpen": true
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "An answer."
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/product-faq-item",
+        "attributes": {
+          "question": "A second question?"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "An answer."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "sgs/product-faq-item": {
+    "attributes": {
+      "question": "A sample question?",
+      "isOpen": true
+    },
+    "inner": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "An answer."
+        }
+      }
+    ],
+    "parents": [
+      {
+        "name": "sgs/product-faq",
+        "attributes": {}
+      }
+    ]
+  },
+  "sgs/product-search": {
+    "attributes": {
+      "placeholder": "Search products",
+      "buttonLabel": "Search"
+    }
+  },
+  "sgs/quote": {
+    "attributes": {
+      "attribution": "Sample Author"
+    },
+    "inner": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "A sample quotation."
+        }
+      }
+    ]
+  },
+  "sgs/separator": {
+    "attributes": {},
+    "variants": [
+      {},
+      {
+        "contentMode": "text",
+        "contentText": "Or"
+      }
+    ]
+  },
+  "sgs/star-rating": {
+    "attributes": {
+      "rating": 4.5,
+      "label": "4.5 out of 5"
+    },
+    "variants": [
+      {},
+      {
+        "displayMode": "stars-with-value-and-count"
+      }
+    ]
+  },
+  "sgs/store-selector": {
+    "attributes": {
+      "triggerPrefix": "Select store",
+      "stores": [
+        {
+          "label": "Store one",
+          "url": "https://example.com/one/",
+          "flagId": 0,
+          "flagUrl": ""
+        },
+        {
+          "label": "Store two",
+          "url": "https://example.com/two/",
+          "flagId": 0,
+          "flagUrl": ""
+        }
+      ]
+    }
+  },
+  "sgs/table-of-contents": {
+    "attributes": {
+      "title": "Contents"
+    },
+    "before": [
+      {
+        "name": "sgs/heading",
+        "attributes": {
+          "level": "h2",
+          "content": "Section one"
+        }
+      },
+      {
+        "name": "sgs/heading",
+        "attributes": {
+          "level": "h3",
+          "content": "Section two"
+        }
+      }
+    ]
+  },
+  "sgs/team-member": {
+    "attributes": {
+      "name": "Sample Person",
+      "role": "Sample role",
+      "bio": "A short supporting statement.",
+      "photo": {
+        "id": 3459,
+        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+        "alt": "Sample image",
+        "type": "image",
+        "mime": "image/jpeg"
+      }
+    }
+  },
+  "sgs/testimonial": {
+    "attributes": {
+      "quote": "A sample testimonial quotation.",
+      "reviewerName": "Sample Reviewer",
+      "reviewerRole": "Sample role",
+      "showRating": true,
+      "ratingStars": 5
+    }
+  },
+  "sgs/testimonial-slider": {
+    "attributes": {},
+    "inner": [
+      {
+        "name": "sgs/testimonial",
+        "attributes": {
+          "quote": "A first sample quotation.",
+          "reviewerName": "Reviewer one"
+        }
+      },
+      {
+        "name": "sgs/testimonial",
+        "attributes": {
+          "quote": "A second sample quotation.",
+          "reviewerName": "Reviewer two"
+        }
+      }
+    ]
+  },
+  "sgs/theme-toggle": {
+    "attributes": {
+      "label": "Dark mode"
+    },
+    "variants": [
+      {},
+      {
+        "toggleStyle": "segmented"
+      }
+    ]
+  },
+  "sgs/timeline": {
+    "attributes": {}
+  },
+  "sgs/trustpilot-reviews": {
+    "attributes": {
+      "dataSource": "placeholder",
+      "trustScore": 4.6,
+      "trustScoreLabel": "Excellent",
+      "totalReviews": 250
+    }
+  },
+  "sgs/wishlist-link": {
+    "attributes": {}
+  },
+  "sgs/wishlist-panel": {
+    "attributes": {
+      "showWhenEmpty": true
     }
   }
 }
