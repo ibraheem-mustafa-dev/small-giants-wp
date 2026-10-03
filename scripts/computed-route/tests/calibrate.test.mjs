@@ -88,3 +88,40 @@ test( 'MUST FAIL TO BE DEAD: the quote borderRadius marker is corner-keyed and p
 	assert.deepEqual( Object.keys( m.attrs.borderRadius ), [ 'desktop', 'tablet', 'mobile' ] );
 	assert.deepEqual( m.attrs.borderRadius.desktop, { topLeft: '11px', topRight: '13px', bottomRight: '17px', bottomLeft: '19px' } );
 } );
+
+// CR11: a border style paints only with a border width (info-box/render.php prints border-style inside
+// `if ( $has_border_width )`), so a style-only marker reads dead. Each style marker carries its companion width and is
+// read against a baseline carrying the same width.
+import { companionWidth, slotFor } from '../lib/calibrate.mjs';
+
+const BORDER_ROW = { attr_name: 'borderStyle', css_property: 'border-style', tier_shape: null, box_family: null };
+// The render's rule, per width: the style prints only beside a width; otherwise nothing paints.
+const paint = ( attrs ) => Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { '': {
+	'border-top-style': attrs.borderWidth ? attrs.borderStyle || 'solid' : 'none',
+	'border-top-width': attrs.borderWidth ? '3px' : '0px',
+} } ] ) );
+
+test( 'a border-style marker carries the companion width, and its baseline carries the same width', () => {
+	const schema = blockSchema( 'sgs/info-box' );
+	assert.deepEqual( companionWidth( 'borderStyle', schema ).attrs, { borderWidth: { top: '3px', right: '3px', bottom: '3px', left: '3px' } } );
+	const ms = markersFor( BORDER_ROW, schema, { palette: [], spacing: [], fontSizes: [] } );
+	assert.ok( ms.length > 1 );
+	for ( const m of ms ) {
+		assert.deepEqual( m.base, { borderWidth: { top: '3px', right: '3px', bottom: '3px', left: '3px' } } );
+		assert.deepEqual( m.attrs.borderWidth, m.base.borderWidth );
+	}
+} );
+
+test( 'MUST FAIL TO BE DEAD: a dashed style is mapped against its width baseline; alone against the default it reads dead', () => {
+	const m = markersFor( BORDER_ROW, blockSchema( 'sgs/info-box' ), { palette: [], spacing: [], fontSizes: [] } ).find( ( x ) => 'enum-dashed' === x.label );
+	const styleOnly = slotFor( BORDER_ROW, m, paint( {} ), paint( { borderStyle: 'dashed' } ) );
+	assert.equal( styleOnly.dead, true );
+	const paired = slotFor( BORDER_ROW, m, paint( m.base ), paint( m.attrs ) );
+	assert.equal( paired.dead, undefined );
+	assert.equal( paired.slot, '' );
+	assert.equal( paired.property, 'border-style' );
+} );
+
+test( 'a style setting with no width companion keeps its plain markers', () => {
+	assert.equal( companionWidth( 'lineStyle', blockSchema( 'sgs/separator' ) ), null );
+} );

@@ -198,7 +198,15 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 			if ( ! ms.length ) {
 				noMarker.add( row.attr_name );
 			}
-			ms.forEach( ( m ) => instances.push( { key: `${ row.attr_name }-${ m.label }-v${ vi }`, row, marker: m, attrs: { ...vattrs, ...m.attrs }, variant: vi, hover: 'hover' === row.css_state, trigger: triggerFor( row.css_state ) } ) );
+			ms.forEach( ( m ) => {
+				// A marker with `base` (a border style with its companion width) is read against a baseline instance of
+				// this variant carrying the same attributes, one per distinct base.
+				const baseKey = m.base ? `${ vi }:${ JSON.stringify( m.base ) }` : null;
+				if ( baseKey && ! instances.some( ( i ) => i.baseKey === baseKey && i.isBase ) ) {
+					instances.push( { key: `base-${ Object.keys( m.base ).join( '-' ) }-v${ vi }`, attrs: { ...vattrs, ...m.base }, variant: vi, isBase: true, baseKey } );
+				}
+				instances.push( { key: `${ row.attr_name }-${ m.label }-v${ vi }`, row, marker: m, attrs: { ...vattrs, ...m.attrs }, variant: vi, hover: 'hover' === row.css_state, trigger: triggerFor( row.css_state ), baseKey } );
+			} );
 		}
 		// Enum settings with no css_property: one instance per value against the plain fixture (variant 0), to discover
 		// what each value paints.
@@ -217,8 +225,8 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 	const rejected = [];
 	// A block with more instances than one page saves reliably is built in chunks; every chunk carries each variant's
 	// default instance, so a marker is always compared with a default read on the same page load.
-	const defaults = instances.filter( ( i ) => i.isDefault );
-	const others = instances.filter( ( i ) => ! i.isDefault );
+	const defaults = instances.filter( ( i ) => i.isDefault || i.isBase );
+	const others = instances.filter( ( i ) => ! i.isDefault && ! i.isBase );
 	const chunks = [];
 	for ( let i = 0; i < others.length; i += CHUNK ) {
 		chunks.push( [ ...defaults, ...others.slice( i, i + CHUNK ) ] );
@@ -258,13 +266,22 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 		}
 		// Each instance keeps its own reads and its chunk's default reads (rest and scrolled) for its variant.
 		const chunkDefault = {};
-		list.forEach( ( inst, n ) => inst.isDefault && ( chunkDefault[ inst.variant ] = n ) );
+		const chunkBase = {};
+		list.forEach( ( inst, n ) => {
+			inst.isDefault && ( chunkDefault[ inst.variant ] = n );
+			inst.isBase && ( chunkBase[ inst.baseKey ] = n );
+		} );
 		const at = ( n, src ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, src[ w ]?.[ n ] ] ) );
 		list.forEach( ( inst, n ) => {
-			if ( inst.isDefault && c > 0 ) {
+			// Baselines are only ever compared against; defaults are kept once.
+			if ( inst.isBase || ( inst.isDefault && c > 0 ) ) {
 				return;
 			}
-			const d = chunkDefault[ inst.variant ];
+			if ( inst.baseKey && undefined === chunkBase[ inst.baseKey ] ) {
+				rejected.push( { key: inst.key, message: 'its baseline instance was rejected, so there is nothing to compare it with' } );
+				return;
+			}
+			const d = inst.baseKey ? chunkBase[ inst.baseKey ] : chunkDefault[ inst.variant ];
 			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), scrollMissed: reads.scrollMissed.includes( n ) } );
 		} );
 	}

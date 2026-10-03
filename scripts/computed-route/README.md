@@ -22,7 +22,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 |---|---|
 | `README.md` | This index. |
 | `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, client names. |
-| `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page, reads them at 375/768/1440 (hover under a real mouse; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
+| `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`). |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain, optional variants and optional `before` blocks (placed ahead of the instance, for a block that reads the page, such as a table of contents) per calibrated block. |
@@ -42,7 +42,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/normalise.test.mjs` | R-47-7: tokens before literals. |
 | `tests/resolve.test.mjs` | FR-47-1: storage shapes and gaps; border-radius written as corners, never sides. |
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
-| `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code; a run never replaces another site's cache file without `--recalibrate`. |
+| `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code; a run never replaces another site's cache file without `--recalibrate`; a border-style marker carries its companion width and maps against a width baseline (CR11). |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
 | `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
@@ -119,7 +119,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `READ_PROPS`: the properties read per element. `INHERITED`: never recorded as default paint.
 - `STATE_TRIGGERS`, `SCROLL_Y`: how each setting state is reached (`hover` real mouse, `scrolled` window scroll, `open` and `current` rendered by the fixture). `triggerFor(state)` → the trigger, `null` for rest, undefined when the state has none (reported, never calibrated).
 - `longhands(cssProperty)` → the walker longhands a setting covers.
-- `markersFor(row, schema, snapshot, current)` → `[{ label, attrs, expect, form? }]` (§3.2 table).
+- `markersFor(row, schema, snapshot, current)` → `[{ label, attrs, expect, form?, base? }]` (§3.2 table); a border-style marker carries its companion width and `base` (the baseline attributes it is read against).
+- `companionWidth(styleAttr, schema)` → `{ attr, attrs }`: the width a border-style marker needs (`<x>Style` → `<x>Width`, 3px in the attribute's own shape), or null.
 - `buildTree(block, fixture, instances)` → the calibration tree.
 - `readInstancesInPage([count, prefix, props, pathSrc])`: in-page; every element of each instance by path.
 - `elementPath`: re-exported from `scripts/parity/lib/ref-trace.mjs`.

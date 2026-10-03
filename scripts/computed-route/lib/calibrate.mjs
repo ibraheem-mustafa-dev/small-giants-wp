@@ -60,7 +60,31 @@ const KEYWORDS = {
 	'text-align': [ 'center', 'right' ],
 };
 
-const isColour = ( p ) => /(^|-)color$/.test( p ) || 'background-color' === p;
+// The width a border-style marker needs before it can paint: the same setting name with Style → Width
+// (borderStyle → borderWidth, ctaBorderStyle → ctaBorderWidth), written in that attribute's own shape (a box of 3px
+// sides, a number with its px unit companion, or a px string). Returns { attr, attrs } or null when the block has none.
+export function companionWidth( styleAttr, schema ) {
+	const attr = styleAttr.replace( /Style$/, 'Width' );
+	const def = attr !== styleAttr ? schema[ attr ] : null;
+	if ( ! def ) {
+		return null;
+	}
+	const unitAttr = schema[ `${ attr }Unit` ] ? `${ attr }Unit` : null;
+	const t = types( def );
+	let value;
+	if ( t.includes( 'object' ) ) {
+		value = Object.fromEntries( SIDES.map( ( s ) => [ s, '3px' ] ) );
+	} else if ( t.includes( 'number' ) || t.includes( 'integer' ) ) {
+		value = 3;
+	} else if ( t.includes( 'string' ) ) {
+		value = unitAttr ? '3' : '3px';
+	} else {
+		return null;
+	}
+	return { attr, attrs: { [ attr ]: value, ...( unitAttr && 'object' !== typeof value ? { [ unitAttr ]: 'px' } : {} ) } };
+}
+
+const isColour = ( p ) =>/(^|-)color$/.test( p ) || 'background-color' === p;
 const types = ( def ) => [].concat( def?.type || [] );
 
 // The markers for one setting (§3.2 table). Each: { label, attrs, expect: { width: value } | null, form? }.
@@ -93,7 +117,11 @@ export function markersFor( row, schema, snapshot, current = {} ) {
 		return KEYWORDS[ prop ].map( ( v ) => ( { label: `kw-${ v.replace( /[^a-z0-9]+/gi, '-' ) }`, attrs: { [ row.attr_name ]: v }, expect: null } ) );
 	}
 	if ( Array.isArray( def.enum ) ) {
-		return def.enum.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, attrs: { [ row.attr_name ]: v }, expect: null } ) );
+		// A border style paints only with a border width, so each style marker carries its companion width and is read
+		// against a baseline instance carrying the same width (`base`), never against the plain default.
+		const pair = 'border-style' === prop ? companionWidth( row.attr_name, schema ) : null;
+		const extra = pair ? pair.attrs : {};
+		return def.enum.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, attrs: { [ row.attr_name ]: v, ...extra }, expect: null, ...( pair ? { base: pair.attrs } : {} ) } ) );
 	}
 	if ( types( def ).includes( 'boolean' ) ) {
 		return [ { label: 'bool', attrs: { [ row.attr_name ]: ! def.default }, expect: null } ];
