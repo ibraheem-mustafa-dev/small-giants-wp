@@ -77,3 +77,14 @@ test( 'a CRLF render.php keys the same as its LF copy', () => {
 test( 'MUST FAIL TO MATCH: a code change in render.php changes the key, whatever its line endings', () => {
 	assert.notEqual( localBlockHash( buildDir( '<?php\r\necho 2;\r\n' ) ), localBlockHash( buildDir( '<?php\necho 1;\n' ) ) );
 } );
+
+// A border-radius box marker is written in the shape the render reads: corners, per device (otherwise every
+// borderRadius reads as dead).
+import { markersFor } from '../lib/calibrate.mjs';
+import { blockSchema } from '../lib/resolve.mjs';
+
+test( 'MUST FAIL TO BE DEAD: the quote borderRadius marker is corner-keyed and per device', () => {
+	const [ m ] = markersFor( { attr_name: 'borderRadius', css_property: 'border-radius', tier_shape: 'box_only', box_family: 'borderRadius' }, blockSchema( 'sgs/quote' ), { palette: [], spacing: [], fontSizes: [] } );
+	assert.deepEqual( Object.keys( m.attrs.borderRadius ), [ 'desktop', 'tablet', 'mobile' ] );
+	assert.deepEqual( m.attrs.borderRadius.desktop, { topLeft: '11px', topRight: '13px', bottomRight: '17px', bottomLeft: '19px' } );
+} );

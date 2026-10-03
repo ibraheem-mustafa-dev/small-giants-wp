@@ -152,6 +152,36 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {} }, cali
 // siblings: the element's other draft properties, for settings found by calibration }.
 // ctx: { db, calibration: { settings: { attr: { slot, forms } } } | null, snapshot, log }.
 // Returns { writes: [{ attr, value, merge: 'deep'|'replace' }] } or { gap, detail }.
+// A border-radius box stores corners, never sides (helpers-box.php::sgs_border_radius_tiers reads topLeft, topRight,
+// bottomLeft, bottomRight and ignores any other key), per device when the attribute's default is a tier object.
+export const CORNERS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
+
+// The computed border-radius shorthand ("8px", "8px 4px", …) as corners, or null for an elliptical radius.
+export function radiusCorners( raw ) {
+	const v = String( raw ).trim().split( /\s+/ );
+	if ( ! v.length || v.length > 4 || v.some( ( x ) => '/' === x || ! parseLength( x ) ) ) {
+		return null;
+	}
+	const [ a, b = a, c = a, d = b ] = v;
+	return Object.fromEntries( CORNERS.map( ( k, i ) => [ k, [ a, b, c, d ][ i ] ] ) );
+}
+
+function radiusWrite( attr, tiers, def ) {
+	const perTier = Object.fromEntries( Object.entries( tiers ).map( ( [ t, raw ] ) => [ t, radiusCorners( raw ) ] ) );
+	const bad = Object.entries( perTier ).find( ( [ , c ] ) => ! c );
+	if ( bad ) {
+		return { gap: 'shape', detail: `${ attr } cannot hold the radius ${ tiers[ bad[ 0 ] ] }` };
+	}
+	if ( def?.default && 'object' === typeof def.default && 'desktop' in def.default ) {
+		return { writes: [ { attr, value: perTier, merge: 'deep' } ] };
+	}
+	const vals = [ ...new Set( Object.values( perTier ).map( ( c ) => JSON.stringify( c ) ) ) ];
+	if ( vals.length > 1 ) {
+		return { gap: 'shape', detail: `${ attr } holds one radius for every width; draft has ${ vals.join( ', ' ) }` };
+	}
+	return { writes: [ { attr, value: JSON.parse( vals[ 0 ] ), merge: 'replace' } ] };
+}
+
 export function resolve( input, ctx ) {
 	const { block, slot, prop, state = null, perWidth, fontPx = {}, current = {} } = input;
 	const { short, side } = splitProperty( prop );
@@ -193,6 +223,9 @@ export function resolve( input, ctx ) {
 	const tierPx = ( t ) => fontPx[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || 16;
 	const fmt = ( t, raw, def ) => formatValue( { prop: short, raw, def, unit, fontPx: tierPx( t ), forms, prefer: typeof current[ attr ] === 'string' ? current[ attr ] : null,
 		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }` } );
+	if ( 'border-radius' === short && ( row.box_family || 'box_only' === row.tier_shape ) ) {
+		return radiusWrite( attr, tiers, schema[ attr ] );
+	}
 	const out = {};
 	for ( const [ t, raw ] of Object.entries( tiers ) ) {
 		const def = 'flat_sibling' === row.tier_shape ? schema[ attr + ( 'desktop' === t ? '' : t[ 0 ].toUpperCase() + t.slice( 1 ) ) ] : schema[ attr ];

@@ -4,7 +4,7 @@
 // Only settings painting a property the walker measures are calibrated: those are the only ones Solve can be asked for.
 import { DEFAULT_PROPS, HOVER_PROPS } from '../../parity/lib/collect.mjs';
 import { REF_PROPS, elementPath } from '../../parity/lib/ref-trace.mjs';
-import { splitProperty } from './resolve.mjs';
+import { splitProperty, CORNERS } from './resolve.mjs';
 
 export const WIDTHS = [ 375, 768, 1440 ];
 export const MARKER_HEX = '#13579b';
@@ -100,6 +100,14 @@ export function markersFor( row, schema, snapshot, current = {} ) {
 	}
 	const box = !! row.box_family || 'box_only' === row.tier_shape;
 	const boxOf = ( t ) => Object.fromEntries( SIDES.map( ( s, i ) => [ s, `${ BOX[ t ][ i ] }px` ] ) );
+	// A border-radius box stores corners (lib/resolve.mjs::CORNERS), per device when its default is a tier object; a
+	// side-keyed marker is ignored by helpers-box.php::sgs_border_radius_tiers and reads as dead.
+	if ( 'border-radius' === prop && ( box || 'tier_object' === row.tier_shape ) && types( def ).includes( 'object' ) ) {
+		const cornersOf = ( t ) => Object.fromEntries( CORNERS.map( ( k, i ) => [ k, `${ BOX[ t ][ i ] }px` ] ) );
+		const tiered = def.default && 'object' === typeof def.default && 'desktop' in def.default;
+		const value = tiered ? { desktop: cornersOf( 'desktop' ), tablet: cornersOf( 'tablet' ), mobile: cornersOf( 'mobile' ) } : cornersOf( 'desktop' );
+		return [ { label: tiered ? 'corners-tiers' : 'corners', attrs: { [ row.attr_name ]: value }, expect: null, box: true } ];
+	}
 	if ( 'tier_object' === row.tier_shape ) {
 		if ( box ) {
 			return [ { label: 'box-tiers', attrs: { [ row.attr_name ]: { desktop: boxOf( 'desktop' ), tablet: boxOf( 'tablet' ), mobile: boxOf( 'mobile' ) } }, expect: null, box: true } ];

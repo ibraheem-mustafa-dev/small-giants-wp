@@ -38,7 +38,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/ledger.mjs` | Ledger library: rules, matching, stale entries, accept migration, entries from report rows. |
 | `tests/db.test.mjs` | R-47-2: read-only database. |
 | `tests/normalise.test.mjs` | R-47-7: tokens before literals. |
-| `tests/resolve.test.mjs` | FR-47-1: storage shapes and gaps. |
+| `tests/resolve.test.mjs` | FR-47-1: storage shapes and gaps; border-radius written as corners, never sides. |
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
 | `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code; a run never replaces another site's cache file without `--recalibrate`. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
@@ -79,6 +79,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `splitProperty(prop)` → `{ short, side }` (a walker longhand as the database shorthand and box side).
 - `tiersOf(perWidth, prop)` → `{ tiers }` (375 mobile, 768 tablet, 1440 and 1920 desktop) or `{ error }`.
 - `resolveDiscovered(input, calibration)` → a write for a setting calibration found (an enum value whose effects match the draft; ties broken by the element's other properties), a gap, or null.
+- `CORNERS`, `radiusCorners(raw)` → a border-radius box's corner keys (`helpers-box.php::sgs_border_radius_tiers` reads only these), and the computed shorthand as corners (null when elliptical); border-radius writes are corner objects, per device when the default is a tier object.
 - `resolve(input, ctx)` → `{ writes: [{ attr, value, merge }] }` or `{ gap, detail }`.
 
 ### `lib/tree.mjs`

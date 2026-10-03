@@ -95,3 +95,26 @@ test( 'a box that already holds sides is merged, never re-seeded', () => {
 	const r = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'padding-top', perWidth: { 1440: '0px' }, current: { padding: { desktop: { bottom: '8px' } } } }, { db, snapshot, calibration: padCal } );
 	assert.deepEqual( r.writes[ 0 ].value, { desktop: { top: '0px' } } );
 } );
+
+// A border-radius box stores corners per device (helpers-box.php::sgs_border_radius_tiers reads only topLeft,
+// topRight, bottomLeft, bottomRight); side keys would be ignored on render.
+import { radiusCorners } from '../lib/resolve.mjs';
+
+test( 'quote border-radius: corners inside a tier object, from the computed shorthand', () => {
+	const r = resolve( { block: 'sgs/quote', slot: '', prop: 'border-radius', perWidth: { 375: '4px', 1440: '8px 4px' } },
+		{ db, snapshot, calibration: cal( { borderRadius: { slot: '', property: 'border-radius' } } ) } );
+	assert.deepEqual( r.writes, [ { attr: 'borderRadius', merge: 'deep', value: {
+		mobile: { topLeft: '4px', topRight: '4px', bottomRight: '4px', bottomLeft: '4px' },
+		desktop: { topLeft: '8px', topRight: '4px', bottomRight: '8px', bottomLeft: '4px' },
+	} } ] );
+	assert.deepEqual( radiusCorners( '1px 2px 3px' ), { topLeft: '1px', topRight: '2px', bottomRight: '3px', bottomLeft: '2px' } );
+	assert.equal( radiusCorners( '8px / 4px' ), null );
+} );
+
+test( 'MUST FAIL TO WRITE: a border-radius write never carries side keys', () => {
+	const r = resolve( { block: 'sgs/quote', slot: '', prop: 'border-radius', perWidth: { 1440: '8px' } },
+		{ db, snapshot, calibration: cal( { borderRadius: { slot: '', property: 'border-radius' } } ) } );
+	for ( const tier of Object.values( r.writes[ 0 ].value ) ) {
+		assert.ok( ! [ 'top', 'right', 'bottom', 'left' ].some( ( k ) => k in tier ) );
+	}
+} );
