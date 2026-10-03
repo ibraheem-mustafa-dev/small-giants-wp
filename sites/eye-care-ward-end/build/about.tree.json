@@ -40,7 +40,8 @@
           "left": "20px",
           "right": "20px"
         }
-      }
+      },
+      "className": "cr-ref-about-0"
     },
     "innerBlocks": [
       {
@@ -50,7 +51,8 @@
           "metadata": {
             "name": "About text"
           },
-          "flexWrap": "wrap"
+          "flexWrap": "wrap",
+          "className": "cr-ref-about-1"
         },
         "innerBlocks": [
           {
@@ -69,7 +71,19 @@
               "sgsAnimation": "fade-up",
               "sgsAnimationDuration": "500",
               "sgsAnimationDistance": "18",
-              "sgsAnimationEasing": "ease"
+              "sgsAnimationEasing": "ease",
+              "className": "cr-ref-about-2",
+              "margin": {
+                "mobile": {
+                  "bottom": "10px"
+                },
+                "tablet": {
+                  "bottom": "10px"
+                },
+                "desktop": {
+                  "bottom": "10px"
+                }
+              }
             }
           },
           {
@@ -89,7 +103,20 @@
               "sgsAnimation": "fade-up",
               "sgsAnimationDuration": "600",
               "sgsAnimationDistance": "18",
-              "sgsAnimationEasing": "ease"
+              "sgsAnimationEasing": "ease",
+              "className": "cr-ref-about-3",
+              "margin": {
+                "mobile": {
+                  "bottom": "20px"
+                },
+                "tablet": {
+                  "bottom": "20px"
+                },
+                "desktop": {
+                  "bottom": "20px"
+                }
+              },
+              "textWrap": "pretty"
             }
           },
           {
@@ -107,7 +134,19 @@
               "sgsAnimation": "fade-up",
               "sgsAnimationDuration": "700",
               "sgsAnimationDistance": "18",
-              "sgsAnimationEasing": "ease"
+              "sgsAnimationEasing": "ease",
+              "className": "cr-ref-about-4",
+              "margin": {
+                "mobile": {
+                  "bottom": "28px"
+                },
+                "tablet": {
+                  "bottom": "28px"
+                },
+                "desktop": {
+                  "bottom": "28px"
+                }
+              }
             }
           },
           {
@@ -125,7 +164,9 @@
               "sgsAnimation": "fade-up",
               "sgsAnimationDuration": "800",
               "sgsAnimationDistance": "18",
-              "sgsAnimationEasing": "ease"
+              "sgsAnimationEasing": "ease",
+              "className": "cr-ref-about-5",
+              "textWrap": "pretty"
             }
           },
           {
@@ -144,7 +185,9 @@
               "sgsAnimation": "fade-up",
               "sgsAnimationDuration": "850",
               "sgsAnimationDistance": "18",
-              "sgsAnimationEasing": "ease"
+              "sgsAnimationEasing": "ease",
+              "className": "cr-ref-about-6",
+              "textWrap": "pretty"
             }
           },
           {
@@ -157,13 +200,21 @@
               },
               "margin": {
                 "desktop": {
-                  "bottom": "18px"
+                  "bottom": "0px"
+                },
+                "mobile": {
+                  "bottom": "0px"
+                },
+                "tablet": {
+                  "bottom": "0px"
                 }
               },
               "sgsAnimation": "fade-up",
               "sgsAnimationDuration": "900",
               "sgsAnimationDistance": "18",
-              "sgsAnimationEasing": "ease"
+              "sgsAnimationEasing": "ease",
+              "className": "cr-ref-about-7",
+              "textWrap": "pretty"
             }
           },
           {
@@ -179,7 +230,8 @@
                 "desktop": {
                   "top": "32px"
                 }
-              }
+              },
+              "className": "cr-ref-about-8"
             },
             "innerBlocks": [
               {
@@ -191,7 +243,13 @@
                   "backgroundColour": "whatsapp",
                   "labelColour": "#0B2B17",
                   "backgroundColourHover": "whatsapp-hover",
-                  "labelFontWeight": "500"
+                  "labelFontWeight": "500",
+                  "className": "cr-ref-about-9",
+                  "labelLineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  }
                 }
               },
               {
@@ -232,7 +290,8 @@
                       "left": "24px",
                       "right": "24px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-about-10"
                 }
               }
             ]
@@ -247,7 +306,7 @@
             "name": "Credential stack"
           },
           "layout": "flex",
-          "flexWrap": "wrap",
+          "flexWrap": "nowrap",
           "gap": {
             "desktop": "1px"
           },
@@ -278,7 +337,9 @@
           "sgsAnimation": "fade-up",
           "sgsAnimationDuration": "800",
           "sgsAnimationDistance": "18",
-          "sgsAnimationEasing": "ease"
+          "sgsAnimationEasing": "ease",
+          "className": "cr-ref-about-11",
+          "flexDirection": "column"
         },
         "innerBlocks": [
           {
@@ -293,7 +354,8 @@
                   "left": "24px",
                   "right": "24px"
                 }
-              }
+              },
+              "className": "cr-ref-about-12"
             },
             "innerBlocks": [
               {
@@ -303,7 +365,25 @@
                   "level": "h3",
                   "fontSize": {
                     "desktop": "22px"
-                  }
+                  },
+                  "className": "cr-ref-about-13",
+                  "lineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
+                  "margin": {
+                    "mobile": {
+                      "bottom": "0px"
+                    },
+                    "tablet": {
+                      "bottom": "0px"
+                    },
+                    "desktop": {
+                      "bottom": "0px"
+                    }
+                  },
+                  "textWrap": "wrap"
                 }
               },
               {
@@ -313,6 +393,18 @@
                   "textColour": "text-muted",
                   "fontSize": {
                     "desktop": "14.5px"
+                  },
+                  "className": "cr-ref-about-14",
+                  "margin": {
+                    "mobile": {
+                      "top": "6px"
+                    },
+                    "tablet": {
+                      "top": "6px"
+                    },
+                    "desktop": {
+                      "top": "6px"
+                    }
                   }
                 }
               }
@@ -330,7 +422,8 @@
                   "left": "24px",
                   "right": "24px"
                 }
-              }
+              },
+              "className": "cr-ref-about-15"
             },
             "innerBlocks": [
               {
@@ -340,7 +433,25 @@
                   "level": "h3",
                   "fontSize": {
                     "desktop": "22px"
-                  }
+                  },
+                  "className": "cr-ref-about-16",
+                  "lineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
+                  "margin": {
+                    "mobile": {
+                      "bottom": "0px"
+                    },
+                    "tablet": {
+                      "bottom": "0px"
+                    },
+                    "desktop": {
+                      "bottom": "0px"
+                    }
+                  },
+                  "textWrap": "wrap"
                 }
               },
               {
@@ -350,7 +461,8 @@
                   "textColour": "text-muted",
                   "fontSize": {
                     "desktop": "14.5px"
-                  }
+                  },
+                  "className": "cr-ref-about-17"
                 }
               }
             ]
@@ -372,7 +484,8 @@
                 "left": "3px"
               },
               "borderStyle": "solid",
-              "borderColour": "accent"
+              "borderColour": "accent",
+              "className": "cr-ref-about-18"
             },
             "innerBlocks": [
               {
@@ -382,7 +495,25 @@
                   "level": "h3",
                   "fontSize": {
                     "desktop": "22px"
-                  }
+                  },
+                  "className": "cr-ref-about-19",
+                  "lineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
+                  "margin": {
+                    "mobile": {
+                      "bottom": "0px"
+                    },
+                    "tablet": {
+                      "bottom": "0px"
+                    },
+                    "desktop": {
+                      "bottom": "0px"
+                    }
+                  },
+                  "textWrap": "wrap"
                 }
               },
               {
@@ -392,7 +523,8 @@
                   "textColour": "text-muted",
                   "fontSize": {
                     "desktop": "14.5px"
-                  }
+                  },
+                  "className": "cr-ref-about-20"
                 }
               }
             ]
@@ -409,7 +541,8 @@
                   "left": "24px",
                   "right": "24px"
                 }
-              }
+              },
+              "className": "cr-ref-about-21"
             },
             "innerBlocks": [
               {
@@ -419,7 +552,25 @@
                   "level": "h3",
                   "fontSize": {
                     "desktop": "22px"
-                  }
+                  },
+                  "className": "cr-ref-about-22",
+                  "lineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
+                  "margin": {
+                    "mobile": {
+                      "bottom": "0px"
+                    },
+                    "tablet": {
+                      "bottom": "0px"
+                    },
+                    "desktop": {
+                      "bottom": "0px"
+                    }
+                  },
+                  "textWrap": "wrap"
                 }
               },
               {
@@ -429,7 +580,8 @@
                   "textColour": "text-muted",
                   "fontSize": {
                     "desktop": "14.5px"
-                  }
+                  },
+                  "className": "cr-ref-about-23"
                 }
               }
             ]

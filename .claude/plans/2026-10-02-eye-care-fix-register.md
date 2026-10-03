@@ -281,9 +281,9 @@
 | Ref | What is wrong | Fix | Type | Status |
 |---|---|---|---|---|
 | 104 | Shop the range hover | S1 (lifts like every button) | | |
-| 105 | Heading, credentials and intro spacing | name heading bottom margin 20px | tree | proven |
-| 106 | Credential cards come out shorter | card headings line height 1.5, bottom margin 6px | tree | proven |
-| 107 | Columns the wrong widths | grid columns 1.1fr 1fr | tree | proven |
+| 105 | Heading, credentials and intro spacing | name heading bottom margin 20px | tree | Solve closed (2026-10-03) |
+| 106 | Credential cards come out shorter | card headings line height 1.5, bottom margin 6px | tree | Solve closed (2026-10-03) |
+| 107 | Columns the wrong widths | grid columns 1.1fr 1fr | tree | proven; open after Solve: no walker pair measures the grid's columns (add one to `about.mjs`) |
 | 108, 109 | WhatsApp button | S4 | | |
 | N42 | Content starts too low | S6 | | |
 
@@ -352,6 +352,19 @@
 | 160 | Keep the pre-filled WhatsApp message (decided) | closed |
 | 161 | Brand links go to brand pages, each with a short unique intro (D9); filtered shop links point to them | content + tree |
 | 162 | Keep the contact form's empty-submit messages (decided) | closed |
+
+## Computed route findings (Spec 47 stage 3)
+
+Calibration (2026-10-03) measured, on eye-care-test's private calibration page, what each setting of the 44 SGS blocks these layouts use actually paints. It also flags settings that change nothing ("dead") and settings that reach only some screen widths. Each is a lead to prove before it becomes a fix: many dead settings are fixture artefacts (a border style with no border width, burger settings on a menu that never collapses on a plain page). The per-block lists are in `scripts/computed-route/cache/<block>.json` (`dead`, `oneWidth`, `untestedStates`).
+
+| Ref | Finding | Evidence | Status |
+|---|---|---|---|
+| CR1 | Header rows and footer rows: the per-device gap and content width reach phone and desktop but not tablet | Calibration markers on `sgs/site-header-row` and `sgs/site-footer-row`: 375 and 1440 move, 768 does not, identically on both blocks (likely shared code) | to prove |
+| CR2 | A header's scrolled background and text colours show no change | `site-header/render.php`: the scroll script that adds `is-header-scrolled` is switched on only by transparent, shrink, hide, a scrolled shadow or section ink, never by these two colours. Calibration also saw no change with shrink on, so a second cause remains | to prove |
+| CR3 | Accordion header colour, background and weight settings change nothing | Calibration of `sgs/accordion` (headerColour, headerBackground, headerFontWeight and their hover/open versions dead); matches S5's "hardcoded size and colour" | to prove, with S5 |
+| CR4 | Large dead sets to triage | `nav-bar-menu` 77, `product-card` 56, `cart` 50, `mega-panel` 30, `nav-drawer` 28, `icon-list` 28 dead settings, mostly states the calibration page cannot show (collapsed menus, closed drawers, empty carts) | to prove |
+| CR6 | Setting one side of a padding or margin box sets the other three to 0, wiping the block's own default (the About WhatsApp button lost its 24px sides when only the top was set) | `includes/helpers-box.php::sgs_box_object_shorthand` prints `0` for every unset side; measured live on About, 2026-10-03 (padding-left/right 24px → 0px). Reaches every block that uses the helper. Solve now writes the other sides at their default, so it no longer trips on it | proven |
+| CR5 | Not calibrated | `brand-strip`: its calibration page (live product-brands source in every instance) times out loading; needs a manual-logo fixture or a smaller chunk. `heading` shrunk size and `nav-drawer` hover settings need a header or an open drawer | open |
 
 ## Walker improvements (why some of your points were missed)
 
