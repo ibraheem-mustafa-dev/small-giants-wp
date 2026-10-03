@@ -476,6 +476,12 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        out Missing setting; calibration should record the child's own value so Solve can name it Hardcode.
      - About 107 needs a walker pair on the grid's `grid-template-columns` in `qa/parity/about.mjs` before Solve can
        close it.
+     - **Calibration leads** (register CR8, CR10, CR11): `decorative-image` must print its wrapper class through
+       `get_block_wrapper_attributes()` (a block fix and deploy), then calibrate it on sandybrown; `aspect-ratio` joins
+       the walker's and calibration's property lists, then the 7 blocks with an aspect-ratio setting are re-calibrated;
+       border-style markers are paired with a border width so style can be mapped. CR9 (per-device settings that skip
+       one width) is proved together with CR1; CR12 (`theme-toggle`) is calibrated once a client snapshot carries a
+       derived dark palette.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer.
 5. **A second draft** from a different designer, to test generality.
 6. **Handover to Spec 31.** Spec 31 decides, under its own plan, whether `sc_var_responsive_bridge.py` is still needed

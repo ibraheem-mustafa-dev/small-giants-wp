@@ -58,9 +58,8 @@ pushed: the session's permission check refused the push). Built: walker state ma
 writes to a linked placeholder; every post a page prints has its own surface, 17 in `surfaces.json`), the pinpointing
 regression guard, and calibration of 44 of the 45 SGS blocks Eye Care uses (radius fixed). Solved: footer, About, Lenses,
 Help, Contact, Home (15 register items "Solve closed" plus N22's resting colour; 0 open regressions). About, Lenses, Contact and Home are re-run under
-the new guard next, then the other 11 surfaces. A parallel session (calibration on sandybrown, private page 4750) fills
-the library-wide cache for the 48 blocks Eye Care does not use and writes its own status. Register "Computed route
-findings" CR1-CR6 holds the leads (CR6, the box helper zeroing unset sides, is proven).
+the new guard next, then the other 11 surfaces. The library-wide calibration of the other 48 blocks is done (next paragraph).
+Register "Computed route findings" CR1-CR13 holds the leads (CR6, the box helper zeroing unset sides, is proven).
 
 **Library-wide calibration (2026-10-03, local `main`, unpushed):** 93 of the 95 SGS blocks have one cache file each,
 whichever site measured it (Bean: no per-site split; `--recalibrate` replaces another site's file). The 48 blocks Eye
