@@ -21,9 +21,9 @@ file names the rule it proves and has one case marked MUST FAIL.
 | File | Job |
 |---|---|
 | `README.md` | This index. |
-| `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, client names. |
+| `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, client names. |
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page, reads them at 375/768/1440 (hover under a real mouse; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
-| `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`). |
+| `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`). |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain, optional variants and optional `before` blocks (placed ahead of the instance, for a block that reads the page, such as a table of contents) per calibrated block. |
 | `ledger.mjs` | Divergence ledger command: `accept <report.json> <row id>` adds an entry dated today; `stale <report.json>` exits 1 while any entry is stale. |
@@ -35,6 +35,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/calibrate.mjs` | Calibration library: markers per setting shape, calibration trees, in-page reads, slot detection, default paint. |
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, classification. |
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json`. |
+| `lib/references.mjs` | Reference blocks found from each block's render.php (linked placeholders, frames around another post's blocks, core template parts) and the surfaces lint that every printed post has a surface. |
 | `lib/guard.mjs` | The regression guard: reverts a write calibration names, else tries one suspect at a time and lets the next walk decide. |
 | `lib/ledger.mjs` | Ledger library: rules, matching, stale entries, accept migration, entries from report rows. |
 | `tests/db.test.mjs` | R-47-2: read-only database. |
@@ -43,6 +44,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
 | `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code; a run never replaces another site's cache file without `--recalibrate`. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
+| `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
 | `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written). |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching). |
@@ -146,6 +148,13 @@ file names the rule it proves and has one case marked MUST FAIL.
 
 ### `lib/solve-report.mjs`
 - `writeSolveReport(outDir, result)`.
+
+### `lib/references.mjs` (reads `plugins/sgs-blocks/src/blocks/*/render.php`)
+- `BLOCKS_SRC`: the block sources folder. `CORE_PLACEHOLDERS`: core blocks that print another post or part, with the attribute naming it.
+- `referenceKind(src)` → `{ kind: 'linked', flag, key }` (a `<x>IsLinked` flag: own settings unused when on), `{ kind: 'frame', key }` (a `<x>Ref` post printed with `do_blocks`), or null.
+- `detectReferences(dir?)` → every SGS reference block.
+- `referenceOf(node, refs)` → the reference a tree node holds, or null (a linked block only with its flag on).
+- `lintSurfaces(surfaces, buildDir, refs?)` → problems: a tree prints a post that no surface targets (frames) or `provides` (linked blocks, template parts).
 
 ### `lib/guard.mjs`
 - `explains(w, r, cal)` → true when calibration ties write `w` to regressed row `r` (its own property, a calibrated side effect, or a discovered layout effect).

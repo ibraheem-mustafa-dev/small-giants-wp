@@ -11,7 +11,10 @@
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
     "states": {
       "opening": null
-    }
+    },
+    "provides": [
+      "core/template-part:footer"
+    ]
   },
   "about": {
     "tree": "about.tree.json",
@@ -107,6 +110,9 @@
     "walkStates": [
       "closed",
       "scrolled"
+    ],
+    "provides": [
+      "core/template-part:header"
     ]
   },
   "mobile-menu": {
@@ -226,7 +232,10 @@
       "q2-thickness": null,
       "q3-finish": null,
       "q4-prescription": null
-    }
+    },
+    "provides": [
+      "sgs/choice-flow:lens-configurator"
+    ]
   },
   "shop": {
     "tree": "archive-product.tree.json",
@@ -255,5 +264,22 @@
     "states": {
       "opening": null
     }
+  },
+  "contact-form": {
+    "tree": "contact-form.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 285
+    },
+    "walker": "qa/parity/contact.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "opening": null
+    },
+    "provides": [
+      "sgs/form:contact"
+    ]
   }
 }

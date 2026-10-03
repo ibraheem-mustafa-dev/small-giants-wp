@@ -70,7 +70,16 @@ framework database, the parity walker and the page builder, and no code. Spec 31
   that site's `theme-snapshot.json` (Spec 33), and the framework database.
 - **Surface manifest:** `sites/<client>/build/surfaces.json`, one entry per surface:
   `{ "<surface>": { "tree": "footer.tree.json", "envFile": ".claude/secrets/<site>.env", "envKey": "<KEY>", "target": { "postId": 182 } | { "templatePart": "<slug>" }, "walker": "qa/parity/footer.mjs", "draftUrl": "<url>" } }`.
-  Solve and Fill take `--client <slug> --surface <name>` and read only this.
+  Solve and Fill take `--client <slug> --surface <name>` and read only this. An entry also names its walker states'
+  setting states (`states`), optionally the states to walk (`walkStates`), and the linked blocks and template parts
+  whose post it is (`provides`, `"<block>:<value>"`, e.g. `"sgs/form:contact"`, `"core/template-part:header"`).
+- **Reference blocks.** Some blocks print another post (`lib/references.mjs`, found from each block's render.php):
+  a linked placeholder (`formIsLinked`, `flowIsLinked`) ignores its own settings and renders the referenced post's
+  block; a frame (`modalRef`, `drawerRef` printed with `do_blocks`) keeps its own frame settings around another post's
+  blocks; core template parts print the header and footer posts. Every post a surface prints this way has its own
+  surface (`lint.mjs --surfaces` fails otherwise), and Solve never writes to a linked placeholder. Theme templates
+  (shop, product) are SGS-built trees whose only core blocks are those doors and WooCommerce blocks, which hold no
+  SGS setting.
 - **Output:** the surface's tree in `sites/<client>/build/`, built through `scripts/wp-build-page.js`, a report, and
   for Fill a generated walker config.
 - **Not in scope:** content beyond what the draft shows (products, pages, Site Info), functional behaviour, asset
@@ -206,6 +215,7 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
    - The row's `ref` names the node; its `path` matches a calibration element exactly, giving the slot.
    - The resolver gives the setting; the draft's value is written at the row's width.
    - A row with no `ref`, or a `path` calibration does not know, is Unresolved (`unmapped-element`).
+   - A row on a linked placeholder is never written (gap `linked`): it belongs to the referenced post's surface.
    - Rows of other kinds are reported, never written.
    - `width` rows are reported, never written: a computed width is the box's used size (an auto or grid-sized box
      reads as pixels), so writing it would freeze a fluid layout (`solve.mjs::USED_VALUES`).

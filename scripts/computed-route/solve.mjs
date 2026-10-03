@@ -15,6 +15,7 @@ import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, asser
 import { writableGroups, draftValues, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState } from './lib/solve-rows.mjs';
 import { writeSolveReport } from './lib/solve-report.mjs';
 import { guardRound, closeTrials } from './lib/guard.mjs';
+import { detectReferences, referenceOf } from './lib/references.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -57,7 +58,7 @@ function walk( walker, outDir, walkStates = null ) {
 
 // One write round: resolves every writable group of the report against the tree. stateMap is the surface's walker
 // state to setting state map; rows from an unmapped state are never written. Returns the writes and gaps.
-export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor = calibrationFor } ) {
+export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor = calibrationFor, refs = detectReferences() } ) {
 	const { groups } = writableGroups( report, stateMap );
 	const writes = [];
 	const gaps = {};
@@ -75,6 +76,13 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 		const node = nodeByRef( tree, g.ref );
 		if ( ! node ) {
 			gaps[ g.key ] = { gap: 'unmapped', detail: `ref ${ g.ref } is not in the tree` };
+			continue;
+		}
+		// A linked placeholder renders another post's block and ignores its own settings: the write belongs to that
+		// post's surface (lib/references.mjs).
+		const ref = referenceOf( node, refs );
+		if ( ref && 'linked' === ref.kind ) {
+			gaps[ g.key ] = { gap: 'linked', detail: `${ node.name } renders ${ ref.key } "${ ref.value }" from its own post: solve that post's surface` };
 			continue;
 		}
 		const cal = calFor( node.name );

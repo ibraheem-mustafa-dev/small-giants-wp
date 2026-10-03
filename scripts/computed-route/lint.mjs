@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 // The route's own gate (R-47-1, R-47-10).
-//   node scripts/computed-route/lint.mjs [--root <dir>] [--tree <tree.json> ...] [--skeleton <tree.json> ...] [--no-names]
+//   node scripts/computed-route/lint.mjs [--root <dir>] [--tree <tree.json> ...] [--skeleton <tree.json> ...] [--surfaces <surfaces.json> ...] [--no-names]
 // Fails (exit 1) when:
 //   - a file or an exported name under the route folder is missing from its README.md (R-47-1);
 //   - a route file imports from plugins/sgs-blocks/scripts/ (the converter; its db_lookup.py migrates the shared DB);
 //   - a --tree carries a core `style` attribute or a native_wp setting (both serialise as inline style, Spec 32);
 //   - a --skeleton carries any attribute whose css_property is not null (Fill skeletons hold no style values);
+//   - a --surfaces manifest has a tree printing another post (a linked block, a modal or drawer reference, a template
+//     part) that no surface owns (lib/references.mjs::lintSurfaces);
 //   - check-no-client-names.py reports a hit inside the route folder (--no-names skips it: tests on temp copies).
 import fs from 'fs';
 import path from 'path';
@@ -13,6 +15,7 @@ import { execFileSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { openDb, attrRow } from './lib/db.mjs';
 import { readTree, walk } from './lib/tree.mjs';
+import { lintSurfaces } from './lib/references.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -123,6 +126,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const db = openDb();
 	all( '--tree' ).forEach( ( f ) => problems.push( ...lintTree( readTree( f ), db, f ) ) );
 	all( '--skeleton' ).forEach( ( f ) => problems.push( ...lintSkeleton( readTree( f ), db, f ) ) );
+	all( '--surfaces' ).forEach( ( f ) => problems.push( ...lintSurfaces( JSON.parse( fs.readFileSync( f, 'utf8' ) ), path.dirname( path.resolve( f ) ) ) ) );
 	if ( ! argv.includes( '--no-names' ) ) {
 		problems.push( ...clientNameHits() );
 	}
