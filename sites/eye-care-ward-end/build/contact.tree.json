@@ -40,7 +40,8 @@
           "left": "20px",
           "right": "20px"
         }
-      }
+      },
+      "className": "cr-ref-contact-0"
     },
     "innerBlocks": [
       {
@@ -50,7 +51,13 @@
           "metadata": {
             "name": "Contact info + form"
           },
-          "flexWrap": "wrap"
+          "flexWrap": "wrap",
+          "className": "cr-ref-contact-1",
+          "gap": {
+            "mobile": "24px",
+            "tablet": "24px",
+            "desktop": "24px"
+          }
         },
         "innerBlocks": [
           {
@@ -65,6 +72,27 @@
               "letterSpacingUnit": "em",
               "fontSize": {
                 "desktop": "12px"
+              },
+              "className": "cr-ref-contact-2",
+              "margin": {
+                "mobile": {
+                  "top": "0px",
+                  "right": "0px",
+                  "left": "0px",
+                  "bottom": "10px"
+                },
+                "tablet": {
+                  "top": "0px",
+                  "right": "0px",
+                  "left": "0px",
+                  "bottom": "10px"
+                },
+                "desktop": {
+                  "top": "0px",
+                  "right": "0px",
+                  "left": "0px",
+                  "bottom": "10px"
+                }
               }
             }
           },
@@ -72,7 +100,39 @@
             "name": "sgs/heading",
             "attributes": {
               "content": "You'll be talking to me, not a help desk.",
-              "level": "h1"
+              "level": "h1",
+              "className": "cr-ref-contact-3",
+              "fontSize": {
+                "mobile": 34,
+                "tablet": 48,
+                "desktop": 48
+              },
+              "lineHeight": {
+                "mobile": 1.02,
+                "tablet": 1.02,
+                "desktop": 1.02
+              },
+              "margin": {
+                "mobile": {
+                  "top": "0px",
+                  "right": "0px",
+                  "left": "0px",
+                  "bottom": "20px"
+                },
+                "tablet": {
+                  "top": "0px",
+                  "right": "0px",
+                  "left": "0px",
+                  "bottom": "20px"
+                },
+                "desktop": {
+                  "top": "0px",
+                  "right": "0px",
+                  "left": "0px",
+                  "bottom": "20px"
+                }
+              },
+              "textWrap": "pretty"
             }
           },
           {
@@ -82,7 +142,29 @@
               "textColour": "text-muted",
               "fontSize": {
                 "desktop": "16.5px"
-              }
+              },
+              "className": "cr-ref-contact-4",
+              "margin": {
+                "mobile": {
+                  "top": "0px",
+                  "right": "0px",
+                  "left": "0px",
+                  "bottom": "28px"
+                },
+                "tablet": {
+                  "top": "0px",
+                  "right": "0px",
+                  "left": "0px",
+                  "bottom": "28px"
+                },
+                "desktop": {
+                  "top": "0px",
+                  "right": "0px",
+                  "left": "0px",
+                  "bottom": "28px"
+                }
+              },
+              "textWrap": "pretty"
             }
           },
           {
@@ -91,7 +173,41 @@
               "variant": "inline",
               "message": "Hi, I'd like to know more about your services.",
               "label": "WhatsApp 07960 5978",
-              "backgroundColour": "whatsapp"
+              "backgroundColour": "whatsapp",
+              "className": "cr-ref-contact-5",
+              "labelFontSize": {
+                "mobile": 15,
+                "tablet": 15,
+                "desktop": 15
+              },
+              "labelFontWeight": "500",
+              "labelLineHeight": {
+                "mobile": 1.5,
+                "tablet": 1.5,
+                "desktop": 1.5
+              },
+              "labelColour": "#0B2B17",
+              "padding": {
+                "mobile": {
+                  "right": "26px",
+                  "bottom": "0px",
+                  "left": "26px",
+                  "top": "0px"
+                },
+                "tablet": {
+                  "right": "26px",
+                  "bottom": "0px",
+                  "left": "26px",
+                  "top": "0px"
+                },
+                "desktop": {
+                  "right": "26px",
+                  "bottom": "0px",
+                  "left": "26px",
+                  "top": "0px"
+                }
+              },
+              "iconGap": "12px"
             }
           },
           {
@@ -117,7 +233,8 @@
               },
               "contentWidth": {
                 "desktop": "full"
-              }
+              },
+              "className": "cr-ref-contact-6"
             },
             "innerBlocks": [
               {
@@ -127,7 +244,8 @@
                   "layout": "stack",
                   "gap": {
                     "desktop": "6px"
-                  }
+                  },
+                  "className": "cr-ref-contact-7"
                 },
                 "innerBlocks": [
                   {
@@ -142,6 +260,27 @@
                       "letterSpacingUnit": "em",
                       "fontSize": {
                         "desktop": "11.5px"
+                      },
+                      "className": "cr-ref-contact-8",
+                      "margin": {
+                        "mobile": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        },
+                        "tablet": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        },
+                        "desktop": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        }
                       }
                     }
                   },
@@ -153,7 +292,8 @@
                       "labelCollapse": "none",
                       "fontSize": {
                         "desktop": "15px"
-                      }
+                      },
+                      "className": "cr-ref-contact-9"
                     }
                   }
                 ]
@@ -165,7 +305,8 @@
                   "layout": "stack",
                   "gap": {
                     "desktop": "6px"
-                  }
+                  },
+                  "className": "cr-ref-contact-10"
                 },
                 "innerBlocks": [
                   {
@@ -180,6 +321,27 @@
                       "letterSpacingUnit": "em",
                       "fontSize": {
                         "desktop": "11.5px"
+                      },
+                      "className": "cr-ref-contact-11",
+                      "margin": {
+                        "mobile": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        },
+                        "tablet": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        },
+                        "desktop": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        }
                       }
                     }
                   },
@@ -191,7 +353,8 @@
                       "labelCollapse": "none",
                       "fontSize": {
                         "desktop": "15px"
-                      }
+                      },
+                      "className": "cr-ref-contact-12"
                     }
                   }
                 ]
@@ -203,7 +366,8 @@
                   "layout": "stack",
                   "gap": {
                     "desktop": "6px"
-                  }
+                  },
+                  "className": "cr-ref-contact-13"
                 },
                 "innerBlocks": [
                   {
@@ -218,6 +382,27 @@
                       "letterSpacingUnit": "em",
                       "fontSize": {
                         "desktop": "11.5px"
+                      },
+                      "className": "cr-ref-contact-14",
+                      "margin": {
+                        "mobile": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        },
+                        "tablet": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        },
+                        "desktop": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        }
                       }
                     }
                   },
@@ -229,7 +414,8 @@
                       "labelCollapse": "none",
                       "fontSize": {
                         "desktop": "15px"
-                      }
+                      },
+                      "className": "cr-ref-contact-15"
                     }
                   }
                 ]
@@ -241,7 +427,8 @@
                   "layout": "stack",
                   "gap": {
                     "desktop": "6px"
-                  }
+                  },
+                  "className": "cr-ref-contact-16"
                 },
                 "innerBlocks": [
                   {
@@ -256,6 +443,27 @@
                       "letterSpacingUnit": "em",
                       "fontSize": {
                         "desktop": "11.5px"
+                      },
+                      "className": "cr-ref-contact-17",
+                      "margin": {
+                        "mobile": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        },
+                        "tablet": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        },
+                        "desktop": {
+                          "top": "0px",
+                          "right": "0px",
+                          "left": "0px",
+                          "bottom": "6px"
+                        }
                       }
                     }
                   },
@@ -268,7 +476,8 @@
                       "labelCollapse": "none",
                       "fontSize": {
                         "desktop": "15px"
-                      }
+                      },
+                      "className": "cr-ref-contact-18"
                     }
                   },
                   {
@@ -277,7 +486,8 @@
                       "text": "Collections by arrangement",
                       "fontSize": {
                         "desktop": "15px"
-                      }
+                      },
+                      "className": "cr-ref-contact-19"
                     }
                   }
                 ]
@@ -308,7 +518,8 @@
               },
               "contentWidth": {
                 "desktop": "full"
-              }
+              },
+              "className": "cr-ref-contact-20"
             },
             "innerBlocks": [
               {
@@ -318,7 +529,14 @@
                   "level": "h2",
                   "fontSize": {
                     "desktop": "30px"
-                  }
+                  },
+                  "className": "cr-ref-contact-21",
+                  "lineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
+                  "textWrap": "wrap"
                 }
               },
               {
@@ -328,6 +546,27 @@
                   "textColour": "text-muted",
                   "fontSize": {
                     "desktop": "15px"
+                  },
+                  "className": "cr-ref-contact-22",
+                  "margin": {
+                    "mobile": {
+                      "top": "0px",
+                      "right": "0px",
+                      "left": "0px",
+                      "bottom": "0px"
+                    },
+                    "tablet": {
+                      "top": "0px",
+                      "right": "0px",
+                      "left": "0px",
+                      "bottom": "22px"
+                    },
+                    "desktop": {
+                      "top": "0px",
+                      "right": "0px",
+                      "left": "0px",
+                      "bottom": "22px"
+                    }
                   }
                 }
               },
@@ -335,7 +574,8 @@
                 "name": "sgs/form",
                 "attributes": {
                   "formId": "contact",
-                  "formIsLinked": true
+                  "formIsLinked": true,
+                  "className": "cr-ref-contact-23"
                 }
               }
             ]
@@ -355,13 +595,15 @@
           },
           "gap": {
             "desktop": "14px"
-          }
+          },
+          "className": "cr-ref-contact-24"
         },
         "innerBlocks": [
           {
             "name": "sgs/business-info",
             "attributes": {
-              "displayType": "map"
+              "displayType": "map",
+              "className": "cr-ref-contact-25"
             }
           },
           {
@@ -372,7 +614,8 @@
               "flexWrap": "wrap",
               "gap": {
                 "desktop": "10px"
-              }
+              },
+              "className": "cr-ref-contact-26"
             },
             "innerBlocks": [
               {
@@ -396,7 +639,8 @@
                       "left": "16px",
                       "right": "16px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-contact-27"
                 },
                 "innerBlocks": [
                   {
@@ -411,7 +655,8 @@
                       "letterSpacingUnit": "em",
                       "fontSize": {
                         "desktop": "11.5px"
-                      }
+                      },
+                      "className": "cr-ref-contact-28"
                     }
                   },
                   {
@@ -420,7 +665,8 @@
                       "text": "<a href=\"https://share.google/9YZzTiRj2gvW1Xrpr\">Reviews &amp; hours</a>",
                       "fontSize": {
                         "desktop": "14px"
-                      }
+                      },
+                      "className": "cr-ref-contact-29"
                     }
                   }
                 ]
@@ -446,7 +692,8 @@
                       "left": "16px",
                       "right": "16px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-contact-30"
                 },
                 "innerBlocks": [
                   {
@@ -461,7 +708,8 @@
                       "letterSpacingUnit": "em",
                       "fontSize": {
                         "desktop": "11.5px"
-                      }
+                      },
+                      "className": "cr-ref-contact-31"
                     }
                   },
                   {
@@ -470,7 +718,8 @@
                       "text": "<a href=\"https://www.instagram.com/eyecare.birmingham/\">@eyecare.birmingham</a>",
                       "fontSize": {
                         "desktop": "14px"
-                      }
+                      },
+                      "className": "cr-ref-contact-32"
                     }
                   }
                 ]

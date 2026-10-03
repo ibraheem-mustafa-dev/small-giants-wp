@@ -20,7 +20,8 @@
           "bottom": "56px"
         }
       },
-      "layout": "stack"
+      "layout": "stack",
+      "className": "cr-ref-lenses-0"
     },
     "innerBlocks": [
       {
@@ -43,7 +44,8 @@
           "sgsAnimation": "fade-up",
           "sgsAnimationDuration": "500",
           "sgsAnimationDistance": "18",
-          "sgsAnimationEasing": "ease"
+          "sgsAnimationEasing": "ease",
+          "className": "cr-ref-lenses-1"
         }
       },
       {
@@ -66,7 +68,14 @@
           "sgsAnimation": "fade-up",
           "sgsAnimationDuration": "600",
           "sgsAnimationDistance": "18",
-          "sgsAnimationEasing": "ease"
+          "sgsAnimationEasing": "ease",
+          "className": "cr-ref-lenses-2",
+          "lineHeight": {
+            "mobile": 1.02,
+            "tablet": 1.02,
+            "desktop": 1.02
+          },
+          "textWrap": "pretty"
         }
       },
       {
@@ -87,7 +96,9 @@
           "sgsAnimation": "fade-up",
           "sgsAnimationDuration": "700",
           "sgsAnimationDistance": "18",
-          "sgsAnimationEasing": "ease"
+          "sgsAnimationEasing": "ease",
+          "className": "cr-ref-lenses-3",
+          "textWrap": "pretty"
         }
       },
       {
@@ -124,7 +135,8 @@
             "bottom": "1px",
             "left": "1px"
           },
-          "borderColour": "border"
+          "borderColour": "border",
+          "className": "cr-ref-lenses-4"
         },
         "innerBlocks": [
           {
@@ -142,7 +154,8 @@
                   "bottom": "28px",
                   "left": "28px"
                 }
-              }
+              },
+              "className": "cr-ref-lenses-5"
             },
             "innerBlocks": [
               {
@@ -156,7 +169,8 @@
                   "fontSize": {
                     "desktop": 12
                   },
-                  "textColour": "text-label"
+                  "textColour": "text-label",
+                  "className": "cr-ref-lenses-6"
                 }
               },
               {
@@ -167,6 +181,27 @@
                   "fontWeight": "500",
                   "fontSize": {
                     "desktop": 34
+                  },
+                  "className": "cr-ref-lenses-7",
+                  "margin": {
+                    "mobile": {
+                      "right": "0px",
+                      "bottom": "6px",
+                      "left": "0px",
+                      "top": "10px"
+                    },
+                    "tablet": {
+                      "right": "0px",
+                      "bottom": "6px",
+                      "left": "0px",
+                      "top": "10px"
+                    },
+                    "desktop": {
+                      "right": "0px",
+                      "bottom": "6px",
+                      "left": "0px",
+                      "top": "10px"
+                    }
                   }
                 }
               },
@@ -177,7 +212,8 @@
                   "fontSize": {
                     "desktop": 14.5
                   },
-                  "textColour": "text-muted"
+                  "textColour": "text-muted",
+                  "className": "cr-ref-lenses-8"
                 }
               }
             ]
@@ -197,7 +233,8 @@
                   "bottom": "28px",
                   "left": "28px"
                 }
-              }
+              },
+              "className": "cr-ref-lenses-9"
             },
             "innerBlocks": [
               {
@@ -211,7 +248,8 @@
                   "fontSize": {
                     "desktop": 12
                   },
-                  "textColour": "text-label"
+                  "textColour": "text-label",
+                  "className": "cr-ref-lenses-10"
                 }
               },
               {
@@ -222,7 +260,8 @@
                   "fontWeight": "500",
                   "fontSize": {
                     "desktop": 34
-                  }
+                  },
+                  "className": "cr-ref-lenses-11"
                 }
               },
               {
@@ -232,7 +271,8 @@
                   "fontSize": {
                     "desktop": 14.5
                   },
-                  "textColour": "text-muted"
+                  "textColour": "text-muted",
+                  "className": "cr-ref-lenses-12"
                 }
               }
             ]
@@ -252,7 +292,8 @@
                   "bottom": "28px",
                   "left": "28px"
                 }
-              }
+              },
+              "className": "cr-ref-lenses-13"
             },
             "innerBlocks": [
               {
@@ -266,7 +307,8 @@
                   "fontSize": {
                     "desktop": 12
                   },
-                  "textColour": "text-label"
+                  "textColour": "text-label",
+                  "className": "cr-ref-lenses-14"
                 }
               },
               {
@@ -277,7 +319,8 @@
                   "fontWeight": "500",
                   "fontSize": {
                     "desktop": 34
-                  }
+                  },
+                  "className": "cr-ref-lenses-15"
                 }
               },
               {
@@ -287,7 +330,8 @@
                   "fontSize": {
                     "desktop": 14.5
                   },
-                  "textColour": "text-muted"
+                  "textColour": "text-muted",
+                  "className": "cr-ref-lenses-16"
                 }
               }
             ]
@@ -307,7 +351,8 @@
                   "bottom": "28px",
                   "left": "28px"
                 }
-              }
+              },
+              "className": "cr-ref-lenses-17"
             },
             "innerBlocks": [
               {
@@ -321,7 +366,8 @@
                   "fontSize": {
                     "desktop": 12
                   },
-                  "textColour": "text-label"
+                  "textColour": "text-label",
+                  "className": "cr-ref-lenses-18"
                 }
               },
               {
@@ -332,7 +378,8 @@
                   "fontWeight": "500",
                   "fontSize": {
                     "desktop": 34
-                  }
+                  },
+                  "className": "cr-ref-lenses-19"
                 }
               },
               {
@@ -342,7 +389,8 @@
                   "fontSize": {
                     "desktop": 14.5
                   },
-                  "textColour": "text-muted"
+                  "textColour": "text-muted",
+                  "className": "cr-ref-lenses-20"
                 }
               }
             ]
@@ -365,7 +413,8 @@
             "desktop": {
               "top": "64px"
             }
-          }
+          },
+          "className": "cr-ref-lenses-21"
         },
         "innerBlocks": [
           {
@@ -374,7 +423,8 @@
               "layout": "stack",
               "gap": {
                 "desktop": "16px"
-              }
+              },
+              "className": "cr-ref-lenses-22"
             },
             "innerBlocks": [
               {
@@ -393,7 +443,9 @@
                   "lineHeight": {
                     "desktop": 1.5
                   },
-                  "lineHeightUnit": "unitless"
+                  "lineHeightUnit": "unitless",
+                  "className": "cr-ref-lenses-23",
+                  "textWrap": "wrap"
                 }
               },
               {
@@ -425,7 +477,8 @@
                     {
                       "text": "Two-year guarantee on the lenses"
                     }
-                  ]
+                  ],
+                  "className": "cr-ref-lenses-24"
                 }
               }
             ]
@@ -436,7 +489,8 @@
               "layout": "stack",
               "gap": {
                 "desktop": "16px"
-              }
+              },
+              "className": "cr-ref-lenses-25"
             },
             "innerBlocks": [
               {
@@ -455,7 +509,9 @@
                   "lineHeight": {
                     "desktop": 1.5
                   },
-                  "lineHeightUnit": "unitless"
+                  "lineHeightUnit": "unitless",
+                  "className": "cr-ref-lenses-26",
+                  "textWrap": "wrap"
                 }
               },
               {
@@ -491,7 +547,8 @@
                     "desktop": 15.5
                   },
                   "titleFontSizeUnit": "px",
-                  "titleFontWeight": "400"
+                  "titleFontWeight": "400",
+                  "className": "cr-ref-lenses-27"
                 }
               },
               {
@@ -532,7 +589,8 @@
                       "top": "28px"
                     }
                   },
-                  "letterSpacingUnit": "em"
+                  "letterSpacingUnit": "em",
+                  "className": "cr-ref-lenses-28"
                 }
               }
             ]

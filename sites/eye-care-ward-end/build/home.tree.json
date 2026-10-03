@@ -35,7 +35,7 @@
       "contentWidth": {
         "desktop": "1440px"
       },
-      "className": "sgs-hero",
+      "className": "sgs-hero cr-ref-home-0",
       "backgroundOverlayOpacity": {
         "desktop": 100
       }
@@ -58,7 +58,7 @@
           "letterSpacing": 0.24,
           "letterSpacingUnit": "em",
           "textTransform": "uppercase",
-          "className": "sgs-hero__label",
+          "className": "sgs-hero__label cr-ref-home-1",
           "fontWeight": "400",
           "lineHeight": 1.5,
           "lineHeightUnit": "em",
@@ -97,7 +97,7 @@
           "letterSpacingUnit": "em",
           "textColour": "text-inverse",
           "textWrap": "pretty",
-          "className": "sgs-hero__headline",
+          "className": "sgs-hero__headline cr-ref-home-2",
           "maxWidth": 15,
           "maxWidthUnit": "ch",
           "margin": {
@@ -131,7 +131,7 @@
             }
           },
           "textWrap": "pretty",
-          "className": "sgs-hero__subheadline",
+          "className": "sgs-hero__subheadline cr-ref-home-3",
           "fontWeight": "400"
         }
       },
@@ -145,7 +145,8 @@
             "desktop": {
               "top": "32px"
             }
-          }
+          },
+          "className": "cr-ref-home-4"
         },
         "innerBlocks": [
           {
@@ -177,7 +178,8 @@
                   "left": "28px",
                   "right": "28px"
                 }
-              }
+              },
+              "className": "cr-ref-home-5"
             }
           },
           {
@@ -197,7 +199,8 @@
                 "desktop": "52px"
               },
               "borderColourHover": "text-inverse",
-              "colourTextHover": "text-inverse"
+              "colourTextHover": "text-inverse",
+              "className": "cr-ref-home-6"
             }
           }
         ]
@@ -209,7 +212,7 @@
     "attributes": {
       "backgroundColour": "#fff",
       "textWrap": "wrap",
-      "className": "sgs-brand-marquee",
+      "className": "sgs-brand-marquee cr-ref-home-7",
       "contentWidth": {
         "desktop": "1440px"
       },
@@ -270,7 +273,8 @@
           "logoOpacity": 75,
           "logoFit": "contain",
           "transitionDuration": "250",
-          "transitionEasing": "ease"
+          "transitionEasing": "ease",
+          "className": "cr-ref-home-8"
         }
       }
     ]
@@ -296,7 +300,7 @@
         }
       },
       "textWrap": "wrap",
-      "className": "sgs-best-sellers"
+      "className": "sgs-best-sellers cr-ref-home-9"
     },
     "innerBlocks": [
       {
@@ -319,13 +323,15 @@
               "bottom": "34px"
             }
           },
-          "textWrap": "wrap"
+          "textWrap": "wrap",
+          "className": "cr-ref-home-10"
         },
         "innerBlocks": [
           {
             "name": "sgs/container",
             "attributes": {
-              "textWrap": "wrap"
+              "textWrap": "wrap",
+              "className": "cr-ref-home-11"
             },
             "innerBlocks": [
               {
@@ -346,7 +352,8 @@
                     "desktop": {
                       "bottom": "10px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-home-12"
                 }
               },
               {
@@ -369,7 +376,9 @@
                     "desktop": {
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-home-13",
+                  "textWrap": "wrap"
                 }
               }
             ]
@@ -404,10 +413,11 @@
                   "bottom": "0"
                 }
               },
-              "textDecoration": "underline",
+              "textDecoration": "none",
               "minHeight": {
                 "desktop": "44px"
-              }
+              },
+              "className": "cr-ref-home-14"
             }
           }
         ]
@@ -426,7 +436,28 @@
             "mobile": "10px"
           },
           "textWrap": "wrap",
-          "sgsAnimationStaggerChildren": "70"
+          "sgsAnimationStaggerChildren": "70",
+          "className": "cr-ref-home-15",
+          "contentBandMargin": {
+            "mobile": {
+              "top": "0px",
+              "bottom": "0px",
+              "left": "0px",
+              "right": "0px"
+            },
+            "tablet": {
+              "top": "0px",
+              "bottom": "0px",
+              "left": "0px",
+              "right": "0px"
+            },
+            "desktop": {
+              "top": "0px",
+              "bottom": "0px",
+              "left": "0px",
+              "right": "0px"
+            }
+          }
         },
         "innerBlocks": [
           {
@@ -527,7 +558,8 @@
                 "right": "14px",
                 "bottom": "12px",
                 "left": "14px"
-              }
+              },
+              "className": "cr-ref-home-16"
             }
           },
           {
@@ -628,7 +660,8 @@
                 "right": "14px",
                 "bottom": "12px",
                 "left": "14px"
-              }
+              },
+              "className": "cr-ref-home-17"
             }
           },
           {
@@ -729,7 +762,8 @@
                 "right": "14px",
                 "bottom": "12px",
                 "left": "14px"
-              }
+              },
+              "className": "cr-ref-home-18"
             }
           },
           {
@@ -830,7 +864,8 @@
                 "right": "14px",
                 "bottom": "12px",
                 "left": "14px"
-              }
+              },
+              "className": "cr-ref-home-19"
             }
           },
           {
@@ -931,7 +966,8 @@
                 "right": "14px",
                 "bottom": "12px",
                 "left": "14px"
-              }
+              },
+              "className": "cr-ref-home-20"
             }
           },
           {
@@ -1032,7 +1068,8 @@
                 "right": "14px",
                 "bottom": "12px",
                 "left": "14px"
-              }
+              },
+              "className": "cr-ref-home-21"
             }
           },
           {
@@ -1133,7 +1170,8 @@
                 "right": "14px",
                 "bottom": "12px",
                 "left": "14px"
-              }
+              },
+              "className": "cr-ref-home-22"
             }
           },
           {
@@ -1234,7 +1272,16 @@
                 "right": "14px",
                 "bottom": "12px",
                 "left": "14px"
-              }
+              },
+              "className": "cr-ref-home-23",
+              "noImageLabelColour": "#A39C90",
+              "borderWidth": {
+                "top": "0px",
+                "bottom": "0px",
+                "left": "0px",
+                "right": "0px"
+              },
+              "borderColour": "primary"
             }
           }
         ]
@@ -1264,7 +1311,7 @@
       },
       "textColour": "text-inverse",
       "textWrap": "wrap",
-      "className": "sgs-why-buy"
+      "className": "sgs-why-buy cr-ref-home-24"
     },
     "innerBlocks": [
       {
@@ -1276,7 +1323,9 @@
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
           "sgsAnimationDelay": "0",
           "gap": {
-            "desktop": "40px"
+            "desktop": "40px",
+            "mobile": "40px",
+            "tablet": "40px"
           },
           "gridTemplateColumns": {
             "desktop": "minmax(0,1.1fr) minmax(0,1fr)",
@@ -1289,13 +1338,15 @@
             "desktop": {
               "bottom": "52px"
             }
-          }
+          },
+          "className": "cr-ref-home-25"
         },
         "innerBlocks": [
           {
             "name": "sgs/container",
             "attributes": {
-              "textWrap": "wrap"
+              "textWrap": "wrap",
+              "className": "cr-ref-home-26"
             },
             "innerBlocks": [
               {
@@ -1316,7 +1367,8 @@
                     }
                   },
                   "textTransform": "uppercase",
-                  "textColour": "accent"
+                  "textColour": "accent",
+                  "className": "cr-ref-home-27"
                 }
               },
               {
@@ -1342,7 +1394,8 @@
                     "desktop": {
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-home-28"
                 }
               }
             ]
@@ -1362,7 +1415,8 @@
               "lineHeight": {
                 "desktop": 1.5
               },
-              "lineHeightUnit": "unitless"
+              "lineHeightUnit": "unitless",
+              "className": "cr-ref-home-29"
             }
           }
         ]
@@ -1403,7 +1457,8 @@
           },
           "layout": "grid",
           "textWrap": "wrap",
-          "sgsAnimationStaggerChildren": "70"
+          "sgsAnimationStaggerChildren": "70",
+          "className": "cr-ref-home-30"
         },
         "innerBlocks": [
           {
@@ -1428,7 +1483,8 @@
                   "top": "28px"
                 }
               },
-              "textWrap": "wrap"
+              "textWrap": "wrap",
+              "className": "cr-ref-home-31"
             },
             "innerBlocks": [
               {
@@ -1445,7 +1501,8 @@
                   },
                   "lineHeightUnit": "unitless",
                   "text": "01",
-                  "textColour": "accent"
+                  "textColour": "accent",
+                  "className": "cr-ref-home-32"
                 }
               },
               {
@@ -1469,7 +1526,8 @@
                   "lineHeight": {
                     "desktop": 1.5
                   },
-                  "lineHeightUnit": "unitless"
+                  "lineHeightUnit": "unitless",
+                  "className": "cr-ref-home-33"
                 }
               },
               {
@@ -1481,7 +1539,8 @@
                   "fontSizeUnit": "px",
                   "text": "The recommended retail price sits next to my price on every single frame. No codes to hunt for, no countdown timers, no permanent fake sale.",
                   "textColour": "#CFC8BE",
-                  "textWrap": "pretty"
+                  "textWrap": "pretty",
+                  "className": "cr-ref-home-34"
                 }
               }
             ]
@@ -1508,7 +1567,8 @@
                   "top": "28px"
                 }
               },
-              "textWrap": "wrap"
+              "textWrap": "wrap",
+              "className": "cr-ref-home-35"
             },
             "innerBlocks": [
               {
@@ -1525,7 +1585,8 @@
                   },
                   "lineHeightUnit": "unitless",
                   "text": "02",
-                  "textColour": "accent"
+                  "textColour": "accent",
+                  "className": "cr-ref-home-36"
                 }
               },
               {
@@ -1549,7 +1610,8 @@
                   "lineHeight": {
                     "desktop": 1.5
                   },
-                  "lineHeightUnit": "unitless"
+                  "lineHeightUnit": "unitless",
+                  "className": "cr-ref-home-37"
                 }
               },
               {
@@ -1561,7 +1623,8 @@
                   "fontSizeUnit": "px",
                   "text": "Your prescription doesn't get posted off to a lab in another county. I cut, fit and check the lenses here — which is also how I spot a frame that won't work before it's made.",
                   "textColour": "#CFC8BE",
-                  "textWrap": "pretty"
+                  "textWrap": "pretty",
+                  "className": "cr-ref-home-38"
                 }
               }
             ]
@@ -1588,7 +1651,8 @@
                   "top": "28px"
                 }
               },
-              "textWrap": "wrap"
+              "textWrap": "wrap",
+              "className": "cr-ref-home-39"
             },
             "innerBlocks": [
               {
@@ -1605,7 +1669,8 @@
                   },
                   "lineHeightUnit": "unitless",
                   "text": "03",
-                  "textColour": "accent"
+                  "textColour": "accent",
+                  "className": "cr-ref-home-40"
                 }
               },
               {
@@ -1629,7 +1694,8 @@
                   "lineHeight": {
                     "desktop": 1.5
                   },
-                  "lineHeightUnit": "unitless"
+                  "lineHeightUnit": "unitless",
+                  "className": "cr-ref-home-41"
                 }
               },
               {
@@ -1641,7 +1707,8 @@
                   "fontSizeUnit": "px",
                   "text": "One optician, one WhatsApp number. Ask me anything about a frame or a prescription before you spend a penny.",
                   "textColour": "#CFC8BE",
-                  "textWrap": "pretty"
+                  "textWrap": "pretty",
+                  "className": "cr-ref-home-42"
                 }
               }
             ]
@@ -1668,7 +1735,8 @@
                   "top": "28px"
                 }
               },
-              "textWrap": "wrap"
+              "textWrap": "wrap",
+              "className": "cr-ref-home-43"
             },
             "innerBlocks": [
               {
@@ -1685,7 +1753,8 @@
                   },
                   "lineHeightUnit": "unitless",
                   "text": "04",
-                  "textColour": "accent"
+                  "textColour": "accent",
+                  "className": "cr-ref-home-44"
                 }
               },
               {
@@ -1709,7 +1778,8 @@
                   "lineHeight": {
                     "desktop": 1.5
                   },
-                  "lineHeightUnit": "unitless"
+                  "lineHeightUnit": "unitless",
+                  "className": "cr-ref-home-45"
                 }
               },
               {
@@ -1721,7 +1791,8 @@
                   "fontSizeUnit": "px",
                   "text": "Come and pick them up and I'll adjust them to you properly. Or free tracked delivery over £75.",
                   "textColour": "#CFC8BE",
-                  "textWrap": "pretty"
+                  "textWrap": "pretty",
+                  "className": "cr-ref-home-46"
                 }
               }
             ]
@@ -1751,7 +1822,7 @@
         }
       },
       "textWrap": "wrap",
-      "className": "sgs-shape-tiles",
+      "className": "sgs-shape-tiles cr-ref-home-47",
       "backgroundColour": "surface-stage"
     },
     "innerBlocks": [
@@ -1775,13 +1846,15 @@
               "bottom": "30px"
             }
           },
-          "textWrap": "wrap"
+          "textWrap": "wrap",
+          "className": "cr-ref-home-48"
         },
         "innerBlocks": [
           {
             "name": "sgs/container",
             "attributes": {
-              "textWrap": "wrap"
+              "textWrap": "wrap",
+              "className": "cr-ref-home-49"
             },
             "innerBlocks": [
               {
@@ -1802,7 +1875,8 @@
                     "desktop": {
                       "bottom": "10px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-home-50"
                 }
               },
               {
@@ -1825,7 +1899,9 @@
                     "desktop": {
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-home-51",
+                  "textWrap": "wrap"
                 }
               }
             ]
@@ -1860,10 +1936,11 @@
                   "bottom": "0"
                 }
               },
-              "textDecoration": "underline",
+              "textDecoration": "none",
               "minHeight": {
                 "desktop": "44px"
-              }
+              },
+              "className": "cr-ref-home-52"
             }
           }
         ]
@@ -2027,7 +2104,8 @@
               "bottom": "18px",
               "left": "16px"
             }
-          }
+          },
+          "className": "cr-ref-home-53"
         }
       }
     ]
@@ -2054,7 +2132,7 @@
         }
       },
       "textWrap": "wrap",
-      "className": "sgs-google-reviews",
+      "className": "sgs-google-reviews cr-ref-home-54",
       "sgsAnimationStaggerChildren": "70"
     },
     "innerBlocks": [
@@ -2070,7 +2148,28 @@
               "bottom": "28px"
             }
           },
-          "textWrap": "wrap"
+          "textWrap": "wrap",
+          "className": "cr-ref-home-55",
+          "margin": {
+            "mobile": {
+              "top": "0px",
+              "right": "0px",
+              "left": "0px",
+              "bottom": "28px"
+            },
+            "tablet": {
+              "top": "0px",
+              "right": "0px",
+              "left": "0px",
+              "bottom": "28px"
+            },
+            "desktop": {
+              "top": "0px",
+              "right": "0px",
+              "left": "0px",
+              "bottom": "28px"
+            }
+          }
         },
         "innerBlocks": [
           {
@@ -2091,7 +2190,8 @@
               },
               "text": "From the clinic",
               "textTransform": "uppercase",
-              "textColour": "accent-text"
+              "textColour": "accent-text",
+              "className": "cr-ref-home-56"
             }
           },
           {
@@ -2114,7 +2214,9 @@
                 "desktop": {
                   "bottom": "0"
                 }
-              }
+              },
+              "className": "cr-ref-home-57",
+              "textWrap": "wrap"
             }
           }
         ]
@@ -2532,7 +2634,16 @@
           "arrowStep": {
             "desktop": "2",
             "mobile": "1"
-          }
+          },
+          "className": "cr-ref-home-58",
+          "seeAllBorderWidth": {
+            "top": "0px",
+            "bottom": "0px",
+            "left": "0px",
+            "right": "0px"
+          },
+          "seeAllBorderStyle": "none",
+          "seeAllColourBorder": "surface-alt"
         }
       }
     ]
@@ -2567,7 +2678,7 @@
         }
       },
       "textWrap": "wrap",
-      "className": "sgs-about-strip",
+      "className": "sgs-about-strip cr-ref-home-59",
       "sgsAnimationStaggerChildren": "70"
     },
     "innerBlocks": [
@@ -2592,7 +2703,8 @@
           "sgsHoverZoom": 105,
           "sgsHoverZoomDuration": 1400,
           "sgsHoverEasing": "custom",
-          "sgsHoverEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+          "sgsHoverEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+          "className": "cr-ref-home-60"
         }
       },
       {
@@ -2620,7 +2732,8 @@
           "flexDirection": "column",
           "justifyContent": "center",
           "layout": "flex",
-          "textWrap": "wrap"
+          "textWrap": "wrap",
+          "className": "cr-ref-home-61"
         },
         "innerBlocks": [
           {
@@ -2641,7 +2754,8 @@
               },
               "text": "Prescription sunglasses",
               "textTransform": "uppercase",
-              "textColour": "accent-text"
+              "textColour": "accent-text",
+              "className": "cr-ref-home-62"
             }
           },
           {
@@ -2665,7 +2779,8 @@
                   "bottom": "18px"
                 }
               },
-              "textWrap": "pretty"
+              "textWrap": "pretty",
+              "className": "cr-ref-home-63"
             }
           },
           {
@@ -2682,7 +2797,8 @@
               },
               "text": "Three questions with pictures, a price that updates as you go, and you can send your prescription whenever suits — including after you've ordered. Single vision from £59.",
               "textColour": "text-muted",
-              "textWrap": "pretty"
+              "textWrap": "pretty",
+              "className": "cr-ref-home-64"
             }
           },
           {
@@ -2738,7 +2854,8 @@
                   "top": "0",
                   "bottom": "0"
                 }
-              }
+              },
+              "className": "cr-ref-home-65"
             }
           },
           {
@@ -2755,7 +2872,8 @@
               "textTransform": "uppercase",
               "minHeight": {
                 "desktop": "52px"
-              }
+              },
+              "className": "cr-ref-home-66"
             }
           }
         ]
@@ -2796,7 +2914,7 @@
         }
       },
       "textWrap": "wrap",
-      "className": "sgs-optician",
+      "className": "sgs-optician cr-ref-home-67",
       "sgsAnimationStaggerChildren": "70"
     },
     "innerBlocks": [
@@ -2833,7 +2951,8 @@
           },
           "textAlign": "center",
           "textWrap": "wrap",
-          "boxAspectRatio": "4 / 5"
+          "boxAspectRatio": "4 / 5",
+          "className": "cr-ref-home-68"
         },
         "innerBlocks": [
           {
@@ -2853,7 +2972,8 @@
               },
               "lineHeightUnit": "",
               "textTransform": "uppercase",
-              "textColour": "#6B655E"
+              "textColour": "#6B655E",
+              "className": "cr-ref-home-69"
             }
           },
           {
@@ -2867,7 +2987,8 @@
               "maxWidth": 26,
               "maxWidthUnit": "ch",
               "textColour": "#6B655E",
-              "textWrap": "pretty"
+              "textWrap": "pretty",
+              "className": "cr-ref-home-70"
             }
           }
         ]
@@ -2879,7 +3000,8 @@
           "sgsAnimationDistance": "26",
           "sgsAnimationDuration": "460",
           "sgsAnimationEasing": "cubic-bezier(0.33, 1, 0.68, 1)",
-          "textWrap": "wrap"
+          "textWrap": "wrap",
+          "className": "cr-ref-home-71"
         },
         "innerBlocks": [
           {
@@ -2900,7 +3022,8 @@
               },
               "text": "You're buying from a person",
               "textTransform": "uppercase",
-              "textColour": "accent-text"
+              "textColour": "accent-text",
+              "className": "cr-ref-home-72"
             }
           },
           {
@@ -2926,7 +3049,8 @@
               },
               "textWrap": "pretty",
               "maxWidth": 622,
-              "maxWidthUnit": "px"
+              "maxWidthUnit": "px",
+              "className": "cr-ref-home-73"
             }
           },
           {
@@ -2943,7 +3067,8 @@
               },
               "text": "Everything on this site I chose myself, and every prescription order comes across my bench before it's made. If a frame isn't going to work with your lenses, I'd rather tell you before you pay than after.",
               "textColour": "#4A453E",
-              "textWrap": "pretty"
+              "textWrap": "pretty",
+              "className": "cr-ref-home-74"
             }
           },
           {
@@ -2960,7 +3085,8 @@
               },
               "text": "If you're unsure about anything, just ask. Talking people through frames and lenses is what I do all day at the clinic, and I'm glad to do it here too.",
               "textColour": "text-muted",
-              "textWrap": "pretty"
+              "textWrap": "pretty",
+              "className": "cr-ref-home-75"
             }
           },
           {
@@ -2971,7 +3097,8 @@
                 "desktop": "12px"
               },
               "layout": "flex",
-              "textWrap": "wrap"
+              "textWrap": "wrap",
+              "className": "cr-ref-home-76"
             },
             "innerBlocks": [
               {
@@ -3009,7 +3136,8 @@
                   "sgsHoverScalePreset": "",
                   "sgsHoverShadow": "",
                   "sgsHoverDurationMs": 250,
-                  "sgsHoverEasing": "ease"
+                  "sgsHoverEasing": "ease",
+                  "className": "cr-ref-home-77"
                 }
               },
               {
@@ -3048,7 +3176,8 @@
                       "right": "24px"
                     }
                   },
-                  "colourBackgroundHover": "rgba(20,20,20,0.14)"
+                  "colourBackgroundHover": "rgba(20,20,20,0.14)",
+                  "className": "cr-ref-home-78"
                 }
               }
             ]

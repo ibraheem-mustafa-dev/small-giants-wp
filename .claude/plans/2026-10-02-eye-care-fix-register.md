@@ -194,10 +194,10 @@
 | N17a | The whole Google reviews block grows on hover | Remove the default scale-up and shadow from the reviews block (no client wants a full section growing) | framework repair | proven |
 | N17b | Hero text sits in the middle, not bottom-left | The vertical position setting writes to the wrong axis, and a hardcoded "centre" overrides it. Repair both; the layout file already asks for bottom. | framework repair | proven in code |
 | N18 | Draft overlay is darker; you prefer live | Keep live. The walker is improved to catch overlays (see "Walker improvements"). | none | closed |
-| N19 | "See everything" and "All 12 styles": underline touches the text; no hover colour | Draft draws a 1px line 3px below the text, not an underline: bottom border 1px, bottom padding 3px, no underline. Hover colour: the draft's taupe (see readings above). | tree | proven |
+| N19 | "See everything" and "All 12 styles": underline touches the text; no hover colour | Draft draws a 1px line 3px below the text, not an underline: bottom border 1px, bottom padding 3px, no underline. Hover colour: the draft's taupe (see readings above). | tree | Solve closed (2026-10-03) |
 | N20 | Shapes section's ground stops at 1440px | The draft has no ground there at all; live adds a grey band (a tile colour used by mistake). Remove the ground, and use content width instead of box width. | tree | proven at 1920 |
 | N21 | Grey tint behind the shape tiles | Most likely that same band (N20). Re-check after N20. | tree | to prove |
-| N22 | Tile borders look white | Match the draft: #E6E1DA at rest, #CFC7BB on hover. The tree already says so, so first read the live border colour to find what overrides it. | tree or framework repair | to prove |
+| N22 | Tile borders look white | Match the draft: #E6E1DA at rest, #CFC7BB on hover. The tree already says so, so first read the live border colour to find what overrides it. | tree or framework repair | rest colour Solve closed (2026-10-03): it was a tree value; hover colour still to check |
 | N23 | Review slider arrows have no light-blue hover | arrow hover ground #F1F6FE; the "Write a review" hover gets the same | tree | proven |
 | N24 | Google logo in each review card should link | Link it to the review or listing (Google's display rules) | framework repair | proven |
 
@@ -267,10 +267,10 @@
 
 | Ref | What is wrong | Fix | Type | Status |
 |---|---|---|---|---|
-| 99 | Heading line spacing | line height 1.02 all sizes | tree | proven |
-| 100 | Price cards 4px shorter | 4px top margin on each price (page padding does not change card height) | tree | proven |
-| 101 | Gap under section headings 16px too big | heading bottom margin 0 | tree | proven |
-| 102 | Step numbers large and bold; text not aligned with its number | numbers 15.5px, weight 500, gaps 16/15px; each step's text aligned to its number's line | tree (check the alignment setting exists) | proven |
+| 99 | Heading line spacing | line height 1.02 all sizes | tree | Solve closed (2026-10-03) |
+| 100 | Price cards 4px shorter | 4px top margin on each price (page padding does not change card height) | tree | margin Solve closed (2026-10-03); card height still open |
+| 101 | Gap under section headings 16px too big | heading bottom margin 0 | tree | Solve closed (2026-10-03) |
+| 102 | Step numbers large and bold; text not aligned with its number | numbers 15.5px, weight 500, gaps 16/15px; each step's text aligned to its number's line | tree (check the alignment setting exists) | Solve closed (2026-10-03) |
 | 103 | "Choose a frame" text too bold | weight 400 | tree | proven |
 | N39 | Content starts too low | S6 (the top spacing is the main fault: it pushes every page down). Side margins: re-measure at 1280, 1366 and 1920 and fix only if they differ. | tree | proven (top); to prove (sides) |
 | N40 | Gap above the button too big | Match the draft's gap (same cause as 101: a default heading/text bottom margin) | tree | to prove |
@@ -298,7 +298,7 @@
 | 115 | Size-guide pop-up first sentence lighter | colour text-soft | tree | proven |
 | 116 | Size numbers smaller on a phone | 32px on phone | tree | proven |
 | 117, 123, 69, 81, N29 | Size pop-up: wider at tablet, no header bar, padding wrong, close button has a grey circle | (1) Close button: transparent ground, square. (2) Header bar as a container in the pop-up's own layout file: title, divider, sticky. Pop-up gets a padding setting (draft: flat 24px; header 20px 24px). (3) Screen-edge gap from a token: 32px each side above phone size, 16px on a phone. | framework repair + framework new + tree | proven |
-| 119 | Title line spacing on a phone | line height 1.02 on phone | tree | proven |
+| 119 | Title line spacing on a phone | line height 1.02 on phone | tree | Solve closed (2026-10-03) |
 | 120, 121 | Questions heading and links side by side on a phone; links look plain | Two text-link buttons with the draft's static line 3px below the text (like N19, not the S2 sweep); they then wrap under the heading like the draft | tree | proven |
 | N43 | Content starts too low | S6 | | |
 
@@ -306,18 +306,18 @@
 
 | Ref | What is wrong | Fix | Type | Status |
 |---|---|---|---|---|
-| 124 | Heading 63px on 3 lines; draft 48px on 2 | 48px (phone 34), line height 1.02, bottom margin 20, text-wrap pretty | tree | proven |
-| 125 | Gaps under eyebrow and intro | 10px and 28px | tree | proven |
+| 124 | Heading 63px on 3 lines; draft 48px on 2 | 48px (phone 34), line height 1.02, bottom margin 20, text-wrap pretty | tree | Solve closed (2026-10-03) |
+| 125 | Gaps under eyebrow and intro | 10px and 28px | tree | Solve closed (2026-10-03) |
 | 126, 137 | Column widths; map too narrow | grid 1.1fr 1fr; map container as a stack so the map fills | tree | proven |
 | 127, 138 | WhatsApp button | S4 | | |
 | 128 | Details stay 2 columns on a phone | desktop 2, tablet 2 (your choice: live looks better), phone 1, gap 24 | tree | proven |
-| 129 | Label too close to its value | detail cell gap 14px | tree | proven |
+| 129 | Label too close to its value | detail cell gap 14px | tree | Solve closed (2026-10-03) |
 | 130 | Hours | Same as footer 38 | | |
 | 131 | Phone/email hover | S3 (mirrors the page's other links) | | |
-| 133 | Form heading sits high | line height 1.5 | tree | proven |
+| 133 | Form heading sits high | line height 1.5 | tree | Solve closed (2026-10-03) |
 | 134 | Social cards compact | card row as a 2-column grid | tree | proven |
 | 135 | Send button full width on a phone | The form's narrow-width stretch becomes switchable | framework new + tree | proven |
-| 136 | Intro wraps one word early | text-wrap pretty | tree | proven |
+| 136 | Intro wraps one word early | text-wrap pretty | tree | Solve closed (2026-10-03) |
 | 139 | Phone/email fade | S3 | | |
 | 140 | Address on one line | Same as footer 36 | | |
 | N44 | Content starts too low | S6 | | |
