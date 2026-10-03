@@ -16,6 +16,9 @@ export const GAPS = [ 'no-setting', 'ambiguous', 'shape', 'uncalibrated' ];
 
 const TIER_OF = { 375: 'mobile', 768: 'tablet', 1440: 'desktop', 1920: 'desktop' };
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
+// The tiers an empty tier falls back to, nearest first (helpers-box.php: desktop base rule, tablet max-width 1023px,
+// mobile max-width 767px).
+export const WIDER_TIERS = { desktop: [], tablet: [ 'desktop' ], mobile: [ 'tablet', 'desktop' ] };
 const COLOUR_PROPS = [ 'color', 'background-color', 'border-color' ];
 
 let schemaIndex = null;
@@ -244,7 +247,12 @@ export function resolve( input, ctx ) {
 			return {};
 		}
 		const paint = ctx.calibration.elements?.[ slot ]?.[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || {};
-		return Object.fromEntries( SIDES.filter( ( s ) => s !== side && undefined !== paint[ `${ short }-${ s }` ] ).map( ( s ) => [ s, paint[ `${ short }-${ s }` ] ] ) );
+		// An empty tier shows the node's nearest wider tier (desktop is the base rule, tablet and mobile are max-width
+		// media rules over it), so its other sides come from that tier (an unset side there prints 0, CR6), and from the
+		// default paint only when no wider tier holds any: seeding a phone tier from the default would override the node's
+		// own desktop sides.
+		const wider = 'tier_object' === row.tier_shape ? WIDER_TIERS[ t ].map( ( w ) => current[ attr ]?.[ w ] ).find( ( v ) => v && Object.keys( v ).length ) : null;
+		return Object.fromEntries( SIDES.filter( ( s ) => s !== side ).map( ( s ) => [ s, wider ? wider[ s ] ?? '0px' : paint[ `${ short }-${ s }` ] ] ).filter( ( [ , v ] ) => undefined !== v ) );
 	};
 	const boxed = ( v, t ) => {
 		if ( ! isBox ) {

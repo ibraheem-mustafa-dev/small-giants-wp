@@ -83,6 +83,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `tiersOf(perWidth, prop)` → `{ tiers }` (375 mobile, 768 tablet, 1440 and 1920 desktop) or `{ error }`.
 - `resolveDiscovered(input, calibration)` → a write for a setting calibration found (an enum value whose effects match the draft; ties broken by the element's other properties), a gap, or null.
 - `CORNERS`, `radiusCorners(raw)` → a border-radius box's corner keys (`helpers-box.php::sgs_border_radius_tiers` reads only these), and the computed shorthand as corners (null when elliptical); border-radius writes are corner objects, per device when the default is a tier object.
+- `WIDER_TIERS`: the tiers an empty tier falls back to, nearest first; box seeding takes an empty tier's other sides from the node's nearest wider tier before the default paint.
 - `resolve(input, ctx)` → `{ writes: [{ attr, value, merge }] }` or `{ gap, detail }`.
 
 ### `lib/tree.mjs`

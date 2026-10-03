@@ -96,6 +96,14 @@ test( 'a box that already holds sides is merged, never re-seeded', () => {
 	assert.deepEqual( r.writes[ 0 ].value, { desktop: { top: '0px' } } );
 } );
 
+// An empty phone tier shows the node's desktop sides, so it is seeded from them, never from the default paint
+// (Lenses "Choose a frame", 2026-10-03: desktop held 26px sides, the phone tier was seeded 28px from the default and
+// the button widened).
+test( 'MUST FAIL TO OVERRIDE: an empty phone tier is seeded from the node\'s own desktop sides', () => {
+	const r = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'padding-top', perWidth: { 375: '0px', 1440: '0px' }, current: { padding: { desktop: { left: '26px', right: '26px' } } } }, { db, snapshot, calibration: padCal } );
+	assert.deepEqual( r.writes[ 0 ].value, { mobile: { top: '0px', right: '26px', bottom: '0px', left: '26px' }, desktop: { top: '0px' } } );
+} );
+
 // A border-radius box stores corners per device (helpers-box.php::sgs_border_radius_tiers reads only topLeft,
 // topRight, bottomLeft, bottomRight); side keys would be ignored on render.
 import { radiusCorners } from '../lib/resolve.mjs';
