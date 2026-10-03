@@ -451,8 +451,8 @@ The register is the work list. It holds every fix, by surface in build order, ea
 
 **Build order:**
 1. Step 0: rebuild every tree from its current file. Done 2026-10-03.
-2. Spec 47 stage 3: Solve on every built surface. Footer and About done; the rest run in the order of Spec 47 §5 stage 3,
-   each committed with its register update.
+2. Spec 47 stage 3: Solve on every built surface. Footer, About, Lenses, Help, Contact and Home run; the next session
+   re-runs four of them under the new regression guard, then the rest, in the order of Spec 47 §5 stage 3.
 3. Every framework repair and new setting in the register (S-fixes first), then one deploy, then rebuild every tree that
    uses a new setting.
 4. The tree settings Solve could not write, surface by surface in the register's order, re-walking each surface after

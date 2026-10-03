@@ -429,11 +429,18 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      null | "scrolled" | "open" | "shrunk" | "current" }`); rows from an unmapped state are reported, never written, and
      draft values are read only from the group's own states (`lib/solve-rows.mjs::settingState`, `writableGroups`,
      `draftValues`). A stateful candidate with no calibration entry returns `uncalibrated`, not `no-setting`.
-   - **Surfaces: done.** 16 entries in `sites/eye-care-ward-end/build/surfaces.json` (pages, header, mobile menu, four
-     megas, size-guide modal, lens configurator, shop and product templates), each walker config with `refPrefix`,
+   - **Surfaces: done.** 17 entries in `sites/eye-care-ward-end/build/surfaces.json` (pages, header, mobile menu, four
+     megas, size-guide modal, lens configurator, contact form post 285, shop and product templates), each walker config
+     with `refPrefix`,
      `divergences` and 1920. Scoring: `sites/eye-care-ward-end/build/qa/solve-score.mjs` with one
      `qa/score-items/<surface>.json` per surface, built from the register.
-   - **Calibration: 44 of the 45 SGS blocks these trees use.** Fixtures come from each block's first use in the trees,
+   - **Reference blocks: done.** `lib/references.mjs` finds blocks that print another post from their render.php;
+     Solve never writes to a linked placeholder; `lint.mjs --surfaces` passes for Eye Care (§2).
+   - **Regression guard: done.** `lib/guard.mjs` pinpoints the culprit (R-47-9): a calibration-named setting, else one
+     suspect at a time verified by the next walk. Only culprits count as wrong writes. The surfaces solved before it
+     (About, Lenses, Contact, Home) lost correct writes to the old revert-everything-on-the-node guard and are re-run.
+   - **Calibration: 44 of the 45 SGS blocks these trees use.** Re-run on 2026-10-03 after the radius fix: 28 of the
+     29 blocks with a corner-radius setting now map it (accordion-item's `borderRadius` still reads dead: a lead). Fixtures come from each block's first use in the trees,
      styling attributes back to default. `brand-strip` times out (its live brand query runs in every instance): it
      needs a manual-logo fixture or a smaller chunk (done inside the 51-block calibration track below). Leads to prove are the register's "Computed route findings"
      (CR1-CR6), including the box helper that sets unset sides to 0 (CR6, proven). The 27 core and WooCommerce blocks in
@@ -444,16 +451,24 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - About: 4 of 5 items closed (105, 106); open style and box rows 594 to 281; 0 regressions. Wrong writes 3 to 4 of
        about 27, over the 10% line, all on the WhatsApp button (its sizing differs from the draft's, register S4), all
        reverted by the guard. 107 stays open: no walker pair measures the grid's columns (add one to `about.mjs`).
-     - Lenses, Help, Contact, Home, header, mobile menu, the four megas, size guide, lens configurator, shop, product:
-       run in that order; each run is scored and committed with its register update.
+     - Lenses: 99, 101, 102 and 100's margin closed (4 of 6); 0 regressions; 3 of 10 writes reverted on one button.
+     - Help: 119 closed, S5's hardcoded accordion size identified as a gap (2 of 5); 0 regressions, 0 wrong writes.
+       111 and 112 stay open.
+     - Contact: 124, 125, 129, 133, 136 closed (8 of 9); 128 open (its grid layout write was reverted). One regression
+       (the name field 23px lower at 375, from the subtext's 22px margin stacking with the form's spacing) fixed by
+       setting the subtext's phone margin to its calibrated default 0px, re-walked closed.
+     - Home: N19 and N22's resting border colour closed (2 of 2); 0 regressions; 5 of 25 writes reverted on one
+       container (a layout write plus four paddings).
+     - Next: re-run About, Lenses, Contact and Home under the new guard, then header, mobile menu, the four megas,
+       size guide, lens configurator, contact form, shop, product; each scored and committed with its register update.
    - **Residual after the surfaces:**
      - The functional flows (FR-47-7) and the walker's remaining items (FR-47-6 items 1 to 5): not started.
      - Calibrate the other 48 SGS blocks (no Eye Care tree uses them; brand-strip included) on sandybrown, into the library-wide cache
        (slot maps shared, default paint per site), so Fill and the next client start calibrated.
      - **Gap typing:** a setting that paints a parent while a rule on a child overrides it (the hours day label) comes
        out Missing setting; calibration should record the child's own value so Solve can name it Hardcode.
-     - **Wrong-write accounting:** the guard reverts every write on a node when no calibrated side effect explains the
-       regression, so collateral reverts count as wrong writes (About's line height and icon gap).
+     - About 107 needs a walker pair on the grid's `grid-template-columns` in `qa/parity/about.mjs` before Solve can
+       close it.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer.
 5. **A second draft** from a different designer, to test generality.
 6. **Handover to Spec 31.** Spec 31 decides, under its own plan, whether `sc_var_responsive_bridge.py` is still needed

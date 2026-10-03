@@ -53,13 +53,14 @@ empty groups after clearing (N25); the drawer body overflows by its title row (1
 collapses to zero width (N46). No blockers.
 
 **Spec 47 (v0.4): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). Stages 1
-and 2 built; the footer proof passed (14 of 15 items handled). Stage 3 in progress (2026-10-03, `main` f071c92fc plus the
-handoff commit, not yet pushed: the push was refused by the session's permission check): walker state mapping, 16
-surfaces in `sites/eye-care-ward-end/build/surfaces.json`, 44 of 45 blocks calibrated on eye-care-test post 668
-(brand-strip times out), About solved (4 of 5 items closed, 0 regressions; WhatsApp button writes over the 10% wrong-write
-line, all reverted). The other surfaces are running in the same session. A parallel track calibrates the 51 SGS blocks no
-Eye Care tree uses on sandybrown, after splitting the cache per site. Register "Computed route findings" CR1-CR6 holds
-the calibration leads (CR6, the box helper zeroing unset sides, is proven).
+and 2 built; the footer proof passed (14 of 15 items handled). Stage 3 in progress (2026-10-03; local `main`, not
+pushed: the session's permission check refused the push). Built: walker state mapping, reference blocks (Solve never
+writes to a linked placeholder; every post a page prints has its own surface, 17 in `surfaces.json`), the pinpointing
+regression guard, and calibration of 44 of the 45 SGS blocks Eye Care uses (radius fixed). Solved: footer, About, Lenses,
+Help, Contact, Home (15 register items "Solve closed" plus N22's resting colour; 0 open regressions). About, Lenses, Contact and Home are re-run under
+the new guard next, then the other 11 surfaces. A parallel session (calibration on sandybrown, private page 4750) fills
+the library-wide cache for the 48 blocks Eye Care does not use and writes its own status. Register "Computed route
+findings" CR1-CR6 holds the leads (CR6, the box helper zeroing unset sides, is proven).
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:** Spec 47
 §5 stage 3, then the register in the plan's "Work plan" order.
