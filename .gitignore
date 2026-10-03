@@ -183,6 +183,7 @@ plugins/sgs-blocks/now.tmp.json
 scripts/parity/benchmark/out/
 scripts/parity/benchmark/*.log
 sites/*/build/qa/parity/out/
+sites/*/build/qa/parity/out-*/
 
 # LEDGER backups written by the ledger-rotate hook (git already holds every LEDGER version)
 .claude/memory/session-*.md

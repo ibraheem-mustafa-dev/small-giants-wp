@@ -23,7 +23,7 @@ This doc replaces six plans (now in `plans/archive/`):
 - `2026-10-01-eye-care-cloud-handover.md`
 
 Every "built" line below was checked against the code or the live site on 2026-10-02 (three checkers, five
-re-run by hand). The process for this review is `plans/2026-10-01-eye-care-review-phase-plan.md`.
+re-run by hand). The process for this review was `plans/archive/2026-10-01-eye-care-review-phase-plan.md` (done).
 
 - **Draft:** https://mintcream-lyrebird-224487.hostingersite.com/
   - Source: `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/`. `Eye Care Birmingham.dc.html` is the
@@ -42,7 +42,9 @@ re-run by hand). The process for this review is `plans/2026-10-01-eye-care-revie
 - Every surface was re-walked on 2026-10-02 ("Review results").
 - The walker was upgraded on 2026-10-02 before the walk (below, "Walker"), so the next walk measures more than any
   earlier one.
-- Then the work plan by surface (section "Work plan", written after the walk) drives the build.
+- Bean reviewed every surface and the register on 2026-10-03; all nine register decisions (D1-D9) are settled.
+- The build is driven by the register (`plans/2026-10-02-eye-care-fix-register.md`) in the order of "Work plan" below,
+  and the footer's layout values are first closed by Spec 47's footer proof (`specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md` §5).
 
 ## Decisions (Bean's, still in force)
 
@@ -111,14 +113,12 @@ re-run by hand). The process for this review is `plans/2026-10-01-eye-care-revie
     `links` table of where each label must go);
   - load entrances sampled by paint;
   - a reveal sweep before full-page shots.
-- **Config gaps found and being filled:**
-  - the header's scrolled state;
-  - the toast and bag count pop;
-  - hero motion;
-  - product colour, size and accordion states;
-  - shop filter states;
-  - image hovers;
-  - `scrollIn` on reveal sections.
+- **Configs:** every Eye Care surface has a filled config (header scrolled state, toast and count pop, hero motion,
+  product states, shop filter states, image hovers, reveal sections), 2026-10-02.
+- **Next upgrades:** Spec 47 FR-47-6 (overlays drawn as pseudo-elements, 1920 in every run, states on every
+  interactive element, link coverage, line counts during transitions, a divergence ledger, ref tracing) and FR-47-7
+  (shopping flows as scripted tests). Bean's review found the misses that motivate each (register "Walker
+  improvements").
 
 ## Surfaces
 

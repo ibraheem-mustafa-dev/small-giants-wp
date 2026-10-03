@@ -4,7 +4,7 @@ plan_id: eye-care-review-phase
 phase_name: Eye Care - one plan, every surface reviewed, a work plan by surface
 project: small-giants-wp
 spec_id: client build (Front F, D1149)
-status: IN PROGRESS (steps 1-3 done 2026-10-02; walker upgrade and config fills before step 5)
+status: DONE (steps 1-8 done 2026-10-02 to 2026-10-03; Bean approved the register v2 and its decisions D1-D9)
 header: "[PLAN: opus]"
 cost_estimate: "about 1 session; up to 9 Sonnet subagent runs (3 checkers, 1 config author, up to 5 classifiers), the rest inline"
 docscore_grade: see Phase Header

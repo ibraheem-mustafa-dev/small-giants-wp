@@ -41,7 +41,7 @@
 - D6: the live best-sellers list.
 - D9: brand pages (`/brand/<slug>/`) with a short unique intro each; filtered shop links point to them, and an intro-less brand page stays out of the index.
 
-**Readings I made of your notes.** Tell me if any is wrong.
+**Readings of your notes** (unchallenged on 2026-10-03, so they stand):
 - In 54+55 you wrote "N14B"; I read it as N14C, the green WhatsApp style. N14B is the black hero button.
 - 153 "All seems fine": the live checkout's extra fields stay. The redesign (154) restyles them.
 - 19: the bag's free-delivery text stays bold (your preference). The bar's fill speed still gets matched, because you did not object to it.
