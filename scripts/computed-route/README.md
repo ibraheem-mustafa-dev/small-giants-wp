@@ -22,7 +22,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 |---|---|
 | `README.md` | This index. |
 | `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, client names. |
-| `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page, reads them at 375/768/1440 (hover under a real mouse; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json`, empties the page. |
+| `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page, reads them at 375/768/1440 (hover under a real mouse; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`). |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`). |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain and optional variants per calibrated block. |
@@ -31,6 +31,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/normalise.mjs` | Value parsing and token snapping from `theme-snapshot.json`, with the snap log. |
 | `lib/resolve.mjs` | The one property-to-setting engine. |
 | `lib/tree.mjs` | Trees: read, write, refs, setting writes, live-site safety. |
+| `lib/cache.mjs` | The library-wide calibration cache: which site measured a block, and the cross-site guard. |
 | `lib/calibrate.mjs` | Calibration library: markers per setting shape, calibration trees, in-page reads, slot detection, default paint. |
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, classification. |
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json`. |
@@ -39,13 +40,13 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/normalise.test.mjs` | R-47-7: tokens before literals. |
 | `tests/resolve.test.mjs` | FR-47-1: storage shapes and gaps. |
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
-| `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code. |
+| `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code; a run never replaces another site's cache file without `--recalibrate`. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
 | `tests/solve.test.mjs` | R-47-9: the regression guard pins only the write whose side effects explain the regression; walker state mapping (an unmapped state is never written). |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching). |
 
-`cache/` (gitignored) holds calibration files.
+`cache/` (gitignored) holds calibration files: one per block for the whole library, each recording the `site` that measured it.
 
 ## Functions
 
@@ -104,6 +105,10 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `stale(entries, { refs, rows })` → `[{ id, why }]`.
 - `migrateAccepts(accepts, { scope, firstId, decided })` → `{ migrated, unmigrated }`.
 - `entryFromRow(report, rowId, { reason, scope, entries, source })` → a new entry.
+
+### `lib/cache.mjs`
+- `cachedSite(file)` → the site a block's cache file was measured on, or null.
+- `skipReason(file, site, recalibrate?)` → why a run on `site` must leave the file alone (measured on another site, no `--recalibrate`), or null.
 
 ### `lib/calibrate.mjs` (imports `scripts/parity/lib/collect.mjs` and `ref-trace.mjs`)
 - `WIDTHS`: 375, 768, 1440. `MARKER_HEX`, `MARKER_RGB`: the colour marker. `CAL_PREFIX`: `cr-ref-cal-`.

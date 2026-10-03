@@ -33,3 +33,28 @@ test( 'MUST FAIL TO MATCH: a real code change still differs after normalising', 
 	assert.notEqual( normaliseBundle( './view.js', bundle( 2310, 'data-a' ) ), normaliseBundle( './view.js', bundle( 6469, 'data-b' ) ) );
 	assert.notEqual( normaliseBundle( './view.asset.php', "array('dependencies' => array('a'), 'version' => 'x')" ), normaliseBundle( './view.asset.php', "array('dependencies' => array('b'), 'version' => 'x')" ) );
 } );
+
+// One library-wide cache (§3.2): a block calibrated on one site is never replaced by a run on another site unless the
+// run asks for it.
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { skipReason, cachedSite } from '../lib/cache.mjs';
+
+const cacheFile = ( site ) => {
+	const f = path.join( fs.mkdtempSync( path.join( os.tmpdir(), 'cr-cache-' ) ), 'heading.json' );
+	fs.writeFileSync( f, JSON.stringify( { block: 'sgs/heading', site } ) );
+	return f;
+};
+
+test( 'a block with no file, or a file from the same site, may be written', () => {
+	assert.equal( skipReason( path.join( os.tmpdir(), 'cr-cache-none', 'heading.json' ), 'sandybrown' ), null );
+	assert.equal( skipReason( cacheFile( 'sandybrown' ), 'sandybrown' ), null );
+	assert.equal( skipReason( cacheFile( 'eye-care-test' ), 'sandybrown', true ), null );
+} );
+
+test( 'MUST FAIL TO REPLACE: a sandybrown run never replaces an eye-care-test file without --recalibrate', () => {
+	const f = cacheFile( 'eye-care-test' );
+	assert.match( skipReason( f, 'sandybrown' ), /calibrated on eye-care-test/ );
+	assert.equal( cachedSite( f ), 'eye-care-test' );
+} );

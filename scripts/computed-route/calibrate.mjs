@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Block calibration command (FR-47-2).
 //   node scripts/computed-route/calibrate.mjs --site eye-care-test --client eye-care-ward-end --blocks sgs/heading,sgs/text
+//   [--recalibrate] replaces a block's file measured on another site (one library-wide cache; otherwise it is skipped).
 // For each block: refuses to run when the deployed build/blocks/<block>/ differs from the local build (before any
 // write), builds the block's calibration tree on the site's calibration page (calibration-targets.json), reads every
 // instance at 375, 768 and 1440 (hover settings under a real mouse), and writes cache/<block>.json: the slot map and
@@ -14,6 +15,7 @@ import { openDb, attrsFor, enumSettings } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
+import { skipReason } from './lib/cache.mjs';
 import { WIDTHS, CAL_PREFIX, READ_PROPS, SCROLL_Y, markersFor, buildTree, readInstancesInPage, slotFor, defaultPaint, longhands, elementPath, discoverEffects, triggerFor } from './lib/calibrate.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -323,10 +325,19 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	};
 	const site = flag( '--site' );
 	const client = flag( '--client' );
-	const blocks = ( flag( '--blocks' ) || '' ).split( ',' ).filter( Boolean );
-	if ( ! site || ! client || ! blocks.length ) {
-		console.error( 'Usage: calibrate.mjs --site <site> --client <client slug> --blocks sgs/a,sgs/b' );
+	const asked = ( flag( '--blocks' ) || '' ).split( ',' ).filter( Boolean );
+	if ( ! site || ! client || ! asked.length ) {
+		console.error( 'Usage: calibrate.mjs --site <site> --client <client slug> --blocks sgs/a,sgs/b [--recalibrate]' );
 		process.exit( 2 );
+	}
+	// One library-wide cache: a block measured on another site keeps its file unless --recalibrate.
+	const blocks = asked.filter( ( b ) => {
+		const why = skipReason( path.join( CACHE, `${ b.replace( /^sgs\//, '' ) }.json` ), site, argv.includes( '--recalibrate' ) );
+		why && console.log( JSON.stringify( { block: b, skipped: why } ) );
+		return ! why;
+	} );
+	if ( ! blocks.length ) {
+		process.exit( 0 );
 	}
 	const targets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
 	const target = targets[ site ];

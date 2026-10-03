@@ -119,8 +119,8 @@ Calibration has two outputs with different scopes:
 - **Slot map:** which rendered element and property each setting paints, and how its value transforms. It does not
   depend on the site. It is measured once on the canary and cached per block, keyed by the md5 of the block's deployed
   `build/blocks/<block>/` directory read over SSH, so the key matches what the server runs.
-- **Default paint:** each element's computed style with no settings. It depends on the site. It is measured on the
-  site the surface is built on, keyed by the slot-map key plus the md5 of that site's `theme-snapshot.json`.
+- **Default paint:** each element's computed style with no settings. It carries the measuring site's tokens, and is
+  keyed by the slot-map key plus the md5 of that site's `theme-snapshot.json`.
 
 Before calibrating, `calibrate.mjs` compares the deployed `build/blocks/<block>/` md5 with the local build and refuses
 to run on a mismatch. The md5 covers the files that decide what a page paints (`block.json`, `render.php`, the
@@ -131,8 +131,11 @@ front-end files), so a whole-folder key could never match. View bundles and asse
 webpack's module numbers and the asset version (`calibrate.mjs::normaliseBundle`): the same commit numbers its modules by
 build folder (proven 2026-10-03: trust-bar's `view.js` differed only in module 2310 against 6469), while any code change
 still changes the key. Inherited properties are not recorded as default paint (R-47-5 uses the parent's live value).
-The cache is `scripts/computed-route/cache/`, gitignored, one file per block. It does not yet separate sites: a block
-calibrated on a second site overwrites the first site's file, default paint included (residual, §5 stage 3).
+The cache is `scripts/computed-route/cache/`, gitignored: one library-wide file per block, whichever site measured
+it (Bean, 2026-10-03), so every client starts calibrated. Each file records its `site` and `paintKey`. A run on
+another site skips a block that already has a file unless it passes `--recalibrate` (`lib/cache.mjs::skipReason`).
+The default paint therefore carries the measuring site's tokens; a Solve run that shows a default-paint mismatch on
+another site is fixed by recalibrating that block there (a lead, not yet seen).
 
 **Steps:**
 1. Render one default instance and record every rendered element's computed style.
@@ -430,7 +433,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        run in that order; each run is scored and committed with its register update.
    - **Residual after the surfaces:**
      - The functional flows (FR-47-7) and the walker's remaining items (FR-47-6 items 1 to 5): not started.
-     - Calibrate the other 51 SGS blocks (no Eye Care tree uses them) on sandybrown, after the cache is split per site
+     - Calibrate the other 48 SGS blocks (no Eye Care tree uses them; brand-strip included) on sandybrown, into the library-wide cache
        (slot maps shared, default paint per site), so Fill and the next client start calibrated.
      - **Gap typing:** a setting that paints a parent while a rule on a child overrides it (the hours day label) comes
        out Missing setting; calibration should record the child's own value so Solve can name it Hardcode.
