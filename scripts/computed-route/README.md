@@ -22,7 +22,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 |---|---|
 | `README.md` | This index. |
 | `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, client names. |
-| `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page, reads them at 375/768/1440 (hover under a real mouse), writes `cache/<block>.json`, empties the page. |
+| `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page, reads them at 375/768/1440 (hover under a real mouse; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json`, empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`). |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`). |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain and optional variants per calibrated block. |
@@ -39,6 +39,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/normalise.test.mjs` | R-47-7: tokens before literals. |
 | `tests/resolve.test.mjs` | FR-47-1: storage shapes and gaps. |
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
+| `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
 | `tests/solve.test.mjs` | R-47-9: the regression guard pins only the write whose side effects explain the regression; walker state mapping (an unmapped state is never written). |
@@ -107,6 +108,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 ### `lib/calibrate.mjs` (imports `scripts/parity/lib/collect.mjs` and `ref-trace.mjs`)
 - `WIDTHS`: 375, 768, 1440. `MARKER_HEX`, `MARKER_RGB`: the colour marker. `CAL_PREFIX`: `cr-ref-cal-`.
 - `READ_PROPS`: the properties read per element. `INHERITED`: never recorded as default paint.
+- `STATE_TRIGGERS`, `SCROLL_Y`: how each setting state is reached (`hover` real mouse, `scrolled` window scroll, `open` and `current` rendered by the fixture). `triggerFor(state)` → the trigger, `null` for rest, undefined when the state has none (reported, never calibrated).
 - `longhands(cssProperty)` → the walker longhands a setting covers.
 - `markersFor(row, schema, snapshot, current)` → `[{ label, attrs, expect, form? }]` (§3.2 table).
 - `buildTree(block, fixture, instances)` → the calibration tree.

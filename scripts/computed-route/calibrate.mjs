@@ -14,7 +14,7 @@ import { openDb, attrsFor, enumSettings } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
-import { WIDTHS, CAL_PREFIX, READ_PROPS, markersFor, buildTree, readInstancesInPage, slotFor, defaultPaint, longhands, elementPath, discoverEffects } from './lib/calibrate.mjs';
+import { WIDTHS, CAL_PREFIX, READ_PROPS, SCROLL_Y, markersFor, buildTree, readInstancesInPage, slotFor, defaultPaint, longhands, elementPath, discoverEffects, triggerFor } from './lib/calibrate.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -87,14 +87,20 @@ function readEnv( file, key ) {
 	return { url: o[ `WP_URL_${ key }` ].replace( /\/+$/, '' ), user: o[ `WP_USER_${ key }` ], pwd: o[ `WP_PWD_${ key }` ] };
 }
 
-// Reads every instance at each width; hover instances again under a real mouse. Returns { width: [instanceReads] }.
+// Reads every instance at each width; hover instances again under a real mouse; scroll instances (and every default
+// instance, their baseline) again with the window scrolled. Returns { width: [instanceReads] } plus
+// { scrolled: { width: { n: read } }, scrollMissed: [n] } (scroll instances whose header never took the scrolled class).
 async function readAll( page, url, instances ) {
 	const PATH = elementPath.toString();
 	const out = {};
+	const scrolled = {};
+	const scrollMissed = [];
 	for ( const w of WIDTHS ) {
 		await page.setViewportSize( { width: w, height: 900 } );
 		await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
-		await page.waitForSelector( `.${ CAL_PREFIX }0`, { timeout: 60000 } );
+		// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
+		// are still read.
+		await page.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: 60000 } );
 		await page.waitForTimeout( 800 );
 		out[ w ] = await page.evaluate( readInstancesInPage, [ instances.length, CAL_PREFIX, READ_PROPS, PATH ] );
 		for ( const [ n, inst ] of instances.entries() ) {
@@ -109,8 +115,24 @@ async function readAll( page, url, instances ) {
 			out[ w ][ n ] = all[ n ];
 			await page.mouse.move( 0, 0 );
 		}
+		if ( instances.some( ( i ) => 'scroll' === i.trigger ) ) {
+			await page.evaluate( ( y ) => window.scrollTo( { top: y, behavior: 'instant' } ), SCROLL_Y );
+			await page.waitForTimeout( 900 );
+			const all = await page.evaluate( readInstancesInPage, [ instances.length, CAL_PREFIX, READ_PROPS, PATH ] );
+			const hit = await page.evaluate( ( [ count, prefix ] ) => [ ...Array( count ).keys() ].map( ( n ) => !! document.querySelector( `.${ prefix }${ n } .is-header-scrolled, .${ prefix }${ n }.is-header-scrolled` ) ), [ instances.length, CAL_PREFIX ] );
+			scrolled[ w ] = {};
+			instances.forEach( ( inst, n ) => {
+				if ( inst.isDefault || 'scroll' === inst.trigger ) {
+					scrolled[ w ][ n ] = all[ n ];
+				}
+				if ( 'scroll' === inst.trigger && ! hit[ n ] && ! scrollMissed.includes( n ) ) {
+					scrollMissed.push( n );
+				}
+			} );
+			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
+		}
 	}
-	return out;
+	return Object.assign( out, { scrolled, scrollMissed } );
 }
 
 async function calibrateBlock( block, { site, target, env, fixtures, snapshot, db, slotKey, paintKey, rejectedOut } ) {
@@ -133,7 +155,7 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 			if ( ! ms.length ) {
 				noMarker.add( row.attr_name );
 			}
-			ms.forEach( ( m ) => instances.push( { key: `${ row.attr_name }-${ m.label }-v${ vi }`, row, marker: m, attrs: { ...vattrs, ...m.attrs }, variant: vi, hover: 'hover' === row.css_state } ) );
+			ms.forEach( ( m ) => instances.push( { key: `${ row.attr_name }-${ m.label }-v${ vi }`, row, marker: m, attrs: { ...vattrs, ...m.attrs }, variant: vi, hover: 'hover' === row.css_state, trigger: triggerFor( row.css_state ) } ) );
 		}
 		// Enum settings with no css_property: one instance per value against the plain fixture (variant 0), to discover
 		// what each value paints.
@@ -145,8 +167,9 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 			}
 		}
 	} );
-	const states = rows.filter( ( r ) => r.css_state && 'hover' !== r.css_state ).map( ( r ) => `${ r.attr_name }:${ r.css_state }` );
-	instances = instances.filter( ( i ) => ! i.row || ! i.row.css_state || 'hover' === i.row.css_state );
+	// A state with no trigger (lib/calibrate.mjs::STATE_TRIGGERS) is reported, never calibrated.
+	const states = rows.filter( ( r ) => r.css_state && undefined === triggerFor( r.css_state ) ).map( ( r ) => `${ r.attr_name }:${ r.css_state }` );
+	instances = instances.filter( ( i ) => ! i.row || undefined !== i.trigger );
 	const treeFile = path.join( CACHE, `${ short }.tree.json` );
 	const rejected = [];
 	for ( let attempt = 0; attempt < 3; attempt++ ) {
@@ -178,6 +201,9 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 		await browser.close();
 	}
 	const per = ( n ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, reads[ w ][ n ] ] ) );
+	// The same instance read with the window scrolled (scroll instances and their variant's default).
+	const perScrolled = ( n ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, reads.scrolled[ w ]?.[ n ] ] ) );
+	const untested = [ ...states ];
 	// Each variant's default instance, by variant index.
 	const defaultOf = {};
 	instances.forEach( ( inst, n ) => inst.isDefault && ( defaultOf[ inst.variant ] = n ) );
@@ -202,8 +228,16 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 		if ( ! inst.row ) {
 			return;
 		}
-		const s = slotFor( inst.row, inst.marker, per( defaultOf[ inst.variant ] ), per( n ) );
 		const name = inst.row.attr_name;
+		if ( 'scroll' === inst.trigger && reads.scrollMissed.includes( n ) ) {
+			untested.push( `${ name }:${ inst.row.css_state } (the header never took is-header-scrolled)` );
+			return;
+		}
+		// A scrolled marker is compared with its variant's default read scrolled too, so the state's own look is not
+		// counted as the marker's effect.
+		const s = 'scroll' === inst.trigger
+			? slotFor( inst.row, inst.marker, perScrolled( defaultOf[ inst.variant ] ), perScrolled( n ) )
+			: slotFor( inst.row, inst.marker, per( defaultOf[ inst.variant ] ), per( n ) );
 		if ( s.dead ) {
 			dead.push( name );
 			return;
@@ -217,7 +251,7 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 	} );
 	// Dead: no marker of the setting changed anything (a setting with one live marker is not dead).
 	const deadNames = [ ...new Set( dead ) ].filter( ( n ) => ! settings[ n ] );
-	const file = { block, site, slotKey, paintKey, measured: new Date().toISOString(), settings, discovered, elements, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: states, rejected };
+	const file = { block, site, slotKey, paintKey, measured: new Date().toISOString(), settings, discovered, elements, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
 	fs.writeFileSync( path.join( CACHE, `${ short }.json` ), JSON.stringify( file, null, 1 ) );
 	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }

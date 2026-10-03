@@ -107,5 +107,1690 @@
         "displayType": "copyright"
       }
     ]
+  },
+  "sgs/accordion": {
+    "attributes": {
+      "accordionStyle": "flush",
+      "allowMultiple": false,
+      "defaultOpen": 0,
+      "openIcon": "plus",
+      "closeIcon": "x"
+    },
+    "inner": [
+      {
+        "name": "sgs/accordion-item",
+        "attributes": {
+          "title": "Open question",
+          "isOpen": true
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Open answer."
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/accordion-item",
+        "attributes": {
+          "title": "Closed question"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Closed answer."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "sgs/accordion-item": {
+    "attributes": {
+      "title": "Are these frames genuine?"
+    },
+    "inner": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "Answer text."
+        }
+      }
+    ],
+    "parents": [
+      {
+        "name": "sgs/accordion",
+        "attributes": {}
+      }
+    ]
+  },
+  "sgs/brand-strip": {
+    "attributes": {
+      "scrolling": false,
+      "scrollSpeed": "slow",
+      "pauseOnHover": true,
+      "brandLinkToShop": true,
+      "brandMaxItems": 16,
+      "separators": {
+        "column": {
+          "style": "solid",
+          "width": {
+            "desktop": "1px"
+          },
+          "colour": "#EFEAE2"
+        }
+      },
+      "brandHideEmpty": false,
+      "source": "product-brands"
+    },
+    "variants": [
+      {},
+      {
+        "brandDisplay": "logo-else-text"
+      },
+      {
+        "logoLayout": "row"
+      }
+    ]
+  },
+  "sgs/breadcrumbs": {
+    "attributes": {
+      "showArchiveCrumb": false,
+      "showCurrentCrumb": false
+    }
+  },
+  "sgs/button": {
+    "attributes": {
+      "label": "Shop the range",
+      "url": "/shop/"
+    },
+    "variants": [
+      {},
+      {
+        "inheritStyle": "outline"
+      },
+      {
+        "inheritStyle": "custom"
+      }
+    ]
+  },
+  "sgs/buybox": {
+    "attributes": {
+      "rrpMetaKey": "_sgs_rrp",
+      "rrpSavingFormat": "amount",
+      "rrpShowPrice": true,
+      "rrpSavingPrefix": "You save",
+      "showStockStatus": true,
+      "stockInStockLabel": "In stock — dispatched next working day",
+      "stickyEnabled": true,
+      "stickyOffset": "24px",
+      "showLadder": false,
+      "pickerSubLabelMetaKey": "_sgs_size_measure",
+      "pickerShowSelectedTick": false,
+      "addToCartLabel": "Add to bag as they are",
+      "addToCartShowPrice": true,
+      "stockLineHairline": true,
+      "pickerShowSelectedValue": true,
+      "addToCartShowIcon": false,
+      "pickerAlwaysShowAxes": [
+        "pa_frame-size"
+      ],
+      "pickerBandAxis": "pa_frame-size",
+      "pickerBandScale": "S:52,M:57,L",
+      "pickerLabelLinkAxis": "pa_frame-size",
+      "pickerLabelLinkText": "Which size am I?",
+      "pickerLabelLinkUrl": "#size-guide",
+      "gallerySavingBadge": true,
+      "extrasBeforeCount": 3,
+      "extrasBeforeCartCount": 1
+    },
+    "inner": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": ""
+        }
+      },
+      {
+        "name": "sgs/heading",
+        "attributes": {
+          "level": "h1",
+          "content": ""
+        }
+      }
+    ],
+    "variants": [
+      {},
+      {
+        "pickerStyle": "outlined",
+        "pickerSwatchStyle": "tile"
+      }
+    ],
+    "parents": [
+      {
+        "name": "woocommerce/product-collection",
+        "attributes": {
+          "queryId": 91,
+          "query": {
+            "perPage": 1,
+            "pages": 1,
+            "offset": 0,
+            "postType": "product",
+            "order": "asc",
+            "orderBy": "title",
+            "search": "",
+            "exclude": [],
+            "inherit": false,
+            "taxQuery": {},
+            "isProductCollectionBlock": true,
+            "featured": false,
+            "woocommerceOnSale": false,
+            "woocommerceStockStatus": [
+              "instock",
+              "outofstock",
+              "onbackorder"
+            ],
+            "woocommerceAttributes": [],
+            "woocommerceHandPickedProducts": [
+              "71"
+            ]
+          },
+          "tagName": "div"
+        }
+      },
+      {
+        "name": "woocommerce/product-template",
+        "attributes": {}
+      }
+    ]
+  },
+  "sgs/card-grid": {
+    "attributes": {
+      "imageFallback": true,
+      "items": [
+        {
+          "title": "Pilot",
+          "media": null,
+          "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=pilot&query_type_shape=or",
+          "glyphImage": {
+            "id": 148,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/pilot.png",
+            "alt": ""
+          },
+          "_key": "cal-item-1"
+        },
+        {
+          "title": "Wayfarer",
+          "media": {
+            "id": 175,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.jpg",
+            "type": "image",
+            "alt": "Wayfarer-style sunglasses"
+          },
+          "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=wayfarer&query_type_shape=or",
+          "glyphImage": {
+            "id": 149,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.png",
+            "alt": ""
+          },
+          "_key": "cal-item-2"
+        },
+        {
+          "title": "Round",
+          "media": {
+            "id": 177,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.jpg",
+            "type": "image",
+            "alt": "Round sunglasses"
+          },
+          "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=round&query_type_shape=or",
+          "glyphImage": {
+            "id": 150,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.png",
+            "alt": ""
+          },
+          "_key": "cal-item-3"
+        },
+        {
+          "title": "Cat-eye",
+          "media": {
+            "id": 178,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cateye.jpg",
+            "type": "image",
+            "alt": "Cat-eye sunglasses"
+          },
+          "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=cat-eye&query_type_shape=or",
+          "glyphImage": {
+            "id": 151,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cat-eye.png",
+            "alt": ""
+          },
+          "_key": "cal-item-4"
+        },
+        {
+          "title": "Square",
+          "media": {
+            "id": 181,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.jpg",
+            "type": "image",
+            "alt": "Square sunglasses"
+          },
+          "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=square&query_type_shape=or",
+          "glyphImage": {
+            "id": 152,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.png",
+            "alt": ""
+          },
+          "_key": "cal-item-5"
+        },
+        {
+          "title": "Oversized",
+          "media": null,
+          "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=oversized&query_type_shape=or",
+          "glyphImage": {
+            "id": 153,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/oversized.png",
+            "alt": ""
+          },
+          "_key": "cal-item-6"
+        }
+      ],
+      "variant": "overlay",
+      "noImageLabel": "Photo to come"
+    }
+  },
+  "sgs/cart": {
+    "attributes": {
+      "pillLabel": "Bag",
+      "countPopAnimation": true,
+      "freeDeliveryMessage": "Add %s more for free UK delivery",
+      "showZero": true,
+      "panelHeading": "Bag",
+      "panelShowCount": true,
+      "emptyCartMessage": "Nothing in here yet.",
+      "emptyCartCtaLabel": "Shop sunglasses",
+      "panelEmptyTextAlign": "center",
+      "itemShowQty": false,
+      "itemShowSaveForLater": false,
+      "itemRemoveLabel": "Remove",
+      "panelTaxNote": "",
+      "panelShowViewCart": false,
+      "freeDeliveryHideWhenEmpty": true,
+      "freeDeliveryThresholdOverride": "75",
+      "freeDeliverySuccessMessage": "Free UK delivery unlocked",
+      "panelInstalmentsNote": "Or 3 payments of %s with Klarna",
+      "panelInstalmentsCount": 3,
+      "panelSlideEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+    },
+    "variants": [
+      {},
+      {
+        "triggerStyle": "pill",
+        "pillCountStyle": "bubble"
+      }
+    ]
+  },
+  "sgs/choice-flow": {
+    "attributes": {
+      "title": "Add prescription lenses",
+      "progressStyle": "bar",
+      "showPricePanel": true,
+      "pricePanelTitle": "",
+      "stickyFooter": true,
+      "showHeader": true,
+      "headerLogo": {
+        "id": 486,
+        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
+        "alt": ""
+      },
+      "stepCountLabel": "Question",
+      "summaryBaseLabel": "Frame",
+      "summaryPendingLabel": "Lenses",
+      "summaryPendingText": "not chosen yet",
+      "stageNote": "Not sure which to pick?",
+      "stageNoteLink": {
+        "url": "https://wa.me/440000000000",
+        "text": "Happy to talk it through — message me and we'll choose together."
+      },
+      "skipPrompt": "Frame only?",
+      "skipLabel": "Skip the lenses"
+    },
+    "inner": [
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "What they're for"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/choice-flow-question",
+            "attributes": {
+              "priceGroup": "lens-use",
+              "pricePrefix": "from",
+              "question": "What will you use them for?",
+              "intro": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after.",
+              "options": [
+                {
+                  "label": "Distance",
+                  "value": "distance",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 455,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-distance.png",
+                    "alt": ""
+                  },
+                  "helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance.",
+                  "description": "Driving, walking about, everyday wear.",
+                  "summaryText": "Distance lenses"
+                },
+                {
+                  "label": "Reading",
+                  "value": "reading",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 457,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-reading.png",
+                    "alt": ""
+                  },
+                  "helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these.",
+                  "description": "Close work, in the sun.",
+                  "summaryText": "Reading lenses"
+                },
+                {
+                  "label": "Varifocal",
+                  "value": "varifocal",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 458,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-varifocal.png",
+                    "alt": ""
+                  },
+                  "helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person.",
+                  "description": "Near and far in one lens, no line.",
+                  "summaryText": "Varifocal lenses"
+                },
+                {
+                  "label": "No prescription",
+                  "value": "none",
+                  "nextStepId": "7",
+                  "image": {
+                    "id": 456,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-none.png",
+                    "alt": ""
+                  },
+                  "helpText": "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always add prescription lenses later.",
+                  "description": "Keep the lenses they come with.",
+                  "addToBagNow": true
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "How thin"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/choice-flow-question",
+            "attributes": {
+              "priceGroup": "lens-thickness",
+              "question": "How thin would you like them?",
+              "intro": "Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth it.",
+              "options": [
+                {
+                  "label": "Standard · 1.5",
+                  "value": "std",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 451,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-std.png",
+                    "alt": ""
+                  },
+                  "helpText": "The standard lens material. Perfectly good for a mild prescription — going thinner would make no visible difference and cost you money for nothing.",
+                  "description": "Fine for most prescriptions up to about ±2.00.",
+                  "isDefault": true,
+                  "badge": "Most people pick this"
+                },
+                {
+                  "label": "Thin · 1.6",
+                  "value": "thin",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 452,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-thin.png",
+                    "alt": ""
+                  },
+                  "helpText": "Noticeably slimmer at the edge and lighter on your nose. The usual choice once your prescription gets past about ±2.00.",
+                  "description": "Around 20% thinner. For ±2.00 to ±4.00."
+                },
+                {
+                  "label": "Extra thin · 1.67",
+                  "value": "xthin",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 454,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-xthin.png",
+                    "alt": ""
+                  },
+                  "helpText": "Worth it for a stronger prescription — it stops the lens edge standing proud of the frame and reduces the way strong lenses distort how your eyes look.",
+                  "description": "Around 35% thinner. For ±4.00 to ±6.00."
+                },
+                {
+                  "label": "Ultra thin · 1.74",
+                  "value": "ultra",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 453,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-ultra.png",
+                    "alt": ""
+                  },
+                  "helpText": "The thinnest lens material available. If your prescription is strong, this is the difference between glasses you want to wear and glasses you tolerate.",
+                  "description": "The thinnest made. For ±6.00 and above."
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {},
+      {
+        "flowLayout": "showcase"
+      }
+    ]
+  },
+  "sgs/choice-flow-question": {
+    "attributes": {
+      "priceGroup": "lens-use",
+      "question": "What will you use them for?",
+      "intro": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after.",
+      "options": [
+        {
+          "label": "Distance",
+          "value": "distance",
+          "nextStepId": "",
+          "image": {
+            "id": 455,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-distance.png",
+            "alt": ""
+          },
+          "helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance.",
+          "description": "Driving, walking about, everyday wear.",
+          "summaryText": "Distance lenses"
+        },
+        {
+          "label": "Reading",
+          "value": "reading",
+          "nextStepId": "",
+          "image": {
+            "id": 457,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-reading.png",
+            "alt": ""
+          },
+          "helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these.",
+          "description": "Close work, in the sun.",
+          "summaryText": "Reading lenses"
+        },
+        {
+          "label": "Varifocal",
+          "value": "varifocal",
+          "nextStepId": "",
+          "image": {
+            "id": 458,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-varifocal.png",
+            "alt": ""
+          },
+          "helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person.",
+          "description": "Near and far in one lens, no line.",
+          "summaryText": "Varifocal lenses"
+        },
+        {
+          "label": "No prescription",
+          "value": "none",
+          "nextStepId": "7",
+          "image": {
+            "id": 456,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-none.png",
+            "alt": ""
+          },
+          "helpText": "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always add prescription lenses later.",
+          "description": "Keep the lenses they come with.",
+          "addToBagNow": true
+        }
+      ]
+    },
+    "parents": [
+      {
+        "name": "sgs/choice-flow",
+        "attributes": {
+          "title": "Add prescription lenses",
+          "progressStyle": "bar",
+          "flowLayout": "showcase",
+          "showPricePanel": true,
+          "pricePanelTitle": "",
+          "stickyFooter": true,
+          "showHeader": true,
+          "closeStyle": "text",
+          "headerLogo": {
+            "id": 486,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
+            "alt": ""
+          },
+          "progressCounts": "current",
+          "stepCountLabel": "Question",
+          "summaryBaseLabel": "Frame",
+          "summaryPendingLabel": "Lenses",
+          "summaryPendingText": "not chosen yet",
+          "stageNote": "Not sure which to pick?",
+          "stageNoteLink": {
+            "url": "https://wa.me/440000000000",
+            "text": "Happy to talk it through — message me and we'll choose together."
+          },
+          "stageNoteIcon": "whatsapp",
+          "skipPrompt": "Frame only?",
+          "skipLabel": "Skip the lenses"
+        }
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "What they're for"
+        }
+      }
+    ]
+  },
+  "sgs/choice-flow-result": {
+    "attributes": {
+      "heading": "Perfect — order now and I'll WhatsApp you a link for it.",
+      "body": "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut them I refund the lenses in full.",
+      "showBuyNow": false,
+      "addToBasketLabel": "Add to bag",
+      "buttonShowsTotal": true
+    },
+    "parents": [
+      {
+        "name": "sgs/choice-flow",
+        "attributes": {
+          "title": "Add prescription lenses",
+          "progressStyle": "bar",
+          "flowLayout": "showcase",
+          "showPricePanel": true,
+          "pricePanelTitle": "",
+          "stickyFooter": true,
+          "showHeader": true,
+          "closeStyle": "text",
+          "headerLogo": {
+            "id": 486,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
+            "alt": ""
+          },
+          "progressCounts": "current",
+          "stepCountLabel": "Question",
+          "summaryBaseLabel": "Frame",
+          "summaryPendingLabel": "Lenses",
+          "summaryPendingText": "not chosen yet",
+          "stageNote": "Not sure which to pick?",
+          "stageNoteLink": {
+            "url": "https://wa.me/440000000000",
+            "text": "Happy to talk it through — message me and we'll choose together."
+          },
+          "stageNoteIcon": "whatsapp",
+          "skipPrompt": "Frame only?",
+          "skipLabel": "Skip the lenses"
+        }
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "Your prescription"
+        }
+      }
+    ]
+  },
+  "sgs/filter-search": {
+    "attributes": {
+      "taxonomy": "product_brand",
+      "placeholder": "Search brands",
+      "threshold": 2
+    }
+  },
+  "sgs/form": {
+    "attributes": {
+      "formId": "contact",
+      "submitLabel": "Send message",
+      "successMessage": "Thanks — I'll come back to you shortly."
+    },
+    "inner": [
+      {
+        "name": "sgs/form-field-text",
+        "attributes": {
+          "fieldName": "your_name",
+          "label": "",
+          "placeholder": "Your name",
+          "required": true,
+          "width": "half"
+        }
+      },
+      {
+        "name": "sgs/form-field-email",
+        "attributes": {
+          "fieldName": "email",
+          "label": "",
+          "placeholder": "Email",
+          "required": true,
+          "width": "half"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-email": {
+    "attributes": {
+      "fieldName": "email",
+      "label": "",
+      "placeholder": "Email",
+      "required": true,
+      "width": "half"
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-file": {
+    "attributes": {
+      "fieldName": "rx_photo",
+      "label": "Photo of your prescription",
+      "required": true,
+      "allowedTypes": [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ],
+      "maxSize": 10,
+      "uploadText": "Drop a photo or screenshot here",
+      "helpText": "A phone photo of the paper copy is fine, as long as every number is readable."
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ],
+    "variants": [
+      {},
+      {
+        "zoneStyle": "panel"
+      }
+    ]
+  },
+  "sgs/form-field-number": {
+    "attributes": {
+      "fieldName": "rx_r_sph",
+      "label": "Right SPH",
+      "width": "third",
+      "step": "0.25",
+      "min": "-30",
+      "max": "30",
+      "placeholder": "-2.25",
+      "required": true,
+      "columnHeading": "SPH",
+      "rowHeading": "R"
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-phone": {
+    "attributes": {
+      "fieldName": "phone",
+      "label": "",
+      "placeholder": "Phone (optional)",
+      "required": false,
+      "width": "half"
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-select": {
+    "attributes": {
+      "fieldName": "topic",
+      "label": "",
+      "placeholder": "What can I help with?",
+      "required": true,
+      "width": "half",
+      "options": [
+        {
+          "value": "choosing-a-frame",
+          "label": "Choosing a frame"
+        },
+        {
+          "value": "prescription-lenses",
+          "label": "Prescription lenses"
+        },
+        {
+          "value": "an-order",
+          "label": "An order I've placed"
+        },
+        {
+          "value": "eye-test",
+          "label": "Booking an eye test"
+        },
+        {
+          "value": "something-else",
+          "label": "Something else"
+        }
+      ]
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-text": {
+    "attributes": {
+      "fieldName": "your_name",
+      "label": "",
+      "placeholder": "Your name",
+      "required": true,
+      "width": "half"
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-field-textarea": {
+    "attributes": {
+      "fieldName": "message",
+      "label": "",
+      "placeholder": "Your message",
+      "required": true,
+      "width": "full"
+    },
+    "parents": [
+      {
+        "name": "sgs/form",
+        "attributes": {
+          "formId": "cr-calibration",
+          "submitLabel": "Send"
+        }
+      }
+    ]
+  },
+  "sgs/form-step": {
+    "attributes": {
+      "label": "What they're for"
+    },
+    "inner": [
+      {
+        "name": "sgs/choice-flow-question",
+        "attributes": {
+          "priceGroup": "lens-use",
+          "pricePrefix": "from",
+          "question": "What will you use them for?",
+          "intro": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after.",
+          "options": [
+            {
+              "label": "Distance",
+              "value": "distance",
+              "nextStepId": "",
+              "image": {
+                "id": 455,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-distance.png",
+                "alt": ""
+              },
+              "helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance.",
+              "description": "Driving, walking about, everyday wear.",
+              "summaryText": "Distance lenses"
+            },
+            {
+              "label": "Reading",
+              "value": "reading",
+              "nextStepId": "",
+              "image": {
+                "id": 457,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-reading.png",
+                "alt": ""
+              },
+              "helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these.",
+              "description": "Close work, in the sun.",
+              "summaryText": "Reading lenses"
+            },
+            {
+              "label": "Varifocal",
+              "value": "varifocal",
+              "nextStepId": "",
+              "image": {
+                "id": 458,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-varifocal.png",
+                "alt": ""
+              },
+              "helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person.",
+              "description": "Near and far in one lens, no line.",
+              "summaryText": "Varifocal lenses"
+            },
+            {
+              "label": "No prescription",
+              "value": "none",
+              "nextStepId": "7",
+              "image": {
+                "id": 456,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-none.png",
+                "alt": ""
+              },
+              "helpText": "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always add prescription lenses later.",
+              "description": "Keep the lenses they come with.",
+              "addToBagNow": true
+            }
+          ]
+        }
+      }
+    ],
+    "parents": [
+      {
+        "name": "sgs/choice-flow",
+        "attributes": {
+          "title": "Add prescription lenses",
+          "progressStyle": "bar",
+          "flowLayout": "showcase",
+          "showPricePanel": true,
+          "pricePanelTitle": "",
+          "stickyFooter": true,
+          "showHeader": true,
+          "closeStyle": "text",
+          "headerLogo": {
+            "id": 486,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
+            "alt": ""
+          },
+          "progressCounts": "current",
+          "stepCountLabel": "Question",
+          "summaryBaseLabel": "Frame",
+          "summaryPendingLabel": "Lenses",
+          "summaryPendingText": "not chosen yet",
+          "stageNote": "Not sure which to pick?",
+          "stageNoteLink": {
+            "url": "https://wa.me/440000000000",
+            "text": "Happy to talk it through — message me and we'll choose together."
+          },
+          "stageNoteIcon": "whatsapp",
+          "skipPrompt": "Frame only?",
+          "skipLabel": "Skip the lenses"
+        }
+      }
+    ]
+  },
+  "sgs/google-reviews": {
+    "attributes": {
+      "averageRating": 4.7,
+      "cardStyle": "google-card",
+      "footnote": "Scroll for more — 13 of the 15 reviews left a comment.",
+      "reviewCount": 15,
+      "reviewLinkLabel": "Read the full review",
+      "reviewRequestUrl": "https://example.com/",
+      "reviews": [
+        {
+          "author": "Reviewer 1",
+          "avatarColour": "",
+          "date": "2 years ago",
+          "meta": "6 reviews",
+          "rating": 5,
+          "text": "Calibration review text: friendly service and a good choice of frames, explained clearly."
+        },
+        {
+          "author": "Reviewer 2",
+          "avatarColour": "",
+          "date": "a year ago",
+          "meta": "Local Guide · 11 reviews · 8 photos",
+          "rating": 5,
+          "text": "Calibration review text: friendly service and a good choice of frames, explained clearly."
+        },
+        {
+          "author": "Reviewer 3",
+          "avatarColour": "",
+          "date": "5 years ago",
+          "meta": "Local Guide · 60 reviews · 28 photos",
+          "rating": 5,
+          "text": "Calibration review text: friendly service and a good choice of frames, explained clearly.",
+          "url": ""
+        }
+      ],
+      "seeAllLabel": "See all reviews",
+      "seeAllUrl": "https://example.com/",
+      "showCardLogo": true,
+      "showReviewLink": true,
+      "sourceLabel": "Google Reviews",
+      "writeReviewLabel": "Write a review",
+      "arrowStep": {
+        "desktop": "2",
+        "mobile": "1"
+      }
+    },
+    "variants": [
+      {},
+      {
+        "variant": "badge"
+      }
+    ]
+  },
+  "sgs/hero": {
+    "attributes": {
+      "bgKenBurns": true
+    },
+    "inner": [
+      {
+        "name": "sgs/label",
+        "attributes": {
+          "text": "40 designer brands"
+        }
+      },
+      {
+        "name": "sgs/heading",
+        "attributes": {
+          "level": "h1",
+          "content": "The same designer shades. A good deal less."
+        }
+      }
+    ]
+  },
+  "sgs/icon-list": {
+    "attributes": {
+      "markerType": "none",
+      "source": "typed",
+      "items": [
+        {
+          "text": "UV400 protection"
+        },
+        {
+          "text": "Anti-scratch hard coat"
+        },
+        {
+          "text": "Anti-reflective back surface, so you don't catch your own eye in the lens"
+        },
+        {
+          "text": "Tint matched to the frame's original lenses"
+        },
+        {
+          "text": "Checked against your prescription by me before it's posted"
+        },
+        {
+          "text": "Two-year guarantee on the lenses"
+        }
+      ]
+    }
+  },
+  "sgs/label": {
+    "attributes": {
+      "text": "40 designer brands"
+    }
+  },
+  "sgs/media": {
+    "attributes": {
+      "mediaType": "image",
+      "imageId": 202,
+      "imageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg",
+      "imageAlt": "Person wearing sunglasses outdoors"
+    }
+  },
+  "sgs/mega-group": {
+    "attributes": {},
+    "inner": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h3",
+              "content": "Most asked for"
+            }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/card-grid",
+                "attributes": {
+                  "variant": "card",
+                  "imageFallback": false,
+                  "items": [
+                    {
+                      "title": "",
+                      "subtitle": "48 frames",
+                      "link": "/shop/?brands=ray-ban",
+                      "media": {
+                        "id": 571,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-ray-ban.jpg",
+                        "alt": "Ray-Ban",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "",
+                      "subtitle": "44 frames",
+                      "link": "/shop/?brands=gucci",
+                      "media": {
+                        "id": 572,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-gucci.jpg",
+                        "alt": "Gucci",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "",
+                      "subtitle": "17 frames",
+                      "link": "/shop/?brands=oakley",
+                      "media": {
+                        "id": 573,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-oakley.jpg",
+                        "alt": "Oakley",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "",
+                      "subtitle": "12 frames",
+                      "link": "/shop/?brands=prada",
+                      "media": {
+                        "id": 574,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-prada.jpg",
+                        "alt": "Prada",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "",
+                      "subtitle": "11 frames",
+                      "link": "/shop/?brands=versace",
+                      "media": {
+                        "id": 575,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-versace.jpg",
+                        "alt": "Versace",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "",
+                      "subtitle": "9 frames",
+                      "link": "/shop/?brands=dolce-gabbana",
+                      "media": {
+                        "id": 576,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-dolce-gabbana.jpg",
+                        "alt": "Dolce & Gabbana",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "",
+                      "subtitle": "7 frames",
+                      "link": "/shop/?brands=balenciaga",
+                      "media": {
+                        "id": 577,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-balenciaga.jpg",
+                        "alt": "Balenciaga",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "",
+                      "subtitle": "18 frames",
+                      "link": "/shop/?brands=michael-kors",
+                      "media": {
+                        "id": 578,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-michael-kors.jpg",
+                        "alt": "Michael Kors",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "",
+                      "subtitle": "12 frames",
+                      "link": "/shop/?brands=polaroid",
+                      "media": {
+                        "id": 579,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-polaroid.jpg",
+                        "alt": "Polaroid",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "",
+                      "subtitle": "10 frames",
+                      "link": "/shop/?brands=police",
+                      "media": {
+                        "id": 580,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-police.jpg",
+                        "alt": "Police",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "",
+                      "subtitle": "9 frames",
+                      "link": "/shop/?brands=carrera",
+                      "media": {
+                        "id": 581,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-carrera.jpg",
+                        "alt": "Carrera",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    },
+                    {
+                      "title": "Ferrari Scuderia",
+                      "subtitle": "6 frames",
+                      "link": "/shop/?brands=ferrari-scuderia",
+                      "media": {
+                        "id": 625,
+                        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/brand-logo-ferrari-scuderia.svg",
+                        "alt": "Ferrari Scuderia",
+                        "type": "image"
+                      },
+                      "objectFit": "scale-down"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "parents": [
+      {
+        "name": "sgs/mega-panel",
+        "attributes": {
+          "variant": "general",
+          "colourScheme": "light"
+        }
+      }
+    ]
+  },
+  "sgs/mega-panel": {
+    "attributes": {
+      "variant": "general",
+      "colourScheme": "light"
+    },
+    "inner": [
+      {
+        "name": "sgs/mega-group",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h3",
+                  "content": "Most asked for"
+                }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "sgs/modal": {
+    "attributes": {
+      "triggerText": "Which size am I?",
+      "modalRef": 461
+    }
+  },
+  "sgs/multi-button": {
+    "attributes": {},
+    "inner": [
+      {
+        "name": "sgs/button",
+        "attributes": {
+          "inheritStyle": "custom",
+          "label": "Shop sunglasses",
+          "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/"
+        }
+      },
+      {
+        "name": "sgs/button",
+        "attributes": {
+          "inheritStyle": "outline",
+          "label": "Add your prescription",
+          "url": "https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/"
+        }
+      }
+    ]
+  },
+  "sgs/nav-bar-menu": {
+    "attributes": {
+      "ref": 96,
+      "splitAfterItemId": "id:195",
+      "disabledItemIds": [
+        "id:195"
+      ],
+      "submenuOpenOn": "hover",
+      "triggerMode": {
+        "desktop": "icon-and-text",
+        "mobile": "icon"
+      },
+      "submenuCaret": false,
+      "drawerRef": 203,
+      "megaAlign": {
+        "desktop": "full-width"
+      }
+    },
+    "parents": [
+      {
+        "name": "sgs/site-header",
+        "attributes": {
+          "headerSticky": {
+            "desktop": "on"
+          },
+          "scrolledOffset": 40
+        }
+      },
+      {
+        "name": "sgs/site-header-row",
+        "attributes": {
+          "rowSlot": "middle",
+          "rowShrink": {
+            "desktop": "on"
+          },
+          "rowShrinkEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+        }
+      }
+    ]
+  },
+  "sgs/nav-drawer": {
+    "attributes": {
+      "panelSize": {
+        "desktop": "100%"
+      },
+      "submenuModel": "accordion",
+      "chromeSlotText": "MENU",
+      "chromeSlotPlacement": "after-logo",
+      "itemStagger": 50
+    },
+    "inner": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "nav",
+          "ariaLabel": "Shop"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "inheritStyle": "custom",
+              "label": "Sunglasses",
+              "url": "/shop/",
+              "widthType": {
+                "desktop": "full"
+              },
+              "textDecorationHover": "none"
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "inheritStyle": "custom",
+              "label": "Brands",
+              "url": "/shop/",
+              "widthType": {
+                "desktop": "full"
+              },
+              "textDecorationHover": "none"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "nav",
+          "ariaLabel": "More"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/icon-list",
+            "attributes": {
+              "markerType": "none",
+              "items": [
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "About us",
+                  "url": "/about/"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Delivery, returns &amp; FAQs",
+                  "url": "/help/"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Size guide",
+                  "url": "#size-guide"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Contact",
+                  "url": "/contact/"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "sgs/process-steps": {
+    "attributes": {
+      "steps": [
+        {
+          "number": "1",
+          "title": "Pick a frame, then “Add my prescription”"
+        },
+        {
+          "number": "2",
+          "title": "Tell me what they're for, how thin, what finish"
+        },
+        {
+          "number": "3",
+          "title": "Send your prescription now, or later — no rush"
+        }
+      ]
+    }
+  },
+  "sgs/product-card": {
+    "attributes": {
+      "noImageLabel": "Photo to come",
+      "showRating": true,
+      "noReviewsText": "No reviews yet",
+      "showSavingBadge": true,
+      "savingBadgePosition": "bottom-left",
+      "showBrandOverlay": true,
+      "showPickers": false,
+      "showDescription": false,
+      "showCta": false,
+      "showWishlist": true,
+      "rrpMetaKey": "_sgs_rrp",
+      "swatchMaxVisible": 4,
+      "showAttributeTag": true,
+      "attributeTagTerm": "polarised",
+      "attributeTagText": "Polarised",
+      "sourceMode": "wc-product",
+      "productId": 71
+    }
+  },
+  "sgs/responsive-logo": {
+    "attributes": {
+      "linkToHome": true
+    }
+  },
+  "sgs/site-header": {
+    "attributes": {
+      "headerSticky": {
+        "desktop": "on"
+      },
+      "scrolledOffset": 40
+    },
+    "inner": [
+      {
+        "name": "sgs/site-header-row",
+        "attributes": {
+          "rowSlot": "top"
+        }
+      },
+      {
+        "name": "sgs/site-header-row",
+        "attributes": {
+          "rowSlot": "middle",
+          "rowShrink": {
+            "desktop": "on"
+          },
+          "rowShrinkEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/nav-bar-menu",
+            "attributes": {
+              "ref": 96,
+              "splitSide": "before",
+              "splitAfterItemId": "id:195",
+              "disabledItemIds": [
+                "id:195"
+              ],
+              "submenuOpenOn": "hover",
+              "triggerMode": {
+                "desktop": "icon-and-text",
+                "mobile": "icon"
+              },
+              "submenuCaret": false,
+              "drawerRef": 203,
+              "triggerIconPosition": "before",
+              "megaAlign": {
+                "desktop": "full-width"
+              },
+              "burgerBarCount": 2
+            }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/responsive-logo",
+                "attributes": {
+                  "linkToHome": true
+                }
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {},
+      {
+        "headerShrink": {
+          "desktop": "on",
+          "tablet": "on",
+          "mobile": "on"
+        }
+      }
+    ]
+  },
+  "sgs/site-header-row": {
+    "attributes": {
+      "rowSlot": "middle"
+    },
+    "parents": [
+      {
+        "name": "sgs/site-header",
+        "attributes": {
+          "headerSticky": {
+            "desktop": "on"
+          },
+          "scrolledOffset": 40
+        }
+      }
+    ],
+    "inner": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "Header row text."
+        }
+      }
+    ]
+  },
+  "sgs/tab": {
+    "attributes": {
+      "label": "Description"
+    },
+    "inner": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "Tab content."
+        }
+      }
+    ],
+    "parents": [
+      {
+        "name": "sgs/tabs",
+        "attributes": {
+          "hideEmptyTabs": true,
+          "mobileLayout": "row"
+        }
+      }
+    ]
+  },
+  "sgs/tabs": {
+    "attributes": {
+      "hideEmptyTabs": true
+    },
+    "inner": [
+      {
+        "name": "sgs/tab",
+        "attributes": {
+          "label": "First tab"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "First tab content."
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/tab",
+        "attributes": {
+          "label": "Second tab"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Second tab content."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "sgs/trust-bar": {
+    "attributes": {
+      "items": [
+        {
+          "icon": "shield-check",
+          "label": "100% genuine, supplied direct by the brands"
+        },
+        {
+          "icon": "truck",
+          "label": "Free UK delivery over £75, or collect in store"
+        },
+        {
+          "icon": "glasses",
+          "label": "Prescription lenses glazed here in 7–10 days"
+        },
+        {
+          "icon": "rotate-ccw",
+          "label": "30 days to return, free adjustments for life"
+        }
+      ]
+    },
+    "variants": [
+      {},
+      {
+        "overflowMode": "drop"
+      },
+      {
+        "badgeStyle": "icon-bare"
+      }
+    ]
+  },
+  "sgs/whatsapp-cta": {
+    "attributes": {
+      "variant": "inline",
+      "message": "Hi, I'd like to know more about your services.",
+      "label": "Message me"
+    }
   }
 }

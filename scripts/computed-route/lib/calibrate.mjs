@@ -12,6 +12,16 @@ export const MARKER_RGB = 'rgb(19, 87, 155)';
 export const CAL_PREFIX = 'cr-ref-cal-';
 export const READ_PROPS = [ ...new Set( [ ...DEFAULT_PROPS.filter( ( p ) => ! /^icon-/.test( p ) ), ...REF_PROPS, ...HOVER_PROPS ] ) ];
 // Inherited properties are never default paint (R-47-5 compares them with the parent's live value instead).
+// How each setting state is reached before a marker is read (§3.2): 'hover' under a real mouse; 'scroll' by scrolling
+// the window past the header offset (the header script toggles is-header-scrolled on every site header); 'fixture'
+// when the fixture renders the state at rest (an accordion item saved open, the first tab, the last breadcrumb, a nav
+// item linking to the page itself). A state with no entry has no trigger: its settings are reported, never calibrated.
+export const STATE_TRIGGERS = { hover: 'hover', scrolled: 'scroll', open: 'fixture', current: 'fixture' };
+export const SCROLL_Y = 600;
+
+// The trigger for a setting state (null = rest), or undefined when the state has none.
+export const triggerFor = ( state ) => ( state ? STATE_TRIGGERS[ state ] : null );
+
 export const INHERITED = [ 'color', 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'text-align', 'text-wrap', 'text-shadow' ];
 
 const TIER_PX = { desktop: 37, tablet: 23, mobile: 7 };
