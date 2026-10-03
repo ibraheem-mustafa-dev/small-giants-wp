@@ -1,0 +1,30 @@
+{
+ "surface": "header",
+ "source": ".claude/plans/2026-10-02-eye-care-fix-register.md ## Header (tree items). 2/4/N1 are S2/S3, N2A S10, N3 and N4 framework, D7 a new block.",
+ "items": {
+  "1 top bar sentences 12.5px": [
+   [
+    "trust-ticker",
+    [
+     "font-size"
+    ],
+    [
+     "closed"
+    ]
+   ]
+  ],
+  "N2B wordmark never wraps (text-wrap nowrap)": [
+   [
+    "header-wordmark",
+    [
+     "text-wrap"
+    ],
+    [
+     "closed",
+     "scrolled"
+    ]
+   ]
+  ]
+ },
+ "framework": []
+}

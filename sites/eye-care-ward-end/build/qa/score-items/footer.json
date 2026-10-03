@@ -1,0 +1,234 @@
+{
+ "surface": "footer",
+ "source": ".claude/plans/2026-10-02-eye-care-fix-register.md ## Footer; Spec 47 \u00a75 stage 2 scored items",
+ "items": {
+  "25 main row, footer and bottom row padding": [
+   [
+    "footer-root",
+    [
+     "padding-left",
+     "padding-right",
+     "h"
+    ]
+   ],
+   [
+    "columns-row",
+    [
+     "padding-top",
+     "padding-right",
+     "padding-bottom",
+     "padding-left",
+     "h"
+    ]
+   ],
+   [
+    "bottom-bar",
+    [
+     "padding-top",
+     "padding-right",
+     "padding-bottom",
+     "padding-left",
+     "h"
+    ]
+   ]
+  ],
+  "26 wordmark weight, line height, margins": [
+   [
+    "brand-wordmark",
+    [
+     "font-weight",
+     "line-height",
+     "margin-top",
+     "margin-bottom",
+     "h"
+    ]
+   ]
+  ],
+  "27 BIRMINGHAM 4px top margin": [
+   [
+    "brand-tagline",
+    [
+     "margin-top"
+    ]
+   ]
+  ],
+  "27 BIRMINGHAM size and tracking": [
+   [
+    "brand-tagline",
+    [
+     "font-size",
+     "letter-spacing"
+    ]
+   ]
+  ],
+  "27 tagline 18px top margin": [
+   [
+    "brand-description",
+    [
+     "margin-top"
+    ]
+   ]
+  ],
+  "27 social row 20px top margin": [
+   [
+    "social-row",
+    [
+     "margin-top"
+    ]
+   ]
+  ],
+  "27 brand column gap 0": [
+   [
+    "col-brand",
+    [
+     "row-gap",
+     "gap"
+    ]
+   ]
+  ],
+  "28 tagline width and wrap": [
+   [
+    "brand-description",
+    [
+     "width",
+     "max-width",
+     "text-wrap"
+    ]
+   ]
+  ],
+  "29 headings 11.5px": [
+   [
+    "col-shop-heading",
+    [
+     "font-size"
+    ]
+   ],
+   [
+    "col-help-heading",
+    [
+     "font-size"
+    ]
+   ],
+   [
+    "col-visit-heading",
+    [
+     "font-size"
+    ]
+   ]
+  ],
+  "29 headings 0.2em tracking": [
+   [
+    "col-shop-heading",
+    [
+     "letter-spacing"
+    ]
+   ],
+   [
+    "col-help-heading",
+    [
+     "letter-spacing"
+    ]
+   ],
+   [
+    "col-visit-heading",
+    [
+     "letter-spacing"
+    ]
+   ]
+  ],
+  "29 headings weight 400": [
+   [
+    "col-shop-heading",
+    [
+     "font-weight"
+    ]
+   ],
+   [
+    "col-help-heading",
+    [
+     "font-weight"
+    ]
+   ],
+   [
+    "col-visit-heading",
+    [
+     "font-weight"
+    ]
+   ]
+  ],
+  "29 headings line height 1.5": [
+   [
+    "col-shop-heading",
+    [
+     "line-height"
+    ]
+   ],
+   [
+    "col-help-heading",
+    [
+     "line-height"
+    ]
+   ],
+   [
+    "col-visit-heading",
+    [
+     "line-height"
+    ]
+   ]
+  ],
+  "29 headings 4px bottom margin": [
+   [
+    "col-shop-heading",
+    [
+     "margin-bottom"
+    ]
+   ],
+   [
+    "col-help-heading",
+    [
+     "margin-bottom"
+    ]
+   ],
+   [
+    "col-visit-heading",
+    [
+     "margin-bottom"
+    ]
+   ]
+  ],
+  "29 columns 10px gap": [
+   [
+    "col-shop",
+    [
+     "row-gap",
+     "gap"
+    ]
+   ],
+   [
+    "col-help",
+    [
+     "row-gap",
+     "gap"
+    ]
+   ],
+   [
+    "col-visit",
+    [
+     "row-gap",
+     "gap"
+    ]
+   ]
+  ],
+  "38 hours weight 400": [
+   [
+    "hours",
+    [
+     "font-weight"
+    ]
+   ]
+  ]
+ },
+ "framework": [
+  "38 hours weight 400"
+ ]
+}

@@ -1,0 +1,29 @@
+{
+ "surface": "mega-sunglasses",
+ "source": ".claude/plans/2026-10-02-eye-care-fix-register.md ## Mega menus: 8 (panel text 52px too far right). 7 is S2; N5, N5.5 framework.",
+ "items": {
+  "8 panel content starts at the panel edge": [
+   [
+    "shop-panel",
+    [
+     "padding-left",
+     "padding-right"
+    ],
+    [
+     "mega-shop"
+    ]
+   ],
+   [
+    "shop-heading-style",
+    [
+     "margin-left",
+     "padding-left"
+    ],
+    [
+     "mega-shop"
+    ]
+   ]
+  ]
+ },
+ "framework": []
+}

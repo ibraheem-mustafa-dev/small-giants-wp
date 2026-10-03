@@ -1,0 +1,45 @@
+{
+ "surface": "product",
+ "source": ".claude/plans/2026-10-02-eye-care-fix-register.md ## Product page. Only 83 is a tree value on a measured pair; 89 (price weight on the add-to-bag button, framework repair) and 71 (swatch name styling, framework new) are scored as gaps Solve should name. The rest are motion, data, markup or unmeasured.",
+ "items": {
+  "83 Add my prescription side padding 22px": [
+   [
+    "add-prescription",
+    [
+     "padding-left",
+     "padding-right"
+    ],
+    [
+     "opening"
+    ]
+   ]
+  ],
+  "89 add-to-bag price follows the button weight": [
+   [
+    "add-to-bag",
+    [
+     "font-weight"
+    ],
+    [
+     "opening"
+    ]
+   ]
+  ],
+  "71 swatch names size and weight": [
+   [
+    "colour-swatch",
+    [
+     "font-size",
+     "font-weight"
+    ],
+    [
+     "opening"
+    ]
+   ]
+  ]
+ },
+ "framework": [
+  "89 add-to-bag price follows the button weight",
+  "71 swatch names size and weight"
+ ]
+}

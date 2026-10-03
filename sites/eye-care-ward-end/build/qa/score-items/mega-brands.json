@@ -1,0 +1,44 @@
+{
+ "surface": "mega-brands",
+ "source": ".claude/plans/2026-10-02-eye-care-fix-register.md ## Mega menus: 8 and 11 (rows). 9 is content; 11 columns follows 8.",
+ "items": {
+  "8 panel content starts at the panel edge": [
+   [
+    "brands-panel",
+    [
+     "padding-left",
+     "padding-right"
+    ],
+    [
+     "mega-brands"
+    ]
+   ]
+  ],
+  "11 brand rows weight 400, line height 1.5, no minimum height": [
+   [
+    "brands-list-last",
+    [
+     "font-weight",
+     "line-height",
+     "min-height",
+     "h"
+    ],
+    [
+     "mega-brands"
+    ]
+   ],
+   [
+    "brands-top-first",
+    [
+     "font-weight",
+     "line-height",
+     "min-height"
+    ],
+    [
+     "mega-brands"
+    ]
+   ]
+  ]
+ },
+ "framework": []
+}

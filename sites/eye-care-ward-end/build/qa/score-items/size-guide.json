@@ -1,0 +1,20 @@
+{
+ "surface": "size-guide",
+ "source": ".claude/plans/2026-10-02-eye-care-fix-register.md ## Help 115-117 (size pop-up): the walker measures only the dialog box (size-guide-modal, width), so 115 and 116 are judged on the live page after the run. Discovery run.",
+ "items": {
+  "117 pop-up width at tablet": [
+   [
+    "size-guide-modal",
+    [
+     "w"
+    ],
+    [
+     "size-guide"
+    ]
+   ]
+  ]
+ },
+ "framework": [
+  "117 pop-up width at tablet"
+ ]
+}

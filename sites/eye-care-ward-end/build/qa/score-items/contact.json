@@ -1,0 +1,16 @@
+{
+ "surface": "contact",
+ "source": ".claude/plans/2026-10-02-eye-care-fix-register.md ## Contact. 127/138 S4, 131/139 S3, 130 and 140 follow footer 38 and 36, 135 and N45 need framework settings; N44 (S6) has no pair measuring the page container; 126/137 and 134 are layout modes judged on the live page.",
+ "items": {
+  "124 heading 48px (phone 34)": [ [ "heading", [ "font-size" ] ] ],
+  "124 heading line height 1.02, bottom margin 20": [ [ "heading", [ "line-height", "margin-bottom" ] ] ],
+  "124 heading text-wrap pretty and height": [ [ "heading", [ "text-wrap", "h" ] ] ],
+  "125 eyebrow gap 10px": [ [ "eyebrow", [ "margin-bottom" ] ] ],
+  "125 intro gap 28px": [ [ "intro-text", [ "margin-bottom" ] ] ],
+  "128 details grid columns and gap 24": [ [ "detail-grid", [ "grid-template-columns", "column-gap", "row-gap", "w" ] ] ],
+  "129 label to value gap 14px": [ [ "detail-phone-label", [ "margin-bottom", "h" ] ] ],
+  "133 form heading line height 1.5": [ [ "form-heading", [ "line-height" ] ] ],
+  "136 intro text-wrap pretty": [ [ "intro-text", [ "text-wrap" ] ] ]
+ },
+ "framework": []
+}

@@ -1,0 +1,40 @@
+{
+ "surface": "mobile-menu",
+ "source": ".claude/plans/2026-10-02-eye-care-fix-register.md ## Phone drawer (tree items). 14 and N7 need new settings; 15 also needs a framework repair (the body height).",
+ "items": {
+  "13 drawer title row padding 20px 24px 0": [
+   [
+    "drawer-panel",
+    [
+     "padding-top",
+     "padding-left",
+     "padding-right"
+    ],
+    [
+     "drawer-open"
+    ]
+   ]
+  ],
+  "15 More list line height 22.5px": [
+   [
+    "drawer-link-about",
+    [
+     "line-height"
+    ],
+    [
+     "drawer-open"
+    ]
+   ],
+   [
+    "drawer-link-contact",
+    [
+     "line-height"
+    ],
+    [
+     "drawer-open"
+    ]
+   ]
+  ]
+ },
+ "framework": []
+}

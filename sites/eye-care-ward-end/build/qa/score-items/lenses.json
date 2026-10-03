@@ -1,0 +1,13 @@
+{
+ "surface": "lenses",
+ "source": ".claude/plans/2026-10-02-eye-care-fix-register.md ## Lenses page (tree items). N41 is S1 (framework); N39 (S6 top spacing) and N40 (gap above the button) have no pair measuring the gap itself, so they are judged after the run on the live page.",
+ "items": {
+  "99 heading line height 1.02": [ [ "title", [ "line-height" ] ] ],
+  "100 price 4px top margin": [ [ "card-single-vision-price", [ "margin-top" ] ] ],
+  "100 price card height": [ [ "card-single-vision", [ "h" ] ] ],
+  "101 section heading bottom margin 0": [ [ "benefits-heading", [ "margin-bottom" ] ], [ "steps-heading", [ "margin-bottom" ] ] ],
+  "102 step numbers 15.5px weight 500": [ [ "step-1", [ "font-size", "font-weight" ] ] ],
+  "103 Choose a frame weight 400": [ [ "choose-a-frame", [ "font-weight" ] ] ]
+ },
+ "framework": []
+}
