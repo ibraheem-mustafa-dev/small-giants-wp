@@ -28,17 +28,12 @@
 2. **Match each element's full CSS, not just the difference you can see (your point 26).** For every element touched, set margin, padding, line height, font, letter spacing and width to the draft's values, so neighbours stop shifting. This applies on every surface, not just the footer.
 3. **Every new or repaired setting uses the shared controls (your point 70).** Typography through the shared typography controls; per-device values through the responsive control; spacing and gaps through the shared spacing control; padding and margins through the box control; colours through the token picker. Each new setting names the block where the same control is already done, and copies it.
 
-## Decisions for you
-
-Each has a recommendation; reply with the number and "yes" or your choice.
-
-| # | What it is about | Options | My recommendation |
-|---|---|---|---|
-| D1 | **Sizing diagram (your N36S).** You are right that an "optical frame measurements" block is too niche for the shared library. A block is still the only safe way to make the numbers follow the chosen size: the raw-HTML block saves empty on WordPress 7.1, client code may not live in the theme or plugins, and no per-client code home exists. But the block does not have to be about glasses. | A: a general "measured diagram" block. You upload any drawing (Eye Care's front and side frame views become its media, not code), place labels on it, and bind each label to a product measurement. It includes the name / value / description table and a note with the numbers filled in, and follows the size picker. The same block serves furniture (width, depth, height), bags, bikes, mattresses and size charts. B: build a per-client code home first (a client plugin folder plus a deploy path through the deploy script), then a frame-only block inside it. | **A.** It is useful to any shop with measured products, so it earns its place in the library, and nothing optician-specific ships to other clients. B is worth building one day for genuinely one-off features, but not for this. The table and note go in now with existing blocks. |
-| D7 | **The shop's Google rating on product pages (N31).** You pointed out that the rating sits inside the "no product reviews" message, so the negative claim frames it. The reviews block already has a compact "badge" layout (stars, score, count, linked to Google). | A: the badge in the header's top bar, on every page. B: the badge in the footer. C: a "What patients say" item in the product page's Good to know accordion. | **A.** It is seen first on every page, including product pages, with no negative framing. B is seen late; C is hidden until opened. |
-| D8 | **Brand logo on the product page (N33A).** Search and AI first: no difference between the two placements. Google and AI read the brand from the product's structured data, which already carries it (`class-product-schema.php::resolve_brand`). The product name stays as text. The logo's text alternative is the brand name. Your contrast counter is right: a white plate behind the logo solves it, as it does for the typed name. And with the Save tag moving off the photo (N33B), the photo corner is free. | A: logo above the product name, linking to the brand page. B: logo on the photo's top-left corner, on a white plate. C: keep the typed brand name (as now, but linked to the brand page). | **A**, for two reasons that still hold. It is the internal link that feeds the brand pages from D9 (good for search), and a corner badge sits over the photo that people swipe and zoom on phones. |
+## Decisions
 
 **Decided on 2026-10-03:**
+- D1: a general "measured diagram" block (drawing uploaded as media, labels bound to product measurements, table and note, follows the size picker); the table and note go in first with existing blocks.
+- D7: the Google rating as a badge (the reviews block's badge layout) in the header's top bar, on every page.
+- D8: the brand logo above the product name, linking to the brand page.
 - D2: accept the 50-60ms stagger difference.
 - D3: build the draft's drift mode.
 - D4: hide ".00" everywhere except WooCommerce's checkout total lines.
@@ -113,6 +108,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | N2B | Scrolling back up, the wordmark briefly wraps to 3 lines ("EYE" over "CARE") | The wordmark column can shrink to its narrowest width; the trigger was not reproduced. Setting the heading's text-wrap to "nowrap" stops it wrapping, whatever the trigger is. Re-check after step 0, because the live header lacks its shrink settings. | tree | to prove (step 0, then watch it) |
 | N3 + 17B | Bag count sits too low, not centred on the BAG text | The bag-count rule inherits a 2px nudge meant for the icon-only badge. Reset it so the circle centres on the text line. | framework repair | proven live |
 | N4 | Top bar should become a moving strip when its items no longer fit, paused on hover | Follow the draft: below 768px the bar scrolls (30s loop); at 768px and above, items that do not fit are dropped. The scroll settings exist. A small repair lets "drop" and "scroll" work together: today turning scrolling on switches dropping off at every width. The strip pauses on hover and on keyboard focus, and gets a visible pause button: moving content over 5 seconds needs one for WCAG 2.2.2. | tree + framework repair | proven |
+| D7 | The shop's Google rating needs a positive, prominent home | The reviews block in its existing badge layout (stars, score, count, linked to the Google listing) as an item in the header's top bar | tree | decided |
 
 ## Mega menus
 
@@ -246,9 +242,9 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 95 | Several spec rows empty (Style, Frame type, Material, Hinge, Nose pads) | Fill the product data. The 4-column layout is correct, as you said. | content | proven |
 | N28 | Size pop-up WhatsApp card text wrong | S4 | | |
 | N30 | Small box beside the bridge size | Plain "56 · 17 · 145" everywhere (your choice): size buttons, size guide and the sizing note | content + tree | proven |
-| N31 | Reviews panel when there are none | S7; the Google rating moves per D7 | | decision (D7) |
+| N31 | Reviews panel when there are none | S7; the Google rating moves to the header top bar (D7, Header line D7) | | |
 | N32 | Accordion A-F | S5 | | |
-| N33A | Brand name typed at the top | S9 and D8 | | decision |
+| N33A | Brand name typed at the top | S9: the brand logo above the product name, linking to the brand page (D8) | framework new + tree | proven |
 | N33B | Save shown on the photo and beside the price | Turn off the photo tag | tree | proven |
 | N34 | ".00" shown | S8 | | |
 | N35 | Size letter not centred | Centre the text inside each size button | framework repair | proven |
