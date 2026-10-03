@@ -79,3 +79,19 @@ test( 'MUST FAIL TO WRITE: two values with the same effect and no deciding sibli
 	assert.equal( r.gap, 'ambiguous' );
 	assert.equal( r.writes, undefined );
 } );
+
+// A box with some sides set prints 0 for the rest (helpers-box.php::sgs_box_object_shorthand): the first side written
+// into an empty box brings the others at their calibrated default paint, so only the measured side changes.
+const padCal = { settings: { padding: { slot: '.sgs-container__inner', property: 'padding' } }, elements: { '.sgs-container__inner': {
+	375: { 'padding-top': '12px', 'padding-right': '24px', 'padding-bottom': '12px', 'padding-left': '24px' },
+	1440: { 'padding-top': '16px', 'padding-right': '24px', 'padding-bottom': '16px', 'padding-left': '24px' } } } };
+
+test( 'MUST FAIL TO ZERO: one side into an empty box keeps the other sides at their default paint', () => {
+	const r = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'padding-top', perWidth: { 375: '0px', 1440: '0px' } }, { db, snapshot, calibration: padCal } );
+	assert.deepEqual( r.writes[ 0 ].value, { mobile: { top: '0px', right: '24px', bottom: '12px', left: '24px' }, desktop: { top: '0px', right: '24px', bottom: '16px', left: '24px' } } );
+} );
+
+test( 'a box that already holds sides is merged, never re-seeded', () => {
+	const r = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'padding-top', perWidth: { 1440: '0px' }, current: { padding: { desktop: { bottom: '8px' } } } }, { db, snapshot, calibration: padCal } );
+	assert.deepEqual( r.writes[ 0 ].value, { desktop: { top: '0px' } } );
+} );

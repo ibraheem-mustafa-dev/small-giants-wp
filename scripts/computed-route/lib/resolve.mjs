@@ -203,7 +203,26 @@ export function resolve( input, ctx ) {
 		out[ t ] = f.value;
 	}
 	const isBox = !! row.box_family || 'box_only' === row.tier_shape;
-	const boxed = ( v ) => ( isBox ? ( side ? { [ side ]: v } : Object.fromEntries( SIDES.map( ( s ) => [ s, v ] ) ) ) : v );
+	// A box with some sides set prints 0 for the rest (helpers-box.php::sgs_box_object_shorthand), overriding the
+	// block's own stylesheet default. So the first side written into an empty box brings the other sides at their
+	// calibrated default paint, and only the measured side changes.
+	const seedSides = ( t, existing ) => {
+		if ( ! side || ( existing && Object.keys( existing ).length ) ) {
+			return {};
+		}
+		const paint = ctx.calibration.elements?.[ slot ]?.[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || {};
+		return Object.fromEntries( SIDES.filter( ( s ) => s !== side && undefined !== paint[ `${ short }-${ s }` ] ).map( ( s ) => [ s, paint[ `${ short }-${ s }` ] ] ) );
+	};
+	const boxed = ( v, t ) => {
+		if ( ! isBox ) {
+			return v;
+		}
+		if ( ! side ) {
+			return Object.fromEntries( SIDES.map( ( s ) => [ s, v ] ) );
+		}
+		const existing = 'tier_object' === row.tier_shape ? current[ attr ]?.[ t ] : current[ attr ];
+		return { ...seedSides( t, existing ), [ side ]: v };
+	};
 	const writes = [];
 	if ( 'flat_sibling' === row.tier_shape ) {
 		for ( const [ t, v ] of Object.entries( out ) ) {
@@ -214,13 +233,13 @@ export function resolve( input, ctx ) {
 			writes.push( { attr: name, value: v, merge: 'replace' } );
 		}
 	} else if ( 'tier_object' === row.tier_shape ) {
-		writes.push( { attr, value: Object.fromEntries( Object.entries( out ).map( ( [ t, v ] ) => [ t, boxed( v ) ] ) ), merge: 'deep' } );
+		writes.push( { attr, value: Object.fromEntries( Object.entries( out ).map( ( [ t, v ] ) => [ t, boxed( v, t ) ] ) ), merge: 'deep' } );
 	} else {
 		const vals = [ ...new Set( Object.values( out ).map( ( v ) => JSON.stringify( v ) ) ) ];
 		if ( vals.length > 1 ) {
 			return { gap: 'shape', detail: `${ attr } holds one value for every width; draft has ${ vals.join( ', ' ) }` };
 		}
-		writes.push( { attr, value: boxed( JSON.parse( vals[ 0 ] ) ), merge: isBox ? 'deep' : 'replace' } );
+		writes.push( { attr, value: boxed( JSON.parse( vals[ 0 ] ), 'desktop' ), merge: isBox ? 'deep' : 'replace' } );
 	}
 	return { writes };
 }
