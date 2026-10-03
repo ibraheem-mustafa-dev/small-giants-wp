@@ -214,7 +214,14 @@
                 "name": "Shop"
               },
               "flexWrap": "wrap",
-              "className": "cr-ref-footer-7"
+              "className": "cr-ref-footer-7",
+              "layout": "stack",
+              "gap": {
+                "mobile": "10px",
+                "tablet": "10px",
+                "desktop": "10px"
+              },
+              "flexDirection": "column"
             },
             "innerBlocks": [
               {
@@ -299,7 +306,14 @@
                 "name": "Help"
               },
               "flexWrap": "wrap",
-              "className": "cr-ref-footer-14"
+              "className": "cr-ref-footer-14",
+              "layout": "stack",
+              "gap": {
+                "mobile": "10px",
+                "tablet": "10px",
+                "desktop": "10px"
+              },
+              "flexDirection": "column"
             },
             "innerBlocks": [
               {
@@ -384,7 +398,14 @@
                 "name": "Visit or call"
               },
               "flexWrap": "wrap",
-              "className": "cr-ref-footer-21"
+              "className": "cr-ref-footer-21",
+              "layout": "stack",
+              "gap": {
+                "mobile": "10px",
+                "tablet": "10px",
+                "desktop": "10px"
+              },
+              "flexDirection": "column"
             },
             "innerBlocks": [
               {

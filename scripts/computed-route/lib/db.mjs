@@ -20,6 +20,11 @@ export function attrsFor( db, block ) {
 	return db.prepare( `SELECT ${ COLS } FROM block_attributes WHERE block_slug = ? AND source = 'sgs' AND css_property IS NOT NULL` ).all( block ).map( plain );
 }
 
+// A block's enum settings with no css_property (a layout mode, say): calibration discovers what each value changes.
+export function enumSettings( db, block ) {
+	return db.prepare( `SELECT ${ COLS } FROM block_attributes WHERE block_slug = ? AND source = 'sgs' AND css_property IS NULL AND enum_values IS NOT NULL` ).all( block ).map( plain );
+}
+
 // The settings of a block that paint `prop` (a CSS shorthand such as "padding", or one listed in a comma list such
 // as "padding-bottom,padding-left,...") in `state` (null = rest).
 export function candidates( db, block, prop, state = null ) {

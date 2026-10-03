@@ -53,6 +53,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `openDb(file?)` → a read-only `DatabaseSync`.
 - `attrsFor(db, block)` → the block's `sgs` rows that paint a CSS property.
 - `candidates(db, block, prop, state?)` → rows painting `prop` (shorthand or comma-list member) in `state`.
+- `enumSettings(db, block)` → enum settings with no css_property (calibration discovers what each value paints).
 - `siblings(db, block, attr)` → the `flat_sibling` rows sharing `attr`'s base name.
 - `attrRow(db, block, attr)` → one row whatever its source, or null.
 
@@ -75,6 +76,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `blockSchema(slug)` → the block's `block.json` attributes.
 - `splitProperty(prop)` → `{ short, side }` (a walker longhand as the database shorthand and box side).
 - `tiersOf(perWidth, prop)` → `{ tiers }` (375 mobile, 768 tablet, 1440 and 1920 desktop) or `{ error }`.
+- `resolveDiscovered(input, calibration)` → a write for a setting calibration found (an enum value whose effects match the draft; ties broken by the element's other properties), a gap, or null.
 - `resolve(input, ctx)` → `{ writes: [{ attr, value, merge }] }` or `{ gap, detail }`.
 
 ### `lib/tree.mjs`
@@ -111,6 +113,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `readInstancesInPage([count, prefix, props, pathSrc])`: in-page; every element of each instance by path.
 - `elementPath`: re-exported from `scripts/parity/lib/ref-trace.mjs`.
 - `slotFor(row, marker, defReads, markReads)` → `{ slot, slots, property, transform, reachedAt, oneWidth, effects }` or `{ dead }`.
+- `discoverEffects(defReads, markReads)` → what one enum value changes: `{ prop: { slots, value } }`.
 - `defaultPaint(defReads)` → per element and width, non-inherited properties.
 
 ### `calibrate.mjs` (runs `wp-build-page.js`, ssh, Playwright)

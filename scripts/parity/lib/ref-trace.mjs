@@ -5,7 +5,7 @@
 
 // Extra properties measured when a config sets refPrefix: the spacing and width a layout setting writes, which
 // the default list leaves to the box and position rows.
-export const REF_PROPS = [ 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'width', 'max-width', 'text-wrap', 'gap' ];
+export const REF_PROPS = [ 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'width', 'max-width', 'text-wrap', 'gap', 'flex-direction', 'flex-wrap' ];
 
 // In-page and in Node: the selector path from a ref element down to `el`. Each step is the element's BEM class (the
 // first class starting with "sgs-" that is not a modifier and not a per-instance id such as sgs-text-aebb51cc, which

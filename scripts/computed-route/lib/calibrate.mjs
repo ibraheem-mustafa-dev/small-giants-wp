@@ -200,6 +200,36 @@ export function slotFor( row, marker, defReads, markReads ) {
 	return { slot: best.path, slots, property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, effects };
 }
 
+// What one enum value of a setting with no css_property changes: every read property that differs from the default
+// instance, on the shallowest element(s) where it changes. Returns { prop: { slots, value: { width: v } } }.
+export function discoverEffects( defReads, markReads ) {
+	const found = {};
+	const depth = ( p ) => ( '' === p ? 0 : p.split( ' > ' ).length );
+	for ( const w of WIDTHS ) {
+		const d = defReads[ w ] || {};
+		for ( const [ p, styles ] of Object.entries( markReads[ w ] || {} ) ) {
+			for ( const [ prop, v ] of Object.entries( styles ) ) {
+				if ( [ 'width', 'gap', 'row-gap', 'column-gap' ].includes( prop ) || sameVal( v, d[ p ]?.[ prop ] ) ) {
+					continue;
+				}
+				const f = ( found[ prop ] ??= { slots: [], value: {}, depth: Infinity } );
+				if ( depth( p ) < f.depth ) {
+					f.depth = depth( p );
+					f.slots = [ p ];
+					f.value = {};
+				}
+				if ( depth( p ) === f.depth ) {
+					if ( ! f.slots.includes( p ) ) {
+						f.slots.push( p );
+					}
+					f.value[ w ] = v;
+				}
+			}
+		}
+	}
+	return Object.fromEntries( Object.entries( found ).map( ( [ k, v ] ) => [ k, { slots: v.slots, value: v.value } ] ) );
+}
+
 // The default paint of every element at each width, without inherited properties.
 export function defaultPaint( defReads ) {
 	const out = {};

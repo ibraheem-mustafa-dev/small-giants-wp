@@ -18,13 +18,25 @@
       {},
       {
         "flexWrap": "wrap"
+      },
+      {
+        "layout": "flex"
+      },
+      {
+        "layout": "stack"
       }
     ],
     "inner": [
       {
         "name": "sgs/text",
         "attributes": {
-          "text": "Inside a container."
+          "text": "First child."
+        }
+      },
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "Second child."
         }
       }
     ]

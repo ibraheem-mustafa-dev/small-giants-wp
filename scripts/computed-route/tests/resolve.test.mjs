@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
-import { resolve, splitProperty, tiersOf } from '../lib/resolve.mjs';
+import { resolve, resolveDiscovered, splitProperty, tiersOf } from '../lib/resolve.mjs';
 import { parseColour } from '../lib/normalise.mjs';
 
 const db = openDb();
@@ -53,4 +53,23 @@ test( 'longhands map to the database shorthand and a side', () => {
 	assert.deepEqual( splitProperty( 'margin-left' ), { short: 'margin', side: 'left' } );
 	assert.deepEqual( splitProperty( 'border-top-color' ), { short: 'border-color', side: 'top' } );
 	assert.deepEqual( tiersOf( { 375: '1px', 1440: '2px' }, 'x' ).tiers, { mobile: '1px', desktop: '2px' } );
+} );
+
+// A layout mode with no css_property, as calibration discovers it: flex and stack both give display flex on the inner
+// element; only stack gives a column. The draft's other properties of that element decide.
+const discovered = { discovered: { layout: {
+	display: { slots: [ '.sgs-container__inner' ], values: { flex: { 375: 'flex', 768: 'flex', 1440: 'flex' }, stack: { 375: 'flex', 768: 'flex', 1440: 'flex' }, grid: { 375: 'grid', 768: 'grid', 1440: 'grid' } } },
+	'flex-direction': { slots: [ '.sgs-container__inner' ], values: { stack: { 375: 'column', 768: 'column', 1440: 'column' } } },
+} } };
+
+test( 'a discovered layout setting: the value whose effects match the draft, ties broken by sibling properties', () => {
+	const r = resolveDiscovered( { slot: '.sgs-container__inner', prop: 'display', perWidth: { 375: 'flex', 1440: 'flex', 1920: 'flex' }, siblings: { 'flex-direction': { 375: 'column', 1440: 'column' } } }, discovered );
+	assert.deepEqual( r.writes, [ { attr: 'layout', value: 'stack', merge: 'replace' } ] );
+	assert.equal( resolveDiscovered( { slot: '.sgs-container__inner', prop: 'display', perWidth: { 1440: 'block' } }, discovered ), null );
+} );
+
+test( 'MUST FAIL TO WRITE: two values with the same effect and no deciding sibling stay ambiguous', () => {
+	const r = resolveDiscovered( { slot: '.sgs-container__inner', prop: 'display', perWidth: { 1440: 'flex' } }, discovered );
+	assert.equal( r.gap, 'ambiguous' );
+	assert.equal( r.writes, undefined );
 } );

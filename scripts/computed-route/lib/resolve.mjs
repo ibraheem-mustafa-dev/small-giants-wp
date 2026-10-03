@@ -114,7 +114,42 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 	return { value: `${ round( px ) }px` };
 }
 
-// FR-47-1. input: { block, slot, prop, state, perWidth: { width: value }, fontPx: { width: px }, current: node attrs }.
+// A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
+// value whose recorded effect equals the draft at every calibrated width. Ties go to the value that also matches most
+// of the element's other draft properties (`siblings`: { prop: { width: value } }). Returns a write, a gap, or null.
+export function resolveDiscovered( { slot, prop, perWidth, siblings = {} }, calibration ) {
+	const at = ( pw, w ) => pw[ w ] ?? ( 1440 === w ? pw[ 1920 ] : undefined );
+	const same = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).replace( /\s+/g, '' );
+	const fits = ( values, pw ) => {
+		const ws = [ 375, 768, 1440 ].filter( ( w ) => undefined !== at( pw, w ) && undefined !== values[ w ] );
+		return ws.length > 0 && ws.every( ( w ) => same( values[ w ], at( pw, w ) ) );
+	};
+	const options = [];
+	for ( const [ attr, props ] of Object.entries( calibration?.discovered || {} ) ) {
+		const d = props[ prop ];
+		if ( ! d || ! d.slots.includes( slot ) ) {
+			continue;
+		}
+		for ( const [ value, values ] of Object.entries( d.values ) ) {
+			if ( fits( values, perWidth ) ) {
+				const score = Object.entries( siblings ).filter( ( [ p2, pw ] ) => p2 !== prop && props[ p2 ]?.values[ value ] && fits( props[ p2 ].values[ value ], pw ) ).length;
+				options.push( { attr, value, score } );
+			}
+		}
+	}
+	if ( ! options.length ) {
+		return null;
+	}
+	const best = Math.max( ...options.map( ( o ) => o.score ) );
+	const top = options.filter( ( o ) => o.score === best );
+	if ( top.length > 1 ) {
+		return { gap: 'ambiguous', detail: `${ top.map( ( o ) => `${ o.attr }=${ o.value || '(none)' }` ).join( ', ' ) } all give ${ prop } on "${ slot }"` };
+	}
+	return { writes: [ { attr: top[ 0 ].attr, value: top[ 0 ].value, merge: 'replace' } ] };
+}
+
+// FR-47-1. input: { block, slot, prop, state, perWidth: { width: value }, fontPx: { width: px }, current: node attrs,
+// siblings: the element's other draft properties, for settings found by calibration }.
 // ctx: { db, calibration: { settings: { attr: { slot, forms } } } | null, snapshot, log }.
 // Returns { writes: [{ attr, value, merge: 'deep'|'replace' }] } or { gap, detail }.
 export function resolve( input, ctx ) {
@@ -123,7 +158,7 @@ export function resolve( input, ctx ) {
 	const rows = [ ...candidates( ctx.db, block, short, state ), ...( short !== prop ? candidates( ctx.db, block, prop, state ) : [] ) ]
 		.filter( ( r, i, all ) => all.findIndex( ( x ) => x.attr_name === r.attr_name ) === i );
 	if ( ! rows.length ) {
-		return { gap: 'no-setting', detail: `${ block } has no setting for ${ prop }${ state ? ' (' + state + ')' : '' }` };
+		return ( ! state && resolveDiscovered( input, ctx.calibration ) ) || { gap: 'no-setting', detail: `${ block } has no setting for ${ prop }${ state ? ' (' + state + ')' : '' }` };
 	}
 	if ( ! ctx.calibration ) {
 		return { gap: 'uncalibrated', detail: `${ block } has no calibration file` };
@@ -133,7 +168,7 @@ export function resolve( input, ctx ) {
 		return c && ( c.slots || [ c.slot ] ).includes( slot ) && ( ! c.property || c.property === short || c.property === prop );
 	} );
 	if ( ! tied.length ) {
-		return { gap: 'no-setting', detail: `no ${ prop } setting on ${ block } paints "${ slot }" (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` };
+		return ( ! state && resolveDiscovered( input, ctx.calibration ) ) || { gap: 'no-setting', detail: `no ${ prop } setting on ${ block } paints "${ slot }" (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` };
 	}
 	const flat = tied.filter( ( r ) => 'flat_sibling' === r.tier_shape );
 	const others = tied.filter( ( r ) => 'flat_sibling' !== r.tier_shape );

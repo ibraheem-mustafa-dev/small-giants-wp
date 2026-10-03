@@ -10,11 +10,11 @@ import path from 'path';
 import crypto from 'crypto';
 import { execFileSync, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { openDb, attrsFor } from './lib/db.mjs';
+import { openDb, attrsFor, enumSettings } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
-import { WIDTHS, CAL_PREFIX, READ_PROPS, markersFor, buildTree, readInstancesInPage, slotFor, defaultPaint, longhands, elementPath } from './lib/calibrate.mjs';
+import { WIDTHS, CAL_PREFIX, READ_PROPS, markersFor, buildTree, readInstancesInPage, slotFor, defaultPaint, longhands, elementPath, discoverEffects } from './lib/calibrate.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -135,6 +135,15 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 			}
 			ms.forEach( ( m ) => instances.push( { key: `${ row.attr_name }-${ m.label }-v${ vi }`, row, marker: m, attrs: { ...vattrs, ...m.attrs }, variant: vi, hover: 'hover' === row.css_state } ) );
 		}
+		// Enum settings with no css_property: one instance per value against the plain fixture (variant 0), to discover
+		// what each value paints.
+		for ( const row of vi ? [] : enumSettings( db, block ) ) {
+			for ( const v of JSON.parse( row.enum_values || '[]' ) ) {
+				if ( v !== vattrs[ row.attr_name ] && v !== ( schema[ row.attr_name ]?.default ?? '' ) ) {
+					instances.push( { key: `${ row.attr_name }-discover-${ v || 'none' }-v${ vi }`, discover: { attr: row.attr_name, value: v }, attrs: { ...vattrs, [ row.attr_name ]: v }, variant: vi } );
+				}
+			}
+		}
 	} );
 	const states = rows.filter( ( r ) => r.css_state && 'hover' !== r.css_state ).map( ( r ) => `${ r.attr_name }:${ r.css_state }` );
 	instances = instances.filter( ( i ) => ! i.row || ! i.row.css_state || 'hover' === i.row.css_state );
@@ -178,7 +187,18 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 	const settings = {};
 	const dead = [];
 	const oneWidth = [];
+	const discovered = {};
 	instances.forEach( ( inst, n ) => {
+		if ( inst.discover ) {
+			const fx = discoverEffects( per( defaultOf[ inst.variant ] ), per( n ) );
+			const d = ( discovered[ inst.discover.attr ] ??= {} );
+			for ( const [ prop, e ] of Object.entries( fx ) ) {
+				( d[ prop ] ??= { slots: [], values: {} } );
+				d[ prop ].slots = [ ...new Set( [ ...d[ prop ].slots, ...e.slots ] ) ];
+				d[ prop ].values[ inst.discover.value ] = e.value;
+			}
+			return;
+		}
 		if ( ! inst.row ) {
 			return;
 		}
@@ -197,7 +217,7 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 	} );
 	// Dead: no marker of the setting changed anything (a setting with one live marker is not dead).
 	const deadNames = [ ...new Set( dead ) ].filter( ( n ) => ! settings[ n ] );
-	const file = { block, site, slotKey, paintKey, measured: new Date().toISOString(), settings, elements, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: states, rejected };
+	const file = { block, site, slotKey, paintKey, measured: new Date().toISOString(), settings, discovered, elements, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: states, rejected };
 	fs.writeFileSync( path.join( CACHE, `${ short }.json` ), JSON.stringify( file, null, 1 ) );
 	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }

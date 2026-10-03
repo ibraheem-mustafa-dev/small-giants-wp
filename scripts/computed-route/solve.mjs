@@ -80,7 +80,9 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			continue;
 		}
 		const { perWidth, fontPx } = draftValues( report, g.pair, g.prop, 'hover' === g.state );
-		const r = resolve( { block: node.name, slot: g.path, prop: g.prop, state: g.state, perWidth, fontPx, current: node.attributes || {} }, { db, snapshot, calibration: cal, log } );
+		// The element's other draft properties, for a setting calibration found (a layout mode decided by several properties).
+		const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === g.ref && o.path === g.path && ! o.state && o.prop !== g.prop ).map( ( o ) => [ o.prop, draftValues( report, o.pair, o.prop, false ).perWidth ] ) );
+		const r = resolve( { block: node.name, slot: g.path, prop: g.prop, state: g.state, perWidth, fontPx, current: node.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
 		if ( r.gap ) {
 			gaps[ g.key ] = r;
 			continue;
@@ -195,7 +197,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	let prev = null;
 	let lastWrites = [];
 	const blocked = new Map();
-	for ( let round = 1; round <= maxRounds + 1; round++ ) {
+	// R-47-9: at most maxRounds write rounds. A round that only reverts regressions is not a write round, so the cap on
+	// walks is the write rounds, one revert per write round, and the final walk.
+	let writeRounds = 0;
+	for ( let round = 1; round <= maxRounds * 2 + 1; round++ ) {
 		assertQuiet();
 		const b = build( s, treeFile );
 		if ( ! b.ok ) {
@@ -210,22 +215,18 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			reverted.forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
 			console.log( `round ${ round }: reverted ${ reverted.length } writes that broke the layout` );
 			writeTree( treeFile, tree );
-			rounds = round;
-			lastWrote = true;
 			lastWrites = [];
-			if ( round > maxRounds ) {
-				break;
-			}
 			continue;
 		}
-		if ( round > maxRounds ) {
+		if ( writeRounds >= maxRounds ) {
 			break;
 		}
 		const r = writeRound( report, tree, { ...ctx, round, blocked } );
 		gaps = { ...gaps, ...r.gaps };
-		rounds = round;
+		writeRounds++;
+		rounds = writeRounds;
 		lastWrote = r.writes.length > 0;
-		console.log( `round ${ round }: ${ r.writes.length } writes, ${ Object.keys( r.gaps ).length } gaps` );
+		console.log( `round ${ round } (write round ${ writeRounds }): ${ r.writes.length } writes, ${ Object.keys( r.gaps ).length } gaps` );
 		if ( ! r.writes.length ) {
 			break;
 		}

@@ -323,7 +323,7 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   nearest ancestor-or-self class with that prefix), `block` (that element's block root class) and `path` (the selector
   path from it: BEM classes, never a per-instance id class such as `sgs-text-aebb51cc`, joined by ` > `;
   `lib/ref-trace.mjs::elementPath`). Text properties take the path of the element that paints the text. With
-  `refPrefix` every pair also reads its full CSS: the default list, its own list, and margins, `width`, `max-width`,
+  `refPrefix` every pair also reads its full CSS: the default list, its own list, and margins, `width`, `max-width`, `flex-direction`, `flex-wrap`,
   `text-wrap` and `gap`. A config without it is unchanged.
 - **Divergence ledger (`divergences: '<path>'`):** entries in the site's `divergences.json` (Spec 47 §3.5) match a row
   on node (ref, block slug or `*`), state (`hover` matches hover rows), property and width. A rule entry accepts the
