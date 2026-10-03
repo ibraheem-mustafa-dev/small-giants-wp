@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.2"
+spec_version: "0.3"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -320,8 +320,9 @@ All in `scripts/computed-route/`. The README lists every exported function (R-47
 | `lib/normalise.mjs` | Value normalisation and token snapping from `theme-snapshot.json`, with the snap log |
 | `lib/tree.mjs` | Read, write and merge trees; ref classes (`stripRefs` for a final build); per-tier values; R-47-11 target checks |
 | `lib/ledger.mjs`, `ledger.mjs` | Ledger library (`RULES`, match, stale) and command (`accept`, `stale`) |
-| `lib/draft.mjs` | Serves a local draft folder on 127.0.0.1 at an ephemeral port, shut down at exit |
-| `solve.mjs`, `fill.mjs` | The two commands |
+| `lib/draft.mjs` | Serves a local draft folder on 127.0.0.1 at an ephemeral port, shut down at exit (not built; Fill needs it) |
+| `solve.mjs`, `fill.mjs` | The two commands (`fill.mjs` not built) |
+| `lib/solve-rows.mjs`, `lib/solve-report.mjs` | Solve's reading of a walker report (open rows, writable groups, draft values, regressions, classification) and its report |
 | `calibration-targets.json`, `calibration-fixtures.json` | Calibration posts per site; fixture content per block |
 | `cache/` | Calibration cache (gitignored) |
 | `tests/` | `node --test "scripts/computed-route/tests/*.test.mjs"` (Node 24 runs a glob, not a bare folder); each file names the rule it proves and has one case that must fail |
@@ -339,8 +340,10 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 ## 5. Build order and the footer proof
 
 1. **Foundations.** The resolver, normaliser, read-only database and ledger (FR-47-1, FR-47-5), plus walker items 6 and
-   7 (FR-47-6), with tests.
-2. **Footer proof.** Solve (FR-47-3) on Eye Care's footer, with calibration (FR-47-2) of the blocks it uses.
+   7 (FR-47-6), with tests. **Done 2026-10-03:** 38 tests pass, the lint fails on a planted unlisted export, both walker
+   items turned red on planted faults (GAP-CHECKLIST §16), and the benchmark scores 5 of 5 with 0 noise rows.
+2. **Footer proof.** Solve (FR-47-3) on Eye Care's footer, with calibration (FR-47-2) of the blocks it uses. **Passed
+   2026-10-03 (run 3 below).**
    - **Baseline:** `sites/eye-care-ward-end/build/footer.tree.json` at commit `b7c09adc1`, built to `sgs_footer` 182 on
      eye-care-test and walked with `footer.mjs --headless --widths 375,768,1440,1920`. That `report.json` is the
      "before".
@@ -398,7 +401,21 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        but not 768 (a one-width hardcode candidate), and dead settings per block (some are fixture artefacts, such
        as a border style with no border width). Each is proved before it is fixed.
 3. **Solve on every built Eye Care surface.** It shrinks the current fix register. Add the functional flows
-   (FR-47-7), the remaining walker items (FR-47-6 items 1 to 5) and the full calibration cache.
+   (FR-47-7), the remaining walker items (FR-47-6 items 1 to 5) and the full calibration cache. Residual scope, in order:
+   - **State mapping first.** Solve treats every non-hover row as the rest state; configs with scrolled, drawer-open,
+     filter or tab states would write those values into rest settings. Each `surfaces.json` entry names its walker
+     states' setting state (`{ "<walker state>": null | "scrolled" | "open" | "shrunk" | "current" }`); rows from an
+     unmapped state are reported, never written.
+   - **Fixtures and calibration** for every block the other trees use (about 40), variants where one block renders
+     different elements (as business-info's four display types). Calibrating a block inside a header or drawer post
+     uses a dedicated post recorded in `calibration-targets.json` (§3.2).
+   - **One surface at a time** from `sites/eye-care-ward-end/build/surfaces.json`, each walker config given
+     `refPrefix: 'cr-ref-'`, `divergences: '../divergences.json'` and 1920; each run's Hardcode and Missing-setting
+     rows feed the register's framework items, and its closed items are marked "Solve closed" there.
+   - **Gap typing:** a setting that paints a parent while a rule on a child overrides it (the hours day label) comes
+     out Missing setting; calibration should record the child's own value so Solve can name it Hardcode.
+   - **Calibration leads to prove:** `sgs/site-footer-row` per-device `gap` and `contentWidth` skip 768; the dead
+     settings in each `cache/<block>.json` (`dead`), after ruling out fixture artefacts.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer.
 5. **A second draft** from a different designer, to test generality.
 6. **Handover to Spec 31.** Spec 31 decides, under its own plan, whether `sc_var_responsive_bridge.py` is still needed

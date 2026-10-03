@@ -3,7 +3,7 @@ doc_type: plan
 plan_id: eye-care
 project: small-giants-wp
 spec_id: client build (Front F, D1149)
-status: REVIEW IN PROGRESS (2026-10-02)
+status: BUILD IN PROGRESS (2026-10-03)
 ---
 
 # Eye Care Birmingham: the one plan
@@ -31,20 +31,23 @@ re-run by hand). The process for this review was `plans/archive/2026-10-01-eye-c
   - The older `design_handoff_ward_end_eye_care_v2/` is the clone pipeline's input, not the build's.
 - **Test site:** https://darkcyan-grouse-898606.hostingersite.com
   - Credentials: `.claude/secrets/eye-care-test.env`.
-  - Deploy target `eye-care-test`, running c8e805e73.
+  - Deploy target `eye-care-test`, running 4ba8be0f1 (the same plugin build as `main` on 2026-10-03).
 - **Client context:** `sites/eye-care-ward-end/CLAUDE.md`.
 
 ## Status
 
 - Every surface is built and live, the footer included (`sgs_footer` 182), each applied from its tree in
-  `sites/eye-care-ward-end/build/` with no invalid blocks. The footer still uses the banned `core/list` and needs
-  improving to match the draft.
+  `sites/eye-care-ward-end/build/` with no invalid blocks. Step 0 is done: all 17 trees rebuilt on 2026-10-03, so the
+  live header now has its 18px wordmark shrinking to 15px.
+- The footer's layout values were written by Spec 47's Solve (2026-10-03, 47 setting writes; register 25-29 marked
+  "Solve closed"). It still uses the banned `core/list` (register 30) and its framework items stay open.
 - Every surface was re-walked on 2026-10-02 ("Review results").
 - The walker was upgraded on 2026-10-02 before the walk (below, "Walker"), so the next walk measures more than any
   earlier one.
 - Bean reviewed every surface and the register on 2026-10-03; all nine register decisions (D1-D9) are settled.
-- The build is driven by the register (`plans/2026-10-02-eye-care-fix-register.md`) in the order of "Work plan" below,
-  and the footer's layout values are first closed by Spec 47's footer proof (`specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md` §5).
+- The build is driven by the register (`plans/2026-10-02-eye-care-fix-register.md`) in the order of "Work plan" below.
+  Spec 47 stage 3 (Solve on every other surface, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md` §5) writes the surfaces'
+  layout values first, and its Hardcode and Missing-setting rows feed the register's framework items.
 
 ## Decisions (Bean's, still in force)
 
@@ -115,9 +118,10 @@ re-run by hand). The process for this review was `plans/archive/2026-10-01-eye-c
   - a reveal sweep before full-page shots.
 - **Configs:** every Eye Care surface has a filled config (header scrolled state, toast and count pop, hero motion,
   product states, shop filter states, image hovers, reveal sections), 2026-10-02.
-- **Next upgrades:** Spec 47 FR-47-6 (overlays drawn as pseudo-elements, 1920 in every run, states on every
-  interactive element, link coverage, line counts during transitions, a divergence ledger, ref tracing) and FR-47-7
-  (shopping flows as scripted tests). Bean's review found the misses that motivate each (register "Walker
+- **Added 2026-10-03 (section 16):** ref tracing (`refPrefix`: each row names its layout node and element) and the
+  divergence ledger (`sites/eye-care-ward-end/build/qa/divergences.json`). Benchmark 5 of 5, 0 noise rows.
+- **Next upgrades:** Spec 47 FR-47-6 items 1-5 (overlays drawn as pseudo-elements, 1920 in every run, states on every
+  interactive element, link coverage, line counts during transitions) and FR-47-7 (shopping flows as scripted tests). Bean's review found the misses that motivate each (register "Walker
   improvements").
 
 ## Surfaces
@@ -446,11 +450,13 @@ The register is the work list. It holds every fix, by surface in build order, ea
   - Step 0: the live header is older than `header.tree.json`, so every tree is rebuilt before any item is judged.
 
 **Build order:**
-1. Step 0: rebuild every tree from its current file.
-2. Every framework repair and new setting in the register (S-fixes first), then one deploy, then rebuild every tree that
+1. Step 0: rebuild every tree from its current file. Done 2026-10-03.
+2. Spec 47 stage 3: Solve on every built surface (the footer is done).
+3. Every framework repair and new setting in the register (S-fixes first), then one deploy, then rebuild every tree that
    uses a new setting.
-3. The tree settings, surface by surface in the register's order, re-walking each surface after its trees are applied.
-4. Content and data.
+4. The tree settings Solve could not write, surface by surface in the register's order, re-walking each surface after
+   its trees are applied.
+5. Content and data.
 
 ### 3. Content and data
 

@@ -16,8 +16,9 @@ equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3
 
 **Eye Care: now built by hand first (D1149, 2026-09-24).** The Eye Care site is built by hand to client-ready from
 Claude Design's gap map; the finished site becomes the pipeline's answer key. Every surface is built and live on eye-care-test, was walked against
-the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list, all decisions taken. Next: Spec 47's
-footer proof (measure the draft, write the settings automatically), then the register build (Front F).
+the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list, all decisions taken. Spec 47's tool
+(measure the draft, write the layout settings automatically) passed its footer proof; next it runs on every other surface,
+then the register build (Front F).
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -42,21 +43,24 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-03).** eye-care-test and sandybrown run acc2a3b6d (verify deploys by browser or checksum: the host's
-bot check returns 403 to the deploy's own probe). Every surface was walked with the upgraded walker (GAP-CHECKLIST 13-15),
-classified, verified and reviewed by Bean. The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work
-list: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9 taken, three build rules. Proven bugs in it:
-the add-to-bag route drops a second product and a 30s cooldown blocks a second pair (N11); the gallery ignores
-WooCommerce's product gallery (75/82); the shop filters leave empty groups after clearing (N25); the drawer body
-overflows by its title row (15). The live header is older than `header.tree.json` (wordmark 16px, no shrink), so every
-tree is rebuilt before any item is judged (register build rule 1). No blockers.
+**Now (2026-10-03).** eye-care-test runs 4ba8be0f1 and sandybrown 41768f371: the same plugin build as `main` (verify
+deploys by browser or checksum: the host's bot check returns 403 to the deploy's own probe). Step 0 is done: all 17
+trees rebuilt, zero invalid blocks, the header wordmark now 18px shrinking to 15px. The fix register
+`plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list: 12 site-wide fixes (S1-S12), every surface's items,
+decisions D1-D9 taken, three build rules. Proven bugs in it: the add-to-bag route drops a second product and a 30s
+cooldown blocks a second pair (N11); the gallery ignores WooCommerce's product gallery (75/82); the shop filters leave
+empty groups after clearing (N25); the drawer body overflows by its title row (15); a footer row given a width cap
+collapses to zero width (N46). No blockers.
 
-**Spec 47 (new, draft v0.2): the computed route.** Measure the rendered draft and write block settings through the
-framework DB; Solve (compare, write, rebuild, classify survivors) first, proven on the Eye Care footer; then Fill.
-Nothing built yet. `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md` §5 is the build order.
+**Spec 47 (v0.3): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). Stages 1
+and 2 are built: block calibration on a private page (eye-care-test post 668), the resolver, Solve with a regression
+guard, the divergence ledger, and walker ref tracing (GAP-CHECKLIST §16; benchmark 5 of 5, 0 noise). The footer proof
+passed on Bean's success line (14 of 15 items handled: closed, or correctly identified as a framework gap); Solve's 47
+writes are in `footer.tree.json` and live on `sgs_footer` 182. Next: stage 3, Solve on every other built surface
+(§5 stage 3 lists the residual scope, state mapping first).
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:** Spec 47
-§5 stages 1-2, then the register in the plan's "Work plan" order.
+§5 stage 3, then the register in the plan's "Work plan" order.
 
 **Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info
