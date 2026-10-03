@@ -22,10 +22,11 @@
 - *content*: page, product or Site Info data.
 - *client*: Eye Care-only styling, in its own token file.
 
-## Two build rules for every item
+## Three build rules for every item
 
 1. **Step 0: rebuild every page from its layout file first.** The live header is older than `header.tree.json`: the file has asked for an 18px wordmark that shrinks to 15px since 30 September, and the live one is 16px with no shrink. Every tree is rebuilt through `wp-build-page.js` before any item is judged, so no fix chases a stale page.
 2. **Match each element's full CSS, not just the difference you can see (your point 26).** For every element touched, set margin, padding, line height, font, letter spacing and width to the draft's values, so neighbours stop shifting. This applies on every surface, not just the footer.
+3. **Every new or repaired setting uses the shared controls (your point 70).** Typography through the shared typography controls; per-device values through the responsive control; spacing and gaps through the shared spacing control; padding and margins through the box control; colours through the token picker. Each new setting names the block where the same control is already done, and copies it.
 
 ## Decisions for you
 
@@ -33,19 +34,20 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 
 | # | What it is about | Options | My recommendation |
 |---|---|---|---|
-| D1 | **Sizing diagram (your N36S).** You said it should be site-only code, not an SGS block. The framework has nowhere safe to put site-only code: client code may not live in the theme or plugins, the raw-HTML block saves empty on WordPress 7.1, and no per-client plugin path exists. | A: a reusable "frame measurements" block (already specified in the original handoff), fed by the product's measurements. B: first build a per-client code home (a client plugin folder plus a deploy path), then insert the bespoke code. | **A.** Any optician client can use it; B is new infrastructure for one feature. The table and the note go in now with existing blocks; the diagram follows as the block. |
-| D2 | **Drawer stagger timings (14).** The clean CSS method gives .05, .10, .15, .20, then .25 and .30s; the draft's last two are .30 and .36s. Exact values would need a per-block delay override inside the drawer. | A: accept the 50-60ms difference. B: add a per-item delay override. | **A.** The difference is below what the eye notices in a cascade; B adds a setting for no visible gain. |
-| D3 | **Hero photo motion (53).** You thought the draft photo is static. It is not: the draft code moves it at 18% of the scroll speed (a gentle drift). Live uses a fixed background, a stronger effect. | A: build a "drift" mode to match the draft. B: switch parallax off (static photo). | **A** if you like the drift when you scroll the draft slowly; otherwise B (a one-setting change). |
-| D4 | **Pennies on the checkout totals (N9).** Hiding ".00" works cleanly everywhere except WooCommerce's own cart and checkout total lines, which format money in their own code. The only sure way there is a script that rewrites their output, which can break when WooCommerce updates. | A: hide everywhere else; leave ".00" on checkout totals unless a clean WooCommerce route turns up. B: add the rewrite script anyway. | **A.** Order emails and invoices keep pennies on purpose: the money matches the payment record. |
-| D5 | **Floating WhatsApp over the footer links (N13).** | A: the button steps aside while the footer's bottom strip is on screen (it already does this beside other WhatsApp buttons). B: pad the bottom strip so the links never sit under it. | **A.** The footer has its own WhatsApp link, so nothing is lost, and there is no dead space. |
-| D6 | **Best sellers (N16b).** A live "best sellers" list sorts by sales. The test site has no orders, so the first 8 would be arbitrary until orders arrive. | A: switch to the live list now (it corrects itself as orders come in). B: keep hand-picked products until launch. | **A**, so it never needs editing again. |
-| D7 | **Shop's Google reviews on new products (N31).** The shop's Google rating (4.7) currently shows only on products with no reviews, inside the "no reviews yet" panel that is being removed. | A: show the Google rating on every product page. B: remove it from product pages. | **A.** It is a positive claim (your rule), so it belongs on every product. |
-| D8 | **Brand logo on the product page (N33A).** | A: logo replaces the typed brand name above the title, linking to the brand page. B: logo on the top-left of the main photo. | **A.** Logos on varied photos fight for contrast, and the photo already carries the Save tag. |
-| D9 | **Brand link destination (161; you asked which is better for search and AI).** | A: brand pages (`/brand/gucci/`) with a short unique intro each; filtered shop links point to them. B: the filtered shop (`/shop/?brands=gucci`). | **A.** This reverses my first version. Google and AI engines index a brand page as a real answer to "Gucci glasses Birmingham"; filtered URLs are treated as duplicates. A brand page with no intro text should stay out of the index until it has some. |
+| D1 | **Sizing diagram (your N36S).** You are right that an "optical frame measurements" block is too niche for the shared library. A block is still the only safe way to make the numbers follow the chosen size: the raw-HTML block saves empty on WordPress 7.1, client code may not live in the theme or plugins, and no per-client code home exists. But the block does not have to be about glasses. | A: a general "measured diagram" block. You upload any drawing (Eye Care's front and side frame views become its media, not code), place labels on it, and bind each label to a product measurement. It includes the name / value / description table and a note with the numbers filled in, and follows the size picker. The same block serves furniture (width, depth, height), bags, bikes, mattresses and size charts. B: build a per-client code home first (a client plugin folder plus a deploy path through the deploy script), then a frame-only block inside it. | **A.** It is useful to any shop with measured products, so it earns its place in the library, and nothing optician-specific ships to other clients. B is worth building one day for genuinely one-off features, but not for this. The table and note go in now with existing blocks. |
+| D7 | **The shop's Google rating on product pages (N31).** You pointed out that the rating sits inside the "no product reviews" message, so the negative claim frames it. The reviews block already has a compact "badge" layout (stars, score, count, linked to Google). | A: the badge in the header's top bar, on every page. B: the badge in the footer. C: a "What patients say" item in the product page's Good to know accordion. | **A.** It is seen first on every page, including product pages, with no negative framing. B is seen late; C is hidden until opened. |
+| D8 | **Brand logo on the product page (N33A).** Search and AI first: no difference between the two placements. Google and AI read the brand from the product's structured data, which already carries it (`class-product-schema.php::resolve_brand`). The product name stays as text. The logo's text alternative is the brand name. Your contrast counter is right: a white plate behind the logo solves it, as it does for the typed name. And with the Save tag moving off the photo (N33B), the photo corner is free. | A: logo above the product name, linking to the brand page. B: logo on the photo's top-left corner, on a white plate. C: keep the typed brand name (as now, but linked to the brand page). | **A**, for two reasons that still hold. It is the internal link that feeds the brand pages from D9 (good for search), and a corner badge sits over the photo that people swipe and zoom on phones. |
+
+**Decided on 2026-10-03:**
+- D2: accept the 50-60ms stagger difference.
+- D3: build the draft's drift mode.
+- D4: hide ".00" everywhere except WooCommerce's checkout total lines.
+- D5: the floating WhatsApp steps aside over the footer strip.
+- D6: the live best-sellers list.
+- D9: brand pages (`/brand/<slug>/`) with a short unique intro each; filtered shop links point to them, and an intro-less brand page stays out of the index.
 
 **Readings I made of your notes.** Tell me if any is wrong.
 - In 54+55 you wrote "N14B"; I read it as N14C, the green WhatsApp style. N14B is the black hero button.
-- Your note numbered 68 is about the size pop-up, item 69. Item 68 (colour tiles 8px taller) stays as written.
 - 153 "All seems fine": the live checkout's extra fields stay. The redesign (154) restyles them.
 - 19: the bag's free-delivery text stays bold (your preference). The bar's fill speed still gets matched, because you did not object to it.
 - N19: the "See everything" and "All 12 styles" links get the draft's warm-taupe hover colour, because you said the hover colour is missing. Menus and footer links stay black (your point 2).
@@ -65,41 +67,37 @@ Each has a recommendation; reply with the number and "yes" or your choice.
   - Today the trail ends at the brand, which is wrongly marked as "this page" and forced bold.
   - Fixed: Home / Sunglasses / Gucci (link) / Gucci Oversized Cat-Eye.
 - **88, stock line weight.** Regular. The green dot and the words already carry the status; bold adds nothing.
-- **128, contact details layout.** At desktop width the two match. The difference is smaller screens:
-  - Tablet: the draft shows 3 columns; live stays at 2.
-  - Phone: the draft shows 1 column; live stays at 2.
+- **128, contact details layout.** At desktop width the two match. The difference is smaller screens: the draft goes to 3 columns on a tablet and 1 on a phone; live stays at 2. Your call: tablet stays at 2 (live), phone goes to 1 (draft).
 - **N17b, hero text position.** Bottom-left, as the draft. The layout file already asks for bottom, but a framework bug sends it to the middle. Fixing the bug gives you the draft's look, which keeps the photo's subject clear.
-- **N24, Google logos linking.** Yes: Google's display rules for its reviews require attribution with links back to the review or listing.
-- **N30, the little box in the sizes.** It is the "boxing system" symbol that frame makers print inside the arm ("56□17 145": lens width, bridge, temple).
-  - Keep it in the sizing note, where it is explained.
-  - Use a plain "56 · 17 · 145" on the size buttons, where it just looks like a stray box.
+- **N24, Google logos linking.** Yes. Google's display rules require each review to show its source with a link back to it; the G logo is the natural place for that link.
+- **N30, the little box in the sizes.** It is the "boxing system" symbol frame makers print inside the arm ("56□17 145": lens width, bridge, temple). Your call: plain "56 · 17 · 145" everywhere, because it tells a shopper nothing.
 - **N33B, Save shown twice.** Keep the one beside the price, where the buying decision happens; drop the photo tag.
 - **59, swatches on cards.** Standard (Baymard): a swatch changes only its own card's photo, and clicking the card then opens the product with that colour already chosen.
 - **C1 (20), one bag line or two.** One combined line with a single remove. The lenses only exist with that frame, so two lines risk orphaned lenses. Evidence here is thinner than for the other answers.
 - **115.** It is the first sentence of the size-guide pop-up ("Which size am I?"), which is a lighter grey than the draft.
 - **28, the "ch" unit.** It already exists on text and heading width settings; the tagline just does not use it.
-- **30, custom gaps.** Yes. The two gap controls that take presets only (link lists and social icons) gain a "Custom" option with a number and unit, like the button group's.
+- **30, custom gaps.** Yes, the shared spacing control is the universal one (S11).
 - **35, the hardcoded fade.** A leftover default with no setting. It is deleted, as you said, and any fade you want comes from the colour picker's opacity.
 - **37.** Yes: the address can link to the Google Business link stored in Site Info.
 - **62.** The WooCommerce filter block already has a "show counts" switch in its settings, so clients can turn it back on.
-- **N22, shape tile borders.** The draft code gives the tiles a light border (#E6E1DA) at rest and a slightly darker one (#CFC7BB) on hover, not none and black. The layout file already sets those values. Why it reads as a white border on live is measured before changing anything (item N22).
-- **N39, side margins.** At 1440 the text starts at the same spot on both pages, so I could not reproduce your 128 against 85.2. Your figures look measured at another window width. The page is re-measured at that width (item N39).
+- **N22, shape tile borders.** The draft code gives the tiles a light border (#E6E1DA) at rest and a slightly darker one (#CFC7BB) on hover. Your call: match the draft (item N22).
+- **N39, side margins.** At 1440 the text starts at the same spot on both pages, so your 128 against 85.2 was probably measured at another width. The top spacing is the main fault and is fixed by S6; the sides are re-measured at 1280, 1366 and 1920 (item N39).
 
 ## Site-wide fixes (one change, many items)
 
 | ID | What it fixes | Fix | Type | Covers |
 |---|---|---|---|---|
-| S1 | Button hover is inconsistent: some lift, some darken, some do nothing | One site setting holds the button hover: lift 3px over 0.25s (the draft's timing). Every button style reads it: preset buttons, custom buttons, the product page's add-to-bag, the colour tiles and the reviews buttons. The framework default stays "no lift", so other clients are unchanged. Colour rules: white with black text = lift only; black with white text and border = lift plus a lighter ground; green WhatsApp = lift only. The generic darken goes (the outline wash and About's darker green). Plain text links never lift. | client token + framework repair + tree | 50, 60, 104, 113, N14, N16a, N41, N36C |
-| S2 | Text links and menu words | Text stays its own colour (black). An underline sweeps in left to right on hover and retracts right to left on unhover, in the link's own colour (a green WhatsApp link gets a green line). One mechanism: the existing underline-slide utility, corrected to retract backwards and drawn so it works on links that wrap. Header menu: the existing "sweep" setting, switched on. Mega-menu links: a "link" button style using the same sweep. Plain links in text and lists: the theme link rule, set from the client's tokens. The register's old taupe hover values are not applied. | tree + framework repair + client token | 2, 6, 7, 32, 33, 44, 121, 131 |
-| S3 | Phone and email hover fades instead of darkening | Delete the hardcoded 80% hover fade on phone/email links and the bag button. Set the hover colour to black in the trees. Same-pattern sweep: delete hardcoded hover fades only where the block already has a hover-colour setting. Contact page phone/email also take the S2 sweep, so they mirror the page's other links (131); header and footer phone darken only. | framework repair + tree | 4, 34, 35, 139, N1, 131 |
-| S4 | WhatsApp buttons and cards differ page to page | **Button:** green ground, black label, and the icon follows the label colour (fixes the icon going near-black by accident). Hover = S1 lift only. **Card** (product page, size pop-up): the text stops inheriting the button's bold, tight line height; title and subline take the draft's size, weight and dark-green colours (two client colour tokens). The live logo size stays. Hover = 3px lift. **About and contact buttons:** the home button's icon and text size. | framework repair + tree + client token | 54, 55, 74, 78, 79, 108, 109, 127, 138, N28, N36D |
-| S5 | Accordions (product "Good to know" and Help FAQ) | Header text follows the accordion's size setting per device (the hardcoded 1rem and the phone 0.9rem go). No ground on hover or open by default. One open/close animation (the browser's native one) instead of two stacked. The older JavaScript animation stays only as a fallback for browsers without native support, so the two never run together. The + rotates 45° into an × in time with the motion. New settings: icon rotation, icon size, header padding, answer padding. Product: several open at once (as the draft). Help: one at a time (as the draft). Icon size midway between draft and live. | framework repair + framework new + tree | 70, 110, 122, N32 A-F |
-| S6 | Page content starts too low on Lenses, About, Help, Contact | Each page's outer container uses the section spacing (104px) instead of the draft's page spacing. Set top/bottom to 48/90px (phone 28/60). | tree | 146, N39, N42, N43, N44 |
-| S7 | "No reviews yet" broadcasts a lack of demand | Remove the "No reviews yet" text from every product card (the framework already shows nothing when it is empty). Delete the product page's "no reviews on this frame yet" panel. Stars still show on products that do have reviews. | tree | N27, N31, 86 |
+| S1 | Button hover is inconsistent: some lift, some darken, some do nothing | One site setting holds the button hover: lift 3px over 0.25s (the draft's timing). It is a new "default" entry in the existing button-style token family, so there is still one scheme. Every button style reads it: preset buttons, boxed custom buttons, the product page's add-to-bag, the colour tiles and the reviews buttons. The framework default stays "no lift", so other clients are unchanged. Plain text links use a "link" button style (the same one S2 uses) that never lifts. The white button style is repaired: today its hover is white text on white. Colour rules: white with black text = lift only; black with white text and border = lift plus a lighter ground; green WhatsApp = lift only. The generic darken goes (the outline wash and About's darker green). | client token + framework repair + tree | 50, 60, 104, 113, N14, N16a, N41, N36C |
+| S2 | Text links and menu words | Text stays its own colour (black). An underline sweeps in left to right on hover and retracts right to left on unhover, in the link's own colour (a green WhatsApp link gets a green line). One mechanism: the theme's existing underline-slide utility, corrected to retract backwards and drawn so it works on links that wrap; the plugin's unused duplicate is deleted. Header menu: the existing "sweep" setting, switched on. Mega-menu links: a "link" button style using the same sweep. Plain links in text, and the footer's link-list items (which carry their own class), use the same rule, switched on by a client token. The register's old taupe hover values are not applied. | tree + framework repair + client token | 2, 6, 7, 32, 33, 44, 131 |
+| S3 | Phone and email hover fades instead of darkening | Delete the hardcoded 80% hover fade on phone/email links and the bag button. Set the hover colour to black in the trees. Same-pattern sweep: delete hardcoded hover fades only where the block already has a hover-colour setting. Contact page phone/email also take the S2 sweep, so they mirror the page's other links (131): the sweep is switched on by adding the utility's class to those two blocks in the contact layout file. Header and footer phone darken only. The fade is the probable cause of the missing darken: read the live hover colour before and after to confirm. | framework repair + tree | 4, 34, 35, 139, N1, 131 |
+| S4 | WhatsApp buttons and cards differ page to page | **Button:** green ground, black label, and the icon follows the label colour (fixes the icon going near-black by accident). Hover = S1 lift only. **Card** (product page, size pop-up): the text stops inheriting the button's bold, tight line height; title and subline take the draft's size, weight and dark-green colours (two client colour tokens). The live logo size stays. Hover = the S1 lift: the block's built-in grow-and-shadow default goes, and the lift comes from the S1 setting (no number written into the block). **About and contact buttons:** the home button's icon and text size. | framework repair + tree + client token | 54, 55, 74, 78, 79, 108, 109, 127, 138, N28, N36D |
+| S5 | Accordions (product "Good to know" and Help FAQ) | Header text follows the accordion's size setting per device (the hardcoded 1rem and the phone 0.9rem go). No ground on hover or open by default. One open/close animation (the browser's native one) instead of two stacked. The older JavaScript animation stays only as a fallback for browsers without native support, so the two never run together. The + rotates 45° into an × in time with the motion. Header and answer padding: the block's existing padding settings are repaired so the header actually reads them (today a hardcoded value wins). New settings: icon rotation and icon size only. Product: several open at once (as the draft). Help: one at a time (as the draft). Icon size midway between draft and live. | framework repair + framework new + tree | 70, 110, 122, N32 A-F |
+| S6 | Page content starts too low on Lenses, About, Help, Contact | Each page's outer container uses the section spacing (104px) instead of the draft's page spacing. Set top/bottom to 48/90px (phone 28/60). Help's page ends at 0 today: check whether its last section already supplies the bottom space before setting 90. | tree | 146, N39, N42, N43, N44 |
+| S7 | "No reviews yet" broadcasts a lack of demand | Remove the "No reviews yet" text from every product card (the framework already shows nothing when it is empty). Delete the product page's "no reviews on this frame yet" panel. Stars still show on products that do have reviews. The shop's Google rating moves out of the deleted panel (D7). | tree | N27, N31, 86 |
 | S8 | Prices show ".00" | One switch hides ".00" on whole-pound prices across the shop's pages: product page, cards, bag, lens pop-up and the shop's own price text. Emails and admin keep pennies. Checkout total lines: see D4. | framework repair | N9, N34 |
 | S9 | Brand names typed where logos belong | All 40 brands already have a logo saved on the brand. One shared lookup prints the logo, with the brand name as its text alternative, on product cards, the product page top and bag lines. It falls back to the name when a brand has no logo. | framework new + tree | N10, N27-brand, N33A |
 | S10 | Things that should be one link are not | One shared "stretched link" piece: the main link's clickable area covers the whole card or logo row, while buttons inside (wishlist, swatches) sit above it and keep working. Used by product cards (whole card links to the product) and the header logo (logo plus "EYE CARE BIRMINGHAM" as one link). | framework new + tree | N26, N2A |
-| S11 | Gap settings that take presets only | Link lists and social icons gain a "Custom" gap option: number plus unit, checked before it is printed. | framework new | 30, 40 |
+| S11 | Gap settings that take presets only | The universal control exists (your point 30): the shared spacing control, whose free-input mode (number plus unit) the button group uses. Today a control is either presets or free input. Small repair: one "Custom" entry beside the presets switches to the number-plus-unit box, so every gap offers both. Link lists and social icons switch to it. Their output accepts a length as well as a preset, checked before it is printed. | framework repair | 30, 40 |
 | S12 | A clicked card or link gets underlined everywhere | The theme draws an underline on any focused link, which beats each block's "no underline". Show it only for keyboard focus, on text links. The keyboard focus ring stays. | framework repair | N6 (and every whole-card link) |
 
 ## Header
@@ -113,8 +111,8 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | N1 | Phone number does not darken to black on hover | S3 | framework repair + tree | proven in code |
 | N2A | Only the logo image is a link; "EYE CARE BIRMINGHAM" is plain text | S10: new "whole logo row is the link" setting on the logo block, then on in header.tree.json | framework new + tree | proven |
 | N2B | Scrolling back up, the wordmark briefly wraps to 3 lines ("EYE" over "CARE") | The wordmark column can shrink to its narrowest width; the trigger was not reproduced. Setting the heading's text-wrap to "nowrap" stops it wrapping, whatever the trigger is. Re-check after step 0, because the live header lacks its shrink settings. | tree | to prove (step 0, then watch it) |
-| N3 | Bag count sits too low, not centred on the BAG text | The bag-count rule inherits a 2px nudge meant for the icon-only badge. Reset it so the circle centres on the text line. | framework repair | proven live |
-| N4 | Top bar should become a moving strip when its items no longer fit, paused on hover | Draft: below 768px it scrolls (30s loop, pauses on hover); above it, items that do not fit are dropped. The settings exist. A small repair lets "drop" and "scroll" work together; today turning scrolling on switches dropping off at every width. | tree + framework repair | proven |
+| N3 + 17B | Bag count sits too low, not centred on the BAG text | The bag-count rule inherits a 2px nudge meant for the icon-only badge. Reset it so the circle centres on the text line. | framework repair | proven live |
+| N4 | Top bar should become a moving strip when its items no longer fit, paused on hover | Follow the draft: below 768px the bar scrolls (30s loop); at 768px and above, items that do not fit are dropped. The scroll settings exist. A small repair lets "drop" and "scroll" work together: today turning scrolling on switches dropping off at every width. The strip pauses on hover and on keyboard focus, and gets a visible pause button: moving content over 5 seconds needs one for WCAG 2.2.2. | tree + framework repair | proven |
 
 ## Mega menus
 
@@ -124,7 +122,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 7 | Links in the Sunglasses and Help panels | S2: a "link" button style with the sweep. The underline takes the text colour, so the green WhatsApp link gets a green line. | framework new + tree | proven |
 | 8 | Panel text starts 52px too far right | The panel's first container adds a second 52px. Set it to full content width in the Sunglasses, Brands and Help trees. | tree | proven live |
 | 9 | Brand tiles: live logos are correct | Logos read as the brand name to screen readers. One fix: the Ferrari tile reads its name twice; clear its title or its image's text alternative. | tree | proven live |
-| 11 | Brand list rows taller and bolder; draft fits 7 columns, live 6 | Rows: register fix (no minimum height, weight 400, line height 1.5). Columns: same rule as the draft. The 104px lost to item 8's double padding is the cause, so item 8 closes it. Re-count after. | tree | proven |
+| 11 | Brand list rows taller and bolder; draft fits 7 columns, live 6 | Rows: no minimum height, weight 400, line height 1.5. Columns: the same rule as the draft; live loses 104px to item 8's double padding, so item 8 closes it (computed, not measured: re-count after). | tree | proven (rows); to prove (columns) |
 | 12 | Lens cards 15px shorter | label and price line height 1.5 | tree | proven |
 | N5 | At wide screens the panel stops at 1440px, left-aligned; draft ground is full width with the content centred | New panel setting "width limit applies to: panel / content". Content mode paints the ground edge to edge and centres the content at 1440. | framework new + tree | proven live at 1920 |
 | N5.5 | Sunglasses, Lenses and Help open their panels but cannot be clicked through to their pages | The ordinary dropdown menu already renders a link plus a separate open button; mega items always render a button only. Mega items with a page get the same link-plus-button pattern, with the button discreet and still 44px. Then add the page links to the three menu items (Brands stays button-only). | framework repair + content | proven in code |
@@ -136,7 +134,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 |---|---|---|---|---|
 | 13 | Title and close button touch the screen edges | drawer title row padding 20px 24px 0 | tree | proven |
 | 14 | Shop links all appear at once; draft brings them in one by one | New drawer setting "stagger items inside groups", CSS only, replays on every open. Draft movement: rise 18px, 0.5s ease. Timings: D2. | framework new + tree | proven |
-| 15 | Bottom group (phone, social buttons) pushed below the fold | The body is a full screen tall but starts 64px down. Make the drawer a column and let the body fill only the space left. | framework repair | proven live |
+| 15 | Bottom group (phone, social buttons) pushed below the fold | The body is a full screen tall but starts 64px down. Make the drawer a column and let the body fill only the space left. The remaining ~13px comes from the "More" list: gap 14px and line height 22.5px, as the draft. | framework repair + tree | proven live |
 | N7 | Drawer social buttons' colours (normal and hover) should equal the draft footer's | Swap the three hand-styled buttons for the same social-icons block as the footer (colours and hover from footer 39-43), with a new "fill the row" option to keep the full-width buttons. Same Site Info links. | framework new + tree | proven |
 
 ## Bag drawer
@@ -146,11 +144,11 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 17 | Count pop: wrong size and timing; draft pops on page load even at 0 | The existing on/off pop setting becomes off / on change / on load and change. The pop takes the draft's shape: grows from 60% with a fade, overshoots to 115%, 0.5s. Check it plays at 0. | framework repair + tree | proven |
 | 18 | "Added to bag / View bag" toast missing | One shared toast (polite announcement, "View bag", closes after 5s, pauses on hover or focus, respects reduced motion). Errors also show as a toast, in error colours, and stay until closed. The red inline notice and the "Added to your basket." strip under the button are removed in toast mode. First check whether the notice-banner block can be the toast's shell. | framework new + tree | proven |
 | 19 | Free-delivery bar fills faster than the draft | Bar fill duration to the draft's; the text stays bold (your choice) | framework new + tree | proven |
-| 20 + 23 | Bag line details are messy | One server-built summary per line. The bag, cart, checkout and emails all use it. **Frame only:** "Frame only · Size: M · Colour: Gold". **With lenses:** line 1 "Prescription · Distance · Thin · Light-reactive", line 2 "Size: M · Colour: Gold". It drops "Your prescription", "What they're for" and "Options:", the lens thickness number, and the lens width shown as the size (the size letter comes from the same size scale the product page uses). One combined line per frame. "Add my prescription" hides once that frame has lenses. | framework repair + framework new + tree | proven in code |
+| 20 + 23 | Bag line details are messy | One server-built summary per line. The bag, cart, checkout and emails all use it. **Frame only:** "Frame only · Size: M · Colour: Gold". **With lenses:** line 1 "Prescription · Distance · Thin · Light-reactive", line 2 "Size: M · Colour: Gold". It drops "Your prescription", "What they're for" and "Options:", the lens thickness number, and the lens width shown as the size (the size letter comes from the same size scale the product page uses). One combined line per frame. "Add my prescription" hides once that frame has lenses. The framework builds the summary from labels; the wording ("Frame only", "Prescription", each option's short name) is set in Eye Care's lens pop-up layout file, so no optician words live in framework code. | framework repair + framework new + tree | proven in code |
 | N8 | Opening the bag sets off the wordmark wrap | Same as N2B | tree | to prove |
 | N9 | ".00" shown | S8 | | |
 | N10 | Brand name typed in the bag line | S9 | | |
-| N11 | A second, different product never reaches the bag; a second pair of the same frame says "Please wait before adding more of this item." | Two faults in the shop's add-to-bag route. (a) It says "added" but drops the line when the bag already holds something. It works through WooCommerce's own route, so the bag display is fine. (b) A deliberate 30-second "per item" cooldown blocks a normal second pair. Ship (b) now: no cooldown for an item already in the bag, plus clearer wording. For (a), reproduce on the canary first (add A, then B, then read the bag), then load the saved bag before adding. | framework repair | (a) to prove, (b) proven live |
+| N11 | A second, different product never reaches the bag; a second pair of the same frame says "Please wait before adding more of this item." | Two faults in the shop's add-to-bag route. **(a)** It says "added" but drops the line when the bag already holds something. Adding through WooCommerce's own route works, so the bag display is fine. **(b)** A deliberate 30-second "per item" cooldown blocks a normal second pair. Ship (b) now: no cooldown for an item already in the bag, plus clearer wording. For (a), the leading theory is that the route builds the bag without loading the saved one. Test it on the canary (add A, add B, read the bag), then load the saved bag before adding. | framework repair | (a) symptom proven live, mechanism to prove; (b) proven live |
 
 ## Footer
 
@@ -160,10 +158,10 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 26 | Wordmark box taller in the draft | heading weight 500, line height 1.5, margins 0 | tree | proven |
 | 27 | Spacing between wordmark, BIRMINGHAM and tagline | BIRMINGHAM becomes sgs/heading in subheading mode (9.5px, 0.32em tracking, label colour, 4px top margin). Tagline 18px top margin. Social row 20px top margin. Brand column gap 0, so only these margins space it. | tree | proven |
 | 28 | Tagline too wide | width 32ch, text-wrap pretty (both settings exist) | tree | proven |
-| 29 | Column headings bold serif; draft is light sans | the three headings in subheading mode: 11.5px, 0.2em, uppercase, weight 400, line height 1.5, 4px bottom margin | tree | proven |
+| 29 | Column headings bold serif; draft is light sans | the three headings in subheading mode: 11.5px, 0.2em, uppercase, weight 400, line height 1.5, 4px bottom margin. Each column stacks with a 10px gap (draft). | tree | proven |
 | 30 | Link lists use the banned core/list | Replace with sgs/icon-list: no markers, 14px, line height 1.5, gap 10px (S11) | tree + framework new | proven |
 | 32, 33, 44 | Link colours and underlines | S2 | | |
-| 34, 35 | Phone hover | S3 (darken to black like the header) | | |
+| 34, 35 | Phone hover; phone link 44px tall (draft 21px) | S3 (darken to black like the header). Phone link: no minimum height, no padding, so it is one 21px line. The 44px touch-target rule is met by the line spacing around it; check after. | framework repair + tree | proven |
 | 36 | Address on one line with a comma | Store the Site Info address with a line break | content | proven |
 | 37 | Address not a link | New address-link setting on business-info: none / Google Business profile / directions. Set to Google Business profile (the link already in Site Info). | framework new + tree | proven |
 | 38 | Hours bold and split | weight 400, condensed, inline | tree | proven |
@@ -172,13 +170,13 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 46 + N12 | Bottom row layout; no SGS credit; trademark sentence | Bottom row padding and spacing as above. Add the existing "Website credit" variant of business-info. Remove "All brand names are trademarks of their owners" from the Site Info copyright text. | tree + content | proven |
 | 47 | Text moved by other causes | Re-walk after the rebuild | none | proven |
 | 48 | Space above the footer | Live already has the top line; spacing comes from 25 | tree | proven |
-| N13 | Floating WhatsApp can cover the bottom-right links | D5 | framework repair or tree | decision |
+| N13 | Floating WhatsApp can cover the bottom-right links | The button steps aside while the footer's bottom strip is on screen: extend its existing "hide near another WhatsApp button" watcher with a generic opt-in on the footer row (D5) | framework repair + tree | proven |
 
 ## Floating WhatsApp button
 
 | Ref | What is wrong | Fix | Type | Status |
 |---|---|---|---|---|
-| 49 | Label heavier than the draft; icon small, especially when it collapses to icon-only | label weight 500 and 13.5px (draft); icon 25px, between the draft's 22 and live's 28, in both states | tree | proven |
+| 49 | Label heavier than the draft; icon small, especially when it collapses to icon-only | Label weight 500 and 13.5px (draft). Icon 25px in the pill (between the draft's 22 and live's 28). In the collapsed circle the icon stays 28px or larger, which needs a small "collapsed icon size" setting. | tree + framework new | proven |
 
 ## Home
 
@@ -187,7 +185,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 50, 60 | Buttons that should lift do not | S1 | | |
 | 51 | Hero photo has no slow zoom-out on load | The ken-burns effect paints nothing on the standard hero, and it is a 20s loop where the draft is a one-off 3s zoom from 108% to 100%. Repair the paint and add a "zoom out once on load" mode with duration and start size. | framework repair + framework new | proven in code |
 | 52 | Brand logo strip never starts scrolling | Thought to wait for off-screen images before starting. Read the live page first. | framework repair | to prove |
-| 53 | Hero photo motion | D3 | | decision |
+| 53 | Hero photo does not drift like the draft's | Live uses a fixed background (the photo stands still while the page moves); the draft drifts. Turn the fixed parallax off and add a "drift" mode: the photo moves at a set share of the scroll speed (draft 0.18), off under reduced motion (D3). | framework new + tree | proven in code |
 | 54, 55 | WhatsApp button colours | S4 | | |
 | 57 | Pre-filled WhatsApp message | Keep it (your choice) | none | closed |
 | 58 | Hero buttons appear instantly | Button group: fade-up 18px, 0.9s, ease, 0.56s delay. The label, heading and paragraph already match the draft exactly. | tree | proven |
@@ -195,14 +193,14 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | N14 | Button hover standard | S1 | | |
 | N15 | "See all reviews" has no hover; draft darkens its blue ground | See-all hover ground #1765CC (the draft's) | tree | proven |
 | N16a | Review buttons need the 3px lift | S1 | | |
-| N16b | Best sellers is 8 hand-picked cards, not a live list | D6 | tree | decision |
+| N16b | Best sellers is 8 hand-picked cards, not a live list | WooCommerce's best-sellers product collection (8, by sales) with the same product card inside (D6). The test site has no sales yet, so the order is arbitrary until orders arrive. | tree | proven |
 | N17a | The whole Google reviews block grows on hover | Remove the default scale-up and shadow from the reviews block (no client wants a full section growing) | framework repair | proven |
 | N17b | Hero text sits in the middle, not bottom-left | The vertical position setting writes to the wrong axis, and a hardcoded "centre" overrides it. Repair both; the layout file already asks for bottom. | framework repair | proven in code |
 | N18 | Draft overlay is darker; you prefer live | Keep live. The walker is improved to catch overlays (see "Walker improvements"). | none | closed |
 | N19 | "See everything" and "All 12 styles": underline touches the text; no hover colour | Draft draws a 1px line 3px below the text, not an underline: bottom border 1px, bottom padding 3px, no underline. Hover colour: the draft's taupe (see readings above). | tree | proven |
 | N20 | Shapes section's ground stops at 1440px | The draft has no ground there at all; live adds a grey band (a tile colour used by mistake). Remove the ground, and use content width instead of box width. | tree | proven at 1920 |
 | N21 | Grey tint behind the shape tiles | Most likely that same band (N20). Re-check after N20. | tree | to prove |
-| N22 | Tile borders look white | See the answer above. Read the live border colour before changing anything. | tree | to prove |
+| N22 | Tile borders look white | Match the draft: #E6E1DA at rest, #CFC7BB on hover. The tree already says so, so first read the live border colour to find what overrides it. | tree or framework repair | to prove |
 | N23 | Review slider arrows have no light-blue hover | arrow hover ground #F1F6FE; the "Write a review" hover gets the same | tree | proven |
 | N24 | Google logo in each review card should link | Link it to the review or listing (Google's display rules) | framework repair | proven |
 
@@ -214,7 +212,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 62 | Size chips show counts "Small (4)" | show counts off; the switch stays in the block's settings for clients | tree | proven |
 | 64 | Filter drawer's top bar scrolls away | Pin the top bar like the bottom one | framework repair | proven |
 | 65A | "Polarised" tag drops to its own row, right-aligned | When it wraps, align it left under the name | framework repair | proven live |
-| 65B | Shop never goes to one column, even at 320px | The shop's "narrow layout: grid" floors each column at 50% width. First check whether the existing per-device columns setting reaches the shop grid; if not, add "single column below 400px". Research leaned 2 columns for visual products, but its evidence was weak; one column also fixes 65A and 65C. | tree or framework new | proven live |
+| 65B | Shop never goes to one column, even at 320px | The shop's "narrow layout: grid" floors each column at 50% width, so it can never reach one column. Add "single column below 400px" to the shop's narrow layout. Research leaned to 2 columns for visual products, but its evidence was weak, and one column also fixes 65A and 65C. | framework new + tree | proven live |
 | 65C | Price on its own line, RRP drops beside the swatches | Keep price and RRP together on one line; the swatches wrap below instead | framework repair | proven live |
 | N25 | Choosing then removing a filter breaks the filter panel (duplicate Gender, empty sections with arrows) | WooCommerce redraws the filters and leaves the shop's own group wrappers behind as empty shells. Clear the empty shells before each rebuild. Test: choose then clear; group count equals heading count. | framework repair | proven live |
 | N26 | Only the photo and title are links | S10: whole card links to the product, wishlist and swatches still work | framework new + tree | proven |
@@ -226,7 +224,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | Ref | What is wrong | Fix | Type | Status |
 |---|---|---|---|---|
 | 67 | Description inset 24px and fluid-sized | Tabs gain a panel padding setting (set 0); description uses a fixed 16.5px size preset. core/post-content stays (see answers). | framework new + tree | proven |
-| 68 | Colour tiles 8px taller with a gap above the photo | Tile padding applies only to tiles without a photo | framework repair | proven |
+| 68 | Colour tiles 8px taller with a gap above the photo or colour | Remove the tile's top padding whenever the tile shows a photo or a colour block (it is meant only for text-only tiles) | framework repair | proven |
 | 69 | Size pop-up | See Help 123 (one fix for the pop-up) | | |
 | 70 | Accordion | S5 | | |
 | 71 | Swatch names bigger and bolder | The product block passes text styling through to the options (size, weight, tracking, colour) | framework new + tree | proven |
@@ -234,7 +232,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 73 | Main photo does not fade in on load | New entrance setting for the gallery photo on the product block | framework new + tree | proven |
 | 74, 78, 79 | WhatsApp card | S4 | | |
 | 75, 82, 158 | Gallery thumbnails and colour-swatch photos do not show, though you set up the photos (gucci-oversized-cat-eye) | Your data is right; the framework ignores it. The gallery reads only an SGS-only field and never WooCommerce's own product gallery, and the swatch-photo setting is off. Fixes: (1) gallery = the variation's photo plus the WooCommerce gallery, without duplicates; (2) turn on swatch photos; (3) any variation with its own photo shows it. Today a photo equal to the main image is skipped, so Ivory stays flat. | framework repair + tree | proven live |
-| 76 | Colour tile lift is abrupt | The lift is missing from the tile's transition list, so it snaps. Add it at 0.25s, the draft's timing. The lift amount follows S1. | framework repair | proven |
+| 76 | Colour tile lift is abrupt | The lift is missing from the tile's transition list, so it snaps. Add it at 0.25s, the draft's timing. The lift follows S1, so the tiles move 3px where the draft moves 2px (your "consistent lift" rule). | framework repair | proven |
 | 77 | Chosen colour frame 2px vs 1px | Selected-tile border width setting | framework new + tree | proven |
 | 81, N29 | Close button has a grey circle | See Help 123 | | |
 | 83 | "Add my prescription" text 6px further in | button side padding 22px | tree | proven |
@@ -247,8 +245,8 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 94 | Photo does not zoom and brighten on hover | Gallery photo joins the shared hover zoom | framework new + tree | proven |
 | 95 | Several spec rows empty (Style, Frame type, Material, Hinge, Nose pads) | Fill the product data. The 4-column layout is correct, as you said. | content | proven |
 | N28 | Size pop-up WhatsApp card text wrong | S4 | | |
-| N30 | Small box beside the bridge size | Size buttons show "56 · 17 · 145" (product data). The box stays in the sizing note, where it is explained. | content | proven |
-| N31 | Reviews panel when there are none | S7, plus D7 | | |
+| N30 | Small box beside the bridge size | Plain "56 · 17 · 145" everywhere (your choice): size buttons, size guide and the sizing note | content + tree | proven |
+| N31 | Reviews panel when there are none | S7; the Google rating moves per D7 | | decision (D7) |
 | N32 | Accordion A-F | S5 | | |
 | N33A | Brand name typed at the top | S9 and D8 | | decision |
 | N33B | Save shown on the photo and beside the price | Turn off the photo tag | tree | proven |
@@ -258,7 +256,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | N36C | White "add to bag" button changes ground on hover | New add-to-bag hover ground setting, set to white; lift per S1 | framework new + tree | proven |
 | N36D | WhatsApp card text | S4 | | |
 | N36E, N36F | "Which size am I?" links: no hover; the Sizing-tab copy's underline touches the text | One shared "quiet link" style for both: muted text, 1px line 2px below. Text and line turn black on hover. | framework repair + tree | proven |
-| N36S | Sizing tab: no diagram; 3 rows not 4; no description column; no note | Now, with existing blocks: a 4-row table (Lens width, Bridge, Lens height, Temple) with name, value and full description, plus your note under it. Lens height needs adding to the product data (the draft's 74% of lens width is a placeholder). Diagram: D1. The numbers follow the size chosen in the picker. | tree + content (+ D1) | proven |
+| N36S | Sizing tab: no diagram; 3 rows not 4; no description column; no note | Now, with existing blocks: a 4-row table (Lens width, Bridge, Lens height, Temple) with name, value and full description, plus your note under it (its "56▫17 145" written plain, per N30). Lens height needs adding to the product data (the draft's 74% of lens width is a placeholder). Diagram: D1. The interim table shows the default size; following the size chosen in the picker comes with the D1 block. | tree + content (+ D1) | proven |
 
 ## Lens pop-up
 
@@ -277,7 +275,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 101 | Gap under section headings 16px too big | heading bottom margin 0 | tree | proven |
 | 102 | Step numbers large and bold; text not aligned with its number | numbers 15.5px, weight 500, gaps 16/15px; each step's text aligned to its number's line | tree (check the alignment setting exists) | proven |
 | 103 | "Choose a frame" text too bold | weight 400 | tree | proven |
-| N39 | Content starts too low | S6. Also re-measure the side margins at the window width you used. | tree | to prove (sides) |
+| N39 | Content starts too low | S6 (the top spacing is the main fault: it pushes every page down). Side margins: re-measure at 1280, 1366 and 1920 and fix only if they differ. | tree | proven (top); to prove (sides) |
 | N40 | Gap above the button too big | Match the draft's gap (same cause as 101: a default heading/text bottom margin) | tree | to prove |
 | N41 | "Choose a frame" does not lift | S1 | | |
 
@@ -297,14 +295,14 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | Ref | What is wrong | Fix | Type | Status |
 |---|---|---|---|---|
 | 110, 122 | Accordion | S5 (also remove the 20px gap that spaces the rows apart) | | |
-| 111 | FAQ answers wrap differently | answer width 720 | tree | proven |
+| 111 | FAQ answers wrap differently | answer width 72ch (the draft's value) | tree | proven |
 | 112 | "Call the clinic" grey and height | colour text-muted, line height 1.5, no minimum height | tree | proven |
 | 113 | Call / Contact me hover | S1 | | |
 | 115 | Size-guide pop-up first sentence lighter | colour text-soft | tree | proven |
 | 116 | Size numbers smaller on a phone | 32px on phone | tree | proven |
 | 117, 123, 69, 81, N29 | Size pop-up: wider at tablet, no header bar, padding wrong, close button has a grey circle | (1) Close button: transparent ground, square. (2) Header bar as a container in the pop-up's own layout file: title, divider, sticky. Pop-up gets a padding setting (draft: flat 24px; header 20px 24px). (3) Screen-edge gap from a token: 32px each side above phone size, 16px on a phone. | framework repair + framework new + tree | proven |
 | 119 | Title line spacing on a phone | line height 1.02 on phone | tree | proven |
-| 120, 121 | Questions heading and links side by side on a phone; links look plain | Two text-link buttons with a 1px line 3px below; they then wrap under the heading like the draft | tree | proven |
+| 120, 121 | Questions heading and links side by side on a phone; links look plain | Two text-link buttons with the draft's static line 3px below the text (like N19, not the S2 sweep); they then wrap under the heading like the draft | tree | proven |
 | N43 | Content starts too low | S6 | | |
 
 ## Contact
@@ -315,7 +313,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 | 125 | Gaps under eyebrow and intro | 10px and 28px | tree | proven |
 | 126, 137 | Column widths; map too narrow | grid 1.1fr 1fr; map container as a stack so the map fills | tree | proven |
 | 127, 138 | WhatsApp button | S4 | | |
-| 128 | Details stay 2 columns at every size | desktop 2, tablet 3, phone 1, gap 24 | tree | proven |
+| 128 | Details stay 2 columns on a phone | desktop 2, tablet 2 (your choice: live looks better), phone 1, gap 24 | tree | proven |
 | 129 | Label too close to its value | detail cell gap 14px | tree | proven |
 | 130 | Hours | Same as footer 38 | | |
 | 131 | Phone/email hover | S3 (mirrors the page's other links) | | |
@@ -334,10 +332,10 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 |---|---|---|---|---|
 | 147 | Title 63px vs 48px | page-title size token at 48px | client token + tree | proven |
 | 148 | Sections do not fade up | checkout entrance from tokens | framework new | proven |
-| 149 | "Place Order" vs "PAY NOW" with the price on the right | label "Pay now"; price-on-button style | tree + framework repair | proven |
-| 150 | Secure-payment note missing | a per-client place for checkout copy | decision (small) | proven |
+| 149 | "Place Order" vs "PAY NOW" with the price on the right | Label "Pay now" and the price-on-button style. The checkout is the shared theme part, so Eye Care's wording needs a per-site copy of that part: WordPress saves a Site Editor edit of a part per site. Build it from a new checkout layout file if the page builder can build parts; check that first. | tree + framework repair | to prove (per-site part) |
+| 150 | Secure-payment note missing | Same per-site checkout part as 149, holding Eye Care's note | tree | to prove (per-site part) |
 | 151 | Delivery option wording | shipping method titles and descriptions | content | proven |
-| 152 | Coupon, order note and terms | All three stay on, each switchable in settings (order notes and terms on the checkout block; coupons in WooCommerce settings) | none | closed |
+| 152 | Coupon, order note and terms | All three stay on. Confirm each can be switched off without code: order notes is a checkout block setting, coupons a WooCommerce setting, terms an inner block in the shared part. | none | to prove (switches) |
 | 153 | Extra fields (country, flat, phone, billing, guest line) | Keep them (your reading) | none | closed |
 | 154 | Checkout looks like default WooCommerce | Bespoke redesign to the draft, Eye Care only. The shared checkout stylesheet reads tokens (heading size, case and tracking; field look; summary card), so every client benefits. The Eye Care look goes in Eye Care's own token file, the only client styling channel that deploys: numbered small uppercase step headings, white fields, a flat summary card, a 1200px column, delivery cards. A prescription step and an express-pay row need the planned plugin work. | framework repair + client | proven |
 | 155 | Order summary twice on a phone | One summary, below the form (draft): hide WooCommerce's collapsed top summary on phones | framework repair | to prove (selector) |
@@ -355,7 +353,7 @@ Each has a recommendation; reply with the number and "yes" or your choice.
 |---|---|---|
 | 159 | No photo of Fatima unless she asks; a clinic photo for Home is still wanted | content |
 | 160 | Keep the pre-filled WhatsApp message (decided) | closed |
-| 161 | Brand link destination: D9 | decision |
+| 161 | Brand links go to brand pages, each with a short unique intro (D9); filtered shop links point to them | content + tree |
 | 162 | Keep the contact form's empty-submit messages (decided) | closed |
 
 ## Walker improvements (why some of your points were missed)
@@ -391,4 +389,4 @@ Each was proposed, then dropped by you or by the evidence. Kept so you can compa
 - 114 pop-up WhatsApp sentence: no such element (you).
 - 118 Help keyboard focus: you tested it, it works.
 - 132, 141 map strip and Directions link: the real Google Map replaces the sketch.
-- From the first version's dropped list (unchanged): about WhatsApp label hover; checkout input clipped; footer Google Business link; bag "Ask me anything" button; bag ground colour; mega underline fade; mega panel fade; mega card hover fade; drawer slide; drawer "More" box height; header phone width; bag pill hover text; Help panel in scrolled state; brand names at 75%; style-tile zoom speed; "Clear all" underline; accordion answer fade; product WhatsApp text link; "Which size am I?" underline (now N36E/F); lens "Skip the lenses" underline.
+- From the first version's dropped list (unchanged): about WhatsApp label hover; checkout input clipped; footer Google Business link; bag "Ask me anything" button; bag ground colour; mega underline fade; mega panel fade; mega card hover fade; drawer slide; header phone width; bag pill hover text; Help panel in scrolled state; brand names at 75%; style-tile zoom speed; "Clear all" underline; accordion answer fade; product WhatsApp text link; "Which size am I?" underline (now N36E/F); lens "Skip the lenses" underline.
