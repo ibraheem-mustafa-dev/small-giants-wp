@@ -11,9 +11,10 @@ import { fileURLToPath } from 'url';
 import { openDb } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve } from './lib/resolve.mjs';
-import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet, refAncestors } from './lib/tree.mjs';
+import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet } from './lib/tree.mjs';
 import { writableGroups, draftValues, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState } from './lib/solve-rows.mjs';
 import { writeSolveReport } from './lib/solve-report.mjs';
+import { guardRound, closeTrials } from './lib/guard.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -101,48 +102,10 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 	return { writes, gaps };
 }
 
-// The regression guard (R-47-9). A row the last round made worse is pinned on a write to its own node: one whose
-// calibrated side effects include that element and property, or that wrote the property itself. With no such write,
-// every last-round write on that node is suspect. Rows are taken top-down: a row below a node that already has a
-// pinned write follows from it and pins nothing more.
-// Pinned writes are reverted and blocked; `blocked` maps their groups to a breaks-layout gap. Returns the reverted writes.
-export function revertRegressions( prev, report, tree, lastWrites, blocked, calFor = calibrationFor ) {
-	const anc = refAncestors( tree );
-	// Top-down, and on each node style rows before box rows: a box size is a consequence, never first evidence.
-	const rank = ( r ) => ( anc.get( r.ref )?.length ?? 0 ) * 2 + ( 'box' === r.kind ? 1 : 0 );
-	const bad = regressedRows( prev, report ).sort( ( a, b ) => rank( a ) - rank( b ) );
-	const culprits = new Set();
-	const pinnedRefs = new Set();
-	const unexplained = [];
-	for ( const r of bad ) {
-		if ( pinnedRefs.has( r.ref ) || ( anc.get( r.ref ) || [] ).some( ( a ) => pinnedRefs.has( a ) ) ) {
-			continue;
-		}
-		const own = lastWrites.filter( ( w ) => w.ref === r.ref );
-		if ( ! own.length ) {
-			continue;
-		}
-		const pinned = own.filter( ( w ) => w.prop === r.key || ( calFor( w.block )?.settings?.[ w.attr ]?.effects || [] ).includes( `${ r.path }|${ r.key }` ) );
-		( pinned.length ? pinned : own ).forEach( ( w ) => culprits.add( w ) );
-		pinnedRefs.add( r.ref );
-		if ( ! pinned.length ) {
-			unexplained.push( r );
-		}
-	}
-	const list = lastWrites.filter( ( w ) => culprits.has( w ) );
-	for ( const w of [ ...list ].reverse() ) {
-		const node = nodeByRef( tree, w.ref );
-		if ( null === w.before ) {
-			delete node.attributes[ w.attr ];
-		} else {
-			node.attributes[ w.attr ] = w.before;
-		}
-		w.reverted = true;
-		const hit = bad.filter( ( r ) => r.ref === w.ref );
-		w.revertReason = `${ hit.length } rows on its node regressed, e.g. ${ hit.slice( 0, 3 ).map( ( r ) => `${ r.key }@${ r.width } ${ r.draft }→${ r.live }` ).join( '; ' ) }${ unexplained.some( ( r ) => r.ref === w.ref ) ? ' (no side effect matched: every write on the node reverted)' : '' }`;
-		blocked.set( w.group, { gap: 'breaks-layout', detail: `${ w.block } ${ w.attr } holds the draft value but writing it breaks the layout: ${ w.revertReason }` } );
-	}
-	return list;
+// The regression guard (R-47-9) lives in lib/guard.mjs. This wrapper keeps the single-call form: the writes undone this
+// round (a calibration-named culprit, or the one suspect under trial).
+export function revertRegressions( prev, report, tree, lastWrites, blocked, calFor = calibrationFor, trials = new Map() ) {
+	return guardRound( prev, report, tree, lastWrites, blocked, calFor, trials ).filter( ( w ) => w.reverted || w.trial );
 }
 
 // Wrong writes (§3.3): a write a later round reverted, or after which its rows read further from the draft.
@@ -204,10 +167,11 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	let prev = null;
 	let lastWrites = [];
 	const blocked = new Map();
-	// R-47-9: at most maxRounds write rounds. A round that only reverts regressions is not a write round, so the cap on
-	// walks is the write rounds, one revert per write round, and the final walk.
+	const trials = new Map();
+	// R-47-9: at most maxRounds write rounds. Guard rounds (revert a named culprit, try one suspect, restore an
+	// innocent one) are not write rounds; the walk cap leaves room for a few per write round.
 	let writeRounds = 0;
-	for ( let round = 1; round <= maxRounds * 2 + 1; round++ ) {
+	for ( let round = 1; round <= maxRounds * 4 + 1; round++ ) {
 		assertQuiet();
 		const b = build( s, treeFile );
 		if ( ! b.ok ) {
@@ -215,14 +179,14 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			break;
 		}
 		report = walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates );
-		// A round that made rows worse reverts the culprit writes first; the next round measures the revert.
-		const reverted = prev ? revertRegressions( prev, report, tree, lastWrites, blocked ) : [];
-		prev = report;
-		if ( reverted.length ) {
-			reverted.forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
-			console.log( `round ${ round }: reverted ${ reverted.length } writes that broke the layout` );
+		// A round that made rows worse runs the guard against the walk the writes were computed from (prev stays that
+		// walk until the guard is done); the next round measures what it changed.
+		const changed = prev ? guardRound( prev, report, tree, lastWrites, blocked, calibrationFor, trials ) : [];
+		if ( changed.length ) {
+			changed.filter( ( w ) => w.reverted ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
+			changed.filter( ( w ) => w.restored ).forEach( ( w ) => delete gaps[ w.group ] );
+			console.log( `round ${ round }: guard reverted ${ changed.filter( ( w ) => w.reverted ).length }, trying ${ changed.filter( ( w ) => w.trial ).length }, restored ${ changed.filter( ( w ) => w.restored && ! w.trial ).length }` );
 			writeTree( treeFile, tree );
-			lastWrites = [];
 			continue;
 		}
 		if ( writeRounds >= maxRounds ) {
@@ -239,8 +203,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		}
 		allWrites.push( ...r.writes );
 		lastWrites = r.writes;
+		prev = report;
 		writeTree( treeFile, tree );
 	}
+	closeTrials( trials, blocked ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
 	const before = JSON.parse( fs.readFileSync( path.join( outDir, 'round-1', 'report.json' ), 'utf8' ) );
 	const classes = classify( report, { writes: allWrites, gaps, stateMap: s.states } );
 	const wrong = wrongWrites( allWrites, report, s.states );

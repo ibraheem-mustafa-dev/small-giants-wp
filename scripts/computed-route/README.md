@@ -35,6 +35,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/calibrate.mjs` | Calibration library: markers per setting shape, calibration trees, in-page reads, slot detection, default paint. |
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, classification. |
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json`. |
+| `lib/guard.mjs` | The regression guard: reverts a write calibration names, else tries one suspect at a time and lets the next walk decide. |
 | `lib/ledger.mjs` | Ledger library: rules, matching, stale entries, accept migration, entries from report rows. |
 | `tests/db.test.mjs` | R-47-2: read-only database. |
 | `tests/normalise.test.mjs` | R-47-7: tokens before literals. |
@@ -43,7 +44,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code; a run never replaces another site's cache file without `--recalibrate`. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
-| `tests/solve.test.mjs` | R-47-9: the regression guard pins only the write whose side effects explain the regression; walker state mapping (an unmapped state is never written). |
+| `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written). |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching). |
 
 `cache/` (gitignored) holds calibration files: one per block for the whole library, each recording the `site` that measured it.
@@ -146,11 +147,18 @@ file names the rule it proves and has one case marked MUST FAIL.
 ### `lib/solve-report.mjs`
 - `writeSolveReport(outDir, result)`.
 
+### `lib/guard.mjs`
+- `explains(w, r, cal)` → true when calibration ties write `w` to regressed row `r` (its own property, a calibrated side effect, or a discovered layout effect).
+- `settingsOf(writes)` → the writes grouped by node and attribute (writes to one attribute chain, so they are undone together).
+- `suspectOrder(settings, calFor)` → layout-mode settings first, then settings writing a layout property, then the latest.
+- `guardRound(base, report, tree, lastWrites, blocked, calFor, trials)` → the writes whose state changed (reverted, under trial, restored); settles last round's trials against the new walk first.
+- `closeTrials(trials, blocked)` → settings still under trial when the run ends, reported as unconfirmed reverts.
+
 ### `solve.mjs` (runs `wp-build-page.js` and the walker)
 - `USED_VALUES`: computed properties that are used sizes (`width`), reported and never written.
 - `calibrationFor(block)` → the block's calibration file or null.
 - `writeRound(report, tree, { db, snapshot, round, log, blocked, stateMap, calFor? })` → `{ writes, gaps }`; only rows from mapped walker states are written.
-- `revertRegressions(prev, report, tree, lastWrites, blocked, calFor?)` → the reverted writes (the regression guard, pinned through calibrated side effects).
+- `revertRegressions(prev, report, tree, lastWrites, blocked, calFor?, trials?)` → the writes the guard undid this round (`lib/guard.mjs::guardRound`).
 - `wrongWrites(writes, reportAfter, stateMap)` → writes a later round reverted or that moved their rows further from the draft.
 
 ### `lint.mjs`

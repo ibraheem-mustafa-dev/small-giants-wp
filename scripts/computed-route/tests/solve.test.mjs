@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { revertRegressions } from '../solve.mjs';
+import { guardRound } from '../lib/guard.mjs';
 
 const tree = () => [ { name: 'sgs/site-footer-row', attributes: { className: 'cr-ref-f-1', padding: { desktop: { top: '104px' } }, maxWidth: { desktop: '1440px' } }, innerBlocks: [
 	{ name: 'sgs/heading', attributes: { className: 'cr-ref-f-2', margin: { desktop: { bottom: '4px' } } } } ] } ];
@@ -31,9 +32,47 @@ test( 'MUST FAIL TO OVER-REVERT: only the write whose side effect matches is rev
 	assert.equal( blocked.get( 'g-max' ).gap, 'breaks-layout' );
 } );
 
-test( 'with no matching side effect, every write on the regressed node is suspect', () => {
+test( 'MUST FAIL TO OVER-REVERT: with nothing explaining the row, one suspect is tried, never every write', () => {
 	const out = revertRegressions( before, after, tree(), structuredClone( writes ), new Map(), () => ( { settings: {} } ) );
-	assert.deepEqual( out.map( ( w ) => w.attr ).sort(), [ 'maxWidth', 'padding' ] );
+	assert.equal( out.length, 1 );
+	assert.equal( out[ 0 ].trial, true );
+} );
+
+// The pinpointing guard across rounds (lib/guard.mjs): a layout-mode setting is the first suspect; the next walk decides.
+const node = () => [ { name: 'sgs/container', attributes: { className: 'cr-ref-h-1', layout: 'stack', padding: { desktop: { top: '4px', bottom: '6px' } } } } ];
+const gw = () => [
+	{ round: 1, group: 'g-pt', ref: 'cr-ref-h-1', block: 'sgs/container', attr: 'padding', prop: 'padding-top', before: null, after: { desktop: { top: '4px' } } },
+	{ round: 1, group: 'g-pb', ref: 'cr-ref-h-1', block: 'sgs/container', attr: 'padding', prop: 'padding-bottom', before: { desktop: { top: '4px' } }, after: { desktop: { top: '4px', bottom: '6px' } } },
+	{ round: 1, group: 'g-lay', ref: 'cr-ref-h-1', block: 'sgs/container', attr: 'layout', prop: 'display', before: null, after: 'stack' },
+];
+const discoveredLayout = () => ( { settings: {}, discovered: { layout: { display: { slots: [ '.sgs-container__inner' ], values: {} } } } } );
+const regressed = run( [ { pair: 'row', kind: 'style', key: 'justify-content', draft: 'center', live: 'normal', ref: 'cr-ref-h-1', path: '' } ] );
+const cleared = run( [] );
+
+test( 'the layout-mode setting is tried first; when its undo clears the regression it is the only write reverted', () => {
+	const t = node();
+	const w = gw();
+	const trials = new Map();
+	const blocked = new Map();
+	const r1 = guardRound( cleared, regressed, t, w, blocked, discoveredLayout, trials );
+	assert.deepEqual( [ ...new Set( r1.map( ( x ) => x.attr ) ) ], [ 'layout' ] );
+	assert.equal( t[ 0 ].attributes.layout, undefined );
+	guardRound( cleared, cleared, t, w, blocked, discoveredLayout, trials );
+	assert.equal( w.find( ( x ) => 'layout' === x.attr ).reverted, true );
+	assert.ok( w.filter( ( x ) => 'padding' === x.attr ).every( ( x ) => ! x.reverted ) );
+	assert.deepEqual( t[ 0 ].attributes.padding, { desktop: { top: '4px', bottom: '6px' } } );
+} );
+
+test( 'an innocent suspect is restored and the next suspect (the whole chained setting) is tried', () => {
+	const t = node();
+	const w = gw();
+	const trials = new Map();
+	guardRound( cleared, regressed, t, w, new Map(), discoveredLayout, trials );
+	const r2 = guardRound( cleared, regressed, t, w, new Map(), discoveredLayout, trials );
+	assert.equal( t[ 0 ].attributes.layout, 'stack' );
+	assert.ok( r2.some( ( x ) => 'layout' === x.attr && x.restored ) );
+	assert.equal( t[ 0 ].attributes.padding, undefined );
+	assert.ok( w.filter( ( x ) => 'padding' === x.attr ).every( ( x ) => x.trial ) );
 } );
 
 test( 'no regression, no revert', () => {
