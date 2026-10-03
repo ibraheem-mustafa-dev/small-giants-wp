@@ -260,6 +260,10 @@ invocation, so the drift is the page's, not the new checks'. The first run of th
 on a rotating ticker (now left out as a loop) and 8 lens rows, gone on the next run once the focus pass restored every
 scroller it moved (one run: the restore is the suspected cause, not a proven one).
 
+**Re-measured 2026-10-03, after section 16 (ref tracing, the divergence ledger, row ids):** 5 of 5, noise 0 on the shop and
+0 on the lens (`benchmark/out/2026-10-03T13-18-29/summary.md`). The benchmark configs set no `refPrefix`, so they read exactly
+the properties they read before.
+
 **What no draft comparison can catch:** gap a (the Polarised tag's uneven place) is not scored (`draftHasIt`).
 Measured, the pre-fix tag sat exactly as the draft's at every width (box 77x24, 8px each side, 17px from the card
 edge, past the edge on a one-word name at 375): the draft has the flaw, and Bean's fix went beyond it. A flaw in the
