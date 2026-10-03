@@ -442,7 +442,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
    - **Calibration: 44 of the 45 SGS blocks these trees use.** Re-run on 2026-10-03 after the radius fix: 28 of the
      29 blocks with a corner-radius setting now map it (accordion-item's `borderRadius` still reads dead: a lead). Fixtures come from each block's first use in the trees,
      styling attributes back to default. `brand-strip` times out (its live brand query runs in every instance): it
-     needs a manual-logo fixture or a smaller chunk (done inside the 51-block calibration track below). Leads to prove are the register's "Computed route findings"
+     needs a manual-logo fixture or a smaller chunk (done in the library-wide calibration below: CR5's time-out closed). Leads to prove are the register's "Computed route findings"
      (CR1-CR6), including the box helper that sets unset sides to 0 (CR6, proven). The 27 core and WooCommerce blocks in
      the shop and product templates have no `source = 'sgs'` settings, so Solve reports their rows and never writes them.
    - **Box seeding.** The first side written into an empty box brings the other sides at their calibrated default paint
@@ -461,10 +461,17 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        container (a layout write plus four paddings).
      - Next: re-run About, Lenses, Contact and Home under the new guard, then header, mobile menu, the four megas,
        size guide, lens configurator, contact form, shop, product; each scored and committed with its register update.
+   - **Library-wide calibration: done 2026-10-03** (sandybrown, private page 4750, which runs the `mamas-munches`
+     snapshot: palette 30 of 30). 93 of the 95 SGS blocks have one cache file each (47 measured on eye-care-test, 46 on
+     sandybrown; 584 settings mapped on the 46). The 48 new fixtures start from each block.json `example` with styling
+     at defaults, forms unlinked and post or menu references unset; brand-strip uses manual logos; `before` places page
+     context ahead of an instance (a table of contents' headings). Not calibrated, with reasons: `decorative-image`
+     never prints its own class, so no instance can be found (register CR8, a framework repair first);
+     `theme-toggle` renders nothing on a site with no derived dark palette (`settings.custom.dark`), and no client
+     snapshot has one (CR12). Fixed on the way: the deploy key reads local text files as LF (`calibrate.mjs::lfText`),
+     and border-radius boxes calibrate and write as corners (CR7). Leads CR7 to CR13 are in the register.
    - **Residual after the surfaces:**
      - The functional flows (FR-47-7) and the walker's remaining items (FR-47-6 items 1 to 5): not started.
-     - Calibrate the other 48 SGS blocks (no Eye Care tree uses them; brand-strip included) on sandybrown, into the library-wide cache
-       (slot maps shared, default paint per site), so Fill and the next client start calibrated.
      - **Gap typing:** a setting that paints a parent while a rule on a child overrides it (the hours day label) comes
        out Missing setting; calibration should record the child's own value so Solve can name it Hardcode.
      - About 107 needs a walker pair on the grid's `grid-template-columns` in `qa/parity/about.mjs` before Solve can

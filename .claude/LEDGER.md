@@ -62,6 +62,13 @@ the new guard next, then the other 11 surfaces. A parallel session (calibration 
 the library-wide cache for the 48 blocks Eye Care does not use and writes its own status. Register "Computed route
 findings" CR1-CR6 holds the leads (CR6, the box helper zeroing unset sides, is proven).
 
+**Library-wide calibration (2026-10-03, local `main`, unpushed):** 93 of the 95 SGS blocks have one cache file each,
+whichever site measured it (Bean: no per-site split; `--recalibrate` replaces another site's file). The 48 blocks Eye
+Care does not use were measured on sandybrown's private page 4750. `decorative-image` (never prints its own class,
+CR8) and `theme-toggle` (no client has a dark palette, CR12) are recorded, not calibrated. The border-radius corner bug
+(CR7) is fixed and re-calibrated on both sites. Next for this track: repair CR8 and re-calibrate it; route leads CR10
+(aspect-ratio never read) and CR11 (border style needs a paired width marker).
+
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:** Spec 47
 §5 stage 3, then the register in the plan's "Work plan" order.
 
