@@ -76,10 +76,13 @@ framework database, the parity walker and the page builder, and no code. Spec 31
 - **Reference blocks.** Some blocks print another post (`lib/references.mjs`, found from each block's render.php):
   a linked placeholder (`formIsLinked`, `flowIsLinked`) ignores its own settings and renders the referenced post's
   block; a frame (`modalRef`, `drawerRef` printed with `do_blocks`) keeps its own frame settings around another post's
-  blocks; core template parts print the header and footer posts. Every post a surface prints this way has its own
-  surface (`lint.mjs --surfaces` fails otherwise), and Solve never writes to a linked placeholder. Theme templates
-  (shop, product) are SGS-built trees whose only core blocks are those doors and WooCommerce blocks, which hold no
-  SGS setting.
+  blocks. Theme templates (shop, product) are SGS-built trees. They include the header and footer through one
+  `core/template-part` line each (slug `header`/`footer`), which loads the theme part (`parts/header.html`), whose
+  SGS pattern renders the active `sgs_header` / `sgs_footer` post: the header and footer are SGS blocks in their own
+  CPT posts, and the include line carries no setting. The product template also prints the product's own
+  description (`core/post-content`), and WooCommerce blocks hold no SGS setting. Every post a surface prints this way
+  has its own surface (`lint.mjs --surfaces` fails otherwise; the header and footer surfaces `provide` their template
+  part), and Solve never writes to a linked placeholder.
 - **Output:** the surface's tree in `sites/<client>/build/`, built through `scripts/wp-build-page.js`, a report, and
   for Fill a generated walker config.
 - **Not in scope:** content beyond what the draft shows (products, pages, Site Info), functional behaviour, asset
