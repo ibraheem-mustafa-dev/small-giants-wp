@@ -353,7 +353,13 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const results = [];
 	try {
 		for ( const b of blocks ) {
-			results.push( await calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: `${ keys[ b ] }-${ paintSuffix }` } ) );
+			// One block's failure (a page that never renders its instance, a host time-out) is that block's error; the
+			// rest of the run continues.
+			try {
+				results.push( await calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: `${ keys[ b ] }-${ paintSuffix }` } ) );
+			} catch ( e ) {
+				results.push( { block: b, error: String( e.message || e ).split( /\r?\n/ )[ 0 ] } );
+			}
 			console.log( JSON.stringify( results.at( -1 ) ) );
 		}
 	} finally {

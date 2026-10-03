@@ -1564,7 +1564,8 @@
   },
   "sgs/responsive-logo": {
     "attributes": {
-      "linkToHome": true
+      "linkToHome": true,
+      "logoId": 198
     }
   },
   "sgs/site-header": {
