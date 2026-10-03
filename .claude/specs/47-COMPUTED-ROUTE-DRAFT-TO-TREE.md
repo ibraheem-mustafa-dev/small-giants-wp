@@ -130,7 +130,9 @@ front-end stylesheets and view scripts) and leaves out the editor bundles (`inde
 front-end files), so a whole-folder key could never match. View bundles and asset files are hashed after blanking
 webpack's module numbers and the asset version (`calibrate.mjs::normaliseBundle`): the same commit numbers its modules by
 build folder (proven 2026-10-03: trust-bar's `view.js` differed only in module 2310 against 6469), while any code change
-still changes the key. Inherited properties are not recorded as default paint (R-47-5 uses the parent's live value).
+still changes the key. Local text files are read with LF endings (`calibrate.mjs::lfText`): the deploy builds from a
+clean LF checkout, while a working copy may carry CRLF (proven 2026-10-03: language-switch's and wishlist-link's
+`render.php` differed by exactly their line counts). Inherited properties are not recorded as default paint (R-47-5 uses the parent's live value).
 The cache is `scripts/computed-route/cache/`, gitignored: one library-wide file per block, whichever site measured
 it (Bean, 2026-10-03), so every client starts calibrated. Each file records its `site` and `paintKey`. A run on
 another site skips a block that already has a file unless it passes `--recalibrate` (`lib/cache.mjs::skipReason`).

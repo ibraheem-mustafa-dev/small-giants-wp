@@ -128,6 +128,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `CHUNK`: the most instances one calibration page holds (150); a larger block is built and read in chunks, each carrying every variant's default instance.
 - `EDITOR_ONLY`: the editor bundles left out of the key (the same commit built in another folder gives a different `index.js`).
 - `BUNDLE_TEXT`, `normaliseBundle(rel, text)`: view bundles and asset files with webpack's folder-dependent module numbers and the asset version blanked (the same commit built in two folders numbers its modules differently).
+- `TEXT_FILE`, `lfText(buf)`: local text files read with LF endings (the deploy builds from a clean LF checkout; a working copy may carry CRLF).
 - `localBlockHash(dir)`, `remoteBlockHash(site, short)`: md5 of a block's front-end build files (bundles normalised), same listing both sides.
 
 ### `lib/solve-rows.mjs`

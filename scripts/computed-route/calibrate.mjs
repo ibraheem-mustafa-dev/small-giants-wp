@@ -53,8 +53,14 @@ export function normaliseBundle( rel, text ) {
 	return ids.reduce( ( t, id, i ) => t.replace( new RegExp( `([{,(])${ id }(?=[(){},])`, 'g' ), `$1M${ i }` ), text );
 }
 
-// md5 of a build directory's front-end files: each file's md5 (bundles normalised) and relative path, sorted. The
-// remote side lists the same.
+// The deploy builds from a clean checkout of HEAD, so the server's text files always end lines with LF; a local working
+// copy may carry CRLF (proven 2026-10-03: language-switch and wishlist-link render.php, CRLF locally, LF in git and on
+// sandybrown, byte counts differing by exactly their line counts). The local key reads text files with LF endings.
+export const TEXT_FILE = /\.(php|json|css|js|svg|txt|html)$/;
+export const lfText = ( buf ) => buf.toString( 'utf8' ).replace( /\r\n/g, '\n' );
+
+// md5 of a build directory's front-end files: each file's md5 (bundles normalised, text files with LF endings) and
+// relative path, sorted. The remote side lists the same.
 const keyOf = ( lines ) => md5( lines.filter( ( l ) => ! EDITOR_ONLY.test( l.slice( 34 ) ) ).sort( ( a, b ) => a.slice( 34 ).localeCompare( b.slice( 34 ) ) ).join( '\n' ) );
 export function localBlockHash( dir ) {
 	const lines = [];
@@ -66,7 +72,8 @@ export function localBlockHash( dir ) {
 		}
 		const rel = `./${ path.relative( dir, p ).split( path.sep ).join( '/' ) }`;
 		const buf = fs.readFileSync( p );
-		lines.push( `${ md5( BUNDLE_TEXT.test( rel ) ? normaliseBundle( rel, buf.toString( 'utf8' ) ) : buf ) }  ${ rel }` );
+		const text = TEXT_FILE.test( rel ) ? lfText( buf ) : null;
+		lines.push( `${ md5( BUNDLE_TEXT.test( rel ) ? normaliseBundle( rel, text ?? buf.toString( 'utf8' ) ) : text ?? buf ) }  ${ rel }` );
 	} );
 	go( dir );
 	return keyOf( lines );

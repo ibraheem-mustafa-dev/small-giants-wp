@@ -58,3 +58,22 @@ test( 'MUST FAIL TO REPLACE: a sandybrown run never replaces an eye-care-test fi
 	assert.match( skipReason( f, 'sandybrown' ), /calibrated on eye-care-test/ );
 	assert.equal( cachedSite( f ), 'eye-care-test' );
 } );
+
+// The deploy key reads local text files with LF endings (§3.2): the deploy builds from a clean LF checkout, so a CRLF
+// working copy of the same code must key alike, while a code change must not.
+import { localBlockHash } from '../calibrate.mjs';
+
+const buildDir = ( php ) => {
+	const d = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-key-' ) );
+	fs.writeFileSync( path.join( d, 'render.php' ), php );
+	fs.writeFileSync( path.join( d, 'block.json' ), '{"name":"sgs/x"}\n' );
+	return d;
+};
+
+test( 'a CRLF render.php keys the same as its LF copy', () => {
+	assert.equal( localBlockHash( buildDir( '<?php\r\necho 1;\r\n' ) ), localBlockHash( buildDir( '<?php\necho 1;\n' ) ) );
+} );
+
+test( 'MUST FAIL TO MATCH: a code change in render.php changes the key, whatever its line endings', () => {
+	assert.notEqual( localBlockHash( buildDir( '<?php\r\necho 2;\r\n' ) ), localBlockHash( buildDir( '<?php\necho 1;\n' ) ) );
+} );
