@@ -34,24 +34,47 @@ const md5 = ( s ) => crypto.createHash( 'md5' ).update( s ).digest( 'hex' );
 // the front-end stylesheets and view scripts.
 export const EDITOR_ONLY = /^\.\/index(-rtl)?\.(js|css|asset\.php)$/;
 
-// md5 of a build directory's front-end files: each file's md5 and relative path, sorted. The remote side lists the same.
+// Webpack names each bundled module by a number that depends on the build folder, not the code: the same commit gives
+// `var e={2310(){` and `r(2310)` locally and 6469 from the deploy's temporary worktree (proven on trust-bar's view.js,
+// 2026-10-03: the two files differ only in that number), and an asset file's version is a hash of its bundle. Both are
+// normalised before hashing, so the key follows behaviour, never build order.
+export const BUNDLE_TEXT = /^\.\/(view[^/]*\.js|[^/]*\.asset\.php)$/;
+export function normaliseBundle( rel, text ) {
+	if ( /\.asset\.php$/.test( rel ) ) {
+		return text.replace( /'version'\s*=>\s*'[^']*'/g, "'version' => ''" );
+	}
+	const ids = [ ...text.matchAll( /[{,](\d+)\(\)\{/g ) ].map( ( m ) => m[ 1 ] );
+	return ids.reduce( ( t, id, i ) => t.replace( new RegExp( `([{,(])${ id }(?=[(){},])`, 'g' ), `$1M${ i }` ), text );
+}
+
+// md5 of a build directory's front-end files: each file's md5 (bundles normalised) and relative path, sorted. The
+// remote side lists the same.
+const keyOf = ( lines ) => md5( lines.filter( ( l ) => ! EDITOR_ONLY.test( l.slice( 34 ) ) ).sort( ( a, b ) => a.slice( 34 ).localeCompare( b.slice( 34 ) ) ).join( '\n' ) );
 export function localBlockHash( dir ) {
 	const lines = [];
 	const go = ( d ) => fs.readdirSync( d, { withFileTypes: true } ).forEach( ( f ) => {
 		const p = path.join( d, f.name );
 		if ( f.isDirectory() ) {
 			go( p );
-		} else {
-			lines.push( `${ md5( fs.readFileSync( p ) ) }  ./${ path.relative( dir, p ).split( path.sep ).join( '/' ) }` );
+			return;
 		}
+		const rel = `./${ path.relative( dir, p ).split( path.sep ).join( '/' ) }`;
+		const buf = fs.readFileSync( p );
+		lines.push( `${ md5( BUNDLE_TEXT.test( rel ) ? normaliseBundle( rel, buf.toString( 'utf8' ) ) : buf ) }  ${ rel }` );
 	} );
 	go( dir );
-	return md5( lines.filter( ( l ) => ! EDITOR_ONLY.test( l.slice( 34 ) ) ).sort( ( a, b ) => a.slice( 34 ).localeCompare( b.slice( 34 ) ) ).join( '\n' ) );
+	return keyOf( lines );
 }
 
 export function remoteBlockHash( site, short ) {
-	const out = execFileSync( 'ssh', [ ...SSH, `cd ${ REMOTE_PLUGIN[ site ] }/build/blocks/${ short } && find . -type f -exec md5sum {} +` ], { encoding: 'utf8', timeout: 60000 } );
-	return md5( out.trim().split( '\n' ).map( ( l ) => l.trim() ).filter( ( l ) => ! EDITOR_ONLY.test( l.slice( 34 ) ) ).sort( ( a, b ) => a.slice( 34 ).localeCompare( b.slice( 34 ) ) ).join( '\n' ) );
+	const dir = `${ REMOTE_PLUGIN[ site ] }/build/blocks/${ short }`;
+	const listed = execFileSync( 'ssh', [ ...SSH, `cd ${ dir } && find . -type f -exec md5sum {} +` ], { encoding: 'utf8', timeout: 60000 } ).trim().split( '\n' ).map( ( l ) => l.trim() );
+	const lines = listed.filter( ( l ) => ! BUNDLE_TEXT.test( l.slice( 34 ) ) );
+	for ( const rel of listed.map( ( l ) => l.slice( 34 ) ).filter( ( r ) => BUNDLE_TEXT.test( r ) && ! EDITOR_ONLY.test( r ) ) ) {
+		const text = execFileSync( 'ssh', [ ...SSH, `cat ${ dir }/${ rel.slice( 2 ) }` ], { encoding: 'utf8', timeout: 60000 } );
+		lines.push( `${ md5( normaliseBundle( rel, text ) ) }  ${ rel }` );
+	}
+	return keyOf( lines );
 }
 
 function build( target, treeFile, extra = [] ) {
@@ -89,12 +112,14 @@ function readEnv( file, key ) {
 
 // Reads every instance at each width; hover instances again under a real mouse; scroll instances (and every default
 // instance, their baseline) again with the window scrolled. Returns { width: [instanceReads] } plus
-// { scrolled: { width: { n: read } }, scrollMissed: [n] } (scroll instances whose header never took the scrolled class).
+// { scrolled: { width: { n: read } }, scrollMissed: [n] (scroll instances whose header never took the scrolled class),
+// hoverMissed: [n] (hover instances that are hidden) }.
 async function readAll( page, url, instances ) {
 	const PATH = elementPath.toString();
 	const out = {};
 	const scrolled = {};
 	const scrollMissed = [];
+	const hoverMissed = [];
 	for ( const w of WIDTHS ) {
 		await page.setViewportSize( { width: w, height: 900 } );
 		await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
@@ -108,6 +133,11 @@ async function readAll( page, url, instances ) {
 				continue;
 			}
 			const loc = page.locator( `.${ CAL_PREFIX }${ n }` ).first();
+			// A hidden instance (inside a closed drawer) cannot be hovered: reported, never read as a hover.
+			if ( ! await loc.isVisible() ) {
+				hoverMissed.includes( n ) || hoverMissed.push( n );
+				continue;
+			}
 			await loc.scrollIntoViewIfNeeded();
 			await loc.hover( { force: true } );
 			await page.waitForTimeout( 500 );
@@ -132,7 +162,7 @@ async function readAll( page, url, instances ) {
 			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
 		}
 	}
-	return Object.assign( out, { scrolled, scrollMissed } );
+	return Object.assign( out, { scrolled, scrollMissed, hoverMissed } );
 }
 
 async function calibrateBlock( block, { site, target, env, fixtures, snapshot, db, slotKey, paintKey, rejectedOut } ) {
@@ -229,6 +259,10 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 			return;
 		}
 		const name = inst.row.attr_name;
+		if ( 'hover' === inst.trigger && reads.hoverMissed.includes( n ) ) {
+			untested.push( `${ name }:hover (the element is hidden, so it cannot be hovered)` );
+			return;
+		}
 		if ( 'scroll' === inst.trigger && reads.scrollMissed.includes( n ) ) {
 			untested.push( `${ name }:${ inst.row.css_state } (the header never took is-header-scrolled)` );
 			return;

@@ -39,7 +39,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/normalise.test.mjs` | R-47-7: tokens before literals. |
 | `tests/resolve.test.mjs` | FR-47-1: storage shapes and gaps. |
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
-| `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger. |
+| `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
 | `tests/solve.test.mjs` | R-47-9: the regression guard pins only the write whose side effects explain the regression; walker state mapping (an unmapped state is never written). |
@@ -121,7 +121,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 ### `calibrate.mjs` (runs `wp-build-page.js`, ssh, Playwright)
 - `REMOTE_PLUGIN`: the plugin folder on the host per site.
 - `EDITOR_ONLY`: the editor bundles left out of the key (the same commit built in another folder gives a different `index.js`).
-- `localBlockHash(dir)`, `remoteBlockHash(site, short)`: md5 of a block's front-end build files, same listing both sides.
+- `BUNDLE_TEXT`, `normaliseBundle(rel, text)`: view bundles and asset files with webpack's folder-dependent module numbers and the asset version blanked (the same commit built in two folders numbers its modules differently).
+- `localBlockHash(dir)`, `remoteBlockHash(site, short)`: md5 of a block's front-end build files (bundles normalised), same listing both sides.
 
 ### `lib/solve-rows.mjs`
 - `WRITABLE_KINDS`: style, hover, box. `groupKey(row, state)`: ref, path, property, setting state.
