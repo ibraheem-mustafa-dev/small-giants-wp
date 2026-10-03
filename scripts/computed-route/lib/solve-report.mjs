@@ -16,6 +16,7 @@ export function writeSolveReport( outDir, r ) {
 		`| Unresolved | ${ r.classes.unresolved.length } |`,
 		`| Derived box rows (not written) | ${ r.classes.derived.length } |`,
 		`| Other kinds (reported, never written) | ${ r.classes.other.length } |`,
+		`| of which from an unmapped walker state (reported, never written) | ${ r.unmappedState ?? 0 } |`,
 		`| Wrong writes | ${ r.wrong.length } of ${ r.writes.length } |`, '',
 		'## Writes', '', '| Round | Node | Block | Element | Property | Setting | Before | After |', '|---|---|---|---|---|---|---|---|',
 		...r.writes.map( ( w ) => `| ${ w.round } | ${ w.ref } | ${ w.block } | \`${ w.path }\` | ${ w.prop }${ w.state ? ':' + w.state : '' } | ${ w.attr } | ${ cell( w.before ) } | ${ cell( w.after ) } |` ), '',

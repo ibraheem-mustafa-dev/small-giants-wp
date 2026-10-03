@@ -2,8 +2,21 @@
 // (node, element, property), and the classification of the rows that survive the last round.
 export const WRITABLE_KINDS = [ 'style', 'hover', 'box' ];
 
-// One key per written thing: node ref, element path, property, state ('hover' for hover rows, else rest).
-export const groupKey = ( r ) => `${ r.ref }|${ r.path }|${ r.key }|${ 'hover' === r.kind ? 'hover' : '' }`;
+// The setting state a row's values belong to, from the surface's map of walker state to setting state
+// ({ "<walker state>": null | "scrolled" | "open" | "shrunk" | "current" }). undefined = not writable: the walker state
+// is unmapped, or the row is a hover in a non-rest state (no setting holds hover-while-scrolled).
+export function settingState( r, stateMap ) {
+	if ( ! stateMap || ! Object.hasOwn( stateMap, r.state ) ) {
+		return undefined;
+	}
+	if ( 'hover' === r.kind ) {
+		return null === stateMap[ r.state ] ? 'hover' : undefined;
+	}
+	return stateMap[ r.state ];
+}
+
+// One key per written thing: node ref, element path, property, setting state ('' = rest).
+export const groupKey = ( r, state ) => `${ r.ref }|${ r.path }|${ r.key }|${ state || '' }`;
 
 // Every open (unaccepted) row of a report, flattened with its run's state and width and its pair name.
 export function openRows( report ) {
@@ -22,10 +35,14 @@ export function openRows( report ) {
 
 // The draft's value of `prop` on a pair at every width it was measured (rest styles, or the hover end state), and the
 // draft font size there (for em conversions). Read from the pair snapshots, so widths with no difference count too.
-export function draftValues( report, pair, prop, hover ) {
+// walkerStates: only runs in these walker states are read (the states mapped to the group's setting state).
+export function draftValues( report, pair, prop, hover, walkerStates = null ) {
 	const perWidth = {};
 	const fontPx = {};
 	for ( const run of report.runs || [] ) {
+		if ( walkerStates && ! walkerStates.includes( run.state ) ) {
+			continue;
+		}
 		const d = run.pairs?.[ pair ]?.draft;
 		if ( ! d || d.missing ) {
 			continue;
@@ -42,29 +59,38 @@ export function draftValues( report, pair, prop, hover ) {
 	return { perWidth, fontPx };
 }
 
-// The candidate groups a round may write: style and hover rows with a ref, one group per groupKey. Box rows and rows
-// without a ref are returned apart (box rows are derived from the spacing that moves them; unreffed rows are unmapped).
-export function writableGroups( report ) {
+// The candidate groups a round may write: style and hover rows with a ref from a mapped walker state, one group per
+// groupKey. Box rows, rows without a ref and rows from an unmapped state are returned apart (box rows are derived from
+// the spacing that moves them; unreffed rows are unmapped; unmapped-state rows are reported, never written).
+export function writableGroups( report, stateMap ) {
 	const groups = new Map();
 	const box = [];
 	const unmapped = [];
+	const unmappedState = [];
 	const other = [];
 	for ( const r of openRows( report ) ) {
+		const st = settingState( r, stateMap );
 		if ( ! WRITABLE_KINDS.includes( r.kind ) ) {
 			other.push( r );
+		} else if ( undefined === st ) {
+			unmappedState.push( r );
 		} else if ( ! r.ref ) {
 			unmapped.push( r );
 		} else if ( 'box' === r.kind ) {
 			box.push( r );
 		} else {
-			const k = groupKey( r );
+			const k = groupKey( r, st );
 			if ( ! groups.has( k ) ) {
-				groups.set( k, { key: k, ref: r.ref, path: r.path, prop: r.key, state: 'hover' === r.kind ? 'hover' : null, pair: r.pair, rows: [] } );
+				groups.set( k, { key: k, ref: r.ref, path: r.path, prop: r.key, state: st, pair: r.pair, walkerStates: [], rows: [] } );
 			}
-			groups.get( k ).rows.push( r );
+			const g = groups.get( k );
+			g.rows.push( r );
+			if ( ! g.walkerStates.includes( r.state ) ) {
+				g.walkerStates.push( r.state );
+			}
 		}
 	}
-	return { groups: [ ...groups.values() ], box, unmapped, other };
+	return { groups: [ ...groups.values() ], box, unmapped, unmappedState, other };
 }
 
 // Distance of a row from the draft: px difference for lengths, 0/1 otherwise (used to spot a write that made it worse).
@@ -79,12 +105,18 @@ export function rowDistance( r ) {
 
 // Classifies the surviving open rows. writes: every applied write ({ group, attr }); gaps: { groupKey: { gap, detail } }.
 // Returns { hardcode, missing, unresolved, derived, other } (intended rows are already accepted, counted apart).
-export function classify( report, { writes, gaps, elements } ) {
+// Rows from an unmapped walker state go to `other` with their reason.
+export function classify( report, { writes, gaps, elements, stateMap } ) {
 	const written = new Set( writes.filter( ( w ) => ! w.reverted ).map( ( w ) => w.group ) );
 	const out = { hardcode: [], missing: [], unresolved: [], derived: [], other: [] };
 	for ( const r of openRows( report ) ) {
 		if ( ! WRITABLE_KINDS.includes( r.kind ) ) {
 			out.other.push( r );
+			continue;
+		}
+		const st = settingState( r, stateMap );
+		if ( undefined === st ) {
+			out.other.push( { ...r, reason: `unmapped-state ${ r.state }` } );
 			continue;
 		}
 		if ( 'box' === r.kind ) {
@@ -95,7 +127,7 @@ export function classify( report, { writes, gaps, elements } ) {
 			out.unresolved.push( { ...r, reason: 'unmapped-element (no ref)' } );
 			continue;
 		}
-		const k = groupKey( r );
+		const k = groupKey( r, st );
 		if ( 'breaks-layout' === gaps[ k ]?.gap ) {
 			out.hardcode.push( { ...r, reason: gaps[ k ].detail } );
 		} else if ( written.has( k ) ) {
@@ -118,7 +150,7 @@ export const intendedCount = ( report ) => ( report.runs || [] ).reduce( ( n, ru
 
 // Rows a round made worse: open style or box rows absent from the previous report, or further from the draft there.
 export function regressedRows( prev, report ) {
-	const key = ( r ) => `${ r.pair }|${ r.kind }|${ r.key }|${ r.width }`;
+	const key = ( r ) => `${ r.pair }|${ r.state }|${ r.kind }|${ r.key }|${ r.width }`;
 	const before = new Map( openRows( prev ).filter( ( r ) => [ 'style', 'box' ].includes( r.kind ) ).map( ( r ) => [ key( r ), r ] ) );
 	return openRows( report ).filter( ( r ) => [ 'style', 'box' ].includes( r.kind ) && r.ref ).filter( ( r ) => {
 		const b = before.get( key( r ) );

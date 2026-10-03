@@ -167,6 +167,10 @@ export function resolve( input, ctx ) {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
 		return c && ( c.slots || [ c.slot ] ).includes( slot ) && ( ! c.property || c.property === short || c.property === prop );
 	} );
+	// A state setting calibration never measured (no trigger for that state yet) is unproven, not missing.
+	if ( ! tied.length && state && ! rows.some( ( r ) => ctx.calibration.settings?.[ r.attr_name ] ) ) {
+		return { gap: 'uncalibrated', detail: `${ block } ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) } (${ state }) not calibrated` };
+	}
 	if ( ! tied.length ) {
 		return ( ! state && resolveDiscovered( input, ctx.calibration ) ) || { gap: 'no-setting', detail: `no ${ prop } setting on ${ block } paints "${ slot }" (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` };
 	}

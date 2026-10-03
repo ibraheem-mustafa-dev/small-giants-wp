@@ -12,7 +12,7 @@ import { openDb } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve } from './lib/resolve.mjs';
 import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet, refAncestors } from './lib/tree.mjs';
-import { writableGroups, draftValues, classify, openRows, rowDistance, intendedCount, regressedRows } from './lib/solve-rows.mjs';
+import { writableGroups, draftValues, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState } from './lib/solve-rows.mjs';
 import { writeSolveReport } from './lib/solve-report.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -44,8 +44,9 @@ function build( s, treeFile ) {
 	return { ok: true };
 }
 
-function walk( walker, outDir ) {
-	spawnSync( 'node', [ 'scripts/parity/draft-live-walk.mjs', walker, '--headless', '--widths', WIDTHS, '--no-review', '--out', outDir ], { cwd: REPO, encoding: 'utf8', timeout: 1800000, stdio: 'inherit' } );
+// walkStates: the walker states to run (passed as --states); null runs every state the config has.
+function walk( walker, outDir, walkStates = null ) {
+	spawnSync( 'node', [ 'scripts/parity/draft-live-walk.mjs', walker, '--headless', '--widths', WIDTHS, '--no-review', '--out', outDir, ...( walkStates?.length ? [ '--states', walkStates.join( ',' ) ] : [] ) ], { cwd: REPO, encoding: 'utf8', timeout: 1800000, stdio: 'inherit' } );
 	const f = path.join( outDir, 'report.json' );
 	if ( ! fs.existsSync( f ) ) {
 		throw new Error( `the walker wrote no report in ${ outDir }` );
@@ -53,9 +54,10 @@ function walk( walker, outDir ) {
 	return JSON.parse( fs.readFileSync( f, 'utf8' ) );
 }
 
-// One write round: resolves every writable group of the report against the tree. Returns the writes and gaps.
-export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map() } ) {
-	const { groups } = writableGroups( report );
+// One write round: resolves every writable group of the report against the tree. stateMap is the surface's walker
+// state to setting state map; rows from an unmapped state are never written. Returns the writes and gaps.
+export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor = calibrationFor } ) {
+	const { groups } = writableGroups( report, stateMap );
 	const writes = [];
 	const gaps = {};
 	for ( const g of groups ) {
@@ -74,14 +76,14 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			gaps[ g.key ] = { gap: 'unmapped', detail: `ref ${ g.ref } is not in the tree` };
 			continue;
 		}
-		const cal = calibrationFor( node.name );
+		const cal = calFor( node.name );
 		if ( cal && ! ( g.path in ( cal.elements || {} ) ) && ! Object.values( cal.settings || {} ).some( ( s ) => ( s.slots || [ s.slot ] ).includes( g.path ) ) ) {
 			gaps[ g.key ] = { gap: 'unmapped-element', detail: `${ node.name } path "${ g.path }" is not a calibrated element` };
 			continue;
 		}
-		const { perWidth, fontPx } = draftValues( report, g.pair, g.prop, 'hover' === g.state );
+		const { perWidth, fontPx } = draftValues( report, g.pair, g.prop, 'hover' === g.state, g.walkerStates );
 		// The element's other draft properties, for a setting calibration found (a layout mode decided by several properties).
-		const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === g.ref && o.path === g.path && ! o.state && o.prop !== g.prop ).map( ( o ) => [ o.prop, draftValues( report, o.pair, o.prop, false ).perWidth ] ) );
+		const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === g.ref && o.path === g.path && ! o.state && o.prop !== g.prop ).map( ( o ) => [ o.prop, draftValues( report, o.pair, o.prop, false, o.walkerStates ).perWidth ] ) );
 		const r = resolve( { block: node.name, slot: g.path, prop: g.prop, state: g.state, perWidth, fontPx, current: node.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
 		if ( r.gap ) {
 			gaps[ g.key ] = r;
@@ -144,7 +146,7 @@ export function revertRegressions( prev, report, tree, lastWrites, blocked, calF
 }
 
 // Wrong writes (§3.3): a write a later round reverted, or after which its rows read further from the draft.
-export function wrongWrites( writes, reportAfter ) {
+export function wrongWrites( writes, reportAfter, stateMap ) {
 	const rowsAfter = openRows( reportAfter );
 	return writes.filter( ( w ) => {
 		if ( w.reverted ) {
@@ -152,7 +154,7 @@ export function wrongWrites( writes, reportAfter ) {
 		}
 		const reverted = writes.some( ( x ) => x.round > w.round && x.ref === w.ref && x.attr === w.attr && JSON.stringify( x.after ) === JSON.stringify( w.before ) );
 		const worse = w.rows.some( ( r0 ) => {
-			const r1 = rowsAfter.find( ( r ) => `${ r.ref }|${ r.path }|${ r.key }|${ 'hover' === r.kind ? 'hover' : '' }` === w.group && r.width === r0.width );
+			const r1 = rowsAfter.find( ( r ) => undefined !== settingState( r, stateMap ) && groupKey( r, settingState( r, stateMap ) ) === w.group && r.width === r0.width );
 			return r1 && rowDistance( r1 ) > rowDistance( { draft: r0.draft, live: r0.live } );
 		} );
 		return reverted || worse;
@@ -173,6 +175,11 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const s = surfaces[ surface ];
 	if ( ! s ) {
 		console.error( `no surface "${ surface }" in surfaces.json` );
+		process.exit( 2 );
+	}
+	// Every surface names which walker states hold which setting state; without it every row would read as rest.
+	if ( ! s.states || 'object' !== typeof s.states ) {
+		console.error( `surface "${ surface }" has no "states" map in surfaces.json` );
 		process.exit( 2 );
 	}
 	const treeFile = path.join( buildDir, s.tree );
@@ -207,7 +214,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			console.error( `[FAIL] build in round ${ round }: ${ b.err.slice( -800 ) }` );
 			break;
 		}
-		report = walk( walker, path.join( outDir, `round-${ round }` ) );
+		report = walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates );
 		// A round that made rows worse reverts the culprit writes first; the next round measures the revert.
 		const reverted = prev ? revertRegressions( prev, report, tree, lastWrites, blocked ) : [];
 		prev = report;
@@ -221,7 +228,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		if ( writeRounds >= maxRounds ) {
 			break;
 		}
-		const r = writeRound( report, tree, { ...ctx, round, blocked } );
+		const r = writeRound( report, tree, { ...ctx, round, blocked, stateMap: s.states } );
 		gaps = { ...gaps, ...r.gaps };
 		writeRounds++;
 		rounds = writeRounds;
@@ -235,8 +242,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		writeTree( treeFile, tree );
 	}
 	const before = JSON.parse( fs.readFileSync( path.join( outDir, 'round-1', 'report.json' ), 'utf8' ) );
-	const classes = classify( report, { writes: allWrites, gaps } );
-	const wrong = wrongWrites( allWrites, report );
-	writeSolveReport( outDir, { surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, gaps, classes, snaps: ctx.log, intended: intendedCount( report ), before, after: report } );
-	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }; wrong writes ${ wrong.length }. Report: ${ path.join( outDir, 'solve-report.md' ) }` );
+	const classes = classify( report, { writes: allWrites, gaps, stateMap: s.states } );
+	const wrong = wrongWrites( allWrites, report, s.states );
+	const unmappedState = writableGroups( report, s.states ).unmappedState.length;
+	writeSolveReport( outDir, { surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, gaps, classes, snaps: ctx.log, intended: intendedCount( report ), unmappedState, before, after: report } );
+	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }; wrong writes ${ wrong.length }. Report: ${ path.join( outDir, 'solve-report.md' ) }` );
 }

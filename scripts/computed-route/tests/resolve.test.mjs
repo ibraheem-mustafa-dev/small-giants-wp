@@ -43,6 +43,12 @@ test( 'gaps: uncalibrated, wrong slot, shape (desktop differs at 1920), one-valu
 	assert.equal( resolve( { block: 'sgs/heading', slot: '', prop: 'text-transform', perWidth: { 1440: 'uppercase', 375: 'none' } }, { db, snapshot, calibration: cal( { textTransform: { slot: '' } } ) } ).gap, 'shape' );
 } );
 
+test( 'a state setting with no calibration entry is uncalibrated, not a missing setting', () => {
+	const row = db.prepare( "SELECT block_slug, css_property FROM block_attributes WHERE source='sgs' AND css_state='scrolled' AND css_property NOT LIKE '%,%' LIMIT 1" ).get();
+	const r = resolve( { block: row.block_slug, slot: '', prop: row.css_property, state: 'scrolled', perWidth: { 1440: '1px' } }, { db, snapshot, calibration: cal( {} ) } );
+	assert.equal( r.gap, 'uncalibrated' );
+} );
+
 test( 'MUST FAIL TO WRITE: an unknown property returns no-setting and no write', () => {
 	const r = resolve( { block: 'sgs/heading', slot: '', prop: 'mask-composite', perWidth: { 1440: 'add' } }, { db, snapshot, calibration: cal( {} ) } );
 	assert.equal( r.gap, 'no-setting' );

@@ -23,7 +23,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `README.md` | This index. |
 | `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, client names. |
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page, reads them at 375/768/1440 (hover under a real mouse), writes `cache/<block>.json`, empties the page. |
-| `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. |
+| `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`). |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`). |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain and optional variants per calibrated block. |
 | `ledger.mjs` | Divergence ledger command: `accept <report.json> <row id>` adds an entry dated today; `stale <report.json>` exits 1 while any entry is stale. |
@@ -41,7 +41,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
-| `tests/solve.test.mjs` | R-47-9: the regression guard pins only the write whose side effects explain the regression. |
+| `tests/solve.test.mjs` | R-47-9: the regression guard pins only the write whose side effects explain the regression; walker state mapping (an unmapped state is never written). |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching). |
 
 `cache/` (gitignored) holds calibration files.
@@ -122,13 +122,14 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `localBlockHash(dir)`, `remoteBlockHash(site, short)`: md5 of a block's front-end build files, same listing both sides.
 
 ### `lib/solve-rows.mjs`
-- `WRITABLE_KINDS`: style, hover, box. `groupKey(row)`: ref, path, property, state.
-- `openRows(report)` → every unaccepted row with its state, width and pair.
-- `draftValues(report, pair, prop, hover)` → `{ perWidth, fontPx }` from the draft snapshots.
-- `writableGroups(report)` → `{ groups, box, unmapped, other }`.
+- `WRITABLE_KINDS`: style, hover, box. `groupKey(row, state)`: ref, path, property, setting state.
+- `settingState(row, stateMap)` → the row's setting state from the surface's walker-state map (`null` rest, `'hover'`, `'scrolled'`, …), or undefined when the walker state is unmapped or the row is a hover outside rest.
+- `openRows(report)` → every unaccepted row with its walker state, width and pair.
+- `draftValues(report, pair, prop, hover, walkerStates?)` → `{ perWidth, fontPx }` from the draft snapshots, read only from runs in `walkerStates` when given.
+- `writableGroups(report, stateMap)` → `{ groups, box, unmapped, unmappedState, other }`; each group carries its setting `state` and `walkerStates`.
 - `rowDistance(row)` → px distance from the draft (0 or 1 for non-lengths).
-- `regressedRows(prev, report)` → open style or box rows that are new or further from the draft than last round.
-- `classify(report, { writes, gaps, elements })` → `{ hardcode, missing, unresolved, derived, other }`.
+- `regressedRows(prev, report)` → open style or box rows that are new or further from the draft than last round (keyed per walker state).
+- `classify(report, { writes, gaps, elements, stateMap })` → `{ hardcode, missing, unresolved, derived, other }`.
 - `intendedCount(report)` → accepted rows.
 
 ### `lib/solve-report.mjs`
@@ -137,9 +138,9 @@ file names the rule it proves and has one case marked MUST FAIL.
 ### `solve.mjs` (runs `wp-build-page.js` and the walker)
 - `USED_VALUES`: computed properties that are used sizes (`width`), reported and never written.
 - `calibrationFor(block)` → the block's calibration file or null.
-- `writeRound(report, tree, { db, snapshot, round, log })` → `{ writes, gaps }`.
+- `writeRound(report, tree, { db, snapshot, round, log, blocked, stateMap, calFor? })` → `{ writes, gaps }`; only rows from mapped walker states are written.
 - `revertRegressions(prev, report, tree, lastWrites, blocked, calFor?)` → the reverted writes (the regression guard, pinned through calibrated side effects).
-- `wrongWrites(writes, reportAfter)` → writes a later round reverted or that moved their rows further from the draft.
+- `wrongWrites(writes, reportAfter, stateMap)` → writes a later round reverted or that moved their rows further from the draft.
 
 ### `lint.mjs`
 - `routeFiles(root)` → every route file, relative.
