@@ -55,6 +55,13 @@ export default {
 		{ name: 'footer-root', draft: 'footer', live: 'footer.sgs-site-footer', inventory: true, structure: false, box: [ 'h' ],
 			props: [ 'background-color', 'border-top-width', 'border-top-color', 'border-top-style' ] },
 
+		// The columns row and each column's own container (padding, gaps), compared as layout boxes.
+		{ name: 'columns-row', draft: { js: `(r) => { const f = ${ DF }; return f && f.children[0]; }` }, live: { js: `(r) => { const f = ${ LF }; return f && f.querySelector('.sgs-site-footer-row--columns'); }` }, text: false, box: [ 'h' ] },
+		{ name: 'col-brand', draft: { js: dcol( 0 ) }, live: { js: lcol( 0 ) }, text: false, box: [ 'h' ] },
+		{ name: 'col-shop', draft: { js: dcol( 1 ) }, live: { js: lcol( 1 ) }, text: false, box: [ 'h' ] },
+		{ name: 'col-help', draft: { js: dcol( 2 ) }, live: { js: lcol( 2 ) }, text: false, box: [ 'h' ] },
+		{ name: 'col-visit', draft: { js: dcol( 3 ) }, live: { js: lcol( 3 ) }, text: false, box: [ 'h' ] },
+
 		// Brand block: wordmark, tagline words, description.
 		{ name: 'brand-wordmark', draft: { js: dpart( 0, 'd.children[0]' ) }, live: { js: lpart( 0, 'c.querySelector("h4")' ) }, box: [ 'h' ] },
 		{ name: 'brand-tagline', draft: { js: dpart( 0, 'd.children[1]' ) }, live: { js: lpart( 0, 'c.children[1]' ) }, box: [ 'h' ] },

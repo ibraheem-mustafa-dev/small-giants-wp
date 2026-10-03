@@ -84,8 +84,9 @@ export function lintTree( tree, db, label = 'tree' ) {
 		for ( const k of Object.keys( n.attributes || {} ) ) {
 			if ( 'style' === k ) {
 				problems.push( `${ label } node ${ i } (${ n.name }) carries a core style attribute` );
-			} else if ( 'native_wp' === attrRow( db, n.name, k )?.source ) {
-				problems.push( `${ label } node ${ i } (${ n.name }) writes native_wp setting ${ k }` );
+			} else if ( 'native_wp' === attrRow( db, n.name, k )?.source && attrRow( db, n.name, k )?.css_property ) {
+				// A native setting that paints CSS serialises as inline style (Spec 32); content and markup settings do not.
+				problems.push( `${ label } node ${ i } (${ n.name }) writes native_wp style setting ${ k }` );
 			}
 		}
 	} );

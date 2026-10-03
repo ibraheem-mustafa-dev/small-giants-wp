@@ -150,22 +150,23 @@
 
 | Ref | What is wrong | Fix | Type | Status |
 |---|---|---|---|---|
-| 25 | Main row needs more space all round; bottom row less | Main row padding 104/52px (phone 56/20); footer's own side padding 0; bottom row 16px 24px | tree | proven |
-| 26 | Wordmark box taller in the draft | heading weight 500, line height 1.5, margins 0 | tree | proven |
-| 27 | Spacing between wordmark, BIRMINGHAM and tagline | BIRMINGHAM becomes sgs/heading in subheading mode (9.5px, 0.32em tracking, label colour, 4px top margin). Tagline 18px top margin. Social row 20px top margin. Brand column gap 0, so only these margins space it. | tree | proven |
-| 28 | Tagline too wide | width 32ch, text-wrap pretty (both settings exist) | tree | proven |
-| 29 | Column headings bold serif; draft is light sans | the three headings in subheading mode: 11.5px, 0.2em, uppercase, weight 400, line height 1.5, 4px bottom margin. Each column stacks with a 10px gap (draft). | tree | proven |
+| 25 | Main row needs more space all round; bottom row less | Main row padding 104/52px (phone 56/20); footer's own side padding 0; bottom row 16px 24px | tree | Solve closed (padding, 2026-10-03); the footer height still follows 29, 30 and 34 |
+| 26 | Wordmark box taller in the draft | heading weight 500, line height 1.5, margins 0 | tree | Solve closed (2026-10-03) |
+| 27 | Spacing between wordmark, BIRMINGHAM and tagline | BIRMINGHAM becomes sgs/heading in subheading mode (9.5px, 0.32em tracking, label colour, 4px top margin). Tagline 18px top margin. Social row 20px top margin. Brand column gap 0, so only these margins space it. | tree | Solve closed: the margins, size and tracking (2026-10-03); the block swap stays |
+| 28 | Tagline too wide | width 32ch, text-wrap pretty (both settings exist) | tree | Solve closed (2026-10-03; written as the 32ch value in px, 293.9px) |
+| 29 | Column headings bold serif; draft is light sans | the three headings in subheading mode: 11.5px, 0.2em, uppercase, weight 400, line height 1.5, 4px bottom margin. Each column stacks with a 10px gap (draft). | tree | Solve closed: size, tracking, weight, line height, bottom margin (2026-10-03). The 10px gap needs the column container's flex layout (live columns are display: block), set by hand |
 | 30 | Link lists use the banned core/list | Replace with sgs/icon-list: no markers, 14px, line height 1.5, gap 10px (S11) | tree + framework new | proven |
 | 32, 33, 44 | Link colours and underlines | S2 | | |
 | 34, 35 | Phone hover; phone link 44px tall (draft 21px) | S3 (darken to black like the header). Phone link: no minimum height, no padding, so it is one 21px line. The 44px touch-target rule is met by the line spacing around it; check after. | framework repair + tree | proven |
 | 36 | Address on one line with a comma | Store the Site Info address with a line break | content | proven |
 | 37 | Address not a link | New address-link setting on business-info: none / Google Business profile / directions. Set to Google Business profile (the link already in Site Info). | framework new + tree | proven |
-| 38 | Hours bold and split | weight 400, condensed, inline | tree | proven |
+| 38 | Hours bold and split | weight 400, condensed, inline. The day labels' weight 600 is hardcoded on `.sgs-business-hours__day` and the block's weight setting does not reach it (Spec 47 calibration, 2026-10-03): the day label follows the block weight, or gets its own setting | framework repair + tree | proven |
 | 39-43 | Social icons: colours, gap, order, hover | Brand-colour mode gets a variant that colours only the glyph: Google in its 4 colours, Instagram in its gradient (new glyph), WhatsApp green. The box stays white with a light border. Hover: border and a 1px ring in the network's colour, no scale-up. New "networks" setting for order: Instagram, Google, WhatsApp. Gap 10px (S11). Boxes stay 44px, not the draft's 40px, to keep the 44px touch-target rule. | framework repair + framework new + tree | proven |
 | 45 | /privacy and /terms are missing pages | Create both pages | content | proven |
 | 46 + N12 | Bottom row layout; no SGS credit; trademark sentence | Bottom row padding and spacing as above. Add the existing "Website credit" variant of business-info. Remove "All brand names are trademarks of their owners" from the Site Info copyright text. | tree + content | proven |
 | 47 | Text moved by other causes | Re-walk after the rebuild | none | proven |
 | 48 | Space above the footer | Live already has the top line; spacing comes from 25 | tree | proven |
+| N46 | A footer row with a width cap collapses to zero width (found by Spec 47 Solve, 2026-10-03) | `maxWidth` on `sgs/site-footer-row` gives the row auto side margins that cancel its stretch, so its content width goes to 0 and every column squeezes. The header rows had the same fault, fixed in acc2a3b6d (`sgs_header_rows_align_css`); give footer rows the same full-width rule. Calibration also shows the row's per-device gap and content width skipping 768: prove that next | framework repair | proven live |
 | N13 | Floating WhatsApp can cover the bottom-right links | The button steps aside while the footer's bottom strip is on screen: extend its existing "hide near another WhatsApp button" watcher with a generic opt-in on the footer row (D5) | framework repair + tree | proven |
 
 ## Floating WhatsApp button

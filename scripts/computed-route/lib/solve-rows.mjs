@@ -80,7 +80,7 @@ export function rowDistance( r ) {
 // Classifies the surviving open rows. writes: every applied write ({ group, attr }); gaps: { groupKey: { gap, detail } }.
 // Returns { hardcode, missing, unresolved, derived, other } (intended rows are already accepted, counted apart).
 export function classify( report, { writes, gaps, elements } ) {
-	const written = new Set( writes.map( ( w ) => w.group ) );
+	const written = new Set( writes.filter( ( w ) => ! w.reverted ).map( ( w ) => w.group ) );
 	const out = { hardcode: [], missing: [], unresolved: [], derived: [], other: [] };
 	for ( const r of openRows( report ) ) {
 		if ( ! WRITABLE_KINDS.includes( r.kind ) ) {
@@ -96,8 +96,10 @@ export function classify( report, { writes, gaps, elements } ) {
 			continue;
 		}
 		const k = groupKey( r );
-		if ( written.has( k ) ) {
-			out.hardcode.push( r );
+		if ( 'breaks-layout' === gaps[ k ]?.gap ) {
+			out.hardcode.push( { ...r, reason: gaps[ k ].detail } );
+		} else if ( written.has( k ) ) {
+			out.hardcode.push( { ...r, reason: 'the setting holds the draft value; paint still differs' } );
 		} else if ( 'no-setting' === gaps[ k ]?.gap ) {
 			out.missing.push( { ...r, reason: gaps[ k ].detail } );
 		} else if ( gaps[ k ] ) {
@@ -113,3 +115,13 @@ export function classify( report, { writes, gaps, elements } ) {
 
 // Counts accepted rows (intended: config accepts and divergence ledger entries).
 export const intendedCount = ( report ) => ( report.runs || [] ).reduce( ( n, run ) => n + Object.values( run.pairs || {} ).reduce( ( m, p ) => m + ( p.diffs || [] ).filter( ( d ) => d.accepted ).length, 0 ), 0 );
+
+// Rows a round made worse: open style or box rows absent from the previous report, or further from the draft there.
+export function regressedRows( prev, report ) {
+	const key = ( r ) => `${ r.pair }|${ r.kind }|${ r.key }|${ r.width }`;
+	const before = new Map( openRows( prev ).filter( ( r ) => [ 'style', 'box' ].includes( r.kind ) ).map( ( r ) => [ key( r ), r ] ) );
+	return openRows( report ).filter( ( r ) => [ 'style', 'box' ].includes( r.kind ) && r.ref ).filter( ( r ) => {
+		const b = before.get( key( r ) );
+		return ! b || rowDistance( r ) > rowDistance( b ) + 0.5;
+	} );
+}

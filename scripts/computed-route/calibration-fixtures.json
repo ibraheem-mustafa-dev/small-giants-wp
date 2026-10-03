@@ -1,9 +1,99 @@
 {
-  "sgs/heading": { "attributes": { "content": "Calibration heading", "level": "h4" } },
-  "sgs/text": { "attributes": { "text": "Calibration text for measuring." } },
-  "sgs/container": { "attributes": { "tagName": "div" }, "inner": [ { "name": "sgs/text", "attributes": { "text": "Inside a container." } } ] },
-  "sgs/site-footer": { "attributes": {}, "inner": [ { "name": "sgs/site-footer-row", "attributes": { "rowSlot": "columns" }, "innerBlocks": [ { "name": "sgs/text", "attributes": { "text": "Footer row text." } } ] } ] },
-  "sgs/site-footer-row": { "attributes": { "rowSlot": "columns" }, "parents": [ { "name": "sgs/site-footer", "attributes": {} } ], "inner": [ { "name": "sgs/text", "attributes": { "text": "Footer row text." } } ] },
-  "sgs/social-icons": { "attributes": { "source": "site-info", "iconStyle": "boxed", "iconSize": 18 } },
-  "sgs/business-info": { "attributes": { "displayType": "phone", "showIcon": true } }
+  "sgs/heading": {
+    "attributes": {
+      "content": "Calibration heading",
+      "level": "h4"
+    }
+  },
+  "sgs/text": {
+    "attributes": {
+      "text": "Calibration text for measuring."
+    }
+  },
+  "sgs/container": {
+    "attributes": {
+      "tagName": "div"
+    },
+    "variants": [
+      {},
+      {
+        "flexWrap": "wrap"
+      }
+    ],
+    "inner": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "Inside a container."
+        }
+      }
+    ]
+  },
+  "sgs/site-footer": {
+    "attributes": {},
+    "inner": [
+      {
+        "name": "sgs/site-footer-row",
+        "attributes": {
+          "rowSlot": "columns"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Footer row text."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "sgs/site-footer-row": {
+    "attributes": {
+      "rowSlot": "columns"
+    },
+    "parents": [
+      {
+        "name": "sgs/site-footer",
+        "attributes": {}
+      }
+    ],
+    "inner": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "Footer row text."
+        }
+      }
+    ]
+  },
+  "sgs/social-icons": {
+    "attributes": {
+      "source": "site-info",
+      "iconStyle": "boxed",
+      "iconSize": 18
+    }
+  },
+  "sgs/business-info": {
+    "attributes": {
+      "showIcon": true
+    },
+    "variants": [
+      {
+        "displayType": "phone"
+      },
+      {
+        "displayType": "address",
+        "showIcon": false
+      },
+      {
+        "displayType": "hours",
+        "showIcon": false,
+        "hoursLayout": "condensed"
+      },
+      {
+        "displayType": "copyright"
+      }
+    ]
+  }
 }

@@ -12,15 +12,35 @@
         "desktop": {
           "top": "0px",
           "bottom": "0px",
-          "left": "20px",
-          "right": "20px"
+          "left": "0px",
+          "right": "0px"
+        },
+        "mobile": {
+          "right": "0px",
+          "left": "0px"
+        },
+        "tablet": {
+          "right": "0px",
+          "left": "0px"
         }
       },
       "borderWidth": {
         "top": "1px"
       },
       "borderColour": "border",
-      "borderStyle": "solid"
+      "borderStyle": "solid",
+      "className": "cr-ref-footer-0",
+      "margin": {
+        "mobile": {
+          "top": "40px"
+        },
+        "tablet": {
+          "top": "40px"
+        },
+        "desktop": {
+          "top": "40px"
+        }
+      }
     },
     "innerBlocks": [
       {
@@ -39,14 +59,25 @@
           },
           "padding": {
             "desktop": {
-              "top": "56px",
-              "bottom": "56px"
+              "top": "104px",
+              "bottom": "104px",
+              "right": "52px",
+              "left": "52px"
             },
             "tablet": {
+              "top": "104px",
+              "bottom": "104px",
+              "right": "52px",
+              "left": "52px"
+            },
+            "mobile": {
+              "right": "20px",
+              "left": "20px",
               "top": "56px",
               "bottom": "56px"
             }
-          }
+          },
+          "className": "cr-ref-footer-1"
         },
         "innerBlocks": [
           {
@@ -56,7 +87,8 @@
               "metadata": {
                 "name": "Brand"
               },
-              "flexWrap": "wrap"
+              "flexWrap": "wrap",
+              "className": "cr-ref-footer-2"
             },
             "innerBlocks": [
               {
@@ -70,7 +102,25 @@
                   "letterSpacingUnit": "em",
                   "fontSize": {
                     "desktop": "18px"
-                  }
+                  },
+                  "className": "cr-ref-footer-3",
+                  "lineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
+                  "margin": {
+                    "mobile": {
+                      "bottom": "0px"
+                    },
+                    "tablet": {
+                      "bottom": "0px"
+                    },
+                    "desktop": {
+                      "bottom": "0px"
+                    }
+                  },
+                  "textWrap": "wrap"
                 }
               },
               {
@@ -84,7 +134,19 @@
                   "letterSpacing": {
                     "desktop": 0.32
                   },
-                  "letterSpacingUnit": "em"
+                  "letterSpacingUnit": "em",
+                  "className": "cr-ref-footer-4",
+                  "margin": {
+                    "mobile": {
+                      "top": "4px"
+                    },
+                    "tablet": {
+                      "top": "4px"
+                    },
+                    "desktop": {
+                      "top": "4px"
+                    }
+                  }
                 }
               },
               {
@@ -94,7 +156,27 @@
                   "textColour": "text-muted",
                   "fontSize": {
                     "desktop": "14px"
-                  }
+                  },
+                  "className": "cr-ref-footer-5",
+                  "margin": {
+                    "mobile": {
+                      "top": "18px",
+                      "right": "0px",
+                      "left": "0px"
+                    },
+                    "tablet": {
+                      "top": "18px",
+                      "right": "0px",
+                      "left": "0px"
+                    },
+                    "desktop": {
+                      "top": "18px",
+                      "right": "0px",
+                      "left": "0px"
+                    }
+                  },
+                  "maxWidth": 293.888,
+                  "textWrap": "pretty"
                 }
               },
               {
@@ -107,7 +189,19 @@
                   "iconBackground": "surface-alt",
                   "iconBorderColour": "border",
                   "iconGlyphColour": "text",
-                  "gap": "10"
+                  "gap": "10px",
+                  "className": "cr-ref-footer-6",
+                  "margin": {
+                    "mobile": {
+                      "top": "20px"
+                    },
+                    "tablet": {
+                      "top": "20px"
+                    },
+                    "desktop": {
+                      "top": "20px"
+                    }
+                  }
                 }
               }
             ]
@@ -119,7 +213,8 @@
               "metadata": {
                 "name": "Shop"
               },
-              "flexWrap": "wrap"
+              "flexWrap": "wrap",
+              "className": "cr-ref-footer-7"
             },
             "innerBlocks": [
               {
@@ -135,37 +230,61 @@
                   "letterSpacingUnit": "em",
                   "fontSize": {
                     "desktop": "11.5px"
-                  }
+                  },
+                  "className": "cr-ref-footer-8",
+                  "fontFamily": "Outfit, system-ui, sans-serif",
+                  "fontWeight": "400",
+                  "lineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
+                  "margin": {
+                    "mobile": {
+                      "bottom": "4px"
+                    },
+                    "tablet": {
+                      "bottom": "4px"
+                    },
+                    "desktop": {
+                      "bottom": "4px"
+                    }
+                  },
+                  "textWrap": "wrap"
                 }
               },
               {
                 "name": "core/list",
                 "attributes": {
-                  "className": "is-style-no-bullets"
+                  "className": "is-style-no-bullets cr-ref-footer-9"
                 },
                 "innerBlocks": [
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "<a href=\"/shop/\">Sunglasses</a>"
+                      "content": "<a href=\"/shop/\">Sunglasses</a>",
+                      "className": "cr-ref-footer-10"
                     }
                   },
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "<a href=\"/shop/\">All brands</a>"
+                      "content": "<a href=\"/shop/\">All brands</a>",
+                      "className": "cr-ref-footer-11"
                     }
                   },
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "<a href=\"/prescription-lenses/\">Prescription lenses</a>"
+                      "content": "<a href=\"/prescription-lenses/\">Prescription lenses</a>",
+                      "className": "cr-ref-footer-12"
                     }
                   },
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "Glasses — arriving soon"
+                      "content": "Glasses — arriving soon",
+                      "className": "cr-ref-footer-13"
                     }
                   }
                 ]
@@ -179,7 +298,8 @@
               "metadata": {
                 "name": "Help"
               },
-              "flexWrap": "wrap"
+              "flexWrap": "wrap",
+              "className": "cr-ref-footer-14"
             },
             "innerBlocks": [
               {
@@ -195,37 +315,61 @@
                   "letterSpacingUnit": "em",
                   "fontSize": {
                     "desktop": "11.5px"
-                  }
+                  },
+                  "className": "cr-ref-footer-15",
+                  "fontFamily": "Outfit, system-ui, sans-serif",
+                  "fontWeight": "400",
+                  "lineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
+                  "margin": {
+                    "mobile": {
+                      "bottom": "4px"
+                    },
+                    "tablet": {
+                      "bottom": "4px"
+                    },
+                    "desktop": {
+                      "bottom": "4px"
+                    }
+                  },
+                  "textWrap": "wrap"
                 }
               },
               {
                 "name": "core/list",
                 "attributes": {
-                  "className": "is-style-no-bullets"
+                  "className": "is-style-no-bullets cr-ref-footer-16"
                 },
                 "innerBlocks": [
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "<a href=\"/help/\">Delivery &amp; returns</a>"
+                      "content": "<a href=\"/help/\">Delivery &amp; returns</a>",
+                      "className": "cr-ref-footer-17"
                     }
                   },
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "<a href=\"/help/\">FAQs</a>"
+                      "content": "<a href=\"/help/\">FAQs</a>",
+                      "className": "cr-ref-footer-18"
                     }
                   },
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "<a href=\"#size-guide\">Size guide</a>"
+                      "content": "<a href=\"#size-guide\">Size guide</a>",
+                      "className": "cr-ref-footer-19"
                     }
                   },
                   {
                     "name": "core/list-item",
                     "attributes": {
-                      "content": "<a href=\"/contact/\">Contact</a>"
+                      "content": "<a href=\"/contact/\">Contact</a>",
+                      "className": "cr-ref-footer-20"
                     }
                   }
                 ]
@@ -239,7 +383,8 @@
               "metadata": {
                 "name": "Visit or call"
               },
-              "flexWrap": "wrap"
+              "flexWrap": "wrap",
+              "className": "cr-ref-footer-21"
             },
             "innerBlocks": [
               {
@@ -255,7 +400,27 @@
                   "letterSpacingUnit": "em",
                   "fontSize": {
                     "desktop": "11.5px"
-                  }
+                  },
+                  "className": "cr-ref-footer-22",
+                  "fontFamily": "Outfit, system-ui, sans-serif",
+                  "fontWeight": "400",
+                  "lineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
+                  "margin": {
+                    "mobile": {
+                      "bottom": "4px"
+                    },
+                    "tablet": {
+                      "bottom": "4px"
+                    },
+                    "desktop": {
+                      "bottom": "4px"
+                    }
+                  },
+                  "textWrap": "wrap"
                 }
               },
               {
@@ -264,7 +429,8 @@
                   "text": "<a href=\"/about/\">About Eye Care</a>",
                   "fontSize": {
                     "desktop": "14px"
-                  }
+                  },
+                  "className": "cr-ref-footer-23"
                 }
               },
               {
@@ -274,7 +440,8 @@
                   "showIcon": false,
                   "fontSize": {
                     "desktop": "14px"
-                  }
+                  },
+                  "className": "cr-ref-footer-24"
                 }
               },
               {
@@ -285,7 +452,8 @@
                   "textColour": "text-muted",
                   "fontSize": {
                     "desktop": "14px"
-                  }
+                  },
+                  "className": "cr-ref-footer-25"
                 }
               },
               {
@@ -297,7 +465,9 @@
                   "fontSize": {
                     "desktop": "13px"
                   },
-                  "hoursLayout": "condensed"
+                  "hoursLayout": "condensed",
+                  "className": "cr-ref-footer-26",
+                  "labelColour": "#8B8478"
                 }
               }
             ]
@@ -317,9 +487,20 @@
           "padding": {
             "desktop": {
               "top": "16px",
-              "bottom": "16px"
+              "bottom": "16px",
+              "right": "24px",
+              "left": "24px"
+            },
+            "mobile": {
+              "right": "24px",
+              "left": "24px"
+            },
+            "tablet": {
+              "right": "24px",
+              "left": "24px"
             }
-          }
+          },
+          "className": "cr-ref-footer-27"
         },
         "innerBlocks": [
           {
@@ -330,7 +511,8 @@
               "textColour": "text-label",
               "fontSize": {
                 "desktop": "12px"
-              }
+              },
+              "className": "cr-ref-footer-28"
             }
           },
           {
@@ -340,7 +522,8 @@
               "layout": "flex",
               "gap": {
                 "desktop": "14px"
-              }
+              },
+              "className": "cr-ref-footer-29"
             },
             "innerBlocks": [
               {
@@ -349,7 +532,8 @@
                   "text": "<a href=\"/privacy/\">Privacy</a>",
                   "fontSize": {
                     "desktop": "12px"
-                  }
+                  },
+                  "className": "cr-ref-footer-30"
                 }
               },
               {
@@ -358,7 +542,8 @@
                   "text": "<a href=\"/terms/\">Terms</a>",
                   "fontSize": {
                     "desktop": "12px"
-                  }
+                  },
+                  "className": "cr-ref-footer-31"
                 }
               }
             ]
@@ -375,7 +560,8 @@
       "label": "Ask me anything",
       "floatingScrollThreshold": 0,
       "floatingHideLabelBelow": 768,
-      "backgroundColour": "whatsapp"
+      "backgroundColour": "whatsapp",
+      "className": "cr-ref-footer-32"
     }
   },
   {
@@ -399,7 +585,8 @@
       "borderColour": "border",
       "dialogShadow": "0 30px 70px",
       "dialogShadowColour": "site 30%",
-      "closeStyle": "glyph"
+      "closeStyle": "glyph",
+      "className": "cr-ref-footer-33"
     },
     "innerBlocks": []
   }

@@ -19,7 +19,7 @@ export function writeSolveReport( outDir, r ) {
 		`| Wrong writes | ${ r.wrong.length } of ${ r.writes.length } |`, '',
 		'## Writes', '', '| Round | Node | Block | Element | Property | Setting | Before | After |', '|---|---|---|---|---|---|---|---|',
 		...r.writes.map( ( w ) => `| ${ w.round } | ${ w.ref } | ${ w.block } | \`${ w.path }\` | ${ w.prop }${ w.state ? ':' + w.state : '' } | ${ w.attr } | ${ cell( w.before ) } | ${ cell( w.after ) } |` ), '',
-		'## Wrong writes', '', ...( r.wrong.length ? r.wrong.map( ( w ) => `- round ${ w.round } ${ w.ref } ${ w.attr }: ${ cell( w.after ) }` ) : [ 'None.' ] ), '',
+		'## Wrong writes', '', ...( r.wrong.length ? r.wrong.map( ( w ) => `- round ${ w.round } ${ w.ref } ${ w.block } ${ w.attr } = ${ cell( w.after ) }${ w.reverted ? ' (reverted: ' + cell( w.revertReason ) + ')' : '' }` ) : [ 'None.' ] ), '',
 		'## Token snaps', '', '| Where | From | To | Distance | Kind |', '|---|---|---|---|---|',
 		...r.snaps.map( ( s ) => `| ${ s.where } | ${ s.from } | ${ s.to } | ${ s.distance ?? '' } | ${ s.kind } |` ), '' ];
 	const section = ( title, rows, withReason ) => {
@@ -32,7 +32,7 @@ export function writeSolveReport( outDir, r ) {
 		rows.forEach( ( x ) => L.push( `| ${ x.width } | ${ x.pair } | ${ x.ref || '' } | \`${ x.path ?? '' }\` | ${ x.kind } | ${ x.key } | ${ cell( x.draft ) } | ${ cell( x.live ) } |${ withReason ? ' ' + cell( x.reason ) + ' |' : '' }` ) );
 		L.push( '' );
 	};
-	section( 'Hardcode', r.classes.hardcode, false );
+	section( 'Hardcode', r.classes.hardcode, true );
 	section( 'Missing setting', r.classes.missing, true );
 	section( 'Unresolved', r.classes.unresolved, true );
 	section( 'Derived box rows', r.classes.derived, false );

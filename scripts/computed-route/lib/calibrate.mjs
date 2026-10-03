@@ -39,6 +39,17 @@ export function longhands( cssProperty ) {
 	} ) ) ].filter( ( p ) => READ_PROPS.includes( p ) );
 }
 
+// Markers for free-text settings that take a CSS keyword or value (no enum in block.json).
+const KEYWORDS = {
+	'text-transform': [ 'uppercase', 'lowercase', 'capitalize' ],
+	'text-wrap': [ 'balance', 'pretty', 'nowrap' ],
+	'font-family': [ 'Georgia, serif' ],
+	'font-style': [ 'italic' ],
+	'text-decoration': [ 'underline' ],
+	'box-shadow': [ '0 0 0 3px #13579b' ],
+	'text-align': [ 'center', 'right' ],
+};
+
 const isColour = ( p ) => /(^|-)color$/.test( p ) || 'background-color' === p;
 const types = ( def ) => [].concat( def?.type || [] );
 
@@ -49,16 +60,27 @@ export function markersFor( row, schema, snapshot, current = {} ) {
 	const prop = row.css_property.split( ',' )[ 0 ].trim();
 	const unitAttr = schema[ `${ row.attr_name }Unit` ] ? `${ row.attr_name }Unit` : null;
 	const withUnit = ( attrs ) => ( unitAttr ? { ...attrs, [ unitAttr ]: 'px' } : attrs );
-	const lengthIn = ( n ) => ( unitAttr || types( def ).includes( 'number' ) ? n : `${ n }px` );
+	// A number when the setting is numeric; a string ("37" beside a unit setting, else "37px") when it is a string.
+	const lengthIn = ( n ) => {
+		if ( types( def ).includes( 'number' ) || ( unitAttr && ! types( def ).includes( 'string' ) ) ) {
+			return n;
+		}
+		return unitAttr ? String( n ) : `${ n }px`;
+	};
 	const all = ( v ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, v ] ) );
 	if ( isColour( prop ) ) {
-		const slugTok = snapshot.palette.find( ( t ) => t.slug !== current[ row.attr_name ] && 1 === t.colour.a );
+		// The palette colour furthest from both black and white, so it differs from any default text or ground.
+		const mid = ( c ) => Math.min( c.r + c.g + c.b, 765 - ( c.r + c.g + c.b ) ) + ( Math.max( c.r, c.g, c.b ) - Math.min( c.r, c.g, c.b ) );
+		const slugTok = snapshot.palette.filter( ( t ) => t.slug !== current[ row.attr_name ] && 1 === t.colour.a ).sort( ( a, b ) => mid( b.colour ) - mid( a.colour ) )[ 0 ];
 		const out = [ { label: 'hex', form: 'hex', attrs: { [ row.attr_name ]: MARKER_HEX }, expect: all( MARKER_RGB ) } ];
 		if ( slugTok ) {
 			const c = slugTok.colour;
 			out.push( { label: 'slug', form: 'slug', attrs: { [ row.attr_name ]: slugTok.slug }, expect: all( `rgb(${ c.r }, ${ c.g }, ${ c.b })` ) } );
 		}
 		return out;
+	}
+	if ( ! Array.isArray( def.enum ) && KEYWORDS[ prop ] && types( def ).includes( 'string' ) ) {
+		return KEYWORDS[ prop ].map( ( v ) => ( { label: `kw-${ v.replace( /[^a-z0-9]+/gi, '-' ) }`, attrs: { [ row.attr_name ]: v }, expect: null } ) );
 	}
 	if ( Array.isArray( def.enum ) ) {
 		return def.enum.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, attrs: { [ row.attr_name ]: v }, expect: null } ) );
@@ -138,17 +160,26 @@ export { elementPath };
 const sameVal = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).replace( /\s+/g, '' );
 
 // Works out one setting's slot from the default and marked readings ({ width: { path: { prop: value } } }).
-// Returns { slot, property, transform, reachedAt, dead, oneWidth }.
+// Returns { slot, slots, property, transform, reachedAt, oneWidth, effects } or { dead }.
+// slots: every element the marker reaches (a non-inherited property can land on the root and an inner element alike;
+// an inherited one only counts where it is set, the shallowest). effects: other properties the marker changed on those
+// elements ("path|prop"), the side effects Solve's regression guard matches regressions against.
 export function slotFor( row, marker, defReads, markReads ) {
 	const props = longhands( row.css_property );
 	const changes = [];
+	const side = new Set();
 	for ( const w of WIDTHS ) {
 		const d = defReads[ w ] || {};
 		const m = markReads[ w ] || {};
 		for ( const [ p, styles ] of Object.entries( m ) ) {
-			for ( const prop of props ) {
-				if ( undefined !== styles[ prop ] && ! sameVal( styles[ prop ], d[ p ]?.[ prop ] ) ) {
-					changes.push( { w, path: p, prop, value: styles[ prop ], hit: marker.expect ? sameVal( styles[ prop ], marker.expect[ w ] ) : true } );
+			for ( const [ prop, v ] of Object.entries( styles ) ) {
+				if ( sameVal( v, d[ p ]?.[ prop ] ) ) {
+					continue;
+				}
+				if ( props.includes( prop ) ) {
+					changes.push( { w, path: p, prop, value: v, hit: marker.expect ? sameVal( v, marker.expect[ w ] ) : true } );
+				} else {
+					side.add( `${ p }|${ prop }` );
 				}
 			}
 		}
@@ -160,10 +191,13 @@ export function slotFor( row, marker, defReads, markReads ) {
 	const depth = ( p ) => ( '' === p ? 0 : p.split( ' > ' ).length );
 	const pool = changes.some( ( c ) => c.hit ) ? changes.filter( ( c ) => c.hit ) : changes;
 	const best = pool.reduce( ( a, c ) => ( depth( c.path ) < depth( a.path ) ? c : a ) );
+	const inherited = props.every( ( p ) => INHERITED.includes( p ) );
+	const slots = inherited ? [ best.path ] : [ ...new Set( pool.map( ( c ) => c.path ) ) ].sort( ( a, b ) => depth( a ) - depth( b ) );
 	const at = changes.filter( ( c ) => c.path === best.path && ( ! marker.expect || c.hit ) );
 	const reachedAt = [ ...new Set( at.map( ( c ) => c.w ) ) ].sort( ( a, b ) => a - b );
 	const transform = marker.expect && ! best.hit ? Object.fromEntries( changes.filter( ( c ) => c.path === best.path ).map( ( c ) => [ c.w, c.value ] ) ) : null;
-	return { slot: best.path, property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length };
+	const effects = [ ...side ].filter( ( e ) => slots.includes( e.split( '|' )[ 0 ] ) );
+	return { slot: best.path, slots, property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, effects };
 }
 
 // The default paint of every element at each width, without inherited properties.

@@ -119,7 +119,11 @@ Calibration has two outputs with different scopes:
   site the surface is built on, keyed by the slot-map key plus the md5 of that site's `theme-snapshot.json`.
 
 Before calibrating, `calibrate.mjs` compares the deployed `build/blocks/<block>/` md5 with the local build and refuses
-to run on a mismatch. Inherited properties are not recorded as default paint (R-47-5 uses the parent's live value).
+to run on a mismatch. The md5 covers the files that decide what a page paints (`block.json`, `render.php`, the
+front-end stylesheets and view scripts) and leaves out the editor bundles (`index.js`, `index.css`, their rtl copy,
+`index.asset.php`): the same commit built in another folder gives a different `index.js` (proven 2026-10-03: commit
+4ba8be0f1 deployed from the deploy's temporary worktree and built locally gave different editor bundles and identical
+front-end files), so a whole-folder key could never match. Inherited properties are not recorded as default paint (R-47-5 uses the parent's live value).
 The cache is `scripts/computed-route/cache/`, gitignored in the commit that creates the folder.
 
 **Steps:**
@@ -188,6 +192,8 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
    - The resolver gives the setting; the draft's value is written at the row's width.
    - A row with no `ref`, or a `path` calibration does not know, is Unresolved (`unmapped-element`).
    - Rows of other kinds are reported, never written.
+   - `width` rows are reported, never written: a computed width is the box's used size (an auto or grid-sized box
+     reads as pixels), so writing it would freeze a fluid layout (`solve.mjs::USED_VALUES`).
    - Box rows (`w`, `h`) name no CSS property, so no setting can hold them: they are never written, listed as derived,
      and close when the spacing that moves them closes. A scored item closes only when its box rows close too.
 4. Stop when no row changes or after round 3 (R-47-9).
@@ -347,6 +353,25 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        repair is Hardcode, framework new is Missing setting.
      - No row closed before is open after, and no open row moves further from the draft.
    - **Kill:** under 60% close, over 10% of writes are wrong, or round 3 still writes.
+   - **Result (2026-10-03): short of success, on the "round 3 still writes" kill clause only.**
+     - Run: 7 blocks calibrated on eye-care-test, then Solve with the full-CSS walker config (5 layout pairs added to
+       `footer.mjs`). The baseline tree (b7c09adc1) plus ref classes was round 1.
+     - 12 of 15 scored items closed (80%). Style and box rows open: 970 before, 687 after. 0 new rows.
+     - 38 writes, 2 wrong (5%): `maxWidth: 1440px` on both footer rows collapsed them to a 0px content width (auto
+       margins cancel the row's stretch; the header rows had the same fault, fixed in acc2a3b6d). The regression
+       guard (R-47-9, `solve.mjs::revertRegressions`) reverted exactly those two in round 2, pinned through the
+       setting's calibrated side effects (`|margin-left`, `|margin-right`, `|width`). They are classified Hardcode
+       (breaks-layout): a framework repair for `sgs/site-footer-row`.
+     - Round 3 wrote 2 settings (the tagline's side margins to 0, exposed once the revert landed): the kill clause.
+       The revert round used round 2.
+     - Survivors against the register: 25's padding rows all closed; its footer height (4px off at desktop, 16px at
+       375) follows from 29, 30 and 34. 29's 10px column gap needs the container's flex layout: a setting with no
+       `css_property` in the database, so Solve cannot find it yet, and it is wrongly classified Missing setting.
+       38's weight is hardcoded on `.sgs-business-hours__day` (600), which the block's weight setting does not
+       reach (calibration: it paints the root only). That is a framework repair, not the register's "tree".
+     - Calibration also flagged `sgs/site-footer-row` per-device `gap` and `contentWidth` reaching 375 and 1440
+       but not 768 (a one-width hardcode candidate), and dead settings per block (some are fixture artefacts, such
+       as a border style with no border width). Each is proved before it is fixed.
 3. **Solve on every built Eye Care surface.** It shrinks the current fix register. Add the functional flows
    (FR-47-7), the remaining walker items (FR-47-6 items 1 to 5) and the full calibration cache.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer.

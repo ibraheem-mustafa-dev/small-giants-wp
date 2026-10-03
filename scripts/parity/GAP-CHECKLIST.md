@@ -315,6 +315,29 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
 - **Reveal sweep:** before a `fullPage: true` shot the page is scrolled top to bottom a screen at a time, so every
   scroll reveal has fired on both sides (`revealSweep: false` turns it off). Reveal timing stays with `scrollIn` pairs.
 
+## 16. Ref tracing and the divergence ledger (Spec 47 FR-47-6 items 6 and 7)
+
+- **Gap:** a row names a pair, not the layout node a tool must change; and an intended difference lived only in a
+  config's `accept` list, invisible to the tools that write settings.
+- **Ref tracing (`refPrefix: 'cr-ref-'`):** every style, hover and box row carries `ref` (the measured live element's
+  nearest ancestor-or-self class with that prefix), `block` (that element's block root class) and `path` (the selector
+  path from it: BEM classes, never a per-instance id class such as `sgs-text-aebb51cc`, joined by ` > `;
+  `lib/ref-trace.mjs::elementPath`). Text properties take the path of the element that paints the text. With
+  `refPrefix` every pair also reads its full CSS: the default list, its own list, and margins, `width`, `max-width`,
+  `text-wrap` and `gap`. A config without it is unchanged.
+- **Divergence ledger (`divergences: '<path>'`):** entries in the site's `divergences.json` (Spec 47 §3.5) match a row
+  on node (ref, block slug or `*`), state (`hover` matches hover rows), property and width. A rule entry accepts the
+  row; a value entry accepts it only while live shows that value, and otherwise shows the expected value as the row's
+  draft side (`10px (D-2)`). Every report row carries an `id` for `scripts/computed-route/ledger.mjs accept`.
+- **Planted faults (2026-10-03, footer at 1440, `--inject-live-js` and a planted ledger):**
+  - The wordmark's `cr-ref-footer-3` class removed on live: its trace became `cr-ref-footer-2`, path
+    `.sgs-container__inner > h4`, where the unplanted run reads `cr-ref-footer-3`, path `""`.
+  - A value entry matching live (hours `font-weight` 600) was accepted; one not matching (column `row-gap` 10px)
+    stayed open with draft `10px (D-2)`.
+  - Unit level: `scripts/computed-route/tests/walker-refs.test.mjs`.
+- **Falsified by:** a traced row without `ref`, a path holding an id class, or a ledger entry accepting a row whose
+  live value differs from its expected value.
+
 ## 10. Text, data and draft bugs
 
 - Word-multiset text comparison (DOM order ignored). Real-data differences (review counts, stock counts,

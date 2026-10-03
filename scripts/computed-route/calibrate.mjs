@@ -28,7 +28,13 @@ export const REMOTE_PLUGIN = {
 
 const md5 = ( s ) => crypto.createHash( 'md5' ).update( s ).digest( 'hex' );
 
-// md5 of a build directory: every file's md5 and relative path, sorted. The remote side computes the same listing.
+// The editor bundles (index.js, index.css, their rtl copy, index.asset.php) are left out of the key: they paint nothing
+// on the front end, and the same commit built in another folder (the deploy builds in a temporary worktree) gives a
+// different index.js, so a local build could never match. The key covers what a page paints: block.json, render.php,
+// the front-end stylesheets and view scripts.
+export const EDITOR_ONLY = /^\.\/index(-rtl)?\.(js|css|asset\.php)$/;
+
+// md5 of a build directory's front-end files: each file's md5 and relative path, sorted. The remote side lists the same.
 export function localBlockHash( dir ) {
 	const lines = [];
 	const go = ( d ) => fs.readdirSync( d, { withFileTypes: true } ).forEach( ( f ) => {
@@ -40,12 +46,12 @@ export function localBlockHash( dir ) {
 		}
 	} );
 	go( dir );
-	return md5( lines.sort( ( a, b ) => a.slice( 34 ).localeCompare( b.slice( 34 ) ) ).join( '\n' ) );
+	return md5( lines.filter( ( l ) => ! EDITOR_ONLY.test( l.slice( 34 ) ) ).sort( ( a, b ) => a.slice( 34 ).localeCompare( b.slice( 34 ) ) ).join( '\n' ) );
 }
 
 export function remoteBlockHash( site, short ) {
 	const out = execFileSync( 'ssh', [ ...SSH, `cd ${ REMOTE_PLUGIN[ site ] }/build/blocks/${ short } && find . -type f -exec md5sum {} +` ], { encoding: 'utf8', timeout: 60000 } );
-	return md5( out.trim().split( '\n' ).map( ( l ) => l.trim() ).sort( ( a, b ) => a.slice( 34 ).localeCompare( b.slice( 34 ) ) ).join( '\n' ) );
+	return md5( out.trim().split( '\n' ).map( ( l ) => l.trim() ).filter( ( l ) => ! EDITOR_ONLY.test( l.slice( 34 ) ) ).sort( ( a, b ) => a.slice( 34 ).localeCompare( b.slice( 34 ) ) ).join( '\n' ) );
 }
 
 function build( target, treeFile, extra = [] ) {
@@ -115,15 +121,21 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 	}
 	const schema = blockSchema( block ) || {};
 	const rows = attrsFor( db, block ).filter( ( r ) => longhands( r.css_property ).length );
-	let instances = [ { key: 'default', attrs: {} } ];
-	const noMarker = [];
-	for ( const row of rows ) {
-		const ms = markersFor( row, schema, snapshot, fixture.attributes || {} );
-		if ( ! ms.length ) {
-			noMarker.push( row.attr_name );
+	// A fixture may list variants (attribute sets that render different elements, e.g. business-info as a phone number
+	// and as opening hours); each variant gets its own default instance and markers.
+	const variants = ( fixture.variants || [ {} ] ).map( ( v ) => ( { ...( fixture.attributes || {} ), ...v } ) );
+	let instances = [];
+	const noMarker = new Set();
+	variants.forEach( ( vattrs, vi ) => {
+		instances.push( { key: `default-v${ vi }`, attrs: vattrs, variant: vi, isDefault: true } );
+		for ( const row of rows ) {
+			const ms = markersFor( row, schema, snapshot, vattrs );
+			if ( ! ms.length ) {
+				noMarker.add( row.attr_name );
+			}
+			ms.forEach( ( m ) => instances.push( { key: `${ row.attr_name }-${ m.label }-v${ vi }`, row, marker: m, attrs: { ...vattrs, ...m.attrs }, variant: vi, hover: 'hover' === row.css_state } ) );
 		}
-		ms.forEach( ( m ) => instances.push( { key: `${ row.attr_name }-${ m.label }`, row, marker: m, attrs: m.attrs, hover: 'hover' === row.css_state } ) );
-	}
+	} );
 	const states = rows.filter( ( r ) => r.css_state && 'hover' !== r.css_state ).map( ( r ) => `${ r.attr_name }:${ r.css_state }` );
 	instances = instances.filter( ( i ) => ! i.row || ! i.row.css_state || 'hover' === i.row.css_state );
 	const treeFile = path.join( CACHE, `${ short }.tree.json` );
@@ -157,6 +169,12 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 		await browser.close();
 	}
 	const per = ( n ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, reads[ w ][ n ] ] ) );
+	// Each variant's default instance, by variant index.
+	const defaultOf = {};
+	instances.forEach( ( inst, n ) => inst.isDefault && ( defaultOf[ inst.variant ] = n ) );
+	// Default paint: every variant's elements (a path seen in several variants keeps the first).
+	const elements = {};
+	Object.values( defaultOf ).forEach( ( n ) => Object.entries( defaultPaint( per( n ) ) ).forEach( ( [ p, v ] ) => ( elements[ p ] ??= v ) ) );
 	const settings = {};
 	const dead = [];
 	const oneWidth = [];
@@ -164,23 +182,24 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 		if ( ! inst.row ) {
 			return;
 		}
-		const s = slotFor( inst.row, inst.marker, per( 0 ), per( n ) );
+		const s = slotFor( inst.row, inst.marker, per( defaultOf[ inst.variant ] ), per( n ) );
 		const name = inst.row.attr_name;
 		if ( s.dead ) {
 			dead.push( name );
 			return;
 		}
 		const prev = settings[ name ];
-		settings[ name ] = { slot: s.slot, property: s.property, state: inst.row.css_state || null, forms: [ ...new Set( [ ...( prev?.forms || [] ), ...( inst.marker.form ? [ inst.marker.form ] : [] ) ] ) ], transform: s.transform || prev?.transform || null, reachedAt: s.reachedAt };
+		const union = ( a, b ) => [ ...new Set( [ ...( a || [] ), ...( b || [] ) ] ) ];
+		settings[ name ] = { slot: prev?.slot ?? s.slot, slots: union( prev?.slots, s.slots ), property: s.property, state: inst.row.css_state || null, forms: union( prev?.forms, inst.marker.form ? [ inst.marker.form ] : [] ), transform: s.transform || prev?.transform || null, reachedAt: s.reachedAt, effects: union( prev?.effects, s.effects ), variants: union( prev?.variants, [ inst.variant ?? 0 ] ) };
 		if ( s.oneWidth ) {
 			oneWidth.push( { key: inst.key, reachedAt: s.reachedAt } );
 		}
 	} );
 	// Dead: no marker of the setting changed anything (a setting with one live marker is not dead).
 	const deadNames = [ ...new Set( dead ) ].filter( ( n ) => ! settings[ n ] );
-	const file = { block, site, slotKey, paintKey, measured: new Date().toISOString(), settings, elements: defaultPaint( per( 0 ) ), dead: deadNames, oneWidth, noMarker, untestedStates: states, rejected };
+	const file = { block, site, slotKey, paintKey, measured: new Date().toISOString(), settings, elements, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: states, rejected };
 	fs.writeFileSync( path.join( CACHE, `${ short }.json` ), JSON.stringify( file, null, 1 ) );
-	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.length, rejected: rejected.length };
+	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {

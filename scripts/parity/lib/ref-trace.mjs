@@ -8,12 +8,13 @@
 export const REF_PROPS = [ 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'width', 'max-width', 'text-wrap', 'gap' ];
 
 // In-page and in Node: the selector path from a ref element down to `el`. Each step is the element's BEM class (the
-// first class starting with "sgs-" that is not a modifier), or its tag name when it has none, plus
+// first class starting with "sgs-" that is not a modifier and not a per-instance id such as sgs-text-aebb51cc, which
+// changes on every build), or its tag name when it has none, plus
 // :nth-of-type(n) only when a sibling shares that step. Steps are joined by " > "; the ref element itself is "".
 // Self-contained (passed to page.evaluate as source).
 export function elementPath( el, refEl ) {
 	const step = ( e ) => {
-		const bem = [ ...e.classList ].find( ( c ) => /^sgs-[a-z0-9-]+(__[a-z0-9-]+)?$/.test( c ) && ! c.includes( '--' ) );
+		const bem = [ ...e.classList ].find( ( c ) => /^sgs-[a-z0-9-]+(__[a-z0-9-]+)?$/.test( c ) && ! c.includes( '--' ) && ! /-[0-9a-f]{8}$/.test( c ) );
 		const base = bem ? `.${ bem }` : e.tagName.toLowerCase();
 		const p = e.parentElement;
 		if ( ! p ) {
@@ -50,7 +51,7 @@ export function traceRef( el, carrier, prefix, pathSrc ) {
 	if ( ! refEl ) {
 		return null;
 	}
-	const block = [ ...refEl.classList ].find( ( c ) => /^sgs-[a-z0-9-]+$/.test( c ) && ! c.includes( '--' ) && ! c.startsWith( prefix ) ) || null;
+	const block = [ ...refEl.classList ].find( ( c ) => /^sgs-[a-z0-9-]+$/.test( c ) && ! c.includes( '--' ) && ! c.startsWith( prefix ) && ! /-[0-9a-f]{8}$/.test( c ) ) || null;
 	return {
 		ref,
 		block,

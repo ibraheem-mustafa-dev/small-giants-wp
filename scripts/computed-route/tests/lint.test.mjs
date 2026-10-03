@@ -35,6 +35,7 @@ test( 'MUST FAIL: a planted unlisted export and a converter import fail the fold
 test( 'trees: a core style attribute fails; sgs settings pass', () => {
 	assert.equal( lintTree( [ { name: 'sgs/heading', attributes: { lineHeight: { desktop: 1.5 } } } ], db ).length, 0 );
 	assert.equal( lintTree( [ { name: 'sgs/heading', attributes: { style: { spacing: {} } } } ], db ).length, 1 );
+	assert.equal( lintTree( [ { name: 'core/list-item', attributes: { content: 'A link' } } ], db ).length, 0 );
 } );
 
 test( 'skeletons: a setting that paints CSS fails; content passes', () => {

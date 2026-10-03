@@ -11,13 +11,15 @@ import { fileURLToPath } from 'url';
 import { openDb } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve } from './lib/resolve.mjs';
-import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet } from './lib/tree.mjs';
-import { writableGroups, draftValues, classify, openRows, rowDistance, intendedCount } from './lib/solve-rows.mjs';
+import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet, refAncestors } from './lib/tree.mjs';
+import { writableGroups, draftValues, classify, openRows, rowDistance, intendedCount, regressedRows } from './lib/solve-rows.mjs';
 import { writeSolveReport } from './lib/solve-report.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
 const WIDTHS = '375,768,1440,1920';
+// Computed values that are used sizes, never declared ones (getComputedStyle resolves auto to pixels).
+export const USED_VALUES = [ 'width' ];
 
 // The calibration file for a block, or null (the resolver then returns `uncalibrated`).
 export function calibrationFor( block ) {
@@ -52,18 +54,28 @@ function walk( walker, outDir ) {
 }
 
 // One write round: resolves every writable group of the report against the tree. Returns the writes and gaps.
-export function writeRound( report, tree, { db, snapshot, round, log } ) {
+export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map() } ) {
 	const { groups } = writableGroups( report );
 	const writes = [];
 	const gaps = {};
 	for ( const g of groups ) {
+		if ( blocked.has( g.key ) ) {
+			gaps[ g.key ] = blocked.get( g.key );
+			continue;
+		}
+		// A computed width is the used size (an auto or grid-sized box reads as pixels): writing it would freeze a fluid
+		// layout. Width rows are reported; widths change only through the settings that size the box.
+		if ( USED_VALUES.includes( g.prop ) ) {
+			gaps[ g.key ] = { gap: 'used-value', detail: `${ g.prop } is the box's used size, not a declared value` };
+			continue;
+		}
 		const node = nodeByRef( tree, g.ref );
 		if ( ! node ) {
 			gaps[ g.key ] = { gap: 'unmapped', detail: `ref ${ g.ref } is not in the tree` };
 			continue;
 		}
 		const cal = calibrationFor( node.name );
-		if ( cal && ! ( g.path in ( cal.elements || {} ) ) && ! Object.values( cal.settings || {} ).some( ( s ) => s.slot === g.path ) ) {
+		if ( cal && ! ( g.path in ( cal.elements || {} ) ) && ! Object.values( cal.settings || {} ).some( ( s ) => ( s.slots || [ s.slot ] ).includes( g.path ) ) ) {
 			gaps[ g.key ] = { gap: 'unmapped-element', detail: `${ node.name } path "${ g.path }" is not a calibrated element` };
 			continue;
 		}
@@ -85,10 +97,57 @@ export function writeRound( report, tree, { db, snapshot, round, log } ) {
 	return { writes, gaps };
 }
 
+// The regression guard (R-47-9). A row the last round made worse is pinned on a write to its own node: one whose
+// calibrated side effects include that element and property, or that wrote the property itself. With no such write,
+// every last-round write on that node is suspect. Rows are taken top-down: a row below a node that already has a
+// pinned write follows from it and pins nothing more.
+// Pinned writes are reverted and blocked; `blocked` maps their groups to a breaks-layout gap. Returns the reverted writes.
+export function revertRegressions( prev, report, tree, lastWrites, blocked, calFor = calibrationFor ) {
+	const anc = refAncestors( tree );
+	// Top-down, and on each node style rows before box rows: a box size is a consequence, never first evidence.
+	const rank = ( r ) => ( anc.get( r.ref )?.length ?? 0 ) * 2 + ( 'box' === r.kind ? 1 : 0 );
+	const bad = regressedRows( prev, report ).sort( ( a, b ) => rank( a ) - rank( b ) );
+	const culprits = new Set();
+	const pinnedRefs = new Set();
+	const unexplained = [];
+	for ( const r of bad ) {
+		if ( pinnedRefs.has( r.ref ) || ( anc.get( r.ref ) || [] ).some( ( a ) => pinnedRefs.has( a ) ) ) {
+			continue;
+		}
+		const own = lastWrites.filter( ( w ) => w.ref === r.ref );
+		if ( ! own.length ) {
+			continue;
+		}
+		const pinned = own.filter( ( w ) => w.prop === r.key || ( calFor( w.block )?.settings?.[ w.attr ]?.effects || [] ).includes( `${ r.path }|${ r.key }` ) );
+		( pinned.length ? pinned : own ).forEach( ( w ) => culprits.add( w ) );
+		pinnedRefs.add( r.ref );
+		if ( ! pinned.length ) {
+			unexplained.push( r );
+		}
+	}
+	const list = lastWrites.filter( ( w ) => culprits.has( w ) );
+	for ( const w of [ ...list ].reverse() ) {
+		const node = nodeByRef( tree, w.ref );
+		if ( null === w.before ) {
+			delete node.attributes[ w.attr ];
+		} else {
+			node.attributes[ w.attr ] = w.before;
+		}
+		w.reverted = true;
+		const hit = bad.filter( ( r ) => r.ref === w.ref );
+		w.revertReason = `${ hit.length } rows on its node regressed, e.g. ${ hit.slice( 0, 3 ).map( ( r ) => `${ r.key }@${ r.width } ${ r.draft }→${ r.live }` ).join( '; ' ) }${ unexplained.some( ( r ) => r.ref === w.ref ) ? ' (no side effect matched: every write on the node reverted)' : '' }`;
+		blocked.set( w.group, { gap: 'breaks-layout', detail: `${ w.block } ${ w.attr } holds the draft value but writing it breaks the layout: ${ w.revertReason }` } );
+	}
+	return list;
+}
+
 // Wrong writes (§3.3): a write a later round reverted, or after which its rows read further from the draft.
 export function wrongWrites( writes, reportAfter ) {
 	const rowsAfter = openRows( reportAfter );
 	return writes.filter( ( w ) => {
+		if ( w.reverted ) {
+			return true;
+		}
 		const reverted = writes.some( ( x ) => x.round > w.round && x.ref === w.ref && x.attr === w.attr && JSON.stringify( x.after ) === JSON.stringify( w.before ) );
 		const worse = w.rows.some( ( r0 ) => {
 			const r1 = rowsAfter.find( ( r ) => `${ r.ref }|${ r.path }|${ r.key }|${ 'hover' === r.kind ? 'hover' : '' }` === w.group && r.width === r0.width );
@@ -133,6 +192,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	let report;
 	let rounds = 0;
 	let lastWrote = false;
+	let prev = null;
+	let lastWrites = [];
+	const blocked = new Map();
 	for ( let round = 1; round <= maxRounds + 1; round++ ) {
 		assertQuiet();
 		const b = build( s, treeFile );
@@ -141,10 +203,25 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			break;
 		}
 		report = walk( walker, path.join( outDir, `round-${ round }` ) );
+		// A round that made rows worse reverts the culprit writes first; the next round measures the revert.
+		const reverted = prev ? revertRegressions( prev, report, tree, lastWrites, blocked ) : [];
+		prev = report;
+		if ( reverted.length ) {
+			reverted.forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
+			console.log( `round ${ round }: reverted ${ reverted.length } writes that broke the layout` );
+			writeTree( treeFile, tree );
+			rounds = round;
+			lastWrote = true;
+			lastWrites = [];
+			if ( round > maxRounds ) {
+				break;
+			}
+			continue;
+		}
 		if ( round > maxRounds ) {
 			break;
 		}
-		const r = writeRound( report, tree, { ...ctx, round } );
+		const r = writeRound( report, tree, { ...ctx, round, blocked } );
 		gaps = { ...gaps, ...r.gaps };
 		rounds = round;
 		lastWrote = r.writes.length > 0;
@@ -153,6 +230,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			break;
 		}
 		allWrites.push( ...r.writes );
+		lastWrites = r.writes;
 		writeTree( treeFile, tree );
 	}
 	const before = JSON.parse( fs.readFileSync( path.join( outDir, 'round-1', 'report.json' ), 'utf8' ) );

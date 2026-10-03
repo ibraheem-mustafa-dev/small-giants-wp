@@ -19,7 +19,7 @@ test( 'path: BEM classes from the ref element, nth-of-type only where siblings s
 	const inner = el( 'div', [ 'sgs-container__inner' ], ref );
 	const a = el( 'p', [], inner );
 	el( 'p', [], inner );
-	const h = el( 'h4', [ 'sgs-heading', 'sgs-heading--level-4' ], inner );
+	const h = el( 'h4', [ 'sgs-heading-1a2b3c4d', 'sgs-heading', 'sgs-heading--level-4' ], inner );
 	assert.equal( elementPath( ref, ref ), '' );
 	assert.equal( elementPath( h, ref ), '.sgs-container__inner > .sgs-heading' );
 	assert.equal( elementPath( a, ref ), '.sgs-container__inner > p:nth-of-type(1)' );

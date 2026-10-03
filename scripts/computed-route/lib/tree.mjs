@@ -142,10 +142,27 @@ export function assertQuiet( sshArgs = [ '-i', path.join( process.env.HOME || pr
 		throw new Error( `R-47-11: the host is busy (a deploy is unpacking):\n${ remote }` );
 	}
 	const local = process.platform === 'win32'
-		? execFileSync( 'powershell', [ '-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'build-deploy\\.py|sgs-update|seed-' } | ForEach-Object { $_.CommandLine }" ], { encoding: 'utf8', timeout: 60000 } ).trim()
+		// Full path: a Git Bash parent leaves PowerShell off PATH.
+		? execFileSync( path.join( process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe' ), [ '-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match '^\"?[^ ]*python[^ ]*\"? .*(build-deploy\\.py|sgs-update|seed-)' } | ForEach-Object { $_.CommandLine }" ], { encoding: 'utf8', timeout: 60000 } ).trim()
 		: execFileSync( 'sh', [ '-c', "ps -eo args | grep -E 'build-deploy\\.py|sgs-update|seed-' | grep -v grep || true" ], { encoding: 'utf8' } ).trim();
 	if ( local ) {
 		throw new Error( `R-47-11: a deploy or reseed is running on this machine:\n${ local }` );
 	}
 	return true;
+}
+
+
+// Every ref with the refs of its ancestors (not itself), nearest last: the regression guard explains a row by a
+// pinned write on an ancestor before blaming the row's own node.
+export function refAncestors( tree ) {
+	const out = new Map();
+	const go = ( nodes, chain ) => nodes.forEach( ( n ) => {
+		const r = refOf( n );
+		if ( r ) {
+			out.set( r, chain );
+		}
+		go( n.innerBlocks || [], r ? [ ...chain, r ] : chain );
+	} );
+	go( tree, [] );
+	return out;
 }

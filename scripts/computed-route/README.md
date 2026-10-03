@@ -25,7 +25,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page, reads them at 375/768/1440 (hover under a real mouse), writes `cache/<block>.json`, empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`). |
-| `calibration-fixtures.json` | Minimum content, inner blocks and parent chain per calibrated block. |
+| `calibration-fixtures.json` | Minimum content, inner blocks, parent chain and optional variants per calibrated block. |
 | `ledger.mjs` | Divergence ledger command: `accept <report.json> <row id>` adds an entry dated today; `stale <report.json>` exits 1 while any entry is stale. |
 | `lib/db.mjs` | Read-only `block_attributes` queries. |
 | `lib/normalise.mjs` | Value parsing and token snapping from `theme-snapshot.json`, with the snap log. |
@@ -41,6 +41,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
+| `tests/solve.test.mjs` | R-47-9: the regression guard pins only the write whose side effects explain the regression. |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching). |
 
 `cache/` (gitignored) holds calibration files.
@@ -86,6 +87,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `stripRefs(tree)`: removes every ref class (a final build).
 - `nodeByRef(tree, ref)` → the node.
 - `setAttr(node, write)` → `{ before, after }` (deep merges keep other tiers and sides).
+- `refAncestors(tree)` → each ref with its ancestors' refs (nearest last).
 - `writableTargets(manifests)` → `{ posts, templates }` from calibration-targets.json and surfaces.json.
 - `assertWritable(target, manifests)`: throws on a forbidden or unlisted target (R-47-11).
 - `assertQuiet(sshArgs?)`: throws while a deploy or reseed runs (host process list, local process list).
@@ -108,12 +110,13 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `buildTree(block, fixture, instances)` → the calibration tree.
 - `readInstancesInPage([count, prefix, props, pathSrc])`: in-page; every element of each instance by path.
 - `elementPath`: re-exported from `scripts/parity/lib/ref-trace.mjs`.
-- `slotFor(row, marker, defReads, markReads)` → `{ slot, property, transform, reachedAt, oneWidth }` or `{ dead }`.
+- `slotFor(row, marker, defReads, markReads)` → `{ slot, slots, property, transform, reachedAt, oneWidth, effects }` or `{ dead }`.
 - `defaultPaint(defReads)` → per element and width, non-inherited properties.
 
 ### `calibrate.mjs` (runs `wp-build-page.js`, ssh, Playwright)
 - `REMOTE_PLUGIN`: the plugin folder on the host per site.
-- `localBlockHash(dir)`, `remoteBlockHash(site, short)`: md5 of a block's build folder, same listing both sides.
+- `EDITOR_ONLY`: the editor bundles left out of the key (the same commit built in another folder gives a different `index.js`).
+- `localBlockHash(dir)`, `remoteBlockHash(site, short)`: md5 of a block's front-end build files, same listing both sides.
 
 ### `lib/solve-rows.mjs`
 - `WRITABLE_KINDS`: style, hover, box. `groupKey(row)`: ref, path, property, state.
@@ -121,6 +124,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `draftValues(report, pair, prop, hover)` → `{ perWidth, fontPx }` from the draft snapshots.
 - `writableGroups(report)` → `{ groups, box, unmapped, other }`.
 - `rowDistance(row)` → px distance from the draft (0 or 1 for non-lengths).
+- `regressedRows(prev, report)` → open style or box rows that are new or further from the draft than last round.
 - `classify(report, { writes, gaps, elements })` → `{ hardcode, missing, unresolved, derived, other }`.
 - `intendedCount(report)` → accepted rows.
 
@@ -128,8 +132,10 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `writeSolveReport(outDir, result)`.
 
 ### `solve.mjs` (runs `wp-build-page.js` and the walker)
+- `USED_VALUES`: computed properties that are used sizes (`width`), reported and never written.
 - `calibrationFor(block)` → the block's calibration file or null.
 - `writeRound(report, tree, { db, snapshot, round, log })` → `{ writes, gaps }`.
+- `revertRegressions(prev, report, tree, lastWrites, blocked, calFor?)` → the reverted writes (the regression guard, pinned through calibrated side effects).
 - `wrongWrites(writes, reportAfter)` → writes a later round reverted or that moved their rows further from the draft.
 
 ### `lint.mjs`

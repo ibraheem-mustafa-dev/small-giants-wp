@@ -68,7 +68,9 @@ const RESOLVE = resolveFinder.toString();
 const refPrefix = cfg.refPrefix || null;
 const TRACE = traceRef.toString();
 const PATH = elementPath.toString();
-const propsFor = ( p ) => ( refPrefix ? [ ...new Set( [ ...( p.props || DEFAULT_PROPS ), ...REF_PROPS ] ) ] : p.props || DEFAULT_PROPS );
+// With refPrefix every pair reads its full CSS (the default list, its own list and the layout properties), so a tool
+// writing settings sees every property a setting could fix.
+const propsFor = ( p ) => ( refPrefix ? [ ...new Set( [ ...DEFAULT_PROPS, ...( p.props || [] ), ...REF_PROPS ] ) ] : p.props || DEFAULT_PROPS );
 const divergences = loadDivergences( cfgPath, cfg );
 const cb = ( url ) => url.replace( '{cb}', String( Date.now() ) );
 // The full checks (GAP-CHECKLIST.md section 11: motion timelines, painted grounds, inventories, hover

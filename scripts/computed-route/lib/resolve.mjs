@@ -105,7 +105,11 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 	}
 	if ( undefined !== unit ) {
 		const n = '' === unit || 'unitless' === unit ? ( 'line-height' === prop ? round( px / fontPx ) : null ) : pxTo( px, unit, fontPx );
-		return null === n ? { error: `cannot convert ${ raw } to unit "${ unit }"` } : { value: n };
+		if ( null === n ) {
+			return { error: `cannot convert ${ raw } to unit "${ unit }"` };
+		}
+		// A string setting beside its unit setting holds the number as text ("37").
+		return { value: [].concat( def?.type || [] ).includes( 'string' ) && ! [].concat( def?.type || [] ).includes( 'number' ) ? String( n ) : n };
 	}
 	return { value: `${ round( px ) }px` };
 }
@@ -126,7 +130,7 @@ export function resolve( input, ctx ) {
 	}
 	const tied = rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && c.slot === slot && ( ! c.property || c.property === short || c.property === prop );
+		return c && ( c.slots || [ c.slot ] ).includes( slot ) && ( ! c.property || c.property === short || c.property === prop );
 	} );
 	if ( ! tied.length ) {
 		return { gap: 'no-setting', detail: `no ${ prop } setting on ${ block } paints "${ slot }" (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` };
