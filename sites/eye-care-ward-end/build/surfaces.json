@@ -1,0 +1,11 @@
+{
+  "footer": {
+    "tree": "footer.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": { "postId": 182 },
+    "walker": "qa/parity/footer.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/"
+  }
+}

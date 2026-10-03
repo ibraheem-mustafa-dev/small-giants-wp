@@ -150,9 +150,9 @@ A setting whose marker fails `wp-build-page.js` validation is reported as `marke
 
 **Where and how it renders:**
 - Each site has one calibration page, created once with `wp-build-page.js --create page --title "CR calibration"
-  --slug cr-calibration`. Its post ID goes in `scripts/computed-route/calibration-targets.json`
-  (`{ "<site>": { "envFile", "envKey", "postId" } }`). Later runs replace that page with `--post-id`. The page is
-  noindexed through the site's existing mechanism and never linked.
+  --slug cr-calibration --status private`. Its post ID goes in `scripts/computed-route/calibration-targets.json`
+  (`{ "<site>": { "envFile", "envKey", "postId" } }`; eye-care-test: 668). Later runs replace that page with
+  `--post-id`. Private, it is never public, indexed or linked; calibration reads it in a logged-in browser.
 - One build holds a whole block: one default instance plus one instance per (setting, marker), each wrapped in an
   `sgs/container` with class `cr-cal-<block>-<setting>`.
 - Each block has a fixture in `scripts/computed-route/calibration-fixtures.json`: the minimum content and parent chain
@@ -188,6 +188,8 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
    - The resolver gives the setting; the draft's value is written at the row's width.
    - A row with no `ref`, or a `path` calibration does not know, is Unresolved (`unmapped-element`).
    - Rows of other kinds are reported, never written.
+   - Box rows (`w`, `h`) name no CSS property, so no setting can hold them: they are never written, listed as derived,
+     and close when the spacing that moves them closes. A scored item closes only when its box rows close too.
 4. Stop when no row changes or after round 3 (R-47-9).
 
 **Classification of surviving rows:**
@@ -312,7 +314,7 @@ All in `scripts/computed-route/`. The README lists every exported function (R-47
 | `solve.mjs`, `fill.mjs` | The two commands |
 | `calibration-targets.json`, `calibration-fixtures.json` | Calibration posts per site; fixture content per block |
 | `cache/` | Calibration cache (gitignored) |
-| `tests/` | `node --test scripts/computed-route/tests/`; each file names the rule it proves and has one case that must fail |
+| `tests/` | `node --test "scripts/computed-route/tests/*.test.mjs"` (Node 24 runs a glob, not a bare folder); each file names the rule it proves and has one case that must fail |
 
 External imports, read-only:
 - `scripts/parity/lib/*.mjs` (finders, computed-style reading);
@@ -356,5 +358,5 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 
 | Question | Who | When |
 |---|---|---|
-| Does `wp-build-page.js` support building into a dedicated `sgs_header`, `sgs_footer` or `sgs_drawer` calibration post with `--post-id` as it does for pages? | Build session | Stage 2, before calibrating footer-only blocks |
-| Which noindex mechanism does each site already have for the calibration page? | Build session | Stage 2 |
+| Does `wp-build-page.js` support building into a dedicated `sgs_header`, `sgs_footer` or `sgs_drawer` calibration post with `--post-id` as it does for pages? | Answered 2026-10-03: yes. `--post-id` opens `post.php?post=<id>&action=edit` for any post type (footer 182 is rebuilt that way). The footer's blocks need no dedicated post: `sgs/site-footer` has no `parent` lock, so it and its rows calibrate on the calibration page. | Closed |
+| Which noindex mechanism does each site already have for the calibration page? | Answered 2026-10-03: none per page (the plugin noindexes only WooCommerce utility pages). The calibration page is built private instead (§3.2). | Closed |

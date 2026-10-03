@@ -1,0 +1,7 @@
+{
+  "eye-care-test": {
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "postId": 668
+  }
+}

@@ -32,6 +32,8 @@ import { makeHelpers } from './lib/helpers.mjs';
 import { sampleTimeline, collectChrome } from './lib/chrome-walk.mjs';
 import { withAutoScroll, collectAutoOn, markClipped } from './lib/auto-walk.mjs';
 import closeOnExit from '../lib/close-browser-on-exit.js';
+import { REF_PROPS, elementPath, traceRef } from './lib/ref-trace.mjs';
+import { loadDivergences } from './lib/divergences.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const { chromium, devices } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
@@ -61,6 +63,13 @@ const outDir = path.resolve( flag( '--out' ) || path.join( path.dirname( cfgPath
 fs.mkdirSync( outDir, { recursive: true } );
 const tol = { box: 2, px: 0.5, ...( cfg.tolerance || {} ) };
 const RESOLVE = resolveFinder.toString();
+// Ref tracing (GAP-CHECKLIST.md section 16): with `refPrefix` every row names its live block and element, and the
+// spacing and width a layout setting writes are measured too. The divergence ledger (section 16) accepts intended rows.
+const refPrefix = cfg.refPrefix || null;
+const TRACE = traceRef.toString();
+const PATH = elementPath.toString();
+const propsFor = ( p ) => ( refPrefix ? [ ...new Set( [ ...( p.props || DEFAULT_PROPS ), ...REF_PROPS ] ) ] : p.props || DEFAULT_PROPS );
+const divergences = loadDivergences( cfgPath, cfg );
 const cb = ( url ) => url.replace( '{cb}', String( Date.now() ) );
 // The full checks (GAP-CHECKLIST.md section 11: motion timelines, painted grounds, inventories, hover
 // effects, phone widths) run on every page; `mode: 'basic'` turns them off for a quick look.
@@ -147,7 +156,7 @@ async function walkSide( browser, side, width ) {
 		}
 		const snap = {};
 		for ( const p of pairs ) {
-			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], p.props || DEFAULT_PROPS, RESOLVE ] );
+			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH ] );
 			snap[ p.name ].running = running[ p.name ];
 		}
 		if ( header ) {
@@ -224,7 +233,7 @@ for ( const width of widths ) {
 		const shot = path.join( outDir, `pair-${ width }-${ state.name }.png` );
 		await sideBySide( browser, d.shot, l.shot, shot, width );
 		const run = { state: state.name, width, shot: path.basename( shot ), pairs: {} };
-		compareState( run, d, l, { state, width, cfg, accept, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks } );
+		compareState( run, d, l, { state, width, cfg, accept, divergences, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks } );
 		results.runs.push( run );
 	}
 }

@@ -47,8 +47,9 @@ export function resolveFinder( finder ) {
 	return null;
 }
 
-// Everything the comparison needs about one element pair, at rest.
-export function collectPair( [ finder, props, resolveSrc ] ) {
+// Everything the comparison needs about one element pair, at rest. With a ref prefix (ref tracing,
+// lib/ref-trace.mjs) it also returns `trace`: the element's ref, block root class and selector paths.
+export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
 	const el = resolve( finder );
@@ -147,7 +148,13 @@ export function collectPair( [ finder, props, resolveSrc ] ) {
 		}
 		return `unresolved:${ name }`;
 	};
+	let trace;
+	if ( refPrefix ) {
+		// eslint-disable-next-line no-new-func
+		trace = new Function( `return (${ traceSrc });` )()( el, carrier, refPrefix, pathSrc );
+	}
 	return {
+		trace,
 		text: ( el.innerText || el.getAttribute( 'aria-label' ) || '' ).replace( /\s+/g, ' ' ).trim().slice( 0, 400 ),
 		keyframes: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : cs.animationName.split( ',' ).map( ( n ) => keyframes( n.trim() ) ).join( ' | ' ),
 		box: { x: Math.round( r.x ), y: Math.round( r.y + window.scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
