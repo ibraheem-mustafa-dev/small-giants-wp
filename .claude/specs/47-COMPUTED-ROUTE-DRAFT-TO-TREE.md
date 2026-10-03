@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.3"
+spec_version: "0.4"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -127,8 +127,12 @@ to run on a mismatch. The md5 covers the files that decide what a page paints (`
 front-end stylesheets and view scripts) and leaves out the editor bundles (`index.js`, `index.css`, their rtl copy,
 `index.asset.php`): the same commit built in another folder gives a different `index.js` (proven 2026-10-03: commit
 4ba8be0f1 deployed from the deploy's temporary worktree and built locally gave different editor bundles and identical
-front-end files), so a whole-folder key could never match. Inherited properties are not recorded as default paint (R-47-5 uses the parent's live value).
-The cache is `scripts/computed-route/cache/`, gitignored in the commit that creates the folder.
+front-end files), so a whole-folder key could never match. View bundles and asset files are hashed after blanking
+webpack's module numbers and the asset version (`calibrate.mjs::normaliseBundle`): the same commit numbers its modules by
+build folder (proven 2026-10-03: trust-bar's `view.js` differed only in module 2310 against 6469), while any code change
+still changes the key. Inherited properties are not recorded as default paint (R-47-5 uses the parent's live value).
+The cache is `scripts/computed-route/cache/`, gitignored, one file per block. It does not yet separate sites: a block
+calibrated on a second site overwrites the first site's file, default paint included (residual, §5 stage 3).
 
 **Steps:**
 1. Render one default instance and record every rendered element's computed style.
@@ -152,7 +156,7 @@ The cache is `scripts/computed-route/cache/`, gitignored in the commit that crea
 | Enum | every value in turn |
 | Boolean | the opposite of the default |
 | Number (unitless line height, weight, opacity) | 1.37; 700 or 300, whichever differs from the default; 0.37 |
-| Has a `css_state` | the marker is set and the element is put in that state before reading (hover: a real mouse; open, scrolled, current, shrunk: the block's own trigger) |
+| Has a `css_state` | the marker is set and the element is put in that state before reading (`lib/calibrate.mjs::STATE_TRIGGERS`): hover under a real mouse; scrolled by scrolling the window, compared with the variant's default read scrolled; open and current rendered by the fixture (an accordion item saved open, the first tab, the last breadcrumb). A state with no trigger (shrunk today), a hidden element that cannot be hovered, or a header that never takes its scrolled class is listed in `untestedStates`, never calibrated as rest |
 
 A setting whose marker fails `wp-build-page.js` validation is reported as `marker-rejected` with the builder's message.
 
@@ -161,8 +165,10 @@ A setting whose marker fails `wp-build-page.js` validation is reported as `marke
   --slug cr-calibration --status private`. Its post ID goes in `scripts/computed-route/calibration-targets.json`
   (`{ "<site>": { "envFile", "envKey", "postId" } }`; eye-care-test: 668). Later runs replace that page with
   `--post-id`. Private, it is never public, indexed or linked; calibration reads it in a logged-in browser.
-- One build holds a whole block: one default instance plus one instance per (setting, marker), each wrapped in an
-  `sgs/container` with class `cr-cal-<block>-<setting>`.
+- One build holds a block: one default instance per variant plus one instance per (setting, marker), each wrapped in an
+  `sgs/container` with class `cr-cal-<block>-<setting>`. A block with more than `CHUNK` (150) instances is built and read
+  in several pages, each carrying every variant's default instance (google-reviews has about 400; a 400-instance save
+  failed with an invalid JSON response). One block's failure is that block's error; the run continues.
 - Each block has a fixture in `scripts/computed-route/calibration-fixtures.json`: the minimum content and parent chain
   it needs (text for a heading, a parent `sgs/site-footer` for `site-footer-row`). A block with no fixture is
   reported, not guessed.
@@ -400,22 +406,36 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - Calibration also flagged `sgs/site-footer-row` per-device `gap` and `contentWidth` reaching 375 and 1440
        but not 768 (a one-width hardcode candidate), and dead settings per block (some are fixture artefacts, such
        as a border style with no border width). Each is proved before it is fixed.
-3. **Solve on every built Eye Care surface.** It shrinks the current fix register. Add the functional flows
-   (FR-47-7), the remaining walker items (FR-47-6 items 1 to 5) and the full calibration cache. Residual scope, in order:
-   - **State mapping first.** Solve treats every non-hover row as the rest state; configs with scrolled, drawer-open,
-     filter or tab states would write those values into rest settings. Each `surfaces.json` entry names its walker
-     states' setting state (`{ "<walker state>": null | "scrolled" | "open" | "shrunk" | "current" }`); rows from an
-     unmapped state are reported, never written.
-   - **Fixtures and calibration** for every block the other trees use (about 40), variants where one block renders
-     different elements (as business-info's four display types). Calibrating a block inside a header or drawer post
-     uses a dedicated post recorded in `calibration-targets.json` (§3.2).
-   - **One surface at a time** from `sites/eye-care-ward-end/build/surfaces.json`, each walker config given
-     `refPrefix: 'cr-ref-'`, `divergences: '../divergences.json'` and 1920; each run's Hardcode and Missing-setting
-     rows feed the register's framework items, and its closed items are marked "Solve closed" there.
-   - **Gap typing:** a setting that paints a parent while a rule on a child overrides it (the hours day label) comes
-     out Missing setting; calibration should record the child's own value so Solve can name it Hardcode.
-   - **Calibration leads to prove:** `sgs/site-footer-row` per-device `gap` and `contentWidth` skip 768; the dead
-     settings in each `cache/<block>.json` (`dead`), after ruling out fixture artefacts.
+3. **Solve on every built Eye Care surface.** It shrinks the current fix register. In progress (2026-10-03).
+   - **State mapping: done.** Each `surfaces.json` entry names its walker states' setting state (`{ "<walker state>":
+     null | "scrolled" | "open" | "shrunk" | "current" }`); rows from an unmapped state are reported, never written, and
+     draft values are read only from the group's own states (`lib/solve-rows.mjs::settingState`, `writableGroups`,
+     `draftValues`). A stateful candidate with no calibration entry returns `uncalibrated`, not `no-setting`.
+   - **Surfaces: done.** 16 entries in `sites/eye-care-ward-end/build/surfaces.json` (pages, header, mobile menu, four
+     megas, size-guide modal, lens configurator, shop and product templates), each walker config with `refPrefix`,
+     `divergences` and 1920. Scoring: `sites/eye-care-ward-end/build/qa/solve-score.mjs` with one
+     `qa/score-items/<surface>.json` per surface, built from the register.
+   - **Calibration: 44 of the 45 SGS blocks these trees use.** Fixtures come from each block's first use in the trees,
+     styling attributes back to default. `brand-strip` times out (its live brand query runs in every instance): it
+     needs a manual-logo fixture or a smaller chunk (done inside the 51-block calibration track below). Leads to prove are the register's "Computed route findings"
+     (CR1-CR6), including the box helper that sets unset sides to 0 (CR6, proven). The 27 core and WooCommerce blocks in
+     the shop and product templates have no `source = 'sgs'` settings, so Solve reports their rows and never writes them.
+   - **Box seeding.** The first side written into an empty box brings the other sides at their calibrated default paint
+     (`lib/resolve.mjs::resolve`), because `helpers-box.php::sgs_box_object_shorthand` prints 0 for unset sides.
+   - **Results per surface:**
+     - About: 4 of 5 items closed (105, 106); open style and box rows 594 to 281; 0 regressions. Wrong writes 3 to 4 of
+       about 27, over the 10% line, all on the WhatsApp button (its sizing differs from the draft's, register S4), all
+       reverted by the guard. 107 stays open: no walker pair measures the grid's columns (add one to `about.mjs`).
+     - Lenses, Help, Contact, Home, header, mobile menu, the four megas, size guide, lens configurator, shop, product:
+       run in that order; each run is scored and committed with its register update.
+   - **Residual after the surfaces:**
+     - The functional flows (FR-47-7) and the walker's remaining items (FR-47-6 items 1 to 5): not started.
+     - Calibrate the other 51 SGS blocks (no Eye Care tree uses them) on sandybrown, after the cache is split per site
+       (slot maps shared, default paint per site), so Fill and the next client start calibrated.
+     - **Gap typing:** a setting that paints a parent while a rule on a child overrides it (the hours day label) comes
+       out Missing setting; calibration should record the child's own value so Solve can name it Hardcode.
+     - **Wrong-write accounting:** the guard reverts every write on a node when no calibrated side effect explains the
+       regression, so collateral reverts count as wrong writes (About's line height and icon gap).
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer.
 5. **A second draft** from a different designer, to test generality.
 6. **Handover to Spec 31.** Spec 31 decides, under its own plan, whether `sc_var_responsive_bridge.py` is still needed

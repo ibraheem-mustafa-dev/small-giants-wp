@@ -17,8 +17,8 @@ equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3
 **Eye Care: now built by hand first (D1149, 2026-09-24).** The Eye Care site is built by hand to client-ready from
 Claude Design's gap map; the finished site becomes the pipeline's answer key. Every surface is built and live on eye-care-test, was walked against
 the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list, all decisions taken. Spec 47's tool
-(measure the draft, write the layout settings automatically) passed its footer proof; next it runs on every other surface,
-then the register build (Front F).
+(measure the draft, write the layout settings automatically) passed its footer proof and is now running on every
+other surface; then the register build (Front F).
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -52,12 +52,14 @@ cooldown blocks a second pair (N11); the gallery ignores WooCommerce's product g
 empty groups after clearing (N25); the drawer body overflows by its title row (15); a footer row given a width cap
 collapses to zero width (N46). No blockers.
 
-**Spec 47 (v0.3): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). Stages 1
-and 2 are built: block calibration on a private page (eye-care-test post 668), the resolver, Solve with a regression
-guard, the divergence ledger, and walker ref tracing (GAP-CHECKLIST §16; benchmark 5 of 5, 0 noise). The footer proof
-passed on Bean's success line (14 of 15 items handled: closed, or correctly identified as a framework gap); Solve's 47
-writes are in `footer.tree.json` and live on `sgs_footer` 182. Next: stage 3, Solve on every other built surface
-(§5 stage 3 lists the residual scope, state mapping first).
+**Spec 47 (v0.4): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). Stages 1
+and 2 built; the footer proof passed (14 of 15 items handled). Stage 3 in progress (2026-10-03, `main` f071c92fc plus the
+handoff commit, not yet pushed: the push was refused by the session's permission check): walker state mapping, 16
+surfaces in `sites/eye-care-ward-end/build/surfaces.json`, 44 of 45 blocks calibrated on eye-care-test post 668
+(brand-strip times out), About solved (4 of 5 items closed, 0 regressions; WhatsApp button writes over the 10% wrong-write
+line, all reverted). The other surfaces are running in the same session. A parallel track calibrates the 51 SGS blocks no
+Eye Care tree uses on sandybrown, after splitting the cache per site. Register "Computed route findings" CR1-CR6 holds
+the calibration leads (CR6, the box helper zeroing unset sides, is proven).
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:** Spec 47
 §5 stage 3, then the register in the plan's "Work plan" order.
