@@ -23,6 +23,11 @@ const LSIZE = '[data-type-key="pa_frame-size"] input:checked + .sgs-option-picke
 
 export default {
 	name: 'product',
+	widths: [ 375, 768, 1440, 1920 ],
+	// Ref tracing (Spec 47 FR-47-6 item 7): every row names the tree node (cr-ref-<surface>-<n>) it was measured on.
+	refPrefix: 'cr-ref-',
+	// Intended differences (Spec 47 FR-47-5), shared by every Eye Care surface.
+	divergences: '../divergences.json',
 	// Nav-track chrome outside the header and footer on both sides: the draft's floating WhatsApp bubble and
 	// the "100% genuine" trust bar above the header (copied from shop.mjs: the draft has no class names, so
 	// each is found by its own text). Live's header, footer, mobile menu, mega panels and WhatsApp bubble are

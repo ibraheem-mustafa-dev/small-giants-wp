@@ -132,6 +132,11 @@ const LINKS = Object.assign( {}, ...LINK_GROUPS
 
 export default {
 	name: 'header',
+	widths: [ 375, 768, 1440, 1920 ],
+	// Ref tracing (Spec 47 FR-47-6 item 7): every row names the tree node (cr-ref-<surface>-<n>) it was measured on.
+	refPrefix: 'cr-ref-',
+	// Intended differences (Spec 47 FR-47-5), shared by every Eye Care surface.
+	divergences: '../divergences.json',
 	// The panels and the drawer are layers over the page: scrolling moves nothing in them, and the explicit
 	// `scrolled` state covers the header's scrolled look, so the automatic scrolled state would only repeat it
 	// (and would scroll the page under every mega state after it).

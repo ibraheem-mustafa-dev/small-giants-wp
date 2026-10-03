@@ -12,5 +12,248 @@
     "states": {
       "opening": null
     }
+  },
+  "about": {
+    "tree": "about.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 187
+    },
+    "walker": "qa/parity/about.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "opening": null
+    }
+  },
+  "lenses": {
+    "tree": "lenses.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 168
+    },
+    "walker": "qa/parity/lenses.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "opening": null
+    }
+  },
+  "help": {
+    "tree": "help.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 171
+    },
+    "walker": "qa/parity/help.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "opening": null,
+      "faq-closed": null,
+      "faq-item2-open": "open"
+    },
+    "walkStates": [
+      "opening",
+      "faq-closed",
+      "faq-item2-open"
+    ]
+  },
+  "contact": {
+    "tree": "contact.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 190
+    },
+    "walker": "qa/parity/contact.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "opening": null
+    }
+  },
+  "home": {
+    "tree": "home.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 208
+    },
+    "walker": "qa/parity/home.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "opening": null
+    }
+  },
+  "header": {
+    "tree": "header.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 199
+    },
+    "walker": "qa/parity/header.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "closed": null,
+      "scrolled": "scrolled"
+    },
+    "walkStates": [
+      "closed",
+      "scrolled"
+    ]
+  },
+  "mobile-menu": {
+    "tree": "mobile-menu.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 203
+    },
+    "walker": "qa/parity/header.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "drawer-open": null
+    },
+    "walkStates": [
+      "drawer-open"
+    ]
+  },
+  "mega-sunglasses": {
+    "tree": "mega-sunglasses.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 165
+    },
+    "walker": "qa/parity/header.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "mega-shop": null
+    },
+    "walkStates": [
+      "mega-shop"
+    ]
+  },
+  "mega-brands": {
+    "tree": "mega-brands.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 176
+    },
+    "walker": "qa/parity/header.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "mega-brands": null
+    },
+    "walkStates": [
+      "mega-brands"
+    ]
+  },
+  "mega-lenses": {
+    "tree": "mega-lenses.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 183
+    },
+    "walker": "qa/parity/header.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "mega-lenses": null
+    },
+    "walkStates": [
+      "mega-lenses"
+    ]
+  },
+  "mega-help": {
+    "tree": "mega-help.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 186
+    },
+    "walker": "qa/parity/header.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "mega-help": null
+    },
+    "walkStates": [
+      "mega-help"
+    ]
+  },
+  "size-guide": {
+    "tree": "size-guide.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 461
+    },
+    "walker": "qa/parity/help.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "size-guide": null
+    },
+    "walkStates": [
+      "size-guide"
+    ]
+  },
+  "lens": {
+    "tree": "lens-configurator.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "postId": 463
+    },
+    "walker": "qa/parity/lens.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "q1-use": null,
+      "q2-thickness": null,
+      "q3-finish": null,
+      "q4-prescription": null
+    }
+  },
+  "shop": {
+    "tree": "archive-product.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "template": "archive-product"
+    },
+    "walker": "qa/parity/shop.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "opening": null
+    }
+  },
+  "product": {
+    "tree": "single-product.tree.json",
+    "envFile": ".claude/secrets/eye-care-test.env",
+    "envKey": "EYECARETEST",
+    "site": "eye-care-test",
+    "target": {
+      "template": "single-product"
+    },
+    "walker": "qa/parity/product.mjs",
+    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "states": {
+      "opening": null
+    }
   }
 }
