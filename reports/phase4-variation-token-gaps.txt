@@ -1,8 +1,8 @@
-# Stage 3 Style Variation Sync — 2026-09-15 14:34:52 UTC
+# Stage 3 Style Variation Sync — 2026-10-03 12:06:53 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 7 | Missing: 6 | Inserted: 0 | Skipped: 140 | Conflicts: 124
+Snapshots found: 8 | Missing: 5 | Inserted: 0 | Skipped: 246 | Conflicts: 161
 
 ## Per-client results
 
@@ -12,11 +12,37 @@ _(theme-snapshot.json not found)_
 
 ### eye-care-ward-end
 
-_(theme-snapshot.json not found)_
+Inserted: 0 | Skipped: 39 | Conflicts: 25
+
+- CONFLICT: color-primary (framework='#0D1B2A', client='#141414') → inserted as eye-care-ward-end-color-primary
+- CONFLICT: color-primary-text (framework='#FFFFFF', client='#FAF8F5') → inserted as eye-care-ward-end-color-primary-text
+- CONFLICT: color-primary-dark (framework='#060D14', client='#0F0F0F') → inserted as eye-care-ward-end-color-primary-dark
+- CONFLICT: color-accent (framework='#C9A84C', client='#9C8B78') → inserted as eye-care-ward-end-color-accent
+- CONFLICT: color-accent-text (framework='#7A6B00', client='#6F6152') → inserted as eye-care-ward-end-color-accent-text
+- CONFLICT: color-accent-light (framework='#F0E4C3', client='#EFEAE2') → inserted as eye-care-ward-end-color-accent-light
+- CONFLICT: color-success (framework='#2e7d4f', client='#1B7F43') → inserted as eye-care-ward-end-color-success
+- CONFLICT: color-surface (framework='#FFFFFF', client='#FAF8F5') → inserted as eye-care-ward-end-color-surface
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#FFFFFF') → inserted as eye-care-ward-end-color-surface-alt
+- CONFLICT: color-text (framework='#1a1a1a', client='#141414') → inserted as eye-care-ward-end-color-text
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#5E584F') → inserted as eye-care-ward-end-color-text-muted
+- CONFLICT: color-text-inverse (framework='#FFFFFF', client='#FAF8F5') → inserted as eye-care-ward-end-color-text-inverse
+- CONFLICT: color-border (framework='#C9A84C', client='#E6E1DA') → inserted as eye-care-ward-end-color-border
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#FAF8F5') → inserted as eye-care-ward-end-color-footer-bg
+- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Outfit, system-ui, sans-serif') → inserted as eye-care-ward-end-font-family-body
+- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='"Playfair Display", serif') → inserted as eye-care-ward-end-font-family-heading
+- CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='"Playfair Display", serif') → inserted as eye-care-ward-end-font-family-display
+- CONFLICT: spacing-30 (framework='0.75rem', client='1rem') → inserted as eye-care-ward-end-spacing-30
+- CONFLICT: spacing-40 (framework='1rem', client='1.5rem') → inserted as eye-care-ward-end-spacing-40
+- CONFLICT: spacing-50 (framework='1.5rem', client='2rem') → inserted as eye-care-ward-end-spacing-50
+- CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as eye-care-ward-end-spacing-60
+- CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as eye-care-ward-end-spacing-70
+- CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as eye-care-ward-end-spacing-80
+- CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as eye-care-ward-end-shadow-floating
+- CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as eye-care-ward-end-shadow-glow
 
 ### helping-doctors
 
-Inserted: 0 | Skipped: 9 | Conflicts: 16
+Inserted: 0 | Skipped: 19 | Conflicts: 18
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#2d6e5e') → inserted as helping-doctors-color-primary
 - CONFLICT: color-primary-text (framework='#FFFFFF', client='#ffffff') → inserted as helping-doctors-color-primary-text
@@ -34,6 +60,8 @@ Inserted: 0 | Skipped: 9 | Conflicts: 16
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as helping-doctors-color-accent-text
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Inter, system-ui, -apple-system, sans-serif') → inserted as helping-doctors-font-family-heading
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Inter, system-ui, -apple-system, sans-serif') → inserted as helping-doctors-font-family-body
+- CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as helping-doctors-shadow-floating
+- CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as helping-doctors-shadow-glow
 
 ### Indus Foods Mega Menu Design
 
@@ -41,7 +69,7 @@ _(theme-snapshot.json not found)_
 
 ### indus-foods
 
-Inserted: 0 | Skipped: 17 | Conflicts: 13
+Inserted: 0 | Skipped: 27 | Conflicts: 15
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#0A7EA8') → inserted as indus-foods-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#075E80') → inserted as indus-foods-color-primary-dark
@@ -56,14 +84,18 @@ Inserted: 0 | Skipped: 17 | Conflicts: 13
 - CONFLICT: font-size-hero (framework='50px', client='clamp(2.5rem, calc(2.5rem + (100vw - 1024px) * 0.02404), 3.125rem)') → inserted as indus-foods-font-size-hero
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Montserrat, system-ui, sans-serif') → inserted as indus-foods-font-family-heading
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client="'Source Sans 3', system-ui, sans-serif") → inserted as indus-foods-font-family-body
+- CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as indus-foods-shadow-floating
+- CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as indus-foods-shadow-glow
 
 ### mamas-munches
 
-Inserted: 0 | Skipped: 27 | Conflicts: 26
+Inserted: 0 | Skipped: 34 | Conflicts: 26
 
 - CONFLICT: color-accent (framework='#C9A84C', client='#f5d050') → inserted as mamas-munches-color-accent
-- CONFLICT: color-border-subtle (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border-subtle
+- CONFLICT: color-border (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border
+- CONFLICT: color-cookie-brown (framework='#8B6F4E', client='#8b6f4e') → inserted as mamas-munches-color-cookie-brown
 - CONFLICT: color-primary (framework='#0D1B2A', client='#e68a95') → inserted as mamas-munches-color-primary
+- CONFLICT: color-primary-text (framework='#FFFFFF', client='#fffaf5') → inserted as mamas-munches-color-primary-text
 - CONFLICT: color-primary-dark (framework='#060D14', client='#c56a7a') → inserted as mamas-munches-color-primary-dark
 - CONFLICT: color-surface (framework='#FFFFFF', client='#fbf3dc') → inserted as mamas-munches-color-surface
 - CONFLICT: color-surface-alt (framework='#F5F5F0', client='#fff9f0') → inserted as mamas-munches-color-surface-alt
@@ -71,13 +103,9 @@ Inserted: 0 | Skipped: 27 | Conflicts: 26
 - CONFLICT: color-text (framework='#1a1a1a', client='#3a2e26') → inserted as mamas-munches-color-text
 - CONFLICT: color-text-inverse (framework='#FFFFFF', client='#fffaf5') → inserted as mamas-munches-color-text-inverse
 - CONFLICT: color-text-muted (framework='#6B6B6B', client='#6b5c50') → inserted as mamas-munches-color-text-muted
-- CONFLICT: color-border (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border
-- CONFLICT: color-cookie-brown (framework='#8B6F4E', client='#8b6f4e') → inserted as mamas-munches-color-cookie-brown
-- CONFLICT: color-primary-text (framework='#FFFFFF', client='#fffaf5') → inserted as mamas-munches-color-primary-text
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#7A6500') → inserted as mamas-munches-color-accent-text
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#3A2E26') → inserted as mamas-munches-color-footer-bg
 - CONFLICT: color-accent-light (framework='#F0E4C3', client='#FEF3C7') → inserted as mamas-munches-color-accent-light
-- CONFLICT: font-size-regular (framework='16px', client='15px') → inserted as mamas-munches-font-size-regular
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Inter, sans-serif') → inserted as mamas-munches-font-family-body
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Fraunces, serif') → inserted as mamas-munches-font-family-heading
 - CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='Fraunces, serif') → inserted as mamas-munches-font-family-display
@@ -87,6 +115,8 @@ Inserted: 0 | Skipped: 27 | Conflicts: 26
 - CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as mamas-munches-spacing-60
 - CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as mamas-munches-spacing-70
 - CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as mamas-munches-spacing-80
+- CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as mamas-munches-shadow-floating
+- CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as mamas-munches-shadow-glow
 
 ### Mega-menu design
 
@@ -94,7 +124,7 @@ _(theme-snapshot.json not found)_
 
 ### sgs-construction
 
-Inserted: 0 | Skipped: 21 | Conflicts: 18
+Inserted: 0 | Skipped: 31 | Conflicts: 20
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1C1C1C') → inserted as sgs-construction-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#0A0A0A') → inserted as sgs-construction-color-primary-dark
@@ -114,10 +144,12 @@ Inserted: 0 | Skipped: 21 | Conflicts: 18
 - CONFLICT: font-size-x-large (framework='24px', client='clamp(1.25rem, 3vw, 1.75rem)') → inserted as sgs-construction-font-size-x-large
 - CONFLICT: font-size-xx-large (framework='36px', client='clamp(1.75rem, 4vw, 2.5rem)') → inserted as sgs-construction-font-size-xx-large
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client="'DM Sans', system-ui, sans-serif") → inserted as sgs-construction-font-family-heading
+- CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as sgs-construction-shadow-floating
+- CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as sgs-construction-shadow-glow
 
 ### sgs-healthcare
 
-Inserted: 0 | Skipped: 22 | Conflicts: 17
+Inserted: 0 | Skipped: 32 | Conflicts: 19
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1A5F6B') → inserted as sgs-healthcare-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#124550') → inserted as sgs-healthcare-color-primary-dark
@@ -136,10 +168,12 @@ Inserted: 0 | Skipped: 22 | Conflicts: 17
 - CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-healthcare-font-size-large
 - CONFLICT: font-size-x-large (framework='24px', client='clamp(1.25rem, 3vw, 1.75rem)') → inserted as sgs-healthcare-font-size-x-large
 - CONFLICT: font-size-xx-large (framework='36px', client='clamp(1.75rem, 4vw, 2.5rem)') → inserted as sgs-healthcare-font-size-xx-large
+- CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as sgs-healthcare-shadow-floating
+- CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as sgs-healthcare-shadow-glow
 
 ### sgs-mosque
 
-Inserted: 0 | Skipped: 22 | Conflicts: 17
+Inserted: 0 | Skipped: 32 | Conflicts: 19
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1A3D2B') → inserted as sgs-mosque-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#102519') → inserted as sgs-mosque-color-primary-dark
@@ -158,10 +192,12 @@ Inserted: 0 | Skipped: 22 | Conflicts: 17
 - CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-mosque-font-size-large
 - CONFLICT: font-size-x-large (framework='24px', client='clamp(1.25rem, 3vw, 1.75rem)') → inserted as sgs-mosque-font-size-x-large
 - CONFLICT: font-size-xx-large (framework='36px', client='clamp(1.75rem, 4vw, 2.5rem)') → inserted as sgs-mosque-font-size-xx-large
+- CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as sgs-mosque-shadow-floating
+- CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as sgs-mosque-shadow-glow
 
 ### sgs-professional
 
-Inserted: 0 | Skipped: 22 | Conflicts: 17
+Inserted: 0 | Skipped: 32 | Conflicts: 19
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1E2D5E') → inserted as sgs-professional-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#131D3E') → inserted as sgs-professional-color-primary-dark
@@ -180,6 +216,8 @@ Inserted: 0 | Skipped: 22 | Conflicts: 17
 - CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-professional-font-size-large
 - CONFLICT: font-size-x-large (framework='24px', client='clamp(1.25rem, 3vw, 1.75rem)') → inserted as sgs-professional-font-size-x-large
 - CONFLICT: font-size-xx-large (framework='36px', client='clamp(1.75rem, 4vw, 2.5rem)') → inserted as sgs-professional-font-size-xx-large
+- CONFLICT: shadow-floating (framework='0 8px 30px rgba(0,0,0,0.12)', client='0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)') → inserted as sgs-professional-shadow-floating
+- CONFLICT: shadow-glow (framework='0 0 20px rgba(248,122,31,0.3)', client='0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)') → inserted as sgs-professional-shadow-glow
 
 ### small-giants-studio-v2
 
