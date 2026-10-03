@@ -283,8 +283,8 @@
 | 104 | Shop the range hover | S1 (lifts like every button) | | |
 | 105 | Heading, credentials and intro spacing | name heading bottom margin 20px | tree | Solve closed (2026-10-03) |
 | 106 | Credential cards come out shorter | card headings line height 1.5, bottom margin 6px | tree | Solve closed (2026-10-03) |
-| 107 | Columns the wrong widths | grid columns 1.1fr 1fr | tree | proven; open after Solve: no walker pair measures the grid's columns (add one to `about.mjs`) |
-| 108, 109 | WhatsApp button | S4 | | |
+| 107 | Columns the wrong widths | grid columns 1.1fr 1fr | tree | closed (2026-10-03): the tree held `1.1fr 0.9fr`; set to `1.1fr 1fr` and the credential column width reads closed on the Solve re-walk |
+| 108, 109 | WhatsApp button | S4. Sizing done in the tree (2026-10-03): the home button's icon 20px and gap 11px, no vertical padding, 50px tall (draft); 1px wider than the draft from the 20px icon (draft 19px, your rule 109). Icon colour and the hover grow-and-shadow stay with S4 | tree (done) + S4 | proven |
 | N42 | Content starts too low | S6 | | |
 
 ## Help
@@ -371,7 +371,8 @@ Calibration (2026-10-03) measured, on eye-care-test's private calibration page, 
 | CR10 | Aspect-ratio settings are never measured | 7 blocks have an `aspect-ratio` setting; neither the walker's property list nor calibration's (`lib/calibrate.mjs::READ_PROPS`, from the walker) reads `aspect-ratio`, so Solve can never see or write one | open (route) |
 | CR11 | A border style alone reads as dead on about 50 blocks | The style prints only with a border width, and calibration changes one setting at a time. Calibration needs a paired width marker before border style can be mapped | open (route) |
 | CR12 | The dark-mode toggle renders nothing for every current client | `theme-toggle/render.php` returns early without a derived dark palette (`settings.custom.dark`); no `sites/*/theme-snapshot.json` has one | open |
-| CR13 | `sgs/form-field-hidden`'s block.json example uses `name` and `value`, which the block does not have (`fieldName`, `defaultValue`) | Offline fixture check against block.json, 2026-10-03 | proven; fix with the next deploy |
+| CR13 | `sgs/form-field-hidden`'s block.json example uses `name` and `value`, which the block does not have (`fieldName`, `defaultValue`) | Offline fixture check against block.json, 2026-10-03 | fixed (7d465cff2); deploys with the next sandybrown deploy |
+| CR14 | Solve cannot write a setting on an element no walker pair measures, so writes coupled to it are reverted as wrong | About's WhatsApp button (2026-10-03): the draft values for gap (11px) and vertical padding (0) were written and reverted, because the button's width moved 153px→160px against 155px. The cause was the icon (live 24px, draft 19px: label x 52 vs 54, label width 77.28px both sides); `whatsapp-cta.json::settings.iconSize` maps it, but the svg is not a walker pair, so no row asked for it. Written by hand in the tree, then closed on the re-walk | proven; route fix open (measure a pair's child media, or batch a setting's calibrated side effects) |
 
 ## Walker improvements (why some of your points were missed)
 
