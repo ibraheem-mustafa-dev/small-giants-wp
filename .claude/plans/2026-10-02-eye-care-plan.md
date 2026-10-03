@@ -60,9 +60,10 @@ re-run by hand). The process for this review is `plans/2026-10-01-eye-care-revie
   - Colour swatches are each variation's own photo, with a tile as the fallback. Gather real colourway photos for
     one photographed frame (2026-09-28).
 - **Prices:**
-  - Pennies on every price: product page, lens pop-up, cart and checkout.
-  - Only whole-pound savings and card prices drop ".00" ("Save £32", "£139"), set by the Customizer's "Hide .00…"
-    (2026-09-25, 2026-09-27).
+  - Whole-pound prices drop ".00" on every shop page: cards, product page, lens pop-up, bag ("£139"). Prices with
+    pennies keep them. Emails and admin keep ".00". One Customizer switch, "Hide .00…" (2026-10-03, replacing the
+    2026-09-25/27 rule that kept pennies on the product page, cart and checkout). WooCommerce's checkout total lines:
+    register decision D4.
 - **Product page and lenses:**
   - Product-page tabs: one editable starting layout, edited in the Site Editor (2026-09-25).
   - The prescription is the lens configurator's 4th question, per pair. Checkout shows each pair's choice and asks
@@ -390,8 +391,8 @@ Each section: what is built (checked), what is open, and a Review heading that t
     - The product gallery zoom is an opt-in of the shared hover-effects image zoom, not a new control.
     - The Brands mega tiles show a 32px logo *and* the name and frame count in the draft
       (`build/qa/parity/mapping-mega-brands-lenses.md`). Live hides the name and count, so the fix keeps the logos.
-- **Bean's eye check (step 6):** the 4-width sheets (59 pages) were sent on 2026-10-02. Bean is writing his own list to
-  compare with the register; differences get added to the register.
+- **Bean's eye check (step 6):** the 4-width sheets (59 pages) were sent on 2026-10-02. Bean's own list (2026-10-03,
+  about 60 new points) is merged into the register.
 
 | Surface | Report | Open rows | Unique | Accepted (decided / blind / same paint) | Violations | Foundational | Jitter |
 |---|---|---|---|---|---|---|---|
@@ -425,46 +426,44 @@ adds a setting is followed by rebuilding every tree that uses it before measurin
 
 ### 1-2. The items: `plans/2026-10-02-eye-care-fix-register.md`
 
-The register lists every item to fix: 162 in all, by surface in build order, each with its fix, type and status.
-It replaced this section's first lists after a verification pass (2026-10-02, six agents, each checked against the
-code, the framework DB, the trees and the screenshots).
-- **The verification pass changed a lot.** Of 160 causes it checked:
-  - 79 were confirmed;
-  - 34 had the wrong fix and 20 the wrong cause, now corrected in the register;
-  - 20 were not real, and are listed at the register's end;
-  - 7 still need a live check.
-- **Examples of corrections:**
-  - The mega menus' extra 52px is the inner containers' default content width (a tree setting), not double padding.
-  - The WhatsApp button's hover lift already has controls (its Hover panel).
-  - The footer's link colours and underlines come from the theme's global link style (one per-client snapshot
-    change).
-  - Several "set this attribute" fixes hit hardcoded rules (accordion header, tab panel inset, swatch tile padding,
-    price weight), so they are framework repairs.
+The register is the work list. It holds every fix, by surface in build order, each with its fix, type and status.
+- **How it was made:**
+  - **Version 1 (2026-10-02):** the walker's classified causes, re-verified against code, trees and screenshots.
+  - **Version 2 (2026-10-03):** merges Bean's review of version 1 (about 60 new points and a ruling on every item). Each
+    cause was re-traced by six investigators, three of them testing live, then QC-councilled (structure, rules,
+    coverage).
+- **What changed in version 2:**
+  - Twelve site-wide fixes (S1 to S12) replace many per-item fixes: button hover, link hover, phone hover, WhatsApp,
+    accordion, page padding, reviews, pennies, brand logos, stretched links, custom gaps, focus underline.
+  - Bean's choices win over the draft where he chose (black link text with a sweep underline, 3px lift on every
+    button, live icon sizes).
+  - New proven bugs:
+    - the add-to-bag route drops a second product, and a 30s cooldown blocks a second pair;
+    - the gallery ignores WooCommerce's own product gallery;
+    - the shop filters leave empty groups behind after a filter is cleared;
+    - the hero's vertical position writes to the wrong axis;
+    - the phone drawer body overflows by its title-row height.
+  - Step 0: the live header is older than `header.tree.json`, so every tree is rebuilt before any item is judged.
 
 **Build order:**
-1. Every framework repair and new control in the register, then one deploy.
-2. The tree settings, surface by surface in the register's order, re-walking each surface after its trees are applied.
-3. Content.
-
-The checkout skin and the order-confirmation layout need a short design pass first: the skin must stay universal
-(per-client tokens), never Eye Care-only CSS.
+1. Step 0: rebuild every tree from its current file.
+2. Every framework repair and new setting in the register (S-fixes first), then one deploy, then rebuild every tree that
+   uses a new setting.
+3. The tree settings, surface by surface in the register's order, re-walking each surface after its trees are applied.
+4. Content and data.
 
 ### 3. Content and data
 
-- Create Privacy and Terms pages (the footer's `/privacy` and `/terms` return 404).
-- Set the Google Business profile URL in Site Info (the footer's Google link is missing).
-- Gallery images for the photographed frames (one image today, so no thumbnail strip); colourway photos (carried).
+Listed in the register (Type "content"): Privacy and Terms pages, the Site Info address line break and copyright text,
+menu URLs for the mega parents, the empty product spec rows, lens-height data, size labels without the box symbol,
+shipping wording.
 
-### 4. Decisions for Bean (each asked in the session that reaches it)
+### 4. Decisions for Bean
 
-- **WhatsApp prefill.** Live links carry a `?text=` message; the draft links the bare number. Keep the prefill
-  (recommended: the client sees what the message is about) or match the draft?
-- **Checkout terms line.** WooCommerce's terms line has no draft equivalent. Keep it (recommended: a UK shop should
-  show terms at the point of purchase) or remove it?
-- **Contact empty-submit validation.** Live shows red borders and messages; the draft has no validation. Keep live's
-  (recommended, as for the bag and checkout)?
-- **Brand links.** Mega Brands go to `/shop/?brands=<slug>`, the home strip to `/brand/<slug>/`. Pick one destination
-  (recommended: the filtered shop, which keeps the filters).
+D1 to D9 in the register's "Decisions for you", each with a recommendation. Decided on 2026-10-03: keep the
+WhatsApp prefill, keep the contact form's empty-submit messages, keep the checkout's coupon, notes and terms (each
+switchable), and hide ".00" on whole-pound prices across the shop pages (this replaces the 2026-09-25/27 rule that
+the product page, cart and checkout always show pennies).
 
 ### 5. Carried (unchanged)
 
