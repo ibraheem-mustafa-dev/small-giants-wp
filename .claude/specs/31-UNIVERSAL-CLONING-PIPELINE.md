@@ -44,6 +44,8 @@ DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Measured: a cens
 
 **The one-sentence target.** A single DB-driven, name-free routing engine reads any draft routing unit — a CSS property OR a content node (text/media/array) — and places it on the correct block attribute (or child InnerBlock) at the correct responsive tier, for `sgs/container` and every container-bearing composite identically — with completeness measured against a live coverage ledger and cheats caught by structural gates, not by eye.
 
+> **ROUTE.** A draft that renders by script goes to the computed route, Spec 47 (`47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`), whatever classes it carries; so does a static classless draft. A static draft that carries SGS class names stays on this converter. Spec 47 measures the rendered draft and writes settings through the framework DB, and shares no code with this converter. Each draft takes exactly one route.
+
 > **SCOPE — content extraction is IN, and UNIFIED with CSS.** Despite the title saying "CSS-Transfer", this spec governs the WHOLE draft→block transfer through the one container dispatch: **CSS routing AND content routing (scalar text lift, scalar media object-shaping, array/repeater lift, child-block emission)**. Content is NOT a separate engine, NOT a separate stage, NOT out-of-scope. The content fork (which child becomes a block vs a scalar attr — FR-31-2/2.1/2.2/2.5, §13.3) is INCORPORATED here as part of the same name-free DB dispatch; CSS simply adds the L1–L4 layers + more DB columns on top of the SAME recognise→resolve-destination→tier→serialise pipeline. Spec 22's content logic is absorbed into §13. **Do not infer content is excluded because the title or §8 says "container-CSS transfer."**
 
 ---
