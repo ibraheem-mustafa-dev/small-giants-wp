@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "id": "D-1",
+    "scope": "contact",
+    "node": "cr-ref-contact-22",
+    "state": "*",
+    "property": "margin-bottom",
+    "widths": [
+      375
+    ],
+    "expected": {
+      "value": "0px"
+    },
+    "reason": "At 375 the live form stacks its own top spacing under this subtext, so the draft 22px bottom margin lands the name field 23px lower than the draft (Solve 2026-10-03: y-from-form-subtext 45 to 68). 0px keeps the field where the draft has it; tablet and desktop keep 22px.",
+    "decided": "2026-10-03 Spec 47 Solve, contact regression"
+  }
+]

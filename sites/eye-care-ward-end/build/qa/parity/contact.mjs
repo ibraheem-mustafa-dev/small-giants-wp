@@ -93,7 +93,7 @@ const config = {
 		// only 2 levels (its DOM has no .sgs-container__inner wrapper), so only live changed.
 		{ name: 'detail-grid', anchor: 'whatsapp-cta', text: false, box: [ 'w' ],
 			draft: { js: `(r) => { const p = [...r.querySelectorAll('div')].find((d) => ! d.children.length && d.textContent.trim() === 'Phone'); return p && p.parentElement.parentElement; }` },
-			live: { js: `(r) => { const p = [...r.querySelectorAll('p')].find((x) => x.textContent.trim() === 'Phone'); return p && p.parentElement.parentElement.parentElement.parentElement; }` },
+			live: { js: `(r) => { const p = [...r.querySelectorAll('p')].find((x) => x.textContent.trim() === 'Phone'); let c = p && p.parentElement; while (c && 'grid' !== getComputedStyle(c).display) c = c.parentElement; return c; }` },
 			props: [ 'grid-template-columns', 'column-gap', 'row-gap' ] },
 		{ name: 'detail-phone-label', box: [ 'h' ], draft: { text: '^phone$', tag: 'div', within: 'main' }, live: { text: '^phone$', tag: 'p', within: '#sgs-page-contact' },
 			props: [ 'font-size', 'letter-spacing', 'text-transform', 'color' ] },
