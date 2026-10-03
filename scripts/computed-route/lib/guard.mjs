@@ -43,6 +43,22 @@ export function suspectOrder( settings, calFor ) {
 	return [ ...settings ].map( ( s, i ) => ( { s, i } ) ).sort( ( a, b ) => score( a.s ) - score( b.s ) || b.i - a.i ).map( ( x ) => x.s );
 }
 
+// The ref of the pair a distance row is measured from (`y-from-<pair>`, `x-from-<pair>`, `right-from-<pair>`), read
+// from the walk's live trace of that pair, or null.
+export function anchorRef( report, r ) {
+	const m = /^(?:y|x|right)-from-(.+)$/.exec( r.key || '' );
+	if ( ! m ) {
+		return null;
+	}
+	for ( const run of report.runs || [] ) {
+		const ref = run.pairs?.[ m[ 1 ] ]?.live?.trace?.ref;
+		if ( ref ) {
+			return ref;
+		}
+	}
+	return null;
+}
+
 const undo = ( tree, s ) => {
 	const node = nodeByRef( tree, s.ref );
 	const before = s.writes[ 0 ].before;
@@ -97,7 +113,14 @@ export function guardRound( base, report, tree, lastWrites, blocked, calFor, tri
 		if ( [ ...handled ].some( ( h ) => under( r.ref, h ) ) ) {
 			continue;
 		}
-		const open = settingsOf( lastWrites.filter( ( w ) => w.ref === r.ref && ! w.reverted ) );
+		let open = settingsOf( lastWrites.filter( ( w ) => w.ref === r.ref && ! w.reverted ) );
+		// No write on the row's own node: a node moves with writes inside it, and a distance row also moves with writes
+		// inside the pair it is measured from (Contact, 2026-10-03: the subtext's bottom margin pushed the name field
+		// 23px down, and the row carried the form card's ref, which held no write). Those writes are the suspects.
+		if ( ! open.length ) {
+			const from = anchorRef( report, r );
+			open = settingsOf( lastWrites.filter( ( w ) => ! w.reverted && ( under( w.ref, r.ref ) || ( from && under( w.ref, from ) ) ) ) );
+		}
 		if ( ! open.length ) {
 			continue;
 		}

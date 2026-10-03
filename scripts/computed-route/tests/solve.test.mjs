@@ -79,6 +79,32 @@ test( 'no regression, no revert', () => {
 	assert.equal( revertRegressions( before, before, tree(), structuredClone( writes ), new Map(), cal ).length, 0 );
 } );
 
+// A distance row on a node with no writes of its own (Contact, 2026-10-03): the subtext's margin write moved the name
+// field, whose row carries the form card's ref. The write inside the anchor pair is the suspect.
+const formTree = () => [ { name: 'sgs/container', attributes: { className: 'cr-ref-c-20' }, innerBlocks: [
+	{ name: 'sgs/text', attributes: { className: 'cr-ref-c-22', margin: { mobile: { bottom: '22px' } } } } ] } ];
+const fw = () => [ { round: 1, group: 'g-sub', ref: 'cr-ref-c-22', block: 'sgs/text', attr: 'margin', prop: 'margin-bottom', before: { mobile: { bottom: '0px' } }, after: { mobile: { bottom: '22px' } } } ];
+const formRun = ( diffs ) => ( { runs: [ { state: 'opening', width: 375, pairs: {
+	'form-subtext': { live: { trace: { ref: 'cr-ref-c-22' } }, diffs: [] },
+	'field-name': { live: { trace: { ref: 'cr-ref-c-20' } }, diffs } } } ] } );
+const movedField = formRun( [ { kind: 'box', key: 'y-from-form-subtext', draft: 45, live: 68, ref: 'cr-ref-c-20', path: '.sgs-form-field__input' } ] );
+
+test( 'MUST FAIL TO MISS: a distance row on a node with no writes tries the write inside its anchor pair', () => {
+	const t = formTree();
+	const w = fw();
+	const trials = new Map();
+	const out = guardRound( formRun( [] ), movedField, t, w, new Map(), () => ( { settings: {} } ), trials );
+	assert.deepEqual( out.map( ( x ) => x.ref ), [ 'cr-ref-c-22' ] );
+	assert.deepEqual( t[ 0 ].innerBlocks[ 0 ].attributes.margin, { mobile: { bottom: '0px' } } );
+	guardRound( formRun( [] ), formRun( [] ), t, w, new Map(), () => ( { settings: {} } ), trials );
+	assert.equal( w[ 0 ].reverted, true );
+} );
+
+test( 'positive control: a distance row whose anchor pair holds no write reverts nothing', () => {
+	const w = fw().map( ( x ) => ( { ...x, ref: 'cr-ref-c-99' } ) );
+	assert.equal( guardRound( formRun( [] ), movedField, formTree(), w, new Map(), () => ( { settings: {} } ), new Map() ).length, 0 );
+} );
+
 // Walker state mapping (Spec 47 §5 stage 3): rows are written only from walker states the surface maps to a setting
 // state; a scrolled run's values never land in rest settings, and draft values come only from the group's own states.
 import { writeRound } from '../solve.mjs';

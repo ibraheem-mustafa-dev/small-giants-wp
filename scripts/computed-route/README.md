@@ -160,6 +160,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 
 ### `lib/guard.mjs`
 - `explains(w, r, cal)` → true when calibration ties write `w` to regressed row `r` (its own property, a calibrated side effect, or a discovered layout effect).
+- `anchorRef(report, r)` → the ref of the pair a distance row (`y-from-<pair>`, `x-from-`, `right-from-`) is measured from, from the walk's live trace, or null. When the row's own node holds no write, the guard's suspects are the writes inside that node and inside the anchor pair.
 - `settingsOf(writes)` → the writes grouped by node and attribute (writes to one attribute chain, so they are undone together).
 - `suspectOrder(settings, calFor)` → layout-mode settings first, then settings writing a layout property, then the latest.
 - `guardRound(base, report, tree, lastWrites, blocked, calFor, trials)` → the writes whose state changed (reverted, under trial, restored); settles last round's trials against the new walk first.
