@@ -59,8 +59,8 @@
     "editorScript": "file:./index.js",
     "example": {
         "attributes": {
-            "name": "source",
-            "value": "website-contact-form"
+            "fieldName": "source",
+            "defaultValue": "website-contact-form"
         }
     }
 }

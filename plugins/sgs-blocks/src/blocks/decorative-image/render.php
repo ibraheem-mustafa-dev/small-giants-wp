@@ -201,11 +201,20 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 // $scoped_css is pre-sanitised via $sgs_css_num (numeric cast) or a literal.
 $style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 
+// The editor's "Additional CSS class(es)" and the anchor reach whichever element is the block root (naked <img>,
+// treated/overlay wrapper or video wrapper) through the block wrapper attributes, parsed and merged the same way as
+// sgs/media's naked mode. Values are decoded once because every output path escapes them again.
+$sgs_di_wrapper_attrs = get_block_wrapper_attributes();
+preg_match( '/class="([^"]*)"/', $sgs_di_wrapper_attrs, $sgs_di_class_match );
+preg_match( '/id="([^"]*)"/', $sgs_di_wrapper_attrs, $sgs_di_id_match );
+$sgs_di_extra_class = trim( wp_specialchars_decode( $sgs_di_class_match[1] ?? '', ENT_QUOTES ) );
+$sgs_di_anchor      = wp_specialchars_decode( $sgs_di_id_match[1] ?? '', ENT_QUOTES );
+
 // Build data attributes — passed directly through $img_attrs for proper escaping.
 $img_attrs = array(
 	// `sgs-media-el` is the shared atom layer's marker for the REPLACED
 	// element (object-fit/focal-point read it) — added Wave 6, 2026-09-02.
-	'class'    => 'sgs-decorative-image sgs-media-el ' . $uid,
+	'class'    => trim( 'sgs-decorative-image sgs-media-el ' . $uid . ' ' . $sgs_di_extra_class ),
 	'alt'      => $rendered_alt,
 	'loading'  => 'lazy',
 	'decoding' => 'async',
@@ -292,11 +301,15 @@ if ( $is_video ) {
 		$video_wrapper_class[] = SGS_Media_Element::CLASS_BOX;
 	}
 	$video_wrapper_class[] = $uid;
+	$video_wrapper_class[] = $sgs_di_extra_class;
 	$wrapper_attrs         = array(
-		'class'       => implode( ' ', $video_wrapper_class ),
+		'class'       => trim( implode( ' ', $video_wrapper_class ) ),
 		'aria-hidden' => 'true',
 		'role'        => 'presentation',
 	);
+	if ( '' !== $sgs_di_anchor ) {
+		$wrapper_attrs['id'] = $sgs_di_anchor;
+	}
 	foreach ( $img_attrs as $key => $val ) {
 		if ( 0 === strpos( $key, 'data-' ) ) {
 			$wrapper_attrs[ $key ] = $val;
@@ -469,10 +482,14 @@ if ( $sgs_di_wants_wrapper ) {
 		$sgs_di_wrapper_class[] = SGS_Media_Element::CLASS_BOX;
 	}
 	$sgs_di_wrapper_class[] = $uid;
+	$sgs_di_wrapper_class[] = $sgs_di_extra_class;
 
 	$wrapper_attrs = array(
-		'class' => implode( ' ', $sgs_di_wrapper_class ),
+		'class' => trim( implode( ' ', $sgs_di_wrapper_class ) ),
 	);
+	if ( '' !== $sgs_di_anchor ) {
+		$wrapper_attrs['id'] = $sgs_di_anchor;
+	}
 	if ( $image_decorative ) {
 		$wrapper_attrs['aria-hidden'] = 'true';
 		$wrapper_attrs['role']        = 'presentation';
@@ -551,6 +568,10 @@ if ( $sgs_di_wants_wrapper ) {
 // escaped via $img_attrs. NO 'style' key on $img_attrs — the scoped
 // $style_tag_html (echoed first) carries the positioning/transform/opacity
 // rule (contract §A).
+// The anchor sits on the first (desktop) <img> only; tier siblings below copy everything else but must not repeat it.
+if ( '' !== $sgs_di_anchor ) {
+	$img_attrs['id'] = $sgs_di_anchor;
+}
 echo $style_tag_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_num + wp_strip_all_tags.
 echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
 	$image_id ? absint( $image_id ) : 0,
@@ -563,6 +584,7 @@ echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.Outpu
 foreach ( $tier_imgs as $tier_key => $tier_media ) {
 	$tier_attrs          = $img_attrs;
 	$tier_attrs['class'] = $base_class . ' sgs-decorative-image--' . $tier_key;
+	unset( $tier_attrs['id'] );
 	echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
 		$tier_media['id'],
 		$tier_media['url'],
