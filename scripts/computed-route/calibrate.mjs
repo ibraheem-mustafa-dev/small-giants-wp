@@ -32,6 +32,10 @@ const md5 = ( s ) => crypto.createHash( 'md5' ).update( s ).digest( 'hex' );
 // on the front end, and the same commit built in another folder (the deploy builds in a temporary worktree) gives a
 // different index.js, so a local build could never match. The key covers what a page paints: block.json, render.php,
 // the front-end stylesheets and view scripts.
+// Most instances one calibration page holds: larger blocks are built in chunks (google-reviews has about 400, and a
+// save of that page failed with an invalid JSON response on 2026-10-03; 157 saved).
+export const CHUNK = 150;
+
 export const EDITOR_ONLY = /^\.\/index(-rtl)?\.(js|css|asset\.php)$/;
 
 // Webpack names each bundled module by a number that depends on the build folder, not the code: the same commit gives
@@ -202,51 +206,72 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 	instances = instances.filter( ( i ) => ! i.row || undefined !== i.trigger );
 	const treeFile = path.join( CACHE, `${ short }.tree.json` );
 	const rejected = [];
-	for ( let attempt = 0; attempt < 3; attempt++ ) {
-		writeTree( treeFile, buildTree( block, fixture, instances ) );
-		const dry = build( target, treeFile, [ '--post-id', String( target.postId ), '--dry-run' ] );
-		if ( 0 === dry.code ) {
-			break;
+	// A block with more instances than one page saves reliably is built in chunks; every chunk carries each variant's
+	// default instance, so a marker is always compared with a default read on the same page load.
+	const defaults = instances.filter( ( i ) => i.isDefault );
+	const others = instances.filter( ( i ) => ! i.isDefault );
+	const chunks = [];
+	for ( let i = 0; i < others.length; i += CHUNK ) {
+		chunks.push( [ ...defaults, ...others.slice( i, i + CHUNK ) ] );
+	}
+	if ( ! chunks.length ) {
+		chunks.push( defaults );
+	}
+	const kept = [];
+	for ( let c = 0; c < chunks.length; c++ ) {
+		let list = chunks[ c ];
+		for ( let attempt = 0; attempt < 3; attempt++ ) {
+			writeTree( treeFile, buildTree( block, fixture, list ) );
+			const dry = build( target, treeFile, [ '--post-id', String( target.postId ), '--dry-run' ] );
+			if ( 0 === dry.code ) {
+				break;
+			}
+			// wp-build-page names each rejected node by its tree path: "[<i>] sgs/container > ...". Drop those instances.
+			const bad = new Set( [ ...dry.err.matchAll( /^\s*\[(\d+)\] sgs\/container[^:]*: (.*)$/gm ) ].map( ( m ) => {
+				rejected.push( { key: list[ Number( m[ 1 ] ) ].key, message: m[ 2 ] } );
+				return Number( m[ 1 ] );
+			} ) );
+			if ( ! bad.size ) {
+				return { block, error: `calibration tree rejected${ chunks.length > 1 ? ` (chunk ${ c + 1 } of ${ chunks.length })` : '' }: ${ dry.err.slice( -600 ) }` };
+			}
+			list = list.filter( ( _, i ) => ! bad.has( i ) );
 		}
-		// wp-build-page names each rejected node by its tree path: "[<i>] sgs/container > ...". Drop those instances.
-		const bad = new Set( [ ...dry.err.matchAll( /^\s*\[(\d+)\] sgs\/container[^:]*: (.*)$/gm ) ].map( ( m ) => {
-			rejected.push( { key: instances[ Number( m[ 1 ] ) ].key, message: m[ 2 ] } );
-			return Number( m[ 1 ] );
-		} ) );
-		if ( ! bad.size ) {
-			return { block, error: `calibration tree rejected: ${ dry.err.slice( -600 ) }` };
+		const built = build( target, treeFile, [ '--post-id', String( target.postId ) ] );
+		if ( ! built.json?.ok ) {
+			return { block, error: `calibration build failed${ chunks.length > 1 ? ` (chunk ${ c + 1 } of ${ chunks.length })` : '' }: ${ built.err.slice( -600 ) }` };
 		}
-		instances = instances.filter( ( _, i ) => ! bad.has( i ) );
+		const { browser, page } = await openBrowser( env );
+		let reads;
+		try {
+			reads = await readAll( page, built.json.link || `${ env.url }/?page_id=${ target.postId }`, list );
+		} finally {
+			await browser.close();
+		}
+		// Each instance keeps its own reads and its chunk's default reads (rest and scrolled) for its variant.
+		const chunkDefault = {};
+		list.forEach( ( inst, n ) => inst.isDefault && ( chunkDefault[ inst.variant ] = n ) );
+		const at = ( n, src ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, src[ w ]?.[ n ] ] ) );
+		list.forEach( ( inst, n ) => {
+			if ( inst.isDefault && c > 0 ) {
+				return;
+			}
+			const d = chunkDefault[ inst.variant ];
+			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), scrollMissed: reads.scrollMissed.includes( n ) } );
+		} );
 	}
 	rejectedOut.push( ...rejected.map( ( r ) => ( { block, ...r } ) ) );
-	const built = build( target, treeFile, [ '--post-id', String( target.postId ) ] );
-	if ( ! built.json?.ok ) {
-		return { block, error: `calibration build failed: ${ built.err.slice( -600 ) }` };
-	}
-	const { browser, page } = await openBrowser( env );
-	let reads;
-	try {
-		reads = await readAll( page, built.json.link || `${ env.url }/?page_id=${ target.postId }`, instances );
-	} finally {
-		await browser.close();
-	}
-	const per = ( n ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, reads[ w ][ n ] ] ) );
-	// The same instance read with the window scrolled (scroll instances and their variant's default).
-	const perScrolled = ( n ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, reads.scrolled[ w ]?.[ n ] ] ) );
+	instances = kept;
 	const untested = [ ...states ];
-	// Each variant's default instance, by variant index.
-	const defaultOf = {};
-	instances.forEach( ( inst, n ) => inst.isDefault && ( defaultOf[ inst.variant ] = n ) );
 	// Default paint: every variant's elements (a path seen in several variants keeps the first).
 	const elements = {};
-	Object.values( defaultOf ).forEach( ( n ) => Object.entries( defaultPaint( per( n ) ) ).forEach( ( [ p, v ] ) => ( elements[ p ] ??= v ) ) );
+	instances.filter( ( i ) => i.isDefault ).forEach( ( i ) => Object.entries( defaultPaint( i.read ) ).forEach( ( [ p, v ] ) => ( elements[ p ] ??= v ) ) );
 	const settings = {};
 	const dead = [];
 	const oneWidth = [];
 	const discovered = {};
-	instances.forEach( ( inst, n ) => {
+	instances.forEach( ( inst ) => {
 		if ( inst.discover ) {
-			const fx = discoverEffects( per( defaultOf[ inst.variant ] ), per( n ) );
+			const fx = discoverEffects( inst.def, inst.read );
 			const d = ( discovered[ inst.discover.attr ] ??= {} );
 			for ( const [ prop, e ] of Object.entries( fx ) ) {
 				( d[ prop ] ??= { slots: [], values: {} } );
@@ -259,19 +284,19 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 			return;
 		}
 		const name = inst.row.attr_name;
-		if ( 'hover' === inst.trigger && reads.hoverMissed.includes( n ) ) {
+		if ( 'hover' === inst.trigger && inst.hoverMissed ) {
 			untested.push( `${ name }:hover (the element is hidden, so it cannot be hovered)` );
 			return;
 		}
-		if ( 'scroll' === inst.trigger && reads.scrollMissed.includes( n ) ) {
+		if ( 'scroll' === inst.trigger && inst.scrollMissed ) {
 			untested.push( `${ name }:${ inst.row.css_state } (the header never took is-header-scrolled)` );
 			return;
 		}
 		// A scrolled marker is compared with its variant's default read scrolled too, so the state's own look is not
 		// counted as the marker's effect.
 		const s = 'scroll' === inst.trigger
-			? slotFor( inst.row, inst.marker, perScrolled( defaultOf[ inst.variant ] ), perScrolled( n ) )
-			: slotFor( inst.row, inst.marker, per( defaultOf[ inst.variant ] ), per( n ) );
+			? slotFor( inst.row, inst.marker, inst.defScrolled, inst.readScrolled )
+			: slotFor( inst.row, inst.marker, inst.def, inst.read );
 		if ( s.dead ) {
 			dead.push( name );
 			return;

@@ -173,7 +173,7 @@
       "scrollSpeed": "slow",
       "pauseOnHover": true,
       "brandLinkToShop": true,
-      "brandMaxItems": 16,
+      "brandMaxItems": 3,
       "separators": {
         "column": {
           "style": "solid",
@@ -188,9 +188,6 @@
     },
     "variants": [
       {},
-      {
-        "brandDisplay": "logo-else-text"
-      },
       {
         "logoLayout": "row"
       }
@@ -1074,23 +1071,6 @@
           "meta": "6 reviews",
           "rating": 5,
           "text": "Calibration review text: friendly service and a good choice of frames, explained clearly."
-        },
-        {
-          "author": "Reviewer 2",
-          "avatarColour": "",
-          "date": "a year ago",
-          "meta": "Local Guide · 11 reviews · 8 photos",
-          "rating": 5,
-          "text": "Calibration review text: friendly service and a good choice of frames, explained clearly."
-        },
-        {
-          "author": "Reviewer 3",
-          "avatarColour": "",
-          "date": "5 years ago",
-          "meta": "Local Guide · 60 reviews · 28 photos",
-          "rating": 5,
-          "text": "Calibration review text: friendly service and a good choice of frames, explained clearly.",
-          "url": ""
         }
       ],
       "seeAllLabel": "See all reviews",
@@ -1103,13 +1083,7 @@
         "desktop": "2",
         "mobile": "1"
       }
-    },
-    "variants": [
-      {},
-      {
-        "variant": "badge"
-      }
-    ]
+    }
   },
   "sgs/hero": {
     "attributes": {
