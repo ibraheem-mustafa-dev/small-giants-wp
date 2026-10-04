@@ -904,15 +904,15 @@ function listBlockSourceFiles( dir ) {
 }
 
 function readsContextKey( code, key ) {
-	return code.includes( `context['${ key }']` ) ||
-		code.includes( `context["${ key }"]` ) ||
-		code.includes( `context[ '${ key }' ]` ) ||
-		code.includes( `context[ "${ key }" ]` );
+	const escaped = key.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+	return new RegExp( `context(?:\\?\\.)?\\[\\s*(['"])${ escaped }\\1\\s*\\]` ).test( code );
 }
 
 /**
  * Context keys that have a real consumer: listed in some block's block.json
- * `usesContext` AND read as `context['<key>']` in that block's own JS or PHP.
+ * `usesContext` AND read as `context['<key>']` (also `context?.['<key>']` and
+ * `$block->context['<key>']`) in that block's own JS or PHP. Destructured reads
+ * (`const { 'x': v } = context`) are not detected.
  *
  * @param {string[]} blockDirs Block directories to scan.
  * @return {Set<string>} Consumed context keys.
@@ -4257,6 +4257,31 @@ function runSelfTest() {
 			ctxLiveMeta.providesContextAttrs
 		).some( ( f ) => f.attr === 'cardPadding' ),
 		'context consumer fixture: cardPadding feeds a key a block reads via context[] and must stay exempt',
+		failuresA
+	);
+	const ctxHelperDir = writeBlock( 'check-a-ctx-helper-consumer', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-ctx-helper-consumer',
+			usesContext: [ 'sgs/fixtureCardPadding' ],
+		} ),
+		'edit.js': 'export default function Edit() {\n\treturn null;\n}\n',
+		'Panel.js': "export function Panel( { context } ) {\n\treturn context?.[ 'sgs/fixtureCardPadding' ];\n}\n",
+	} );
+	assertTrue(
+		buildConsumedContextKeys( [ ctxHelperDir ] ).has( 'sgs/fixtureCardPadding' ),
+		'context helper fixture: a helper JS file reading context?.[ key ] (optional chaining) counts as a reader',
+		failuresA
+	);
+	const ctxPhpDir = writeBlock( 'check-a-ctx-php-consumer', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-ctx-php-consumer',
+			usesContext: [ 'sgs/fixtureCardPadding' ],
+		} ),
+		'render.php': "<?php\n$padding = $block->context['sgs/fixtureCardPadding'] ?? '';\n",
+	} );
+	assertTrue(
+		buildConsumedContextKeys( [ ctxPhpDir ] ).has( 'sgs/fixtureCardPadding' ),
+		'context php fixture: render.php reading $block->context[key] counts as a reader',
 		failuresA
 	);
 
