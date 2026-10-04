@@ -54,7 +54,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code; a run never replaces another site's cache file without `--recalibrate`; a border-style marker carries its companion width and maps against a width baseline (CR11). |
 | `tests/calibrate-classes.test.mjs` | FR-47-2: each dead or markerless class of the 2026-10-04 audit gets its marker, precondition or read (extension rows from the DB, gradients, keywords, media objects, transforms, wider lengths, non-length tiers, colour by role, box shapes, two weights, unit shapes, the silent drop, preconditions, layout modes, state targets, container-query tiers). |
 | `tests/calibrate-read.test.mjs` | FR-47-2 reader, in a local headless Chromium: elements past the 81st, `::after` and `::placeholder` layers, and an `aria-controls` panel outside the instance are read. |
-| `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
+| `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept; the independent check matches entries on `node` and leaves a drifted value entry open (A5). |
 | `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
 | `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written); `--rounds 0` never calls the write round (A1) |
@@ -129,6 +129,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `stale(entries, { refs, rows })` → `[{ id, why }]`.
 - `migrateAccepts(accepts, { scope, firstId, decided })` → `{ migrated, unmigrated }`.
 - `entryFromRow(report, rowId, { reason, scope, entries, source })` → a new entry.
+- `holdsValue(expected, live, pxTol?)` → whether live still shows a value entry's decided value (numbers within `pxTol`, else equal text ignoring spaces).
+- `judgeIndependent(entries, diff, { state })` → `{ accepted }`, `{ drift: id }` or null for one difference of a site's `qa/independent-check.mjs`: its keys map to the ledger properties that cover them and entries match on `node`, as walker rows do.
 
 ### `lib/cache.mjs`
 - `cachedSite(file)` → the site a block's cache file was measured on, or null.

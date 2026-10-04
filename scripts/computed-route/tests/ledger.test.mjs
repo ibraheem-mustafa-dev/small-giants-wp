@@ -61,3 +61,28 @@ test( 'a rule accept for every width keeps its property', () => {
 	assert.equal( match( [ e ], { ...row, ref: 'cr-ref-contact-9', property: 'padding-top', width: 1440 } ).id, 'D-1' );
 	assert.equal( match( [ e ], { ...row, ref: 'cr-ref-contact-9', property: 'padding-left', width: 1440 } ), null );
 } );
+
+// A5 (plan 2026-10-04-eye-care-sweep-audit-fix.md): the independent check matched entries on e.ref, which no entry
+// carries (entries store node), so it accepted nothing. It now matches through judgeIndependent.
+import { judgeIndependent, holdsValue } from '../lib/ledger.mjs';
+const ientry = ( over ) => ( { id: 'D-9', scope: 'a', node: 'cr-ref-a-2', state: 'opening', property: 'padding-top', expected: { rule: 'touch-target' }, reason: 'tap area', decided: '2026-10-04 Bean', ...over } );
+const idiff = ( over ) => ( { ref: 'cr-ref-a-2', width: 375, prop: 'padding.top', draft: 4, live: 12, ...over } );
+
+test( 'MUST FAIL TO ACCEPT NOTHING: a ledgered row (an entry naming its node, no ref) is accepted by the independent check', () => {
+	assert.match( judgeIndependent( [ ientry() ], idiff(), { state: 'opening' } ).accepted, /^D-9 \(touch-target\)/ );
+	assert.match( judgeIndependent( [ ientry( { node: 'sgs/text', property: 'font-weight' } ) ], idiff( { ref: 'sgs/text', prop: 'weight' } ), { state: 'opening' } ).accepted, /^D-9/ );
+} );
+
+test( 'positive control: another node, property, width or state is not covered', () => {
+	assert.equal( judgeIndependent( [ ientry() ], idiff( { ref: 'cr-ref-a-3' } ), { state: 'opening' } ), null );
+	assert.equal( judgeIndependent( [ ientry() ], idiff( { prop: 'font-size' } ), { state: 'opening' } ), null );
+	assert.equal( judgeIndependent( [ ientry( { widths: [ 1440 ] } ) ], idiff(), { state: 'opening' } ), null );
+	assert.equal( judgeIndependent( [ ientry( { state: 'scrolled' } ) ], idiff(), { state: 'opening' } ), null );
+} );
+
+test( 'MUST FAIL TO HIDE A DRIFT: a value entry accepts only while live shows the decided value', () => {
+	const value = ientry( { expected: { value: '0px' } } );
+	assert.deepEqual( judgeIndependent( [ value ], idiff( { live: 23 } ), { state: 'opening' } ), { drift: 'D-9' } );
+	assert.match( judgeIndependent( [ value ], idiff( { live: 1 } ), { state: 'opening' } ).accepted, /value 0px/ );
+	assert.ok( holdsValue( 'rgb(0, 0, 0)', 'rgb(0,0,0)' ) && ! holdsValue( 'uppercase', 'none' ) );
+} );

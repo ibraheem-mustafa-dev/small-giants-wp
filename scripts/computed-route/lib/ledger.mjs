@@ -143,6 +143,48 @@ export function entryFromRow( report, rowId, { reason, scope, entries, source = 
 	throw new Error( `row ${ rowId } is not in the report` );
 }
 
+// The independent check's differences (sites/<client>/build/qa/independent-check.mjs) use their own keys: each maps to
+// the ledger properties that can cover it (its painted inset to padding or the walker's text inset, its text transform
+// to text-transform, its box to the walker's box keys).
+const INDEPENDENT_KEYS = {
+	'box.x': [ 'x' ], 'box.y': [ 'y' ], 'box.w': [ 'w', 'width' ], 'box.h': [ 'h', 'height' ],
+	'padding.top': [ 'padding-top', 'text-inset-y' ], 'padding.bottom': [ 'padding-bottom', 'text-inset-y' ],
+	'padding.left': [ 'padding-left', 'text-inset-x' ], 'padding.right': [ 'padding-right', 'text-inset-x' ],
+	ground: [ 'painted-ground', 'background-color' ], gap: [ 'gap', 'row-gap', 'column-gap' ],
+	border: [ 'border-top-width', 'border-top-color', 'border-top-style' ], weight: [ 'font-weight' ],
+	letterSpacing: [ 'letter-spacing' ], transform: [ 'text-transform' ],
+};
+
+// A value entry holds while live shows the decided value: equal numbers within pxTol (the check reports pixels as
+// numbers), else equal text ignoring spaces.
+export function holdsValue( expected, live, pxTol = 2 ) {
+	const a = parseFloat( expected );
+	const b = parseFloat( live );
+	if ( ! Number.isNaN( a ) && ! Number.isNaN( b ) && /^-?(\d+(\.\d+)?|\.\d+)(px)?$/.test( String( expected ).trim() ) ) {
+		return Math.abs( a - b ) <= pxTol;
+	}
+	return String( expected ).replace( /\s+/g, '' ) === String( live ).replace( /\s+/g, '' );
+}
+
+// Judges one independent-check difference { ref, width, prop, live } against the ledger, matched on each entry's
+// `node` (its ref or its block) like a walker row, in the walker state the check reads (state). Returns
+// { accepted: reason } for a rule entry or a value entry live still holds, { drift: entry id } for a value entry live
+// has drifted from, or null when no entry covers it.
+export function judgeIndependent( entries, diff, { state } ) {
+	const block = String( diff.ref ).includes( '/' ) ? slugClass( diff.ref ) : null;
+	for ( const property of INDEPENDENT_KEYS[ diff.prop ] || [ diff.prop ] ) {
+		const e = match( entries, { ref: diff.ref, block, property, state, width: diff.width, kind: 'style' } );
+		if ( ! e ) {
+			continue;
+		}
+		if ( e.expected.rule || holdsValue( e.expected.value, diff.live ) ) {
+			return { accepted: `${ e.id } (${ e.expected.rule || 'value ' + e.expected.value }): ${ e.reason }` };
+		}
+		return { drift: e.id };
+	}
+	return null;
+}
+
 export function save( file, entries ) {
 	validate( entries );
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );

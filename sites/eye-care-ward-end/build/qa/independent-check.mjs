@@ -11,8 +11,9 @@
 //     holds no other text): how far its rendered text sits from the outer box's edges, wherever the padding sits; the
 //     unit's gap, its ground colour and its border (the first painted one in the unit).
 // Navigation (the draft url and the click that opens the surface's view) comes from the surface's hand walker config.
-// Differences matching a divergence-ledger entry for the surface (sites/<client>/build/qa/divergences.json, same ref
-// and property) are reported as accepted. Exit 1 when any other difference remains.
+// Differences a divergence-ledger entry for the surface covers (sites/<client>/build/qa/divergences.json, matched on the
+// entry's node and property by scripts/computed-route/lib/ledger.mjs::judgeIndependent) are reported as accepted, unless
+// live has drifted from a value entry's decided value. Exit 1 when any other difference remains.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
@@ -191,7 +192,11 @@ function compare( d, l, width ) {
 	return diffs;
 }
 
-const accepted = ( df ) => ledger.find( ( e ) => ( e.ref === df.ref || e.row?.ref === df.ref ) && JSON.stringify( e ).toLowerCase().includes( df.prop.split( '.' ).pop().toLowerCase() ) );
+// Ledger entries match on their node (lib/ledger.mjs::judgeIndependent), in the walker state the page opens in. A value
+// entry live has drifted from stays open, named by its id.
+const { judgeIndependent } = await import( pathToFileURL( path.join( REPO, 'scripts/computed-route/lib/ledger.mjs' ) ).href );
+const judge = ( df ) => judgeIndependent( ledger, df, { state: cfg.states?.[ 0 ]?.name || '*' } );
+const accepted = ( df ) => judge( df )?.accepted;
 
 const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
 const { makeHelpers, waitOutHostCheck } = await import( pathToFileURL( path.join( REPO, 'scripts/parity/lib/helpers.mjs' ) ).href );
@@ -245,6 +250,6 @@ diffs.sort( ( a, b ) => a.ref.localeCompare( b.ref, undefined, { numeric: true }
 const open = diffs.filter( ( df ) => ! accepted( df ) );
 const out = flag( '--out' );
 out && fs.writeFileSync( path.resolve( out ), JSON.stringify( { surface, widths: WIDTHS, items: items.length, diffs, open: open.length }, null, 1 ) );
-open.forEach( ( df ) => console.log( `${ df.width } ${ df.ref } ${ df.prop }: draft ${ JSON.stringify( df.draft ) } live ${ JSON.stringify( df.live ) }` ) );
+open.forEach( ( df ) => console.log( `${ df.width } ${ df.ref } ${ df.prop }: draft ${ JSON.stringify( df.draft ) } live ${ JSON.stringify( df.live ) }${ judge( df )?.drift ? ` (drifted from ledger ${ judge( df ).drift })` : '' }` ) );
 console.log( JSON.stringify( { surface, items: items.length, differences: diffs.length, accepted: diffs.length - open.length, open: open.length } ) );
 process.exit( open.length ? 1 : 0 );
