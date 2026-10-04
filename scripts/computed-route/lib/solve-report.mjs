@@ -6,10 +6,33 @@ import { openRows } from './solve-rows.mjs';
 
 const cell = ( v ) => String( typeof v === 'object' && null !== v ? JSON.stringify( v ) : v ?? '' ).replace( /\|/g, '\\|' ).replace( /\n/g, ' ' ).slice( 0, 160 );
 
+// The whole page in distinct issues (a style, hover or box difference on one element and property, whatever the width
+// or state), before and after: closed, new, still open and labelled a gap by Solve (Hardcode or Missing setting: a gap
+// counts as handled only once proven outside the tool), and still open with no label.
+const VISUAL = [ 'style', 'hover', 'box' ];
+const issueKey = ( x ) => `${ x.ref || x.pair }|${ x.path ?? '' }|${ x.kind }|${ x.key }`;
+export function wholePage( before, after, classes ) {
+	const set = ( rep ) => new Set( openRows( rep ).filter( ( x ) => VISUAL.includes( x.kind ) ).map( issueKey ) );
+	const b = set( before );
+	const a = set( after );
+	const labelled = new Set( [ ...( classes?.hardcode || [] ), ...( classes?.missing || [] ) ].map( issueKey ) );
+	const open = [ ...a ];
+	return {
+		before: b.size,
+		after: a.size,
+		closed: [ ...b ].filter( ( k ) => ! a.has( k ) ).length,
+		new: open.filter( ( k ) => ! b.has( k ) ).length,
+		labelledGap: open.filter( ( k ) => labelled.has( k ) ).length,
+		unexplained: open.filter( ( k ) => ! labelled.has( k ) ).length,
+	};
+}
+
 export function writeSolveReport( outDir, r ) {
-	fs.writeFileSync( path.join( outDir, 'solve-report.json' ), JSON.stringify( { ...r, before: undefined, after: undefined, openBefore: openRows( r.before ).length, openAfter: openRows( r.after ).length }, null, 1 ) );
+	const page = wholePage( r.before, r.after, r.classes );
+	fs.writeFileSync( path.join( outDir, 'solve-report.json' ), JSON.stringify( { ...r, before: undefined, after: undefined, openBefore: openRows( r.before ).length, openAfter: openRows( r.after ).length, wholePage: page }, null, 1 ) );
 	const L = [ `# Solve: ${ r.surface }`, '',
 		`Refs added: ${ r.refsAdded }. Write rounds: ${ r.rounds }${ r.roundThreeWrote ? ' (round 3 still wrote: a kill condition)' : '' }. Open rows before: ${ openRows( r.before ).length }, after: ${ openRows( r.after ).length }. Intended (accepted): ${ r.intended }.`, '',
+		`**Whole page (distinct style, hover and box issues, any width or state):** ${ page.before } before, ${ page.after } after: ${ page.closed } closed, ${ page.new } new; of those open, ${ page.labelledGap } labelled a gap by Solve (to prove) and ${ page.unexplained } with no label.`, '',
 		'| Class | Rows |', '|---|---|',
 		`| Hardcode (setting holds the draft value, paint still differs) | ${ r.classes.hardcode.length } |`,
 		`| Missing setting (no setting paints it) | ${ r.classes.missing.length } |`,

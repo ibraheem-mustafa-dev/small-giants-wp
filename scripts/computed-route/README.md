@@ -24,6 +24,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, client names. |
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
+| `pairs.mjs` | Block pairing command: pairs every block of a surface with its draft element through the walker's word matcher, re-checks each kept finder at 375 and 768, and writes `<walker>.full.mjs` (the hand config plus one pair per block) and `qa/pairs/<surface>.json` (kept pairs and every left-out block with its reason). A surface's `walkerFull` in `surfaces.json` makes Solve walk it. |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`). |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain, optional variants and optional `before` blocks (placed ahead of the instance, for a block that reads the page, such as a table of contents) per calibrated block. |
 | `ledger.mjs` | Divergence ledger command: `accept <report.json> <row id>` adds an entry dated today; `stale <report.json>` exits 1 while any entry is stale. |
@@ -36,6 +37,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, classification. |
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json`. |
 | `lib/references.mjs` | Reference blocks found from each block's render.php (linked placeholders, frames around another post's blocks, core template parts) and the surfaces lint that every printed post has a surface. |
+| `lib/pairs.mjs` | Block pairing: words per block, their draft twins, the keep-or-leave-out judgement (PAIRING_LIMITS) and the generated config's text. |
 | `lib/guard.mjs` | The regression guard: reverts a write calibration names, else tries one suspect at a time and lets the next walk decide. |
 | `lib/ledger.mjs` | Ledger library: rules, matching, stale entries, accept migration, entries from report rows. |
 | `tests/db.test.mjs` | R-47-2: read-only database. |
@@ -47,6 +49,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
 | `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written). |
+| `tests/pairs.test.mjs` | Block pairing: a partner is kept only when it holds the block's words and none from outside it, at a similar size. |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching); flow position rows and the identity transform (GAP-CHECKLIST section 17). |
 
 `cache/` (gitignored) holds calibration files: one per block for the whole library, each recording the `site` that measured it.
@@ -149,6 +152,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `intendedCount(report)` → accepted rows.
 
 ### `lib/solve-report.mjs`
+- `wholePage(before, after, classes)` → distinct style, hover and box issues before and after: `{ before, after, closed, new, labelledGap, unexplained }` (a labelled gap counts as handled only once proven).
 - `writeSolveReport(outDir, result)`.
 
 ### `lib/references.mjs` (reads `plugins/sgs-blocks/src/blocks/*/render.php`)
@@ -157,6 +161,13 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `detectReferences(dir?)` → every SGS reference block.
 - `referenceOf(node, refs)` → the reference a tree node holds, or null (a linked block only with its flag on).
 - `lintSurfaces(surfaces, buildDir, refs?)` → problems: a tree prints a post that no surface targets (frames) or `provides` (linked blocks, template parts).
+
+### `lib/pairs.mjs`
+- `PAIRING_LIMITS`: a pairing is left out under 80% of the block's words matched, with a word from outside the block, or with a box outside half to double the block's.
+- `wordsByBlock(liveRefs)` → Map ref → live word indices (every word inside the block, nested blocks included).
+- `twinsByBlock(matches, blocks)` → Map ref → `{ live, draft }` (the block's words and their draft twins).
+- `judgePairing(block, partner, liveRefsOfDraft, limits?)` → `{ ok, why }`.
+- `configText(handFile, surface, pairs)` → the generated walker config's source.
 
 ### `lib/guard.mjs`
 - `explains(w, r, cal)` → true when calibration ties write `w` to regressed row `r` (its own property, a calibrated side effect, or a discovered layout effect).
@@ -167,6 +178,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `closeTrials(trials, blocked)` → settings still under trial when the run ends, reported as unconfirmed reverts.
 
 ### `solve.mjs` (runs `wp-build-page.js` and the walker)
+- `WIDTH_GROUPS`: one walker per width, run in parallel (each with its own draft cache).
+- `mergeReports(parts)` → one report from the per-width walks (runs in width order, errors by width).
 - `WALK_FLAGS`: every round's walk is lean (`--lean`: only the styles, boxes, hover end states and structure Solve reads) and reuses the run's draft reads (`--draft-cache <run dir>/draft-cache.json`).
 - `USED_VALUES`: computed properties that are used sizes (`width`), reported and never written.
 - `calibrationFor(block)` → the block's calibration file or null.

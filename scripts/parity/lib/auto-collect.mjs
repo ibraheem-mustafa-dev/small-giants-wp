@@ -124,6 +124,16 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 
 	const words = [];
 	const styleCache = new Map();
+	// scope.tagEls (Spec 47 block pairing, scripts/computed-route/lib/pairs.mjs): each word also carries `e`, the index of
+	// the element painting it in window.__crEls, so the pairing can find that element again. Off, the output is unchanged.
+	const els = scope.tagEls ? ( window.__crEls = [] ) : null;
+	const elIndex = new Map();
+	const tag = ( el ) => {
+		if ( ! elIndex.has( el ) ) {
+			elIndex.set( el, els.push( el ) - 1 );
+		}
+		return { e: elIndex.get( el ) };
+	};
 	const tw = document.createTreeWalker( root, NodeFilter.SHOW_TEXT );
 	const range = document.createRange();
 	for ( let n = tw.nextNode(); n && words.length < maxWords; n = tw.nextNode() ) {
@@ -166,7 +176,7 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 			}
 			const t = m[ 0 ].toLowerCase().replace( /[’‘]/g, "'" ).replace( /[“”]/g, '"' );
 			const [ ox, oy ] = shiftOf( el );
-			words.push( { t, x: Math.round( r.left - ox + ( st.fixed ? 0 : sx ) ), y: Math.round( r.top - oy + ( st.fixed ? 0 : sy ) ), w: Math.round( r.width ), h: Math.round( r.height ), ...st } );
+			words.push( { t, x: Math.round( r.left - ox + ( st.fixed ? 0 : sx ) ), y: Math.round( r.top - oy + ( st.fixed ? 0 : sy ) ), w: Math.round( r.width ), h: Math.round( r.height ), ...st, ...( els ? tag( el ) : {} ) } );
 		}
 	}
 

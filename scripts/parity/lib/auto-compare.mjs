@@ -22,7 +22,7 @@ const quote = ( ws ) => `"${ ws.map( ( w ) => w.t ).join( ' ' ).slice( 0, 60 ) }
 // Words matched in reading order, then words that moved to another place in the DOM: runs of two or
 // more, or a word found once among the leftovers on each side (a lone common word is not paired across
 // the page).
-function matchWords( dw, lw ) {
+export function matchWords( dw, lw ) {
 	const first = lcsPairs( dw.map( ( w ) => w.t ), lw.map( ( w ) => w.t ) );
 	if ( ! first ) {
 		return null;

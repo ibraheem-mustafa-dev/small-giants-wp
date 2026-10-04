@@ -151,3 +151,35 @@ test( 'a hover row from a non-rest state is not writable', () => {
 	assert.equal( out.groups.length, 0 );
 	assert.equal( out.unmappedState.length, 1 );
 } );
+
+// Parallel widths (2026-10-04): each width walks in its own walker and the reports merge into one.
+import { mergeReports, WIDTH_GROUPS } from '../solve.mjs';
+
+test( 'every width is its own walker, and the merged report holds every run and every width\'s errors', () => {
+	assert.deepEqual( WIDTH_GROUPS, [ [ 375 ], [ 768 ], [ 1440 ], [ 1920 ] ] );
+	const merged = mergeReports( [ { config: 'x', runs: [ { width: 375 } ], errors: { 375: { live: [] } } }, { config: 'x', runs: [ { width: 768 }, { width: 768 } ], errors: { 768: { live: [ 'e' ] } } } ] );
+	assert.equal( merged.config, 'x' );
+	assert.deepEqual( merged.runs.map( ( r ) => r.width ), [ 375, 768, 768 ] );
+	assert.deepEqual( merged.errors, { 375: { live: [] }, 768: { live: [ 'e' ] } } );
+} );
+
+test( 'MUST FAIL TO DROP: a width whose walk has no runs still keeps the other widths\' runs', () => {
+	assert.equal( mergeReports( [ { runs: [] }, { runs: [ { width: 1440 } ] } ] ).runs.length, 1 );
+} );
+
+// F5: the whole page in distinct issues. Widths and states of one issue count once.
+import { wholePage } from '../lib/solve-report.mjs';
+
+test( 'one issue at four widths is one issue; a closed, a new, a labelled and an unexplained issue are told apart', () => {
+	const row = ( pair, key, width, ref = `cr-ref-p-${ pair }` ) => ( { kind: 'style', key, draft: '1px', live: '2px', ref, path: '' , width } );
+	const rep = ( rows ) => ( { runs: [ 375, 768, 1440, 1920 ].map( ( width ) => ( { state: 'opening', width, pairs: Object.fromEntries( rows.map( ( r ) => [ r.pair, { diffs: [ row( r.pair, r.key, width ) ] } ] ) ) } ) ) } );
+	const before = rep( [ { pair: 'a', key: 'padding-top' }, { pair: 'b', key: 'gap' }, { pair: 'c', key: 'color' } ] );
+	const after = rep( [ { pair: 'b', key: 'gap' }, { pair: 'c', key: 'color' }, { pair: 'd', key: 'margin-top' } ] );
+	const classes = { missing: [ { ref: 'cr-ref-p-b', path: '', kind: 'style', key: 'gap' } ] };
+	assert.deepEqual( wholePage( before, after, classes ), { before: 3, after: 3, closed: 1, new: 1, labelledGap: 1, unexplained: 2 } );
+} );
+
+test( 'MUST FAIL TO COUNT: accepted rows and non-visual kinds are not issues', () => {
+	const r = { runs: [ { state: 'opening', width: 375, pairs: { a: { diffs: [ { kind: 'style', key: 'x', ref: 'r', accepted: 'decided' }, { kind: 'motion', key: 'y', ref: 'r' } ] } } } ] };
+	assert.deepEqual( wholePage( r, r, {} ), { before: 0, after: 0, closed: 0, new: 0, labelledGap: 0, unexplained: 0 } );
+} );

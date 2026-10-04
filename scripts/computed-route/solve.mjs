@@ -6,7 +6,7 @@
 // file, and solve-report.md / solve-report.json (plus every round's walker report) to --out.
 import fs from 'fs';
 import path from 'path';
-import { spawnSync } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { openDb } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
@@ -49,15 +49,33 @@ function build( s, treeFile ) {
 // walkStates: the walker states to run (passed as --states); null runs every state the config has. Every round walks
 // lean (only the styles, boxes, hover end states and structure Solve reads), so the first and last walks compare like
 // for like, and the draft side is read once per run and reused (--draft-cache): the draft does not change mid-run.
+// The widths walk in parallel, one walker each (4 at once against the shared host measured 2.6x faster than one walker
+// with no bot check, 2026-10-04, with the host's IP allowlist on); each keeps its own draft cache, and the reports merge.
 export const WALK_FLAGS = [ '--headless', '--no-review', '--lean' ];
-function walk( walker, outDir, walkStates = null ) {
-	const cache = path.join( path.dirname( outDir ), 'draft-cache.json' );
-	spawnSync( 'node', [ 'scripts/parity/draft-live-walk.mjs', walker, ...WALK_FLAGS, '--widths', WIDTHS, '--out', outDir, '--draft-cache', cache, ...( walkStates?.length ? [ '--states', walkStates.join( ',' ) ] : [] ) ], { cwd: REPO, encoding: 'utf8', timeout: 1800000, stdio: 'inherit' } );
-	const f = path.join( outDir, 'report.json' );
-	if ( ! fs.existsSync( f ) ) {
-		throw new Error( `the walker wrote no report in ${ outDir }` );
-	}
-	return JSON.parse( fs.readFileSync( f, 'utf8' ) );
+export const WIDTH_GROUPS = WIDTHS.split( ',' ).map( ( w ) => [ Number( w ) ] );
+
+// One report from the per-width walks: their runs in width order and their errors by width.
+export function mergeReports( parts ) {
+	return { ...parts[ 0 ], runs: parts.flatMap( ( r ) => r.runs || [] ), errors: Object.assign( {}, ...parts.map( ( r ) => r.errors || {} ) ) };
+}
+
+async function walk( walker, outDir, walkStates = null ) {
+	const dirOf = ( ws ) => path.join( outDir, `w${ ws.join( '-' ) }` );
+	const one = ( ws ) => new Promise( ( done ) => {
+		const args = [ 'scripts/parity/draft-live-walk.mjs', walker, ...WALK_FLAGS, '--widths', ws.join( ',' ), '--out', dirOf( ws ), '--draft-cache', path.join( path.dirname( outDir ), `draft-cache-${ ws.join( '-' ) }.json` ), ...( walkStates?.length ? [ '--states', walkStates.join( ',' ) ] : [] ) ];
+		spawn( 'node', args, { cwd: REPO, stdio: 'inherit', timeout: 1800000 } ).on( 'close', done );
+	} );
+	await Promise.all( WIDTH_GROUPS.map( one ) );
+	const parts = WIDTH_GROUPS.map( ( ws ) => {
+		const f = path.join( dirOf( ws ), 'report.json' );
+		if ( ! fs.existsSync( f ) ) {
+			throw new Error( `the walker wrote no report in ${ dirOf( ws ) }` );
+		}
+		return JSON.parse( fs.readFileSync( f, 'utf8' ) );
+	} );
+	const report = mergeReports( parts );
+	fs.writeFileSync( path.join( outDir, 'report.json' ), JSON.stringify( report ) );
+	return report;
 }
 
 // One write round: resolves every writable group of the report against the tree. stateMap is the surface's walker
@@ -158,9 +176,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		process.exit( 2 );
 	}
 	const treeFile = path.join( buildDir, s.tree );
-	const walker = path.join( buildDir, s.walker );
+	// walkerFull (scripts/computed-route/pairs.mjs): the hand config plus one pair per block, when the surface has one.
+	const walker = path.join( buildDir, s.walkerFull || s.walker );
 	if ( ! /refPrefix\s*:/.test( fs.readFileSync( walker, 'utf8' ) ) ) {
-		console.error( `${ s.walker } has no refPrefix: rows would carry no ref` );
+		console.error( `${ s.walkerFull || s.walker } has no refPrefix: rows would carry no ref` );
 		process.exit( 2 );
 	}
 	const outDir = path.resolve( flag( '--out' ) || path.join( buildDir, 'qa', 'solve', surface, new Date().toISOString().replace( /[:.]/g, '-' ).slice( 0, 19 ) ) );
@@ -190,7 +209,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			console.error( `[FAIL] build in round ${ round }: ${ b.err.slice( -800 ) }` );
 			break;
 		}
-		report = walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates );
+		report = await walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates );
 		// A round that made rows worse runs the guard against the walk the writes were computed from (prev stays that
 		// walk until the guard is done); the next round measures what it changed.
 		const changed = prev ? guardRound( prev, report, tree, lastWrites, blocked, calibrationFor, trials ) : [];
