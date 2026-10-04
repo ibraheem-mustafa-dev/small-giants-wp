@@ -12,8 +12,10 @@ test( 'reads the heading line-height setting as a tier object', () => {
 	assert.equal( rows[ 0 ].tier_shape, 'tier_object' );
 } );
 
-test( 'returns only source sgs rows', () => {
-	assert.ok( attrsFor( db, 'sgs/container' ).every( ( r ) => 'sgs' === r.source ) );
+test( 'returns block settings and extension settings, never native rows', () => {
+	const rows = attrsFor( db, 'sgs/container' );
+	assert.ok( rows.every( ( r ) => [ 'sgs', 'sgs-ext' ].includes( r.source ) ) );
+	assert.ok( rows.some( ( r ) => 'sgs-ext' === r.source ), 'an extension setting with a css property (sgsHoverLift) is a candidate' );
 } );
 
 test( 'finds flat_sibling rows by base name', () => {

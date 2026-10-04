@@ -348,7 +348,7 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 		}
 		const prev = settings[ name ];
 		const union = ( a, b ) => [ ...new Set( [ ...( a || [] ), ...( b || [] ) ] ) ];
-		settings[ name ] = { slot: prev?.slot ?? s.slot, slots: union( prev?.slots, s.slots ), property: s.property, state: inst.row.css_state || null, forms: union( prev?.forms, inst.marker.form ? [ inst.marker.form ] : [] ), transform: s.transform || prev?.transform || null, reachedAt: s.reachedAt, effects: union( prev?.effects, s.effects ), variants: union( prev?.variants, [ inst.variant ?? 0 ] ) };
+		settings[ name ] = { slot: prev?.slot ?? s.slot, slots: union( prev?.slots, s.slots ), ...( s.reaches || prev?.reaches ? { reaches: union( prev?.reaches, s.reaches ) } : {} ), property: s.property, state: inst.row.css_state || null, forms: union( prev?.forms, inst.marker.form ? [ inst.marker.form ] : [] ), transform: s.transform || prev?.transform || null, reachedAt: s.reachedAt, effects: union( prev?.effects, s.effects ), variants: union( prev?.variants, [ inst.variant ?? 0 ] ) };
 		if ( s.oneWidth ) {
 			oneWidth.push( { key: inst.key, reachedAt: s.reachedAt } );
 		}
