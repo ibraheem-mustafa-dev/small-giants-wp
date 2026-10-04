@@ -361,3 +361,26 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   `y-in-main` row; a lift, a half-pixel shift and a scale stay differences). Live lean walks: About's identity rows 56 to 0
   with the WhatsApp scale and the shop button's 3px lift still reported; About's eyebrow `y-in-main` 68 against 124 at 1440
   (28 against 56 at 375), and Contact's form fields 62 against 87 apart at 375. Configs without `refPrefix` are unchanged.
+
+## 18. Read where it paints: layout, hover text, icons, text runs and groups (Spec 47 stage 3, 2026-10-04)
+
+- **Gap:** properties were read off an element that does not paint them, so a matching page showed rows and a
+  differing one hid them: a container's gap off its wrapper (the flex band is its inner element), hover colour off a
+  link whose label sits in a span, `<main>`'s position after a scroll pass while pair boxes were read before it (a
+  shrinking sticky header), a border style on a side 0 wide, `line-height: normal` against a number, an icon's size in
+  no row, and blocks whose draft text has no element of its own.
+- **Detected by:** `lib/paint.mjs` (self-contained, rebuilt in the page from `PAINT_SRC`): `layoutElement` (the first
+  flex or grid element with two or more items down a single-child chain; layout rows carry its path), `textCarrier` and
+  `paintedDecoration` (hover colour and underline where the text paints, as at rest), `textRun` (finder
+  `{ textRun: { within, direct, match } }`: a block's rendered text, its extent and paint only), `groupBox` (finder
+  `{ group: { paths } }`: the union box of elements, no styles). `collect.mjs::collectPair`: `line-height: normal` read
+  as the pixels it paints, a flex or grid gap of `normal` as 0px, `icon-width`/`icon-height` from the first painted svg.
+  `compare.mjs`: a border side's style and colour are no difference where the side is 0 wide on both pages.
+  `draft-live-walk.mjs`: `<main>`'s position read with the pair boxes. `compare-state.mjs`: refs stamped after the
+  full-check rows (painted ground, text inset), so they reach Solve.
+- **Proof (2026-10-04):** unit cases in `scripts/computed-route/tests/walker-refs.test.mjs` (layout element, stamping,
+  border style at 0 width, icon rows; each red against the previous code). Live: About's button row gap and wrap, the
+  WhatsApp hover colour, the label line height and the page grid's row gap closed on the next Solve; the 768 offset
+  row from the draft's shrinking header disappeared.
+- **Falsified by:** a layout row read off an element with fewer than two items, a hover colour read off an element
+  that paints no text, or a text-run or group pair reporting a style row.

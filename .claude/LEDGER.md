@@ -17,8 +17,9 @@ equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3
 **Eye Care: now built by hand first (D1149, 2026-09-24).** The Eye Care site is built by hand to client-ready from
 Claude Design's gap map; the finished site becomes the pipeline's answer key. Every surface is built and live on eye-care-test, was walked against
 the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list, all decisions taken. Spec 47's tool
-(measure the draft, write the layout settings automatically) passed its footer proof and is now running on every
-other surface; then the register build (Front F).
+(measure the draft, write the layout settings automatically) took the About page to 100% on 2026-10-04 (every
+difference closed or a recorded decision, confirmed by an independent check); Contact is next, then every other
+surface; then the register build (Front F).
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -43,8 +44,9 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-04).** eye-care-test runs 72aadd9ff (verify deploys by browser or checksum: the host's bot check
-returns 403 to the deploy's own probe). Step 0 is done: all 17
+**Now (2026-10-04).** eye-care-test and sandybrown run the framework at c7d292638 (S1 site-wide button lift, S3 link
+hover fix, the 'Page loads' entrance start; deploys now run pending SGS migrations); the Eye Care snapshot with S1's
+default lift is pushed to eye-care-test. Step 0 is done: all 17
 trees rebuilt, zero invalid blocks, the header wordmark now 18px shrinking to 15px. The fix register
 `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list: 12 site-wide fixes (S1-S12), every surface's items,
 decisions D1-D9 taken, three build rules. Proven bugs in it: the add-to-bag route drops a second product and a 30s
@@ -52,20 +54,16 @@ cooldown blocks a second pair (N11); the gallery ignores WooCommerce's product g
 empty groups after clearing (N25); the drawer body overflows by its title row (15); a footer row given a width cap
 collapses to zero width (N46). No blockers.
 
-**Spec 47 (v0.5): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`, "Solve"
-compares a built page with the draft and writes block settings). Stages 1 and 2 built; stage 3 in progress, all on
-`main` and pushed. S3, S4, S5, S11, CR8 and CR13 are live on eye-care-test and sandybrown; decorative-image is calibrated
-(94 of 95 blocks). At close both sites served this PC the host's bot check despite the IP allowlist: Bean to check
-hPanel, since every live check and walk depends on it. Under the pinpointing guard: About
-5 of 5 items, Lenses 6 of 6, Contact 8 of 9, all with 0 regressions. A council (2026-10-04) found Solve only saw the
-elements a hand-written walker config names (About 16 of 24 blocks); fixes F1 (where an element sits in the page) and F4
-(identity transform) are done; F2 (every block paired with its draft element through matched words, `pairs.mjs`) paired
-About 24 of 24 and Lenses 29 of 29, but its first Solve regressed About (a padded container mispaired, and the guard
-never suspects a parent's write, CR21), so About was restored and full coverage is off until both are fixed; F5
-(whole-page score) is built. Solve now walks lean, reads the draft once and runs four widths at once (about 5 to 15 times faster), with
-eye-care-test's IP allowlisted against the host's bot check. Register "Computed route findings" CR1-CR20 holds the
-leads. Every surface except About, Lenses and Contact still needs a Solve run under the current route. Blocker: F2's
-two fixes block full-coverage runs (plan below).
+**Spec 47 (v0.6): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; "Solve"
+compares a built page with the draft and writes block settings). Every block of a surface is paired with its draft
+element (`pairs.mjs`, full coverage switched on per surface by `walkerFull` in `surfaces.json`), the guard reverts a
+parent's bad write (CR21), and `sites/eye-care-ward-end/build/qa/independent-check.mjs` is the second opinion.
+**About is at 100%** (50 distinct issues to 0, 0 wrong writes, 12 ledger entries citing register 104/S1/S4).
+**Contact is in progress:** 31 of 32 blocks paired (the map is register 418), its form post 6 of 6, 134 distinct
+issues open in five cause groups (plan Progress). S1, S3, S4, S5 and S11 are checked live (S3's header phone fixed).
+Hostinger's edge answers headless browsers and curl with a 403 browser check after bursts of traffic: run the route's
+host tools with `SGS_HEADED=1` (dev-setup.md). Recalibration: 28 of 66 border-style blocks done; the rest are listed
+in the plan. Not yet re-run with full coverage: Lenses, Help, Home and every remaining surface.
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**
 `plans/2026-10-04-spec47-full-coverage.md` "Progress", then Spec 47 §5 stage 3 "Residual", then the register in the plan's

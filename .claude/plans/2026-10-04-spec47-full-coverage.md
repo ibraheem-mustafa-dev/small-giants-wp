@@ -19,8 +19,12 @@ benchmarked 5 of 5), which already pairs every painted word on the draft with it
 1. A discovery run opens the draft and live at 1440 (the config's own `draft.url`, `draft.open`, `live.url`), collects
    every painted word with the element that paints it, and pairs the words with `matchWords`.
 2. Live words are grouped by their block (nearest `cr-ref-<surface>-<n>` ancestor).
-3. A block's draft partner is the smallest draft element containing all the draft twins of its words. A block with no
-   words of its own (a wrapper) takes the smallest draft element containing its children's partners.
+3. A block's draft partner is the smallest draft element containing all the draft twins of its words; a word whose
+   text repeats on the draft takes the occurrence nearest the block's unrepeated words (or its parent's, or its
+   children's, partner). An unpadded draft element of a padded block climbs to its tight padded wrapper. A block whose
+   draft text has no element of its own (a value beside its label, an inline span against a block) pairs as a text
+   run; a form control pairs by name, id, placeholder, label or first option; a block whose draft element is shared
+   with other blocks' words pairs as the group of its children's partners (box only).
 4. Each pairing is checked before it is kept; a doubtful one is reported and left out, never written through:
    - the partner holds at least 80% of the block's matched words;
    - it holds no matched word that belongs to a block outside this one (otherwise it is too big);
@@ -31,11 +35,12 @@ benchmarked 5 of 5), which already pairs every painted word on the draft with it
    exclusions, divergences) and adds the pairs. `surfaces.json` gains `"walkerFull"`, which Solve walks when present.
 6. The draft finder is checked at 375, 768 and 1440 (it must resolve to an element holding the same words).
 
-**Files:** `scripts/computed-route/pairs.mjs` (command) and `lib/pairs.mjs` (grouping, partner, checks, config text),
-`scripts/parity/lib/auto-compare.mjs` (export `matchWords`), `scripts/computed-route/solve.mjs` (`walkerFull`), tests,
-README.
+**Files:** `scripts/computed-route/pairs.mjs` (command), `lib/pairs.mjs` (grouping, partner choice, checks, config
+text), `lib/pairs-page.mjs` (in-page collectors), `scripts/parity/lib/auto-compare.mjs` (export `matchWords`),
+`scripts/parity/lib/paint.mjs` (`textRun`, `groupBox` finders), `scripts/computed-route/solve.mjs` (`walkerFull`),
+tests, README.
 
-**Done when** (measured before the change, 2026-10-04):
+**Done when** (measured before the change, 2026-10-04; About met on 2026-10-04, Lenses not yet re-run):
 - About: blocks measured 16 of 24 → at least 22 of 24, the page container (cr-ref-about-0) among them, and a Solve
   run writes its top padding (register S6: 104px against the draft's 48px).
 - Lenses: 7 of 29 → at least 26 of 29.
@@ -46,36 +51,58 @@ README.
 
 ## Progress (2026-10-04)
 
-- [x] Steps 1-6 built: `scripts/computed-route/pairs.mjs`, `lib/pairs.mjs` (`PAIRING_LIMITS`, `judgePairing`),
-  `auto-collect.mjs` `tagEls`, `auto-compare.mjs` exports `matchWords`, `solve.mjs` walks `walkerFull`. Tests:
-  `scripts/computed-route/tests/pairs.test.mjs` (a partner holding another block's words is left out).
-- [x] About paired 24 of 24 (before 16), page container `cr-ref-about-0` included; Lenses 29 of 29 (before 7). Every
-  pairing at 100% of its words; every finder held its words at 375 and 768. Reports: `sites/eye-care-ward-end/build/qa/pairs/`.
-- [ ] **Proof by Solve failed (About, 2026-10-04, run `qa/solve/about/2026-10-04T00-35-46/`).** It wrote the page
-  container's padding (S6), but to 0 on every side: the pairing matched cr-ref-about-0 to a draft element of the same
-  size whose padding sits on its parent, so Solve read the draft's padding as 0. Content went full width at 375 (335px to
-  375px wide); whole page 63 issues before, 108 after (61 new). The guard did not revert it (CR21 below). About's tree was
-  restored from git and rebuilt; `walkerFull` was removed from about and lenses until the two fixes below land.
-- [x] Pairing for padded containers (`lib/pairs.mjs::paddedPartner`, `PAIRING_LIMITS.boxTolerance`): a partner that
-  holds no padding where the block does, with matching content boxes, climbs to the nearest draft ancestor wrapping it
-  with padding of its own; with none, `judgePairing` leaves it out. Border boxes are not required to match: About's
-  draft `<main>` is 1100x672 (padding 48px 52px 90px) against live 1100x742 (104px 52px), a real difference Solve must
-  close. Re-pair: About 24 of 24, `cr-ref-about-0` paired to the draft `<main>`. Tests: `tests/pairs.test.mjs`
-  (MUST FAIL TO KEEP: an unpadded partner of a padded block).
+- [x] Pairing built: `scripts/computed-route/pairs.mjs` (command), `lib/pairs.mjs` (decisions: `PAIRING_LIMITS`,
+  `judgePairing`, `paddedPartner`, `twinPlan`, `choosePartner`, `chooseControlPartner`, `chooseGroupPartner`,
+  `commonPath`, `reconcileHandPairs`, `configText`), `lib/pairs-page.mjs` (in-page collectors). The generated config is
+  `qa/parity/<surface>.full.mjs`; a surface's `walkerFull` in `surfaces.json` makes Solve walk it. Walker finders added
+  for pairs a block-to-element match cannot express: `{ textRun }` (a block's rendered text) and `{ group }` (the union
+  box of a block's children's partners), both in `scripts/parity/lib/paint.mjs`. Tests: `tests/pairs.test.mjs`.
 - [x] Guard CR21 (`lib/guard.mjs::guardRound`): with no write on a regressed row's node, suspects are tried tier by
-  tier: writes inside the node or its anchor pair, then each ancestor's writes, nearest first. Tests:
-  `tests/solve.test.mjs` (MUST FAIL TO MISS: a row on a node with no writes tries the nearest ancestor's write;
-  proven red against the previous guard).
+  tier: writes inside the node or its anchor pair, then each ancestor's writes, nearest first. On Contact it reverted
+  four wrong padding writes on its own.
 - [x] **About at 100% (2026-10-04).** Judged on a fresh rebuild of the committed tree: Whole page 0 unexplained, 0
   labelled gaps, 0 new rows, 0 wrong writes; 12 ledger entries, all citing register 104 / S1 / S4 (Shop the range and
   WhatsApp hover lifts). Independent check (`sites/eye-care-ward-end/build/qa/independent-check.mjs`): 0 differences
   over 24 blocks at 375/768/1440. Negative control: a planted 22px top padding on the page container was caught by
   both (Solve wrote it back; the check reported the inset and every block below at 1440 only), then restored.
   Distinct issues over the pilot: 50, 28, 19, 9, 6, 2, 0.
-- [ ] Contact to 100% (second surface, a grid, a linked form post, a map), then Lenses.
-- [ ] Pair and solve every other surface: `node scripts/computed-route/pairs.mjs --client eye-care-ward-end --surface <s>`,
+- [ ] **Contact to 100% (in progress).** Paired: Contact 31 of 32 blocks (`qa/pairs/contact.json`; the map,
+  `cr-ref-contact-25`, is left out: register 418, the real Google Map replaces the draft's sketch), the contact form
+  (post 285, surface `contact-form`) 6 of 6 (the form block as its fields' group). Both walk only the rest state
+  (`walkStates: ["opening"]`; the hand config's form-flow states belong to FR-47-7). Solve so far: page container
+  padding 48/90, phone 28/60 (S6), page grid gap 48px, WhatsApp icon 21px; 0 wrong writes since the padded-wrapper
+  climb, 0 new rows. Open on the last run (`qa/solve/contact/2026-10-04T05-50-07/`): **134 distinct issues**, grouped:
+  1. Layout mechanism, not paint (about 45 rows): the draft stacks label and value as blocks; live uses flex column
+     with a 6px gap (`gap`, `row-gap`, `column-gap`, `flex-direction`, `display` rows on cr-ref-contact-7, 10, 13, 16
+     and 1). General walker fix to build: compare layout properties only when both sides' layout element is flex or
+     grid; the children's positions (flow rows) judge the rest. Same for `display` between block-level values.
+  2. The phone link's tap area (12 rows on cr-ref-contact-9 `.sgs-business-info__link`): live pads the link and
+     cancels it with negative margins (the 44px touch-target rule in CLAUDE.md non-negotiables); the text paints in
+     the same place. Ledger, citing that rule.
+  3. Decided divergences: the map (20 rows, register 418); WhatsApp hover lift 3px against the draft's 2px (S1).
+  4. Settings Solve should reach: the page grid's columns (`grid-template-columns`, draft 496.562px 451.438px, live
+     521.391px 426.609px at 1440: the tree's `1.1fr 1fr` against the draft), the phone label's hover colour (draft
+     rgb(111,97,82)), the WhatsApp button height (56 vs 44), the hours day weight (400 vs 600), the address label
+     line height (22.5px vs 24px), the Google and Instagram cards' ground (white) and widths.
+  5. Width rows (`width` is a used value, about 25): consequences of 4; they close with it.
+  Contact form (rest state, own blocks only): **101 distinct issues, 80 labelled framework gaps** (form field styling
+  settings: register N45 / N45b).
+- [ ] Lenses: re-pair with today's pairing, set its `walkerFull` again, Solve it.
+- [ ] Pair and solve every other surface, in Spec 47 §5 stage 3 Residual's order (Help, Home, header, mobile-menu, the
+  four megas, size-guide, lens, shop, product): `node scripts/computed-route/pairs.mjs --client eye-care-ward-end --surface <s>`,
   set its `walkerFull`, then Solve it. Surfaces whose states open a panel (Help's FAQ, the megas, size-guide, lens) are
   paired at rest only today: blocks inside a closed panel paint no words and are listed as left out.
+- [ ] Recalibration (CR11 border styles, CR3, CR17, modal): 28 of 66 blocks done on 2026-10-04 with the parallel
+  reader. Redo (measured headed before scrollbars were hidden, so about 15px narrow): accordion-item, account, audio,
+  before-after, brand-strip, breadcrumbs. Still to run: heading, business-info, nav-bar-menu, nav-drawer,
+  nav-drawer-menu, notice-banner, option-picker, physics-canvas, post-grid, pricing-table, process-steps,
+  product-card, product-faq, product-faq-item, product-search, quote, responsive-logo, separator, site-footer,
+  site-footer-row, site-header, site-header-row, social-icons, star-rating, store-selector, tab, table-of-contents,
+  tabs, team-member, testimonial, testimonial-slider, text, timeline, trust-bar, trustpilot-reviews, whatsapp-cta (each
+  `node scripts/computed-route/calibrate.mjs --site <its cache file's "site"> --client <eye-care-ward-end or
+  mamas-munches> --blocks sgs/<slug> --recalibrate`, `SGS_HEADED=1` while the host challenges headless browsers).
+  sgs/modal fails: without `modalRef` the editor rewrites the block on first load ("changedOnReload"), so the
+  calibration page will not save; its fixture needs a modal it can render without a linked post.
 
 ## Universal tool log
 

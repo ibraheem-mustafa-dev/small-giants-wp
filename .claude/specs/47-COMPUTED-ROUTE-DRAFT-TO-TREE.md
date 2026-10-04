@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.5"
+spec_version: "0.6"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -217,7 +217,8 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
    hover end states, structure); `--draft-cache` reads the draft once per run. `<walker>` is the surface's `walkerFull`
    (every block paired, `pairs.mjs`) when it has one, else its hand config. Measured on About, 2026-10-04: lean 45s and
    cached 21s against 123s full; four widths at once 49s against 126s, with no host bot check (eye-care-test's IP
-   allowlist on).
+   allowlist on). With `SGS_HEADED=1` the walks run headed (`solve.mjs::WALK_FLAGS` drops `--headless`): Hostinger's edge answers
+   headless browsers with a 403 browser check after bursts of traffic (`.claude/dev-setup.md`).
 3. Write. Consider each row in `report.json` whose kind is `style`, `hover` or `box`, which is not accepted and not
    matched in `divergences.json`:
    - The row's `ref` names the node; its `path` matches a calibration element exactly, giving the slot.
@@ -446,49 +447,49 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
    - **Calibration:** 94 of 95 SGS blocks have one library-wide cache file each (47 measured on eye-care-test, page 668;
      47 on sandybrown, page 4750, which runs the `mamas-munches` snapshot), `decorative-image` included once CR8 was fixed.
      Not calibrated: `theme-toggle` (CR12). A border-style marker carries its
-     companion width (CR11, proven on quote and info-box); the other affected blocks are re-calibrated only on Bean's go.
+     companion width (CR11, proven on quote and info-box); the other border-style blocks are being re-calibrated (Bean's
+     go, 2026-10-04; calibration reads its three widths in parallel, `calibrate.mjs::readAll`).
      Fixtures come from each block's first use in the trees or its block.json `example`, styling at defaults.
    - **Results under the new guard** (scored items from the register; the whole-page line, distinct style, hover and
      box issues from `solve-report.mjs::wholePage`, appears from the next runs):
-     - About: 5 of 5 handled; 0 regressions; open style and box rows 281 to 186. Three draft-correct writes on the
-       WhatsApp button were reverted because the icon, which no pair measured, was 24px against 19px (CR14); the tree
-       now holds the home button's icon (20px) and gap, and 107's grid is `1.1fr 1fr`.
+     - About: at 100% with full coverage (F2 below).
      - Lenses: 6 of 6 handled; 0 regressions; 314 to 80. A box-seeding bug wrote the button's default 28px sides over the
        node's 26px (fixed); the price cards dropped a flex gap that stacked on their margins.
-     - Contact: 8 of 9 handled; 0 regressions after D-1 and the guard's anchor rule (CR15). 128 was fixed in the tree:
-       Solve cannot write grid columns (CR16).
+     - Contact: fully paired, in progress (F2 below).
      - Help (old guard) and the footer: as recorded in the register. Home was stopped at walk 5 on 2026-10-04 and rebuilt
        from its committed tree; it re-runs with full coverage.
-     - An independent Playwright check (its own finders, 375/768/1440) confirmed Lenses 9 of 9 and About 9 of 12; the 3
-       are one missing 1px column border (register 107b).
+     - An independent Playwright check (its own finders, 375/768/1440) confirmed Lenses 9 of 9.
    - **Council, 2026-10-04 (qc-council, three raters).** Solve's coverage was the gap between §0's promise and its
      results: §3.3 walked a hand-written config naming only some elements, the walker never compared where an element
      sits, and success was scored on register items, not the page. Fixes, each with a measured baseline:
      - F1 flow position rows (CR19) and F4 identity transform (CR20): done, 4606ba598.
-     - F2 every block paired through matched words (`pairs.mjs`, `lib/pairs.mjs`; plan
-       `.claude/plans/2026-10-04-spec47-full-coverage.md`): built; About 24 of 24 and Lenses 29 of 29 paired (before 16
-       and 7). The first full-coverage Solve on About regressed it: the page container was paired with a same-size draft
-       element whose padding sits on its parent, so its padding was written as 0 (content full width at 375; 61 new
-       issues), and the guard looks only at a row's own block, anchor and descendants, never its parent (CR21). About was
-       restored and full coverage switched off until both are fixed.
+     - F2 every block paired through matched words (`pairs.mjs`, `lib/pairs.mjs`, `lib/pairs-page.mjs`; plan
+       `.claude/plans/2026-10-04-spec47-full-coverage.md`): built, with a padded block paired to its padded draft
+       wrapper, repeated words placed by nearness, text-run, form-control and group pairs (walker finders
+       `{ textRun }`, `{ group }` in `scripts/parity/lib/paint.mjs`). The guard tries a regressed row's ancestors' writes,
+       nearest first (CR21). **About is at 100%** (2026-10-04): 50 distinct issues to 0 on a fresh rebuild, 0 wrong writes,
+       12 ledger entries citing register 104 / S1 / S4, confirmed by an independent check
+       (`sites/eye-care-ward-end/build/qa/independent-check.mjs`, 0 differences at 375/768/1440) and a planted-fault
+       negative control. Contact pairs 31 of 32 blocks (the map is register 418) and its form 6 of 6; 134 distinct
+       issues open, grouped in the plan's Progress.
      - F3 calibration paths: measured, mostly not needed (Help's link rows are a block swap, register 120/121; Contact's
        form rows belong to the contact-form surface); one fixture gap (CR17).
      - F5 whole-page score in the solve report: built.
      - Speed: lean walks, the draft cache and four widths at once (step 2 above).
    - **Residual:**
-     - Fix F2's padded-container pairing and the guard's ancestor suspects (CR21), prove F2 and F5 live (About, then
-       Lenses), then run every surface once with its full config: About, Lenses, Help,
-       Contact and Home, then header, mobile-menu, the four megas, size-guide, lens, contact-form, shop and product. Done
-       per surface: 0 regressions, wrong writes at most 10%, every newly closed register item marked, every proven gap in
-       the register.
-     - Calibration leads: CR10 (aspect-ratio joins the walker's and calibration's property lists, then the 7 blocks with
-       an aspect-ratio setting are re-calibrated), CR11's wider re-calibration (Bean's go), `sgs/modal` re-calibrated
-       without `modalRef`, CR17, and accordion and accordion-item after S5 (CR3).
-     - Route leads: CR14 (measure a pair's child media, or write a setting's calibrated side effects together) and CR16
-       (grid columns from the track count).
-     - Gap typing: a setting that paints a parent while a rule on a child overrides it (the hours day label) comes out
-       Missing setting; calibration should record the child's own value so Solve can name it Hardcode.
-     - The functional flows (FR-47-7) and the walker's items 1 to 5 (FR-47-6): not started.
+     - Contact and its form post to 100% (the plan's Progress lists the five cause groups), then Lenses, then every
+       other surface with its full config: Help, Home, header, mobile-menu, the four megas, size-guide, lens, shop and
+       product. Done per surface: on a fresh rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the
+       whole-page line, 0 new rows, wrong writes at most 10%, the independent check agreeing, the register marked.
+     - Walker rule to build first for Contact: layout properties compared only where both sides lay out with flex or
+       grid (a draft block stack against a live flex column paints the same; flow rows judge the children).
+     - Calibration: 28 of 66 blocks re-calibrated on 2026-10-04 (border styles CR11, accordion and accordion-item CR3);
+       the rest, six redone for a scrollbar error, and `sgs/modal`'s fixture are listed in the plan's Progress. CR10
+       (aspect-ratio in the walker's and calibration's property lists) and CR17's business-info address variant remain.
+     - Route leads: CR16 (grid columns from the track count); gap typing (a setting that paints a parent while a rule on
+       a child overrides it comes out Missing setting; calibration should record the child's own value).
+     - The functional flows (FR-47-7) and the walker's items 1 to 5 (FR-47-6): not started. Contact and its form walk
+       only their rest state until FR-47-7 maps the form-flow states.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer.
 5. **A second draft** from a different designer, to test generality.
 6. **Handover to Spec 31.** Spec 31 decides, under its own plan, whether `sc_var_responsive_bridge.py` is still needed

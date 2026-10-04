@@ -206,7 +206,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 ### `solve.mjs` (runs `wp-build-page.js` and the walker)
 - `WIDTH_GROUPS`: one walker per width, run in parallel (each with its own draft cache).
 - `mergeReports(parts)` → one report from the per-width walks (runs in width order, errors by width).
-- `WALK_FLAGS`: every round's walk is lean (`--lean`: only the styles, boxes, hover end states and structure Solve reads) and reuses the run's draft reads (`--draft-cache <run dir>/draft-cache.json`).
+- `WALK_FLAGS`: headless unless `SGS_HEADED=1` (Hostinger's edge 403s headless browsers after bursts of traffic; `pairs.mjs`, `calibrate.mjs` and `scripts/wp-build-page.js` honour the same switch, scrollbars hidden); every round's walk is lean (`--lean`: only the styles, boxes, hover end states and structure Solve reads) and reuses the run's draft reads (`--draft-cache <run dir>/draft-cache.json`).
 - `USED_VALUES`: computed properties that are used sizes (`width`), reported and never written.
 - `calibrationFor(block)` → the block's calibration file or null.
 - `writeRound(report, tree, { db, snapshot, round, log, blocked, stateMap, calFor? })` → `{ writes, gaps }`; only rows from mapped walker states are written.
