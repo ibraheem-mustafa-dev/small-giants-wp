@@ -66,3 +66,25 @@ test( 'the generated config keeps the hand config and adds one ref-finder pair p
 	assert.match( src, /name: "gen-about-0", text: false, structure: false, draft: "body > main:nth-child\(2\)", live: "\.cr-ref-about-0"/ );
 	assert.match( src, /refPrefix: base\.refPrefix/ );
 } );
+
+// About, 2026-10-04: the hand pair `credential-stack` measured the draft's bordered column (the element the column
+// block was paired with) against the block's inner band, which paints none of its border or ground.
+import { reconcileHandPairs } from '../lib/pairs.mjs';
+const keptCol = [ { ref: 'cr-ref-about-11', draft: 'body > main:nth-child(1) > div:nth-child(2)' }, { ref: 'cr-ref-about-12', draft: 'body > main:nth-child(1) > div:nth-child(2) > div:nth-child(1)' } ];
+
+test( 'MUST FAIL TO KEEP: a hand pair measuring a paired block\'s draft element inside the block moves to the block root', () => {
+	const r = reconcileHandPairs( [ { name: 'credential-stack', draft: keptCol[ 0 ].draft, liveRef: 'cr-ref-about-11', liveIsRoot: false } ], keptCol );
+	assert.deepEqual( [ ...r.retarget ], [ [ 'credential-stack', '.cr-ref-about-11' ] ] );
+	assert.deepEqual( [ ...r.duplicate ], [ 'cr-ref-about-11' ] );
+	const src = configText( 'about.mjs', 'about', [ keptCol[ 1 ] ], r.retarget );
+	assert.match( src, /const moved = \{"credential-stack":"\.cr-ref-about-11"\};/ );
+} );
+
+test( 'positive control: a hand pair on the root, on another draft element or another block is not moved', () => {
+	const root = reconcileHandPairs( [ { name: 'a', draft: keptCol[ 0 ].draft, liveRef: 'cr-ref-about-11', liveIsRoot: true } ], keptCol );
+	assert.equal( root.retarget.size, 0 );
+	assert.deepEqual( [ ...root.duplicate ], [ 'cr-ref-about-11' ] );
+	const other = reconcileHandPairs( [ { name: 'b', draft: 'body > div:nth-child(9)', liveRef: 'cr-ref-about-11', liveIsRoot: false }, { name: 'c', draft: keptCol[ 0 ].draft, liveRef: 'cr-ref-about-12', liveIsRoot: false }, { name: 'd', draft: null, liveRef: null, liveIsRoot: false } ], keptCol );
+	assert.equal( other.retarget.size, 0 );
+	assert.equal( other.duplicate.size, 0 );
+} );

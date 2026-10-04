@@ -1,6 +1,6 @@
 // The per-state passes of draft-live-walk.mjs that move the page: scroll-in reveals, the reveal sweep
 // before a full-page shot, hover end states and keyboard focus rings.
-import { HOVER_PROPS, collectRunning, centreOf, hoverStyles } from './collect.mjs';
+import { HOVER_PROPS, collectRunning, centreOf, hoverStyles, PAINT_SRC } from './collect.mjs';
 import { hoverChrome } from './chrome-walk.mjs';
 import { focusPass } from './focus.mjs';
 
@@ -15,7 +15,7 @@ export async function scrollInPass( page, scrollIns, side, snap, RESOLVE ) {
 		await page.waitForTimeout( 60 );
 		snap[ p.name ].scroll.running = await page.evaluate( collectRunning, [ p[ side ], RESOLVE ] );
 		await page.waitForTimeout( p.scrollWait ?? 1500 );
-		snap[ p.name ].scroll.post = await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE ] );
+		snap[ p.name ].scroll.post = await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE, PAINT_SRC ] );
 	}
 }
 
@@ -55,7 +55,7 @@ export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, f
 			await page.mouse.move( at.x, at.y );
 			await page.waitForTimeout( p.hoverWait ?? 800 );
 		}
-		snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE ] );
+		snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC ] );
 		await page.mouse.move( 1, 1 );
 		await page.waitForTimeout( 400 );
 	}

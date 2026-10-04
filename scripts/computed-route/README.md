@@ -168,7 +168,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `wordsByBlock(liveRefs)` → Map ref → live word indices (every word inside the block, nested blocks included).
 - `twinsByBlock(matches, blocks)` → Map ref → `{ live, draft }` (the block's words and their draft twins).
 - `judgePairing(block, partner, liveRefsOfDraft, limits?)` → `{ ok, why }`.
-- `configText(handFile, surface, pairs)` → the generated walker config's source.
+- `reconcileHandPairs(hand, kept)` → `{ retarget, duplicate }`: a hand pair measuring a kept block's draft element on an element inside that block moves to the block root (`retarget`), and the generated pair it then duplicates is dropped (`duplicate`).
+- `configText(handFile, surface, pairs, retarget?)` → the generated walker config's source (hand pairs named in `retarget` measure the given live finder).
 
 ### `lib/guard.mjs`
 - `explains(w, r, cal)` → true when calibration ties write `w` to regressed row `r` (its own property, a calibrated side effect, or a discovered layout effect).

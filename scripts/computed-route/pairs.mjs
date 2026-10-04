@@ -15,7 +15,7 @@ import { matchWords } from '../parity/lib/auto-compare.mjs';
 import { AUTO_EXCLUDE } from '../parity/lib/auto-walk.mjs';
 import { makeHelpers } from '../parity/lib/helpers.mjs';
 import { resolveFinder } from '../parity/lib/collect.mjs';
-import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, configText } from './lib/pairs.mjs';
+import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -109,6 +109,43 @@ function draftChains( page, wanted, wordEls ) {
 	}, [ wanted, wordEls ] );
 }
 
+// In-page: each hand pair's element on one side. Draft: its CSS path from <body> (as draftChains writes it). Live: the
+// nearest block ref at or above it and whether it is that ref's own element.
+function handElements( page, finders, side, prefix ) {
+	return page.evaluate( ( [ list, src, sd, pre ] ) => {
+		// eslint-disable-next-line no-new-func
+		const resolve = new Function( `return (${ src });` )();
+		const pathOf = ( el ) => {
+			const steps = [];
+			for ( let a = el; a && a !== document.body; a = a.parentElement ) {
+				steps.unshift( `${ a.tagName.toLowerCase() }:nth-child(${ [ ...a.parentElement.children ].indexOf( a ) + 1 })` );
+			}
+			return [ 'body', ...steps ].join( ' > ' );
+		};
+		return list.map( ( f ) => {
+			let el = null;
+			try {
+				el = f ? resolve( f ) : null;
+			} catch {
+				el = null;
+			}
+			if ( ! el ) {
+				return null;
+			}
+			if ( 'draft' === sd ) {
+				return pathOf( el );
+			}
+			for ( let a = el; a; a = a.parentElement ) {
+				const r = [ ...a.classList ].find( ( c ) => c.startsWith( pre ) );
+				if ( r ) {
+					return { liveRef: r, liveIsRoot: a === el };
+				}
+			}
+			return null;
+		} );
+	}, [ finders, resolveFinder.toString(), side, prefix ] );
+}
+
 async function openDraft( browser, cfg, width ) {
 	const page = await browser.newPage( { viewport: { width, height: 900 } } );
 	const RESOLVE = resolveFinder.toString();
@@ -164,6 +201,16 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		const verdict = partner ? judgePairing( { ref, ...t, liveBox: boxes[ ref ] || { w: 0, h: 0 } }, partner, liveRefsOfDraft ) : { ok: false, why: t.draft.length ? 'no draft element holds its words' : 'no matched words' };
 		( verdict.ok ? kept : left ).push( { ref, draft: partner?.path || null, why: verdict.why, words: t.live.length, matched: t.draft.length, first: t.draft.length ? dWords[ Math.min( ...t.draft ) ].t : null, last: t.draft.length ? dWords[ Math.max( ...t.draft ) ].t : null } );
 	}
+	// Hand pairs measuring a kept block's draft element on an element inside the block move to the block root, and
+	// the generated pair they then duplicate is dropped (lib/pairs.mjs::reconcileHandPairs).
+	const handPairs = ( cfg.pairs || [] ).filter( ( p ) => p && p.name );
+	const serial = ( f ) => ( 'function' === typeof f ? null : f );
+	const hDraft = await handElements( draft, handPairs.map( ( p ) => serial( p.draft ) ), 'draft', prefix );
+	const hLive = await handElements( live, handPairs.map( ( p ) => serial( p.live ) ), 'live', prefix );
+	const { retarget, duplicate } = reconcileHandPairs( handPairs.map( ( p, i ) => ( { name: p.name, draft: hDraft[ i ], liveRef: hLive[ i ]?.liveRef || null, liveIsRoot: !! hLive[ i ]?.liveIsRoot } ) ), kept );
+	for ( let i = kept.length - 1; i >= 0; i-- ) {
+		duplicate.has( kept[ i ].ref ) && kept.splice( i, 1 );
+	}
 	// A kept finder must hold the block's first and last matched words at 375 and 768 too.
 	for ( const width of [ 375, 768 ] ) {
 		const page = await openDraft( browser, cfg, width );
@@ -182,9 +229,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const unworded = all.filter( ( r ) => ! twins.has( r ) ).map( ( ref ) => ( { ref, why: 'no painted words (an image, an icon or an empty wrapper)' } ) );
 	const handFile = path.basename( s.walker );
 	const fullFile = handFile.replace( /\.mjs$/, '.full.mjs' );
-	fs.writeFileSync( path.join( path.dirname( handPath ), fullFile ), configText( handFile, surface, kept ) );
+	fs.writeFileSync( path.join( path.dirname( handPath ), fullFile ), configText( handFile, surface, kept, retarget ) );
 	fs.mkdirSync( path.join( buildDir, 'qa', 'pairs' ), { recursive: true } );
-	const report = { surface, when: new Date().toISOString(), blocks: all.length, kept: kept.length, left: [ ...left, ...unworded ], keptPairs: kept };
+	const report = { surface, when: new Date().toISOString(), blocks: all.length, kept: kept.length, coveredByHand: [ ...duplicate ], retargeted: Object.fromEntries( retarget ), left: [ ...left, ...unworded ], keptPairs: kept };
 	fs.writeFileSync( path.join( buildDir, 'qa', 'pairs', `${ surface }.json` ), JSON.stringify( report, null, 1 ) );
 	console.log( JSON.stringify( { surface, blocks: all.length, kept: kept.length, left: report.left.length, config: path.join( path.dirname( s.walker ), fullFile ) } ) );
 }

@@ -22,7 +22,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { DEFAULT_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles } from './lib/collect.mjs';
+import { DEFAULT_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles, PAINT_SRC } from './lib/collect.mjs';
 import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses } from './lib/state-passes.mjs';
 import { collectLinks, probeLinks, unseenLabels } from './lib/links.mjs';
 import { sampleEntrances } from './lib/entrances.mjs';
@@ -164,9 +164,16 @@ async function walkSide( browser, side, width ) {
 		}
 		const snap = {};
 		for ( const p of pairs ) {
-			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH ] );
+			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH, PAINT_SRC ] );
 			snap[ p.name ].running = running[ p.name ];
 		}
+		// The page's own zero point for positions (the outermost <main>), so a pair's place on the page is compared
+		// without the header above it (ref-traced walks only: compare-state.mjs::flowOffsets). Read at the same scroll
+		// as the pair boxes above: a sticky header that shrinks on scroll moves <main> after any scroll pass.
+		const mainY = refPrefix ? await page.evaluate( () => {
+			const m = document.querySelector( 'main' );
+			return m ? Math.round( m.getBoundingClientRect().top + window.scrollY ) : null;
+		} ) : null;
 		if ( header ) {
 			await collectChrome( page, side, pairs, snap, RESOLVE, h.timeline );
 		}
@@ -175,7 +182,7 @@ async function walkSide( browser, side, width ) {
 		// Scroll-in pairs are read before anything scrolls (a full-page shot reveals them too).
 		const scrollIns = pairs.filter( ( q ) => q.scrollIn && ! snap[ q.name ].missing );
 		for ( const p of scrollIns ) {
-			snap[ p.name ].scroll = { pre: await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE ] ) };
+			snap[ p.name ].scroll = { pre: await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE, PAINT_SRC ] ) };
 		}
 		const auto = autoOn ? await collectAutoOn( page, side, cfg ) : null;
 		// Links (section 14): the live side's same-origin targets are fetched once per run.
@@ -207,12 +214,6 @@ async function walkSide( browser, side, width ) {
 		if ( header && ! lean ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 		}
-		// The page's own zero point for positions (the outermost <main>), so a pair's place on the page is compared
-		// without the header above it (ref-traced walks only: compare-state.mjs::flowOffsets).
-		const mainY = refPrefix ? await page.evaluate( () => {
-			const m = document.querySelector( 'main' );
-			return m ? Math.round( m.getBoundingClientRect().top + window.scrollY ) : null;
-		} ) : null;
 		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, entrances: state.name === firstState ? entrances : null };
 		if ( state.autoScrolled ) {
 			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );

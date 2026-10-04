@@ -80,9 +80,9 @@ const normText = ( t ) => ( t || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase(
 // judged by the box sizes and the side-by-side screenshots.
 const sameWords = ( a, b ) => normText( a ).split( ' ' ).sort().join( ' ' ) === normText( b ).split( ' ' ).sort().join( ' ' );
 
-// A border colour only matters where that side has a border.
+// A border colour or style only matters where that side has a border (a 0 width paints neither).
 function borderColourIrrelevant( p, d, l ) {
-	const m = p.match( /^border-(top|bottom|left|right)-color$/ );
+	const m = p.match( /^border-(top|bottom|left|right)-(color|style)$/ );
 	if ( ! m ) {
 		return false;
 	}

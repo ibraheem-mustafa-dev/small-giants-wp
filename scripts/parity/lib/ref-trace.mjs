@@ -34,9 +34,10 @@ export function elementPath( el, refEl ) {
 	return steps.join( ' > ' );
 }
 
-// In-page: the ref, its block root class and the paths for one measured element. `text` is the element that paints
-// the first text (collectPair reads text properties from it), so text rows get that element's path.
-export function traceRef( el, carrier, prefix, pathSrc ) {
+// In-page: the ref, its block root class and the paths for one measured element. `carrier` is the element that
+// paints the first text (collectPair reads text properties from it), so text rows get that element's path; `layoutEl`
+// is the element laying out the children (collectPair reads layout properties from it), so layout rows get its path.
+export function traceRef( el, carrier, prefix, pathSrc, layoutEl = null ) {
 	// eslint-disable-next-line no-new-func
 	const path = new Function( `return (${ pathSrc });` )();
 	let refEl = null;
@@ -57,13 +58,18 @@ export function traceRef( el, carrier, prefix, pathSrc ) {
 		block,
 		path: path( el, refEl ),
 		textPath: carrier && refEl.contains( carrier ) ? path( carrier, refEl ) : null,
+		layoutPath: layoutEl && refEl.contains( layoutEl ) ? path( layoutEl, refEl ) : null,
 	};
 }
 
 // The properties collectPair reads from the text carrier rather than the element.
 export const TEXT_CARRIED = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ];
 
-// Node side: stamps ref, block and path on one pair's rows from the live snapshot's trace.
+// The properties collectPair reads from the element laying out the children (collect.mjs::LAYOUT_PROPS).
+export const LAYOUT_CARRIED = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
+
+// Node side: stamps ref, block and path on one pair's rows from the live snapshot's trace. Text properties (at rest and
+// on hover: hoverStyles reads colour from the same carrier) take the text path; layout properties the layout path.
 export function stampRefs( diffs, trace ) {
 	if ( ! trace ) {
 		return diffs;
@@ -74,7 +80,13 @@ export function stampRefs( diffs, trace ) {
 		}
 		d.ref = trace.ref;
 		d.block = trace.block;
-		d.path = 'style' === d.kind && TEXT_CARRIED.includes( d.key ) && null !== trace.textPath ? trace.textPath : trace.path;
+		if ( [ 'style', 'hover' ].includes( d.kind ) && TEXT_CARRIED.includes( d.key ) && null != trace.textPath ) {
+			d.path = trace.textPath;
+		} else if ( 'style' === d.kind && LAYOUT_CARRIED.includes( d.key ) && null != trace.layoutPath ) {
+			d.path = trace.layoutPath;
+		} else {
+			d.path = trace.path;
+		}
 	}
 	return diffs;
 }

@@ -81,3 +81,55 @@ test( 'a pair with a configured anchor keeps its own distance row and gets no fl
 	const live = { eyebrow: at( 225 ), name: at( 257 ), intro: at( 317 ) };
 	assert.deepEqual( flowOffsets( [ { name: 'eyebrow', anchor: 'x' }, ...flowPairs.slice( 1 ) ], draftSnap, live, { draft: 120, live: 120 }, { box: 2 } ), {} );
 } );
+
+// Layout properties are read from the element laying out the children (About, 2026-10-04): an SGS container's flex or
+// grid sits on its inner band, the draft's on the row element itself, so the walker compared the wrapper's `normal`
+// gap against the draft's 10px and never saw the page grid's 32px row gap against the draft's 48px.
+import { layoutElement } from '../../parity/lib/collect.mjs';
+import { comparePair } from '../../parity/lib/compare.mjs';
+
+const box = ( display, kids = [] ) => ( { display, children: kids, getClientRects: () => [ 1 ] } );
+const styleOf = ( e ) => ( { display: e.display } );
+
+test( 'MUST FAIL TO MISS: a wrapper holding one flex or grid band reads its layout from the band', () => {
+	const inner = box( 'grid', [ box( 'block' ), box( 'block' ) ] );
+	const wrapper = box( 'block', [ inner ] );
+	assert.equal( layoutElement( wrapper, styleOf ), inner );
+	const deep = box( 'flex', [ box( 'block' ), box( 'block' ) ] );
+	assert.equal( layoutElement( box( 'block', [ box( 'block', [ deep ] ) ] ), styleOf ), deep );
+} );
+
+test( 'positive control: a flex element, a wrapper with two children, or one with no layout below keeps itself', () => {
+	const row = box( 'inline-flex', [ box( 'grid' ) ] );
+	assert.equal( layoutElement( row, styleOf ), row );
+	const two = box( 'block', [ box( 'grid' ), box( 'grid' ) ] );
+	assert.equal( layoutElement( two, styleOf ), two );
+	const plain = box( 'block', [ box( 'block', [ box( 'block' ), box( 'block' ) ] ) ] );
+	assert.equal( layoutElement( plain, styleOf ), plain );
+	const hidden = { display: 'none', children: [], getClientRects: () => [] };
+	const withHidden = box( 'block', [ box( 'flex', [ box( 'block' ), box( 'block' ) ] ), hidden ] );
+	assert.equal( layoutElement( withHidden, styleOf ), withHidden.children[ 0 ] );
+} );
+
+test( 'stamping: layout rows take the layout path; hover colour takes the text path', () => {
+	const diffs = [ { kind: 'style', key: 'gap' }, { kind: 'style', key: 'flex-wrap' }, { kind: 'hover', key: 'color' }, { kind: 'style', key: 'padding-top' } ];
+	stampRefs( diffs, { ref: 'cr-ref-a-8', block: 'sgs-container', path: '', textPath: '.sgs-container__inner > a > span', layoutPath: '.sgs-container__inner' } );
+	assert.deepEqual( diffs.map( ( d ) => d.path ), [ '.sgs-container__inner', '.sgs-container__inner', '.sgs-container__inner > a > span', '' ] );
+} );
+
+// A border side's style paints nothing at 0 width (About's DipTp card: left-only 3px border, `border-style: solid`
+// reports solid on the top side at 0 width against the draft's none).
+const styled = ( styles ) => ( { box: { w: 10, h: 10 }, text: '', styles, motion: { animation: 'none', transition: 'none' }, keyframes: 'none' } );
+const tol = { box: 2, px: 2 };
+
+test( 'a border style on a 0-width side is no difference', () => {
+	const d = styled( { 'border-top-style': 'none', 'border-top-width': '0px' } );
+	const l = styled( { 'border-top-style': 'solid', 'border-top-width': '0px' } );
+	assert.equal( comparePair( { motion: false, text: false }, d, l, tol ).length, 0 );
+} );
+
+test( 'MUST FAIL TO MATCH: a border style on a painted side is still a difference', () => {
+	const d = styled( { 'border-top-style': 'none', 'border-top-width': '0px' } );
+	const l = styled( { 'border-top-style': 'solid', 'border-top-width': '3px' } );
+	assert.deepEqual( comparePair( { motion: false, text: false }, d, l, tol ).map( ( x ) => x.key ).sort(), [ 'border-top-style', 'border-top-width' ] );
+} );
