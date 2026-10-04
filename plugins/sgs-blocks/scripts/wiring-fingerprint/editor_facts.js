@@ -187,6 +187,13 @@ function facts( file ) {
 				for ( const m of src.slice( p.node.init.start, p.node.init.end ).matchAll( /['"]([A-Z][A-Za-z0-9]*)['"]/g ) ) sfx.add( m[ 1 ] );
 			}
 		},
+		// `next.attr = value` on an object later passed to setAttributes( next ) writes attr.
+		AssignmentExpression( p ) {
+			const l = p.node.left;
+			if ( l.type === 'MemberExpression' && ! l.computed && l.object.type === 'Identifier' && objVars.has( l.object.name ) && l.property.type === 'Identifier' ) {
+				objVars.get( l.object.name ).push( l.property.name );
+			}
+		},
 		ImportDeclaration( p ) { out.imports.push( { from: p.node.source.value, names: p.node.specifiers.map( ( s ) => ( s.imported ? s.imported.name || s.imported.value : 'default' ) ) } ); },
 		StringLiteral( p ) { if ( ATTR_SHAPE_RE.test( p.node.value ) && p.node.value.length < 60 ) lits.add( p.node.value ); },
 		CallExpression( p ) {
@@ -325,7 +332,10 @@ function facts( file ) {
 	} );
 	for ( const m of src.matchAll( /\$\{\s*prefix\s*\}([A-Z][A-Za-z0-9]*)/g ) ) sfx.add( m[ 1 ] );
 	for ( const m of src.matchAll( /prefix\s*\+\s*['"]([A-Z][A-Za-z0-9]*)['"]/g ) ) sfx.add( m[ 1 ] );
-	for ( const m of src.matchAll( /\w*(?:[aA]ttrKey|[aA]ttrName|Name|\bk)\(\s*(?:prefix\s*,\s*)?['"]([A-Z][A-Za-z0-9]*)['"]\s*\)/g ) ) sfx.add( m[ 1 ] );
+	for ( const m of src.matchAll( /\w*(?:[aA]ttrKey|[aA]ttrName|Name|\bk)\(\s*(?:[A-Za-z_$][\w$.]*\s*,\s*){0,2}['"]([A-Z][A-Za-z0-9]*)['"]\s*\)(?:\s*\+\s*['"]([A-Z][A-Za-z0-9]*)['"])?/g ) ) {
+		sfx.add( m[ 1 ] );
+		if ( m[ 2 ] ) sfx.add( m[ 1 ] + m[ 2 ] );
+	}
 	out.literals = [ ...lits ].sort();
 	out.setKeys = [ ...setKeys ].sort();
 	out.controlReads = [ ...controlReads ].sort();
@@ -361,7 +371,7 @@ function reach( entry, maxDepth ) {
 	return [ ...seen.keys() ].sort();
 }
 
-const result = { blocks: {}, files: {}, extensions: [], exports: {} };
+const result = { blocks: {}, files: {}, extensions: [], extensionReach: {}, exports: {} };
 if ( fs.existsSync( BLOCKS ) ) {
 	for ( const d of fs.readdirSync( BLOCKS, { withFileTypes: true } ).sort( ( a, b ) => ( a.name < b.name ? -1 : 1 ) ) ) {
 		if ( ! d.isDirectory() || d.name === 'extensions' ) continue;
@@ -372,7 +382,7 @@ if ( fs.existsSync( BLOCKS ) ) {
 }
 for ( const f of walkJs( path.join( BLOCKS, 'extensions' ), [] ) ) {
 	result.extensions.push( rel( f ) );
-	facts( f );
+	result.extensionReach[ rel( f ) ] = reach( f, 2 ).map( rel );
 }
 for ( const [ f, v ] of [ ...factCache.entries() ].sort( ( a, b ) => ( a[ 0 ] < b[ 0 ] ? -1 : 1 ) ) ) {
 	result.files[ rel( f ) ] = v;

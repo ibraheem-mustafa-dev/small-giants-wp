@@ -23,6 +23,8 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
     records: list[dict] = []
     files = editor.files
     all_ext = list(inp.facts.get("extensions", []))
+    # Control writes also count from the shared components an extension mounts (its imports, two steps deep).
+    ctl_files = sorted(set(all_ext) | {f for v in inp.facts.get("extensionReach", {}).values() for f in v})
     for ext in inp.roster:
         fam = "src/blocks/extensions/" + ext.get("file", "")
         fam_dir = fam.rsplit("/", 1)[0] + "/"
@@ -51,7 +53,7 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
                 records.append(rec)
                 continue
             ctl = any(attr in files.get(f, {}).get("setKeys", []) or (files.get(f, {}).get("callsSet") and attr in files.get(f, {}).get("literals", []))
-                      for f in all_ext)
+                      for f in ctl_files)
             canvas = blb and any(attr in files.get(f, {}).get("canvasReads", {}) for f in fam_files)
             missing, details = [], {}
             if not ctl:
