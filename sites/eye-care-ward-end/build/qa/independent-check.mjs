@@ -24,10 +24,8 @@ const argv = process.argv.slice( 2 );
 const flag = ( n, d = null ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : d );
 const surface = flag( '--surface' );
 const WIDTHS = flag( '--widths', '375,768,1440' ).split( ',' ).map( Number );
-const PX_TOL = 2;
-const FONT_TOL = 0.5;
+const [ PX_TOL, FONT_TOL ] = [ 2, 0.5 ]; // px: boxes and insets; font sizes and line heights
 const TEXT_KEYS = [ 'content', 'text', 'label', 'heading', 'title', 'buttonText', 'triggerText', 'subtitle', 'description', 'placeholder' ];
-
 if ( ! surface ) {
 	console.error( 'Usage: independent-check.mjs --surface <surface> [--widths 375,768,1440] [--out file.json]' );
 	process.exit( 2 );
@@ -42,8 +40,7 @@ const ledger = ( Array.isArray( ledgerRaw ) ? ledgerRaw : Object.values( ledgerR
 // The words of a string, lower-cased, letters and digits only.
 const norm = ( t ) => String( t ).replace( /<[^>]+>/g, ' ' ).replace( /&[a-z#0-9]+;/gi, ' ' ).toLowerCase().replace( /[^\p{L}\p{N}]+/gu, ' ' ).trim();
 const snippet = ( t ) => norm( t ).split( ' ' ).slice( 0, 6 ).join( ' ' );
-const ownText = ( n ) => {
-	const a = n.attributes || {};
+const ownText = ( { attributes: a = {} } ) => {
 	const k = TEXT_KEYS.find( ( key ) => 'string' === typeof a[ key ] && norm( a[ key ] ) );
 	return k ? snippet( a[ k ] ) : null;
 };
@@ -73,21 +70,35 @@ walk( Array.isArray( tree ) ? tree : tree.blocks || [] );
 // In-page: finds each item and reads its painted values.
 function readPage( list ) {
 	const N = ( t ) => String( t ).toLowerCase().replace( /[^\p{L}\p{N}]+/gu, ' ' ).trim();
-	const skip = ( el ) => !! el.closest( 'header, nav, footer, [role="navigation"], [role="banner"], [role="contentinfo"], script, style, noscript, template' );
+	// Page chrome only: a <header> or <nav> inside <main> is part of the content (a card's or section's heading).
+	const skip = ( el ) => {
+		const c = el.closest( 'header, nav, footer, [role="navigation"], [role="banner"], [role="contentinfo"], script, style, noscript, template' );
+		return !! c && ( /^(SCRIPT|STYLE|NOSCRIPT|TEMPLATE)$/.test( c.tagName ) || ! c.closest( 'main' ) );
+	};
 	const visible = ( el ) => {
 		const r = el.getBoundingClientRect();
 		const c = getComputedStyle( el );
 		return r.width > 0 && r.height > 0 && 'hidden' !== c.visibility && 'none' !== c.display;
 	};
 	const all = [ ...document.body.querySelectorAll( '*' ) ].filter( ( el ) => ! skip( el ) );
-	const textOf = new Map( all.map( ( el ) => [ el, N( el.textContent ) ] ) );
+	// innerText separates neighbouring blocks (textContent runs a heading into the paragraph after it).
+	const textOf = new Map( all.map( ( el ) => [ el, N( el.innerText ?? el.textContent ) ] ) );
 	const has = ( el, t ) => ( ' ' + textOf.get( el ) + ' ' ).includes( ' ' + t + ' ' );
 	// The deepest visible elements holding every given text, in document order.
 	const deepest = ( texts ) => all.filter( ( el ) => texts.every( ( t ) => has( el, t ) ) && visible( el ) && ! [ ...el.children ].some( ( c ) => textOf.has( c ) && texts.every( ( t ) => has( c, t ) ) && visible( c ) ) );
 	// The unit: the element and every ancestor holding exactly the same text.
+	// The unit: the element and every ancestor that holds exactly the same text and wraps its children tightly (its
+	// content box spans them: padding around them, no free space). A wider wrapper (a centred page container's
+	// full-width parent) is layout around the block, not part of it.
+	const tight = ( a, c = getComputedStyle( a ) ) => {
+		const sides = [ 'paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth' ].reduce( ( t, k ) => t + parseFloat( c[ k ] ), 0 );
+		const kids = [ ...a.children ].map( ( k ) => k.getBoundingClientRect() ).filter( ( r ) => r.width );
+		const span = kids.reduce( ( m, r ) => Math.max( m, r.right ), -Infinity ) - kids.reduce( ( m, r ) => Math.min( m, r.left ), Infinity );
+		return Math.abs( a.getBoundingClientRect().width - sides - span ) <= 2;
+	};
 	const unitOf = ( el ) => {
 		const out = [ el ];
-		for ( let a = el.parentElement; a && a !== document.body && textOf.get( a ) === textOf.get( el ); a = a.parentElement ) {
+		for ( let a = el.parentElement; a && a !== document.body && textOf.get( a ) === textOf.get( el ) && tight( a ); a = a.parentElement ) {
 			out.push( a );
 		}
 		return out;
@@ -115,16 +126,27 @@ function readPage( list ) {
 		const r = outer.getBoundingClientRect();
 		// Painted inset: from the outer box's edges to where its text paints (the rendered text's own rectangle), so the
 		// padding counts wherever it sits in the unit and an icon or label wrapper before the text counts as it paints.
-		const range = document.createRange();
-		range.selectNodeContents( el );
-		const tr = range.getBoundingClientRect();
-		const inset = tr.width && tr.height
+		// The union of the element's rendered text nodes (an icon beside the text is not text).
+		const tw = document.createTreeWalker( el, NodeFilter.SHOW_TEXT );
+		let tr = null;
+		for ( let n = tw.nextNode(); n; n = tw.nextNode() ) {
+			if ( ! n.textContent.trim() ) {
+				continue;
+			}
+			const rg = document.createRange();
+			rg.selectNodeContents( n );
+			const b = rg.getBoundingClientRect();
+			if ( b.width && b.height ) {
+				tr = tr ? { left: Math.min( tr.left, b.left ), top: Math.min( tr.top, b.top ), right: Math.max( tr.right, b.right ), bottom: Math.max( tr.bottom, b.bottom ) } : { left: b.left, top: b.top, right: b.right, bottom: b.bottom };
+			}
+		}
+		const inset = tr
 			? { top: Math.round( tr.top - r.top ), right: Math.round( r.right - tr.right ), bottom: Math.round( r.bottom - tr.bottom ), left: Math.round( tr.left - r.left ) }
 			: { top: 0, right: 0, bottom: 0, left: 0 };
 		const ic = getComputedStyle( el );
 		const firstOf = ( fn ) => unit.map( ( u ) => fn( getComputedStyle( u ) ) ).find( ( v ) => null !== v ) ?? null;
 		const ground = firstOf( ( c ) => ( /rgba\(.*,\s*0\)$|transparent/.test( c.backgroundColor ) ? null : c.backgroundColor ) );
-		const border = firstOf( ( c ) => ( [ 'Top', 'Right', 'Bottom', 'Left' ].some( ( sd ) => 'none' !== c[ `border${ sd }Style` ] && px( c[ `border${ sd }Width` ] ) > 0 ) ? [ 'Top', 'Right', 'Bottom', 'Left' ].map( ( sd ) => ( 'none' === c[ `border${ sd }Style` ] ? '0' : `${ c[ `border${ sd }Width` ] } ${ c[ `border${ sd }Style` ] } ${ c[ `border${ sd }Color` ] }` ) ).join( ' | ' ) : null ) );
+		const border = firstOf( ( c ) => ( [ 'Top', 'Right', 'Bottom', 'Left' ].some( ( sd ) => 'none' !== c[ `border${ sd }Style` ] && px( c[ `border${ sd }Width` ] ) > 0 ) ? [ 'Top', 'Right', 'Bottom', 'Left' ].map( ( sd ) => ( 'none' === c[ `border${ sd }Style` ] || 0 === px( c[ `border${ sd }Width` ] ) ? '0' : `${ c[ `border${ sd }Width` ] } ${ c[ `border${ sd }Style` ] } ${ c[ `border${ sd }Color` ] }` ) ).join( ' | ' ) : null ) );
 		const gap = firstOf( ( c ) => ( /flex|grid/.test( c.display ) && ( 'normal' !== c.rowGap || 'normal' !== c.columnGap ) ? `${ c.rowGap } ${ c.columnGap }` : null ) );
 		const row = {
 			ref: it.ref,
@@ -147,8 +169,7 @@ function compare( d, l, width ) {
 	const diffs = [];
 	const add = ( prop, dv, lv ) => diffs.push( { ref: d.ref, width, prop, draft: dv, live: lv } );
 	if ( ! d.found || ! l.found ) {
-		d.found !== l.found && add( 'found', d.found, l.found );
-		return diffs;
+		return d.found !== l.found ? [ { ref: d.ref, width, prop: 'found', draft: d.found, live: l.found } ] : diffs;
 	}
 	for ( const k of [ 'x', 'y', 'w', 'h' ] ) {
 		Math.abs( d.box[ k ] - l.box[ k ] ) > PX_TOL && add( `box.${ k }`, d.box[ k ], l.box[ k ] );
@@ -177,12 +198,11 @@ const { makeHelpers, waitOutHostCheck } = await import( pathToFileURL( path.join
 const { resolveFinder } = await import( pathToFileURL( path.join( REPO, 'scripts/parity/lib/collect.mjs' ) ).href );
 // SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load).
 const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars' ] } );
+// Fires every scroll reveal and lets entrance animations finish before reading.
 const settle = async ( page ) => {
-	// Fire every scroll reveal and let entrance animations finish before reading.
 	await page.evaluate( async () => {
 		for ( let y = 0; y < document.body.scrollHeight; y += 500 ) {
-			window.scrollTo( 0, y );
-			await new Promise( ( r ) => setTimeout( r, 120 ) );
+			window.scrollTo( 0, y ) || await new Promise( ( r ) => setTimeout( r, 120 ) );
 		}
 		window.scrollTo( 0, 0 );
 	} );

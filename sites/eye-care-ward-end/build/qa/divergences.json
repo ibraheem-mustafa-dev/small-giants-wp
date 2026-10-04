@@ -30,21 +30,6 @@
     "decided": "2026-10-04 Bean"
   },
   {
-    "id": "D-3",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "ground appears, lifts"
-    },
-    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
-    "decided": "2026-10-04 Bean"
-  },
-  {
     "id": "D-4",
     "scope": "about",
     "node": "cr-ref-about-10",
@@ -55,21 +40,6 @@
     ],
     "expected": {
       "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
-    "decided": "2026-10-04 Bean"
-  },
-  {
-    "id": "D-5",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      1440
-    ],
-    "expected": {
-      "value": "ground appears, lifts"
     },
     "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
     "decided": "2026-10-04 Bean"
@@ -96,12 +66,132 @@
     "state": "opening",
     "property": "hover-effects",
     "widths": [
+      768
+    ],
+    "expected": {
+      "value": "lifts"
+    },
+    "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-8",
+    "scope": "about",
+    "node": "cr-ref-about-10",
+    "state": "opening",
+    "property": "hover-effects",
+    "widths": [
+      1440
+    ],
+    "expected": {
+      "value": "lifts"
+    },
+    "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-9",
+    "scope": "about",
+    "node": "cr-ref-about-10",
+    "state": "opening",
+    "property": "hover-effects",
+    "widths": [
       1920
     ],
     "expected": {
-      "value": "ground appears, lifts"
+      "value": "lifts"
     },
-    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+    "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-10",
+    "scope": "about",
+    "node": "cr-ref-about-9",
+    "state": "opening",
+    "property": "transform",
+    "widths": [
+      768
+    ],
+    "expected": {
+      "value": "matrix(1, 0, 0, 1, 0, -3)"
+    },
+    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-11",
+    "scope": "about",
+    "node": "cr-ref-about-9",
+    "state": "opening",
+    "property": "hover-effects",
+    "widths": [
+      768
+    ],
+    "expected": {
+      "value": "lifts"
+    },
+    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-12",
+    "scope": "about",
+    "node": "cr-ref-about-9",
+    "state": "opening",
+    "property": "transform",
+    "widths": [
+      1440
+    ],
+    "expected": {
+      "value": "matrix(1, 0, 0, 1, 0, -3)"
+    },
+    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-13",
+    "scope": "about",
+    "node": "cr-ref-about-9",
+    "state": "opening",
+    "property": "hover-effects",
+    "widths": [
+      1440
+    ],
+    "expected": {
+      "value": "lifts"
+    },
+    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-14",
+    "scope": "about",
+    "node": "cr-ref-about-9",
+    "state": "opening",
+    "property": "transform",
+    "widths": [
+      1920
+    ],
+    "expected": {
+      "value": "matrix(1, 0, 0, 1, 0, -3)"
+    },
+    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-15",
+    "scope": "about",
+    "node": "cr-ref-about-9",
+    "state": "opening",
+    "property": "hover-effects",
+    "widths": [
+      1920
+    ],
+    "expected": {
+      "value": "lifts"
+    },
+    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
     "decided": "2026-10-04 Bean"
   }
 ]
