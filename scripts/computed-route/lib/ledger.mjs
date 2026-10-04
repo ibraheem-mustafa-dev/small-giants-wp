@@ -58,7 +58,7 @@ const slugClass = ( node ) => 'sgs-' + node.replace( /^sgs\//, '' );
 export function match( entries, row ) {
 	const stateOk = ( e ) => '*' === e.state || ( 'hover' === e.state ? 'hover' === row.kind : e.state === row.state );
 	return entries.find( ( e ) => stateOk( e ) &&
-		e.property === row.property &&
+		( '*' === e.property || e.property === row.property ) &&
 		( ! e.widths || e.widths.includes( row.width ) ) &&
 		( '*' === e.node || e.node === row.ref || ( row.block && e.node.includes( '/' ) && slugClass( e.node ) === row.block ) ) ) || null;
 }
@@ -121,15 +121,22 @@ export function migrateAccepts( accepts, { scope, firstId = 1, decided } ) {
 	return { migrated, unmigrated };
 }
 
-// Builds the entry accepting one report row (by its id), dated today.
-export function entryFromRow( report, rowId, { reason, scope, entries, source = 'Bean' } ) {
+// Builds the entry accepting one report row (by its id), dated today. rule names a RULES entry in place of the row's
+// live value; everyWidth drops the width (every width); everyProperty covers every property of the row's node (a
+// decided replacement such as a real embed for a draft sketch).
+export function entryFromRow( report, rowId, { reason, scope, entries, source = 'Bean', rule = null, everyWidth = false, everyProperty = false } ) {
 	for ( const run of report.runs || [] ) {
 		for ( const p of Object.values( run.pairs || {} ) ) {
 			const d = ( p.diffs || [] ).find( ( x ) => x.id === rowId );
 			if ( d ) {
 				const next = 1 + Math.max( 0, ...entries.map( ( e ) => Number( String( e.id ).replace( /^D-/, '' ) ) || 0 ) );
-				return { id: `D-${ next }`, scope, node: d.ref || ( d.block ? 'sgs/' + d.block.replace( /^sgs-/, '' ) : '*' ), state: run.state, property: d.key,
-					widths: [ run.width ], expected: { value: String( d.live ) }, reason, decided: `${ new Date().toISOString().slice( 0, 10 ) } ${ source }` };
+				const node = d.ref || ( d.block ? 'sgs/' + d.block.replace( /^sgs-/, '' ) : '*' );
+				if ( everyProperty && '*' === node ) {
+					throw new Error( `row ${ rowId } names no node, so it cannot cover every property` );
+				}
+				return { id: `D-${ next }`, scope, node, state: run.state, property: everyProperty ? '*' : d.key,
+					...( everyWidth ? {} : { widths: [ run.width ] } ), expected: rule || everyProperty ? { rule: rule || 'bean-choice' } : { value: String( d.live ) },
+					reason, decided: `${ new Date().toISOString().slice( 0, 10 ) } ${ source }` };
 			}
 		}
 	}

@@ -193,5 +193,197 @@
     },
     "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
     "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-16",
+    "scope": "contact",
+    "node": "cr-ref-contact-25",
+    "state": "opening",
+    "property": "*",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 418 (Bean, 2026-10-02): the real embedded Google Map replaces the draft's sketch placeholder, whose own caption asks for that swap; no setting should copy the sketch's paint",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-17",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "padding-top",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-18",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "padding-right",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-19",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "padding-bottom",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-20",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "padding-left",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-21",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "margin-top",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-22",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "margin-right",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-23",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "margin-bottom",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-24",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "margin-left",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-25",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "w",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-26",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "h",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-27",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "width",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-28",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "text-inset-x",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-29",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "text-inset-y",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-30",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "display",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-31",
+    "scope": "contact",
+    "node": "cr-ref-contact-5",
+    "state": "opening",
+    "property": "transform",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S1 (Bean, 2026-10-02): every button lifts 3px on hover site-wide; the draft's WhatsApp button lifts 2px",
+    "decided": "2026-10-04 Bean"
   }
 ]

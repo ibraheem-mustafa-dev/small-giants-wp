@@ -1,7 +1,7 @@
 // Divergence ledger (GAP-CHECKLIST.md section 16, Spec 47 FR-47-5). A config may name a site's divergences.json
 // (`divergences: '<path>'`, relative to the config file). Each entry records an intended difference:
 //   { id, scope, node, state, property, widths, expected: { value } | { rule }, reason, decided }
-// A row matches an entry on node (its ref, its block, or '*'), state, property and width. A rule entry accepts the
+// A row matches an entry on node (its ref, its block, or '*'), state, property (or '*', every property) and width. A rule entry accepts the
 // row; a value entry accepts it only while live shows that value, and otherwise reports the expected value as the
 // row's draft side. Kept separate from the computed route's own ledger: the walker imports nothing from it.
 import fs from 'fs';
@@ -27,7 +27,7 @@ export function divergenceFor( entries, ctx, diff ) {
 	// state 'hover' matches hover rows (the hover end state); any other state names the walker state.
 	const stateOk = ( e ) => '*' === e.state || ( 'hover' === e.state ? 'hover' === diff.kind : e.state === ctx.state );
 	return entries.find( ( e ) => stateOk( e ) &&
-		e.property === diff.key &&
+		( '*' === e.property || e.property === diff.key ) &&
 		( ! e.widths || e.widths.includes( ctx.width ) ) &&
 		( '*' === e.node || e.node === diff.ref || ( diff.block && e.node.includes( '/' ) && slugClass( e.node ) === diff.block ) ) ) || null;
 }

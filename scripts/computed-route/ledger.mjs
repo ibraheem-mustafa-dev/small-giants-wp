@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Divergence ledger command (FR-47-5).
 //   node scripts/computed-route/ledger.mjs accept <report.json> <row id> --ledger <divergences.json> --scope <surface> --reason "..."
+//     [--rule <name>] [--every-width] [--every-property]
 //   node scripts/computed-route/ledger.mjs stale <report.json> --ledger <divergences.json> [--tree <tree.json>]
 // accept writes the entry with today's date; stale exits 1 while any entry is stale.
 import fs from 'fs';
@@ -27,9 +28,10 @@ if ( 'accept' === cmd ) {
 		console.error( 'accept needs --reason with a real reason' );
 		process.exit( 2 );
 	}
-	const entry = entryFromRow( report, rowId, { reason, scope: flag( '--scope' ) || 'site', entries } );
+	const entry = entryFromRow( report, rowId, { reason, scope: flag( '--scope' ) || 'site', entries, rule: flag( '--rule' ),
+		everyWidth: argv.includes( '--every-width' ), everyProperty: argv.includes( '--every-property' ) } );
 	save( ledgerFile, [ ...entries, entry ] );
-	console.log( `${ entry.id } added: ${ entry.node } ${ entry.property } @ ${ entry.widths.join( ',' ) } = ${ entry.expected.value }` );
+	console.log( `${ entry.id } added: ${ entry.node } ${ entry.property } @ ${ entry.widths ? entry.widths.join( ',' ) : 'every width' } = ${ entry.expected.value ?? entry.expected.rule }` );
 } else {
 	let refs = null;
 	if ( flag( '--tree' ) ) {
