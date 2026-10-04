@@ -159,13 +159,6 @@ class EditorModel:
                         be.ssr_credit |= set(self._f(rel).get("guarded", {}).get(g, [])) & declared
         return be
 
-    def child_reads_context(self, slug: str, key: str) -> bool:
-        entry = self.facts.get("blocks", {}).get(slug)
-        if not entry:
-            return False
-        pat = re.compile(r"""context\s*(?:\?\.)?\[\s*['"]""" + re.escape(key) + r"""['"]\s*\]""")
-        own = [f for f in entry["files"] if f.startswith(f"src/blocks/{slug}/")]
-        return any(pat.search(read(self.plugin / f)) for f in own)
 
 
 def tier_only(read_info: dict) -> bool:

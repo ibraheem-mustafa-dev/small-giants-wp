@@ -92,8 +92,8 @@ def scan(roots: Roots, inp: Inputs) -> dict:
                 rec["class"] = "not-paint"
                 records.append(rec)
                 continue
-            ctx_canvas = bool(key) and any(editor.child_reads_context(inp.blockjson[cb][0].name, key)
-                                           for cb in inp.uses_context.get(key, ()) if cb in inp.blockjson)
+            ctx_canvas = bool(key) and bool(set(inp.context_reads.get(key, {}).get("editor", ()))
+                                            & set(inp.uses_context.get(key, ())))
             res_l = assess(r, cat, ch, d, be, ctx_canvas, b2, env, frozenset(bjson.get("allowedBlocks") or ()))
             rec.update({"control": be.control.get(attr), "canvas": res_l["canvas"], "frontend": where or d.get("renderVia"),
                         "channel": res_l["channel"], "cps": sorted(ch.cps), "helpers": sorted(ch.helpers)[:8],

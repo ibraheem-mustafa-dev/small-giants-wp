@@ -888,64 +888,19 @@ function loadKeywordTable() {
 	return data.properties || {};
 }
 
-const CONTEXT_SOURCE_EXTENSIONS = new Set( [ '.js', '.jsx', '.php' ] );
-
-function listBlockSourceFiles( dir ) {
-	const out = [];
-	for ( const entry of fs.readdirSync( dir, { withFileTypes: true } ) ) {
-		const full = path.join( dir, entry.name );
-		if ( entry.isDirectory() ) {
-			out.push( ...listBlockSourceFiles( full ) );
-		} else if ( CONTEXT_SOURCE_EXTENSIONS.has( path.extname( entry.name ) ) ) {
-			out.push( full );
-		}
-	}
-	return out;
-}
-
-function readsContextKey( code, key ) {
-	const escaped = key.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
-	// Left boundary: `context` is never the tail of a longer name (`mycontext['k']`);
-	// `$context[`, `->context[` and a destructured `context?.[` still match.
-	return new RegExp( `(?<![A-Za-z0-9_])context(?:\\?\\.)?\\[\\s*(['"])${ escaped }\\1\\s*\\]` ).test( code );
-}
+// Context-key consumption is decided by the one shared rule (scripts/lib/context-keys.js), which the dead-controls
+// and wiring-fingerprint gates use too.
+const { readsContextKey, consumedContextKeys } = require( './lib/context-keys' );
 
 /**
- * Context keys that have a real consumer: listed in some block's block.json
- * `usesContext` AND read as `context['<key>']` (also `context?.['<key>']` and
- * `$block->context['<key>']`) in that block's own JS or PHP. Destructured reads
- * (`const { 'x': v } = context`) are not detected.
+ * Context keys that have a real consumer among `blockDirs`: listed in a block's block.json `usesContext` AND read
+ * by that block (scripts/lib/context-keys.js::readsContextKey, editor or front end).
  *
  * @param {string[]} blockDirs Block directories to scan.
  * @return {Set<string>} Consumed context keys.
  */
 function buildConsumedContextKeys( blockDirs ) {
-	const consumed = new Set();
-	for ( const dir of blockDirs ) {
-		const blockJsonPath = path.join( dir, 'block.json' );
-		if ( ! fs.existsSync( blockJsonPath ) ) {
-			continue;
-		}
-		let meta;
-		try {
-			meta = JSON.parse( fs.readFileSync( blockJsonPath, 'utf8' ) );
-		} catch ( e ) {
-			continue;
-		}
-		const used = Array.isArray( meta.usesContext ) ? meta.usesContext : [];
-		if ( ! used.length ) {
-			continue;
-		}
-		const code = listBlockSourceFiles( dir )
-			.map( ( f ) => fs.readFileSync( f, 'utf8' ) )
-			.join( '\n' );
-		for ( const key of used ) {
-			if ( readsContextKey( code, key ) ) {
-				consumed.add( key );
-			}
-		}
-	}
-	return consumed;
+	return consumedContextKeys( { blockDirs, includesDir: path.join( __dirname, '..', 'includes' ) } );
 }
 
 let consumedKeysCache = null;

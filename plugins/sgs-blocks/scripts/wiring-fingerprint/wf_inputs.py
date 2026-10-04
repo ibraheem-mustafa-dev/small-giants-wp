@@ -22,12 +22,15 @@ ATTR_COLUMNS = (
 
 
 class Collectors:
-    """The two Node collectors, started at once and collected on first use, so the
+    """The Node collectors, started at once and collected on first use, so the
     Python side indexes PHP and CSS while Node parses the editor files."""
 
     def __init__(self, roots: Roots, with_dump: bool) -> None:
         self._facts_p = _spawn(["node", str(COLLECTOR_JS), str(roots.plugin), str(roots.node_modules)], roots.plugin)
         self._dump_p = _spawn(["node", "scripts/check-dead-controls.js", "--dump-json"], roots.plugin) if with_dump else None
+        # Which blocks read each context key: the one rule the dead-controls and editor-render-parity gates share.
+        self._ctx_p = _spawn(["node", "scripts/lib/context-keys.js", "--json"], roots.plugin)
+        self._ctx: dict | None = None
         self._facts: dict | None = None
         self._dump: dict | None = None
 
@@ -36,6 +39,13 @@ class Collectors:
         if self._facts is None:
             self._facts = json.loads(_collect(self._facts_p, "editor_facts.js"))
         return self._facts
+
+    @property
+    def context_reads(self) -> dict[str, dict]:
+        """context key -> {"users", "editor", "frontend"}: block names (scripts/lib/context-keys.js)."""
+        if self._ctx is None:
+            self._ctx = json.loads(_collect(self._ctx_p, "context-keys.js --json"))
+        return self._ctx
 
     @property
     def dump(self) -> dict[tuple[str, str], dict]:
@@ -60,6 +70,10 @@ class Inputs:
     @property
     def facts(self) -> dict:
         return self.collectors.facts
+
+    @property
+    def context_reads(self) -> dict[str, dict]:
+        return self.collectors.context_reads
 
     @property
     def dump(self) -> dict[tuple[str, str], dict]:

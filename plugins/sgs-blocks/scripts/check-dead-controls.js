@@ -132,6 +132,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { resolveComponentFiles } = require( './inspector-scan/core/components' );
+const { consumedContextKeys } = require( './lib/context-keys' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -2044,19 +2045,11 @@ function main() {
 		process.exit( 0 );
 	}
 
-	// Rule (b) prep — LIVE context keys: a context-key is live only if some block
-	// lists it in usesContext AND that consumer's own render/save/view actually
-	// references the key (a stale providesContext with no live consumer must NOT
-	// whitelist its source attr — qc-council Rater C). Then map live keys back to
-	// each provider block's source attribute names.
-	const liveContextKeys = new Set();
-	for ( const b of blocks ) {
-		for ( const key of b.usesContext ) {
-			if ( isConsumed( key, b.ownCorpus ) ) {
-				liveContextKeys.add( key );
-			}
-		}
-	}
+	// Rule (b) prep — LIVE context keys: a context-key is live only if some block lists it in usesContext AND that
+	// consumer reads it (scripts/lib/context-keys.js, the rule check-editor-render-parity.js and the wiring gate share);
+	// a stale providesContext with no live consumer must NOT whitelist its source attr (qc-council Rater C). Then map
+	// live keys back to each provider block's source attribute names.
+	const liveContextKeys = consumedContextKeys( { blockDirs: blocks.map( ( b ) => b.dir ).filter( Boolean ) } );
 	const contextConsumedByBlock = new Map(); // block.name → Set(attrName)
 	for ( const b of blocks ) {
 		const set = new Set();
