@@ -80,7 +80,10 @@ export function paintedDecoration( from ) {
 // Self-contained. A text run: the rendered text of `el` (only its own text nodes when `direct`, every text node inside it
 // otherwise; with `match`, a regex source, only the nodes it matches), for a block whose draft text has no element of its
 // own (a value sharing its element with a label). Returns { box: the union of the text's rects (page coordinates),
-// carrier: the element painting the first text } or null.
+// carrier: the element painting the first text, rows: { count, space } } or null. Rows are the text's boxes grouped by
+// their top (a day and its hours on one line are one row); space is the median distance from one row's bottom to the
+// next row's top less the line's leading (a text box is the font's height, the line box the line-height's), so it
+// reads as the gap between the rows' line boxes; 0 for one row.
 export function textRun( el, direct, match = null ) {
 	const re = match ? new RegExp( match, 'iu' ) : null;
 	const nodes = direct ? [ ...el.childNodes ].filter( ( n ) => 3 === n.nodeType ) : ( () => {
@@ -93,6 +96,7 @@ export function textRun( el, direct, match = null ) {
 	} )();
 	let box = null;
 	let carrier = null;
+	const tops = [];
 	for ( const n of nodes.filter( ( x ) => x.textContent.trim() && ( ! re || re.test( x.textContent ) ) ) ) {
 		const rg = document.createRange();
 		rg.selectNodeContents( n );
@@ -101,9 +105,21 @@ export function textRun( el, direct, match = null ) {
 			continue;
 		}
 		carrier = carrier || n.parentElement;
+		const row = tops.find( ( r ) => Math.abs( r.t - b.top ) <= 2 );
+		if ( row ) {
+			row.b = Math.max( row.b, b.bottom );
+		} else {
+			tops.push( { t: b.top, b: b.bottom } );
+		}
 		box = box ? { l: Math.min( box.l, b.left ), t: Math.min( box.t, b.top ), r: Math.max( box.r, b.right ), b: Math.max( box.b, b.bottom ) } : { l: b.left, t: b.top, r: b.right, b: b.bottom };
 	}
-	return box ? { box: { x: Math.round( box.l ), y: Math.round( box.t + window.scrollY ), w: Math.round( box.r - box.l ), h: Math.round( box.b - box.t ) }, carrier } : null;
+	tops.sort( ( a, c ) => a.t - c.t );
+	const lh = carrier ? parseFloat( getComputedStyle( carrier ).lineHeight ) : NaN;
+	const textH = Math.min( ...tops.map( ( r ) => r.b - r.t ) );
+	const leading = lh > textH ? lh - textH : 0;
+	const spaces = tops.slice( 1 ).map( ( r, i ) => r.t - tops[ i ].b - leading ).sort( ( a, c ) => a - c );
+	const rows = { count: tops.length, space: spaces.length ? Math.round( spaces[ Math.floor( spaces.length / 2 ) ] * 10 ) / 10 : 0 };
+	return box ? { box: { x: Math.round( box.l ), y: Math.round( box.t + window.scrollY ), w: Math.round( box.r - box.l ), h: Math.round( box.b - box.t ) }, carrier, rows } : null;
 }
 
 // Self-contained. A group: the union of the boxes of the elements at `paths` (CSS selectors), for a block whose draft has

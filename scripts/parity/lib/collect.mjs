@@ -183,6 +183,8 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		text: ( el.innerText || el.getAttribute( 'aria-label' ) || '' ).replace( /\s+/g, ' ' ).trim().slice( 0, 400 ),
 		keyframes: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : cs.animationName.split( ',' ).map( ( n ) => keyframes( n.trim() ) ).join( ' | ' ),
 		box: run ? run.box : { x: Math.round( r.x ), y: Math.round( r.y + window.scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
+		// A text run's rows (paint.mjs::textRun): compared as the spacing between them.
+		...( run?.rows ? { rows: run.rows } : {} ),
 		styles,
 		pseudo,
 		layoutDisplay: lcs.display,

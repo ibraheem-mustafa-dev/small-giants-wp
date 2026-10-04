@@ -61,3 +61,47 @@ test( 'MUST FAIL: Solve reads a layer row\'s draft value on that layer, in its o
 	assert.equal( groups[ 0 ].pseudo, '::before' );
 	assert.deepEqual( draftValues( report, 'p', 'background-color', false, null, '::before' ).perWidth, { 375: 'rgb(0, 0, 0)' } );
 } );
+
+// Declared sizes (Contact's 168px address, 2026-10-04): the draft's matched rules declare a width the computed style
+// gives only as used pixels. Solve passes a width group on to the resolver only with a declared plain length.
+import { writeRound } from '../solve.mjs';
+import { openDb } from '../lib/db.mjs';
+
+const widthReport = ( declared ) => ( { runs: [ 375, 1440 ].map( ( width ) => ( { state: 'opening', width, pairs: { addr: {
+	draft: { styles: { width: '168px' }, ...( declared ? { declared: { width: declared } } : {} ) },
+	diffs: [ { kind: 'style', key: 'width', draft: '168px', live: '320px', ref: 'cr-ref-a-4', path: '' } ],
+} } } ) ) } );
+const widthRound = ( declared ) => writeRound( widthReport( declared ), [ { name: 'sgs/text', attributes: { className: 'cr-ref-a-4' } } ],
+	{ db: openDb(), snapshot: { palette: [], spacing: [], fontSizes: [] }, round: 1, log: [], stateMap: { opening: null }, calFor: () => null } ).gaps[ 'cr-ref-a-4||width|' ];
+
+test( 'MUST FAIL TO FREEZE: a width the draft declares goes to the resolver as declared; a used width stays a gap', () => {
+	assert.notEqual( widthRound( '168px' ).gap, 'used-value', 'declared 168px passes the used-value gate' );
+	assert.equal( widthRound( null ).gap, 'used-value' );
+	const auto = widthRound( 'auto' );
+	assert.equal( auto.gap, 'used-value' );
+	assert.match( auto.detail, /declares/, 'the gap names what the draft declares' );
+	assert.deepEqual( draftValues( widthReport( '50%' ), 'addr', 'width', false ).declared, { 375: '50%', 1440: '50%' } );
+} );
+
+// A text run's rows (Contact's opening hours, 2026-10-04): the list's gap shows only as the space between its rows.
+const run = ( space, count = 3 ) => snap( {}, { rows: { count, space } } );
+
+test( 'MUST FAIL TO MISS: a text run whose rows sit 14px apart against 8px is one row-gap row Solve can target', () => {
+	const diffs = comparePair( { text: false }, run( 8 ), run( 14 ), { box: 2, px: 0.5 } );
+	assert.deepEqual( diffs.map( ( x ) => [ x.kind, x.key, x.draft, x.live ] ), [ [ 'style', 'row-gap', '8px', '14px' ] ] );
+	const report = { runs: [ { state: 'opening', width: 375, pairs: { hours: { draft: run( 8 ), diffs } } } ] };
+	assert.deepEqual( draftValues( report, 'hours', 'row-gap', false ).perWidth, { 375: '8px' } );
+} );
+
+test( 'positive control: equal spacing, one row, or a different row count give no row-gap row', () => {
+	assert.deepEqual( comparePair( { text: false }, run( 8 ), run( 9 ), { box: 2, px: 0.5 } ), [] );
+	assert.deepEqual( comparePair( { text: false }, run( 0, 1 ), run( 12, 1 ), { box: 2, px: 0.5 } ), [] );
+	assert.deepEqual( comparePair( { text: false }, run( 8, 3 ), run( 14, 4 ), { box: 2, px: 0.5 } ), [] );
+} );
+
+test( 'MUST FAIL TO DROP: the full check replaces the element\'s background-color with its painted ground but keeps a layer\'s', async () => {
+	const { compareChrome } = await import( '../../parity/lib/chrome-walk.mjs' );
+	const rows = [ { kind: 'style', key: 'background-color', draft: 'a', live: 'b' }, { kind: 'style', key: 'background-color', pseudo: '::before', draft: 'a', live: 'b' } ];
+	const kept = compareChrome( {}, snap( {}, { extras: {} } ), snap( {}, { extras: {} } ), tol, rows ).filter( ( x ) => 'background-color' === x.key );
+	assert.deepEqual( kept.map( ( x ) => x.pseudo ), [ '::before' ] );
+} );

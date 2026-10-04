@@ -187,6 +187,10 @@ export function comparePair( pair, d, l, tol ) {
 			add( 'style', p, d.styles[ p ], l.styles[ p ] );
 		}
 	}
+	// A text run's rows (an opening-hours list): the same number of rows on both sides spaced differently is a row-gap row.
+	if ( d.rows && l.rows && d.rows.count === l.rows.count && d.rows.count > 1 && Math.abs( d.rows.space - l.rows.space ) > tol.box ) {
+		add( 'style', 'row-gap', `${ d.rows.space }px`, `${ l.rows.space }px` );
+	}
 	// Painting ::before / ::after layers: a layer on one side only is one content row; on both, each property compared.
 	if ( pair.pseudo !== false ) {
 		for ( const ps of new Set( [ ...Object.keys( d.pseudo || {} ), ...Object.keys( l.pseudo || {} ) ] ) ) {

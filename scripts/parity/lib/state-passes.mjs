@@ -3,6 +3,7 @@
 import { HOVER_PROPS, collectRunning, centreOf, hoverStyles } from './collect.mjs';
 import { PAINT_SRC } from './paint.mjs';
 import { hoverChrome } from './chrome-walk.mjs';
+import { forcedHover } from './devtools.mjs';
 import { focusPass } from './focus.mjs';
 
 export const SCROLL_PROPS = [ 'opacity', 'transform', 'translate', 'scale', 'filter' ];
@@ -32,8 +33,13 @@ export async function revealSweep( page, y ) {
 	await page.waitForTimeout( 1200 );
 }
 
-// Hover end states of the `hover: true` pairs. A phone has no hover (Bean 2026-09-28), so phones skip it.
-export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full, phone } ) {
+// Hover end states of the `hover: true` pairs, under a real pointer. With a DevTools session (ref-traced walks) every
+// other pair's hover end state is read too, with :hover forced on it and its ancestors (devtools.mjs::forcedHover).
+// A phone has no hover (Bean 2026-09-28), so phones skip it.
+export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full, phone, cdp = null } ) {
+	for ( const p of cdp && ! phone ? pairs.filter( ( q ) => ! q.hover && ! snap[ q.name ].missing ) : [] ) {
+		snap[ p.name ].hover = await forcedHover( cdp, page, p[ side ], RESOLVE, () => page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC ] ) );
+	}
 	for ( const p of pairs.filter( ( q ) => q.hover && ! phone ) ) {
 		if ( snap[ p.name ].missing ) {
 			continue;

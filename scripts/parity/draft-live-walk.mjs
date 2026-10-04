@@ -39,6 +39,7 @@ import { withAutoScroll, collectAutoOn, markClipped } from './lib/auto-walk.mjs'
 import closeOnExit from '../lib/close-browser-on-exit.js';
 import { REF_PROPS, elementPath, traceRef } from './lib/ref-trace.mjs';
 import { loadDivergences } from './lib/divergences.mjs';
+import { openDevtools, settleAnimations, declaredValues, DECLARED_PROPS } from './lib/devtools.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const { chromium, devices } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
@@ -133,6 +134,8 @@ async function walkSide( browser, side, width ) {
 		return t.spent;
 	} : null;
 	const h = makeHelpers( page, side, { cb, RESOLVE, onAction } );
+	// Ref-traced walks read through the DevTools protocol too: every pair's forced hover and its declared sizes.
+	const cdp = refPrefix ? await openDevtools( page ) : null;
 	await h.goto( cfg[ side ].url );
 	// Load entrances (GAP-CHECKLIST.md section 15): the page reloaded and sampled as it paints in.
 	const firstState = cfg.states[ 0 ]?.name;
@@ -159,7 +162,8 @@ async function walkSide( browser, side, width ) {
 				return page.evaluate( collectRunning, [ p[ side ], RESOLVE ] );
 			} );
 		}
-		await page.waitForTimeout( state.settle ?? 900 );
+		// Read once the state's animations finish (a state's `settle` is the floor for scripts that start one late).
+		const settled = await settleAnimations( page, { floor: state.settle ?? 300 } );
 		if ( onlyStates && ! onlyStates.includes( state.name ) ) {
 			continue;
 		}
@@ -167,6 +171,9 @@ async function walkSide( browser, side, width ) {
 		for ( const p of pairs ) {
 			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH, PAINT_SRC, refPrefix ? PSEUDO_PROPS : null ] );
 			snap[ p.name ].running = running[ p.name ];
+			if ( cdp && ! snap[ p.name ].missing && ! p[ side ].textRun && ! p[ side ].group ) {
+				snap[ p.name ].declared = await declaredValues( cdp, p[ side ], RESOLVE, DECLARED_PROPS );
+			}
 		}
 		// The page's own zero point for positions (the outermost <main>), so a pair's place on the page is compared
 		// without the header above it (ref-traced walks only: compare-state.mjs::flowOffsets). Read at the same scroll
@@ -211,11 +218,11 @@ async function walkSide( browser, side, width ) {
 				fs.writeFileSync( path.join( outDir, `auto-${ side }-${ width }-${ state.name }.json` ), JSON.stringify( auto ) );
 			}
 		}
-		await hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full: header, phone: !! phone.isMobile } );
+		await hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full: header, phone: !! phone.isMobile, cdp } );
 		if ( header && ! lean ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 		}
-		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, entrances: state.name === firstState ? entrances : null };
+		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ) };
 		if ( state.autoScrolled ) {
 			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
 		}

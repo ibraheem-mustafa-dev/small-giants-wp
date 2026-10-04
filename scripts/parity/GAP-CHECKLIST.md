@@ -394,3 +394,31 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   row from the draft's shrinking header disappeared.
 - **Falsified by:** a gap or alignment row between a block stack and a flex column, a layout row read off an element with fewer than two items, a hover colour read off an element
   that paints no text, or a text-run or group pair reporting a style row.
+
+## 19. Read what DevTools reads: settled animations, forced hover, declared sizes, pseudo layers, timings, row spacing (Spec 47 A-1, 2026-10-05)
+
+- **Gap:** a fixed wait read rows mid-entrance (container `transform` and `opacity` rows); hover was read only on pairs a
+  hand config flagged; computed style gives a declared `168px` or `50%` width only as used pixels, so Solve could not
+  write it; paint on `::before`/`::after` layers was never compared; motion timings showed only as one shorthand row
+  Solve never writes; a text run (an opening-hours list) never compared the spacing between its rows.
+- **Detected by:** `lib/devtools.mjs` (ref-traced walks, one DevTools protocol session per page): `settleAnimations`
+  waits a floor (a state's `settle`, default 300ms) then until no finite animation on the document timeline is left
+  (6s cap; a state that hits it is recorded as `unsettled`); `forcedHover` forces `:hover` on the element and every
+  ancestor (`CSS.forcePseudoState`, as a pointer hovers the chain), reads `hoverStyles` once its transitions finish and
+  clears it, for every pair not flagged `hover` (`state-passes.mjs::hoverPass`; phones still skip hover);
+  `declaredValues` reads `DECLARED_PROPS` from `CSS.getMatchedStylesForNode` (`cascadeWinner`: author rules then inline,
+  last wins, `!important` first, user-agent ignored) into `snap.declared`. `collect.mjs`: `DEFAULT_PROPS` reads
+  transition and animation duration, delay and easing; `PSEUDO_PROPS` are read on each painting layer (`snap.pseudo`).
+  `compare.mjs`: timings compare as sets of distinct values and are skipped where nothing runs (`timingIrrelevant`);
+  layer rows carry `pseudo` and stamp on `<path>::before` (`ref-trace.mjs`), calibration's key for the layer; a layer on
+  one side only is one `content` row; `chrome-walk.mjs::compareChrome` keeps a layer's background row.
+  `paint.mjs::textRun` groups its text boxes into rows by top; `rows.space` is the median space between rows less the
+  line's leading; equal row counts spaced apart by more than the box tolerance give one `row-gap` row.
+- **Proof (2026-10-05):** `scripts/computed-route/tests/walker-devtools.test.mjs` runs headless Chromium on local HTML
+  (a 1.4s entrance read at opacity 1, an infinite loop ignored; a `.card:hover .title` colour and a finished 3px lift;
+  `50%`/`20rem`/`168px`/`!important` declared values; a 14px list gap) and `walker-reads.test.mjs` the comparisons, each
+  red against the previous code. A local walk of two `file://` pages read every one as a row in 6s. Host proof: an About
+  measure-only run after Session 0's deploy (plan `2026-10-04-eye-care-sweep-audit-fix.md`, Track P).
+- **Falsified by:** a row read while an entrance still runs, a hover row missing on a pair whose CSS hover differs, a
+  declared width written where the draft declares none, a layer row on an element whose layers do not paint, or a
+  `row-gap` row between lists with the same line-box spacing.

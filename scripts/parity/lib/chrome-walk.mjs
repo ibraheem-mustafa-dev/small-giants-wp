@@ -70,10 +70,10 @@ export async function hoverChrome( page, p, side, RESOLVE, centreOf, reach, wait
 	return { at, fx: [ ...hoverEffects( rest, end, mids ) ] };
 }
 
-// Full-check differences for one pair. The painted ground replaces the raw background-color,
-// which misreads a ground painted by a ::before or a child.
+// Full-check differences for one pair. The painted ground replaces the element's raw background-color,
+// which misreads a ground painted by a ::before or a child; a pseudo layer's own background row stays (its setting).
 export function compareChrome( p, d, l, tol, diffs ) {
-	const kept = diffs.filter( ( x ) => ! ( [ 'style', 'hover' ].includes( x.kind ) && 'background-color' === x.key ) );
+	const kept = diffs.filter( ( x ) => x.pseudo || ! ( [ 'style', 'hover' ].includes( x.kind ) && 'background-color' === x.key ) );
 	if ( d.missing || l.missing ) {
 		return kept;
 	}

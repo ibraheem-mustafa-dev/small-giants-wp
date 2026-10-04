@@ -37,13 +37,33 @@ export function openRows( report ) {
 	return out;
 }
 
+// One draft snapshot's value of prop: on a pseudo layer, at the hover end state, the painted ground (a full-check value
+// chrome-walk.mjs stores on extras), a text run's row spacing (row-gap, from its rows), or the collected style.
+function draftValueOf( d, prop, hover, pseudo ) {
+	if ( pseudo ) {
+		return d.pseudo?.[ pseudo ]?.[ prop ];
+	}
+	if ( hover ) {
+		return d.hover?.[ prop ];
+	}
+	if ( 'painted-ground' === prop ) {
+		return d.extras?.ground;
+	}
+	if ( 'row-gap' === prop && undefined === d.styles?.[ prop ] && d.rows ) {
+		return `${ d.rows.space }px`;
+	}
+	return d.styles?.[ prop ];
+}
+
 // The draft's value of `prop` on a pair at every width it was measured (rest styles, or the hover end state), and the
 // draft font size there (for em conversions). Read from the pair snapshots, so widths with no difference count too.
 // walkerStates: only runs in these walker states are read (the states mapped to the group's setting state).
 // pseudo ('::before' / '::after'): the value is read on that painting layer of the pair's element.
+// declared: the value the draft's matched rules declare for prop at each width (the walker's DevTools read), when any.
 export function draftValues( report, pair, prop, hover, walkerStates = null, pseudo = null ) {
 	const perWidth = {};
 	const fontPx = {};
+	const declared = {};
 	for ( const run of report.runs || [] ) {
 		if ( walkerStates && ! walkerStates.includes( run.state ) ) {
 			continue;
@@ -52,18 +72,23 @@ export function draftValues( report, pair, prop, hover, walkerStates = null, pse
 		if ( ! d || d.missing ) {
 			continue;
 		}
-		// A painted ground is a full-check value (chrome-walk.mjs stores it on extras), not a collected style.
-		const v = pseudo ? d.pseudo?.[ pseudo ]?.[ prop ] : ( hover ? d.hover?.[ prop ] : ( 'painted-ground' === prop ? d.extras?.ground : d.styles?.[ prop ] ) );
+		const v = draftValueOf( d, prop, hover, pseudo );
 		if ( undefined !== v ) {
 			perWidth[ run.width ] = v;
+		}
+		if ( ! hover && ! pseudo && undefined !== d.declared?.[ prop ] ) {
+			declared[ run.width ] = d.declared[ prop ];
 		}
 		const fs = parseFloat( d.styles?.[ 'font-size' ] );
 		if ( fs ) {
 			fontPx[ run.width ] = fs;
 		}
 	}
-	return { perWidth, fontPx };
+	return { perWidth, fontPx, declared };
 }
+
+// A declared value a setting can hold as it is: a plain length or percentage (not auto, a keyword, var() or calc()).
+export const plainLength = ( v ) => /^-?(\d+(\.\d+)?|\.\d+)(px|rem|em|%|vw|vh|ch)$/.test( String( v ?? '' ) );
 
 // The candidate groups a round may write: style and hover rows with a ref from a mapped walker state, one group per
 // groupKey. Box rows, rows without a ref and rows from an unmapped state are returned apart (box rows are derived from
