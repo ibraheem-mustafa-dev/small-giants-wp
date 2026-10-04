@@ -40,6 +40,7 @@
       "postId": 168
     },
     "walker": "qa/parity/lenses.mjs",
+    "walkerFull": "qa/parity/lenses.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
     "states": {
       "opening": null
@@ -76,7 +77,9 @@
     },
     "walker": "qa/parity/contact.mjs",
     "walkerFull": "qa/parity/contact.full.mjs",
-    "walkStates": [ "opening" ],
+    "walkStates": [
+      "opening"
+    ],
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
     "states": {
       "opening": null
@@ -278,7 +281,9 @@
     },
     "walker": "qa/parity/contact.mjs",
     "walkerFull": "qa/parity/contact-form.full.mjs",
-    "walkStates": [ "opening" ],
+    "walkStates": [
+      "opening"
+    ],
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
     "states": {
       "opening": null
