@@ -96,7 +96,8 @@
       },
       {
         "displayType": "address",
-        "showIcon": false
+        "showIcon": false,
+        "textBefore": "Call"
       },
       {
         "displayType": "hours",
@@ -1381,8 +1382,7 @@
   },
   "sgs/modal": {
     "attributes": {
-      "triggerText": "Which size am I?",
-      "modalRef": 461
+      "triggerText": "Which size am I?"
     }
   },
   "sgs/multi-button": {

@@ -127,55 +127,70 @@ function readEnv( file, key ) {
 // instance, their baseline) again with the window scrolled. Returns { width: [instanceReads] } plus
 // { scrolled: { width: { n: read } }, scrollMissed: [n] (scroll instances whose header never took the scrolled class),
 // hoverMissed: [n] (hover instances that are hidden) }.
+// The widths are read in parallel, each in its own page of the logged-in context (each page has its own viewport and
+// mouse, so hovers and scrolls never cross).
 async function readAll( page, url, instances ) {
-	const PATH = elementPath.toString();
 	const out = {};
 	const scrolled = {};
 	const scrollMissed = [];
 	const hoverMissed = [];
-	for ( const w of WIDTHS ) {
-		await page.setViewportSize( { width: w, height: 900 } );
-		await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
-		// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
-		// are still read.
-		await page.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: 60000 } );
-		await page.waitForTimeout( 800 );
-		out[ w ] = await page.evaluate( readInstancesInPage, [ instances.length, CAL_PREFIX, READ_PROPS, PATH ] );
-		for ( const [ n, inst ] of instances.entries() ) {
-			if ( ! inst.hover ) {
-				continue;
-			}
-			const loc = page.locator( `.${ CAL_PREFIX }${ n }` ).first();
-			// A hidden instance (inside a closed drawer) cannot be hovered: reported, never read as a hover.
-			if ( ! await loc.isVisible() ) {
-				hoverMissed.includes( n ) || hoverMissed.push( n );
-				continue;
-			}
-			await loc.scrollIntoViewIfNeeded();
-			await loc.hover( { force: true } );
-			await page.waitForTimeout( 500 );
-			const all = await page.evaluate( readInstancesInPage, [ instances.length, CAL_PREFIX, READ_PROPS, PATH ] );
-			out[ w ][ n ] = all[ n ];
-			await page.mouse.move( 0, 0 );
+	const ctx = page.context();
+	await Promise.all( WIDTHS.map( async ( w ) => {
+		const p = await ctx.newPage();
+		try {
+			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed } );
+		} finally {
+			await p.close();
 		}
-		if ( instances.some( ( i ) => 'scroll' === i.trigger ) ) {
-			await page.evaluate( ( y ) => window.scrollTo( { top: y, behavior: 'instant' } ), SCROLL_Y );
-			await page.waitForTimeout( 900 );
-			const all = await page.evaluate( readInstancesInPage, [ instances.length, CAL_PREFIX, READ_PROPS, PATH ] );
-			const hit = await page.evaluate( ( [ count, prefix ] ) => [ ...Array( count ).keys() ].map( ( n ) => !! document.querySelector( `.${ prefix }${ n } .is-header-scrolled, .${ prefix }${ n }.is-header-scrolled` ) ), [ instances.length, CAL_PREFIX ] );
-			scrolled[ w ] = {};
-			instances.forEach( ( inst, n ) => {
-				if ( inst.isDefault || 'scroll' === inst.trigger ) {
-					scrolled[ w ][ n ] = all[ n ];
-				}
-				if ( 'scroll' === inst.trigger && ! hit[ n ] && ! scrollMissed.includes( n ) ) {
-					scrollMissed.push( n );
-				}
-			} );
-			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
-		}
-	}
+	} ) );
+	scrollMissed.sort( ( a, b ) => a - b );
+	hoverMissed.sort( ( a, b ) => a - b );
 	return Object.assign( out, { scrolled, scrollMissed, hoverMissed } );
+}
+
+// One width of readAll: fills out[w], scrolled[w] and the missed lists.
+async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed } ) {
+	const PATH = elementPath.toString();
+	await page.setViewportSize( { width: w, height: 900 } );
+	await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
+	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
+	// are still read.
+	await page.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: 60000 } );
+	await page.waitForTimeout( 800 );
+	out[ w ] = await page.evaluate( readInstancesInPage, [ instances.length, CAL_PREFIX, READ_PROPS, PATH ] );
+	for ( const [ n, inst ] of instances.entries() ) {
+		if ( ! inst.hover ) {
+			continue;
+		}
+		const loc = page.locator( `.${ CAL_PREFIX }${ n }` ).first();
+		// A hidden instance (inside a closed drawer) cannot be hovered: reported, never read as a hover.
+		if ( ! await loc.isVisible() ) {
+			hoverMissed.includes( n ) || hoverMissed.push( n );
+			continue;
+		}
+		await loc.scrollIntoViewIfNeeded();
+		await loc.hover( { force: true } );
+		await page.waitForTimeout( 500 );
+		const all = await page.evaluate( readInstancesInPage, [ instances.length, CAL_PREFIX, READ_PROPS, PATH ] );
+		out[ w ][ n ] = all[ n ];
+		await page.mouse.move( 0, 0 );
+	}
+	if ( instances.some( ( i ) => 'scroll' === i.trigger ) ) {
+		await page.evaluate( ( y ) => window.scrollTo( { top: y, behavior: 'instant' } ), SCROLL_Y );
+		await page.waitForTimeout( 900 );
+		const all = await page.evaluate( readInstancesInPage, [ instances.length, CAL_PREFIX, READ_PROPS, PATH ] );
+		const hit = await page.evaluate( ( [ count, prefix ] ) => [ ...Array( count ).keys() ].map( ( n ) => !! document.querySelector( `.${ prefix }${ n } .is-header-scrolled, .${ prefix }${ n }.is-header-scrolled` ) ), [ instances.length, CAL_PREFIX ] );
+		scrolled[ w ] = {};
+		instances.forEach( ( inst, n ) => {
+			if ( inst.isDefault || 'scroll' === inst.trigger ) {
+				scrolled[ w ][ n ] = all[ n ];
+			}
+			if ( 'scroll' === inst.trigger && ! hit[ n ] && ! scrollMissed.includes( n ) ) {
+				scrollMissed.push( n );
+			}
+		} );
+		await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
+	}
 }
 
 async function calibrateBlock( block, { site, target, env, fixtures, snapshot, db, slotKey, paintKey, rejectedOut } ) {
