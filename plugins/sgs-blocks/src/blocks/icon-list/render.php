@@ -234,8 +234,10 @@ if ( ! in_array( $icon_size, $allowed_icon_sizes, true ) ) {
 	$icon_size = 'medium';
 }
 
-// Sanitise gap to digits only — it is used as a spacing preset slug (e.g. "20", "30").
-$gap_slug = preg_replace( '/[^0-9]/', '', $gap );
+// Gap is a spacing preset slug ("20") or a custom length ("11px"); the shared
+// validator wraps a real slug in its preset var(), passes a safe length through
+// and returns '' for anything unsafe.
+$gap_css = sgs_css_length_value( $gap );
 
 // ---------------------------------------------------------------------------
 // 4. Box-object attrs — padding/margin (WP-native style.spacing.*, base) +
@@ -602,9 +604,9 @@ $wrapper_only_classes = $uid;
 // Spec 32 FR-32-1/FR-32-4 (enforced by
 // scripts/no-inline/check-no-inline.py): even a custom-property VALUE never
 // rides the inline style attribute — the gap var is emitted into the block's
-// own scoped <style> rule instead. $gap_slug is digits-only (sanitised above).
-if ( $gap_slug ) {
-	$scoped_css[] = "{$root_sel}{--sgs-icon-list-gap:var(--wp--preset--spacing--{$gap_slug});}";
+// own scoped <style> rule instead. $gap_css is validated above.
+if ( '' !== $gap_css ) {
+	$scoped_css[] = "{$root_sel}{--sgs-icon-list-gap:{$gap_css};}";
 }
 
 // Enqueue Dashicons on the frontend only when a dashicon can actually render

@@ -76,7 +76,7 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:background-color-gradient": "backgroundColourGradient"
 					},
-					"_note": "The root <ul>. `gap` is the per-item spacing preset slug emitted as the `--sgs-icon-list-gap` custom-property VALUE (contract-permitted, not a declaration). No __experimentalBorder.width/color/style native support declared — border-width/style/colour are SGS custom scalar attrs (base only, no tiers), mirrors sgs/quote's borderWidth object pattern. No `layer` — this is a static list, not a configurable grid/flex composite (no display/flex-*/grid-* attrs exist).",
+					"_note": "The root <ul>. `gap` is a spacing preset slug (\"20\") or a custom length (\"11px\"), validated by sgs_css_length_value() and emitted as the `--sgs-icon-list-gap` custom-property VALUE (contract-permitted, not a declaration). No __experimentalBorder.width/color/style native support declared — border-width/style/colour are SGS custom scalar attrs (base only, no tiers), mirrors sgs/quote's borderWidth object pattern. No `layer` — this is a static list, not a configurable grid/flex composite (no display/flex-*/grid-* attrs exist).",
 					"states": {
 						"hover": {
 							"attrMap": {

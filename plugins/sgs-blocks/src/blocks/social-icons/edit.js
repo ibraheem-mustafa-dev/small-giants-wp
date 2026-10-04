@@ -11,7 +11,7 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
-import { spacingVar, borderPaintPreview } from '../../utils';
+import { gapVar, borderPaintPreview } from '../../utils';
 import BrandIconGlyph from './brand-icons';
 import { resolveBorderStyle } from '../../utils/border-style';
 
@@ -197,7 +197,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			.map( ( k ) => wrapperRadiusBox[ k ] || '0' ).join( ' ' );
 	}
 	if ( gap ) {
-		previewStyle.gap = spacingVar( gap );
+		previewStyle.gap = gapVar( gap );
 	}
 	// 'theme' mode drives every item's resting background/border/glyph colour
 	// via these 3 custom properties (style.css .sgs-social-icons__item{color:
@@ -488,6 +488,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 					<SpacingControl
+						custom
 						label={ __( 'Gap', 'sgs-blocks' ) }
 						value={ gap }
 						onChange={ ( val ) => setAttributes( { gap: val } ) }

@@ -285,11 +285,13 @@ $root_sel = '.' . $uid;
 $scoped_css = array();
 
 // --- Row gap + per-item colour custom properties. ---
-$gap_slug_raw = sgs_css_keyword_sanitise( str_replace( array( '.', '%' ), '', (string) $gap_raw ) );
-$gap_slug     = '' !== $gap_slug_raw ? $gap_slug_raw : preg_replace( '/[^0-9]/', '', (string) $gap_raw );
-$gap_slug     = '' !== $gap_slug ? $gap_slug : '20';
+// Gap is a spacing preset slug ("20") or a custom length ("11px"), validated by
+// the shared sgs_css_length_value(); an empty or unsafe value falls back to the
+// default preset.
+$gap_css = sgs_css_length_value( $gap_raw );
+$gap_css = '' !== $gap_css ? $gap_css : 'var(--wp--preset--spacing--20)';
 $root_decls   = array(
-	'gap:var(--wp--preset--spacing--' . $gap_slug . ')',
+	'gap:' . $gap_css,
 );
 $root_decls   = array_merge(
 	$root_decls,

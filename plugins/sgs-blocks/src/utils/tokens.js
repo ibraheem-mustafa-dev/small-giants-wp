@@ -80,6 +80,22 @@ export function spacingVar( slug ) {
 	return `var(--wp--preset--spacing--${ slug })`;
 }
 
+/**
+ * Resolve a gap value for an editor preview — the JS mirror of
+ * `sgs_css_length_value()`. A digits-only value is a spacing preset slug and
+ * becomes `var(--wp--preset--spacing--{slug})`; anything else is a custom
+ * length (e.g. "11px") and passes through unchanged.
+ *
+ * @param {string} value Stored gap: a preset slug or a CSS length.
+ * @return {string|undefined} CSS value, or undefined when empty.
+ */
+export function gapVar( value ) {
+	if ( ! value ) {
+		return undefined;
+	}
+	return /^\d+$/.test( String( value ) ) ? spacingVar( value ) : String( value );
+}
+
 export function shadowVar( slug ) {
 	if ( ! slug ) {
 		return undefined;

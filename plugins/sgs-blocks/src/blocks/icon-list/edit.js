@@ -25,9 +25,10 @@ import {
   GradientCapableColourControl,
   SgsLengthControl,
   SgsSeparatorControl,
+  SpacingControl,
 } from "../../components";
 import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
-import { colourVar, spacingVar, separatorsLineCss, usePreviewTier } from "../../utils";
+import { colourVar, gapVar, separatorsLineCss, usePreviewTier } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
 import { resolveBorderStyle } from '../../utils/border-style';
 
@@ -63,13 +64,6 @@ const MARKER_TYPE_OPTIONS = [
   { label: __("Bullet", "sgs-blocks"), value: "bullet" },
   { label: __("Numbered", "sgs-blocks"), value: "numbered" },
   { label: __("None", "sgs-blocks"), value: "none" },
-];
-
-const GAP_OPTIONS = [
-  { label: __("Tight", "sgs-blocks"), value: "10" },
-  { label: __("Normal", "sgs-blocks"), value: "20" },
-  { label: __("Relaxed", "sgs-blocks"), value: "30" },
-  { label: __("Spacious", "sgs-blocks"), value: "40" },
 ];
 
 // Per-item slug → Lucide name, for items that store `{icon: slug}`.
@@ -309,7 +303,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
     ]
       .filter(Boolean)
       .join(" "),
-    style: { ...previewStyle, gap: spacingVar(gap) || undefined },
+    style: { ...previewStyle, gap: gapVar(gap || "20") },
   });
 
   const iconStyle = {
@@ -428,7 +422,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
     {
       item: `.sgs-ed-sep-${clientId} > .sgs-icon-list__item`,
       direction: "column",
-      gap: "var(--wp--preset--spacing--" + (gap || "20") + ")",
+      gap: gapVar(gap || "20"),
     },
     previewTier,
     separators?.edges
@@ -723,13 +717,11 @@ export default function Edit({ attributes, setAttributes, clientId }) {
               presets={false}
             />
           )}
-          <SelectControl
+          <SpacingControl
+            custom
             label={__("Spacing", "sgs-blocks")}
             value={gap}
-            options={GAP_OPTIONS}
             onChange={(val) => setAttributes({ gap: val })}
-            __nextHasNoMarginBottom
-          	__next40pxDefaultSize
           />
           <SgsSeparatorControl
             label={__("Lines between items", "sgs-blocks")}
