@@ -310,7 +310,7 @@
 | 125 | Gaps under eyebrow and intro | 10px and 28px | tree | Solve closed (2026-10-03) |
 | 126, 137 | Column widths; map too narrow | grid 1.1fr 1fr; map container as a stack so the map fills | tree | proven |
 | 127, 138 | WhatsApp button | S4 | | |
-| 128 | Details stay 2 columns on a phone | desktop 2, tablet 2 (your choice: live looks better), phone 1, gap 24 | tree | proven |
+| 128 | Details stay 2 columns on a phone | desktop 2, tablet 2 (your choice: live looks better), phone 1, gap 24 | tree | done (2026-10-04): the grid's desktop-only `repeat(2, …)` columns applied at every width over `columns.mobile: 1`; a phone value `minmax(0, 1fr)` added, and the details stack on a phone |
 | 129 | Label too close to its value | detail cell gap 14px | tree | Solve closed (2026-10-03) |
 | 130 | Hours | Same as footer 38 | | |
 | 131 | Phone/email hover | S3 (mirrors the page's other links) | | |

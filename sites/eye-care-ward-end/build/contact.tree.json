@@ -221,7 +221,8 @@
                 "mobile": 1
               },
               "gridTemplateColumns": {
-                "desktop": "repeat(2, minmax(0, 1fr))"
+                "desktop": "repeat(2, minmax(0, 1fr))",
+                "mobile": "minmax(0, 1fr)"
               },
               "gap": {
                 "desktop": "24px"
