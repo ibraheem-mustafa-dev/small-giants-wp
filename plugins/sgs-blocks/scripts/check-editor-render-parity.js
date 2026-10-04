@@ -888,7 +888,74 @@ function loadKeywordTable() {
 	return data.properties || {};
 }
 
-function readDeclaredAttrs( dir ) {
+const CONTEXT_SOURCE_EXTENSIONS = new Set( [ '.js', '.jsx', '.php' ] );
+
+function listBlockSourceFiles( dir ) {
+	const out = [];
+	for ( const entry of fs.readdirSync( dir, { withFileTypes: true } ) ) {
+		const full = path.join( dir, entry.name );
+		if ( entry.isDirectory() ) {
+			out.push( ...listBlockSourceFiles( full ) );
+		} else if ( CONTEXT_SOURCE_EXTENSIONS.has( path.extname( entry.name ) ) ) {
+			out.push( full );
+		}
+	}
+	return out;
+}
+
+function readsContextKey( code, key ) {
+	return code.includes( `context['${ key }']` ) ||
+		code.includes( `context["${ key }"]` ) ||
+		code.includes( `context[ '${ key }' ]` ) ||
+		code.includes( `context[ "${ key }" ]` );
+}
+
+/**
+ * Context keys that have a real consumer: listed in some block's block.json
+ * `usesContext` AND read as `context['<key>']` in that block's own JS or PHP.
+ *
+ * @param {string[]} blockDirs Block directories to scan.
+ * @return {Set<string>} Consumed context keys.
+ */
+function buildConsumedContextKeys( blockDirs ) {
+	const consumed = new Set();
+	for ( const dir of blockDirs ) {
+		const blockJsonPath = path.join( dir, 'block.json' );
+		if ( ! fs.existsSync( blockJsonPath ) ) {
+			continue;
+		}
+		let meta;
+		try {
+			meta = JSON.parse( fs.readFileSync( blockJsonPath, 'utf8' ) );
+		} catch ( e ) {
+			continue;
+		}
+		const used = Array.isArray( meta.usesContext ) ? meta.usesContext : [];
+		if ( ! used.length ) {
+			continue;
+		}
+		const code = listBlockSourceFiles( dir )
+			.map( ( f ) => fs.readFileSync( f, 'utf8' ) )
+			.join( '\n' );
+		for ( const key of used ) {
+			if ( readsContextKey( code, key ) ) {
+				consumed.add( key );
+			}
+		}
+	}
+	return consumed;
+}
+
+let consumedKeysCache = null;
+
+function getConsumedContextKeys() {
+	if ( ! consumedKeysCache ) {
+		consumedKeysCache = buildConsumedContextKeys( collectAllBlockDirs() );
+	}
+	return consumedKeysCache;
+}
+
+function readDeclaredAttrs( dir, consumedKeys = getConsumedContextKeys() ) {
 	const blockJsonPath = path.join( dir, 'block.json' );
 	if ( ! fs.existsSync( blockJsonPath ) ) {
 		return null;
@@ -906,17 +973,19 @@ function readDeclaredAttrs( dir ) {
 	);
 	// `providesContext` values are the SOURCE ATTRIBUTE feeding a WP block-
 	// context key a CHILD block consumes (e.g. sgs/accordion-item reads
-	// `sgs\accordionHeaderColour` context, sourced from the parent's own
+	// `sgs/accordionHeaderColour` context, sourced from the parent's own
 	// `headerColour` attribute). The parent's own edit.js legitimately never
-	// re-references such an attribute — its "canvas" is the CHILD block's own
-	// editor preview, not the parent's. Same exemption class check-dead-
-	// controls.js's CHECK 1 rule (b) already grants; CHECK A needs its own
-	// copy because it scans a different corpus (JS identifiers, not text
-	// consumption). Deliberately NOT verifying the child block actually
-	// CONSUMES the context live (check-dead-controls.js's stricter
-	// liveContextKeys cross-check) — documented as a blind spot below rather
-	// than reimplementing that cross-block wiring here.
-	const providesContextAttrs = new Set( Object.values( meta.providesContext || {} ) );
+	// re-references such an attribute: its "canvas" is the CHILD block's own
+	// editor preview. The exemption applies only to a context key with a real
+	// consumer: a block whose block.json `usesContext` lists the key AND whose
+	// edit or render code reads `context['<key>']`. An orphan key (no consumer)
+	// paints nothing anywhere, so its source attribute is not exempt.
+	const providesContextAttrs = new Set();
+	for ( const [ key, attr ] of Object.entries( meta.providesContext || {} ) ) {
+		if ( consumedKeys.has( key ) ) {
+			providesContextAttrs.add( attr );
+		}
+	}
 	return { name: meta.name || path.basename( dir ), attrs, providesContextAttrs };
 }
 
@@ -4118,6 +4187,76 @@ function runSelfTest() {
 		'renamed-destructure over-match fixture: pricingTableStyle (destructured as `style`) is never ' +
 			'read anywhere outside InspectorControls, so it should still be flagged (proves the alias fix ' +
 			"doesn't over-exempt), but it was suppressed",
+		failuresA
+	);
+
+	// Block-context exemption requires a real consumer. The provider's attribute is
+	// written by a control and never read in its edit preview; it is exempt only
+	// when another block lists the key in usesContext AND reads context[key].
+	const ctxProviderDir = writeBlock( 'check-a-ctx-provider', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-ctx-provider',
+			attributes: { cardPadding: { type: 'string' } },
+			providesContext: { 'sgs/fixtureCardPadding': 'cardPadding' },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, RangeControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { cardPadding } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<RangeControl value={ cardPadding } onChange={ ( v ) => setAttributes( { cardPadding: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const ctxConsumerDir = writeBlock( 'check-a-ctx-consumer', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-ctx-consumer',
+			usesContext: [ 'sgs/fixtureCardPadding' ],
+		} ),
+		'edit.js': "export default function Edit( { context } ) {\n\treturn context[ 'sgs/fixtureCardPadding' ];\n}\n",
+	} );
+	const ctxListedOnlyDir = writeBlock( 'check-a-ctx-listed-only', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-ctx-listed-only',
+			usesContext: [ 'sgs/fixtureCardPadding' ],
+		} ),
+		'edit.js': 'export default function Edit() {\n\treturn null;\n}\n',
+	} );
+	const ctxOrphanMeta = readDeclaredAttrs(
+		ctxProviderDir,
+		buildConsumedContextKeys( [ ctxProviderDir, ctxListedOnlyDir ] )
+	);
+	assertTrue(
+		checkEditorCanvasDesync(
+			ctxOrphanMeta.name,
+			ctxProviderDir,
+			ctxOrphanMeta.attrs,
+			ctxOrphanMeta.providesContextAttrs
+		).some( ( f ) => f.attr === 'cardPadding' ),
+		'context orphan fixture: cardPadding provides a key no block reads and must be flagged (a usesContext listing without a context[] read is not a consumer)',
+		failuresA
+	);
+	const ctxLiveMeta = readDeclaredAttrs(
+		ctxProviderDir,
+		buildConsumedContextKeys( [ ctxProviderDir, ctxConsumerDir ] )
+	);
+	assertTrue(
+		! checkEditorCanvasDesync(
+			ctxLiveMeta.name,
+			ctxProviderDir,
+			ctxLiveMeta.attrs,
+			ctxLiveMeta.providesContextAttrs
+		).some( ( f ) => f.attr === 'cardPadding' ),
+		'context consumer fixture: cardPadding feeds a key a block reads via context[] and must stay exempt',
 		failuresA
 	);
 

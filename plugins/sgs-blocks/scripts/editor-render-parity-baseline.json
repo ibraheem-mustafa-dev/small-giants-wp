@@ -275,6 +275,34 @@
       "attr": "gap",
       "disposition": "accepted-debt",
       "reason": "Same gap as columns (see that entry) -- accepted debt, no canvas mirror built yet for this responsive value."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/container",
+      "attr": "gridItemPadding",
+      "disposition": "accepted-debt",
+      "reason": "Session 0 grid-item repair: container provides the sgs/gridItem* context keys but no block lists them in usesContext, so the block-context exemption no longer applies; the grid-item defaults need a real editor preview and consumer, which the Session 0 repair delivers."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/container",
+      "attr": "gridItemBorderRadius",
+      "disposition": "accepted-debt",
+      "reason": "Session 0 grid-item repair: container provides the sgs/gridItem* context keys but no block lists them in usesContext, so the block-context exemption no longer applies; the grid-item defaults need a real editor preview and consumer, which the Session 0 repair delivers."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/container",
+      "attr": "gridItemBorder",
+      "disposition": "accepted-debt",
+      "reason": "Session 0 grid-item repair: container provides the sgs/gridItem* context keys but no block lists them in usesContext, so the block-context exemption no longer applies; the grid-item defaults need a real editor preview and consumer, which the Session 0 repair delivers."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/container",
+      "attr": "gridItemTextColour",
+      "disposition": "accepted-debt",
+      "reason": "Session 0 grid-item repair: container provides the sgs/gridItem* context keys but no block lists them in usesContext, so the block-context exemption no longer applies; the grid-item defaults need a real editor preview and consumer, which the Session 0 repair delivers."
     }
   ]
 }
