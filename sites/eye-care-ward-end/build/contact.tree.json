@@ -270,7 +270,9 @@
                   "tagName": "div",
                   "layout": "stack",
                   "gap": {
-                    "desktop": "6px"
+                    "desktop": "0px",
+                    "mobile": "0px",
+                    "tablet": "0px"
                   },
                   "className": "cr-ref-contact-7",
                   "flexDirection": "row"
@@ -322,7 +324,12 @@
                         "desktop": "15px"
                       },
                       "className": "cr-ref-contact-9",
-                      "textColourHover": "accent-text"
+                      "textColourHover": "accent-text",
+                      "iconGap": {
+                        "mobile": "0px",
+                        "tablet": "0px",
+                        "desktop": "0px"
+                      }
                     }
                   }
                 ]
@@ -333,7 +340,9 @@
                   "tagName": "div",
                   "layout": "stack",
                   "gap": {
-                    "desktop": "6px"
+                    "desktop": "0px",
+                    "mobile": "0px",
+                    "tablet": "0px"
                   },
                   "className": "cr-ref-contact-10",
                   "flexDirection": "row"
@@ -395,7 +404,9 @@
                   "tagName": "div",
                   "layout": "stack",
                   "gap": {
-                    "desktop": "6px"
+                    "desktop": "0px",
+                    "mobile": "0px",
+                    "tablet": "0px"
                   },
                   "className": "cr-ref-contact-13",
                   "flexDirection": "row"
@@ -462,7 +473,9 @@
                   "tagName": "div",
                   "layout": "stack",
                   "gap": {
-                    "desktop": "6px"
+                    "desktop": "0px",
+                    "mobile": "0px",
+                    "tablet": "0px"
                   },
                   "className": "cr-ref-contact-16",
                   "flexDirection": "row"
