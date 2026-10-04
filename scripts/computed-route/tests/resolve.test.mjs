@@ -156,3 +156,12 @@ test( 'MUST FAIL: a per-device discovered setting writes the value fitting each 
 	assert.deepEqual( wideOnly.writes[ 0 ].value, { desktop: 'fill', mobile: '' } );
 	assert.equal( resolveDiscovered( { slot: '.x', prop: 'flex-grow', perWidth: { 1440: '1' } }, calibration ), null );
 } );
+
+// A visibility toggle (an extension yes/no setting painting display) never takes a measured keyword: a keyword is held
+// only by a text setting (formatValue).
+test( 'a yes/no setting is never written from a measured display value', () => {
+	const r = resolve( { block: 'sgs/container', slot: '', prop: 'display', perWidth: { 1440: 'flex', 1920: 'flex' } },
+		{ db, snapshot, calibration: cal( { sgsHideOnDesktop: { slot: '', property: 'display' } } ) } );
+	assert.equal( r.gap, 'shape' );
+	assert.equal( r.writes, undefined );
+} );
