@@ -94,6 +94,10 @@
 	   than the address row directly above/below it in the SAME footer
 	   column. The larger tap area stays without shifting the glyph. */
 	margin: -0.5em -0.6em;
+	/* Vertically the box is the larger of the 44px floor and the padded line, so
+	   the block margins cancel all of it beyond one line of text: the link takes
+	   exactly one line in the flow, like unlinked text. */
+	margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2);
 }
 
 .sgs-business-info__link:hover {

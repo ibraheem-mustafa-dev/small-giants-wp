@@ -157,6 +157,10 @@ import { ratioSetting } from '../lib/normalise.mjs';
 test( 'MUST FAIL: aspect-ratio is in the walker list and in calibration READ_PROPS', () => {
 	assert.ok( DEFAULT_PROPS.includes( 'aspect-ratio' ) );
 	assert.ok( READ_PROPS.includes( 'aspect-ratio' ) );
+	// A draft child that fills its flex row (flex-grow) and a draft's fixed control height are measured too.
+	for ( const p of [ 'flex-grow', 'min-height' ] ) {
+		assert.ok( DEFAULT_PROPS.includes( p ) && READ_PROPS.includes( p ), p );
+	}
 } );
 
 test( 'MUST FAIL: a different ratio is a row; the same ratio in another spelling, and auto against auto, are not', () => {
