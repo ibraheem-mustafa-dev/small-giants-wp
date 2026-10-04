@@ -122,10 +122,10 @@ $scoped_css = array();
 // the correct mechanism (outline cannot hold a gradient in any case).
 $input_css = '';
 if ( ! empty( $attributes['focusRingColour'] ?? '' ) ) {
-	$input_css .= '--sgs-filter-search-focus:' . sanitize_text_field( $attributes['focusRingColour'] ) . ';';
+	$input_css .= '--sgs-filter-search-focus:' . sgs_colour_value( (string) $attributes['focusRingColour'] ) . ';';
 }
 if ( ! empty( $attributes['textColour'] ?? '' ) ) {
-	$input_css .= '--sgs-filter-search-text:' . sanitize_text_field( $attributes['textColour'] ) . ';';
+	$input_css .= '--sgs-filter-search-text:' . sgs_colour_value( (string) $attributes['textColour'] ) . ';';
 }
 if ( ! empty( $input_css ) ) {
 	$scoped_css[] = "{$root_sel}{" . $input_css . '}';
@@ -136,7 +136,7 @@ if ( ! empty( $input_css ) ) {
 if ( ! empty( $attributes['textColourHover'] ?? '' ) ) {
 	$scoped_css[] = sgs_hover_state_rules(
 		$root_sel,
-		'--sgs-filter-search-text-hover:' . sanitize_text_field( $attributes['textColourHover'] ) . ';'
+		'--sgs-filter-search-text-hover:' . sgs_colour_value( (string) $attributes['textColourHover'] ) . ';'
 	);
 }
 

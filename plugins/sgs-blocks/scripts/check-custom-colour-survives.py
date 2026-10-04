@@ -17,6 +17,9 @@ Two checks:
                core stores a custom colour in `style.color` instead.
            (b) `sgs_resolve_palette_hex()` called with anything but a fixed slug, outside its own
                definition files. Resolve an attribute through `sgs_colour_hex_for_contrast()`.
+           (c) a colour attribute written straight into a CSS declaration through a text sanitiser
+               (`'--x:' . sanitize_text_field( $attributes['<colour attr>'] )`): a palette slug lands as
+               an invalid bare word and a `;}` breakout passes. Paint through `sgs_colour_value()`.
   render   Every flat colour attribute (framework DB, plus a wide walk of every block.json) is fed
            a palette slug and, separately, a raw hex through the real render.php
            (scripts/qa/lib/render-css-harness.php). Slug reaches the output but the hex does not:
@@ -58,6 +61,11 @@ FLAT_PROPS = re.compile(
 NAME_RE = re.compile(r"(Colou?r|Bg|Background|Fill|Stroke)(Hover|Active|Selected|Focus|Open|Current|Checked)?$")
 
 SANITIZE_RE = re.compile(r"(sanitize_html_class|sanitize_key)\(\s*(?:\(\s*string\s*\)\s*)?\$\w+\[\s*['\"](\w+)['\"]\s*\]")
+# A CSS declaration ending in "<prop>:" (or a custom property) concatenated with a text-sanitised attribute.
+RAW_DECL_RE = re.compile(
+    r"[-\w]+:\s*['\"]\s*\.\s*(sanitize_text_field|esc_attr|wp_strip_all_tags|trim)\(\s*"
+    r"(?:\(\s*string\s*\)\s*)?\$\w+\[\s*['\"](\w+)['\"]\s*\]"
+)
 HAND_VAR_RE = re.compile(r"""var\(--wp--preset--color--(?:['"]\s*\.|%s)""")
 # Files allowed to build a palette var by hand, each because every non-slug value is refused or
 # passed through before the concatenation.
@@ -85,6 +93,11 @@ def static_findings(text: str, rel: str, colour_names: set[str]) -> list[dict]:
         if (name in colour_names or NAME_RE.search(name)) and name not in CORE_SLUG_ATTRS:
             out.append({"file": rel, "line": code.count("\n", 0, m.start()) + 1, "rule": func,
                         "detail": f"colour value '{name}' read through {func} (strips the #)"})
+    for m in RAW_DECL_RE.finditer(code):
+        func, name = m.group(1), m.group(2)
+        if (name in colour_names or NAME_RE.search(name)) and name not in CORE_SLUG_ATTRS:
+            out.append({"file": rel, "line": code.count("\n", 0, m.start()) + 1, "rule": "raw-colour-declaration",
+                        "detail": f"colour value '{name}' written into CSS through {func} (a slug is not resolved); use sgs_colour_value()"})
     if rel not in HAND_VAR_OK:
         for m in HAND_VAR_RE.finditer(code):
             out.append({"file": rel, "line": code.count("\n", 0, m.start()) + 1, "rule": "hand-built-palette-var",
@@ -266,6 +279,14 @@ def self_test() -> int:
     # A '#' earlier on the line must not hide the read behind it.
     if len(static_findings("<?php $d = '#fff'; $b = sanitize_html_class( $attributes['drawerBg'] );", "x.php", {"drawerBg"})) != 1:
         fails.append("static: a hex string earlier on the line hid a finding")
+    raw = ("<?php $c .= '--sgs-x-focus:' . sanitize_text_field( $attributes['focusRingColour'] ) . ';';\n"
+           "$d = 'color:' . esc_attr( (string) $attributes['textColourHover'] );")
+    if len(static_findings(raw, "src/blocks/x/render.php", set())) != 2:
+        fails.append("static: missed a colour written into a declaration through a text sanitiser")
+    good = ("<?php $c = '--sgs-x-focus:' . sgs_colour_value( $attributes['focusRingColour'] ) . ';';\n"
+            "$t = 'content:' . sanitize_text_field( $attributes['label'] );")
+    if static_findings(good, "x.php", set()):
+        fails.append("static: flagged a resolved colour or a non-colour declaration")
     if classify("x sgsprobe-003 y", "var(--wp--preset--color--0a1b03)", 3) != "DROPPED":
         fails.append("render: a hex turned into a fake preset var was not DROPPED")
     if classify("sgsprobe-003", "background:#0A1B03", 3) != "PASS":
