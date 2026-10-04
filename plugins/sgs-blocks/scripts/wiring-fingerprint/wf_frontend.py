@@ -12,7 +12,7 @@ from pathlib import Path
 
 from wf_channel import Channel, ChannelAnalyser, attr_seeds, dyn_sites, quoted_seeds
 from wf_media import MediaKeys
-from wf_php import PhpIndex, PhpText, _call_names, lower_first, read, split_args
+from wf_php import PhpIndex, PhpText, _call_names, loop_literals, lower_first, read, split_args
 
 HOOK_EMITTER_RE = re.compile(r"""render_block|\[\s*['"]attrs['"]\s*\]|parsed_block|block_type_metadata""")
 
@@ -79,8 +79,10 @@ class FrontEnd:
                     for idx, sfx in self.ptable[fname].items():
                         if idx < len(args):
                             mm = re.fullmatch(r"""['"](\w*)['"]""", args[idx])
-                            if mm:
-                                pre = mm.group(1)
+                            vm = re.fullmatch(r"\$(\w+)", args[idx])
+                            # A loop variable over an array literal resolves to its literal keys/values.
+                            pres = [mm.group(1)] if mm else (loop_literals(t.src, t.mask, m.start(), vm.group(1)) if vm else [])
+                            for pre in pres:
                                 for s in sfx:
                                     derived[(pre + s) if pre else lower_first(s)].append(fname)
         out = (texts, dict(derived))
@@ -163,6 +165,7 @@ class FrontEnd:
         for ctexts, key in consumers:
             sub = self.flow_texts(ctexts, key, lambda t, k=key: quoted_seeds(t, k), [t for t in ctexts if key in t.src])
             if sub.read:
+                ch.ctx_tokens |= (sub.classes | sub.cps) - (ch.classes | ch.cps)
                 ch.merge(sub)
                 where = where or "context"
         if not ch.kinds():

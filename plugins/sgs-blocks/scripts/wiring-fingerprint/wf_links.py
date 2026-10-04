@@ -33,12 +33,15 @@ class LinkEnv:
     root_class_re: re.Pattern
 
 
-def canvas_mode(be: BlockEditor, attr: str, ctx_canvas: bool) -> str | None:
+def canvas_mode(be: BlockEditor, attr: str, ctx_canvas: bool, layout: bool = False) -> str | None:
+    """How the editor canvas shows the attribute. A layout attribute whose every
+    canvas read only feeds a comparison (the canvas derives a flag from it, never
+    the value: wishlist-panel `columns`) is not shown."""
     if be.ssr == "full":
         return "ssr"
     if be.ssr == "partial" and attr in be.ssr_credit:
         return "ssr-branch"
-    if attr in be.canvas:
+    if attr in be.canvas and not (layout and be.canvas[attr].get("flag")):
         return "direct"
     if ctx_canvas:
         return "context"
@@ -46,12 +49,12 @@ def canvas_mode(be: BlockEditor, attr: str, ctx_canvas: bool) -> str | None:
 
 
 def assess(row: dict, category: str, ch: Channel, dump_row: dict, be: BlockEditor, ctx_canvas: bool,
-           b2: set[str], env: LinkEnv) -> dict:
+           b2: set[str], env: LinkEnv, allowed: frozenset = frozenset()) -> dict:
     """The missing links of one painting attribute, with the facts behind them."""
     attr = row["attr_name"]
     missing: list[str] = []
     state = is_state(attr, row.get("css_state")) or is_motion(attr, row.get("css_property"))
-    canvas = canvas_mode(be, attr, ctx_canvas)
+    canvas = canvas_mode(be, attr, ctx_canvas, row.get("role") == "layout")
     if attr not in be.control:
         missing.append("L2")
     if canvas is None:
@@ -68,14 +71,20 @@ def assess(row: dict, category: str, ch: Channel, dump_row: dict, be: BlockEdito
         missing.append("L5")
     else:
         unconsumed = sorted(cp for cp in ch.cps if not env.css.cp_read(cp))
-        unconsumed += sorted(c for c in ch.classes if "--" in c and not env.css.has_class(c) and c not in env.js)
+        unconsumed += sorted(c for c in ch.classes if "--" in c and not env.css.has_class(c) and c.rstrip("*") not in env.js)
+        own = (set(ch.cps) | {c for c in ch.classes if "--" in c}) - ch.ctx_tokens
+        if own - set(unconsumed):
+            # The value already paints through its own block; a token only a block-context
+            # consumer emits (`sgs-accordion-item--{style}` beside `sgs-accordion--{style}`) is
+            # that consumer's own markup, not this attribute's missing consumer.
+            unconsumed = [u for u in unconsumed if u not in ch.ctx_tokens]
         if unconsumed:
             missing.append("L6")
         if canvas == "direct" and ch.cps and attr not in be.real_prop and not state:
             ecps = set(be.editor_cps)
             if not any(cp in ecps or (cp.endswith("-") and any(e.startswith(cp) for e in ecps)) for cp in ch.cps):
                 missing.append("L7")
-        if child_conditional(ch.cps, env.css, env.root_class_re) or ch.child_sel:
+        if child_conditional(ch.cps, env.css, env.root_class_re, ch.child_sel, allowed):
             missing.append("C1")
         if inner_depth_bug(ch.child_sel, ch.inner_sel, env.css):
             missing.append("B3")

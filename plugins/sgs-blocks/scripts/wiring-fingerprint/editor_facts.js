@@ -37,6 +37,21 @@ const calleeName = ( c ) => ( c.type === 'Identifier' ? c.name : c.type === 'Mem
 
 const { walkJs, parse, exportsOf, resolveSpec, declaringFile, COMPONENT_MAP } = require( './editor_facts_resolve' )( { SRC, BLOCKS, parser, OPTS } );
 
+// The attributes object, or a local derived from it through an object spread, a ternary
+// or a logical fallback (`const a = x ? attributes : { ...attributes, k: v }`).
+function derivesAttrs( n, scope, depth ) {
+	if ( ! n || depth > 3 ) return false;
+	if ( n.type === 'Identifier' ) {
+		if ( ATTR_OBJ_RE.test( n.name ) ) return true;
+		const b = scope && scope.getBinding( n.name );
+		return !! b && b.path.isVariableDeclarator() && b.path.node.id.type === 'Identifier' && derivesAttrs( b.path.node.init, b.path.scope, depth + 1 );
+	}
+	if ( n.type === 'ObjectExpression' ) return n.properties.some( ( pr ) => pr.type === 'SpreadElement' && derivesAttrs( pr.argument, scope, depth + 1 ) );
+	if ( n.type === 'ConditionalExpression' ) return derivesAttrs( n.consequent, scope, depth + 1 ) || derivesAttrs( n.alternate, scope, depth + 1 );
+	if ( n.type === 'LogicalExpression' ) return derivesAttrs( n.left, scope, depth + 1 ) || derivesAttrs( n.right, scope, depth + 1 );
+	return false;
+}
+
 function identsIn( node ) {
 	const out = new Set();
 	( function walk( n ) {
@@ -74,6 +89,41 @@ function facts( file ) {
 			if ( pr.type === 'SpreadElement' && pr.argument.type === 'Identifier' && objVars.has( pr.argument.name ) ) objVars.get( pr.argument.name ).forEach( ( k ) => setKeys.add( k ) );
 		}
 	};
+	// A table of rows mapped into prefixed controls: `[ [ 'panelTitle', … ], … ].map(
+	// ( [ prefix ] ) => ( { prefix } ) )` (rows may be arrays or objects; the table may be
+	// a const). Every row's literal at the destructured slot is a prefix.
+	function tupleTablePrefixes( p ) {
+		let table = p.node.callee.object;
+		if ( table.type === 'Identifier' ) {
+			const b = p.scope.getBinding( table.name );
+			table = b && b.path.isVariableDeclarator() ? b.path.node.init : null;
+		}
+		const cb = p.get( 'arguments.0' );
+		if ( ! table || table.type !== 'ArrayExpression' || ! cb || ! cb.node || ! cb.isFunction() || ! cb.node.params.length ) return;
+		const pat = cb.node.params[ 0 ];
+		const slots = pat.type === 'ArrayPattern' ? pat.elements.map( ( el, i ) => [ el, i ] ) : pat.type === 'ObjectPattern' ? pat.properties.filter( ( pr ) => pr.type === 'ObjectProperty' ).map( ( pr ) => [ pr.value, pr.key.name || pr.key.value ] ) : [];
+		for ( const [ el, slot ] of slots ) {
+			const local = el && ( el.type === 'Identifier' ? el.name : el.type === 'AssignmentPattern' && el.left.type === 'Identifier' ? el.left.name : null );
+			const b = local && cb.scope.getBinding( local );
+			if ( ! b ) continue;
+			const uses = [];
+			for ( const r of b.referencePaths ) {
+				const par = r.parent;
+				if ( par.type === 'ObjectProperty' && par.value === r.node && ( par.key.name || par.key.value ) === 'prefix' ) uses.push( [ 'jsx' ] );
+				else if ( par.type === 'JSXExpressionContainer' && r.parentPath.parent.type === 'JSXAttribute' && r.parentPath.parent.name.name === 'prefix' ) uses.push( [ 'jsx' ] );
+				else if ( par.type === 'CallExpression' && par.arguments.indexOf( r.node ) > -1 && par.arguments.indexOf( r.node ) <= 1 ) uses.push( [ 'call', calleeName( par.callee ), par.arguments.indexOf( r.node ) ] );
+			}
+			if ( ! uses.length ) continue;
+			for ( const row of table.elements ) {
+				const v = ! row ? null : row.type === 'ArrayExpression' ? row.elements[ slot ] : row.type === 'ObjectExpression' ? ( row.properties.find( ( pr ) => pr.type === 'ObjectProperty' && ( pr.key.name || pr.key.value ) === slot ) || {} ).value : null;
+				if ( ! v || v.type !== 'StringLiteral' || ! ( v.value === '' || ATTR_SHAPE_RE.test( v.value ) ) ) continue;
+				for ( const [ kind, fn, idx ] of uses ) {
+					if ( kind === 'jsx' ) out.prefixJsx.push( { tag: '', prefix: v.value } );
+					else out.prefixCalls.push( { fn, idx, prefix: v.value, start: p.node.start } );
+				}
+			}
+		}
+	}
 	// Pass 1: ranges, literals, setters, prefixes, imports, SSR.
 	traverse( ast, {
 		JSXElement( p ) {
@@ -152,6 +202,7 @@ function facts( file ) {
 				const optSrc = opt ? src.slice( opt.start, opt.end ) : '';
 				out.shadowBases.push( { base: a0.value, hover: /hover\s*:\s*true/.test( optSrc ) || optSrc === "'hover'", hoverColour: /hoverColour\s*:\s*true/.test( optSrc ) || optSrc === "'hoverColour'", part: fname === 'shadowAttrName' ? optSrc.replace( /['"]/g, '' ) || 'base' : null } );
 			}
+			if ( fname === 'map' && p.node.callee.type === 'MemberExpression' ) tupleTablePrefixes( p );
 			p.node.arguments.slice( 0, 3 ).forEach( ( arg, i ) => {
 				if ( arg.type === 'StringLiteral' && ( arg.value === '' || ATTR_SHAPE_RE.test( arg.value ) ) && arg.value.length < 40 ) out.prefixCalls.push( { fn: fname, idx: i, prefix: arg.value, start: p.node.start } );
 			} );
@@ -169,7 +220,8 @@ function facts( file ) {
 	const noteRead = ( attr, refPath, pos ) => {
 		if ( ! ATTR_SHAPE_RE.test( attr ) ) return;
 		if ( isControlPos( pos ) || onlyFeedsControls( refPath ) ) { controlReads.add( attr ); return; }
-		const rec = canvas.get( attr ) || { whole: false, tiers: new Set() };
+		const rec = canvas.get( attr ) || { whole: false, tiers: new Set(), flag: true };
+		rec.flag = rec.flag && flagOnly( refPath, 0 );
 		const par = refPath && refPath.parent;
 		if ( par && ( par.type === 'MemberExpression' || par.type === 'OptionalMemberExpression' ) && par.object === refPath.node && ! par.computed && TIER_KEYS.has( par.property.name ) ) rec.tiers.add( par.property.name );
 		else rec.whole = true;
@@ -187,6 +239,29 @@ function facts( file ) {
 			if ( b && b.referencePaths.some( ( r ) => intoRealProp( r ) ) ) realProp.add( attr );
 		}
 	};
+	// The value only ever feeds a presence or numeric comparison (`columns[ t ] !== undefined`,
+	// `1 === Number( columns.mobile )`): the canvas derives a flag from it but never shows the
+	// value. A comparison with a string (`'grid' === layout`) selects markup, so it is a read.
+	function flagOnly( refPath, depth ) {
+		let q = refPath;
+		let numeric = false;
+		for ( let i = 0; q && q.parent && i < 8; i++, q = q.parentPath ) {
+			const par = q.parent;
+			if ( par.type === 'BinaryExpression' && /^(===|!==|==|!=|<|>|<=|>=)$/.test( par.operator ) ) {
+				const other = par.left === q.node ? par.right : par.left;
+				return numeric || other.type === 'NumericLiteral' || other.type === 'NullLiteral' || ( other.type === 'Identifier' && other.name === 'undefined' ) || ( other.type === 'StringLiteral' && other.value === '' );
+			}
+			if ( ( par.type === 'MemberExpression' || par.type === 'OptionalMemberExpression' ) && par.object === q.node ) continue;
+			if ( par.type === 'CallExpression' && /^(Number|parseInt|parseFloat)$/.test( calleeName( par.callee ) ) ) { numeric = true; continue; }
+			if ( par.type === 'LogicalExpression' || ( par.type === 'ConditionalExpression' && par.test !== q.node ) ) continue;
+			if ( par.type === 'VariableDeclarator' && par.init === q.node && par.id.type === 'Identifier' && depth < 2 ) {
+				const b = q.parentPath.scope.getBinding( par.id.name );
+				return !! b && b.referencePaths.length > 0 && b.referencePaths.every( ( r ) => flagOnly( r, depth + 1 ) );
+			}
+			return false;
+		}
+		return false;
+	}
 	function intoRealProp( refPath ) {
 		let q = refPath;
 		for ( let i = 0; q && q.parent && i < 5; i++, q = q.parentPath ) {
@@ -237,13 +312,13 @@ function facts( file ) {
 		CallExpression( p ) {
 			if ( isControlPos( p.node.start ) ) return;
 			const args = p.node.arguments;
-			const passes = args.some( ( a ) => ( a.type === 'Identifier' && ATTR_OBJ_RE.test( a.name ) ) || ( a.type === 'ObjectExpression' && a.properties.some( ( pr ) => pr.type === 'SpreadElement' && pr.argument.type === 'Identifier' && ATTR_OBJ_RE.test( pr.argument.name ) ) ) );
+			const passes = args.some( ( a ) => derivesAttrs( a, p.scope, 0 ) );
 			if ( passes ) out.canvasCalls.push( { fn: calleeName( p.node.callee ), prefixes: args.filter( ( a ) => a.type === 'StringLiteral' ).map( ( a ) => a.value ) } );
 		},
 		JSXOpeningElement( p ) {
 			if ( isControlPos( p.node.start ) ) return;
 			const attrs = p.node.attributes.filter( ( a ) => a.type === 'JSXAttribute' && a.name );
-			const passes = attrs.some( ( a ) => a.value && a.value.type === 'JSXExpressionContainer' && a.value.expression.type === 'Identifier' && ATTR_OBJ_RE.test( a.value.expression.name ) ) || p.node.attributes.some( ( a ) => a.type === 'JSXSpreadAttribute' );
+			const passes = attrs.some( ( a ) => a.value && a.value.type === 'JSXExpressionContainer' && derivesAttrs( a.value.expression, p.scope, 0 ) ) || p.node.attributes.some( ( a ) => a.type === 'JSXSpreadAttribute' );
 			const pre = attrs.find( ( a ) => a.name.name === 'prefix' && a.value && a.value.type === 'StringLiteral' );
 			if ( passes ) out.canvasJsx.push( { tag: tagName( p.node.name ), prefix: pre ? pre.value.value : null } );
 		},
@@ -257,7 +332,7 @@ function facts( file ) {
 	out.realPropAttrs = [ ...realProp ].sort();
 	out.prefixSuffixes = [ ...sfx ].sort();
 	out.jsxTags = [ ...tags ].sort();
-	for ( const [ k, v ] of [ ...canvas.entries() ].sort() ) out.canvasReads[ k ] = { whole: v.whole, tiers: [ ...v.tiers ].sort() };
+	for ( const [ k, v ] of [ ...canvas.entries() ].sort() ) out.canvasReads[ k ] = { whole: v.whole, tiers: [ ...v.tiers ].sort(), flag: v.flag };
 	for ( const g of Object.keys( out.guarded ) ) out.guarded[ g ] = [ ...new Set( out.guarded[ g ] ) ].sort();
 	return out;
 }

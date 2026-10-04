@@ -98,21 +98,23 @@ class CssIndex:
     editor_rules: list[tuple[str, str, str]] = field(default_factory=list)   # editor-only sheets
     php_cp_readers: set[str] = field(default_factory=set)
     injector_cp_readers: set[str] = field(default_factory=set)
+    js_cp_readers: set[str] = field(default_factory=set)                     # front-end scripts
 
     def has_class(self, token: str) -> bool:
-        """Exact class, or a prefix ending in `-`/`--`/`__` built dynamically."""
+        """Exact class, or a prefix built dynamically (ending in `-`/`_`, or marked
+        `*` when the string concatenates a value onto it: `'…__title--w' . $v`)."""
         if token in self.class_tokens:
             return True
-        if token.endswith(("-", "_")):
-            return any(t.startswith(token) for t in self.class_tokens)
+        if token.endswith(("-", "_", "*")):
+            pre = token.rstrip("*")
+            return any(t.startswith(pre) for t in self.class_tokens)
         return False
 
     def cp_read(self, cp: str) -> bool:
+        others = self.php_cp_readers | self.injector_cp_readers | self.js_cp_readers
         if cp.endswith("-"):
-            return any(k.startswith(cp) for k in self.cp_readers) or any(
-                k.startswith(cp) for k in self.php_cp_readers | self.injector_cp_readers
-            )
-        return bool(self.cp_readers.get(cp)) or cp in self.php_cp_readers or cp in self.injector_cp_readers
+            return any(k.startswith(cp) for k in self.cp_readers) or any(k.startswith(cp) for k in others)
+        return bool(self.cp_readers.get(cp)) or cp in others
 
 
 def stylesheet_files(plugin: Path, theme: Path) -> list[Path]:
@@ -141,15 +143,54 @@ def build_css_index(plugin: Path, theme: Path, php_texts) -> CssIndex:
                 idx.cp_readers[cp].append((posix, sel))
             for cp in set(CP_READ_RE.findall(sel)):
                 idx.cp_readers[cp].append((posix, sel))
+    php_texts = list(php_texts)
     for t in php_texts:
         idx.php_cp_readers.update(CP_READ_RE.findall(t.src))
-        # Selectors a PHP emitter writes (`'.sgs-x--y{'`) are class rules too.
-        idx.class_tokens.update(m.group(1) for m in re.finditer(r"\.((?:sgs|is|has)-[a-z0-9_-]+)\s*[{:,> .\[]", t.src))
+        # Selectors a PHP emitter writes (`'.sgs-x--y{'`, or concatenated:
+        # `'.' . $uid . '.sgs-x__tag--trial'`) are class rules too.
+        idx.class_tokens.update(m.group(1) for m in PHP_SELECTOR_CLASS_RE.finditer(t.src))
         idx.data_attrs.update(DATA_ATTR_SEL_RE.findall(t.src))
+    idx.php_cp_readers |= dynamic_var_reads(php_texts)
     for pat in INJECTOR_GLOBS:
         for f in sorted(plugin.glob(pat)):
             idx.injector_cp_readers.update(CP_READ_RE.findall(read(f)))
     return idx
+
+
+PHP_SELECTOR_CLASS_RE = re.compile(r"""\.((?:sgs|is|has)-[a-z0-9_-]+)(?=\s*[{:,> .\['"])""")
+# `var(--' . $name . ')` / `var(--' . $name . '-gradient)`: a reader whose name a parameter carries.
+DYN_VAR_READ_RE = re.compile(r"""var\(\s*--['"]\s*\.\s*\$(\w+)(?:\s*\.\s*['"]([a-z0-9-]*))?""")
+CLOSURE_HEAD_RE = re.compile(r"\$(\w+)\s*=\s*(?:static\s+)?function\s*\(([^)]*)\)")
+NAMED_HEAD_RE = re.compile(r"\bfunction\s+&?\s*(\w+)\s*\(([^)]*)\)")
+STR_ARG_RE = re.compile(r"""\s*['"](?:--)?(sgs-[a-z0-9-]*[a-z0-9])['"]\s*$""")
+
+
+def dynamic_var_reads(php_texts) -> set[str]:
+    """Custom properties read through `var(--' . $name . …)` where `$name` is a
+    parameter of a function or closure: every call passing a literal
+    `'sgs-…'` / `'--sgs-…'` at that parameter names a read custom property."""
+    from wf_php import split_args
+
+    out: set[str] = set()
+    for t in php_texts:
+        for m in DYN_VAR_READ_RE.finditer(t.src):
+            name, tail = m.group(1), m.group(2) or ""
+            heads = [(h.start(), "closure", h.group(1), h.group(2)) for h in CLOSURE_HEAD_RE.finditer(t.src, 0, m.start())]
+            heads += [(h.start(), "named", h.group(1), h.group(2)) for h in NAMED_HEAD_RE.finditer(t.src, 0, m.start())]
+            for _pos, kind, fname, params in sorted(heads, reverse=True):
+                pnames = [(re.search(r"\$(\w+)", p) or [None, ""])[1] for p in params.split(",")]
+                if name not in pnames:
+                    continue
+                idx = pnames.index(name)
+                call_re = re.compile((r"\$" + fname if kind == "closure" else r"(?<![\w$>:])" + fname) + r"\s*\(")
+                for tt in (php_texts if kind == "named" else [t]):
+                    for cm in call_re.finditer(tt.src):
+                        args = split_args(tt.src, cm.end() - 1)
+                        lm = STR_ARG_RE.match(args[idx]) if idx < len(args) else None
+                        if lm:
+                            out.add("--" + lm.group(1) + tail)
+                break
+    return out
 
 
 def specificity_zero(selector: str) -> bool:
@@ -187,3 +228,13 @@ def data_consumed(data: set[str], css: CssIndex, js: str) -> bool:
         elif d:
             return True
     return False
+
+
+# `getPropertyValue( '--sgs-x' )`, `resolveColour( root, '--sgs-x' )`: a front-end script
+# reading a custom property by name (a write through setProperty/removeProperty is not a read).
+JS_CP_ARG_RE = re.compile(r"""\b(\w+)\s*\(\s*(?:[\w.$]+\s*,\s*)*['"`](--sgs-[a-z0-9-]*[a-z0-9])['"`]""")
+JS_CP_WRITERS = frozenset({"setProperty", "removeProperty"})
+
+
+def js_cp_reads(js: str) -> set[str]:
+    return {m.group(2) for m in JS_CP_ARG_RE.finditer(js) if m.group(1) not in JS_CP_WRITERS}

@@ -112,6 +112,8 @@ def calibration(report: dict) -> dict | None:
     if not CACHE.exists():
         return None
     rec = {(r["block"], r["attr"]): r for r in report["records"]}
+    # An extension attribute (every block carries it) is one record per extension.
+    ext = {r["attr"]: r for r in report["records"] if r["block"].startswith("ext/")}
     total = 0
     outside, flagged = [], []
     for f in sorted(CACHE.glob("*.json")):
@@ -120,7 +122,7 @@ def calibration(report: dict) -> dict | None:
         d = json.loads(f.read_text(encoding="utf-8"))
         for attr in sorted(d.get("settings", {})):
             total += 1
-            r = rec.get((d["block"], attr))
+            r = rec.get((d["block"], attr)) or ext.get(attr)
             if not r or r["category"] == "not":
                 outside.append(f"{d['block']}::{attr}")
                 continue

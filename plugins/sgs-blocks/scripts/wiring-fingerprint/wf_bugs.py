@@ -1,13 +1,17 @@
 """Bug-class rules and the selector-shaped links.
 
   C1  child-conditional reader (Spec 32 FR-32-12, Bean 2026-10-04): every reader
-      of the attribute's custom property, or the selector its PHP emits, reaches a
-      cell only when the cell is one specific block (`… > .sgs-<block>`). Grid-cell
-      defaults must style every direct cell whatever block it is.
+      of the attribute's custom property, or the selector its PHP emits (directly or
+      through a selector variable), reaches a cell only when the cell is one specific
+      block (`… > .sgs-<block>`). Grid-cell defaults must style every direct cell
+      whatever block it is. Exempt when the block's `allowedBlocks` admits only the
+      blocks the readers name.
   B1  scope hash without context: a render.php derives its scoping uid from a hash
-      of `$attributes` that omits `$block->context`, while it reads block context
-      into the CSS it scopes with that uid (two items with equal attributes under
-      different parents share one uid and overwrite each other's rules).
+      of `$attributes` that omits `$block->context`, while a block-context value is
+      written into the CSS it scopes with that uid (a declaration or custom property
+      carries the value; a value that only decides whether a rule is emitted does
+      not count), so two items with equal attributes under different parents share
+      one uid and overwrite each other's rules.
   B2  root prefix orphaned: the block wires the shared typography helper for named
       prefixes, declares the root ('') family too, and the root family has no
       control or no front-end emission.
@@ -30,22 +34,32 @@ CONTEXT_READ_RE = re.compile(r"""\$block->context\[\s*['"]([^'"]+)['"]\s*\]""")
 HASH_RE = re.compile(r"\$(\w+)\s*=\s*[^;]*?\b(?:md5|crc32|sha1|wp_hash|hash)\s*\(([^;]*);")
 
 
-def child_conditional(cps: set[str], css: CssIndex, root_class_re: re.Pattern) -> bool:
-    """True when every reader of every linked custom property is behind a
-    `<combinator> .sgs-<block>` subject."""
-    if not cps:
-        return False
-    for cp in cps:
-        readers = css.cp_readers.get(cp, [])
-        if not readers or cp in css.php_cp_readers:
-            return False
-        for _f, sel in readers:
-            for part in [s.strip() for s in sel.split(",") if s.strip()]:
-                p2 = re.sub(r":where\(\s*|\s*\)$", "", part).strip()
-                toks = [x for x in re.split(r"\s*[>+~]\s*|\s+", p2) if x]
-                if not (len(toks) > 1 and root_class_re.search(toks[-1])):
-                    return False
-    return True
+def child_conditional(cps: set[str], css: CssIndex, root_class_re: re.Pattern,
+                      child_sel: set[str] = frozenset(), allowed: set[str] = frozenset()) -> bool:
+    """True when every reader of every linked custom property (or a PHP-emitted
+    `> .sgs-<block>` selector) reaches a cell only when the cell is one specific
+    block. Exempt when the block's `allowedBlocks` admits only the blocks the
+    readers name: then the reader reaches every possible cell."""
+    subjects: set[str] = set(child_sel)
+    if cps:
+        for cp in cps:
+            readers = css.cp_readers.get(cp, [])
+            if not readers or cp in css.php_cp_readers or cp in css.js_cp_readers:
+                return bool(child_sel) and not _all_cells(child_sel, allowed)
+            for _f, sel in readers:
+                for part in [s.strip() for s in sel.split(",") if s.strip()]:
+                    p2 = re.sub(r":where\(\s*|\s*\)$", "", part).strip()
+                    toks = [x for x in re.split(r"\s*[>+~]\s*|\s+", p2) if x]
+                    m = root_class_re.search(toks[-1]) if len(toks) > 1 else None
+                    if not m:
+                        return bool(child_sel) and not _all_cells(child_sel, allowed)
+                    subjects.add(m.group(1))
+    return bool(subjects) and not _all_cells(subjects, allowed)
+
+
+def _all_cells(subjects: set[str], allowed: set[str]) -> bool:
+    """The block admits only children the reader names (`allowedBlocks` ⊆ subjects)."""
+    return bool(allowed) and {a.split("/", 1)[-1] for a in allowed} <= set(subjects)
 
 
 def scope_hash_bug(render_texts: list[PhpText], analyser) -> list[str]:
@@ -66,7 +80,9 @@ def scope_hash_bug(render_texts: list[PhpText], analyser) -> list[str]:
             for cm in CONTEXT_READ_RE.finditer(t.src):
                 ch = Channel()
                 analyser.flow(t, [cm.start()], cm.group(1), ch)
-                if ch.decl or ch.gate_decl or ch.cps:
+                # The context value must change what the CSS says, not merely whether
+                # a rule is emitted (a gate) or which helper runs.
+                if ch.value_decl or ch.cps:
                     hits.append(cm.group(1))
     return sorted(set(hits))
 

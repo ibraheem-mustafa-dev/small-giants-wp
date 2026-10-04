@@ -265,3 +265,53 @@ def rx(pattern: str, flags: int = 0) -> re.Pattern:
 
 def lower_first(s: str) -> str:
     return s[:1].lower() + s[1:]
+
+
+LOOP_HEAD_RE = re.compile(r"foreach\s*\(\s*(.*?)\s+as\s+(?:\$(\w+)\s*=>\s*)?&?\$(\w+)\s*\)", re.S)
+ARRAY_LIT_RE = re.compile(r"\s*(?:array\s*\(|\[)")
+KEY_LIT_RE = re.compile(r"""\s*(['"])([^'"]*)\1\s*(=>)?""")
+
+
+def _array_open(src: str, at: int) -> int | None:
+    m = ARRAY_LIT_RE.match(src, at)
+    return m.end() - 1 if m else None
+
+
+def loop_literals(src: str, mask: str, pos: int, var: str) -> list[str]:
+    """The literal strings `$var` takes at `pos` when it is the key or value of an
+    enclosing `foreach` over an array literal (inline, or a variable assigned one
+    earlier): `foreach ( array( 'title' => '.t' ) as $prefix => $sel )` gives
+    ['title'] for `$prefix`; a list of tuples gives each tuple's first element."""
+    for m in reversed(list(LOOP_HEAD_RE.finditer(mask, 0, pos))):
+        key_var, val_var = m.group(2), m.group(3)
+        if var not in (key_var, val_var):
+            continue
+        ob = mask.find("{", m.end())
+        if ob == -1 or len(brace_body(src, ob, mask)) + ob < pos:
+            continue
+        expr_at = m.start(1)
+        open_at = _array_open(src, expr_at)
+        vm = re.match(r"\$(\w+)\s*$", src[m.start(1):m.end(1)])
+        if open_at is None and vm:
+            assigns = list(re.finditer(r"\$" + re.escape(vm.group(1)) + r"\s*=(?!=|>)", mask[:m.start()]))
+            if assigns:
+                open_at = _array_open(src, assigns[-1].end())
+        if open_at is None:
+            return []
+        out = []
+        for s, e in split_arg_spans(src, open_at):
+            km = KEY_LIT_RE.match(src, s)
+            if var == key_var:
+                if km and km.group(3):
+                    out.append(km.group(2))
+            elif km and not km.group(3):
+                out.append(km.group(2))
+            else:
+                inner = _array_open(src, s)
+                if inner is not None:
+                    first = split_arg_spans(src, inner)
+                    fm = KEY_LIT_RE.match(src, first[0][0]) if first else None
+                    if fm and not fm.group(3):
+                        out.append(fm.group(2))
+        return out
+    return []

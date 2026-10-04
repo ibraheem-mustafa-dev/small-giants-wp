@@ -25,7 +25,7 @@ from __future__ import annotations
 import re
 
 from wf_php import PhpIndex, PhpText, brace_body, rx, split_arg_spans
-from wf_tokens import CP_SET_RE, CSS_KEY_RE, Channel, DECL_RE, TokenReader, blank_index
+from wf_tokens import ARRAY_KW_RE, CP_SET_RE, CSS_KEY_RE, Channel, DECL_RE, TokenReader, blank_index, open_brackets
 
 # A statement may open with template HTML (`?> <div …> <?php`); heads are matched after it.
 HEAD = r"^\s*(?:(?:\?>.*?)?<\?php\s*)?"
@@ -45,6 +45,8 @@ CALL_NAME_RE = re.compile(r"\b([a-z_]\w*)\s*\(")
 ARRAY_OPEN_RE = re.compile(r"\s*(?:\(\s*\w+\s*\)\s*)?(array\s*\(|\[)")
 PAIR_KEY_RE = re.compile(r"""\s*(['"])([^'"]+)\1\s*=>""")
 ATTR_INDEX_BEFORE_RE = re.compile(r"""(?:\$\w*attr\w*|\$atts|\[\s*['"]attrs['"]\s*\])\s*\[\s*$""")
+SEL_VAR_RE = re.compile(r"\$(\w+)")
+NEW_RE = re.compile(r"\s*new\s+[\\\w]")
 DYN_KEY_RE = re.compile(r"""\$\w+\s*\.\s*['"]([A-Z][A-Za-z0-9]*)['"]""")
 
 def func_spans(t: PhpText) -> list[tuple[int, int, set]]:
@@ -183,6 +185,8 @@ class ChannelAnalyser:
             ch.stmts += 1
             ch.read = True
             self.reader.read(stmt, attr, offs, ch)
+            if ch.decl or ch.cps:
+                self._selector_vars(t, span[0], stmt, taint, ch)
             if RETURN_RE.match(stmt):
                 returns = True
             if GATE_HEAD_RE.match(stmt):
@@ -196,6 +200,7 @@ class ChannelAnalyser:
                             sub.read = False
                             ch.gate_decl |= sub.decl
                             sub.decl = False
+                            sub.value_decl = False
                             ch.merge(sub)  # a short guarded block is the toggle's own output
                     if RETURN_IN_BODY_RE.search(body):
                         returns = True  # the function's result depends on the value
@@ -209,7 +214,10 @@ class ChannelAnalyser:
                 if index is None:
                     if not rx(r"\$" + re.escape(m.group(1)) + r"\b").search(stmt, m.end()):
                         # `$x = array_merge( $x, … )` accumulates like `$x[] =`; anything else taints x.
-                        new.append((m.group(1), self._pair_key(stmt, m.end(), offs)))
+                        key = self._pair_key(stmt, m.end(), offs)
+                        if key is None and NEW_RE.match(stmt, m.end()):
+                            key = self._enclosing_pair_key(stmt, offs)
+                        new.append((m.group(1), key))
                 elif index.strip():
                     lit = re.fullmatch(r"""\s*(['"])([^'"]+)\1\s*""", index)
                     new.append((m.group(1), lit.group(2) if lit else None))
@@ -235,6 +243,42 @@ class ChannelAnalyser:
                 work.extend(var_refs(t, var, span[0], key))
         return returns
 
+    def _selector_vars(self, t: PhpText, at: int, stmt: str, taint: dict, ch: Channel) -> None:
+        """A selector held in a variable (`$sel = '.' . $uid . ' > .sgs-card';` then
+        `sgs_hover_state_rules( $sel, $decl )`): the latest assignment of each
+        untainted variable the emitting statement names, in the same scope, is read
+        for its child-selector subjects."""
+        scope = _scope_of(t, at)
+        for name in set(SEL_VAR_RE.findall(stmt)) - set(taint) - {"attributes", "this"}:
+            for p in reversed(t.variables.get(name, ())):
+                if p >= at or not (scope[0] <= p < scope[1]):
+                    continue
+                s, e = t.stmt_span(p)
+                text = t.src[s:e]
+                am = ASSIGN_RE.match(text)
+                if am and am.group(1) == name and am.group(2) is None:
+                    child, inner = self.reader.child_selectors(text)
+                    ch.child_sel |= child
+                    ch.inner_sel |= inner
+                    break
+
+    @staticmethod
+    def _enclosing_pair_key(stmt: str, offs: list[int]) -> str | None:
+        """The pair key of the innermost multi-pair array literal holding the value
+        (`new C( $a, array( 'align' => $v, … ) )` carries the value under 'align')."""
+        if not offs:
+            return None
+        for ob in reversed(open_brackets(stmt, offs[0])):
+            if stmt[ob] != "[" and not ARRAY_KW_RE.search(stmt[max(0, ob - 8):ob]):
+                continue
+            spans = split_arg_spans(stmt, ob)
+            if len(spans) < 2:
+                continue
+            el = next(((s, e) for s, e in spans if s <= offs[0] < e), None)
+            km = PAIR_KEY_RE.match(stmt, el[0]) if el else None
+            return km.group(2) if km else None
+        return None
+
     @staticmethod
     def _pair_key(stmt: str, rhs_at: int, offs: list[int]) -> str | None:
         """The array key holding the tainted value when the right-hand side is a
@@ -258,8 +302,14 @@ class ChannelAnalyser:
                 if i >= len(pnames) or not pnames[i] or pnames[i] == "attributes":
                     continue
                 for off, var, key, keyed_read in refs:
-                    if s <= off < e and var:
-                        ch.merge(self.param_channel(fname, i, None if keyed_read else key))
+                    if not s <= off < e:
+                        continue
+                    # A value inside an array-literal argument (`f( array( 'count' => $v, … ) )`,
+                    # `$v` a tainted local or the attribute read itself) reaches the parameter
+                    # under its pair's key only.
+                    pair = self._pair_key(stmt, s, [off]) if keyed_read else None
+                    if var or pair:
+                        ch.merge(self.param_channel(fname, i, pair or (None if keyed_read else key)))
 
     def param_channel(self, fname: str, idx: int, key: str | None = None) -> Channel:
         memo = (fname, idx, key)

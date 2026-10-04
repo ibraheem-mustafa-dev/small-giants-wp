@@ -106,17 +106,19 @@ class EditorModel:
         # ---- L3 canvas
         def add_reads(rel: str, via: str) -> None:
             for attr, r in self._f(rel).get("canvasReads", {}).items():
-                cur = be.canvas.setdefault(attr, {"whole": False, "tiers": set(), "via": via})
+                cur = be.canvas.setdefault(attr, {"whole": False, "tiers": set(), "via": via, "flag": True})
                 cur["whole"] = cur["whole"] or r["whole"]
                 cur["tiers"] |= set(r["tiers"])
+                cur["flag"] = cur["flag"] and r.get("flag", False)
             for cp, attrs in self._f(rel).get("cpCanvas", {}).items():
                 be.editor_cps.setdefault(cp, set()).update(attrs)
             be.real_prop |= set(self._f(rel).get("realPropAttrs", []))
 
         def add_name(name: str, via: str) -> None:
             if name in declared:
-                cur = be.canvas.setdefault(name, {"whole": True, "tiers": set(), "via": via})
+                cur = be.canvas.setdefault(name, {"whole": True, "tiers": set(), "via": via, "flag": False})
                 cur["whole"] = True
+                cur["flag"] = False
 
         canvas_files = ([entry["edit"]] if entry else []) + own
         seen: set[str] = set()

@@ -10,7 +10,7 @@ from collections import Counter
 
 from wf_bugs import root_prefix_bug, scope_hash_bug
 from wf_channel import ChannelAnalyser
-from wf_css import build_css_index, data_consumed, frontend_js
+from wf_css import build_css_index, data_consumed, frontend_js, js_cp_reads
 from wf_editor import EditorModel
 from wf_extensions import scan_extensions
 from wf_frontend import FrontEnd, prefix_helpers
@@ -43,6 +43,7 @@ def scan(roots: Roots, inp: Inputs) -> dict:
     css = build_css_index(roots.plugin, roots.theme, list(index.files.values()))
     fe = FrontEnd(index, analyser, prefix_helpers(index, roots.plugin / "scripts" / "check-dead-controls.js"), roots.includes)
     js = frontend_js(roots.plugin)
+    css.js_cp_readers = js_cp_reads(js)
     env = LinkEnv(css=css, js=js, root_class_re=re.compile(
         r"\.sgs-(" + "|".join(sorted(map(re.escape, slugs), key=len, reverse=True) or ["\x00"]) + r")(?![\w-])"))
     editor = EditorModel(inp.facts, roots.plugin)   # first use of the Node collectors' output
@@ -94,18 +95,22 @@ def scan(roots: Roots, inp: Inputs) -> dict:
                 "class_rule": any(css.has_class(c) for c in ch.classes if "--" in c),
                 "cp_reader": any(css.cp_read(cp) for cp in ch.cps),
                 "decl_channel": ch.decl or ch.gate_decl,
+                # State utility modifiers the framework styles (`sgs-on-dark`, `sgs-has-hover-overlay`).
+                "utility_class_rule": any(css.has_class(c) for c in ch.classes if c.startswith(("sgs-on-", "sgs-has-"))),
                 "data_consumed": data_consumed(ch.fx_data, css, js),
+                "fx_data_consumed": data_consumed(ch.fx_data, css, js),
             }
             cat, basis = paint.classify(r, signals)
             rec = {"block": block, "attr": attr, "role": r.get("role"), "css_property": r.get("css_property"),
-                   "category": cat, "basis": basis, "classes": sorted(ch.classes)[:8], "data": sorted(ch.data)[:6]}
+                   "category": cat, "basis": basis, "classes": sorted(ch.classes)[:8], "data": sorted(ch.data)[:6],
+                   "props": sorted(ch.decl_props)[:10]}
             if cat == "not":
                 rec["class"] = "not-paint"
                 records.append(rec)
                 continue
             ctx_canvas = bool(key) and any(editor.child_reads_context(inp.blockjson[cb][0].name, key)
                                            for cb in inp.uses_context.get(key, ()) if cb in inp.blockjson)
-            res = assess(r, cat, ch, d, be, ctx_canvas, b2, env)
+            res = assess(r, cat, ch, d, be, ctx_canvas, b2, env, frozenset(bjson.get("allowedBlocks") or ()))
             rec.update({"control": be.control.get(attr), "canvas": res["canvas"], "frontend": where or d.get("renderVia"),
                         "channel": res["channel"], "cps": sorted(ch.cps), "helpers": sorted(ch.helpers)[:8],
                         "missing": res["missing"], "class": res["class"]})
@@ -113,7 +118,9 @@ def scan(roots: Roots, inp: Inputs) -> dict:
                 rec["unconsumed"] = res["unconsumed"]
             records.append(rec)
             findings += [{"block": block, "attr": attr, "link": m} for m in res["missing"]]
-    findings += scan_extensions(inp, fe, css, js, editor)
+    ext_findings, ext_records = scan_extensions(inp, fe, css, js, editor, paint)
+    findings += ext_findings
+    records += ext_records
     findings.sort(key=lambda f: (f["block"], f["attr"], f["link"]))
     return {"records": records, "findings": findings, "summary": summarise(records, findings)}
 

@@ -10,7 +10,9 @@ Decided from the source and the DB, never from the calibration cache:
   js    an `anim:`/`fx:` pseudo-property, or a data attribute a front-end script or
         attribute selector reads
   not   unit companions (checked through their base attribute), content roles,
-        and everything with no paint signal (the reason is the role)
+        show/hide toggles (SWITCH_ROLES) with no class rule or custom property
+        (unless a hover/state/motion effect or a visual-effect runtime), and
+        everything with no paint signal (the reason is the role)
 
 `classification` on the DB `roles` table cannot make this call (it files colour
 and layout roles beside behaviour ones), so PAINT_ROLES and CONTENT_ROLES are
@@ -29,6 +31,10 @@ CONTENT_ROLES = frozenset({
     "icon-dashicon", "icon-slug", "url-href", "presence-boolean", "tag-identity", "scalar-media",
     "technical", "enum-class-probe",
 })
+# Show/hide toggles. `enum-mode` is left out on measurement: a mode's gated declarations
+# are what it selects (hero splitMediaMediaSizing, nav-bar-menu submenuAlign,
+# responsive-logo colourTreatment paint that way), and Rater B's labels gain nothing from it.
+SWITCH_ROLES = frozenset({"boolean-visibility"})
 EXTRA_SUFFIXES = (
     ("TextIndent", "text-indent"), ("Saturate", "filter"), ("Blur", "filter"),
     ("WritingMode", "writing-mode"), ("TextWrap", "text-wrap"),
@@ -84,6 +90,22 @@ class PaintClassifier:
             return "css", "class-modifier-rule"
         if signals.get("cp_reader"):
             return "css", "cp-with-reader"
+        if role in SWITCH_ROLES:
+            # A show/hide toggle paints only through a class with a rule (a modifier,
+            # or a state utility class such as `sgs-on-dark`) or a custom property; a
+            # declaration it merely gates (or a data attribute it sets) is the content
+            # or behaviour it switches. A hover,
+            # state or motion effect toggle (`shadowLiftOnHover`, `bgHoverZoom`)
+            # paints through the declaration it gates, and a visual-effect runtime
+            # toggle (`bgLottieLoop`, `itemMagnetEnabled`) through its data attribute.
+            if signals.get("utility_class_rule"):
+                return "css", "class-rule"
+            effect = is_state(attr, row.get("css_state")) or is_motion(attr, cssp)
+            if effect and signals.get("decl_channel"):
+                return "css", "effect-toggle-decl"
+            if signals.get("fx_data_consumed"):
+                return "js", "effect-toggle-runtime"
+            return "not", "role:" + role
         if signals.get("decl_channel"):
             return "css", "decl-channel"
         if signals.get("data_consumed"):

@@ -1,0 +1,12 @@
+{
+ "extensions": [
+  {
+   "id": "hover-opacity",
+   "file": "hover-opacity.js",
+   "rule": "every block",
+   "attributes": {
+    "sgsHoverOpacity": { "type": "number", "default": 0, "role": "visual", "css_property": "opacity", "css_element": "wrapper", "css_state": "hover" }
+   }
+  }
+ ]
+}
