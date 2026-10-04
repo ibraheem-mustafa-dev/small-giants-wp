@@ -334,6 +334,7 @@
     "woocommerce_wp_checkbox",
     "woocommerce_wp_text_input",
     "woocommerce_wp_select",
+    "wp_specialchars_decode",
     "wp_add_inline_script",
     "wp_add_inline_style",
     "wp_attachment_is_image",
