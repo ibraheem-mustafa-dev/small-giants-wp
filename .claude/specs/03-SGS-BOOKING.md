@@ -253,10 +253,10 @@ Uses WordPress transients (`set_transient()` / `get_transient()`).
 
 | Data | Cache Key Pattern | TTL | Reason |
 |---|---|---|---|
-| Organisation branding | `sgs_org_{slug}` | 15 minutes | Rarely changes |
-| Booking types list | `sgs_types_{slug}` | 10 minutes | Changes infrequently |
-| Single booking type | `sgs_type_{slug}_{typeSlug}` | 10 minutes | Changes infrequently |
-| Provider list | `sgs_providers_{slug}` | 10 minutes | Changes infrequently |
+| Organisation branding | `sgs_org_{slug}` | `sgs_booking_cache_ttl` (default 10 minutes) | Rarely changes |
+| Booking types list | `sgs_types_{slug}` | `sgs_booking_cache_ttl` | Changes infrequently |
+| Single booking type | `sgs_type_{slug}_{typeSlug}` | `sgs_booking_cache_ttl` | Changes infrequently |
+| Provider list | `sgs_providers_{slug}` | `sgs_booking_cache_ttl` | Changes infrequently |
 | Availability slots | **Never cached** | N/A | Real-time data — stale cache = double bookings |
 | Booking creation | **Never cached** | N/A | Write operation |
 | Payment intents | **Never cached** | N/A | Write operation |

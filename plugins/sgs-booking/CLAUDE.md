@@ -140,8 +140,8 @@ The plugin's frontend booking UI inherits the booking system's design system via
 
 ## Caching
 
-- Organisation branding: 15 min transient
-- Booking types list: 10 min transient
+- All cached API data (organisation branding, booking types, single type, providers): one transient lifetime set by `sgs_booking_cache_ttl` (default 10 minutes, range 1-60)
+- Availability, booking creation and payments: never cached
 - **Availability: NEVER cached** (stale cache = double bookings)
 - **Writes: NEVER cached** (booking creation, payment)
 

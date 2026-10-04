@@ -98,5 +98,5 @@ Page state: `.claude/LEDGER.md`; IDs come from the live site (`wp post list`).
 
 - Real customer testimonials (mockups have placeholders)
 - Certification logos: BRC, Halal, SALSA, Unitas, FWD
-- Brand logos: Sanam, Shaan, Falak Rice, Lemon Tree, Leaf Green
+- Brand logos: Falak Rice (Sanam, Shan Foods, Green Leaf and Lemon Tree are in the media library as attachments 32-35 as JPGs; swap in the client's official versions if supplied)
 - Professional photography (placeholder images flagged in mockups)
