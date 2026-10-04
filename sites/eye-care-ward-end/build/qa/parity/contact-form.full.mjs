@@ -7,6 +7,6 @@ const generated = [
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.
-const moved = {"field-name":".cr-ref-contact-form-1","field-email":".cr-ref-contact-form-2","field-phone":".cr-ref-contact-form-3","field-topic":".cr-ref-contact-form-4","field-message":".cr-ref-contact-form-5","field-name-focus-look":".cr-ref-contact-form-1"};
+const moved = {"field-name":".cr-ref-contact-form-1 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)","field-email":".cr-ref-contact-form-2 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)","field-phone":".cr-ref-contact-form-3 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)","field-topic":".cr-ref-contact-form-4 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)","field-message":".cr-ref-contact-form-5 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)","field-name-focus-look":".cr-ref-contact-form-1 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)"};
 
 export default { ...base, refPrefix: base.refPrefix, pairs: [ ...base.pairs.map( ( p ) => ( moved[ p.name ] ? { ...p, live: moved[ p.name ] } : p ) ), ...generated ] };

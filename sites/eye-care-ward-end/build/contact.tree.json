@@ -321,7 +321,8 @@
                       "fontSize": {
                         "desktop": "15px"
                       },
-                      "className": "cr-ref-contact-9"
+                      "className": "cr-ref-contact-9",
+                      "textColourHover": "accent-text"
                     }
                   }
                 ]
@@ -445,7 +446,12 @@
                       "fontSize": {
                         "desktop": "15px"
                       },
-                      "className": "cr-ref-contact-15"
+                      "className": "cr-ref-contact-15",
+                      "lineHeight": {
+                        "mobile": 1.5,
+                        "tablet": 1.5,
+                        "desktop": 1.5
+                      }
                     }
                   }
                 ]
@@ -680,6 +686,9 @@
                     "mobile": "4px",
                     "tablet": "4px",
                     "desktop": "4px"
+                  },
+                  "sgsChildSizing": {
+                    "desktop": "fill"
                   }
                 },
                 "innerBlocks": [
@@ -739,6 +748,9 @@
                     "mobile": "4px",
                     "tablet": "4px",
                     "desktop": "4px"
+                  },
+                  "sgsChildSizing": {
+                    "desktop": "fill"
                   }
                 },
                 "innerBlocks": [

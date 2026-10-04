@@ -20,7 +20,8 @@
       },
       "submitMinHeight": 52,
       "fieldColumnsFrom": "480",
-      "className": "cr-ref-contact-form-0"
+      "className": "cr-ref-contact-form-0",
+      "fieldBackground": "surface-alt"
     },
     "innerBlocks": [
       {

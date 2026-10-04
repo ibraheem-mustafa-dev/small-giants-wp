@@ -1,6 +1,6 @@
 {
  "surface": "contact-form",
- "when": "2026-10-04T10:15:24.378Z",
+ "when": "2026-10-04T10:46:44.587Z",
  "blocks": 6,
  "kept": 1,
  "coveredByHand": [
@@ -11,12 +11,12 @@
   "cr-ref-contact-form-5"
  ],
  "retargeted": {
-  "field-name": ".cr-ref-contact-form-1",
-  "field-email": ".cr-ref-contact-form-2",
-  "field-phone": ".cr-ref-contact-form-3",
-  "field-topic": ".cr-ref-contact-form-4",
-  "field-message": ".cr-ref-contact-form-5",
-  "field-name-focus-look": ".cr-ref-contact-form-1"
+  "field-name": ".cr-ref-contact-form-1 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)",
+  "field-email": ".cr-ref-contact-form-2 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)",
+  "field-phone": ".cr-ref-contact-form-3 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)",
+  "field-topic": ".cr-ref-contact-form-4 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)",
+  "field-message": ".cr-ref-contact-form-5 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)",
+  "field-name-focus-look": ".cr-ref-contact-form-1 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)"
  },
  "left": [],
  "keptPairs": [
