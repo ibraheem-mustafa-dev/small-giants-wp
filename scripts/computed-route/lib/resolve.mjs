@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { candidates, siblings } from './db.mjs';
-import { parseLength, toPx, pxTo, snapColour, round } from './normalise.mjs';
+import { parseLength, toPx, pxTo, snapColour, ratioSetting, round } from './normalise.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const BLOCKS_DIR = path.resolve( HERE, '../../../plugins/sgs-blocks/src/blocks' );
@@ -89,6 +89,9 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 			return { value: snapColour( raw, { palette: [] }, { log: [] } ).value };
 		}
 		return { value: s.value };
+	}
+	if ( 'aspect-ratio' === prop ) {
+		return ratioSetting( raw, def );
 	}
 	if ( Array.isArray( def?.enum ) ) {
 		return def.enum.includes( raw ) ? { value: raw } : { error: `${ raw } is not one of ${ def.enum.join( ', ' ) }` };

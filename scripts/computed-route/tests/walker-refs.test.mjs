@@ -148,3 +148,35 @@ test( 'MUST FAIL TO MISS: icon size rows carry the icon path and stand for width
 	assert.deepEqual( diffs.map( ( d ) => d.path ), [ '.sgs-whatsapp-cta__icon', '.sgs-whatsapp-cta__icon', '' ] );
 	assert.deepEqual( [ 'icon-width', 'icon-height', 'width', 'icon-fill', 'painted-ground' ].map( cssProp ), [ 'width', 'height', 'width', 'icon-fill', 'background-color' ] );
 } );
+
+// CR10: aspect-ratio is read on both sides and by calibration, and equal ratios in different spellings are no row.
+import { DEFAULT_PROPS } from '../../parity/lib/collect.mjs';
+import { READ_PROPS } from '../lib/calibrate.mjs';
+import { ratioSetting } from '../lib/normalise.mjs';
+
+test( 'MUST FAIL: aspect-ratio is in the walker list and in calibration READ_PROPS', () => {
+	assert.ok( DEFAULT_PROPS.includes( 'aspect-ratio' ) );
+	assert.ok( READ_PROPS.includes( 'aspect-ratio' ) );
+} );
+
+test( 'MUST FAIL: a different ratio is a row; the same ratio in another spelling, and auto against auto, are not', () => {
+	const rows = ( d, l ) => comparePair( { text: false, motion: false }, { box: { w: 1, h: 1 }, styles: { 'aspect-ratio': d } }, { box: { w: 1, h: 1 }, styles: { 'aspect-ratio': l } }, { box: 1, px: 0.5 } );
+	assert.equal( rows( '16 / 9', '1 / 1' ).length, 1 );
+	assert.equal( rows( '16 / 9', '1 / 1' )[ 0 ].key, 'aspect-ratio' );
+	assert.equal( rows( '16 / 9', '1.77778 / 1' ).length, 0 );
+	assert.equal( rows( '1.5', '3 / 2' ).length, 0 );
+	assert.equal( rows( 'auto', 'auto' ).length, 0 );
+	assert.equal( rows( 'auto', '16 / 9' ).length, 1 );
+	assert.equal( rows( 'auto 16 / 9', '16 / 9' ).length, 1 );
+} );
+
+test( 'Solve holds a measured ratio in the setting form: enum value, free "w / h", auto as the empty setting', () => {
+	const en = { type: 'string', default: '', enum: [ '', '16 / 9', '4 / 3', '1 / 1' ] };
+	assert.deepEqual( ratioSetting( '1.77778 / 1', en ), { value: '16 / 9' } );
+	assert.deepEqual( ratioSetting( 'auto', en ), { value: '' } );
+	assert.ok( ratioSetting( '7 / 3', en ).error );
+	assert.deepEqual( ratioSetting( '4 / 5', { type: 'string', default: '' } ), { value: '4 / 5' } );
+	assert.deepEqual( ratioSetting( 'auto', { type: 'string', default: '' } ), { value: '' } );
+	assert.deepEqual( ratioSetting( 'auto', { type: 'string', default: '16 / 9' } ), { value: 'auto' } );
+	assert.ok( ratioSetting( 'auto 16 / 9', { type: 'string', default: '' } ).error );
+} );

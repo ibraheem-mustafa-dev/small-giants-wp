@@ -1,5 +1,6 @@
 // Compares one pair's draft and live snapshots and returns the differences.
 import { compareFocus } from './focus.mjs';
+import { sameRatio } from './ratio.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
 // The identity transform in both forms the computed style gives (2D and 3D), whitespace removed.
@@ -42,6 +43,10 @@ export function sameValue( prop, a, b, pxTol ) {
 	if ( prop === 'transform' ) {
 		const flat = ( v ) => ( IDENTITY.has( v.replace( /\s+/g, '' ) ) ? 'none' : v );
 		return flat( a ) === flat( b );
+	}
+	// Ratios paint the same when equal as numbers ("16 / 9" and "1.77778 / 1").
+	if ( prop === 'aspect-ratio' ) {
+		return sameRatio( a, b );
 	}
 	if ( PX.test( a ) && PX.test( b ) ) {
 		return Math.abs( parseFloat( a ) - parseFloat( b ) ) <= pxTol;

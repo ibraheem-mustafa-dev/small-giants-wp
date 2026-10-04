@@ -58,6 +58,7 @@ const KEYWORDS = {
 	'text-decoration': [ 'underline' ],
 	'box-shadow': [ '0 0 0 3px #13579b' ],
 	'text-align': [ 'center', 'right' ],
+	'aspect-ratio': [ '7 / 3' ],
 };
 
 // The width a border-style marker needs before it can paint: the same setting name with Style → Width

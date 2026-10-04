@@ -3,6 +3,7 @@
 // tolerance (colour ΔE ≤ 2, length ±0.5px), then a literal flagged in the log. Every snap is logged with its distance.
 import fs from 'fs';
 import path from 'path';
+import { parseRatio, sameRatio } from '../../parity/lib/ratio.mjs';
 
 export const COLOUR_DE = 2;
 export const LENGTH_TOL = 0.5;
@@ -80,6 +81,21 @@ export function deltaE( a, b ) {
 	};
 	const [ x, y ] = [ lab( a ), lab( b ) ];
 	return Math.hypot( x[ 0 ] - y[ 0 ], x[ 1 ] - y[ 1 ], x[ 2 ] - y[ 2 ] );
+}
+
+// A measured aspect-ratio in the setting's form. "auto" is the empty setting where one exists; a ratio is the enum value
+// painting the same ratio, or "w / h" for a free string. "auto 16 / 9" (the image's own ratio first) cannot be held.
+export function ratioSetting( raw, def ) {
+	const unset = 'auto' === String( raw ).trim();
+	if ( Array.isArray( def?.enum ) ) {
+		const hit = def.enum.find( ( v ) => ( unset ? '' === v : '' !== v && sameRatio( v, raw ) ) );
+		return undefined !== hit ? { value: hit } : { error: `${ raw } is not one of ${ def.enum.join( ', ' ) }` };
+	}
+	const r = parseRatio( raw );
+	if ( unset ) {
+		return { value: '' === def?.default ? '' : 'auto' };
+	}
+	return r && ! r.auto ? { value: `${ r.w } / ${ r.h }` } : { error: `${ raw } cannot be held` };
 }
 
 // The site's tokens: palette colours, spacing sizes and font sizes, each with a px value where it has one.
