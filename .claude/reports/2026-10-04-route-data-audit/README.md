@@ -146,3 +146,28 @@ edit.js control props (925 literal min/max/step, unit lists; costly to parse, lo
 `design_tokens` (the route reads `theme-snapshot.json`), `style_variations`, `markup_examples` (stale), `slots`,
 `canonical_slot_aliases`, `block_capabilities`, motion tables (only for FR-47-7), tooling/docs tables, both empty
 `variant_composition_*` tables, content-only `array_item_schema`/`emit_shape`/`alt_companion_attr`.
+
+## 5. QC council on the fingerprint counts (`council/`)
+
+Four Sonnet raters (precision by sampled code reading, recall census, scanner code-path trace with patched runs,
+triangulation against calibration and CHECK A). Agreement was high; verdicts per link:
+
+| Link | Prototype count | Measured precision | Likely true count | Main false-positive / false-negative mechanism |
+|---|---|---|---|---|
+| L3 editor canvas | 1,330 | 95% (60 sampled) | ~1,264, plus hidden gaps | panel props counted as canvas reads (≥111), conditional SSR credited (163), barrel re-exports and media-atom helper not followed; ~18 of sampled are hover or motion |
+| L5 channel | 389 | 2.5% (40) | ~10 to 50 | 2-hop variable cap, helper return values, custom properties inside strings, class shapes with `__`, data attributes, forwarded values, context searched in the parent |
+| L2 control | 120 | ~10% strict (40) | ~8 to 14 | computed `setAttributes` keys (shadow keys, media atoms, descriptor rows in non-panel files), extension and variation controls |
+| L7 parity | 47 | 25.5% (census) | 12 | documented exemption not implemented; dynamic custom-property names; unrelated properties sharing a statement |
+| C1 child-conditional | 11 | 100% (census) | 11 | — (container grid items) |
+| L4 front-end read | 4 | 25% | 1 | editor-only attributes; hook-registered `includes/` emitters |
+| L6 consumer | 1 | 0% | 0 | the check could almost never fail (`not decl` exemption); `.scss` `//` comments |
+
+Population: the "not-paint" bucket held ~1,310 painting settings (Rater B census, `rater-b-notpaint-reclassified.csv`),
+because paint came only from the DB `css_property` or the calibration cache; paint total ~4,750, not 3,529. False
+passes: the attribute's own name counted as a declaration (60), an always-true helper branch (18), conditional SSR
+(163). Engineering: the prototype read the gitignored calibration cache (gate results would differ in CI), used absolute
+paths, wrote non-deterministic key order, and had no input freshness check. Bug classes it could not see: accordion-item's
+scope hash without context, a root-prefix helper with no root control (team-member, google-reviews), the `__inner` depth.
+Real defects confirmed in passing: team-member root typography; `nav-bar-menu::margin`, `nav-drawer-menu::margin`,
+`choice-flow::backColourBorderHover` have no control; `wishlist-panel::columns` never reaches the canvas.
+All 21 fixes are Task 2 of `.claude/plans/2026-10-04-wiring-fingerprint-gate.md`.

@@ -1,0 +1,204 @@
+class,block,attr,verdict,evidence
+L3,sgs/accordion,alignItems,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/post-grid,gridTemplateColumns,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/choice-flow,advanceMode,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/team-member,transitionDuration,TRUE GAP (motion: canvas does not animate),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/decorative-image,parallaxStrength,TRUE GAP (motion: canvas does not animate),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/local-time,timeFontStyle,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/local-time,labelColourHover,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/cart,pillBorderStyle,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/product-search,borderColourHoverGradient,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/post-grid,titleFontStyle,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/table-of-contents,fontStyle,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/site-footer-row,textColour,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/site-footer,surfaceTone,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/button,textAlign,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/cta-section,textTransform,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/site-header,inkEasing,TRUE GAP (motion: canvas does not animate),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/language-switch,fontWeight,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/option-picker,pillFontWeight,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/pricing-table,titleFontStyle,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/store-selector,panelPadding,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/notice-banner,fontStyle,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/site-header-row,backgroundColourHoverGradient,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/timeline,titleFontStyle,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/star-rating,borderColourHoverGradient,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/choice-flow-question,questionFontWeight,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/buybox,stockOutOfStockColour,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/choice-flow,backColourBackgroundHover,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/info-box,fontStyle,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/cart,itemDetailColour,UNCLEAR,cart/edit.js renders only the trigger; the panel is never on the canvas
+L3,sgs/multi-button,childBtnBackground,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/countdown-timer,textTransform,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/form-step,borderColour,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/theme-toggle,iconColourHover,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/gallery,captionColourHoverGradient,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/icon-list,headingTextTransform,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/heading,transitionDuration,TRUE GAP (motion: canvas does not animate),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/hero,splitMediaMediaSizing,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/collapsible-text,margin,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/audio,borderColourHover,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/social-icons,textIndent,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/product-faq-item,textColourHoverGradient,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/wishlist-link,iconColour,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/product-faq,lineHeight,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/team-member,bioTextWrap,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/feature-grid,alignContent,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/nav-drawer,closeLetterSpacing,FALSE POSITIVE,"utils/typography-preview.js::typographyPreviewStyle called from nav-drawer/edit.js (closeTypographyAttrs,""close""); missed because editor-facts.js::reach skips the utils/index.js barrel"
+L3,sgs/counter,borderColourGradient,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/whatsapp-cta,labelTextAlign,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/quote,attributionFontWeight,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/notice-message,backgroundColourGradient,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/modal,triggerColourHover,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/decorative-image,pathDrawEasing,TRUE GAP (motion: canvas does not animate),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/tabs,borderWidth,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/testimonial,quoteWritingMode,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/image-sequence,fxEnd,TRUE GAP (motion: canvas does not animate),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/icon,linkTarget,FALSE POSITIVE,not a painting setting; fingerprint_scan.py::classify_paint counts an empty discovered{} entry as calibrated paint
+L3,sgs/text,boxShadowHover,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/testimonial-slider,fontWeight,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/breadcrumbs,separatorColourHoverGradient,TRUE GAP (hover: canvas never mirrors hover),"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L3,sgs/tab,borderColourGradient,TRUE GAP,"no canvas read in edit.js, block files or helpers (occ.js + cssk.py)"
+L5,sgs/accordion,headerBackgroundGradient,FALSE POSITIVE,block-context consumer accordion-item/render.php not scanned for channel
+L5,sgs/audio,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/button,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/buybox,stockOutOfStockColour,FALSE POSITIVE,array map + foreach alias
+L5,sgs/card-grid,imageZoomHover,FALSE POSITIVE,class pushed via $class_names[] accumulator + style.css rule
+L5,sgs/collapsible-text,collapsedLines,FALSE POSITIVE,custom property inside a rule string after { (CP regex needs a leading quote)
+L5,sgs/container,bgSvgOpacity,FALSE POSITIVE,custom property inside a rule string
+L5,sgs/countdown-timer,labelColour,FALSE POSITIVE,custom property inside an interpolated rule string
+L5,sgs/cta-section,surfaceTone,FALSE POSITIVE,class sgs-on-dark via $classes[] in SGS_Container_Wrapper
+L5,sgs/decorative-image,positionY,FALSE POSITIVE,3-hop variable chain
+L5,sgs/form,formFocusRingOpacity,FALSE POSITIVE,custom property preceded by ; in a concatenated string
+L5,sgs/gallery,dragToScroll,FALSE POSITIVE,"behaviour: data-sgs-fx attribute, not a CSS channel"
+L5,sgs/google-reviews,navPosition,FALSE POSITIVE,class built in includes/helpers-slider-nav.php::sgs_slider_nav_classes
+L5,sgs/heading,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/hero,splitMediaTypeMobile,FALSE POSITIVE,"structural markup choice, not CSS"
+L5,sgs/icon,linkTarget,FALSE POSITIVE,not paint
+L5,sgs/info-box,sgsAnimationEasing,FALSE POSITIVE,extension data-attribute channel
+L5,sgs/media,boxShadow,FALSE POSITIVE,media atom custom property (SGS_Media_Element)
+L5,sgs/modal,maxWidth,FALSE POSITIVE,BEM __ modifier class sgs-modal__dialog--{var}
+L5,sgs/notice-banner,iconStyle,FALSE POSITIVE,BEM __ modifier class (CLASS_RE2 character class excludes underscores)
+L5,sgs/option-picker,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/post-grid,sgsAnimationDuration,FALSE POSITIVE,extension data-attribute channel
+L5,sgs/pricing-table,headingLevel,FALSE POSITIVE,"tag identity, not paint"
+L5,sgs/process-steps,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/product-card,pickerPillBgColour,FALSE POSITIVE,forwarded to nested render_block(sgs/option-picker)
+L5,sgs/product-faq,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/quote,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/star-rating,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/team-member,fontStyle,TRUE GAP,team-member/render.php never calls sgs_typography_css_rule with the root prefix
+L5,sgs/testimonial,sgsAnimationEasing,FALSE POSITIVE,extension data-attribute channel
+L5,sgs/testimonial-slider,dragToScroll,FALSE POSITIVE,"behaviour: data-sgs-fx attribute, not a CSS channel"
+L5,sgs/trust-bar,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/trustpilot-reviews,dragMomentum,FALSE POSITIVE,behaviour: data-sgs-fx attribute
+L5,sgs/brand-strip,brandTextMinWidth,FALSE POSITIVE,custom property inside an interpolated rule string
+L5,sgs/separator,contentIconSource,FALSE POSITIVE,"structural icon choice, not CSS"
+L5,sgs/social-icons,colourMode,FALSE POSITIVE,attribute used as a gate condition (social-icons/render.php brand branch)
+L5,sgs/icon-list,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/mega-panel,drawerLinkDescColourGradient,FALSE POSITIVE,"dynamic key $attributes[$k . ""Gradient""] in foreach"
+L5,sgs/nav-drawer,borderRadius,FALSE POSITIVE,"helper return value: includes/helpers-box.php::sgs_border_radius_tiers then style engine / border-radius string, more than 2 hops (fingerprint_scan.py::channel_for)"
+L5,sgs/before-after,orientation,FALSE POSITIVE,data-orientation attribute + style.css attribute selector
+L2,sgs/button,inheritStyle,FALSE POSITIVE,block.json variations write it
+L2,sgs/card-grid,sgsAnimation,FALSE POSITIVE,extension HOC control extensions/animation.js
+L2,sgs/gallery,sgsAnimation,FALSE POSITIVE,extension HOC control extensions/animation.js
+L2,sgs/google-reviews,sgsAnimationDuration,FALSE POSITIVE,extension HOC control
+L2,sgs/heading,boxShadowColourHover,FALSE POSITIVE,ShadowControl attrNames=shadowAttrKeys() computed keys
+L2,sgs/info-box,sgsAnimationEasing,FALSE POSITIVE,extension HOC control
+L2,sgs/media,height,FALSE POSITIVE,media atom control via mediaStoredAttrName computed key
+L2,sgs/post-grid,sgsAnimation,FALSE POSITIVE,extension HOC control extensions/animation.js
+L2,sgs/pricing-table,sgsAnimationEasing,FALSE POSITIVE,extension HOC control
+L2,sgs/process-steps,sgsAnimation,FALSE POSITIVE,extension HOC control extensions/animation.js
+L2,sgs/site-header-row,flexWrap,TRUE GAP (by design: block.json locks nowrap),no control found
+L2,sgs/testimonial,sgsAnimationDuration,FALSE POSITIVE,extension HOC control
+L2,sgs/text,boxShadowHover,FALSE POSITIVE,same
+L2,sgs/trustpilot-reviews,sgsAnimationEasing,FALSE POSITIVE,extension HOC control
+L2,sgs/separator,contentIconSource,FALSE POSITIVE,const next = {contentIconSource: ...} then setAttributes(next)
+L2,sgs/icon-list,source,FALSE POSITIVE,const next = {source: val}
+L2,sgs/cta-section,tagName,TRUE GAP (non-paint),no control found
+L2,sgs/hero,tagName,TRUE GAP (non-paint),no control found
+L2,sgs/trust-bar,tagName,TRUE GAP (non-paint),no control found
+L2,sgs/before-after,boxShadowColourHover,FALSE POSITIVE,ShadowControl attrNames=shadowAttrKeys() computed keys
+L2,sgs/container,templateLock,TRUE GAP (non-paint),no control found
+L2,sgs/team-member,fontSize,TRUE GAP,no control found
+L2,sgs/nav-bar-menu,margin,TRUE GAP,no control found
+L2,sgs/nav-drawer-menu,margin,TRUE GAP,no control found
+L2,sgs/choice-flow,backColourBorderHover,TRUE GAP,no control found
+L2,sgs/cart,itemBrandColour,FALSE POSITIVE,cart/panelColourRows.js literal table + setAttributes({[attr]: v}); file not recognised as panel
+L2,sgs/button,boxShadowColourHover,FALSE POSITIVE,ShadowControl attrNames=shadowAttrKeys() computed keys
+L2,sgs/card-grid,cardShadowColour,FALSE POSITIVE,same
+L2,sgs/gallery,sgsAnimationEasing,FALSE POSITIVE,extension HOC control
+L2,sgs/google-reviews,fontStyle,FALSE POSITIVE,"google-reviews CardPanel typoTarget("""", ...) prefix passed as a helper argument"
+L2,sgs/heading,boxShadowColour,FALSE POSITIVE,same
+L2,sgs/info-box,sgsAnimation,FALSE POSITIVE,extension HOC control extensions/animation.js
+L2,sgs/media,borderStyle,FALSE POSITIVE,same
+L2,sgs/post-grid,shadowColourHover,FALSE POSITIVE,same
+L2,sgs/pricing-table,sgsAnimationDuration,FALSE POSITIVE,extension HOC control
+L2,sgs/process-steps,sgsAnimationEasing,FALSE POSITIVE,extension HOC control
+L2,sgs/testimonial,sgsAnimationEasing,FALSE POSITIVE,extension HOC control
+L2,sgs/text,boxShadowColourHover,FALSE POSITIVE,ShadowControl attrNames=shadowAttrKeys() computed keys
+L2,sgs/trustpilot-reviews,sgsAnimationDuration,FALSE POSITIVE,extension HOC control
+L2,sgs/hero,splitMediaAnimationDuration,FALSE POSITIVE,same (hero prefix splitMedia)
+L7,sgs/button,colourText,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/button,colourTextHover,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/button,colourBackground,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/button,colourBackgroundHover,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/container,gap,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/container,backgroundImage,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/container,bgAnimationDuration,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/cta-section,backgroundImage,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/cta-section,bgAnimationDuration,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/feature-grid,gap,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/gallery,gap,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/gallery,aspectRatio,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/hero,backgroundImage,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/icon-list,gap,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/multi-button,gap,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/option-picker,borderColour,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/post-grid,gap,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/post-grid,aspectRatio,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/post-grid,categoryBadgeColour,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/post-grid,categoryBadgeBgColour,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/site-footer-row,gap,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/site-header-row,gap,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/trust-bar,gap,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/trust-bar,backgroundImage,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/nav-drawer,drawerAlign,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/site-footer,backgroundImage,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/site-footer,bgAnimationDuration,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/site-header,backgroundImage,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/site-header,bgAnimationDuration,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/filter-search,focusRingColour,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/filter-search,textColour,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/multi-button,backgroundImage,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/physics-canvas,backgroundImage,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/button,colourBackgroundGradient,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/button,colourBackgroundHoverGradient,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/button,borderColour,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/post-grid,categoryBadgeBgColourHover,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/post-grid,categoryBadgeBgColourHoverGradient,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/timeline,rowStripeColourAHover,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/timeline,rowStripeColourAHoverGradient,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/timeline,rowStripeColourBHover,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/timeline,rowStripeColourBHoverGradient,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/trust-bar,iconCircleBackgroundHover,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/trust-bar,iconCircleBackgroundHoverGradient,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/post-grid,categoryBadgeBgColourGradient,FALSE POSITIVE,editor paints the real property or sets the var via a util; custom property picked from an unrelated statement
+L7,sgs/filter-search,textColourHover,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+L7,sgs/wishlist-panel,columns,TRUE GAP (really a missing canvas mirror; L3 mislabelled),canvas read is a control read only (SgsColourPanel is not in CONTROL_CONTAINERS)
+C1,sgs/container,gridItemPadding,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+C1,sgs/container,gridItemBackground,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+C1,sgs/container,gridItemBorderRadius,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+C1,sgs/container,gridItemBorder,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+C1,sgs/container,gridItemShadow,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+C1,sgs/container,gridItemTextColour,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+C1,sgs/container,gridItemBorderGradient,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+C1,sgs/container,gridItemBorderGradientHover,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+C1,sgs/container,gridItemBackgroundGradient,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+C1,sgs/container,gridItemBackgroundHoverGradient,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+C1,sgs/container,gridItemTextColourHoverGradient,TRUE (documented conditional),only reader is container/style.css :where(.sgs-container--grid > .sgs-container)
+L4,sgs/card-grid,staggerDelay,FALSE POSITIVE,templateLock is editor-only; staggerDelay read by includes/animation-stagger.php
+L4,sgs/container,templateLock,FALSE POSITIVE,templateLock is editor-only; staggerDelay read by includes/animation-stagger.php
+L4,sgs/hero,templateLock,FALSE POSITIVE,templateLock is editor-only; staggerDelay read by includes/animation-stagger.php
+L4,sgs/team-member,lineHeight,TRUE GAP,root lineHeight never emitted
+L6,sgs/timeline,entryGap,FALSE POSITIVE,timeline/style.scss reader dropped: fingerprint_scan.py::css_rules loses declarations before a nested rule and does not strip // comments
