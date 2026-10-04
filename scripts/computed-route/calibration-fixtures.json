@@ -1413,7 +1413,22 @@
   "sgs/modal": {
     "attributes": {
       "triggerText": "Which size am I?"
-    }
+    },
+    "inner": [
+      {
+        "name": "sgs/heading",
+        "attributes": {
+          "level": "h2",
+          "content": "Calibration modal heading"
+        }
+      },
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "Calibration modal text."
+        }
+      }
+    ]
   },
   "sgs/multi-button": {
     "attributes": {},
