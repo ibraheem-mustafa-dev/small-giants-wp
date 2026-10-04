@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.10"
+spec_version: "1.11"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
@@ -421,26 +421,24 @@ renders only when the grid container has its own band props set:
 }
 ```
 
-This is a **direct-child selector** keyed on the literal class `.sgs-container`. It only paints
-a grid cell when that cell is ITSELF an element carrying `.sgs-container` — i.e. the cell is a
-container-wrapper-routed block, not any arbitrary InnerBlock. *Done when:* a block's grid-item
-defaults panel is only mounted where this selector can ever match one of its own children.
+**Scope (Bean, 2026-10-04):** grid-item defaults are one uniform format for **every cell of the grid,
+whatever block the cell is** (container, card, info-box, text, any InnerBlock). The consumer rule
+therefore targets every direct child cell at both depths (`:where( .sgs-container--grid > * )`,
+`:where( .sgs-container--grid > .sgs-container__inner > * )`), still at specificity (0,0,0) so a
+cell's own styling wins. Of the six values only text colour (`--sgs-gi-color`) reaches the cell's
+own children, by normal inheritance; padding, ground, radius, border and shadow style the cell box
+alone. The editor canvas sets all six variables on the same element the front end does, and
+`container/editor.css` must not override them on a cell. *Current code (to repair in Session 0 of
+`.claude/plans/2026-10-04-eye-care-sweep-audit-fix.md`):* the rule is keyed on `> .sgs-container`,
+the editor sets only `--sgs-gi-bg` and `--sgs-gi-shadow`, `editor.css`'s dashed outline beats the
+border, and the PHP hover, gradient and text-colour rules cover the direct-child depth only.
 
-**Eligibility (the qualifying test):** a block qualifies for a grid-item-defaults panel **only when
-its own grid cells render as `.sgs-container`-classed elements** — today that is `sgs/container`
-alone, nesting its own children. A block whose repeater/grid renders any other markup (a typed
-`items[]` array producing e.g. `<div class="sgs-trust-bar__badge">`, or a composite's own
-private-scoped card markup) can never satisfy the selector, however the panel is wired, because the
-selector's right-hand side never matches.
+**Eligibility:** a block mounts a grid-item-defaults panel when it renders the variables on the
+element whose direct children are its grid cells. Read the block's own `render.php`/`save.js`
+output to decide it, never `block_composition.container_kind` (that column classifies the
+draft-cloning layer model, Spec 31 §13.6, not a block's own markup).
 
-⛔ **`block_composition.container_kind` (section/layout/content) is IRRELEVANT to this test — do not
-use it as a proxy.** `container_kind` classifies a block in the DRAFT-CLONING layer model (Spec 31
-§13.6: which of the 3-layer OUTER/CONTENT-WIDTH/PER-GRID-ITEM model a composite's wrapper occupies);
-it says nothing about what markup that block's OWN children render into. Do not answer "do this block's grid cells carry `.sgs-container`" — a DOM-shape question — from `container_kind`. The only correct test is: does the child element carry
-literal class `.sgs-container`? Read the block's own `render.php`/`save.js` output, never the
-`container_kind` column, to answer it.
-
-**No dead mounts:** `sgs/trust-bar` and `sgs/cta-section` do not mount `GridItemDefaultsPanel`, because they render typed-item markup that never carries `.sgs-container` — a panel there would paint ~15 client-facing controls that change nothing on the frontend. Their declared `gridItem*` block.json attrs stay in place (removing them is a stored-content migration). Verify: `git grep -n "GridItemDefaultsPanel" -- 'plugins/sgs-blocks/src/blocks/*/edit.js'` lists only `container`, plus comments in `trust-bar`/`cta-section`.
+**No dead mounts:** today only `sgs/container` mounts `GridItemDefaultsPanel`. `sgs/trust-bar` and `sgs/cta-section` declare `gridItem*` attributes but render no grid-item variables, so they mount no panel (a panel there would change nothing); Session 0 decides, from each block's own markup, whether its cells can take the defaults under the scope above. Verify: `git grep -n "GridItemDefaultsPanel" -- 'plugins/sgs-blocks/src/blocks/*/edit.js'`.
 
 ## 7. Data model
 

@@ -16,8 +16,10 @@ per-surface walker work resumes.
 134 to 19 issues, and 13 of 17 surfaces have never been measured with today's walker, so nobody knows what is already
 fixed, what the register still needs, or whether "missing setting" labels are true.
 
-**Order:** Session A (sweep) → Session B (audit + divergence protection + writes Session C's detailed plan) →
-Session C (framework fixes) → Session D (back to walker work, ranked by the sweep). Each session ends with `/handoff`.
+**Order:** Session 0 (repair everything the 2026-10-04 audit proved) → Session A (sweep) → Session B (audit what is
+still open + divergence protection + writes Session C's plan) → Session C (framework gaps the sweep still shows) →
+Session D (back to walker work, ranked by the sweep). Each session ends with `/handoff`. Session 0 goes first so the
+sweep measures a repaired framework and the route sees the settings the seeder and calibration were missing.
 
 ## Terms (for a cold reader)
 
@@ -57,6 +59,27 @@ framework repair, framework new, content, client) was set by investigation on 20
 with walker rows since.
 
 ---
+
+## Session 0: repair everything the audit proved
+
+**Source:** `.claude/reports/2026-10-04-route-data-audit/README.md` (with rerun scripts) and the wiring-fingerprint
+gate (`plans/2026-10-04-wiring-fingerprint-gate.md`, built 2026-10-04). **Done when:** every group below is fixed with a
+test that fails without it (or recorded with a proven reason it cannot be), the framework DB is reseeded from clean
+HEAD, both test sites are deployed, every block is recalibrated, and a rerun of the four audit scripts and the
+fingerprint gate shows the counts fall by the predicted amounts with no new gap. **Estimate:** ~2 to 3 h, the
+recalibration tail unattended.
+
+| Group | Scope | Owner files | Who |
+|---|---|---|---|
+| S0-1 Seeder routing | The six blind spots (gap classes A helper suffix map, B sibling PHP, C1/C2 wrapper callees and `includes/` emitters incl. the cart's variable prefix, D1-D5 value helpers / variable maps / cross-block custom properties / forwarding / quoted strings and `transition`, G box tiers without boxFamilies) by deriving the helper maps and file sets from source instead of hand lists; the `_split_php_statements` brace bug; the 3 wrong routes (`testimonial::ratingSize`, `nav-bar-menu::collapsePoint`, `nav-drawer::modality`); the 46 stale override entries; `css_property` for the extension roster's `sgsHover*` visuals and child sizing | `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py` (split by job if it grows), `attr-classification-overrides.json`, `extension-roster.json`, block.json `boxFamilies` | one Opus agent (one owner for the seeder file) |
+| S0-2 Framework bugs | `accordion-item/render.php` scope hash includes the inherited accordion settings; `team-member/render.php` emits its root typography; container grid items to Spec 32 FR-32-12's 2026-10-04 scope (every direct cell, text colour the only inherited value, all six variables in the editor, `editor.css` not overriding, hover/gradient/text rules at both depths, `--sgs-gi-border` through `sgs_colour_value()`); `image-sequence` allowed ratios as a block.json enum | the named block files, `class-sgs-container-wrapper.php`, `container/edit.js`, `container/editor.css`, `container/style.css` | `wp-sgs-developer` (diagnose, main checks, implement) |
+| S0-3 Calibration: dead classes | fixture preconditions read from `blocks.variant_attr` + `variant_slots`, block.json `example`, `allowedBlocks`, `providesContext` and render conditions (element present, layout grid/flex, variant or toggle on, partner setting, overlay image, rendered state); per-element reads instead of the 81-element cap; closed surfaces read through their `aria-controls` panel, opened; hover on the styled child; `::before`/`::after` paint read (here and in the walker); pseudo-elements and a focus trigger; marker equal to the rest value; stale caches recalibrated | `scripts/computed-route/calibrate.mjs`, `lib/calibrate.mjs`, `calibration-fixtures.json`, `calibration-targets.json`, `scripts/parity/lib/collect.mjs` | main thread (route code) with one Sonnet helper for fixtures |
+| S0-4 Calibration: noMarker, smaller lists, silent drop | gradient, transform, media-object markers; keywords and enums from the DB row when block.json has none (extension settings); the length regex widened; colour decided by `role`; `tier_shape` `flat_sibling`; per-device non-length values from the attrMap `:count`; container-width tiers not flagged as oneWidth; per-device unit objects and numeric weights given the right marker shape; the drawer opened for its 25 hover targets; a `shrunk` trigger; the 641 settings `longhands()` drops (gradient, border-colour gradient, shadow colour, stroke, height, grid-template-rows) | same as S0-3 | main thread |
+| S0-5 Paint gaps, grouped | The fingerprint gate's confirmed partials grouped by missing link and pattern (editor canvas by fingerprint: prefix helper, block-own, shared wrapper, hover; channel parity; controls), each group fixed in bulk: a codemod where the change is mechanical across blocks, or one shared helper upgraded or created (e.g. `typographyPreviewStyle` is the editor half of `sgs_typography_css_rule` but only `nav-drawer` uses it; `contentBandPreview` is called in 4 of the wrapper's blocks). Hover previews in the editor follow the group's decision. Each group re-runs the gate and tightens the baseline | `src/components/*`, block `edit.js` files, codemod scripts under `plugins/sgs-blocks/scripts/` | `wp-sgs-developer` agents, one group each, worktree isolation |
+| S0-6 Serial tail | merge, read every diff, `npm run build`, `run-gates.py --tier full`, reseed from clean HEAD, deploy eye-care-test then sandybrown, recalibrate every block through the queue (`SGS_HEADED=1`), rerun the audit scripts and the gate, update the report's numbers | — | main thread |
+
+**Parallel shape:** S0-1, S0-2 and S0-5 touch disjoint files and run at once (S0-5's groups in separate worktrees);
+S0-3/S0-4 run in the main thread alongside; the tail is serial. Pause the host queue before any build or reseed.
 
 ## Session A: whole-site sweep (measure, never write)
 
@@ -108,7 +131,7 @@ functionality.
 
 | Unit | Does | Files | Depends on | Test |
 |---|---|---|---|---|
-| B0 Route data audit | **Investigation done 2026-10-04:** `.claude/reports/2026-10-04-route-data-audit/README.md` (wiring fingerprints, seeder routing gaps, every calibration outcome classified, DB and block-file inventory; rerun scripts beside it). Left for B0: run `/qc-council` on the fix designs it proposes (seeder rules A to D5 and G; calibration fixes: fixture preconditions from `variant_attr`/`variant_slots`/block.json `example`, per-element reads instead of the 81-element cap, `::after` paint, hover on the styled child, partner settings, DB fallback in `markersFor`, gradient/transform/media markers, the 641 settings `longhands()` drops; the wiring-fingerprint gate) and `/gap-analysis` on the resulting fix list | the report; fix designs into Session C's catalogue | none (can run before Session A) | each design names its proof and the rows it reclassifies |
+| B0 Route data audit | **Investigation done 2026-10-04:** `.claude/reports/2026-10-04-route-data-audit/README.md` (wiring fingerprints, seeder routing gaps, every calibration outcome classified, DB and block-file inventory; rerun scripts beside it). Its fixes are Session 0. Left for B0: rerun the audit scripts after Session 0 and carry any residual into B1 | the report; fix designs into Session C's catalogue | Session 0 | residual counts recorded beside the 2026-10-04 ones |
 | B1 Triage script | Built from B0's findings. For every Hardcode, Missing and Unresolved row of the sweep, checks mechanically: attributes on the block whose name or `css_property` fits (DB, NULL rows included); extension roster settings; enclosing blocks' calibrated `reaches`; whether the row's node has an open parent row with the same delta (consequence); transient properties (transform, opacity, transition mid-animation); used values. With `--rounds 0` Solve writes no gaps, so every row reads "not written": the script runs the resolver read-only (`lib/resolve.mjs`, no `setAttr`) to get each row's `no-setting`, `uncalibrated` or `breaks-layout` reason first. Then reads the block's own source for the rows still labelled missing or hardcode: does `render.php` read the attribute, and how does it emit it (class modifier, custom property, inline wrapper attribute); which rule in the block's `style.css` declares the property (the matched rule's stylesheet and selector from A-1's `CSS.getMatchedStylesForNode` names it on the live page). The same pass audits calibration's 711 dead and 357 no-marker settings (94 blocks, `scripts/computed-route/cache/*.json`) and the styling attributes with no `css_property` in the DB: each is a marker gap (route), a missing DB route (seeder), or a render that never reads the attribute (framework repair). Writes a candidate class and its evidence per row | new `scripts/computed-route/triage.mjs` + `lib/triage.mjs`, `tests/triage.test.mjs` | Session A | MUST FAIL tests: a known existing setting (textarea width via its extension) is never labelled F; a known consequence row is labelled W |
 | B2 Prove each candidate | Parallel read-only Sonnet agents grouped by mechanism (not by surface), each proving or disproving its batch with file::symbol and DB queries. Main thread re-checks every F verdict and a sample of W | evidence table in this plan's appendix | B1 | every F has the proof the class table requires |
 | B3 Group and match helpers | Proven F gaps grouped by mechanism (for example layout alignment on blocks without it, inner-element typography, text max-width, hover effects) and matched to the shared helpers and declarations that already solve it elsewhere (`SgsLengthControl`, box control, typography helpers, `supports.sgs.boxFamilies`, extensions, the form's Field style group as the parent-styles-children precedent) | fix catalogue section in Session C's plan | B2 | each group names its precedent block and helper |
@@ -126,23 +149,6 @@ and ledger code under `scripts/` and the ledger file, never blocks or theme, and
 No-go: the F gaps stay in the register (Sweep column) and work goes straight to Session D.
 
 ---
-
-## Fixes already proven (2026-10-04 audit, feed Session C's catalogue)
-
-- **Framework bugs:** `accordion-item/render.php` scope hash ignores inherited settings; `team-member/render.php` never
-  emits its root typography; container grid items: only `sgs/container` cells paint, the editor sets 2 of 6 grid-item
-  variables, `editor.css`'s dashed border beats the grid-item border, hover/gradient/text rules miss the `__inner`
-  depth; `--sgs-gi-border` skips `sgs_colour_value()`; ~1,330 settings paint live but not in the editor canvas.
-- **Seeder (`extract-signatures.py`):** ~628 working settings unrouted over classes A to D5 and G; the brace-split bug
-  in `_split_php_statements`; 3 wrong `css_property` routes; 46 stale override entries; extension roster lacks
-  `css_property` for `sgsHover*` visuals and child sizing.
-- **Gates:** `check-editor-render-parity.js` CHECK A's context exemption; a new wiring-fingerprint gate.
-- **Calibration and route:** the items listed in B0.
-
-**For Bean (Gate B, or sooner):** (1) should container grid-item defaults paint any cell (widen the zero-specificity
-reader to every direct child) or only `sgs/container` cells as Spec 32 FR-32-12 says? Recommended: any cell. (2) Should
-the wiring-fingerprint gate block new editor-canvas gaps (existing ones baselined) or only warn? Recommended: block new
-ones.
 
 ## Session C: framework fixes (outline; B5 writes the detail)
 
