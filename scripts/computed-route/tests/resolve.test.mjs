@@ -147,3 +147,12 @@ test( 'MUST FAIL: an inherited setting writes a descendant row its value reaches
 	assert.deepEqual( resolve( row, { db, snapshot, calibration: cal( both ) } ).writes.map( ( w ) => w.attr ), [ 'labelColourHover' ] );
 	assert.equal( resolve( { ...row, slot: '.sgs-business-hours__day' }, { db, snapshot, calibration: cal( reach ) } ).gap, 'no-setting' );
 } );
+
+test( 'MUST FAIL: a per-device discovered setting writes the value fitting each tier, smaller tiers only where they differ', () => {
+	const calibration = { discovered: { sgsChildSizing: { 'flex-grow': { slots: [ '' ], tier: 'tier_object', values: { fill: { 375: '1', 768: '1', 1440: '1' }, fixed: { 375: '0', 768: '0', 1440: '0' } } } } } };
+	const all = resolveDiscovered( { slot: '', prop: 'flex-grow', perWidth: { 375: '1', 768: '1', 1440: '1', 1920: '1' } }, calibration );
+	assert.deepEqual( all.writes, [ { attr: 'sgsChildSizing', value: { desktop: 'fill' }, merge: 'deep' } ] );
+	const wideOnly = resolveDiscovered( { slot: '', prop: 'flex-grow', perWidth: { 375: '2', 768: '1', 1440: '1' } }, calibration );
+	assert.deepEqual( wideOnly.writes[ 0 ].value, { desktop: 'fill', mobile: '' } );
+	assert.equal( resolveDiscovered( { slot: '.x', prop: 'flex-grow', perWidth: { 1440: '1' } }, calibration ), null );
+} );

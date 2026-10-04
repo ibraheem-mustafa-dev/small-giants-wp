@@ -126,6 +126,28 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 	return { value: `${ round( px ) }px` };
 }
 
+// A per-device discovered setting: each tier takes the value whose recorded effect equals the draft at that tier's
+// width (an unlisted value is the setting's empty state); a smaller tier is written only where it differs from the
+// tier above. Returns { writes }, a gap when a tier fits two values, or null when no tier fits any.
+function tierWrite( attr, d, perWidth, at, same ) {
+	const value = {};
+	for ( const [ t, w ] of [ [ 'desktop', 1440 ], [ 'tablet', 768 ], [ 'mobile', 375 ] ] ) {
+		if ( undefined === at( perWidth, w ) ) {
+			continue;
+		}
+		const fit = Object.entries( d.values ).filter( ( [ , values ] ) => undefined !== values[ w ] && same( values[ w ], at( perWidth, w ) ) ).map( ( [ v ] ) => v );
+		if ( fit.length > 1 ) {
+			return { gap: 'ambiguous', detail: `${ attr } values ${ fit.join( ', ' ) } all give the draft at ${ w }` };
+		}
+		const above = 'mobile' === t ? value.tablet ?? value.desktop : value.desktop;
+		const v = fit[ 0 ] ?? '';
+		if ( 'desktop' === t || v !== ( above ?? '' ) ) {
+			value[ t ] = v;
+		}
+	}
+	return Object.values( value ).some( ( v ) => '' !== v ) ? { writes: [ { attr, value, merge: 'deep' } ] } : null;
+}
+
 // A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
 // value whose recorded effect equals the draft at every calibrated width. Ties go to the value that also matches most
 // of the element's other draft properties (`siblings`: { prop: { width: value } }). Returns a write, a gap, or null.
@@ -140,6 +162,13 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {} }, cali
 	for ( const [ attr, props ] of Object.entries( calibration?.discovered || {} ) ) {
 		const d = props[ prop ];
 		if ( ! d || ! d.slots.includes( slot ) ) {
+			continue;
+		}
+		if ( 'tier_object' === d.tier ) {
+			const w = tierWrite( attr, d, perWidth, at, same );
+			if ( w ) {
+				return w;
+			}
 			continue;
 		}
 		for ( const [ value, values ] of Object.entries( d.values ) ) {
@@ -233,7 +262,9 @@ export function resolve( input, ctx ) {
 	if ( error ) {
 		return { gap: 'shape', detail: error };
 	}
-	const schema = blockSchema( block ) || {};
+	// Extension settings (source sgs-ext) are not in block.json: their database rows give type, default and enum.
+	const rowDef = ( r ) => ( { type: r.attr_type, default: r.default_value ?? undefined, ...( r.enum_values ? { enum: JSON.parse( r.enum_values ) } : {} ) } );
+	const schema = { ...Object.fromEntries( tied.filter( ( r ) => 'sgs-ext' === r.source ).map( ( r ) => [ r.attr_name, rowDef( r ) ] ) ), ...( blockSchema( block ) || {} ) };
 	const row = others[ 0 ] || flat[ 0 ];
 	const attr = others[ 0 ] ? row.attr_name : [ ...bases ][ 0 ];
 	const unitAttr = schema[ `${ attr }Unit` ] ? `${ attr }Unit` : null;

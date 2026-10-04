@@ -230,7 +230,9 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 		for ( const row of vi ? [] : enumSettings( db, block ) ) {
 			for ( const v of JSON.parse( row.enum_values || '[]' ) ) {
 				if ( v !== vattrs[ row.attr_name ] && v !== ( schema[ row.attr_name ]?.default ?? '' ) ) {
-					instances.push( { key: `${ row.attr_name }-discover-${ v || 'none' }-v${ vi }`, discover: { attr: row.attr_name, value: v }, attrs: { ...vattrs, [ row.attr_name ]: v }, variant: vi } );
+					// A per-device setting holds the value in its desktop tier (the smaller tiers inherit it).
+					const held = 'tier_object' === row.tier_shape ? { desktop: v } : v;
+					instances.push( { key: `${ row.attr_name }-discover-${ v || 'none' }-v${ vi }`, discover: { attr: row.attr_name, value: v, tier: row.tier_shape || null }, attrs: { ...vattrs, [ row.attr_name ]: held }, variant: vi } );
 				}
 			}
 		}
@@ -317,7 +319,7 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 			const fx = discoverEffects( inst.def, inst.read );
 			const d = ( discovered[ inst.discover.attr ] ??= {} );
 			for ( const [ prop, e ] of Object.entries( fx ) ) {
-				( d[ prop ] ??= { slots: [], values: {} } );
+				( d[ prop ] ??= { slots: [], values: {}, ...( inst.discover.tier ? { tier: inst.discover.tier } : {} ) } );
 				d[ prop ].slots = [ ...new Set( [ ...d[ prop ].slots, ...e.slots ] ) ];
 				d[ prop ].values[ inst.discover.value ] = e.value;
 			}
