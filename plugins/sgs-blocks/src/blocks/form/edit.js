@@ -15,7 +15,7 @@ import {
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveTextColourPreviewStyle, backgroundPaintPreview, borderBoxPreview } from '../../utils';
@@ -317,8 +317,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		box && 'object' === typeof box && Object.values( box ).some( hasValue )
 			? [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ].map( ( c ) => box[ c ] || '0' ).join( ' ' )
 			: '';
-	const fieldHeight = ( v ) => ( hasValue( v ) && Number.isFinite( Number( v ) ) ? `${ Math.max( 44, Number( v ) ) }px` : '' );
-	const fieldPx = ( v ) => ( hasValue( v ) && Number.isFinite( Number( v ) ) ? `${ Number( v ) }px` : '' );
+	// A stored value is a bare number (px) or a CSS length string; the height is
+	// floored at 44px with max(), as render.php does.
+	const fieldPx = ( v ) => ( hasValue( v ) ? ( Number.isFinite( Number( v ) ) ? `${ Number( v ) }px` : String( v ) ) : '' );
+	const fieldHeight = ( v ) => ( fieldPx( v ) ? `max(44px,${ fieldPx( v ) })` : '' );
 	const fieldBorderDecls = borderBoxPreview( fieldBorderWidth, fieldBorderStyle );
 	const fieldBackgroundValue = resolveColourToken( fieldBackground, palette );
 	const fieldTextValue = resolveColourToken( fieldTextColour, palette );
@@ -922,56 +924,53 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
-						label={ __( 'Field minimum height (px)', 'sgs-blocks' ) }
+						label={ __( 'Field minimum height', 'sgs-blocks' ) }
 						value={ fieldMinHeight }
 						onChange={ ( obj ) => setAttributes( { fieldMinHeight: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<NumberControl
-								label={ __( 'Field minimum height (px)', 'sgs-blocks' ) }
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Field minimum height', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ ownValue ?? '' }
-								placeholder={ inherited ? effectiveValue : '44' }
-								min={ 44 }
-								onChange={ ( value ) => setOwnValue( value ? Math.max( 44, parseInt( value, 10 ) || 0 ) : undefined ) }
 								help={ __( 'Inputs and selects. Never below 44px; empty keeps the default 44px.', 'sgs-blocks' ) }
-								__next40pxDefaultSize
+								value={ ownValue ?? '' }
+								placeholder={ inherited ? effectiveValue : '44px' }
+								onChange={ ( val ) => setOwnValue( val || undefined ) }
 							/>
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
-						label={ __( 'Textarea minimum height (px)', 'sgs-blocks' ) }
+						label={ __( 'Textarea minimum height', 'sgs-blocks' ) }
 						value={ fieldTextareaMinHeight }
 						onChange={ ( obj ) => setAttributes( { fieldTextareaMinHeight: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<NumberControl
-								label={ __( 'Textarea minimum height (px)', 'sgs-blocks' ) }
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Textarea minimum height', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ ownValue ?? '' }
-								placeholder={ inherited ? effectiveValue : '100' }
-								min={ 44 }
-								onChange={ ( value ) => setOwnValue( value ? Math.max( 44, parseInt( value, 10 ) || 0 ) : undefined ) }
 								help={ __( 'Never below 44px; empty keeps the default 100px.', 'sgs-blocks' ) }
-								__next40pxDefaultSize
+								value={ ownValue ?? '' }
+								placeholder={ inherited ? effectiveValue : '100px' }
+								onChange={ ( val ) => setOwnValue( val || undefined ) }
 							/>
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
-						label={ __( 'Field text size (px)', 'sgs-blocks' ) }
+						label={ __( 'Field text size', 'sgs-blocks' ) }
 						value={ fieldFontSize }
 						onChange={ ( obj ) => setAttributes( { fieldFontSize: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<NumberControl
-								label={ __( 'Field text size (px)', 'sgs-blocks' ) }
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Field text size', 'sgs-blocks' ) }
 								hideLabelFromVision
+								help={ __( 'Empty keeps the theme default size.', 'sgs-blocks' ) }
 								value={ ownValue ?? '' }
 								placeholder={ inherited ? effectiveValue : '' }
-								min={ 1 }
-								onChange={ ( value ) => setOwnValue( value ? parseInt( value, 10 ) || undefined : undefined ) }
-								help={ __( 'Empty keeps the theme default size.', 'sgs-blocks' ) }
-								__next40pxDefaultSize
+								onChange={ ( val ) => setOwnValue( val || undefined ) }
 							/>
 						) }
 					</ResponsiveOverride>

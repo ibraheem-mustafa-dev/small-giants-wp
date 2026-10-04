@@ -465,9 +465,11 @@ if ( ! empty( $sgs_field_vars ) ) {
 }
 
 // Heights never go under the 44px touch target (WCAG 2.2 target size, the SGS
-// standard): a smaller stored value is raised to 44.
+// standard). A stored value is a bare number (px) or one CSS length ('52px',
+// '3.25rem'), emitted as max(44px, value) so the floor holds in any unit.
 $sgs_field_height = static function ( $raw ): string {
-	return is_numeric( $raw ) ? (string) max( 44, (float) $raw ) . 'px' : '';
+	$length = is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw );
+	return '' === $length ? '' : 'max(44px,' . $length . ')';
 };
 $sgs_field_tier_specs = array(
 	array(

@@ -43,6 +43,18 @@
 				],
 				"borderWidth": [
 					"borderWidth"
+				],
+				"fieldPadding": [
+					"fieldPadding"
+				],
+				"fieldBorderWidth": [
+					"fieldBorderWidth"
+				],
+				"fieldBorderRadius": [
+					"fieldBorderRadius"
+				],
+				"submitPadding": [
+					"submitPadding"
 				]
 			},
 			"elements": {
@@ -410,17 +422,17 @@
 		"fieldMinHeight": {
 			"type": "object",
 			"default": {},
-			"description": "Minimum height in px of single-line field controls (input and select), per device: {desktop,tablet,mobile}. Render raises anything under 44 to 44. Empty = the stylesheet's 44px."
+			"description": "Minimum height of single-line field controls (input and select), per device: {desktop,tablet,mobile}, each a CSS length ('52px', '3.25rem') or a bare number of px. Render keeps it at least 44px with max(44px, value). Empty = the stylesheet's 44px."
 		},
 		"fieldTextareaMinHeight": {
 			"type": "object",
 			"default": {},
-			"description": "Minimum height in px of a textarea, per device: {desktop,tablet,mobile}. Render raises anything under 44 to 44. Empty = the stylesheet's 100px."
+			"description": "Minimum height of a textarea, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Render keeps it at least 44px with max(44px, value). Empty = the stylesheet's 100px."
 		},
 		"fieldFontSize": {
 			"type": "object",
 			"default": {},
-			"description": "Font size in px of every field control, per device: {desktop,tablet,mobile}. Empty = the stylesheet's small preset size."
+			"description": "Font size of every field control, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the stylesheet's small preset size."
 		},
 		"submitAlign": {
 			"type": "string",
