@@ -5,17 +5,20 @@
 export const LAYOUT_PROPS = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
 
 // Whether a layout or display row means anything. A pair's snapshot carries its layout element's display
-// (collect.mjs::collectPair, layoutDisplay). Layout properties compare only where both sides lay out their children
-// with flex or grid, and a property of one model (grid tracks, flex wrap and direction) only where both use that
-// model: a block stack and a flex column paint the same, and the children's flow rows judge where the children sit.
-// A display row between two block-level values is the same judgement (the box sits in the flow the same way).
+// (collect.mjs::collectPair, layoutDisplay). Gaps always compare: a side not laying out with flex or grid reads its
+// gap as the 0 it paints, so a block stack against a flex column with a gap is a real row. The other layout
+// properties compare only where both sides lay out their children with flex or grid, and a property of one model
+// (grid tracks, flex wrap and direction) only where both use that model: a block stack and a gapless flex column paint
+// the same, and the children's flow rows judge where the children sit. A display row between two block-level values
+// is the same judgement (the box sits in the flow the same way).
+const GAPS = [ 'gap', 'row-gap', 'column-gap' ];
 const MODEL = { 'grid-template-columns': /grid$/, 'flex-wrap': /flex$/, 'flex-direction': /flex$/ };
 const BLOCK_LEVEL = new Set( [ 'block', 'flow-root', 'flex', 'grid', 'list-item' ] );
 export function layoutComparable( prop, d, l ) {
 	if ( 'display' === prop ) {
 		return ! ( BLOCK_LEVEL.has( d.styles?.display ) && BLOCK_LEVEL.has( l.styles?.display ) );
 	}
-	if ( ! LAYOUT_PROPS.includes( prop ) || undefined === d.layoutDisplay || undefined === l.layoutDisplay ) {
+	if ( GAPS.includes( prop ) || ! LAYOUT_PROPS.includes( prop ) || undefined === d.layoutDisplay || undefined === l.layoutDisplay ) {
 		return true;
 	}
 	const model = MODEL[ prop ] || /(^|-)(flex|grid)$/;

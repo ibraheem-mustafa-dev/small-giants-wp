@@ -187,10 +187,13 @@ test( 'Solve holds a measured ratio in the setting form: enum value, free "w / h
 
 test( 'MUST FAIL: layout rows compare only where both sides lay out with flex or grid; display between block-level values is no row', () => {
 	const tol = { box: 1, px: 0.5 };
-	const snap = ( display, layoutDisplay, extra = {} ) => ( { box: { w: 1, h: 1 }, layoutDisplay, styles: { display, gap: 'normal', 'row-gap': 'normal', 'flex-direction': 'row', 'align-items': 'normal', ...extra } } );
+	// collectPair reads a block-flow side's gap as the 0px it paints.
+	const snap = ( display, layoutDisplay, extra = {} ) => ( { box: { w: 1, h: 1 }, layoutDisplay, styles: { display, gap: '0px', 'row-gap': '0px', 'flex-direction': 'row', 'align-items': 'normal', ...extra } } );
 	const keys = ( d, l ) => comparePair( { text: false, motion: false }, d, l, tol ).map( ( x ) => x.key ).sort();
-	// A draft block stack against a live flex column: the same paint, so no layout or display row.
-	assert.deepEqual( keys( snap( 'block', 'block' ), snap( 'flex', 'flex', { gap: '6px', 'row-gap': '6px', 'flex-direction': 'column', 'align-items': 'stretch' } ) ), [] );
+	// A draft block stack against a gapless live flex column: the same paint, so no layout or display row.
+	assert.deepEqual( keys( snap( 'block', 'block' ), snap( 'flex', 'flex', { 'flex-direction': 'column', 'align-items': 'stretch' } ) ), [] );
+	// The same stack against a flex column with a 6px gap: the gap paints, so the gap rows stay (Solve can write 0).
+	assert.deepEqual( keys( snap( 'block', 'block' ), snap( 'flex', 'flex', { gap: '6px', 'row-gap': '6px', 'flex-direction': 'column' } ) ), [ 'gap', 'row-gap' ] );
 	// Both flex with different gaps: a row each.
 	assert.deepEqual( keys( snap( 'flex', 'flex' ), snap( 'flex', 'flex', { gap: '6px', 'row-gap': '6px' } ) ), [ 'gap', 'row-gap' ] );
 	// A grid against a flex row: the shared gap compares, flex direction does not.
