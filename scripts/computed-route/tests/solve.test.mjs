@@ -222,3 +222,11 @@ test( 'MUST FAIL TO COUNT: accepted rows and non-visual kinds are not issues', (
 	const r = { runs: [ { state: 'opening', width: 375, pairs: { a: { diffs: [ { kind: 'style', key: 'x', ref: 'r', accepted: 'decided' }, { kind: 'motion', key: 'y', ref: 'r' } ] } } } ] };
 	assert.deepEqual( wholePage( r, r, {} ), { before: 0, after: 0, closed: 0, new: 0, labelledGap: 0, unexplained: 0 } );
 } );
+
+// A painted ground (About's credential column, 2026-10-04) is read from the draft's full-check extras, not its styles.
+import { draftValues as dv } from '../lib/solve-rows.mjs';
+test( 'MUST FAIL TO MISS: a painted-ground row takes its draft value from the draft snapshot\'s extras', () => {
+	const report = { runs: [ { state: 'opening', width: 375, pairs: { col: { draft: { styles: { 'font-size': '16px' }, extras: { ground: 'rgba(230, 225, 218, 1)' } } } } } ] };
+	assert.deepEqual( dv( report, 'col', 'painted-ground', false ).perWidth, { 375: 'rgba(230, 225, 218, 1)' } );
+	assert.deepEqual( dv( report, 'col', 'background-color', false ).perWidth, {} );
+} );

@@ -51,7 +51,8 @@ export function draftValues( report, pair, prop, hover, walkerStates = null ) {
 		if ( ! d || d.missing ) {
 			continue;
 		}
-		const v = hover ? d.hover?.[ prop ] : d.styles?.[ prop ];
+		// A painted ground is a full-check value (chrome-walk.mjs stores it on extras), not a collected style.
+		const v = hover ? d.hover?.[ prop ] : ( 'painted-ground' === prop ? d.extras?.ground : d.styles?.[ prop ] );
 		if ( undefined !== v ) {
 			perWidth[ run.width ] = v;
 		}

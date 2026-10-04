@@ -277,8 +277,8 @@ export function resolve( input, ctx ) {
 		writes.push( { attr, value: Object.fromEntries( Object.entries( out ).map( ( [ t, v ] ) => [ t, boxed( v, t ) ] ) ), merge: 'deep' } );
 	} else {
 		const vals = [ ...new Set( Object.values( out ).map( ( v ) => JSON.stringify( v ) ) ) ];
-		if ( vals.length > 1 ) {
-			return { gap: 'shape', detail: `${ attr } holds one value for every width; draft has ${ vals.join( ', ' ) }` };
+		if ( 1 !== vals.length || undefined === vals[ 0 ] ) {
+			return { gap: 'shape', detail: vals.length > 1 ? `${ attr } holds one value for every width; draft has ${ vals.join( ', ' ) }` : `no draft value for ${ prop }` };
 		}
 		writes.push( { attr, value: boxed( JSON.parse( vals[ 0 ] ), 'desktop' ), merge: isBox ? 'deep' : 'replace' } );
 	}
