@@ -67,15 +67,15 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	}
 	const cs = getComputedStyle( el );
 	const r = el.getBoundingClientRect();
-	// Text properties come from the element that paints the first visible text (a
-	// button's label span, not the button), so a wrapper's unused font-size is ignored.
+	// Text properties come from the element painting the first visible text (a button's label span, not the button).
 	const TEXT_PROPS = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ];
 	// A text-run finder ({ textRun: { within, direct } }) measures the block's rendered text only: its extent and its paint.
 	// A group finder ({ group: { paths } }) measures the union box of its elements only (no styles).
 	const run = finder.textRun ? textRun( el, !! finder.textRun.direct, finder.textRun.match || null ) : ( finder.group ? groupBox( finder.group.paths ) : null );
 	const carrier = run ? run.carrier : textCarrier( el );
 	const ccs = carrier ? getComputedStyle( carrier ) : null;
-	// Layout properties come from the element laying out the children (paint.mjs::LAYOUT_PROPS, layoutElement).
+	// Layout properties come from the element laying out the children (paint.mjs::LAYOUT_PROPS, layoutElement); a flex
+	// or grid gap of `normal` reads as the 0 it paints.
 	const LAYOUT = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
 	const layoutEl = layoutElement( el );
 	const lcs = getComputedStyle( layoutEl );
@@ -100,7 +100,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		const src = TEXT_PROPS.includes( p ) ? ccs : ( LAYOUT.includes( p ) ? lcs : cs );
 		if ( src && ! /^icon-/.test( p ) ) {
 			const v = src.getPropertyValue( p ).trim();
-			styles[ p ] = /color$/.test( p ) ? srgb( v ) : v;
+			styles[ p ] = /color$/.test( p ) ? srgb( v ) : ( /gap$/.test( p ) && 'normal' === v && /(^|-)(flex|grid)$/.test( lcs.display ) ? '0px' : v );
 		}
 	}
 	if ( ! finder.group && props.includes( 'text-decoration-line' ) ) {

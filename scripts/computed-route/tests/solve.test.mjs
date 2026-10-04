@@ -230,3 +230,13 @@ test( 'MUST FAIL TO MISS: a painted-ground row takes its draft value from the dr
 	assert.deepEqual( dv( report, 'col', 'painted-ground', false ).perWidth, { 375: 'rgba(230, 225, 218, 1)' } );
 	assert.deepEqual( dv( report, 'col', 'background-color', false ).perWidth, {} );
 } );
+
+// A surface sharing its walker (the contact page and its embedded form post) is judged on its own blocks' rows and
+// rows with no block (lib/solve-report.mjs::wholePage).
+test( 'MUST FAIL TO COUNT: a neighbour surface\'s rows are not this surface\'s issues', () => {
+	const rep = ( rows ) => ( { runs: [ { state: 'opening', width: 375, pairs: { p: { diffs: rows } } } ] } );
+	const rows = [ { kind: 'style', key: 'gap', ref: 'cr-ref-contact-form-1', path: '' }, { kind: 'style', key: 'color', ref: 'cr-ref-contact-3', path: '' }, { kind: 'style', key: 'painted-ground', path: '' } ];
+	assert.equal( wholePage( rep( [] ), rep( rows ), {}, 'cr-ref-contact-' ).after, 2 );
+	assert.equal( wholePage( rep( [] ), rep( rows ), {}, 'cr-ref-contact-form-' ).after, 2 );
+	assert.equal( wholePage( rep( [] ), rep( rows ), {} ).after, 3 );
+} );

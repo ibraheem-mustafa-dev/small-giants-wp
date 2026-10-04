@@ -11,8 +11,11 @@ const cell = ( v ) => String( typeof v === 'object' && null !== v ? JSON.stringi
 // counts as handled only once proven outside the tool), and still open with no label.
 const VISUAL = [ 'style', 'hover', 'box' ];
 const issueKey = ( x ) => `${ x.ref || x.pair }|${ x.path ?? '' }|${ x.kind }|${ x.key }`;
-export function wholePage( before, after, classes ) {
-	const set = ( rep ) => new Set( openRows( rep ).filter( ( x ) => VISUAL.includes( x.kind ) ).map( issueKey ) );
+export function wholePage( before, after, classes, prefix = null ) {
+	// A surface sharing its walker with another (a page and the form post it embeds) is judged on its own blocks' rows
+	// and the rows that carry no block.
+	const mine = ( x ) => ! prefix || ! x.ref || ( x.ref.startsWith( prefix ) && /^\d+$/.test( x.ref.slice( prefix.length ) ) );
+	const set = ( rep ) => new Set( openRows( rep ).filter( ( x ) => VISUAL.includes( x.kind ) && mine( x ) ).map( issueKey ) );
 	const b = set( before );
 	const a = set( after );
 	const labelled = new Set( [ ...( classes?.hardcode || [] ), ...( classes?.missing || [] ) ].map( issueKey ) );
@@ -28,7 +31,7 @@ export function wholePage( before, after, classes ) {
 }
 
 export function writeSolveReport( outDir, r ) {
-	const page = wholePage( r.before, r.after, r.classes );
+	const page = wholePage( r.before, r.after, r.classes, `cr-ref-${ r.surface }-` );
 	fs.writeFileSync( path.join( outDir, 'solve-report.json' ), JSON.stringify( { ...r, before: undefined, after: undefined, openBefore: openRows( r.before ).length, openAfter: openRows( r.after ).length, wholePage: page }, null, 1 ) );
 	const L = [ `# Solve: ${ r.surface }`, '',
 		`Refs added: ${ r.refsAdded }. Write rounds: ${ r.rounds }${ r.roundThreeWrote ? ' (round 3 still wrote: a kill condition)' : '' }. Open rows before: ${ openRows( r.before ).length }, after: ${ openRows( r.after ).length }. Intended (accepted): ${ r.intended }.`, '',

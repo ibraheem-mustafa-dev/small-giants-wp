@@ -156,7 +156,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `intendedCount(report)` → accepted rows.
 
 ### `lib/solve-report.mjs`
-- `wholePage(before, after, classes)` → distinct style, hover and box issues before and after: `{ before, after, closed, new, labelledGap, unexplained }` (a labelled gap counts as handled only once proven).
+- `wholePage(before, after, classes, prefix?)` → distinct style, hover and box issues before and after: `{ before, after, closed, new, labelledGap, unexplained }` (a labelled gap counts as handled only once proven). With `prefix` (writeSolveReport passes `cr-ref-<surface>-`), only the surface's own blocks' rows and rows with no block count: a surface sharing its walker is not judged on its neighbour's blocks.
 - `writeSolveReport(outDir, result)`.
 
 ### `lib/references.mjs` (reads `plugins/sgs-blocks/src/blocks/*/render.php`)
