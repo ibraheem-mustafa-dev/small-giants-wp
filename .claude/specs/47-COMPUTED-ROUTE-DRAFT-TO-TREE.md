@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.7"
+spec_version: "0.8"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -479,7 +479,13 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - F5 whole-page score in the solve report: built.
      - Speed: lean walks, the draft cache and four widths at once (step 2 above).
    - **Residual:**
-     - Contact and its form post to 100%, then Lenses, then every other surface with its full config: Help, Home,
+     - First (plan `plans/2026-10-04-eye-care-sweep-audit-fix.md`): Session 0 repairs what the 2026-10-04 route data
+       audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved: ~628 working settings the seeder never
+       routes (so Solve calls them Missing), calibration's dead and no-marker classes (fixture preconditions, an
+       81-element read cap, closed surfaces, hover on the root, `::after` paint, 641 settings `longhands()` drops), and
+       the framework bugs and editor-canvas gaps the new wiring gate (`check-wiring-fingerprint.py`) reports; then a
+       measure-only sweep of every surface, an audit of what stays open, and the framework fixes it needs.
+     - Then Contact and its form post to 100%, then Lenses, then every other surface with its full config: Help, Home,
        header, mobile-menu, the four megas, size-guide, lens, shop and product. Done per surface: on a fresh rebuild of
        the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes at most
        10%, the independent check agreeing, the register marked. The open causes per surface are in the plan's Progress

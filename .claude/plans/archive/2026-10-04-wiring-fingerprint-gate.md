@@ -2,7 +2,7 @@
 title: Wiring-fingerprint gate
 project: small-giants-wp
 created: 2026-10-04
-status: active
+status: done
 parent: .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md (Session 0)
 ---
 

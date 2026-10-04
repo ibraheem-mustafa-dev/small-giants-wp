@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 2
-spec_version: "1.8"
+spec_version: "1.9"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: shipped
@@ -1198,7 +1198,9 @@ the attribute and rendering it correctly on the published page is only half the 
 block editor canvas must show the change too. Enforced by
 `plugins/sgs-blocks/scripts/check-editor-render-parity.js` (CHECK A, "editor-canvas desync"),
 which finds attributes a control writes and `render.php` consumes correctly while the canvas shows
-nothing.
+nothing. Its block-context exemption applies only when a block's `usesContext` lists the key and its code
+reads it. `plugins/sgs-blocks/scripts/check-wiring-fingerprint.py` (fast tier, blocks new gaps against its baseline)
+proves each painting setting is wired through control, editor canvas, front-end channel and CSS reader.
 
 **This is a client-experience requirement, not a nicety.** Per this spec's own premise, clients are
 tech-illiterate and work exclusively in the block editor. A colour picker that appears to do

@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.11"
+spec_version: "1.12"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
@@ -405,7 +405,7 @@ VALUES on the grid element (`SGS_Container_Wrapper`, routed via its `$styles` / 
 channel; editor UI: `GridItemDefaultsPanel.js`, `src/blocks/container/components/`). The **ONLY**
 CSS consumer is one rule in `src/blocks/container/style.css`, zeroed to specificity (0,0,0) via
 `:where()` so a real per-instance value on the grid item's own class-selector rule always wins, and
-chained over both direct-child depths (`.sgs-container--grid > .sgs-container` and
+chained over both direct-child depths (current code; target scope below) (`.sgs-container--grid > .sgs-container` and
 `.sgs-container--grid > .sgs-container__inner > .sgs-container`) because the `__inner` band wrapper
 renders only when the grid container has its own band props set:
 

@@ -54,7 +54,6 @@ tests, README.
 Per-surface work below pauses for `plans/2026-10-04-eye-care-sweep-audit-fix.md` (whole-site sweep, gap audit,
 framework fixes); it resumes in that plan's Session D, ranked by the sweep.
 
-
 - [x] Pairing built: `scripts/computed-route/pairs.mjs` (command), `lib/pairs.mjs` (decisions: `PAIRING_LIMITS`,
   `judgePairing`, `paddedPartner`, `twinPlan`, `choosePartner`, `chooseControlPartner`, `chooseGroupPartner`,
   `commonPath`, `reconcileHandPairs`, `configText`), `lib/pairs-page.mjs` (in-page collectors). The generated config is

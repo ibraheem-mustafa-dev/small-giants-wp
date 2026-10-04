@@ -170,11 +170,11 @@ paths, wrote non-deterministic key order, and had no input freshness check. Bug 
 scope hash without context, a root-prefix helper with no root control (team-member, google-reviews), the `__inner` depth.
 Real defects confirmed in passing: team-member root typography; `nav-bar-menu::margin`, `nav-drawer-menu::margin`,
 `choice-flow::backColourBorderHover` have no control; `wishlist-panel::columns` never reaches the canvas.
-All 21 fixes are Task 2 of `.claude/plans/2026-10-04-wiring-fingerprint-gate.md`.
+All 21 fixes are Task 2 of `.claude/plans/archive/2026-10-04-wiring-fingerprint-gate.md`.
 
 ## 6. The production gate (2026-10-04, `check-wiring-fingerprint.py`)
 
-Built from the prototype with the council's 21 blind spots and two review rounds fixed (`plans/2026-10-04-wiring-fingerprint-gate.md`).
+Built from the prototype with the council's 21 blind spots and two review rounds fixed (`plans/archive/2026-10-04-wiring-fingerprint-gate.md`).
 On Rater A's labelled rows it has 100% precision on every link and 100% recall except L2 (44%: the misses are
 `tagName`/`templateLock`-type settings outside the paint population by design); Rater B's population agreement is
 ≥95% both ways; no calibrated setting carries an L5 or L7 finding; it finds all three framework bugs. Counts at

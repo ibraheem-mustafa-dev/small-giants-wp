@@ -19,9 +19,9 @@ Claude Design's gap map; the finished site becomes the pipeline's answer key. Ev
 the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list, all decisions taken. Spec 47's tool
 (measure the draft, write the layout settings automatically) took the About page to 100% on 2026-10-04 (every
 difference closed or a recorded decision, confirmed by an independent check). Contact is down from 134 differences to 19
-(2026-10-04) and the contact form from 94 to 46. Next (Bean, 2026-10-04): a whole-site sweep with today's walker,
-then an audit proving which open issues are decided differences, framework gaps or walker gaps, then one framework
-fix pass (Front F).
+(2026-10-04) and the contact form from 94 to 46. Next (Bean, 2026-10-04): a repair session for everything the route data audit proved
+(seeder routing, calibration, framework bugs, editor-canvas gaps), then a whole-site sweep, an audit of what stays
+open, and one framework fix pass (Front F).
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -55,7 +55,7 @@ add-to-bag route drops a second product and a 30s cooldown blocks a second pair 
 WooCommerce's product gallery (75/82); the shop filters leave empty groups after clearing (N25); the drawer body
 overflows by its title row (15); a footer row given a width cap collapses to zero width (N46). No blockers.
 
-**Spec 47 (v0.7): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; "Solve"
+**Spec 47 (v0.8): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; "Solve"
 compares a built page with the draft and writes block settings). Every block of a surface is paired with its draft
 element (`pairs.mjs`, switched on per surface by `walkerFull` in `surfaces.json`); a parent block's setting can now
 style its children (a form's field style), extension settings (child sizing, hover, entrance) are seeded in the
@@ -71,9 +71,18 @@ Two route bugs proven by code reading (2026-10-04), fixed in the sweep plan's A5
 ledger decision, Solve's next write uses the draft value (`solve-rows.mjs::draftValues` ignores the ledger), and
 `qa/independent-check.mjs::accepted` never matches a ledger entry (it reads `ref`; entries store `node`).
 
+**Route data audit and wiring gate (2026-10-04, pushed, not deployed: no runtime code changed).** Four investigations
+(`.claude/reports/2026-10-04-route-data-audit/README.md`): ~628 working settings the seeder never routes, every
+calibration outcome classified, three framework bugs (accordion-item scope hash, team-member root typography,
+container grid items), the DB and block-file inventory. A new fast-tier gate, `check-wiring-fingerprint.py` (`plans/archive/2026-10-04-wiring-fingerprint-gate.md`), proves
+each painting setting is wired end to end (control, editor canvas, front end, CSS reader); a QC council and three
+review rounds took it to 100% precision on the labelled rows; it blocks new gaps only (1,781 baselined, mostly 1,591
+editor-canvas gaps over 72 blocks). Bean's rule (Spec 32 v1.11 FR-32-12): grid-item defaults style every grid cell
+whatever its block, text colour the only inherited value; the code still keys on container cells (Session 0).
+
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**
-`plans/2026-10-04-eye-care-sweep-audit-fix.md` Session A (sweep every surface, measure only), then its Sessions B
-(audit the split, protect decisions) and C (framework fixes); per-surface Solve work (`plans/2026-10-04-spec47-full-coverage.md`
+`plans/2026-10-04-eye-care-sweep-audit-fix.md` Session 0 (repair everything the audit proved), then Session A (sweep
+every surface, measure only), B (audit what stays open, protect decisions) and C (framework fixes); per-surface Solve work (`plans/2026-10-04-spec47-full-coverage.md`
 "Progress") resumes in its Session D.
 
 **Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared
