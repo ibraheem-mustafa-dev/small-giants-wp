@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9448,
+    "row_count": 9452,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -541,6 +541,7 @@
     "sgs/accordion::borderWidth": "visual",
     "sgs/accordion::closeIcon": "enum-class-probe",
     "sgs/accordion::columns": "layout",
+    "sgs/accordion::contentPadding": "layout",
     "sgs/accordion::contentWidth": "layout",
     "sgs/accordion::defaultOpen": "behaviour",
     "sgs/accordion::faqSchema": "technical",
@@ -567,11 +568,14 @@
     "sgs/accordion::headerColourOpen": "color",
     "sgs/accordion::headerFontWeight": "typography",
     "sgs/accordion::headerFontWeightOpen": "styling",
+    "sgs/accordion::headerPadding": "layout",
     "sgs/accordion::iconColour": "color",
     "sgs/accordion::iconColourGradient": "color",
     "sgs/accordion::iconColourHover": "color",
     "sgs/accordion::iconColourHoverGradient": "color",
     "sgs/accordion::iconPosition": "select-from-enum",
+    "sgs/accordion::iconRotation": null,
+    "sgs/accordion::iconSize": "select-from-enum",
     "sgs/accordion::justifyContent": "layout",
     "sgs/accordion::justifyItems": "layout",
     "sgs/accordion::layout": "layout",
