@@ -188,7 +188,12 @@ export function reconcileHandPairs( hand, kept ) {
 		if ( ! k ) {
 			continue;
 		}
-		h.liveIsRoot || retarget.set( h.name, `.${ k.ref }` );
+		// A control block is measured at its control (liveControl), so a hand pair on it moves to that control.
+		if ( k.liveControl ) {
+			retarget.set( h.name, `.${ k.ref } ${ CONTROL_SELECTOR }` );
+		} else if ( ! h.liveIsRoot ) {
+			retarget.set( h.name, `.${ k.ref }` );
+		}
 		duplicate.add( k.ref );
 	}
 	return { retarget, duplicate };

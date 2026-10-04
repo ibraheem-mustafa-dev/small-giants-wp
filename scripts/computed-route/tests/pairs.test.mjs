@@ -195,3 +195,11 @@ test( 'MUST FAIL: a control paired with the draft control itself is measured at 
 	assert.match( src, /live: "\.cr-ref-form-2 :is\(input:not\(\[type=hidden\]\)/ );
 	assert.match( src, /live: "\.cr-ref-form-3" \}/ );
 } );
+
+test( 'MUST FAIL: a hand pair on a control block moves to the block\'s control, even when it measured the block root', () => {
+	const kept = [ { ref: 'cr-ref-form-2', draft: 'body > form > input:nth-child(2)', liveControl: true } ];
+	for ( const liveIsRoot of [ false, true ] ) {
+		const r = reconcileHandPairs( [ { name: 'field-email', draft: kept[ 0 ].draft, liveRef: 'cr-ref-form-2', liveIsRoot } ], kept );
+		assert.match( r.retarget.get( 'field-email' ), /^\.cr-ref-form-2 :is\(input/ );
+	}
+} );

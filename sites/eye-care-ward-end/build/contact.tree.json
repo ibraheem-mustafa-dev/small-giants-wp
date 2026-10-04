@@ -231,7 +231,8 @@
                 }
               },
               "iconGap": "12px",
-              "iconSize": "21px"
+              "iconSize": "21px",
+              "minHeight": "56px"
             }
           },
           {
@@ -507,7 +508,8 @@
                       "fontSize": {
                         "desktop": "15px"
                       },
-                      "className": "cr-ref-contact-18"
+                      "className": "cr-ref-contact-18",
+                      "labelFontWeight": "400"
                     }
                   },
                   {
