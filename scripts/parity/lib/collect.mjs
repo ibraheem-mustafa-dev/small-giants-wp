@@ -30,6 +30,9 @@ export function resolveFinder( finder ) {
 	if ( typeof finder === 'string' ) {
 		return [ ...document.querySelectorAll( finder ) ].find( visible ) || null;
 	}
+	if ( finder.textRun ) {
+		return [ ...document.querySelectorAll( finder.textRun.within ) ].find( visible ) || null;
+	}
 	if ( finder.js ) {
 		// eslint-disable-next-line no-new-func
 		return new Function( 'root', `return (${ finder.js })(root);` )( scope( finder.within ) );
@@ -54,7 +57,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
 	// eslint-disable-next-line no-new-func
-	const { textCarrier, paintedDecoration, layoutElement } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, layoutElement };` )();
+	const { textCarrier, paintedDecoration, layoutElement, textRun } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, layoutElement, textRun };` )();
 	const el = resolve( finder );
 	if ( ! el ) {
 		return { missing: true };
@@ -64,7 +67,9 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// Text properties come from the element that paints the first visible text (a
 	// button's label span, not the button), so a wrapper's unused font-size is ignored.
 	const TEXT_PROPS = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ];
-	const carrier = textCarrier( el );
+	// A text-run finder ({ textRun: { within, direct } }) measures the block's rendered text only: its extent and its paint.
+	const run = finder.textRun ? textRun( el, !! finder.textRun.direct, finder.textRun.match || null ) : null;
+	const carrier = run ? run.carrier : textCarrier( el );
 	const ccs = carrier ? getComputedStyle( carrier ) : null;
 	// Layout properties come from the element laying out the children (paint.mjs::LAYOUT_PROPS, layoutElement).
 	const LAYOUT = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
@@ -87,7 +92,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		return f;
 	};
 	const styles = {};
-	for ( const p of props ) {
+	for ( const p of run ? props.filter( ( x ) => TEXT_PROPS.includes( x ) ) : props ) {
 		const src = TEXT_PROPS.includes( p ) ? ccs : ( LAYOUT.includes( p ) ? lcs : cs );
 		if ( src && ! /^icon-/.test( p ) ) {
 			const v = src.getPropertyValue( p ).trim();
@@ -114,7 +119,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	}
 	// An icon: the first painted shape of the pair's svg (or the svg the pair is) gives its colour; the svg's box its size.
 	let iconEl = null;
-	if ( props.includes( 'icon-fill' ) ) {
+	if ( ! run && props.includes( 'icon-fill' ) ) {
 		const svg = 'svg' === el.tagName.toLowerCase() ? el : el.querySelector( 'svg' );
 		const shape = svg && [ ...svg.querySelectorAll( 'path, circle, rect, ellipse, line, polyline, polygon, use, text' ) ]
 			.find( ( s ) => s.getClientRects().length && 'none' !== getComputedStyle( s ).display );
@@ -156,7 +161,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		trace,
 		text: ( el.innerText || el.getAttribute( 'aria-label' ) || '' ).replace( /\s+/g, ' ' ).trim().slice( 0, 400 ),
 		keyframes: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : cs.animationName.split( ',' ).map( ( n ) => keyframes( n.trim() ) ).join( ' | ' ),
-		box: { x: Math.round( r.x ), y: Math.round( r.y + window.scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
+		box: run ? run.box : { x: Math.round( r.x ), y: Math.round( r.y + window.scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
 		styles,
 		motion: {
 			animation: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : `${ cs.animationDuration } ${ cs.animationTimingFunction } ${ cs.animationDelay } ${ cs.animationIterationCount } ${ cs.animationFillMode }`,

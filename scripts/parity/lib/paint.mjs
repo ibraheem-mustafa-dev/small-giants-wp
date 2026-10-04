@@ -56,5 +56,34 @@ export function paintedDecoration( from ) {
 	return null;
 }
 
+// Self-contained. A text run: the rendered text of `el` (only its own text nodes when `direct`, every text node inside it
+// otherwise; with `match`, a regex source, only the nodes it matches), for a block whose draft text has no element of its
+// own (a value sharing its element with a label). Returns { box: the union of the text's rects (page coordinates),
+// carrier: the element painting the first text } or null.
+export function textRun( el, direct, match = null ) {
+	const re = match ? new RegExp( match, 'iu' ) : null;
+	const nodes = direct ? [ ...el.childNodes ].filter( ( n ) => 3 === n.nodeType ) : ( () => {
+		const out = [];
+		const tw = document.createTreeWalker( el, NodeFilter.SHOW_TEXT );
+		for ( let n = tw.nextNode(); n; n = tw.nextNode() ) {
+			out.push( n );
+		}
+		return out;
+	} )();
+	let box = null;
+	let carrier = null;
+	for ( const n of nodes.filter( ( x ) => x.textContent.trim() && ( ! re || re.test( x.textContent ) ) ) ) {
+		const rg = document.createRange();
+		rg.selectNodeContents( n );
+		const b = rg.getBoundingClientRect();
+		if ( ! b.width || ! b.height ) {
+			continue;
+		}
+		carrier = carrier || n.parentElement;
+		box = box ? { l: Math.min( box.l, b.left ), t: Math.min( box.t, b.top ), r: Math.max( box.r, b.right ), b: Math.max( box.b, b.bottom ) } : { l: b.left, t: b.top, r: b.right, b: b.bottom };
+	}
+	return box ? { box: { x: Math.round( box.l ), y: Math.round( box.t + window.scrollY ), w: Math.round( box.r - box.l ), h: Math.round( box.b - box.t ) }, carrier } : null;
+}
+
 // The source collectPair and hoverStyles rebuild their paint helpers from.
-export const PAINT_SRC = [ textCarrier, paintedDecoration, layoutElement ].map( ( f ) => f.toString() ).join( ';\n' );
+export const PAINT_SRC = [ textCarrier, paintedDecoration, layoutElement, textRun ].map( ( f ) => f.toString() ).join( ';\n' );

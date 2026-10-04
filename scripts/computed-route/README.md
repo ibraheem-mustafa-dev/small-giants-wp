@@ -38,7 +38,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json`. |
 | `lib/references.mjs` | Reference blocks found from each block's render.php (linked placeholders, frames around another post's blocks, core template parts) and the surfaces lint that every printed post has a surface. |
 | `lib/entrance.mjs` | Entrance start: a block the draft shows at rest while live holds its entrance waiting for a scroll gets `sgsAnimationStart: 'load'` (Spec 38). |
-| `lib/pairs.mjs` | Block pairing: words per block, their draft twins, the keep-or-leave-out judgement (PAIRING_LIMITS) and the generated config's text. |
+| `lib/pairs.mjs` | Block pairing: words per block, their draft twins (repeated words planned apart), the partner choice (element, padded wrapper or text run), the keep-or-leave-out judgement (PAIRING_LIMITS) and the generated config's text. |
+| `lib/pairs-page.mjs` | Block pairing's in-page collectors: tagged words, live block boxes and text runs, draft chains (repeated words placed nearest the sure ones), hand pair elements, and the draft opened through its navigation. |
 | `lib/guard.mjs` | The regression guard: reverts a write calibration names, else tries one suspect at a time and lets the next walk decide. |
 | `lib/ledger.mjs` | Ledger library: rules, matching, stale entries, accept migration, entries from report rows. |
 | `tests/db.test.mjs` | R-47-2: read-only database. |
@@ -169,12 +170,24 @@ file names the rule it proves and has one case marked MUST FAIL.
 
 - `entranceStart(group, node, perWidth)` → `{ writes }` (`sgsAnimationStart: 'load'`) when the block has an entrance, the group is a rest opacity, translate or transform on the block's own element, every draft value is the shown value and every live value the hidden one; else null. `solve.mjs::writeRound` tries it before the resolver.
 
+### `lib/pairs-page.mjs`
+
+- `collectTagged(page, side, cfg)` → the page's words with their tagged elements, as the walker's automatic check collects them.
+- `liveBlocks(page, prefix)` → `{ refs, boxes }`: the refs around each live word (innermost first) and each block's border box, content box and text run.
+- `draftChains(page, want, wordEls, match)` → per block, the chain from the smallest draft element holding its chosen words up to `<body>`, the first carrying `own` (the words are its own text) and `run` (its text run's extent).
+- `handElements(page, finders, side, prefix)` → per hand pair, its draft path or its live block ref and whether it is that block's root.
+- `openDraft(browser, cfg, width)` → the draft page opened through the hand config's navigation with every scroll reveal fired.
+
 ### `lib/pairs.mjs`
 - `PAIRING_LIMITS`: a pairing is left out under 80% of the block's words matched, with a word from outside the block, with a box outside half to double the block's, or when it holds no padding where the block does and their content boxes match within `boxTolerance` (2px) (the padding sits on a draft ancestor).
 - `paddedPartner(chain, liveBox, limits?)` → the partner from the draft chain (smallest element holding the twins, then its ancestors, nearest first): the first element, or, when its padding sits elsewhere, the nearest ancestor wrapping it with padding of its own.
 - `wordsByBlock(liveRefs)` → Map ref → live word indices (every word inside the block, nested blocks included).
 - `twinsByBlock(matches, blocks)` → Map ref → `{ live, draft }` (the block's words and their draft twins).
 - `judgePairing(block, partner, liveRefsOfDraft, limits?)` → `{ ok, why }`.
+- `twinPlan(draftIdx, words)` → `{ sure, repeated }`: element indices of the block's words whose text occurs once on the draft, and, per repeated text, every candidate element (draftChains places it nearest the sure words).
+- `parentRef(ref, refsOfWords)` → the next block ref out from `ref` around its words, or null (a block of repeated words only is anchored on its parent's partner).
+- `wordMatch(texts)` → a regex source (flags `iu`) matching a text node holding any of the block's words as whole words; a text run takes only those nodes.
+- `choosePartner(chain, block, liveRefsOfDraft, limits?)` → `{ partner, verdict }`: the element partner when it passes; else, when the draft element has the block's text but not its box, or shares its element with another block's words while the block's words are its own text, a text-run partner (`textRun: { direct }`) judged on both sides' text extents.
 - `reconcileHandPairs(hand, kept)` → `{ retarget, duplicate }`: a hand pair measuring a kept block's draft element on an element inside that block moves to the block root (`retarget`), and the generated pair it then duplicates is dropped (`duplicate`).
 - `configText(handFile, surface, pairs, retarget?)` → the generated walker config's source (hand pairs named in `retarget` measure the given live finder).
 

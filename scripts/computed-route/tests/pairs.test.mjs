@@ -88,3 +88,56 @@ test( 'positive control: a hand pair on the root, on another draft element or an
 	assert.equal( other.retarget.size, 0 );
 	assert.equal( other.duplicate.size, 0 );
 } );
+
+// Contact, 2026-10-04: repeated draft words, bare-text values beside their labels, an inline number against a block.
+import { twinPlan, parentRef, wordMatch, choosePartner } from '../lib/pairs.mjs';
+
+test( 'MUST FAIL TO TRUST: a word that occurs twice on the draft is a candidate set, not a fixed twin', () => {
+	const words = [ { t: 'google', e: 1 }, { t: 'sketch', e: 1 }, { t: 'google', e: 7 }, { t: 'reviews', e: 8 } ];
+	assert.deepEqual( twinPlan( [ 0, 3 ], words ), { sure: [ 8 ], repeated: [ [ 1, 7 ] ] } );
+	assert.deepEqual( twinPlan( [ 3 ], words ), { sure: [ 8 ], repeated: [] } );
+} );
+
+test( 'a block\'s parent is the next ref out around its words', () => {
+	assert.equal( parentRef( 'c-28', [ [ 'c-31', 'c-30' ], [ 'c-28', 'c-27', 'c-26' ] ] ), 'c-27' );
+	assert.equal( parentRef( 'c-0', [ [ 'c-0' ] ] ), null );
+} );
+
+test( 'a word match finds whole words only', () => {
+	const re = new RegExp( wordMatch( [ 'mon', 'sat' ] ), 'iu' );
+	assert.ok( re.test( 'Mon–Sat 9.30–17.30' ) );
+	assert.ok( ! re.test( 'Collections by arrangement' ) );
+	assert.equal( wordMatch( [] ), null );
+} );
+
+const ofDraftC = new Map( [ [ 20, [ 'e', 'card' ] ], [ 21, [ 'v', 'card' ] ] ] );
+const valueBlock = ( run ) => ( { ref: 'v', live: [ 1 ], draft: [ 21 ], liveBox: { w: 249, h: 29, content: { w: 249, h: 29 }, run } } );
+
+test( 'MUST FAIL TO KEEP: a value sharing its draft element with a label is paired as its own text run', () => {
+	const chain = [ { path: 'body > div:nth-child(2)', box: { w: 236, h: 46 }, content: { w: 236, h: 46 }, inside: [ 20, 21 ], own: true, run: { w: 230, h: 19 } } ];
+	const r = choosePartner( chain, valueBlock( { w: 232, h: 20 } ), ofDraftC );
+	assert.equal( r.verdict.ok, true );
+	assert.deepEqual( r.partner.textRun, { direct: true } );
+	assert.deepEqual( r.partner.inside, [ 21 ] );
+} );
+
+test( 'MUST FAIL TO KEEP: an inline number against a block is paired by its text', () => {
+	const chain = [ { path: 'body > span:nth-child(1)', box: { w: 91, h: 19 }, content: { w: 91, h: 19 }, inside: [ 21 ], own: false, run: { w: 91, h: 19 } } ];
+	const r = choosePartner( chain, valueBlock( { w: 92, h: 20 } ), ofDraftC );
+	assert.equal( r.verdict.ok, true );
+	assert.deepEqual( r.partner.textRun, { direct: false } );
+} );
+
+test( 'positive control: a run is not used when the element passes, when foreign words are not the element\'s own text, or when no live run exists', () => {
+	const ok = [ { path: 'p', box: { w: 240, h: 30 }, content: { w: 240, h: 30 }, inside: [ 21 ], own: true, run: { w: 230, h: 19 } } ];
+	assert.equal( choosePartner( ok, valueBlock( { w: 232, h: 20 } ), ofDraftC ).partner.textRun, undefined );
+	const nested = [ { path: 'd', box: { w: 236, h: 46 }, content: { w: 236, h: 46 }, inside: [ 20, 21 ], own: false, run: { w: 230, h: 19 } } ];
+	assert.equal( choosePartner( nested, valueBlock( { w: 232, h: 20 } ), ofDraftC ).verdict.ok, false );
+	assert.equal( choosePartner( [ { ...nested[ 0 ], own: true } ], valueBlock( null ), ofDraftC ).verdict.ok, false );
+} );
+
+test( 'a text-run pair measures the run on both sides in the generated config', () => {
+	const src = configText( 'contact.mjs', 'contact', [ { ref: 'cr-ref-contact-12', draft: 'body > div:nth-child(2)', textRun: { direct: true, match: '(x)' } } ] );
+	assert.match( src, /draft: \{"textRun":\{"within":"body > div:nth-child\(2\)","direct":true,"match":"\(x\)"\}\}/ );
+	assert.match( src, /live: \{"textRun":\{"within":"\.cr-ref-contact-12","direct":false,"match":"\(x\)"\}\}/ );
+} );

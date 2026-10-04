@@ -4,170 +4,21 @@
 // Opens the surface's draft (its walker config's draft url and navigation) and live page at 1440, collects every
 // painted word with the element painting it (scripts/parity/lib/auto-collect.mjs, tagEls), pairs the words with the
 // walker's own matcher (auto-compare.mjs::matchWords), and pairs each live block (cr-ref-<surface>-<n>) with the
-// smallest draft element holding its words' twins (lib/pairs.mjs). Doubtful pairings are left out with their reason.
+// smallest draft element holding its words' twins (lib/pairs.mjs; the in-page collectors are lib/pairs-page.mjs).
+// A repeated draft word takes the occurrence nearest the block's sure words, or its parent block's partner; a block
+// whose draft text has no element of its own is paired as a text run. Doubtful pairings are left out with their reason.
 // A kept draft finder is re-checked at 375 and 768 (it must still hold the block's first and last matched words).
 // Writes sites/<client>/build/qa/parity/<surface>.full.mjs and sites/<client>/build/qa/pairs/<surface>.json.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { collectAuto } from '../parity/lib/auto-collect.mjs';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
-import { AUTO_EXCLUDE } from '../parity/lib/auto-walk.mjs';
-import { makeHelpers, waitOutHostCheck } from '../parity/lib/helpers.mjs';
-import { resolveFinder } from '../parity/lib/collect.mjs';
-import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
+import { waitOutHostCheck } from '../parity/lib/helpers.mjs';
+import { wordsByBlock, twinsByBlock, twinPlan, parentRef, wordMatch, choosePartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
+import { collectTagged, liveBlocks, draftChains, handElements, openDraft } from './lib/pairs-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
-
-// In-page: the words (tagged with their elements) of the page, as the walker's automatic check collects them.
-function collectTagged( page, side, cfg ) {
-	const exclude = [ ...AUTO_EXCLUDE, ...( cfg.auto?.exclude?.[ side ] || [] ) ];
-	return page.evaluate( ( [ fn, rootSel, ex ] ) => {
-		// eslint-disable-next-line no-new-func
-		const collect = new Function( `return (${ fn });` )();
-		// eslint-disable-next-line no-new-func
-		const excludeEls = ex.filter( ( e ) => e && e.js ).map( ( e ) => new Function( 'root', `return (${ e.js })(root);` )( document ) ).filter( Boolean );
-		const root = rootSel ? document.querySelector( rootSel ) : null;
-		return collect( [ { root, modal: null, excludeEls, tagEls: true }, ex.filter( ( e ) => 'string' === typeof e ), 4000 ] ).words;
-	}, [ collectAuto.toString(), cfg.auto?.root?.[ side ] || null, exclude ] );
-}
-
-// In-page (live): the cr-ref classes around each tagged word, innermost first, and each block's border box and
-// content box (the border box minus its computed padding).
-function liveBlocks( page, prefix ) {
-	return page.evaluate( ( pre ) => {
-		const refOf = ( el ) => [ ...el.classList ].find( ( c ) => c.startsWith( pre ) );
-		const refsAround = ( el ) => {
-			const out = [];
-			for ( let a = el; a; a = a.parentElement ) {
-				const r = refOf( a );
-				r && out.push( r );
-			}
-			return out;
-		};
-		const boxes = {};
-		document.querySelectorAll( `[class*="${ pre }"]` ).forEach( ( el ) => {
-			const r = refOf( el );
-			const b = el.getBoundingClientRect();
-			const cs = getComputedStyle( el );
-			const px = ( p ) => parseFloat( cs[ p ] ) || 0;
-			r && ! boxes[ r ] && b.width > 0 && ( boxes[ r ] = {
-				w: Math.round( b.width ),
-				h: Math.round( b.height ),
-				content: { w: Math.round( b.width - px( 'paddingLeft' ) - px( 'paddingRight' ) ), h: Math.round( b.height - px( 'paddingTop' ) - px( 'paddingBottom' ) ) },
-			} );
-		} );
-		return { refs: window.__crEls.map( refsAround ), boxes };
-	}, prefix );
-}
-
-// In-page (draft): for each block, the smallest element holding its twins' elements and each of its ancestors below
-// <body>, nearest first: a CSS path from <body>, border box, content box, and every tagged word element inside it.
-// lib/pairs.mjs::paddedPartner picks the partner from that chain.
-function draftChains( page, wanted, wordEls ) {
-	return page.evaluate( ( [ want, wEls ] ) => {
-		const els = window.__crEls;
-		const lca = ( list ) => list.reduce( ( a, b ) => {
-			let x = a;
-			while ( x && ! x.contains( b ) ) {
-				x = x.parentElement;
-			}
-			return x;
-		} );
-		const pathOf = ( el ) => {
-			const steps = [];
-			for ( let a = el; a && a !== document.body; a = a.parentElement ) {
-				steps.unshift( `${ a.tagName.toLowerCase() }:nth-child(${ [ ...a.parentElement.children ].indexOf( a ) + 1 })` );
-			}
-			return [ 'body', ...steps ].join( ' > ' );
-		};
-		const boxOf = ( el ) => {
-			const b = el.getBoundingClientRect();
-			const cs = getComputedStyle( el );
-			const px = ( p ) => parseFloat( cs[ p ] ) || 0;
-			return {
-				w: Math.round( b.width ),
-				h: Math.round( b.height ),
-				content: { w: Math.round( b.width - px( 'paddingLeft' ) - px( 'paddingRight' ) ), h: Math.round( b.height - px( 'paddingTop' ) - px( 'paddingBottom' ) ) },
-			};
-		};
-		const out = {};
-		for ( const [ ref, idx ] of Object.entries( want ) ) {
-			const p = lca( [ ...new Set( idx ) ].map( ( i ) => els[ i ] ) );
-			if ( ! p || p === document.body || p === document.documentElement ) {
-				out[ ref ] = null;
-				continue;
-			}
-			out[ ref ] = [];
-			for ( let a = p; a && a !== document.body; a = a.parentElement ) {
-				const box = boxOf( a );
-				out[ ref ].push( { path: pathOf( a ), box: { w: box.w, h: box.h }, content: box.content, inside: wEls.map( ( e, j ) => ( a.contains( els[ e ] ) ? j : -1 ) ).filter( ( j ) => j >= 0 ) } );
-			}
-		}
-		return out;
-	}, [ wanted, wordEls ] );
-}
-
-// In-page: each hand pair's element on one side. Draft: its CSS path from <body> (as draftChains writes it). Live: the
-// nearest block ref at or above it and whether it is that ref's own element.
-function handElements( page, finders, side, prefix ) {
-	return page.evaluate( ( [ list, src, sd, pre ] ) => {
-		// eslint-disable-next-line no-new-func
-		const resolve = new Function( `return (${ src });` )();
-		const pathOf = ( el ) => {
-			const steps = [];
-			for ( let a = el; a && a !== document.body; a = a.parentElement ) {
-				steps.unshift( `${ a.tagName.toLowerCase() }:nth-child(${ [ ...a.parentElement.children ].indexOf( a ) + 1 })` );
-			}
-			return [ 'body', ...steps ].join( ' > ' );
-		};
-		return list.map( ( f ) => {
-			let el = null;
-			try {
-				el = f ? resolve( f ) : null;
-			} catch {
-				el = null;
-			}
-			if ( ! el ) {
-				return null;
-			}
-			if ( 'draft' === sd ) {
-				return pathOf( el );
-			}
-			for ( let a = el; a; a = a.parentElement ) {
-				const r = [ ...a.classList ].find( ( c ) => c.startsWith( pre ) );
-				if ( r ) {
-					return { liveRef: r, liveIsRoot: a === el };
-				}
-			}
-			return null;
-		} );
-	}, [ finders, resolveFinder.toString(), side, prefix ] );
-}
-
-async function openDraft( browser, cfg, width ) {
-	const page = await browser.newPage( { viewport: { width, height: 900 } } );
-	const RESOLVE = resolveFinder.toString();
-	const h = makeHelpers( page, 'draft', { cb: ( u ) => u.replace( '{cb}', String( Date.now() ) ), RESOLVE, onAction: null } );
-	h.log = [];
-	await page.goto( cfg.draft.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
-	await page.waitForTimeout( 1500 );
-	await waitOutHostCheck( page );
-	if ( cfg.draft.open ) {
-		await cfg.draft.open( h );
-	}
-	// Every scroll reveal fires before anything is read.
-	await page.evaluate( async () => {
-		for ( let y = 0; y < document.body.scrollHeight; y += 600 ) {
-			window.scrollTo( 0, y );
-			await new Promise( ( r ) => setTimeout( r, 120 ) );
-		}
-		window.scrollTo( 0, 0 );
-	} );
-	await page.waitForTimeout( 1500 );
-	return page;
-}
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
 	const argv = process.argv.slice( 2 );
@@ -195,15 +46,27 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const lRefsOfWord = lWords.map( ( w ) => liveRefs[ w.e ] || [] );
 	const twins = twinsByBlock( matches, wordsByBlock( lRefsOfWord ) );
 	const liveRefsOfDraft = new Map( matches.map( ( [ d, l ] ) => [ d, lRefsOfWord[ l ] ] ) );
-	const wanted = Object.fromEntries( [ ...twins ].filter( ( [ , t ] ) => t.draft.length ).map( ( [ ref, t ] ) => [ ref, t.draft.map( ( j ) => dWords[ j ].e ) ] ) );
-	const chains = await draftChains( draft, wanted, dWords.map( ( w ) => w.e ) );
-	const partners = Object.fromEntries( Object.entries( chains ).map( ( [ ref, chain ] ) => [ ref, chain && paddedPartner( chain, boxes[ ref ] ) ] ) );
+	const wordEls = dWords.map( ( w ) => w.e );
+	// Pass 1: blocks with at least one sure (unrepeated) draft word; pass 2: blocks of repeated words only, anchored on
+	// their parent block's partner.
+	const plans = new Map( [ ...twins ].filter( ( [ , t ] ) => t.draft.length ).map( ( [ ref, t ] ) => [ ref, twinPlan( t.draft, dWords ) ] ) );
+	const match = Object.fromEntries( [ ...twins ].map( ( [ ref, t ] ) => [ ref, wordMatch( t.draft.map( ( j ) => dWords[ j ].t ) ) ] ) );
+	const results = {};
+	const decide = ( chains ) => {
+		for ( const [ ref, chain ] of Object.entries( chains ) ) {
+			const block = { ref, ...twins.get( ref ), liveBox: boxes[ ref ] || { w: 0, h: 0 } };
+			results[ ref ] = chain ? choosePartner( chain, block, liveRefsOfDraft ) : { partner: null, verdict: { ok: false, why: 'no draft element holds its words' } };
+		}
+	};
+	decide( await draftChains( draft, Object.fromEntries( [ ...plans ].filter( ( [ , p ] ) => p.sure.length ).map( ( [ ref, p ] ) => [ ref, { ...p, anchor: null } ] ) ), wordEls, match ) );
+	const second = [ ...plans ].filter( ( [ , p ] ) => ! p.sure.length ).map( ( [ ref, p ] ) => [ ref, { ...p, anchor: results[ parentRef( ref, lRefsOfWord ) ]?.partner?.path || null } ] );
+	decide( await draftChains( draft, Object.fromEntries( second ), wordEls, match ) );
 	const kept = [];
 	const left = [];
 	for ( const [ ref, t ] of twins ) {
-		const partner = partners[ ref ];
-		const verdict = partner ? judgePairing( { ref, ...t, liveBox: boxes[ ref ] || { w: 0, h: 0 } }, partner, liveRefsOfDraft ) : { ok: false, why: t.draft.length ? 'no draft element holds its words' : 'no matched words' };
-		( verdict.ok ? kept : left ).push( { ref, draft: partner?.path || null, why: verdict.why, words: t.live.length, matched: t.draft.length, first: t.draft.length ? dWords[ Math.min( ...t.draft ) ].t : null, last: t.draft.length ? dWords[ Math.max( ...t.draft ) ].t : null } );
+		const { partner, verdict } = results[ ref ] || { partner: null, verdict: { ok: false, why: 'no matched words' } };
+		const textRun = partner?.textRun ? { ...partner.textRun, match: match[ ref ] } : null;
+		( verdict.ok ? kept : left ).push( { ref, draft: partner?.path || null, ...( textRun ? { textRun } : {} ), why: verdict.why, words: t.live.length, matched: t.draft.length, first: t.draft.length ? dWords[ Math.min( ...t.draft ) ].t : null, last: t.draft.length ? dWords[ Math.max( ...t.draft ) ].t : null } );
 	}
 	// Hand pairs measuring a kept block's draft element on an element inside the block move to the block root, and
 	// the generated pair they then duplicate is dropped (lib/pairs.mjs::reconcileHandPairs).
@@ -211,7 +74,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const serial = ( f ) => ( 'function' === typeof f ? null : f );
 	const hDraft = await handElements( draft, handPairs.map( ( p ) => serial( p.draft ) ), 'draft', prefix );
 	const hLive = await handElements( live, handPairs.map( ( p ) => serial( p.live ) ), 'live', prefix );
-	const { retarget, duplicate } = reconcileHandPairs( handPairs.map( ( p, i ) => ( { name: p.name, draft: hDraft[ i ], liveRef: hLive[ i ]?.liveRef || null, liveIsRoot: !! hLive[ i ]?.liveIsRoot } ) ), kept );
+	const { retarget, duplicate } = reconcileHandPairs( handPairs.map( ( p, i ) => ( { name: p.name, draft: hDraft[ i ], liveRef: hLive[ i ]?.liveRef || null, liveIsRoot: !! hLive[ i ]?.liveIsRoot } ) ), kept.filter( ( k ) => ! k.textRun ) );
 	for ( let i = kept.length - 1; i >= 0; i-- ) {
 		duplicate.has( kept[ i ].ref ) && kept.splice( i, 1 );
 	}
