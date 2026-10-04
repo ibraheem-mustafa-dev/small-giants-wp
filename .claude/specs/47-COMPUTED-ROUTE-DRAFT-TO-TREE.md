@@ -443,9 +443,9 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      (`lib/guard.mjs`, R-47-9), box seeding from the node's nearest wider tier (`resolve.mjs::WIDER_TIERS`), and the
      divergence ledger (`sites/eye-care-ward-end/build/qa/divergences.json`; D-1 holds Contact's subtext margin at 0px
      on phones).
-   - **Calibration:** 93 of 95 SGS blocks have one library-wide cache file each (47 measured on eye-care-test, page 668;
-     46 on sandybrown, page 4750, which runs the `mamas-munches` snapshot). Not calibrated: `decorative-image` (CR8, fixed
-     in the block; its sandybrown calibration is queued) and `theme-toggle` (CR12). A border-style marker carries its
+   - **Calibration:** 94 of 95 SGS blocks have one library-wide cache file each (47 measured on eye-care-test, page 668;
+     47 on sandybrown, page 4750, which runs the `mamas-munches` snapshot), `decorative-image` included once CR8 was fixed.
+     Not calibrated: `theme-toggle` (CR12). A border-style marker carries its
      companion width (CR11, proven on quote and info-box); the other affected blocks are re-calibrated only on Bean's go.
      Fixtures come from each block's first use in the trees or its block.json `example`, styling at defaults.
    - **Results under the new guard** (scored items from the register; the whole-page line, distinct style, hover and

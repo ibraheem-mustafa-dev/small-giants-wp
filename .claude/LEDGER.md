@@ -54,8 +54,9 @@ collapses to zero width (N46). No blockers.
 
 **Spec 47 (v0.5): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`, "Solve"
 compares a built page with the draft and writes block settings). Stages 1 and 2 built; stage 3 in progress, all on
-`main` and pushed. S3, S4, S5, S11, CR8 and CR13 are live on eye-care-test; sandybrown's redeploy, its CR8 check and the
-decorative-image calibration were queued at close. Under the pinpointing guard: About
+`main` and pushed. S3, S4, S5, S11, CR8 and CR13 are live on eye-care-test and sandybrown; decorative-image is calibrated
+(94 of 95 blocks). At close both sites served this PC the host's bot check despite the IP allowlist: Bean to check
+hPanel, since every live check and walk depends on it. Under the pinpointing guard: About
 5 of 5 items, Lenses 6 of 6, Contact 8 of 9, all with 0 regressions. A council (2026-10-04) found Solve only saw the
 elements a hand-written walker config names (About 16 of 24 blocks); fixes F1 (where an element sits in the page) and F4
 (identity transform) are done; F2 (every block paired with its draft element through matched words, `pairs.mjs`) paired
