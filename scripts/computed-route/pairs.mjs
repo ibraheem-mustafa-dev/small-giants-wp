@@ -14,8 +14,8 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
 import { waitOutHostCheck } from '../parity/lib/helpers.mjs';
-import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
-import { collectTagged, liveBlocks, draftChains, formControls, handElements, openDraft } from './lib/pairs-page.mjs';
+import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, chooseGroupPartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
+import { collectTagged, liveBlocks, draftChains, formControls, groupBoxes, handElements, openDraft } from './lib/pairs-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -59,12 +59,13 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		}
 	};
 	decide( await draftChains( draft, Object.fromEntries( [ ...plans ].filter( ( [ , p ] ) => p.sure.length ).map( ( [ ref, p ] ) => [ ref, { ...p, anchor: null } ] ) ), wordEls, match ) );
-	// Hand pairs' elements (also read for reconcileHandPairs below): a hand pair on a block's root is that block's partner.
+	// Hand pairs' elements (also read for reconcileHandPairs below).
 	const handPairs = ( cfg.pairs || [] ).filter( ( p ) => p && p.name );
 	const serial = ( f ) => ( 'function' === typeof f ? null : f );
 	const hDraft = await handElements( draft, handPairs.map( ( p ) => serial( p.draft ) ), 'draft', prefix );
 	const hLive = await handElements( live, handPairs.map( ( p ) => serial( p.live ) ), 'live', prefix );
-	const partnerPath = { ...Object.fromEntries( handPairs.map( ( p, i ) => ( hLive[ i ]?.liveIsRoot && hDraft[ i ] ? [ hLive[ i ].liveRef, hDraft[ i ] ] : null ) ).filter( Boolean ) ) };
+	// For anchoring, a hand pair measuring any element of a block stands for that block (a field's input for the field).
+	const partnerPath = Object.fromEntries( handPairs.map( ( p, i ) => ( hLive[ i ]?.liveRef && hDraft[ i ] ? [ hLive[ i ].liveRef, hDraft[ i ] ] : null ) ).filter( Boolean ) );
 	Object.entries( results ).forEach( ( [ ref, r ] ) => r.verdict.ok && ( partnerPath[ ref ] = r.partner.path ) );
 	// A block of repeated words only anchors on its parent block's partner, else on its child blocks' partners' common ancestor.
 	const anchorOf = ( ref ) => partnerPath[ parents[ ref ] ] || commonPath( Object.keys( parents ).filter( ( c ) => parents[ c ] === ref ).map( ( c ) => partnerPath[ c ] ) );
@@ -85,9 +86,20 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		const { partner, verdict } = chooseControlPartner( controlChains[ ref ], boxes[ ref ] );
 		( verdict.ok ? kept : left ).push( { ref, draft: partner?.path || null, control: liveControls[ ref ].id, why: verdict.why, words: 0, matched: 0, first: null, last: null } );
 	}
+	// A block left out for sharing its draft element with other blocks' words, whose children are paired, is paired as
+	// the group of its children's partners (box only).
+	kept.forEach( ( k ) => ( partnerPath[ k.ref ] = partnerPath[ k.ref ] || k.draft ) );
+	const childPaths = ( ref ) => Object.keys( parents ).filter( ( c ) => parents[ c ] === ref ).map( ( c ) => partnerPath[ c ] );
+	const grouped = left.filter( ( l ) => /belong outside|no draft element holds/.test( l.why || '' ) && childPaths( l.ref ).filter( Boolean ).length > 1 );
+	const gBoxes = grouped.length ? await groupBoxes( draft, Object.fromEntries( grouped.map( ( l ) => [ l.ref, childPaths( l.ref ).filter( Boolean ) ] ) ) ) : {};
+	for ( const l of grouped ) {
+		const { partner, verdict } = chooseGroupPartner( childPaths( l.ref ), gBoxes[ l.ref ], boxes[ l.ref ] || { w: 0, h: 0 } );
+		left.splice( left.indexOf( l ), 1 );
+		( verdict.ok ? kept : left ).push( { ...l, draft: partner?.path || l.draft, ...( partner ? { group: partner.group } : {} ), why: verdict.ok ? null : `${ l.why }; ${ verdict.why }`, first: verdict.ok ? null : l.first, last: verdict.ok ? null : l.last } );
+	}
 	// Hand pairs measuring a kept block's draft element on an element inside the block move to the block root, and
 	// the generated pair they then duplicate is dropped (lib/pairs.mjs::reconcileHandPairs).
-	const { retarget, duplicate } = reconcileHandPairs( handPairs.map( ( p, i ) => ( { name: p.name, draft: hDraft[ i ], liveRef: hLive[ i ]?.liveRef || null, liveIsRoot: !! hLive[ i ]?.liveIsRoot } ) ), kept.filter( ( k ) => ! k.textRun ) );
+	const { retarget, duplicate } = reconcileHandPairs( handPairs.map( ( p, i ) => ( { name: p.name, draft: hDraft[ i ], liveRef: hLive[ i ]?.liveRef || null, liveIsRoot: !! hLive[ i ]?.liveIsRoot } ) ), kept.filter( ( k ) => ! k.textRun && ! k.group ) );
 	for ( let i = kept.length - 1; i >= 0; i-- ) {
 		duplicate.has( kept[ i ].ref ) && kept.splice( i, 1 );
 	}

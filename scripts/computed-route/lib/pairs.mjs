@@ -157,6 +157,23 @@ export function chooseControlPartner( chain, liveBox, limits = PAIRING_LIMITS ) 
 	return { partner: fits.sort( ( a, b ) => off( a.box ) - off( b.box ) )[ 0 ], verdict: { ok: true, why: null } };
 }
 
+// The partner for a block whose draft has no element of its own (it shares one with another block's words) but whose
+// child blocks are paired: the group of its children's draft partners, compared by its union box only. childPaths: the
+// children's draft partner paths; groupBox: their union box on the draft; liveBox: the block's. Returns { partner,
+// verdict }; the partner carries `group: { paths }`.
+export function chooseGroupPartner( childPaths, groupBox, liveBox, limits = PAIRING_LIMITS ) {
+	const paths = [ ...new Set( childPaths.filter( Boolean ) ) ];
+	if ( paths.length < 2 || ! groupBox ) {
+		return { partner: null, verdict: { ok: false, why: 'its draft element holds other blocks\' words and fewer than two of its children are paired' } };
+	}
+	const [ lo, hi ] = limits.boxRatio;
+	const off = [ 'w', 'h' ].find( ( k ) => groupBox[ k ] / Math.max( 1, liveBox[ k ] ) < lo || groupBox[ k ] / Math.max( 1, liveBox[ k ] ) > hi );
+	if ( off ) {
+		return { partner: null, verdict: { ok: false, why: `its children's draft group is ${ groupBox[ off ] }px ${ 'w' === off ? 'wide' : 'high' } against ${ liveBox[ off ] }px live` } };
+	}
+	return { partner: { path: commonPath( paths ), box: groupBox, group: { paths } }, verdict: { ok: true, why: null } };
+}
+
 // Hand pairs against kept generated pairs. hand: [{ name, draft: draft element path or null, liveRef: the nearest
 // block ref at or above its live element, liveIsRoot }]; kept: [{ ref, draft }]. A hand pair measuring the very draft
 // element a block was paired with must measure that block's root on live: one inside the block (an inner band)
@@ -181,9 +198,13 @@ export function reconcileHandPairs( hand, kept ) {
 // navigation, exclusions and divergence ledger; refPrefix is restated so Solve accepts the file. retarget: hand pair
 // name -> the live finder replacing its own (reconcileHandPairs).
 export function configText( handFile, surface, pairs, retarget = new Map() ) {
-	// A text-run pair (lib/pairs.mjs::choosePartner) measures the block's rendered text on both sides (paint.mjs::textRun).
+	// A text-run pair (choosePartner) measures the block's rendered text on both sides (paint.mjs::textRun); a group pair
+	// (chooseGroupPartner) the union box of its children's partners against the block's box (paint.mjs::groupBox).
 	const finder = ( p, side ) => {
 		const within = 'draft' === side ? p.draft : `.${ p.ref }`;
+		if ( p.group ) {
+			return { group: { paths: 'draft' === side ? p.group.paths : [ within ] } };
+		}
 		return p.textRun ? { textRun: { within, direct: 'draft' === side && !! p.textRun.direct, match: p.textRun.match || null } } : within;
 	};
 	const lines = pairs.map( ( p ) => `\t{ name: ${ JSON.stringify( `gen-${ p.ref.replace( /^cr-ref-/, '' ) }` ) }, text: false, structure: false, draft: ${ JSON.stringify( finder( p, 'draft' ) ) }, live: ${ JSON.stringify( finder( p, 'live' ) ) } },` );

@@ -169,3 +169,23 @@ test( 'MUST FAIL TO KEEP: an unpadded partner climbs to its tight padded wrapper
 	assert.equal( paddedPartner( [ inner, { ...outer, content: { w: 1100, h: 738 } } ], live ).path, 'main > div' );
 	assert.equal( paddedPartner( [ inner, outer ], { w: 996, h: 600, content: { w: 996, h: 600 } } ).path, 'main > div' );
 } );
+
+// Contact's form, 2026-10-04: the draft has no element of its own for the form (its fields sit beside the heading in
+// one card); it is paired as the group of its fields' partners, by box only.
+import { chooseGroupPartner } from '../lib/pairs.mjs';
+
+test( 'MUST FAIL TO KEEP: a block with no draft element of its own pairs as its children\'s group', () => {
+	const kids = [ 'body > main > div:nth-child(2) > div:nth-child(3)', 'body > main > div:nth-child(2) > div:nth-child(4)' ];
+	const r = chooseGroupPartner( kids, { w: 440, h: 300 }, { w: 450, h: 320 } );
+	assert.equal( r.verdict.ok, true );
+	assert.deepEqual( r.partner.group, { paths: kids } );
+	assert.equal( r.partner.path, 'body > main > div:nth-child(2)' );
+	const src = configText( 'contact.mjs', 'contact-form', [ { ref: 'cr-ref-contact-form-0', draft: r.partner.path, group: r.partner.group } ] );
+	assert.match( src, /live: \{"group":\{"paths":\["\.cr-ref-contact-form-0"\]\}\}/ );
+} );
+
+test( 'positive control: one paired child, no group box, or a group far from the block\'s size is left out', () => {
+	assert.equal( chooseGroupPartner( [ 'a', null ], { w: 1, h: 1 }, { w: 1, h: 1 } ).verdict.ok, false );
+	assert.equal( chooseGroupPartner( [ 'a', 'b' ], null, { w: 1, h: 1 } ).verdict.ok, false );
+	assert.match( chooseGroupPartner( [ 'body > a', 'body > b' ], { w: 100, h: 300 }, { w: 450, h: 320 } ).verdict.why, /wide/ );
+} );

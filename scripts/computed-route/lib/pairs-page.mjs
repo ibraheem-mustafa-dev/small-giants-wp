@@ -174,6 +174,18 @@ export function formControls( page, prefix, side, idents = null ) {
 	}, [ prefix, side, idents ] );
 }
 
+// Draft groups: ref -> the union box ({ w, h }) of the elements at its paths (paint.mjs::groupBox), or null.
+export function groupBoxes( page, groups ) {
+	return page.evaluate( ( [ g, src ] ) => {
+		// eslint-disable-next-line no-new-func
+		const { groupBox } = new Function( `${ src }; return { groupBox };` )();
+		return Object.fromEntries( Object.entries( g ).map( ( [ ref, paths ] ) => {
+			const b = groupBox( paths );
+			return [ ref, b ? { w: b.box.w, h: b.box.h } : null ];
+		} ) );
+	}, [ groups, PAINT_SRC ] );
+}
+
 // Each hand pair's element on one side. Draft: its CSS path from <body> (as draftChains writes it). Live: the nearest
 // block ref at or above it and whether it is that ref's own element.
 export function handElements( page, finders, side, prefix ) {

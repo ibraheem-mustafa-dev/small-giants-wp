@@ -85,5 +85,19 @@ export function textRun( el, direct, match = null ) {
 	return box ? { box: { x: Math.round( box.l ), y: Math.round( box.t + window.scrollY ), w: Math.round( box.r - box.l ), h: Math.round( box.b - box.t ) }, carrier } : null;
 }
 
+// Self-contained. A group: the union of the boxes of the elements at `paths` (CSS selectors), for a block whose draft has
+// no element of its own (a form whose fields sit beside a heading in one card). Returns { box, carrier: null } or null.
+export function groupBox( paths ) {
+	const rects = paths.map( ( p ) => document.querySelector( p ) ).filter( Boolean ).map( ( e ) => e.getBoundingClientRect() ).filter( ( r ) => r.width && r.height );
+	if ( ! rects.length ) {
+		return null;
+	}
+	const l = Math.min( ...rects.map( ( r ) => r.left ) );
+	const t = Math.min( ...rects.map( ( r ) => r.top ) );
+	const w = Math.max( ...rects.map( ( r ) => r.right ) ) - l;
+	const h = Math.max( ...rects.map( ( r ) => r.bottom ) ) - t;
+	return { box: { x: Math.round( l ), y: Math.round( t + window.scrollY ), w: Math.round( w ), h: Math.round( h ) }, carrier: null };
+}
+
 // The source collectPair and hoverStyles rebuild their paint helpers from.
-export const PAINT_SRC = [ textCarrier, paintedDecoration, layoutElement, textRun ].map( ( f ) => f.toString() ).join( ';\n' );
+export const PAINT_SRC = [ textCarrier, paintedDecoration, layoutElement, textRun, groupBox ].map( ( f ) => f.toString() ).join( ';\n' );

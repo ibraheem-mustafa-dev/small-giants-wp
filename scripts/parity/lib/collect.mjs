@@ -33,6 +33,9 @@ export function resolveFinder( finder ) {
 	if ( finder.textRun ) {
 		return [ ...document.querySelectorAll( finder.textRun.within ) ].find( visible ) || null;
 	}
+	if ( finder.group ) {
+		return finder.group.paths.map( ( p ) => document.querySelector( p ) ).find( visible ) || null;
+	}
 	if ( finder.js ) {
 		// eslint-disable-next-line no-new-func
 		return new Function( 'root', `return (${ finder.js })(root);` )( scope( finder.within ) );
@@ -57,7 +60,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
 	// eslint-disable-next-line no-new-func
-	const { textCarrier, paintedDecoration, layoutElement, textRun } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, layoutElement, textRun };` )();
+	const { textCarrier, paintedDecoration, layoutElement, textRun, groupBox } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, layoutElement, textRun, groupBox };` )();
 	const el = resolve( finder );
 	if ( ! el ) {
 		return { missing: true };
@@ -68,7 +71,8 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// button's label span, not the button), so a wrapper's unused font-size is ignored.
 	const TEXT_PROPS = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ];
 	// A text-run finder ({ textRun: { within, direct } }) measures the block's rendered text only: its extent and its paint.
-	const run = finder.textRun ? textRun( el, !! finder.textRun.direct, finder.textRun.match || null ) : null;
+	// A group finder ({ group: { paths } }) measures the union box of its elements only (no styles).
+	const run = finder.textRun ? textRun( el, !! finder.textRun.direct, finder.textRun.match || null ) : ( finder.group ? groupBox( finder.group.paths ) : null );
 	const carrier = run ? run.carrier : textCarrier( el );
 	const ccs = carrier ? getComputedStyle( carrier ) : null;
 	// Layout properties come from the element laying out the children (paint.mjs::LAYOUT_PROPS, layoutElement).
@@ -92,14 +96,14 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		return f;
 	};
 	const styles = {};
-	for ( const p of run ? props.filter( ( x ) => TEXT_PROPS.includes( x ) ) : props ) {
+	for ( const p of run ? props.filter( ( x ) => ! finder.group && TEXT_PROPS.includes( x ) ) : props ) {
 		const src = TEXT_PROPS.includes( p ) ? ccs : ( LAYOUT.includes( p ) ? lcs : cs );
 		if ( src && ! /^icon-/.test( p ) ) {
 			const v = src.getPropertyValue( p ).trim();
 			styles[ p ] = /color$/.test( p ) ? srgb( v ) : v;
 		}
 	}
-	if ( props.includes( 'text-decoration-line' ) ) {
+	if ( ! finder.group && props.includes( 'text-decoration-line' ) ) {
 		const deco = paintedDecoration( carrier || el );
 		styles[ 'text-decoration-line' ] = deco ? deco.textDecorationLine : 'none';
 		styles[ 'text-decoration-color' ] = deco ? srgb( deco.textDecorationColor ) : 'none';
