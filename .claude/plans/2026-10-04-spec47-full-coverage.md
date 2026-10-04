@@ -82,15 +82,15 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   group (register N45), label-less fields without the floating-label gap, business-info `labelFontWeight` and the
   address line height, the business-info link's 44px tap area takes one line in the flow.
 - [ ] **Contact to 100% (in progress): 19 distinct issues open, 0 labelled gaps** (last Solve
-  `qa/solve/contact/2026-10-04T11-15-35/`: 0 new rows, 0 wrong writes). Ledger D-16 (map, register 418), D-17 to D-30, D-32 and
+  `qa/solve/contact/2026-10-04T11-15-35/`: 0 new rows, 0 wrong writes). Ledger D-16 (map, register 132 and 141), D-17 to D-30, D-32 and
   D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). Open, all box rows:
-  1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. The block pairs as a text
-     run, and a text-run pair reads text only, so its inner row gap is never measured. Build: a text-run pair whose
-     block lays out rows with flex or grid also reads that layout element's gap (both sides; the draft side's rows are
-     the text run's line boxes, so compare their spacing), MUST FAIL test, then Solve writes the hours row gap setting.
+  1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. The walker now measures
+     it (`f7d9003f5`: a text run's rows give a `row-gap` row from the space between line boxes, and Solve reads the
+     draft's); left: a Solve run on Contact to write the hours row gap setting.
   2. The address (cr-ref-contact-13, 15, 17): the draft's address text is 168px wide at every width and wraps to two
-     lines at 375; live fills its column. Find the draft rule that caps it (read the draft CSS) and the business-info
-     setting that can express it (a max width on the address), then write it.
+     lines at 375; live fills its column. The walker now reads the draft's declared width from its matched rules
+     (`f7d9003f5`, `devtools.mjs::declaredValues`) and Solve writes a declared width; left: a Solve run on Contact,
+     and if no business-info setting holds the address width, the gap goes to Session B's triage.
   3. Consequences that close with 1 and 2: page and column heights (cr-ref-contact-0, 1, 20) and rows compared across
      the two columns at 1440 (cr-ref-contact-14, 15, 27, 29).
   Then the done line: fresh rebuild of the committed tree, 0 unexplained and 0 labelled gaps, 0 new rows, wrong writes at
