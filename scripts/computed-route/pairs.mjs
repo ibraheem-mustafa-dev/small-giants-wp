@@ -14,8 +14,8 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
 import { waitOutHostCheck } from '../parity/lib/helpers.mjs';
-import { wordsByBlock, twinsByBlock, twinPlan, parentRef, wordMatch, choosePartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
-import { collectTagged, liveBlocks, draftChains, handElements, openDraft } from './lib/pairs-page.mjs';
+import { wordsByBlock, twinsByBlock, twinPlan, parentRef, wordMatch, choosePartner, chooseControlPartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
+import { collectTagged, liveBlocks, draftChains, formControls, handElements, openDraft } from './lib/pairs-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -68,6 +68,14 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		const textRun = partner?.textRun ? { ...partner.textRun, match: match[ ref ] } : null;
 		( verdict.ok ? kept : left ).push( { ref, draft: partner?.path || null, ...( textRun ? { textRun } : {} ), why: verdict.why, words: t.live.length, matched: t.draft.length, first: t.draft.length ? dWords[ Math.min( ...t.draft ) ].t : null, last: t.draft.length ? dWords[ Math.max( ...t.draft ) ].t : null } );
 	}
+	// Form-control blocks (no painted words) pair by their control's name, id, placeholder or label.
+	const liveControls = await formControls( live, prefix, 'live' );
+	const controlRefs = Object.keys( boxes ).filter( ( r ) => ! twins.has( r ) && liveControls[ r ] );
+	const controlChains = controlRefs.length ? await formControls( draft, prefix, 'draft', Object.fromEntries( controlRefs.map( ( r ) => [ r, liveControls[ r ] ] ) ) ) : {};
+	for ( const ref of controlRefs ) {
+		const { partner, verdict } = chooseControlPartner( controlChains[ ref ], boxes[ ref ] );
+		( verdict.ok ? kept : left ).push( { ref, draft: partner?.path || null, control: liveControls[ ref ].id, why: verdict.why, words: 0, matched: 0, first: null, last: null } );
+	}
 	// Hand pairs measuring a kept block's draft element on an element inside the block move to the block root, and
 	// the generated pair they then duplicate is dropped (lib/pairs.mjs::reconcileHandPairs).
 	const handPairs = ( cfg.pairs || [] ).filter( ( p ) => p && p.name );
@@ -78,14 +86,14 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	for ( let i = kept.length - 1; i >= 0; i-- ) {
 		duplicate.has( kept[ i ].ref ) && kept.splice( i, 1 );
 	}
-	// A kept finder must hold the block's first and last matched words at 375 and 768 too.
+	// A kept finder must hold the block's first and last matched words at 375 and 768 too (a control's, just exist).
 	for ( const width of [ 375, 768 ] ) {
 		const page = await openDraft( browser, cfg, width );
 		const texts = await page.evaluate( ( paths ) => paths.map( ( p ) => document.querySelector( p )?.textContent.toLowerCase() ?? null ), kept.map( ( k ) => k.draft ) );
 		await page.close();
 		for ( let i = kept.length - 1; i >= 0; i-- ) {
 			const t = texts[ i ];
-			if ( null === t || ! t.includes( kept[ i ].first ) || ! t.includes( kept[ i ].last ) ) {
+			if ( null === t || ( null !== kept[ i ].first && ( ! t.includes( kept[ i ].first ) || ! t.includes( kept[ i ].last ) ) ) ) {
 				left.push( { ...kept[ i ], why: `its draft element at ${ width } does not hold the same words` } );
 				kept.splice( i, 1 );
 			}
@@ -93,7 +101,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	}
 	await browser.close();
 	const all = Object.keys( boxes ).filter( ( r ) => r.startsWith( prefix ) );
-	const unworded = all.filter( ( r ) => ! twins.has( r ) ).map( ( ref ) => ( { ref, why: 'no painted words (an image, an icon or an empty wrapper)' } ) );
+	const unworded = all.filter( ( r ) => ! twins.has( r ) && ! liveControls[ r ] ).map( ( ref ) => ( { ref, why: 'no painted words (an image, an icon or an empty wrapper)' } ) );
 	const handFile = path.basename( s.walker );
 	// Named after the surface: two surfaces can share one hand config (a page and the form post it embeds).
 	const fullFile = `${ surface }.full.mjs`;

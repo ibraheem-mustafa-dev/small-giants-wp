@@ -141,3 +141,19 @@ test( 'a text-run pair measures the run on both sides in the generated config', 
 	assert.match( src, /draft: \{"textRun":\{"within":"body > div:nth-child\(2\)","direct":true,"match":"\(x\)"\}\}/ );
 	assert.match( src, /live: \{"textRun":\{"within":"\.cr-ref-contact-12","direct":false,"match":"\(x\)"\}\}/ );
 } );
+
+// Contact's form, 2026-10-04: the draft's controls carry placeholders only, the live ones names and ids too; a hidden
+// honeypot never counts (lib/pairs-page.mjs::formControls); the partner is the wrapper nearest the block's size.
+import { chooseControlPartner } from '../lib/pairs.mjs';
+
+test( 'MUST FAIL TO MISS: a form-control block takes the draft wrapper nearest its size around the same control', () => {
+	const chain = [ { path: 'input', box: { w: 400, h: 44 } }, { path: 'div.field', box: { w: 420, h: 70 } }, { path: 'div.row', box: { w: 860, h: 70 } } ];
+	const r = chooseControlPartner( chain, { w: 418, h: 72 } );
+	assert.equal( r.verdict.ok, true );
+	assert.equal( r.partner.path, 'div.field' );
+} );
+
+test( 'positive control: no draft control, or none near the size, is left out with its reason', () => {
+	assert.match( chooseControlPartner( null, { w: 400, h: 44 } ).verdict.why, /no draft control/ );
+	assert.match( chooseControlPartner( [ { path: 'x', box: { w: 40, h: 10 } } ], { w: 400, h: 44 } ).verdict.why, /near its size/ );
+} );

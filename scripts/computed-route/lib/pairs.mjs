@@ -138,6 +138,22 @@ export function choosePartner( chain, block, liveRefsOfDraft, limits = PAIRING_L
 	return v.ok ? { partner: run, verdict: v } : { partner, verdict };
 }
 
+// The partner for a form-control block (it paints no words): chain is lib/pairs-page.mjs::formControls's draft chain
+// for its control (the control, then every ancestor holding no other control); the partner is the element whose box is
+// nearest the block's on both axes, within PAIRING_LIMITS.boxRatio. Returns { partner, verdict }.
+export function chooseControlPartner( chain, liveBox, limits = PAIRING_LIMITS ) {
+	if ( ! chain?.length ) {
+		return { partner: null, verdict: { ok: false, why: 'no draft control with its name, id, placeholder or label' } };
+	}
+	const [ lo, hi ] = limits.boxRatio;
+	const off = ( b ) => [ 'w', 'h' ].reduce( ( t, k ) => t + Math.abs( Math.log( Math.max( 1, b[ k ] ) / Math.max( 1, liveBox[ k ] ) ) ), 0 );
+	const fits = chain.filter( ( a ) => [ 'w', 'h' ].every( ( k ) => a.box[ k ] / Math.max( 1, liveBox[ k ] ) >= lo && a.box[ k ] / Math.max( 1, liveBox[ k ] ) <= hi ) );
+	if ( ! fits.length ) {
+		return { partner: null, verdict: { ok: false, why: `no draft element around its control is near its size (${ liveBox.w }x${ liveBox.h })` } };
+	}
+	return { partner: fits.sort( ( a, b ) => off( a.box ) - off( b.box ) )[ 0 ], verdict: { ok: true, why: null } };
+}
+
 // Hand pairs against kept generated pairs. hand: [{ name, draft: draft element path or null, liveRef: the nearest
 // block ref at or above its live element, liveIsRoot }]; kept: [{ ref, draft }]. A hand pair measuring the very draft
 // element a block was paired with must measure that block's root on live: one inside the block (an inner band)

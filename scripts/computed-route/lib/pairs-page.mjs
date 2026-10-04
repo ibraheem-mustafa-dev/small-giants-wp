@@ -25,7 +25,8 @@ export function liveBlocks( page, prefix ) {
 	return page.evaluate( ( [ pre, src ] ) => {
 		// eslint-disable-next-line no-new-func
 		const { textRun } = new Function( `${ src }; return { textRun };` )();
-		const refOf = ( el ) => [ ...el.classList ].find( ( c ) => c.startsWith( pre ) );
+		// Only this surface's refs: `<prefix><n>`; an embedded post's blocks (cr-ref-contact-form-3 on the contact page) belong to its own surface.
+		const refOf = ( el ) => [ ...el.classList ].find( ( c ) => c.startsWith( pre ) && /^\d+$/.test( c.slice( pre.length ) ) );
 		const refsAround = ( el ) => {
 			const out = [];
 			for ( let a = el; a; a = a.parentElement ) {
@@ -114,6 +115,51 @@ export function draftChains( page, want, wordEls, match ) {
 		}
 		return out;
 	}, [ want, wordEls, match, PAINT_SRC ] );
+}
+
+// Form controls (blocks with no painted words: a text field, a select). A control's identity is its name, else its id,
+// else its placeholder, else its accessible label, else a select's first option (a draft built from mock markup carries
+// placeholders only). Live: ref -> the identity of the first visible control in the block. Draft: identity -> the chain
+// from the visible control with that identity up through every ancestor holding no other control, nearest first (path,
+// border box). Hidden controls (a honeypot) never count.
+export function formControls( page, prefix, side, idents = null ) {
+	return page.evaluate( ( [ pre, sd, ids ] ) => {
+		const SEL = 'input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea';
+		const shown = ( e ) => e.getClientRects().length && 'hidden' !== getComputedStyle( e ).visibility;
+		const ident = ( e ) => e.name || e.id || e.placeholder || e.getAttribute( 'aria-label' ) || e.labels?.[ 0 ]?.innerText.trim() || ( 'SELECT' === e.tagName ? e.options[ 0 ]?.text.trim() : '' ) || '';
+		const pathOf = ( el ) => {
+			const steps = [];
+			for ( let a = el; a && a !== document.body; a = a.parentElement ) {
+				steps.unshift( `${ a.tagName.toLowerCase() }:nth-child(${ [ ...a.parentElement.children ].indexOf( a ) + 1 })` );
+			}
+			return [ 'body', ...steps ].join( ' > ' );
+		};
+		const controls = [ ...document.querySelectorAll( SEL ) ].filter( shown );
+		if ( 'live' === sd ) {
+			const out = {};
+			for ( const c of controls ) {
+				const holder = [ ...document.querySelectorAll( `[class*="${ pre }"]` ) ].filter( ( b ) => b.contains( c ) ).pop();
+				const ref = holder && [ ...holder.classList ].find( ( x ) => x.startsWith( pre ) && /^\d+$/.test( x.slice( pre.length ) ) );
+				ref && ! out[ ref ] && ( out[ ref ] = { tag: c.tagName, id: ident( c ), name: c.name, idAttr: c.id, ph: c.placeholder || '' } );
+			}
+			return out;
+		}
+		const out = {};
+		for ( const [ ref, want ] of Object.entries( ids ) ) {
+			const c = controls.find( ( x ) => x.tagName === want.tag && [ x.name, x.id, x.placeholder ].some( ( v ) => v && [ want.name, want.idAttr, want.ph ].includes( v ) ) )
+				|| controls.find( ( x ) => x.tagName === want.tag && ident( x ) && ident( x ) === want.id );
+			if ( ! c ) {
+				out[ ref ] = null;
+				continue;
+			}
+			out[ ref ] = [];
+			for ( let a = c; a && a !== document.body && controls.filter( ( x ) => a.contains( x ) ).length === 1; a = a.parentElement ) {
+				const b = a.getBoundingClientRect();
+				out[ ref ].push( { path: pathOf( a ), box: { w: Math.round( b.width ), h: Math.round( b.height ) } } );
+			}
+		}
+		return out;
+	}, [ prefix, side, idents ] );
 }
 
 // Each hand pair's element on one side. Draft: its CSS path from <body> (as draftChains writes it). Live: the nearest
