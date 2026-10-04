@@ -141,9 +141,10 @@ class FrontEnd:
         return ch
 
     def channel(self, attr: str, texts: list[PhpText], derived: dict, consumers: list[tuple[list[PhpText], str]],
-                block: str = "") -> tuple[Channel, str]:
-        """The attribute's channel and where it was found ('block', 'media-atom', 'context', 'hook', '')."""
-        ch = self.flow_texts(texts, attr, lambda t: attr_seeds(t, attr))
+                block: str = "", own_prefix: str = "") -> tuple[Channel, str]:
+        """The attribute's channel and where it was found ('block', 'media-atom', 'context', 'hook', '').
+        `own_prefix` is the block directory: texts under it are the block's own files."""
+        ch = self.flow_texts(texts, attr, lambda t: attr_seeds(t, attr, own=not own_prefix or t.path.startswith(own_prefix)))
         where = "block" if ch.read else ""
         if not ch.kinds() and block:
             prefixes = self._media_prefixes(texts)

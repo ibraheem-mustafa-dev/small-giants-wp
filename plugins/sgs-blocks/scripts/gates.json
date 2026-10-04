@@ -512,8 +512,8 @@
     "cmd": "python scripts/check-wiring-fingerprint.py --check",
     "tier": "fast",
     "added_D": null,
-    "added_commit": null,
-    "budget_ms": 15920,
+    "added_commit": "7cd04abc1",
+    "budget_ms": 14520,
     "order": 58
   },
   {

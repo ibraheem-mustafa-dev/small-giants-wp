@@ -79,7 +79,7 @@ def scan(roots: Roots, inp: Inputs) -> dict:
             key = ctx_of.get(attr)
             consumers = [(fe.block_texts(inp.blockjson[cb][0])[0], key)
                          for cb in sorted(inp.uses_context.get(key, ())) if key and cb in inp.blockjson]
-            ch, where = fe.channel(attr, texts, derived, consumers, block)
+            ch, where = fe.channel(attr, texts, derived, consumers, block, bdir.as_posix() + "/")
             d = inp.dump.get((block, attr), {})
             if attr in anim_map and not ch.kinds():
                 ch.read = True

@@ -89,3 +89,14 @@ def test_scss_comments_nesting_and_declarations_before_a_nested_rule():
     rules = dict(css_rules(".t { margin: 0; // a note: not a rule\n &--wide { gap: var(--sgs-gap); }\n color: red; }", scss=True))
     assert "margin: 0" in rules[".t"] and "color: red" in rules[".t"]
     assert "var(--sgs-gap)" in rules[".t--wide"]
+
+
+def test_shared_text_seeds_one_word_names_only_from_attribute_reads(tmp_path):
+    f = tmp_path / "helper.php"
+    f.write_text("<?php\n$css = array( 'width' => $w );\n$v = $attributes['width'];\n"
+                 "$map = array( 'panelFooterBorderColour' => array( '.x', 'border-top-color' ) );\n", encoding="utf-8")
+    text = PhpIndex([f]).files[f.as_posix()]
+    shared = attr_seeds(text, "width", own=False)
+    assert len(shared) == 1 and text.src[shared[0] - 12:shared[0]].endswith("$attributes[")
+    assert len(attr_seeds(text, "width", own=True)) == 2
+    assert attr_seeds(text, "panelFooterBorderColour", own=False)

@@ -44,6 +44,7 @@ FUNC_SPAN_RE = re.compile(r"\bfunction\b\s*&?\s*\w*\s*\(([^)]*)\)\s*(?:use\s*\((
 CALL_NAME_RE = re.compile(r"\b([a-z_]\w*)\s*\(")
 ARRAY_OPEN_RE = re.compile(r"\s*(?:\(\s*\w+\s*\)\s*)?(array\s*\(|\[)")
 PAIR_KEY_RE = re.compile(r"""\s*(['"])([^'"]+)\1\s*=>""")
+ATTR_INDEX_BEFORE_RE = re.compile(r"""(?:\$\w*attr\w*|\$atts|\[\s*['"]attrs['"]\s*\])\s*\[\s*$""")
 DYN_KEY_RE = re.compile(r"""\$\w+\s*\.\s*['"]([A-Z][A-Za-z0-9]*)['"]""")
 
 def func_spans(t: PhpText) -> list[tuple[int, int, set]]:
@@ -91,9 +92,19 @@ def dyn_sites(t: PhpText) -> dict[str, list[int]]:
     return t.cache["dyn"]
 
 
-def attr_seeds(t: PhpText, attr: str) -> list[int]:
-    """`'attr'`, or `$k . 'Suffix'` where attr = prefix + Suffix and the prefix literal is present."""
+def attr_seeds(t: PhpText, attr: str, own: bool = True) -> list[int]:
+    """`'attr'`, or `$k . 'Suffix'` where attr = prefix + Suffix and the prefix literal is present.
+
+    In the block's own files every quoted occurrence is a read, and so is a
+    camelCase name anywhere (descriptor tables such as
+    `'panelFooterBorderColour' => array( … )` in includes/). In a shared text (a
+    helper or class the render reaches) a one-word name such as `'width'` or
+    `'gap'` is mostly a CSS key or an option, so there only an attribute index
+    (`$attributes['width']`, `$block['attrs']['width']`) or a call that passes the
+    attributes alongside the name counts."""
     seeds = list(t.literals.get(attr, ()))
+    if not own and attr.isalpha() and attr.islower():
+        seeds = [p for p in seeds if ATTR_INDEX_BEFORE_RE.search(t.src, max(0, p - 48), p) or "$attributes" in t.stmt(p)]
     sites = dyn_sites(t)
     if sites:
         for i in range(1, len(attr)):
