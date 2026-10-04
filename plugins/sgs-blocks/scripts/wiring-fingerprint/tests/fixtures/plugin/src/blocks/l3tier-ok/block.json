@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/l3tier-ok",
+ "title": "l3tier-ok",
+ "attributes": {
+  "padding": {
+   "type": "object"
+  }
+ }
+}

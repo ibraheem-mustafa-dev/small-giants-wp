@@ -1,0 +1,314 @@
+{
+ "block_attributes": [
+  {
+   "block_slug": "sgs/ok",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/l2-gap",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/l3-gap",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/l3tier-gap",
+   "attr_name": "padding",
+   "attr_type": "object",
+   "css_property": "padding",
+   "css_state": null,
+   "role": "layout",
+   "tier_shape": "tier_object"
+  },
+  {
+   "block_slug": "sgs/l3tier-ok",
+   "attr_name": "padding",
+   "attr_type": "object",
+   "css_property": "padding",
+   "css_state": null,
+   "role": "layout",
+   "tier_shape": "tier_object"
+  },
+  {
+   "block_slug": "sgs/l3state-gap",
+   "attr_name": "textColourHover",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/l4-gap",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/l5-gap",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/l6-gap",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/l6-ok",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/l7-gap",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/l7-ok",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/c1-gap",
+   "attr_name": "gridItemBackground",
+   "attr_type": "string",
+   "css_property": "background-color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/c1-ok",
+   "attr_name": "gridItemBackground",
+   "attr_type": "string",
+   "css_property": "background-color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/s1-gap",
+   "attr_name": "borderColour",
+   "attr_type": "string",
+   "css_property": "border-color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/s1-ok",
+   "attr_name": "borderColour",
+   "attr_type": "string",
+   "css_property": "border-color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/b1-gap",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/b1-ok",
+   "attr_name": "textColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/b2-gap",
+   "attr_name": "titleFontSize",
+   "attr_type": "string",
+   "css_property": "font-size",
+   "css_state": null,
+   "role": "typography",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/b2-gap",
+   "attr_name": "fontSize",
+   "attr_type": "string",
+   "css_property": "font-size",
+   "css_state": null,
+   "role": "typography",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/b2-gap",
+   "attr_name": "fontWeight",
+   "attr_type": "string",
+   "css_property": "font-weight",
+   "css_state": null,
+   "role": "typography",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/b2-ok",
+   "attr_name": "titleFontSize",
+   "attr_type": "string",
+   "css_property": "font-size",
+   "css_state": null,
+   "role": "typography",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/b2-ok",
+   "attr_name": "fontSize",
+   "attr_type": "string",
+   "css_property": "font-size",
+   "css_state": null,
+   "role": "typography",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/b2-ok",
+   "attr_name": "fontWeight",
+   "attr_type": "string",
+   "css_property": "font-weight",
+   "css_state": null,
+   "role": "typography",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/b3-gap",
+   "attr_name": "cellBackground",
+   "attr_type": "string",
+   "css_property": "background-color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/b3-ok",
+   "attr_name": "cellBackground",
+   "attr_type": "string",
+   "css_property": "background-color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/paint",
+   "attr_name": "gapUnit",
+   "attr_type": "string",
+   "css_property": null,
+   "css_state": null,
+   "role": "layout",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/paint",
+   "attr_name": "titleText",
+   "attr_type": "string",
+   "css_property": null,
+   "css_state": null,
+   "role": "text-content",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/paint",
+   "attr_name": "boxRadius",
+   "attr_type": "string",
+   "css_property": null,
+   "css_state": null,
+   "role": null,
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/paint",
+   "attr_name": "fxTrigger",
+   "attr_type": "string",
+   "css_property": "fx:trigger",
+   "css_state": null,
+   "role": "behaviour",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/paint",
+   "attr_name": "layoutMode",
+   "attr_type": "string",
+   "css_property": null,
+   "css_state": null,
+   "role": "select-from-enum",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/paint",
+   "attr_name": "autoplay",
+   "attr_type": "boolean",
+   "css_property": null,
+   "css_state": null,
+   "role": "behaviour",
+   "tier_shape": null
+  }
+ ],
+ "property_suffixes": [
+  {
+   "suffix": "Colour",
+   "role": "color",
+   "css_property": "color"
+  },
+  {
+   "suffix": "Radius",
+   "role": "visual",
+   "css_property": "border-radius"
+  },
+  {
+   "suffix": "FontSize",
+   "role": "typography",
+   "css_property": "font-size"
+  },
+  {
+   "suffix": "Padding",
+   "role": "layout",
+   "css_property": "padding"
+  }
+ ]
+}

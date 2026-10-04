@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/s1-gap",
+ "title": "s1-gap",
+ "attributes": {
+  "borderColour": {
+   "type": "string"
+  }
+ }
+}

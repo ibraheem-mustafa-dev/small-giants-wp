@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/s1-ok",
+ "title": "s1-ok",
+ "attributes": {
+  "borderColour": {
+   "type": "string"
+  }
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/b2-ok",
+ "title": "b2-ok",
+ "attributes": {
+  "titleFontSize": {
+   "type": "string"
+  },
+  "fontSize": {
+   "type": "string"
+  },
+  "fontWeight": {
+   "type": "string"
+  }
+ }
+}

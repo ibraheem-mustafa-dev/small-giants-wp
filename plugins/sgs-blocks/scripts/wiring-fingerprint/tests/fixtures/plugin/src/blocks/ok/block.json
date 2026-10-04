@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/ok",
+ "title": "ok",
+ "attributes": {
+  "textColour": {
+   "type": "string"
+  }
+ }
+}

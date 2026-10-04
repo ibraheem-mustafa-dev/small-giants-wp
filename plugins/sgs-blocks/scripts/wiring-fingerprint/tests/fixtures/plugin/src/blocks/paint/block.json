@@ -1,0 +1,25 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/paint",
+ "title": "paint",
+ "attributes": {
+  "gapUnit": {
+   "type": "string"
+  },
+  "titleText": {
+   "type": "string"
+  },
+  "boxRadius": {
+   "type": "string"
+  },
+  "fxTrigger": {
+   "type": "string"
+  },
+  "layoutMode": {
+   "type": "string"
+  },
+  "autoplay": {
+   "type": "boolean"
+  }
+ }
+}

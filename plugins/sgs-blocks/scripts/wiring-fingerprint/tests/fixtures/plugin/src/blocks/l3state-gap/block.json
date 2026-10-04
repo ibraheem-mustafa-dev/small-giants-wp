@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/l3state-gap",
+ "title": "l3state-gap",
+ "attributes": {
+  "textColourHover": {
+   "type": "string"
+  }
+ }
+}

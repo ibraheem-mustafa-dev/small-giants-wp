@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/l7-ok",
+ "title": "l7-ok",
+ "attributes": {
+  "textColour": {
+   "type": "string"
+  }
+ }
+}

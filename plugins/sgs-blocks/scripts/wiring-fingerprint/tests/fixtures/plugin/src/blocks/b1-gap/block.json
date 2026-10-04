@@ -1,0 +1,13 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/b1-gap",
+ "title": "b1-gap",
+ "attributes": {
+  "textColour": {
+   "type": "string"
+  }
+ },
+ "usesContext": [
+  "sgs/parentColour"
+ ]
+}

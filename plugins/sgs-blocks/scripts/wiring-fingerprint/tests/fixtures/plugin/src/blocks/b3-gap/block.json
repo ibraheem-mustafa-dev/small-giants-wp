@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/b3-gap",
+ "title": "b3-gap",
+ "attributes": {
+  "cellBackground": {
+   "type": "string"
+  }
+ }
+}

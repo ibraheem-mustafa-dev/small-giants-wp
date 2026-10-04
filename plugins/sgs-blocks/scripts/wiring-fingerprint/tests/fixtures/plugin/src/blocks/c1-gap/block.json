@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/c1-gap",
+ "title": "c1-gap",
+ "attributes": {
+  "gridItemBackground": {
+   "type": "string"
+  }
+ }
+}

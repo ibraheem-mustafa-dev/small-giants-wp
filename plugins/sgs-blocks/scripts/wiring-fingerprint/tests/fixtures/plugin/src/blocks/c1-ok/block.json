@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/c1-ok",
+ "title": "c1-ok",
+ "attributes": {
+  "gridItemBackground": {
+   "type": "string"
+  }
+ }
+}

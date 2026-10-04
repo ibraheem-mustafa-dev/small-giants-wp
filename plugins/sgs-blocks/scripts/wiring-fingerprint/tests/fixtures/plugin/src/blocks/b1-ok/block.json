@@ -1,0 +1,13 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/b1-ok",
+ "title": "b1-ok",
+ "attributes": {
+  "textColour": {
+   "type": "string"
+  }
+ },
+ "usesContext": [
+  "sgs/parentColour"
+ ]
+}

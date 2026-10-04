@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/l2-gap",
+ "title": "l2-gap",
+ "attributes": {
+  "textColour": {
+   "type": "string"
+  }
+ }
+}

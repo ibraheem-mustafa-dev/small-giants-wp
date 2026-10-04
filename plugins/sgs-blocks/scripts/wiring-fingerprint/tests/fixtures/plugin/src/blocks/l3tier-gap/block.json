@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/l3tier-gap",
+ "title": "l3tier-gap",
+ "attributes": {
+  "padding": {
+   "type": "object"
+  }
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/b2-gap",
+ "title": "b2-gap",
+ "attributes": {
+  "titleFontSize": {
+   "type": "string"
+  },
+  "fontSize": {
+   "type": "string"
+  },
+  "fontWeight": {
+   "type": "string"
+  }
+ }
+}

@@ -1,0 +1,10 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/b3-ok",
+ "title": "b3-ok",
+ "attributes": {
+  "cellBackground": {
+   "type": "string"
+  }
+ }
+}
