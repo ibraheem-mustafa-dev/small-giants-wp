@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // The route's own gate (R-47-1, R-47-10).
-//   node scripts/computed-route/lint.mjs [--root <dir>] [--tree <tree.json> ...] [--skeleton <tree.json> ...] [--surfaces <surfaces.json> ...] [--no-names]
+//   node scripts/computed-route/lint.mjs [--root <dir>] [--tree <tree.json> ...] [--skeleton <tree.json> ...] [--surfaces <surfaces.json> ...]
+//     [--register <fix-register.md>] [--no-names]
 // Fails (exit 1) when:
 //   - a file or an exported name under the route folder is missing from its README.md (R-47-1);
 //   - a route file imports from plugins/sgs-blocks/scripts/ (the converter; its db_lookup.py migrates the shared DB);
@@ -8,6 +9,8 @@
 //   - a --skeleton carries any attribute whose css_property is not null (Fill skeletons hold no style values);
 //   - a --surfaces manifest has a tree printing another post (a linked block, a modal or drawer reference, a template
 //     part) that no surface owns (lib/references.mjs::lintSurfaces);
+//   - the divergence ledger beside a --surfaces manifest has an entry citing no register item, or an item --register
+//     does not hold (house-rule entries exempt), or has entries and no --register is given (B4);
 //   - check-no-client-names.py reports a hit inside the route folder (--no-names skips it: tests on temp copies).
 import fs from 'fs';
 import path from 'path';
@@ -16,6 +19,7 @@ import { fileURLToPath } from 'url';
 import { openDb, attrRow } from './lib/db.mjs';
 import { readTree, walk } from './lib/tree.mjs';
 import { lintSurfaces } from './lib/references.mjs';
+import { load } from './lib/ledger.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -109,6 +113,60 @@ export function lintSkeleton( tree, db, label = 'skeleton' ) {
 	return problems;
 }
 
+// A register item id: a number, or letters then a number (S1, CR15, N16a, N36C).
+const ITEM_ID = /^[A-Z]{0,3}\d+[A-Za-z]{0,2}$/;
+
+// Every item id a fix register holds: each table row's first cell (comma-separated ids, "126, 137") and the ids that
+// lead a bullet ("- 132, 141 map strip ...", "- D1: a general ...").
+export function registerIds( markdown ) {
+	const ids = new Set();
+	for ( const line of markdown.split( /\r?\n/ ) ) {
+		const cell = line.match( /^\|\s*([^|]+?)\s*\|/ );
+		const bullet = line.match( /^- ([A-Za-z0-9]+(?:,\s*[A-Za-z0-9]+)*)[\s:]/ );
+		const first = cell?.[ 1 ] ?? bullet?.[ 1 ];
+		for ( const id of first ? first.split( ',' ).map( ( s ) => s.trim() ) : [] ) {
+			if ( ITEM_ID.test( id ) ) {
+				ids.add( id );
+			}
+		}
+	}
+	return ids;
+}
+
+// Rules that are house rules (CLAUDE.md non-negotiables), not decisions: their entries cite no register item.
+export const HOUSE_RULES = [ 'touch-target', 'accessibility' ];
+
+// B4: every divergence-ledger entry is a decision Bean made, so each cites the register items it implements
+// (`register: [ids]`), and every id is in the register. House-rule entries are exempt.
+export function lintLedger( entries, ids, label = 'ledger' ) {
+	const problems = [];
+	for ( const e of entries ) {
+		if ( HOUSE_RULES.includes( e.expected?.rule ) ) {
+			continue;
+		}
+		if ( ! Array.isArray( e.register ) || ! e.register.length ) {
+			problems.push( `${ label } entry ${ e.id } cites no register decision (register: [ids])` );
+			continue;
+		}
+		e.register.filter( ( id ) => ! ids.has( String( id ) ) ).forEach( ( id ) => problems.push( `${ label } entry ${ e.id } cites register item ${ id }, which the register does not hold` ) );
+	}
+	return problems;
+}
+
+// The ledger beside a surfaces manifest (<build>/qa/divergences.json) checked against the register file; a ledger
+// with entries and no register to check them against is itself a problem.
+export function lintSurfaceLedger( surfacesFile, registerFile ) {
+	const file = path.join( path.dirname( path.resolve( surfacesFile ) ), 'qa', 'divergences.json' );
+	const entries = load( file );
+	if ( ! entries.length ) {
+		return [];
+	}
+	if ( ! registerFile ) {
+		return [ `${ file } has ${ entries.length } entries and no --register to check their decisions against` ];
+	}
+	return lintLedger( entries, registerIds( fs.readFileSync( registerFile, 'utf8' ) ), file );
+}
+
 function clientNameHits() {
 	try {
 		execFileSync( 'python', [ path.join( REPO, 'scripts', 'check-no-client-names.py' ), '--check' ], { cwd: REPO, encoding: 'utf8', stdio: 'pipe' } );
@@ -126,7 +184,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const db = openDb();
 	all( '--tree' ).forEach( ( f ) => problems.push( ...lintTree( readTree( f ), db, f ) ) );
 	all( '--skeleton' ).forEach( ( f ) => problems.push( ...lintSkeleton( readTree( f ), db, f ) ) );
-	all( '--surfaces' ).forEach( ( f ) => problems.push( ...lintSurfaces( JSON.parse( fs.readFileSync( f, 'utf8' ) ), path.dirname( path.resolve( f ) ) ) ) );
+	all( '--surfaces' ).forEach( ( f ) => problems.push( ...lintSurfaces( JSON.parse( fs.readFileSync( f, 'utf8' ) ), path.dirname( path.resolve( f ) ) ), ...lintSurfaceLedger( f, all( '--register' )[ 0 ] ) ) );
 	if ( ! argv.includes( '--no-names' ) ) {
 		problems.push( ...clientNameHits() );
 	}

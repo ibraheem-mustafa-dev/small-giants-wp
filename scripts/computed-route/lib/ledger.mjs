@@ -32,6 +32,9 @@ export function validate( entries ) {
 		if ( 'rule' in x && ! RULES[ x.rule ] ) {
 			problems.push( `entry ${ e.id } names unknown rule "${ x.rule }" (known: ${ Object.keys( RULES ).join( ', ' ) })` );
 		}
+		if ( undefined !== e.register && ( ! Array.isArray( e.register ) || ! e.register.length || e.register.some( ( id ) => 'string' !== typeof id || ! id ) ) ) {
+			problems.push( `entry ${ e.id } register must be a non-empty list of register item ids` );
+		}
 		if ( ! /^\d{4}-\d{2}-\d{2} \S/.test( e.decided || '' ) ) {
 			problems.push( `entry ${ e.id } decided must be "YYYY-MM-DD <source>"` );
 		}

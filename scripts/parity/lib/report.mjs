@@ -29,7 +29,7 @@ export function writeReport( outDir, cfg, results ) {
 				} else {
 					open++;
 				}
-				rows.push( `| ${ d.id } | ${ pair }${ d.ref ? ' `' + d.ref + ( d.path ? ' ' + d.path : '' ) + '`' : '' } | ${ d.kind } | ${ d.key } | ${ cell( d.draft ) } | ${ cell( d.live ) } | ${ d.accepted ? 'accepted: ' + cell( d.accepted ) : '**open**' } |` );
+				rows.push( `| ${ d.id } | ${ pair }${ d.ref ? ' `' + d.ref + ( d.path ? ' ' + d.path : '' ) + '`' : '' } | ${ d.kind } | ${ d.key } | ${ cell( d.draft ) }${ d.decided && ! d.decided.rule ? ' (decided ' + d.decided.id + ')' : '' } | ${ cell( d.live ) } | ${ d.accepted ? 'accepted: ' + cell( d.accepted ) : '**open**' } |` );
 			}
 		}
 		lines.push( `## ${ r.state } @ ${ r.width }  (${ r.shot })`, '' );

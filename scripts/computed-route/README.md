@@ -21,7 +21,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | File | Job |
 |---|---|
 | `README.md` | This index. |
-| `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, client names. |
+| `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, every divergence-ledger entry beside that manifest citing register items `--register` holds (B4), client names. |
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
 | `pairs.mjs` | Block pairing command: pairs every block of a surface with its draft element through the walker's word matcher, re-checks each kept finder at 375 and 768, and writes `<surface>.full.mjs` (the hand config plus one pair per block) and `qa/pairs/<surface>.json` (kept pairs and every left-out block with its reason). A surface's `walkerFull` in `surfaces.json` makes Solve walk it. |
@@ -56,7 +56,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/calibrate-read.test.mjs` | FR-47-2 reader, in a local headless Chromium: elements past the 81st, `::after` and `::placeholder` layers, and an `aria-controls` panel outside the instance are read. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept; the independent check matches entries on `node` and leaves a drifted value entry open (A5). |
 | `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
-| `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
+| `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint; B4: a ledger entry citing an item the register lacks, or none, fails; a house-rule entry needs none; a ledger with entries and no `--register` fails. |
 | `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written); `--rounds 0` never calls the write round (A1) |
 | `tests/pairs.test.mjs` | Block pairing: a partner is kept only when it holds the block's words and none from outside it, at a similar size, with its padding where the block's is; hand pairs measuring a paired block's draft element move to the block root. |
 | `tests/entrance.test.mjs` | Entrance start: a hidden-live, shown-draft entrance gets `sgsAnimationStart: 'load'`; no entrance, a part, a hover, a half opacity or a hidden draft gets nothing. |
@@ -122,7 +122,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 
 ### `lib/ledger.mjs`
 - `RULES`: rule names with their meaning.
-- `validate(entries)`: throws on missing keys, unknown rules, bad dates, duplicate ids.
+- `validate(entries)`: throws on missing keys, unknown rules, bad dates, duplicate ids, a `register` that is not a non-empty list of ids.
 - `load(file)` → validated entries (empty when the file is absent); `save(file, entries)`.
 - `match(entries, row)` → the entry covering a row, or null.
 - `measurements(report)` → every traced measured property of a walker report.
@@ -256,3 +256,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `lintFolder(root)` → problems (README index, converter imports).
 - `lintTree(tree, db, label?)` → problems (core style, native_wp).
 - `lintSkeleton(tree, db, label?)` → problems (style values).
+- `registerIds(markdown)` → the item ids a fix register holds (table first cells, comma-split, and ids leading a bullet).
+- `HOUSE_RULES`: ledger rules that are house rules (`touch-target`, `accessibility`): their entries cite no register item.
+- `lintLedger(entries, ids, label?)` → problems: an entry (not a house rule) whose `register` ids are missing or not in `ids`.
+- `lintSurfaceLedger(surfacesFile, registerFile?)` → `lintLedger` on `<build>/qa/divergences.json`; a ledger with entries and no register file is a problem.

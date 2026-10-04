@@ -321,3 +321,33 @@ test( 'positive control: rounds 1 calls the write round once, then walks what it
 	await solveLoop( { maxRounds: 1, ...steps } );
 	assert.deepEqual( calls, { build: 2, walk: 2, write: 1 } );
 } );
+
+// B4 (plan 2026-10-04-eye-care-sweep-audit-fix.md): a ledgered row's target is Bean's decided value. Before, a drifted
+// row kept the raw draft as Solve's target (draftValues read the draft snapshot), so the next Solve wrote the draft over
+// the decision.
+import { judgeDivergence } from '../../parity/lib/divergences.mjs';
+const decision = [ { id: 'D-5', node: 'cr-ref-h-1', state: '*', property: 'font-size', expected: { value: '16px' }, reason: 'decided' } ];
+const ledgered = ( live ) => {
+	const row = { kind: 'style', key: 'font-size', draft: '18px', live, ref: 'cr-ref-h-1', path: '' };
+	judgeDivergence( decision, { state: 'opening', width: 1440 }, row, 0.5 );
+	return { runs: [ pairRun( 'opening', '18px', [ row ] ) ] };
+};
+
+test( 'MUST FAIL TO OVERWRITE A DECISION: a drifted value entry is written back to the decided value, not the draft', () => {
+	const rep = ledgered( '20px' );
+	assert.equal( rep.runs[ 0 ].pairs.head.diffs[ 0 ].draft, '16px', 'the row reads the decided value as plain text' );
+	assert.deepEqual( draftValues( rep, 'head', 'font-size', false ).perWidth, { 1440: '16px' } );
+	const t = headTree();
+	const r = writeRound( rep, t, { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: headCal } );
+	assert.equal( r.writes.length, 1 );
+	assert.match( JSON.stringify( r.writes[ 0 ].after ), /16/ );
+	assert.doesNotMatch( JSON.stringify( r.writes[ 0 ].after ), /18/ );
+} );
+
+test( 'MUST FAIL TO OVERWRITE A DECISION: at a width the entry accepts, a group written from another width targets the decided value', () => {
+	const held = ledgered( '16px' ).runs[ 0 ];
+	const other = pairRun( 'opening', '18px', [ { kind: 'style', key: 'font-size', draft: '18px', live: '20px', ref: 'cr-ref-h-1', path: '' } ] );
+	other.width = 768;
+	assert.ok( held.pairs.head.diffs[ 0 ].decided && 'D-5' === held.pairs.head.diffs[ 0 ].decided.id );
+	assert.deepEqual( draftValues( { runs: [ held, other ] }, 'head', 'font-size', false ).perWidth, { 1440: '16px', 768: '18px' } );
+} );

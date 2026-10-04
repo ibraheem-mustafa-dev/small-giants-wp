@@ -56,7 +56,7 @@ export function writeSolveReport( outDir, r ) {
 			return;
 		}
 		L.push( `| Width | Pair | Node | Element | Kind | Key | Draft | Live |${ withReason ? ' Reason |' : '' }`, `|---|---|---|---|---|---|---|---|${ withReason ? '---|' : '' }` );
-		rows.forEach( ( x ) => L.push( `| ${ x.width } | ${ x.pair } | ${ x.ref || '' } | \`${ x.path ?? '' }\` | ${ x.kind } | ${ x.key } | ${ cell( x.draft ) } | ${ cell( x.live ) } |${ withReason ? ' ' + cell( x.reason ) + ' |' : '' }` ) );
+		rows.forEach( ( x ) => L.push( `| ${ x.width } | ${ x.pair } | ${ x.ref || '' } | \`${ x.path ?? '' }\` | ${ x.kind } | ${ x.key } | ${ cell( x.draft ) }${ x.decided && ! x.decided.rule ? ' (decided ' + x.decided.id + ')' : '' } | ${ cell( x.live ) } |${ withReason ? ' ' + cell( x.reason ) + ' |' : '' }` ) );
 		L.push( '' );
 	};
 	section( 'Hardcode', r.classes.hardcode, true );

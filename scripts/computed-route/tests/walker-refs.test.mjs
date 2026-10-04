@@ -39,7 +39,8 @@ test( 'MUST FAIL TO ACCEPT: a value divergence reopens when live drifts from the
 	assert.match( judgeDivergence( entries, ctx, { key: 'min-height', ref: 'cr-ref-footer-3', live: '44px', draft: '21px' }, 0.5 ), /D-1/ );
 	const drifted = { key: 'min-height', ref: 'cr-ref-footer-3', live: '40px', draft: '21px' };
 	assert.equal( judgeDivergence( entries, ctx, drifted, 0.5 ), null );
-	assert.equal( drifted.draft, '44px (D-1)' );
+	assert.equal( drifted.draft, '44px' );
+	assert.deepEqual( drifted.decided, { id: 'D-1', value: '44px' } );
 } );
 
 // The identity transform paints exactly as none (a finished reveal leaves matrix(1, 0, 0, 1, 0, 0) on one side): no

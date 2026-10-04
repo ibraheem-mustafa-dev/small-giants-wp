@@ -1,20 +1,5 @@
 [
   {
-    "id": "D-1",
-    "scope": "contact",
-    "node": "cr-ref-contact-22",
-    "state": "*",
-    "property": "margin-bottom",
-    "widths": [
-      375
-    ],
-    "expected": {
-      "value": "0px"
-    },
-    "reason": "At 375 the live form stacks its own top spacing under this subtext, so the draft 22px bottom margin lands the name field 23px lower than the draft (Solve 2026-10-03: y-from-form-subtext 45 to 68). 0px keeps the field where the draft has it; tablet and desktop keep 22px.",
-    "decided": "2026-10-03 Spec 47 Solve, contact regression"
-  },
-  {
     "id": "D-2",
     "scope": "about",
     "node": "cr-ref-about-10",
@@ -27,6 +12,10 @@
       "value": "matrix(1, 0, 0, 1, 0, -3)"
     },
     "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+    "register": [
+      "104",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -42,6 +31,10 @@
       "value": "matrix(1, 0, 0, 1, 0, -3)"
     },
     "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+    "register": [
+      "104",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -57,6 +50,10 @@
       "value": "matrix(1, 0, 0, 1, 0, -3)"
     },
     "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+    "register": [
+      "104",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -72,6 +69,10 @@
       "value": "lifts"
     },
     "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+    "register": [
+      "104",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -87,6 +88,10 @@
       "value": "lifts"
     },
     "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+    "register": [
+      "104",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -102,6 +107,10 @@
       "value": "lifts"
     },
     "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+    "register": [
+      "104",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -117,6 +126,10 @@
       "value": "matrix(1, 0, 0, 1, 0, -3)"
     },
     "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "register": [
+      "S4",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -132,6 +145,10 @@
       "value": "lifts"
     },
     "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "register": [
+      "S4",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -147,6 +164,10 @@
       "value": "matrix(1, 0, 0, 1, 0, -3)"
     },
     "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "register": [
+      "S4",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -162,6 +183,10 @@
       "value": "lifts"
     },
     "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "register": [
+      "S4",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -177,6 +202,10 @@
       "value": "matrix(1, 0, 0, 1, 0, -3)"
     },
     "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "register": [
+      "S4",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -192,6 +221,10 @@
       "value": "lifts"
     },
     "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+    "register": [
+      "S4",
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -204,6 +237,10 @@
       "rule": "bean-choice"
     },
     "reason": "Register 418 (Bean, 2026-10-02): the real embedded Google Map replaces the draft's sketch placeholder, whose own caption asks for that swap; no setting should copy the sketch's paint",
+    "register": [
+      "132",
+      "141"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {
@@ -384,6 +421,9 @@
       "rule": "bean-choice"
     },
     "reason": "Register S1 (Bean, 2026-10-02): every button lifts 3px on hover site-wide; the draft's WhatsApp button lifts 2px",
+    "register": [
+      "S1"
+    ],
     "decided": "2026-10-04 Bean"
   },
   {

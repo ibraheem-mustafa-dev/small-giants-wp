@@ -60,6 +60,7 @@ function draftValueOf( d, prop, hover, pseudo ) {
 // walkerStates: only runs in these walker states are read (the states mapped to the group's setting state).
 // pseudo ('::before' / '::after'): the value is read on that painting layer of the pair's element.
 // declared: the value the draft's matched rules declare for prop at each width (the walker's DevTools read), when any.
+// At a width where a divergence-ledger entry covers the row, the target is the entry's decided value instead.
 export function draftValues( report, pair, prop, hover, walkerStates = null, pseudo = null ) {
 	const perWidth = {};
 	const fontPx = {};
@@ -72,7 +73,10 @@ export function draftValues( report, pair, prop, hover, walkerStates = null, pse
 		if ( ! d || d.missing ) {
 			continue;
 		}
-		const v = draftValueOf( d, prop, hover, pseudo );
+		// A ledgered row (parity/lib/divergences.mjs::judgeDivergence) holds Bean's decided value at this width: that is
+		// the target, accepted or drifted, so no group written from other widths overwrites the decision.
+		const ruled = ( run.pairs[ pair ].diffs || [] ).find( ( x ) => x.decided && x.key === prop && ( 'hover' === x.kind ) === !! hover && ( x.pseudo || null ) === ( pseudo || null ) );
+		const v = ruled ? ruled.decided.value : draftValueOf( d, prop, hover, pseudo );
 		if ( undefined !== v ) {
 			perWidth[ run.width ] = v;
 		}
