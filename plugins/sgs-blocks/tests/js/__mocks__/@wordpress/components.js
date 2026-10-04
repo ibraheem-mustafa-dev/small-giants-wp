@@ -24,7 +24,9 @@ const makeInput = ( name ) => {
 	return Input;
 };
 
-module.exports = {
+// Any component the list above does not name renders its children (a PascalCase export), and any other
+// helper is a no-op, so a block using a newer core component still mounts.
+const named = {
 	__esModule: true,
 	PanelBody: makeComponent( 'PanelBody' ),
 	PanelRow: makeComponent( 'PanelRow' ),
@@ -95,3 +97,16 @@ module.exports = {
 	NavigatorScreen: makeComponent( 'NavigatorScreen' ),
 	NavigatorButton: makeComponent( 'NavigatorButton' ),
 };
+module.exports = new Proxy( named, {
+	get: ( target, key ) => {
+		// An ES-module shape, so Babel's interop reads names through this proxy instead of copying its own keys.
+		if ( '__esModule' === key ) {
+			return true;
+		}
+		if ( key in target || 'symbol' === typeof key || 'then' === key ) {
+			return target[ key ];
+		}
+		return /^(__experimental|__unstable)?[A-Z]/.test( key ) ? ( target[ key ] = makeComponent( key ) ) : ( target[ key ] = () => undefined );
+	},
+} );
+

@@ -72,6 +72,14 @@ module.exports = {
 		'^@wordpress/block-editor$': `${ MOCKS_DIR }/@wordpress/block-editor.js`,
 		'^@wordpress/components$': `${ MOCKS_DIR }/@wordpress/components.js`,
 		'^@wordpress/data$': `${ MOCKS_DIR }/@wordpress/data.js`,
+		'^@wordpress/a11y$': `${ MOCKS_DIR }/@wordpress/a11y.js`,
+		'^@wordpress/editor$': `${ MOCKS_DIR }/@wordpress/editor.js`,
+		'^@wordpress/core-data$': `${ MOCKS_DIR }/@wordpress/core-data.js`,
+		'^@wordpress/api-fetch$': `${ MOCKS_DIR }/@wordpress/api-fetch.js`,
+		'^@wordpress/url$': `${ MOCKS_DIR }/@wordpress/url.js`,
+		'^@wordpress/html-entities$': `${ MOCKS_DIR }/@wordpress/html-entities.js`,
+		'^@wordpress/plugins$': `${ MOCKS_DIR }/@wordpress/plugins.js`,
+		'^@wordpress/server-side-render$': `${ MOCKS_DIR }/@wordpress/server-side-render.js`,
 
 		// lucide-react and lucide-static are not installed as node_modules.
 		'^lucide-react$': `${ MOCKS_DIR }/lucide-react.js`,

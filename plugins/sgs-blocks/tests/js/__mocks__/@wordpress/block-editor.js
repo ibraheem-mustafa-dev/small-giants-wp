@@ -25,7 +25,9 @@ useBlockProps.save = jest.fn( ( extra ) => ( {
 const useInnerBlocksProps = jest.fn( () => ( { children: null } ) );
 useInnerBlocksProps.save = jest.fn( ( props ) => props );
 
-module.exports = {
+// Any component the list above does not name renders its children (a PascalCase export), and any other
+// helper is a no-op, so a block using a newer core component still mounts.
+const named = {
 	__esModule: true,
 	useBlockProps,
 	useInnerBlocksProps,
@@ -62,3 +64,16 @@ module.exports = {
 	useSettings: jest.fn( () => [ [] ] ),
 	store: { name: 'core/block-editor' },
 };
+module.exports = new Proxy( named, {
+	get: ( target, key ) => {
+		// An ES-module shape, so Babel's interop reads names through this proxy instead of copying its own keys.
+		if ( '__esModule' === key ) {
+			return true;
+		}
+		if ( key in target || 'symbol' === typeof key || 'then' === key ) {
+			return target[ key ];
+		}
+		return /^(__experimental|__unstable)?[A-Z]/.test( key ) ? ( target[ key ] = makeComponent( key ) ) : ( target[ key ] = () => undefined );
+	},
+} );
+
