@@ -1,6 +1,7 @@
 // Compares one pair's draft and live snapshots and returns the differences.
 import { compareFocus } from './focus.mjs';
 import { sameRatio } from './ratio.mjs';
+import { layoutComparable } from './paint.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
 // The identity transform in both forms the computed style gives (2D and 3D), whitespace removed.
@@ -130,7 +131,7 @@ export function comparePair( pair, d, l, tol ) {
 		}
 	}
 	for ( const p of new Set( [ ...Object.keys( d.styles ), ...Object.keys( l.styles ) ] ) ) {
-		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || equivalent( p, d.styles[ p ], l.styles[ p ] ) ) {
+		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || equivalent( p, d.styles[ p ], l.styles[ p ] ) || ! layoutComparable( p, d, l ) ) {
 			continue;
 		}
 		if ( ! sameValue( p, d.styles[ p ], l.styles[ p ], tol.px ) ) {

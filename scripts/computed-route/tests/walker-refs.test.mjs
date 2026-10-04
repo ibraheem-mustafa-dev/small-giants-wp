@@ -180,3 +180,19 @@ test( 'Solve holds a measured ratio in the setting form: enum value, free "w / h
 	assert.deepEqual( ratioSetting( 'auto', { type: 'string', default: '16 / 9' } ), { value: 'auto' } );
 	assert.ok( ratioSetting( 'auto 16 / 9', { type: 'string', default: '' } ).error );
 } );
+
+test( 'MUST FAIL: layout rows compare only where both sides lay out with flex or grid; display between block-level values is no row', () => {
+	const tol = { box: 1, px: 0.5 };
+	const snap = ( display, layoutDisplay, extra = {} ) => ( { box: { w: 1, h: 1 }, layoutDisplay, styles: { display, gap: 'normal', 'row-gap': 'normal', 'flex-direction': 'row', 'align-items': 'normal', ...extra } } );
+	const keys = ( d, l ) => comparePair( { text: false, motion: false }, d, l, tol ).map( ( x ) => x.key ).sort();
+	// A draft block stack against a live flex column: the same paint, so no layout or display row.
+	assert.deepEqual( keys( snap( 'block', 'block' ), snap( 'flex', 'flex', { gap: '6px', 'row-gap': '6px', 'flex-direction': 'column', 'align-items': 'stretch' } ) ), [] );
+	// Both flex with different gaps: a row each.
+	assert.deepEqual( keys( snap( 'flex', 'flex' ), snap( 'flex', 'flex', { gap: '6px', 'row-gap': '6px' } ) ), [ 'gap', 'row-gap' ] );
+	// A grid against a flex row: the shared gap compares, flex direction does not.
+	assert.deepEqual( keys( snap( 'grid', 'grid', { gap: '8px' } ), snap( 'flex', 'flex', { gap: '6px', 'flex-direction': 'column' } ) ), [ 'gap' ] );
+	// Display between an inline and a block-level value stays a row.
+	assert.deepEqual( keys( snap( 'inline', 'inline' ), snap( 'flex', 'flex' ) ), [ 'display' ] );
+	// A snapshot without layoutDisplay (an older reader) keeps every row.
+	assert.deepEqual( keys( { box: { w: 1, h: 1 }, styles: { gap: 'normal' } }, { box: { w: 1, h: 1 }, styles: { gap: '6px' } } ), [ 'gap' ] );
+} );

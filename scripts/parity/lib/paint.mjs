@@ -4,6 +4,24 @@
 // Properties read from the element that lays out the pair's children (layoutElement), not the pair's element.
 export const LAYOUT_PROPS = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
 
+// Whether a layout or display row means anything. A pair's snapshot carries its layout element's display
+// (collect.mjs::collectPair, layoutDisplay). Layout properties compare only where both sides lay out their children
+// with flex or grid, and a property of one model (grid tracks, flex wrap and direction) only where both use that
+// model: a block stack and a flex column paint the same, and the children's flow rows judge where the children sit.
+// A display row between two block-level values is the same judgement (the box sits in the flow the same way).
+const MODEL = { 'grid-template-columns': /grid$/, 'flex-wrap': /flex$/, 'flex-direction': /flex$/ };
+const BLOCK_LEVEL = new Set( [ 'block', 'flow-root', 'flex', 'grid', 'list-item' ] );
+export function layoutComparable( prop, d, l ) {
+	if ( 'display' === prop ) {
+		return ! ( BLOCK_LEVEL.has( d.styles?.display ) && BLOCK_LEVEL.has( l.styles?.display ) );
+	}
+	if ( ! LAYOUT_PROPS.includes( prop ) || undefined === d.layoutDisplay || undefined === l.layoutDisplay ) {
+		return true;
+	}
+	const model = MODEL[ prop ] || /(^|-)(flex|grid)$/;
+	return model.test( d.layoutDisplay ) && model.test( l.layoutDisplay );
+}
+
 // Self-contained (passed to page.evaluate as source). The element whose layout a pair's layout properties describe:
 // the first flex or grid container with two or more rendered children, found from the element down a chain of single
 // rendered children (a block wrapper, flex or not, holding one inner band that lays out the items), else the element.
