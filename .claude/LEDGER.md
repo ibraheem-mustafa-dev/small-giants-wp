@@ -19,8 +19,9 @@ Claude Design's gap map; the finished site becomes the pipeline's answer key. Ev
 the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list, all decisions taken. Spec 47's tool
 (measure the draft, write the layout settings automatically) took the About page to 100% on 2026-10-04 (every
 difference closed or a recorded decision, confirmed by an independent check). Contact is down from 134 differences to 19
-(2026-10-04) and the contact form from 94 to 46; Lenses is next, then every other surface; then the register build
-(Front F).
+(2026-10-04) and the contact form from 94 to 46. Next (Bean, 2026-10-04): a whole-site sweep with today's walker,
+then an audit proving which open issues are decided differences, framework gaps or walker gaps, then one framework
+fix pass (Front F).
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -66,9 +67,14 @@ closed 25 but regressed 3 rows, so its tree was restored from git and rebuilt. R
 today's calibration changes: 6 done, the rest listed in the plan. Hostinger's edge answers headless browsers and curl with a 403 browser
 check after bursts of traffic: run the route's host tools with `SGS_HEADED=1` (dev-setup.md), one job at a time.
 
+Two route bugs proven by code reading (2026-10-04), fixed in the sweep plan's A5 and B4: when live drifts from a
+ledger decision, Solve's next write uses the draft value (`solve-rows.mjs::draftValues` ignores the ledger), and
+`qa/independent-check.mjs::accepted` never matches a ledger entry (it reads `ref`; entries store `node`).
+
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**
-`plans/2026-10-04-spec47-full-coverage.md` "Progress", then Spec 47 §5 stage 3 "Residual", then the register in the plan's
-"Work plan" order.
+`plans/2026-10-04-eye-care-sweep-audit-fix.md` Session A (sweep every surface, measure only), then its Sessions B
+(audit the split, protect decisions) and C (framework fixes); per-surface Solve work (`plans/2026-10-04-spec47-full-coverage.md`
+"Progress") resumes in its Session D.
 
 **Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info
