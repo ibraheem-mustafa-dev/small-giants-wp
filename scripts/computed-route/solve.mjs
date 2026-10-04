@@ -80,12 +80,21 @@ async function walk( walker, outDir, walkStates = null ) {
 	return report;
 }
 
+// The leaves a write changes: [[dotted path, JSON value]] where after differs from before.
+function leafChanges( before, after, at = '' ) {
+	if ( after && 'object' === typeof after && ! Array.isArray( after ) ) {
+		return Object.entries( after ).flatMap( ( [ k, v ] ) => leafChanges( before && 'object' === typeof before ? before[ k ] : undefined, v, at ? `${ at }.${ k }` : k ) );
+	}
+	return JSON.stringify( before ) === JSON.stringify( after ) ? [] : [ [ at, JSON.stringify( after ) ] ];
+}
+
 // One write round: resolves every writable group of the report against the tree. stateMap is the surface's walker
 // state to setting state map; rows from an unmapped state are never written. Returns the writes and gaps.
 export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor = calibrationFor, refs = detectReferences() } ) {
 	const { groups } = writableGroups( report, stateMap );
 	const writes = [];
 	const gaps = {};
+	const claimed = new Map();
 	for ( const g of groups ) {
 		if ( blocked.has( g.key ) ) {
 			gaps[ g.key ] = blocked.get( g.key );
@@ -143,11 +152,20 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			gaps[ g.key ] = r;
 			continue;
 		}
+		// A group wanting a part of a setting (a side, a device) that another group already wrote this round with another
+		// value is not written and is reported as a conflict: one shared setting cannot hold both elements' draft values.
+		const clash = r.writes.map( ( w ) => [ w, leafChanges( target.node.attributes?.[ w.attr ], setAttr( structuredClone( target.node ), w ).after ) ] )
+			.flatMap( ( [ w, leaves ] ) => leaves.filter( ( [ k, v ] ) => { const had = claimed.get( `${ target.ref }|${ w.attr }|${ k }` ); return undefined !== had && had !== v; } ).map( ( [ k ] ) => `${ w.attr }.${ k }` ) );
+		if ( clash.length ) {
+			gaps[ g.key ] = { gap: 'conflict', detail: `${ clash.join( ', ' ) } already written with another value this round (one setting, two elements' draft values)` };
+			continue;
+		}
 		for ( const w of r.writes ) {
 			const same = JSON.stringify( setAttr( structuredClone( target.node ), w ).after ) === JSON.stringify( target.node.attributes?.[ w.attr ] );
 			if ( same ) {
 				continue;
 			}
+			leafChanges( target.node.attributes?.[ w.attr ], setAttr( structuredClone( target.node ), w ).after ).forEach( ( [ k, v ] ) => claimed.set( `${ target.ref }|${ w.attr }|${ k }`, v ) );
 			const { before, after } = setAttr( target.node, w );
 			writes.push( { round, group: g.key, ref: target.ref, block: target.node.name, path: target.path, prop: g.prop, state: g.state, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
 		}

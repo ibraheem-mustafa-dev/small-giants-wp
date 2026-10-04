@@ -274,3 +274,22 @@ test( 'MUST FAIL: an enclosing block\'s setting matches on the element\'s tag, s
 	const r = writeRound( report, ownedFormTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: formCal } );
 	assert.deepEqual( r.writes.map( ( w ) => w.attr ), [ 'fieldMinHeight' ] );
 } );
+
+test( 'MUST FAIL: a second element wanting one part of a shared setting at another value in the same round is a conflict, not a write', () => {
+	const INPUT = '.sgs-form__inner > .sgs-form-field:nth-of-type(1) > .sgs-form-field__input';
+	const AREA = '.sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input';
+	const formCal = ( name ) => ( 'sgs/form' === name
+		? { elements: { [ INPUT ]: { 1440: { _tag: 'input' } }, [ AREA ]: { 1440: { _tag: 'textarea' } } }, settings: { fieldPadding: { slot: INPUT, slots: [ INPUT, AREA ], property: 'padding' } } }
+		: { elements: { '': {}, '.sgs-form-field__input': {} }, settings: {} } );
+	const row = ( pair, ref, draft, tag ) => ( { kind: 'style', key: 'padding-top', draft, live: '12px', ref, path: '.sgs-form-field__input',
+		owners: [ { ref: 'cr-ref-f-0', block: 'sgs-form', path: `.sgs-form__inner > .sgs-form-field:nth-of-type(${ 'input' === tag ? 1 : 2 }) > .sgs-form-field__input`, tag } ] } );
+	const tree = () => [ { name: 'sgs/form', attributes: { className: 'cr-ref-f-0' }, innerBlocks: [ { name: 'sgs/form-field-text', attributes: { className: 'cr-ref-f-1' } }, { name: 'sgs/form-field-textarea', attributes: { className: 'cr-ref-f-2' } } ] } ];
+	const report = ( areaDraft ) => ( { runs: [ { state: 'opening', width: 1440, pairs: {
+		name: { draft: { styles: { 'padding-top': '0px' } }, diffs: [ row( 'name', 'cr-ref-f-1', '0px', 'input' ) ] },
+		message: { draft: { styles: { 'padding-top': areaDraft } }, diffs: [ row( 'message', 'cr-ref-f-2', areaDraft, 'textarea' ) ] } } } ] } );
+	const clash = writeRound( report( '14px' ), tree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: formCal } );
+	assert.equal( clash.writes.length, 1 );
+	assert.equal( Object.values( clash.gaps ).filter( ( x ) => 'conflict' === x.gap ).length, 1 );
+	const agree = writeRound( report( '0px' ), tree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: formCal } );
+	assert.equal( Object.values( agree.gaps ).filter( ( x ) => 'conflict' === x.gap ).length, 0 );
+} );
