@@ -1527,6 +1527,25 @@ def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
         err("[purge] theme pattern cache did not clear (exit %d): %s"
             % (pt.returncode, pout[:200]))
 
+    # ---- leg 4: pending SGS migrations -------------------------------------
+    # A release that ships a migration (includes/migrations/) needs it run on
+    # every site, or wp-admin shows "N migrations pending" until someone runs
+    # it by hand. The runner needs edit_theme_options, so it runs as the site's
+    # first administrator. Idempotent; a failure is reported, never fatal.
+    mig_cmd = ssh_base_cmd(use_alias) + [
+        "cd " + shlex.quote(webroot) + " && "
+        "uid=$(wp user list --role=administrator --field=ID --orderby=ID "
+        "--number=1 2>/dev/null) && "
+        "wp sgs migrations run --user=\"$uid\" 2>&1 && echo SGS-MIGRATIONS-OK"]
+    mg = subprocess.run(mig_cmd, check=False, capture_output=True, text=True)
+    mout = ((mg.stdout or "") + (mg.stderr or "")).strip()
+    if "SGS-MIGRATIONS-OK" in mout:
+        log("[migrate] %s" % mout.replace("SGS-MIGRATIONS-OK", "").strip()[:300])
+    else:
+        err("[migrate] pending SGS migrations did not run (exit %d): %s - run "
+            "`wp sgs migrations run --user=<admin id>` on the target"
+            % (mg.returncode, mout[:200]))
+
     if ok_opcache and ok_page and ok_patterns:
         log("[purge] OK - all layers clear")
         return 0
