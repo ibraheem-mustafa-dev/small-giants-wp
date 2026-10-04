@@ -490,8 +490,8 @@ $add_to_cart_style_class = sgs_buybox_add_to_cart_class( sanitize_key( (string) 
 $add_to_cart_show_price  = (bool) ( $attributes['addToCartShowPrice'] ?? false );
 // Cart icon show/hide (cart-mode form only — buybox-modal-cta.php's
 // own markup is outside this block's file scope) and the hover-lift modifier
-// (style.css pairs this class with a translateY(-2px), timed to match a
-// beside-it sgs/button CTA's own hover-transform — see style.css's comment).
+// (style.css pairs this class with the site-wide button hover transform and
+// timing, falling back to a 2px lift when the site sets none).
 $add_to_cart_show_icon  = (bool) ( $attributes['addToCartShowIcon'] ?? true );
 $add_to_cart_hover_lift = (bool) ( $attributes['addToCartHoverLift'] ?? false );
 

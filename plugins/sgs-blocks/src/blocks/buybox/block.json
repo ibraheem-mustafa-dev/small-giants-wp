@@ -679,7 +679,7 @@
 		"addToCartHoverLift": {
 			"type": "boolean",
 			"default": false,
-			"description": "Lifts the add-to-cart button 2px on hover (matches the timing of a beside-it sgs/button CTA's own hover-transform, button/style.css). Off = today's brightness-only hover."
+			"description": "Forces the add-to-cart button to lift on hover, using the site-wide button hover lift and timing (2px over 0.18s when the site sets none). Off = the button follows the site-wide button hover only."
 		},
 		"stockInStockLabel": {
 			"type": "string",

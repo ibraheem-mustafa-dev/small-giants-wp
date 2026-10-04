@@ -102,8 +102,9 @@ function build( target, treeFile, extra = [] ) {
 
 async function openBrowser( env ) {
 	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
-	// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load).
-	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED } );
+	// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load); scrollbars hidden as the walker hides them,
+	// or a headed window lays the page out about 15px narrower than its viewport.
+	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars' ] } );
 	const ctx = await browser.newContext( { ignoreHTTPSErrors: true } );
 	const page = await ctx.newPage();
 	await page.goto( `${ env.url }/wp-login.php`, { waitUntil: 'domcontentloaded', timeout: 60000 } );

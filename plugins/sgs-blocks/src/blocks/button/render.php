@@ -450,8 +450,15 @@ if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 // Hover lift paints the independent `translate` property (not `transform`),
 // so it composes with the scale above without the two contending for one
 // declaration; it always moves the button root, whichever part scales.
+// An explicit lift replaces the site-wide default lift token (the preset's
+// `transform`), otherwise the two would stack; a whole-button scale already
+// overrides that transform on its own rule.
 if ( $hover_lift > 0 ) {
-	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "translate:0 -{$hover_lift}px" );
+	$lift_decls = "translate:0 -{$hover_lift}px";
+	if ( abs( $hover_scale - 1.0 ) <= 0.001 || 'face' === $hover_scale_target ) {
+		$lift_decls .= ';transform:none';
+	}
+	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", $lift_decls );
 }
 
 // Content alignment + label-to-icon gap, per device. Both are flex properties
@@ -701,7 +708,7 @@ if ( $has_width_tier || in_array( $width_type, array( 'custom', 'full', 'fit' ),
 // value emits NO modifier — the neutral base `.sgs-button` + any per-instance
 // override vars govern (so a naked cloned link is NOT forced to a primary look).
 $btn_classes = array( 'sgs-button' );
-if ( in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true ) ) {
+if ( in_array( $inherit_style, array( 'primary', 'secondary', 'outline', 'link' ), true ) ) {
 	$btn_classes[] = 'sgs-button--' . $inherit_style;
 }
 
@@ -928,7 +935,7 @@ $btn_style_str = $inline_styles ? implode( ';', $inline_styles ) . ';' : '';
 $btn_class_str = implode( ' ', $btn_classes );
 
 // Whitelist to prevent arbitrary attribute-value injection.
-$allowed_presets    = array( 'primary', 'secondary', 'outline' );
+$allowed_presets    = array( 'primary', 'secondary', 'outline', 'link' );
 $safe_inherit_style = in_array( $inherit_style, $allowed_presets, true ) ? $inherit_style : 'primary';
 
 // The <a>/<button> IS the block root (no intermediate wrapper div — D288): the

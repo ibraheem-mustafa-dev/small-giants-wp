@@ -245,7 +245,6 @@
                   "label": "Message me",
                   "backgroundColour": "whatsapp",
                   "labelColour": "#0B2B17",
-                  "backgroundColourHover": "whatsapp-hover",
                   "labelFontWeight": "500",
                   "className": "cr-ref-about-9",
                   "labelLineHeight": {

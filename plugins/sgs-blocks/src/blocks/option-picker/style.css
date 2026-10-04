@@ -651,10 +651,26 @@
 .sgs-option-picker--tile.sgs-option-picker--large  { --sgs-option-picker-tile-width: 112px; }
 .sgs-option-picker--tile .sgs-option-picker__pill { width: 100%; }
 
+/* The tile's lift is part of its transition, timed by the site-wide button hover
+   timing (buttonPresets.default.hover-transition) when set. */
+.sgs-option-picker--tile .sgs-option-picker__pill {
+	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
+	            color            var(--wp--custom--transition--fast, 0.15s ease),
+	            border-color     var(--wp--custom--transition--fast, 0.15s ease),
+	            box-shadow       var(--wp--custom--transition--fast, 0.15s ease),
+	            transform        var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-option-picker--tile .sgs-option-picker__pill {
+		transition: none;
+	}
+}
+
 .sgs-option-picker--tile .sgs-option-picker__option:hover .sgs-option-picker__pill,
 .sgs-option-picker--tile .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
 	border-color: var(--sgs-op-border, var(--wp--preset--color--primary, currentColor));
-	transform: translateY(-2px);
+	transform: var(--wp--custom--button-presets--default--hover-transform, translateY(-2px));
 }
 
 .sgs-option-picker--tile .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {

@@ -119,6 +119,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-hover-state.php';
+require_once __DIR__ . '/helpers-hover-links.php';
 require_once __DIR__ . '/helpers-responsive.php';
 require_once __DIR__ . '/helpers-separators-css.php';
 require_once __DIR__ . '/helpers-container-separators.php';

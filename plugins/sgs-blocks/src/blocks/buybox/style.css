@@ -162,11 +162,13 @@
 	background: var(--sgs-buybox-cta-bg, var(--wp--preset--color--accent, var(--wp--preset--color--primary, #1e1e1e)));
 	color: var(--sgs-buybox-cta-colour, var(--wp--preset--color--text, #fff));
 	cursor: pointer;
-	transition: filter 200ms ease, transform 200ms ease;
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 200ms) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 200ms) ease, color var(--wp--custom--button-presets--default--hover-transition, 200ms) ease, transform var(--wp--custom--button-presets--default--hover-transition, 200ms) ease;
 }
 
+/* Hover: the style presets below own the colour change; the site-wide button lift
+   (buttonPresets.default.hover-transform) moves it when set, none otherwise. */
 .sgs-buybox .buybox__add-to-cart:hover:not([disabled]) {
-	filter: brightness(0.94);
+	transform: var(--wp--custom--button-presets--default--hover-transform, none);
 }
 
 .sgs-buybox .buybox__add-to-cart:focus-visible {
@@ -206,7 +208,6 @@
 }
 
 .sgs-buybox .buybox__add-to-cart--primary:hover:not([disabled]) {
-	filter: none;
 	background: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--text));
 	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--preset--color--text));
 	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--preset--color--text-inverse, #fff));
@@ -220,7 +221,6 @@
 }
 
 .sgs-buybox .buybox__add-to-cart--secondary:hover:not([disabled]) {
-	filter: none;
 	background: var(--wp--custom--button-presets--secondary--hover-background, var(--wp--preset--color--primary));
 	border-color: var(--wp--custom--button-presets--secondary--hover-border, var(--wp--preset--color--primary));
 	color: var(--wp--custom--button-presets--secondary--hover-text, var(--wp--preset--color--text-inverse, #fff));
@@ -234,7 +234,6 @@
 }
 
 .sgs-buybox .buybox__add-to-cart--outline:hover:not([disabled]) {
-	filter: none;
 	background: var(--wp--custom--button-presets--outline--hover-background, var(--wp--preset--color--surface-alt));
 	border-color: var(--wp--custom--button-presets--outline--hover-border, var(--wp--preset--color--primary));
 	color: var(--wp--custom--button-presets--outline--hover-text, var(--wp--preset--color--text));
@@ -260,19 +259,16 @@
 }
 
 /* ── Add-to-cart hover lift (addToCartHoverLift) ─────────────
-   0.18s ease matches button/style.css's own `--sgs-btn-transform-hover`
-   transition timing (that file's `transition:` declaration, ~line 71) — the
-   beside-it "Add my prescription" CTA is an sgs/button instance reading that
-   same timing, so the two lift in step. Reduced-motion honoured by the
-   existing .buybox__add-to-cart media query below (sets transition: none;
-   the end state itself still applies, matching every other hover state on
-   this button — filter/background/border/colour are not motion-gated). */
+   The switch forces a lift even when no site-wide lift is set: it uses the
+   site-wide button hover transform and timing (buttonPresets.default), falling
+   back to 2px over 0.18s only when the site sets none. Reduced-motion is honoured
+   by the existing .buybox__add-to-cart media query below (transition: none). */
 .sgs-buybox .buybox__add-to-cart--hover-lift {
-	transition: filter 200ms ease, transform 0.18s ease;
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
 }
 
 .sgs-buybox .buybox__add-to-cart--hover-lift:hover:not([disabled]) {
-	transform: translateY(-2px);
+	transform: var(--wp--custom--button-presets--default--hover-transform, translateY(-2px));
 }
 
 /* ── Picker label row: "show selected value" (F1) or a label link (F2) ────

@@ -8,7 +8,10 @@
 	text-decoration: none;
 	font-weight: 600;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	transition: var(--wp--custom--transition--medium, 0.3s ease);
+	transition-property: all;
+	transition-timing-function: ease;
+	/* The site-wide button hover timing (buttonPresets.default.hover-transition). */
+	transition-duration: var(--wp--custom--button-presets--default--hover-transition, 0.3s);
 	cursor: pointer;
 	border: none;
 	line-height: 1;
@@ -32,8 +35,12 @@
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
-/* Hover lift and fade come from the universal Hover panel (supports.sgs.hoverDefaults:
-   a 1px lift by default; its Lift and Opacity controls change them). */
+/* Hover: the site-wide button lift (buttonPresets.default.hover-transform) applies
+   when set; with none set the button does not move. The universal Hover panel's Lift
+   and Opacity controls override it per instance (zero specificity here so they win). */
+:where(.sgs-whatsapp-cta__btn:hover) {
+	transform: var(--wp--custom--button-presets--default--hover-transform, none);
+}
 
 .sgs-whatsapp-cta__btn:focus-visible {
 	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));

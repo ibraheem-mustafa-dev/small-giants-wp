@@ -1,0 +1,230 @@
+#!/usr/bin/env node
+// Independent check of a surface against its draft (Spec 47 pilot, plan .claude/plans/2026-10-04-spec47-full-coverage.md).
+//   node sites/eye-care-ward-end/build/qa/independent-check.mjs --surface about [--widths 375,768,1440] [--out <file.json>]
+// A second opinion on Solve that shares none of its measuring: it never uses the cr-ref classes, the walker's word
+// matcher or the pairing report. Every block of the surface's tree is found on both pages by its own text (the text
+// its attributes carry; a container by the texts inside it that the page holds), and form fields by
+// their name or id. It then compares painted values at each width:
+//   - each block's box (width, height) and its position relative to the first block found on both pages;
+//   - text blocks: font size, weight, line height, letter spacing, colour, text transform;
+//   - every block: the painted inset of its "unit" (the element holding its text, and every wrapper around it that
+//     holds no other text): how far its rendered text sits from the outer box's edges, wherever the padding sits; the
+//     unit's gap, its ground colour and its border (the first painted one in the unit).
+// Navigation (the draft url and the click that opens the surface's view) comes from the surface's hand walker config.
+// Differences matching a divergence-ledger entry for the surface (sites/<client>/build/qa/divergences.json, same ref
+// and property) are reported as accepted. Exit 1 when any other difference remains.
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+
+const HERE = path.dirname( fileURLToPath( import.meta.url ) );
+const BUILD = path.resolve( HERE, '..' );
+const REPO = path.resolve( BUILD, '../../..' );
+const argv = process.argv.slice( 2 );
+const flag = ( n, d = null ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : d );
+const surface = flag( '--surface' );
+const WIDTHS = flag( '--widths', '375,768,1440' ).split( ',' ).map( Number );
+const PX_TOL = 2;
+const FONT_TOL = 0.5;
+const TEXT_KEYS = [ 'content', 'text', 'label', 'heading', 'title', 'buttonText', 'triggerText', 'subtitle', 'description', 'placeholder' ];
+
+if ( ! surface ) {
+	console.error( 'Usage: independent-check.mjs --surface <surface> [--widths 375,768,1440] [--out file.json]' );
+	process.exit( 2 );
+}
+const s = JSON.parse( fs.readFileSync( path.join( BUILD, 'surfaces.json' ), 'utf8' ) )[ surface ];
+const tree = JSON.parse( fs.readFileSync( path.join( BUILD, s.tree ), 'utf8' ) );
+const cfg = ( await import( pathToFileURL( path.join( BUILD, s.walker ) ).href ) ).default;
+const ledgerFile = path.join( BUILD, 'qa', 'divergences.json' );
+const ledgerRaw = fs.existsSync( ledgerFile ) ? JSON.parse( fs.readFileSync( ledgerFile, 'utf8' ) ) : [];
+const ledger = ( Array.isArray( ledgerRaw ) ? ledgerRaw : Object.values( ledgerRaw ).flat() ).filter( ( e ) => e && ( ! e.scope || e.scope === surface ) );
+
+// The words of a string, lower-cased, letters and digits only.
+const norm = ( t ) => String( t ).replace( /<[^>]+>/g, ' ' ).replace( /&[a-z#0-9]+;/gi, ' ' ).toLowerCase().replace( /[^\p{L}\p{N}]+/gu, ' ' ).trim();
+const snippet = ( t ) => norm( t ).split( ' ' ).slice( 0, 6 ).join( ' ' );
+const ownText = ( n ) => {
+	const a = n.attributes || {};
+	const k = TEXT_KEYS.find( ( key ) => 'string' === typeof a[ key ] && norm( a[ key ] ) );
+	return k ? snippet( a[ k ] ) : null;
+};
+const refOf = ( n ) => ( ( n.attributes?.className || '' ).match( /\bcr-ref-\S+/ ) || [] )[ 0 ] || null;
+
+// Items: one per block (the ref only labels the result). texts: the snippets of every text-bearing block inside it;
+// field: a form field's name or id.
+const items = [];
+const walk = ( nodes ) => nodes.forEach( ( n ) => {
+	const texts = [];
+	const collect = ( m ) => {
+		const t = ownText( m );
+		t && texts.push( t );
+		( m.innerBlocks || [] ).forEach( collect );
+	};
+	collect( n );
+	const a = n.attributes || {};
+	const field = a.fieldName || a.name || a.fieldId || null;
+	const own = ownText( n );
+	if ( own || texts.length || field ) {
+		items.push( { ref: refOf( n ) || n.name, block: n.name, own, texts, field: 'string' === typeof field && /^[\w-]+$/.test( field ) ? field : null } );
+	}
+	walk( n.innerBlocks || [] );
+} );
+walk( Array.isArray( tree ) ? tree : tree.blocks || [] );
+
+// In-page: finds each item and reads its painted values.
+function readPage( list ) {
+	const N = ( t ) => String( t ).toLowerCase().replace( /[^\p{L}\p{N}]+/gu, ' ' ).trim();
+	const skip = ( el ) => !! el.closest( 'header, nav, footer, [role="navigation"], [role="banner"], [role="contentinfo"], script, style, noscript, template' );
+	const visible = ( el ) => {
+		const r = el.getBoundingClientRect();
+		const c = getComputedStyle( el );
+		return r.width > 0 && r.height > 0 && 'hidden' !== c.visibility && 'none' !== c.display;
+	};
+	const all = [ ...document.body.querySelectorAll( '*' ) ].filter( ( el ) => ! skip( el ) );
+	const textOf = new Map( all.map( ( el ) => [ el, N( el.textContent ) ] ) );
+	const has = ( el, t ) => ( ' ' + textOf.get( el ) + ' ' ).includes( ' ' + t + ' ' );
+	// The deepest visible elements holding every given text, in document order.
+	const deepest = ( texts ) => all.filter( ( el ) => texts.every( ( t ) => has( el, t ) ) && visible( el ) && ! [ ...el.children ].some( ( c ) => textOf.has( c ) && texts.every( ( t ) => has( c, t ) ) && visible( c ) ) );
+	// The unit: the element and every ancestor holding exactly the same text.
+	const unitOf = ( el ) => {
+		const out = [ el ];
+		for ( let a = el.parentElement; a && a !== document.body && textOf.get( a ) === textOf.get( el ); a = a.parentElement ) {
+			out.push( a );
+		}
+		return out;
+	};
+	const used = new Set();
+	const px = ( v ) => parseFloat( v ) || 0;
+	const out = [];
+	for ( const it of list ) {
+		let el = null;
+		if ( it.field ) {
+			el = [ ...document.querySelectorAll( `[name="${ it.field }"], #${ CSS.escape( it.field ) }` ) ].find( ( e ) => ! skip( e ) ) || null;
+		}
+		if ( ! el ) {
+			// A container by every text inside it that the page holds (a wording difference elsewhere is a text row, not a lost block).
+			const texts = it.own ? [ it.own ] : it.texts.filter( ( t ) => all.some( ( e ) => has( e, t ) ) );
+			el = texts.length ? deepest( texts ).find( ( e ) => ! used.has( e ) ) || null : null;
+		}
+		if ( ! el ) {
+			out.push( { ref: it.ref, found: false } );
+			continue;
+		}
+		used.add( el );
+		const unit = unitOf( el );
+		const outer = unit.at( -1 );
+		const r = outer.getBoundingClientRect();
+		// Painted inset: from the outer box's edges to where its text paints (the rendered text's own rectangle), so the
+		// padding counts wherever it sits in the unit and an icon or label wrapper before the text counts as it paints.
+		const range = document.createRange();
+		range.selectNodeContents( el );
+		const tr = range.getBoundingClientRect();
+		const inset = tr.width && tr.height
+			? { top: Math.round( tr.top - r.top ), right: Math.round( r.right - tr.right ), bottom: Math.round( r.bottom - tr.bottom ), left: Math.round( tr.left - r.left ) }
+			: { top: 0, right: 0, bottom: 0, left: 0 };
+		const ic = getComputedStyle( el );
+		const firstOf = ( fn ) => unit.map( ( u ) => fn( getComputedStyle( u ) ) ).find( ( v ) => null !== v ) ?? null;
+		const ground = firstOf( ( c ) => ( /rgba\(.*,\s*0\)$|transparent/.test( c.backgroundColor ) ? null : c.backgroundColor ) );
+		const border = firstOf( ( c ) => ( [ 'Top', 'Right', 'Bottom', 'Left' ].some( ( sd ) => 'none' !== c[ `border${ sd }Style` ] && px( c[ `border${ sd }Width` ] ) > 0 ) ? [ 'Top', 'Right', 'Bottom', 'Left' ].map( ( sd ) => ( 'none' === c[ `border${ sd }Style` ] ? '0' : `${ c[ `border${ sd }Width` ] } ${ c[ `border${ sd }Style` ] } ${ c[ `border${ sd }Color` ] }` ) ).join( ' | ' ) : null ) );
+		const gap = firstOf( ( c ) => ( /flex|grid/.test( c.display ) && ( 'normal' !== c.rowGap || 'normal' !== c.columnGap ) ? `${ c.rowGap } ${ c.columnGap }` : null ) );
+		const row = {
+			ref: it.ref,
+			found: true,
+			box: { x: Math.round( r.left + scrollX ), y: Math.round( r.top + scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
+			inset,
+			ground,
+			border,
+			gap,
+		};
+		if ( it.own || it.field ) {
+			row.font = { size: px( ic.fontSize ), weight: ic.fontWeight, lineHeight: 'normal' === ic.lineHeight ? 'normal' : px( ic.lineHeight ), letterSpacing: ic.letterSpacing, color: ic.color, transform: ic.textTransform };
+		}
+		out.push( row );
+	}
+	return out;
+}
+
+function compare( d, l, width ) {
+	const diffs = [];
+	const add = ( prop, dv, lv ) => diffs.push( { ref: d.ref, width, prop, draft: dv, live: lv } );
+	if ( ! d.found || ! l.found ) {
+		d.found !== l.found && add( 'found', d.found, l.found );
+		return diffs;
+	}
+	for ( const k of [ 'x', 'y', 'w', 'h' ] ) {
+		Math.abs( d.box[ k ] - l.box[ k ] ) > PX_TOL && add( `box.${ k }`, d.box[ k ], l.box[ k ] );
+	}
+	for ( const k of [ 'top', 'right', 'bottom', 'left' ] ) {
+		Math.abs( d.inset[ k ] - l.inset[ k ] ) > PX_TOL && add( `padding.${ k }`, d.inset[ k ], l.inset[ k ] );
+	}
+	for ( const k of [ 'ground', 'border', 'gap' ] ) {
+		d[ k ] !== l[ k ] && add( k, d[ k ], l[ k ] );
+	}
+	if ( d.font && l.font ) {
+		Math.abs( d.font.size - l.font.size ) > FONT_TOL && add( 'font-size', d.font.size, l.font.size );
+		const lh = ( f ) => ( 'normal' === f.lineHeight ? 'normal' : Math.round( f.lineHeight ) );
+		lh( d.font ) !== lh( l.font ) && Math.abs( ( d.font.lineHeight || 0 ) - ( l.font.lineHeight || 0 ) ) > FONT_TOL && add( 'line-height', d.font.lineHeight, l.font.lineHeight );
+		for ( const k of [ 'weight', 'letterSpacing', 'color', 'transform' ] ) {
+			d.font[ k ] !== l.font[ k ] && add( k, d.font[ k ], l.font[ k ] );
+		}
+	}
+	return diffs;
+}
+
+const accepted = ( df ) => ledger.find( ( e ) => ( e.ref === df.ref || e.row?.ref === df.ref ) && JSON.stringify( e ).toLowerCase().includes( df.prop.split( '.' ).pop().toLowerCase() ) );
+
+const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+const { makeHelpers, waitOutHostCheck } = await import( pathToFileURL( path.join( REPO, 'scripts/parity/lib/helpers.mjs' ) ).href );
+const { resolveFinder } = await import( pathToFileURL( path.join( REPO, 'scripts/parity/lib/collect.mjs' ) ).href );
+// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load).
+const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars' ] } );
+const settle = async ( page ) => {
+	// Fire every scroll reveal and let entrance animations finish before reading.
+	await page.evaluate( async () => {
+		for ( let y = 0; y < document.body.scrollHeight; y += 500 ) {
+			window.scrollTo( 0, y );
+			await new Promise( ( r ) => setTimeout( r, 120 ) );
+		}
+		window.scrollTo( 0, 0 );
+	} );
+	await page.waitForTimeout( 2000 );
+};
+const cb = ( u ) => u.replace( '{cb}', String( Date.now() ) );
+const diffs = [];
+try {
+	await Promise.all( WIDTHS.map( async ( width ) => {
+		const ctx = await browser.newContext( { viewport: { width, height: 900 } } );
+		const draft = await ctx.newPage();
+		await draft.goto( cb( cfg.draft.url ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
+		await draft.waitForTimeout( 1500 );
+		await waitOutHostCheck( draft );
+		if ( cfg.draft.open ) {
+			const h = makeHelpers( draft, 'draft', { cb, RESOLVE: resolveFinder.toString(), onAction: null } );
+			h.log = [];
+			await cfg.draft.open( h );
+		}
+		await settle( draft );
+		const live = await ctx.newPage();
+		await live.goto( cb( cfg.live.url ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
+		await waitOutHostCheck( live );
+		await settle( live );
+		const d = await draft.evaluate( readPage, items );
+		const l = await live.evaluate( readPage, items );
+		// Positions from the first block found on both pages, so the header above and a block missed on one side shift nothing.
+		const o = d.findIndex( ( row, i ) => row.found && l[ i ].found );
+		for ( const [ side, ref ] of [ [ d, d[ o ] ], [ l, l[ o ] ] ] ) {
+			const base = ref ? { x: ref.box.x, y: ref.box.y } : { x: 0, y: 0 };
+			side.filter( ( row ) => row.found ).forEach( ( row ) => ( row.box = { ...row.box, x: row.box.x - base.x, y: row.box.y - base.y } ) );
+		}
+		d.forEach( ( row, i ) => diffs.push( ...compare( row, l[ i ], width ) ) );
+		await ctx.close();
+	} ) );
+} finally {
+	await browser.close();
+}
+diffs.sort( ( a, b ) => a.ref.localeCompare( b.ref, undefined, { numeric: true } ) || a.width - b.width );
+const open = diffs.filter( ( df ) => ! accepted( df ) );
+const out = flag( '--out' );
+out && fs.writeFileSync( path.resolve( out ), JSON.stringify( { surface, widths: WIDTHS, items: items.length, diffs, open: open.length }, null, 1 ) );
+open.forEach( ( df ) => console.log( `${ df.width } ${ df.ref } ${ df.prop }: draft ${ JSON.stringify( df.draft ) } live ${ JSON.stringify( df.live ) }` ) );
+console.log( JSON.stringify( { surface, items: items.length, differences: diffs.length, accepted: diffs.length - open.length, open: open.length } ) );
+process.exit( open.length ? 1 : 0 );

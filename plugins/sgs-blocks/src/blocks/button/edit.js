@@ -412,7 +412,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// ignored every preset while the frontend honoured it. A 'custom'/unknown
 	// value emits NO modifier, exactly as render.php does.
 	const blockClasses = [ 'sgs-button' ];
-	if ( [ 'primary', 'secondary', 'outline' ].includes( inheritStyle ) ) {
+	if ( [ 'primary', 'secondary', 'outline', 'link' ].includes( inheritStyle ) ) {
 		blockClasses.push( `sgs-button--${ inheritStyle }` );
 	}
 	if ( widthType?.desktop === 'full' ) blockClasses.push( 'sgs-button--full' );

@@ -219,7 +219,7 @@ tree = [
                 pickerShowSelectedValue=True,
                 addToCartTextTransform="uppercase", addToCartLetterSpacing={"desktop": 0.12}, addToCartLetterSpacingUnit="em",
                 addToCartFontWeight="400", addToCartFontSize={"desktop": 13}, addToCartFontSizeUnit="px",
-                addToCartMinHeight="56px", addToCartShowIcon=False, addToCartHoverLift=True,
+                addToCartMinHeight="56px", addToCartShowIcon=False,
                 addToCartBorderColour="text", addToCartBackgroundColour="surface-alt",
                 # Bean 2026-09-28: sizes shown by universal band (S up to 52mm, M up to 57mm, L), only this frame's own,
                 # a one-size frame included; "Which size am I?" at the right of the Size label; the draft's "Save £51

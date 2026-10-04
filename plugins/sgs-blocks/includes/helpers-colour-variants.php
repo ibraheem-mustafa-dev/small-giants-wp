@@ -280,6 +280,10 @@ function sgs_text_states_css( string $selector, array $attributes, array $map ):
 		$css .= sgs_emit_state_colour_css( $selector, $decls['normal'], $decls['hover'], $extra_states );
 	}
 
+	if ( $decls['hover'] ) {
+		$css .= sgs_hover_link_inherit_css( $selector );
+	}
+
 	$css .= sgs_text_colour_gradient_fallback_rule( $selector, $normal_resolved );
 	if ( '' !== $hover_resolved && $hover_resolved !== $normal_resolved ) {
 		$css .= sgs_hover_media_wrap(

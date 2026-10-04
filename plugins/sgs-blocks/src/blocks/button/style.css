@@ -68,7 +68,7 @@
 	text-decoration: none;
 	cursor: pointer;
 	white-space: normal;
-	transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
 	-webkit-appearance: none;
 	appearance: none;
 
@@ -136,10 +136,11 @@
 	background-image: var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-hover-image-default, var(--sgs-mb-btn-bg-image-default, none))));
 	border-color: var(--sgs-btn-border-hover, var(--sgs-btn-border, var(--sgs-mb-btn-border-default, transparent)));
 	/* Preset hover transform (FR-33-4 open-bag "transform-lift"): applied from the client's
-	   buttonPresets hover-transform token; `none` fallback = current behaviour when no preset.
+	   buttonPresets hover-transform token, then the site-wide buttonPresets.default
+	   hover-transform; `none` fallback = no lift when neither is set.
 	   A per-instance scaleHover attr emits a higher-specificity `.uid.sgs-button:hover` rule
 	   (render.php) that overrides this; reduced-motion forces transform:none !important. */
-	transform: var(--sgs-btn-transform-hover, none);
+	transform: var(--sgs-btn-transform-hover, var(--wp--custom--button-presets--default--hover-transform, none));
 	/* Hover opacity (opacityHover attribute, render.php) — a real editor
 	   control, never a hardcoded literal here. Fallback 1 = no visible change
 	   when the attribute is unset (0, the off-sentinel). Touch-guarded at
@@ -190,7 +191,7 @@
 	--sgs-btn-color-hover: var(--wp--custom--button-presets--primary--hover-text, var(--wp--preset--color--text-inverse));
 	--sgs-btn-bg-hover: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--text));
 	--sgs-btn-border-hover: var(--wp--custom--button-presets--primary--hover-border, var(--wp--preset--color--text));
-	--sgs-btn-transform-hover: var(--wp--custom--button-presets--primary--hover-transform, none);
+	--sgs-btn-transform-hover: var(--wp--custom--button-presets--primary--hover-transform, var(--wp--custom--button-presets--default--hover-transform, none));
 }
 
 .sgs-button--secondary {
@@ -211,7 +212,7 @@
 	--sgs-btn-color-hover: var(--wp--custom--button-presets--secondary--hover-text, var(--wp--preset--color--text-inverse));
 	--sgs-btn-bg-hover: var(--wp--custom--button-presets--secondary--hover-background, var(--wp--preset--color--primary));
 	--sgs-btn-border-hover: var(--wp--custom--button-presets--secondary--hover-border, var(--wp--preset--color--primary));
-	--sgs-btn-transform-hover: var(--wp--custom--button-presets--secondary--hover-transform, none);
+	--sgs-btn-transform-hover: var(--wp--custom--button-presets--secondary--hover-transform, var(--wp--custom--button-presets--default--hover-transform, none));
 }
 
 .sgs-button--outline {
@@ -232,7 +233,24 @@
 	--sgs-btn-color-hover: var(--wp--custom--button-presets--outline--hover-text, var(--wp--preset--color--text));
 	--sgs-btn-bg-hover: var(--wp--custom--button-presets--outline--hover-background, var(--wp--preset--color--surface-alt));
 	--sgs-btn-border-hover: var(--wp--custom--button-presets--outline--hover-border, var(--wp--preset--color--primary));
-	--sgs-btn-transform-hover: var(--wp--custom--button-presets--outline--hover-transform, none);
+	--sgs-btn-transform-hover: var(--wp--custom--button-presets--outline--hover-transform, var(--wp--custom--button-presets--default--hover-transform, none));
+}
+
+/* Link style: plain text, no ground or border, never lifts (it ignores the
+   site-wide default lift). Colours follow the surrounding text unless the
+   instance sets its own. */
+.sgs-button--link {
+	border-width: 0;
+	border-style: none;
+	padding: 0;
+	min-height: 44px;
+	--sgs-btn-color: currentColor;
+	--sgs-btn-bg: transparent;
+	--sgs-btn-border: transparent;
+	--sgs-btn-color-hover: currentColor;
+	--sgs-btn-bg-hover: transparent;
+	--sgs-btn-border-hover: transparent;
+	--sgs-btn-transform-hover: none;
 }
 
 /* Width modifiers (D288 — the button IS the block root now, no wrapper div).

@@ -119,7 +119,6 @@
               "addToCartFontSizeUnit": "px",
               "addToCartMinHeight": "56px",
               "addToCartShowIcon": false,
-              "addToCartHoverLift": true,
               "addToCartBorderColour": "text",
               "addToCartBackgroundColour": "surface-alt",
               "pickerAlwaysShowAxes": [

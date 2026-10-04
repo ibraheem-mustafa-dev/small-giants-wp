@@ -199,6 +199,7 @@
 				"primary",
 				"secondary",
 				"outline",
+				"link",
 				"custom"
 			]
 		},
@@ -574,6 +575,21 @@
 			],
 			"attributes": {
 				"inheritStyle": "outline"
+			}
+		},
+		{
+			"name": "link",
+			"title": "Link",
+			"description": "Plain text link with no ground or border. Never lifts on hover.",
+			"scope": [
+				"block",
+				"transform"
+			],
+			"isActive": [
+				"inheritStyle"
+			],
+			"attributes": {
+				"inheritStyle": "link"
 			}
 		}
 	]

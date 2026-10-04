@@ -231,7 +231,7 @@ const PAGES = {
 	'/prescription-lenses/': ( p, w ) => gaps( p, w, [ 'lenses' ] ),
 };
 
-const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED } );
+const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars' ] } );
 const page = await ( await browser.newContext() ).newPage();
 for ( const w of WIDTHS ) {
 	await page.setViewportSize( { width: w, height: 900 } );

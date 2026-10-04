@@ -618,10 +618,16 @@
 	background-color: color-mix( in srgb, var( --wp--preset--color--primary, #1a73e8 ) 6%, transparent );
 }
 
+/* Site-wide button hover (buttonPresets.default): the lift and its timing. With no
+   site setting the buttons do not move and keep the 150ms colour fade. */
 @media ( prefers-reduced-motion: no-preference ) {
 	.sgs-google-reviews__write-review,
 	.sgs-google-reviews__see-all {
-		transition: background-color 150ms ease, box-shadow 150ms ease;
+		transition: background-color var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease, box-shadow var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease, transform var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease;
+	}
+
+	:where( .sgs-google-reviews__write-review:hover, .sgs-google-reviews__see-all:hover ) {
+		transform: var( --wp--custom--button-presets--default--hover-transform, none );
 	}
 }
 

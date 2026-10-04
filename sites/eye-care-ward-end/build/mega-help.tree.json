@@ -93,7 +93,7 @@
                     "attributes": {
                       "label": "Delivery & returns",
                       "url": "/help/",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -130,7 +130,7 @@
                     "attributes": {
                       "label": "Size guide",
                       "url": "#size-guide",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -167,7 +167,7 @@
                     "attributes": {
                       "label": "Frequently asked questions",
                       "url": "/help/",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -265,7 +265,7 @@
                     "attributes": {
                       "label": "How lenses work",
                       "url": "/prescription-lenses/",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -302,7 +302,7 @@
                     "attributes": {
                       "label": "Reading your prescription",
                       "url": "/help/",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -339,7 +339,7 @@
                     "attributes": {
                       "label": "Measuring your PD",
                       "url": "/help/",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -437,7 +437,7 @@
                     "attributes": {
                       "label": "Contact & visit us",
                       "url": "/contact/",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -474,7 +474,7 @@
                     "attributes": {
                       "label": "0121 729 8233",
                       "url": "tel:01217298233",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -512,7 +512,7 @@
                     "attributes": {
                       "label": "WhatsApp me",
                       "url": "https://wa.me/4479605978",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "success",
                       "fontSize": {
                         "desktop": 14.5

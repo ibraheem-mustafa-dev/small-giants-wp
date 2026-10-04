@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: "1.9"
+spec_version: "2.0"
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
@@ -153,7 +153,7 @@ Pass A MUST extract EVERY value type the draft DECLARES, into its theme slot (§
 palette (FR-33-2); typography families + sizes + weights + line-heights + letter-spacing
 (`fontFamilies`/`fontSizes`/`styles.elements.{h1..h6,link}`); spacing tokens →
 `settings.spacing.spacingSizes`; radius → `settings.custom.borderRadius`; shadow →
-`settings.shadow.presets`; buttons → `settings.custom.buttonPresets.{primary,secondary,outline}`;
+`settings.shadow.presets`; buttons → `settings.custom.buttonPresets.{primary,secondary,outline}` plus an optional `buttonPresets.default` entry (the site-wide button hover: `hover-transform`, e.g. `matrix(1, 0, 0, 1, 0, -3)`, and `hover-transition`, e.g. `0.25s`; printed as `--wp--custom--button-presets--default--hover-transform` / `--hover-transition`; every button style and every block's buttons fall back to it, and an absent value means no lift and the 0.18s fade; a style or block that sets its own hover transform, or a per-instance lift or scale, wins; the `link` button style never lifts);
 `contentSize`/`wideSize` from `.container`/`.section` `max-width` OR a `--content-width`/`--measure`
 token (scan BEYOND `:root`), superseded by the rendered content box when the census has one (FR-33-19). A `clamp()`/`calc()`/`min()` value is emitted **verbatim as the size
 string** (theme.json accepts it), never recomputed. Button presets are an **OPEN property bag** — the
@@ -536,7 +536,7 @@ NON-fluid — `small` 14 / `regular` 16 / `large` 20 / `x-large` 24 / `xx-large`
 `hero` 50, every one `"fluid": false`) + `fluid` (declared but
 inert — no preset opts in); `settings.spacing.spacingSizes` (8-step `10`–`80`); `settings.shadow.presets`
 (sm/md/lg/glow); `settings.custom.{buttonPresets(primary/secondary/outline — each: background/text/
-border/border-width/border-radius/padding/font-size/font-weight/min-height/hover-*), borderRadius
+border/border-width/border-radius/padding/font-size/font-weight/min-height/hover-*; plus the optional `default` entry holding only `hover-transform` + `hover-transition`), borderRadius
 (small/medium/large/pill), transition/duration/easing, focus-ring}`; `settings.layout.{contentSize
 1200, wideSize 1400}`; `styles.typography` (base body); `styles.elements.{h1..h6, heading, link,
 button}`. **Namespace this spec reserves:** `settings.custom.header`/`.footer` (Part 2, FR-33-13; Part 2's concrete owner is `sgs/site-header`/`sgs/site-footer`/`sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer` per the header/footer/nav design-gate — those blocks' GLOBAL colour/typography/spacing defaults read the `settings.color.palette`/`settings.typography.*`/`settings.spacing.*` slots above directly; whether their header-specific settings use this reserved namespace is decided by Spec 37, see FR-33-13).

@@ -13,7 +13,7 @@ FR-32-9 says:
     `outline`/...). Role keys are a fixed vocabulary: `background`, `text`,
     `border`, `hover-background`, `hover-text`, `hover-border` (+ geometry:
     `border-width`, `border-radius`, `padding`, `font-size`, `font-weight`,
-    `min-height`; + motion: `hover-transform`).
+    `min-height`; + motion: `hover-transform`, `hover-transition`).
 
     Done when: every component's tokens follow this scheme (lint/grep check
     per component).
@@ -25,7 +25,7 @@ for any key under `settings.custom` ending in `Presets` and asserts:
    `{component}` stem maps to a real block: a block exists if
    `plugins/sgs-blocks/src/blocks/<kebab-of-stem>/block.json` exists.
 2. Variant slugs are semantic — lowercase kebab-case (`^[a-z][a-z0-9-]*$`).
-3. Role keys are in the fixed 13-entry vocabulary (6 colour + 6 geometry + 1 motion).
+3. Role keys are in the fixed 14-entry vocabulary (6 colour + 6 geometry + 2 motion).
 
 Usage
 -----
@@ -57,7 +57,7 @@ _BLOCKS_DIR = _REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
 _SITES_DIR = _REPO_ROOT / "sites"
 
 # ---------------------------------------------------------------------------
-# Fixed vocabulary (Spec 32 FR-32-9) — 6 colour + 6 geometry + 1 motion = 13
+# Fixed vocabulary (Spec 32 FR-32-9) — 6 colour + 6 geometry + 2 motion = 14
 # ---------------------------------------------------------------------------
 _ROLE_VOCABULARY: frozenset[str] = frozenset({
     # colour roles
@@ -66,8 +66,10 @@ _ROLE_VOCABULARY: frozenset[str] = frozenset({
     # geometry roles
     "border-width", "border-radius", "padding",
     "font-size", "font-weight", "min-height",
-    # motion role (read by button/style.css as --sgs-btn-transform-hover)
-    "hover-transform",
+    # motion roles (button/style.css reads hover-transform as
+    # --sgs-btn-transform-hover; the `default` variant's hover-transform and
+    # hover-transition are the site-wide button hover lift and its timing)
+    "hover-transform", "hover-transition",
 })
 
 # camelCase namespace ending in "Presets", e.g. "buttonPresets", "cardGridPresets"
@@ -190,7 +192,7 @@ def _scan_custom_settings(
                         role=role_key, kind="role",
                         detail=(
                             f"role key '{role_key}' is outside the fixed "
-                            f"13-entry vocabulary (6 colour + 6 geometry + 1 motion)"
+                            f"14-entry vocabulary (6 colour + 6 geometry + 2 motion)"
                         ),
                     ))
 

@@ -349,7 +349,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Ray-Ban",
                       "url": "/shop/?brands=ray-ban",
                       "fontSize": {
@@ -376,7 +376,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Gucci",
                       "url": "/shop/?brands=gucci",
                       "fontSize": {
@@ -403,7 +403,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Oakley",
                       "url": "/shop/?brands=oakley",
                       "fontSize": {
@@ -430,7 +430,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Prada",
                       "url": "/shop/?brands=prada",
                       "fontSize": {
@@ -457,7 +457,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Versace",
                       "url": "/shop/?brands=versace",
                       "fontSize": {
@@ -484,7 +484,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Dolce & Gabbana",
                       "url": "/shop/?brands=dolce-gabbana",
                       "fontSize": {
@@ -511,7 +511,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Balenciaga",
                       "url": "/shop/?brands=balenciaga",
                       "fontSize": {
@@ -538,7 +538,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Michael Kors",
                       "url": "/shop/?brands=michael-kors",
                       "fontSize": {
@@ -565,7 +565,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Polaroid",
                       "url": "/shop/?brands=polaroid",
                       "fontSize": {
@@ -592,7 +592,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Police",
                       "url": "/shop/?brands=police",
                       "fontSize": {
@@ -619,7 +619,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Carrera",
                       "url": "/shop/?brands=carrera",
                       "fontSize": {
@@ -646,7 +646,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Ferrari Scuderia",
                       "url": "/shop/?brands=ferrari-scuderia",
                       "fontSize": {
@@ -673,7 +673,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Emporio Armani",
                       "url": "/shop/?brands=emporio-armani",
                       "fontSize": {
@@ -700,7 +700,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Coach",
                       "url": "/shop/?brands=coach",
                       "fontSize": {
@@ -727,7 +727,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Ralph Lauren",
                       "url": "/shop/?brands=ralph-lauren",
                       "fontSize": {
@@ -754,7 +754,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Diesel",
                       "url": "/shop/?brands=diesel",
                       "fontSize": {
@@ -781,7 +781,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Adidas Originals",
                       "url": "/shop/?brands=adidas-originals",
                       "fontSize": {
@@ -808,7 +808,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Barbour",
                       "url": "/shop/?brands=barbour",
                       "fontSize": {
@@ -835,7 +835,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Calvin Klein",
                       "url": "/shop/?brands=calvin-klein",
                       "fontSize": {
@@ -862,7 +862,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Chloé",
                       "url": "/shop/?brands=chloe",
                       "fontSize": {
@@ -889,7 +889,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "David Beckham",
                       "url": "/shop/?brands=david-beckham",
                       "fontSize": {
@@ -916,7 +916,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "DKNY",
                       "url": "/shop/?brands=dkny",
                       "fontSize": {
@@ -943,7 +943,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Dsquared2",
                       "url": "/shop/?brands=dsquared2",
                       "fontSize": {
@@ -970,7 +970,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Farah",
                       "url": "/shop/?brands=farah",
                       "fontSize": {
@@ -997,7 +997,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Fila",
                       "url": "/shop/?brands=fila",
                       "fontSize": {
@@ -1024,7 +1024,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Giorgio Armani",
                       "url": "/shop/?brands=giorgio-armani",
                       "fontSize": {
@@ -1051,7 +1051,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Hugo Boss",
                       "url": "/shop/?brands=hugo-boss",
                       "fontSize": {
@@ -1078,7 +1078,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Lipsy",
                       "url": "/shop/?brands=lipsy",
                       "fontSize": {
@@ -1105,7 +1105,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Marc Jacobs",
                       "url": "/shop/?brands=marc-jacobs",
                       "fontSize": {
@@ -1132,7 +1132,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "MaxMara",
                       "url": "/shop/?brands=maxmara",
                       "fontSize": {
@@ -1159,7 +1159,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Montblanc",
                       "url": "/shop/?brands=montblanc",
                       "fontSize": {
@@ -1186,7 +1186,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Mulberry",
                       "url": "/shop/?brands=mulberry",
                       "fontSize": {
@@ -1213,7 +1213,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Nike",
                       "url": "/shop/?brands=nike",
                       "fontSize": {
@@ -1240,7 +1240,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "O'Neill",
                       "url": "/shop/?brands=oneill",
                       "fontSize": {
@@ -1267,7 +1267,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Radley",
                       "url": "/shop/?brands=radley",
                       "fontSize": {
@@ -1294,7 +1294,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Superdry",
                       "url": "/shop/?brands=superdry",
                       "fontSize": {
@@ -1321,7 +1321,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Swarovski",
                       "url": "/shop/?brands=swarovski",
                       "fontSize": {
@@ -1348,7 +1348,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Tiffany",
                       "url": "/shop/?brands=tiffany",
                       "fontSize": {
@@ -1375,7 +1375,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Tommy Hilfiger",
                       "url": "/shop/?brands=tommy-hilfiger",
                       "fontSize": {
@@ -1402,7 +1402,7 @@
                   {
                     "name": "sgs/button",
                     "attributes": {
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "label": "Vogue",
                       "url": "/shop/?brands=vogue",
                       "fontSize": {

@@ -105,7 +105,7 @@
                     "attributes": {
                       "label": "Pilot",
                       "url": "/shop/?filter_shape=pilot&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -142,7 +142,7 @@
                     "attributes": {
                       "label": "Wayfarer",
                       "url": "/shop/?filter_shape=wayfarer&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -179,7 +179,7 @@
                     "attributes": {
                       "label": "Square",
                       "url": "/shop/?filter_shape=square&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -216,7 +216,7 @@
                     "attributes": {
                       "label": "Rectangle",
                       "url": "/shop/?filter_shape=rectangle&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -253,7 +253,7 @@
                     "attributes": {
                       "label": "Round",
                       "url": "/shop/?filter_shape=round&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -290,7 +290,7 @@
                     "attributes": {
                       "label": "Oval",
                       "url": "/shop/?filter_shape=oval&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -327,7 +327,7 @@
                     "attributes": {
                       "label": "Cat-eye",
                       "url": "/shop/?filter_shape=cat-eye&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -364,7 +364,7 @@
                     "attributes": {
                       "label": "Butterfly",
                       "url": "/shop/?filter_shape=butterfly&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -401,7 +401,7 @@
                     "attributes": {
                       "label": "Browline",
                       "url": "/shop/?filter_shape=browline&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -438,7 +438,7 @@
                     "attributes": {
                       "label": "Geometric",
                       "url": "/shop/?filter_shape=geometric&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -475,7 +475,7 @@
                     "attributes": {
                       "label": "Shield",
                       "url": "/shop/?filter_shape=shield&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -512,7 +512,7 @@
                     "attributes": {
                       "label": "Oversized",
                       "url": "/shop/?filter_shape=oversized&query_type_shape=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -614,7 +614,7 @@
                     "attributes": {
                       "label": "Best sellers",
                       "url": "/shop/",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -651,7 +651,7 @@
                     "attributes": {
                       "label": "Biggest savings",
                       "url": "/shop/?orderby=sgs_biggest_saving",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -688,7 +688,7 @@
                     "attributes": {
                       "label": "Polarised",
                       "url": "/shop/?tags=polarised",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -725,7 +725,7 @@
                     "attributes": {
                       "label": "Under £100",
                       "url": "/shop/?max_price=100",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -762,7 +762,7 @@
                     "attributes": {
                       "label": "Women's",
                       "url": "/shop/?filter_gender=women&query_type_gender=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
@@ -799,7 +799,7 @@
                     "attributes": {
                       "label": "Men's",
                       "url": "/shop/?filter_gender=men&query_type_gender=or",
-                      "inheritStyle": "custom",
+                      "inheritStyle": "link",
                       "colourText": "text",
                       "fontSize": {
                         "desktop": 14.5
