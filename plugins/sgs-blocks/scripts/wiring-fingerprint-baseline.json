@@ -1,7 +1,7 @@
 {
  "_comment": "Wiring-fingerprint ratchet baseline (check-wiring-fingerprint.py). Each entry is <block>::<attr>::<link>. --check fails only for a blocking gap not listed here; regenerate with --update-baseline after fixing gaps, or add named gaps with --accept. Advisory links (L3-state, L6-token) are never listed.",
  "counts": {
-  "L3": 1591,
+  "L3": 1590,
   "L3-tier": 99,
   "L2": 26,
   "L5": 18,
@@ -959,7 +959,6 @@
   "sgs/nav-drawer::closeBorderStyle::L3",
   "sgs/nav-drawer::closeBorderWidth::L3",
   "sgs/nav-drawer::closeIconSize::L3",
-  "sgs/nav-drawer::closeLineHeight::L3",
   "sgs/nav-drawer::curtainColour::L3",
   "sgs/nav-drawer::curtainColourGradient::L3",
   "sgs/nav-drawer::drawerGap::L3-tier",
