@@ -43,7 +43,7 @@ const TEMPLATE = [
 	[
 		'sgs/heading',
 		{
-			level: 2,
+			level: 'h2',
 			placeholder: __( 'Modal heading…', 'sgs-blocks' ),
 		},
 	],
