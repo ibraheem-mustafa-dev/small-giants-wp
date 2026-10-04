@@ -111,6 +111,18 @@ if not hasattr(_seeder_mod, "_collect_fx_attr_namespace_overrides"):
     )
 _collect_fx_attr_namespace_overrides = _seeder_mod._collect_fx_attr_namespace_overrides
 
+# Fourth reseed-durable channel: the editor-extension roster (layer 2.6 of
+# `_apply_attr_classification_overrides`). `_collect_extension_attr_overrides` derives
+# the routing fields of every EXISTING source='sgs-ext' row from
+# src/blocks/extensions/extension-roster.json. Imported, never re-implemented (R-22-1).
+if not hasattr(_seeder_mod, "_collect_extension_attr_overrides"):
+    raise ImportError(
+        "[check_css_property_reseed] sgs-update-v2.py has no "
+        "_collect_extension_attr_overrides symbol — cannot verify the "
+        "editor-extension channel (R-22-1)."
+    )
+_collect_extension_attr_overrides = _seeder_mod._collect_extension_attr_overrides
+
 # The raw attr_name -> css_property map itself (seed-motion-fx-registry.py), for
 # Check A2's VALUE-correctness pass — Check B below only proves a (slug, attr)
 # pair is EXPLAINABLE by a legitimate channel, not that its stored value is the
@@ -121,11 +133,11 @@ _load_fx_attr_css_property_map = _seeder_mod._load_fx_attr_css_property_map
 
 def _legitimate_sources(conn: sqlite3.Connection) -> dict[tuple[str, str], dict[str, object]]:
     """Return {(block_slug, attr): fields} for EVERY (slug, attr) declared in any of
-    the THREE reseed-durable channels — the derived layer (base), the fx:* namespace
+    the FOUR reseed-durable channels — the derived layer (base), the fx:* namespace
     (DB-driven), and the override layer (wins on conflict) — exactly mirroring
     `_apply_attr_classification_overrides`'s own merge order in sgs-update-v2.py.
     Used by Check B: a DB row is "rogue" only if it is NOT explainable by any of the
-    three channels.
+    four channels.
 
     Takes the live connection (added 2026-08-01, D432) because the fx:* channel is
     DB-driven — it can only be computed by querying which block_attributes rows
@@ -136,6 +148,8 @@ def _legitimate_sources(conn: sqlite3.Connection) -> dict[tuple[str, str], dict[
         k: dict(v) for k, v in _load_css_property_classifications().items()
     }
     for key, fields in _collect_fx_attr_namespace_overrides(conn.cursor()).items():
+        combined.setdefault(key, {}).update(fields)
+    for key, fields in _collect_extension_attr_overrides(conn.cursor()).items():
         combined.setdefault(key, {}).update(fields)
     for key, fields in ATTR_CLASSIFICATION_OVERRIDES.items():
         combined.setdefault(key, {}).update(fields)
@@ -242,8 +256,27 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
                     key=css_property_reseed_key(slug, attr, "fx-mismatch"),
                 ))
 
+    # A3. editor-extension rows (source='sgs-ext') VALUE-correctness: the stored
+    # css_property must equal the roster's declaration (NULL when it declares none).
+    ext_fields = _collect_extension_attr_overrides(conn.cursor())
+    for slug, attr, db_prop in conn.execute(
+        "SELECT block_slug, attr_name, css_property FROM block_attributes WHERE source = 'sgs-ext'"
+    ).fetchall():
+        exp_prop = ext_fields.get((slug, attr), {}).get("css_property")
+        if db_prop != exp_prop:
+            violations.append(Violation(
+                check="css_property_reseed",
+                block=slug,
+                detail=(
+                    f"{slug}.{attr}: editor-extension css_property did NOT survive reseed — "
+                    f"DB has {db_prop!r}, extension-roster.json declares {exp_prop!r}."
+                ),
+                fix="Run sgs-update-v2.py --stage 1 (never a bare UPDATE) — layer 2.6 re-applies the roster value.",
+                key=css_property_reseed_key(slug, attr, "ext-mismatch"),
+            ))
+
     # B. no rogue non-NULL css_property outside ANY reseed-durable channel (derived
-    # layer, fx:* namespace, or override layer — 2026-08-01 three-layer architecture).
+    # layer, fx:* namespace, extension roster, or override layer — 2026-08-01 layered architecture).
     legitimate = _legitimate_sources(conn)
     db_declared = conn.execute(
         "SELECT block_slug, attr_name, css_property, css_layer FROM block_attributes "

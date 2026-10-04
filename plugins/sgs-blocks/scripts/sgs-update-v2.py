@@ -3684,6 +3684,175 @@ def _seed_missing_fx_attr_rows(conn: sqlite3.Connection, dry_run: bool = False) 
     }
 
 
+_EXTENSION_ROSTER_JSON = (
+    Path(__file__).resolve().parent.parent
+    / "src" / "blocks" / "extensions" / "extension-roster.json"
+)
+
+# The roster fields that become routing columns, written through
+# `_apply_attr_classification_overrides` layer 2.6 (the css_* columns are reset to
+# NULL there every run, so a value written only at INSERT time would vanish).
+_EXTENSION_ROUTING_FIELDS = ("css_property", "css_element", "css_state", "css_tier", "role")
+
+
+def _load_extension_roster(path: Path = _EXTENSION_ROSTER_JSON) -> list[dict]:
+    """The `extensions` list of extension-roster.json, or [] when the file is
+    absent (an unrelated /sgs-update then seeds nothing rather than failing)."""
+    if not path.exists():
+        return []
+    try:
+        return list(json.loads(path.read_text(encoding="utf-8")).get("extensions") or [])
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 (ext-attr-rows): WARN failed to read {path.name}: {exc}")
+        return []
+
+
+def _extension_applies(rule: dict, block_json: dict) -> bool:
+    """Whether a roster rule gives this block the extension's attributes. The same
+    predicate as scripts/check-extension-roster.js::rosterApplies, which the
+    roster-drift gate holds equal to the extension JS."""
+    supports = block_json.get("supports") or {}
+    sgs = supports.get("sgs") or {}
+    class_ok = supports.get("className") is not False
+    hide = sgs.get("hideExtensions") or []
+    hidden = bool(rule.get("hideSlug")) and rule["hideSlug"] in hide
+    mode = rule.get("mode")
+    if mode == "allowlist":
+        enabled = rule.get("enabledSlug") in (sgs.get("enabledExtensions") or [])
+        return enabled and (class_ok or not rule.get("requiresClassName"))
+    if mode == "universal":
+        return not hidden and (class_ok or not rule.get("requiresClassName"))
+    if mode == "denylist":
+        return not hidden and str(block_json.get("name", "")).startswith("sgs/")
+    if mode == "flag":
+        return bool(sgs.get(rule.get("flag")))
+    return False  # "named" targets non-sgs blocks; no rows are seeded for those
+
+
+def _extension_rows_for_block(roster: list[dict], block_json: dict) -> dict[str, dict]:
+    """{attr_name: roster attribute def} for every extension attribute this block opts into."""
+    out: dict[str, dict] = {}
+    for ext in roster:
+        if _extension_applies(ext.get("rule") or {}, block_json):
+            out.update(ext.get("attributes") or {})
+    return out
+
+
+def _seed_extension_attr_rows(
+    conn: sqlite3.Connection,
+    blocks_dir: Path,
+    dry_run: bool = False,
+    roster_path: Path = _EXTENSION_ROSTER_JSON,
+) -> dict:
+    """Stage 1 sub-step B2.6b: one `block_attributes` row per `sgs*` editor-extension
+    attribute for every SGS block that opts into the extension, `source='sgs-ext'`.
+
+    The extension attributes are added client-side (`addFilter('blocks.registerBlockType')`)
+    and appear in no block.json, so Stage 1's block.json discovery never made rows for
+    them. Downstream tools (the computed route, the converter) then needed special cases
+    for child sizing, entrance start and the rest. The roster
+    (src/blocks/extensions/extension-roster.json) declares each attribute and its opt-in
+    rule; this function applies the rule to every `blocks.source='sgs'` block's block.json.
+
+    `source='sgs-ext'`, not `'sgs'`, for the reason `_seed_missing_fx_attr_rows` gives:
+    Stage 9 deletes any `source='sgs'` row whose attribute is absent from block.json.
+
+    Authoritative every run: rows absent from the derived set are deleted (a block dropped
+    the opt-in, or `hideExtensions` gained the slug), missing rows are inserted, existing
+    `sgs-ext` rows are brought up to date. A row already present under any other source
+    (an attribute the block declares in its own block.json) is never touched. The routing
+    columns are written by `_collect_extension_attr_overrides` (layer 2.6), not here.
+
+    Returns {"ext_rows_inserted", "ext_rows_updated", "ext_rows_deleted", "ext_rows_blocks"}.
+    """
+    c = conn.cursor()
+    roster = _load_extension_roster(roster_path)
+    wanted: dict[tuple[str, str], dict] = {}
+    for (slug,) in c.execute("SELECT slug FROM blocks WHERE source = 'sgs'").fetchall():
+        block_json_path = blocks_dir / slug.replace("sgs/", "", 1) / "block.json"
+        if not block_json_path.exists():
+            continue
+        try:
+            block_json = json.loads(block_json_path.read_text(encoding="utf-8"))
+        except Exception as exc:  # noqa: BLE001
+            print(f"Stage 1 (ext-attr-rows): WARN unreadable {block_json_path}: {exc}")
+            continue
+        for attr, spec in _extension_rows_for_block(roster, block_json).items():
+            wanted[(slug, attr)] = spec
+    existing = {
+        (slug, attr): source
+        for slug, attr, source in c.execute(
+            "SELECT block_slug, attr_name, source FROM block_attributes"
+        ).fetchall()
+        if source == "sgs-ext" or (slug, attr) in wanted
+    }
+    inserted = updated = 0
+    touched: set[str] = set()
+    for (slug, attr), spec in sorted(wanted.items()):
+        source = existing.get((slug, attr))
+        if source is not None and source != "sgs-ext":
+            continue
+        values = (
+            spec.get("type", "string"),
+            json.dumps(spec["default"]) if "default" in spec else None,
+            json.dumps(spec["enum"]) if spec.get("enum") else None,
+            int(spec.get("is_responsive", 0)),
+            spec.get("tier_shape"),
+        )
+        touched.add(slug)
+        if source is None:
+            inserted += 1
+            if not dry_run:
+                c.execute(
+                    "INSERT INTO block_attributes (block_slug, attr_name, attr_type, default_value, "
+                    "enum_values, is_responsive, tier_shape, source) VALUES (?, ?, ?, ?, ?, ?, ?, 'sgs-ext')",
+                    (slug, attr) + values,
+                )
+        else:
+            updated += 1
+            if not dry_run:
+                c.execute(
+                    "UPDATE block_attributes SET attr_type = ?, default_value = ?, enum_values = ?, "
+                    "is_responsive = ?, tier_shape = ? WHERE block_slug = ? AND attr_name = ?",
+                    values + (slug, attr),
+                )
+    stale = [k for k, src in existing.items() if src == "sgs-ext" and k not in wanted]
+    if not dry_run:
+        for slug, attr in stale:
+            c.execute(
+                "DELETE FROM block_attributes WHERE block_slug = ? AND attr_name = ? AND source = 'sgs-ext'",
+                (slug, attr),
+            )
+    return {
+        "ext_rows_inserted": inserted,
+        "ext_rows_updated": updated,
+        "ext_rows_deleted": len(stale),
+        "ext_rows_blocks": len(touched),
+    }
+
+
+def _collect_extension_attr_overrides(
+    c: sqlite3.Cursor, roster_path: Path = _EXTENSION_ROSTER_JSON
+) -> dict[tuple[str, str], dict[str, object]]:
+    """Layer 2.6 of `_apply_attr_classification_overrides`: {(block_slug, attr_name):
+    routing fields} for every EXISTING `source='sgs-ext'` row, taken from the roster.
+    DB-driven like layer 2.5: only rows `_seed_extension_attr_rows` already created."""
+    specs: dict[str, dict] = {}
+    for ext in _load_extension_roster(roster_path):
+        specs.update(ext.get("attributes") or {})
+    out: dict[tuple[str, str], dict[str, object]] = {}
+    for slug, attr in c.execute(
+        "SELECT block_slug, attr_name FROM block_attributes WHERE source = 'sgs-ext'"
+    ).fetchall():
+        spec = specs.get(attr)
+        if spec is None:
+            continue
+        fields = {f: spec[f] for f in _EXTENSION_ROUTING_FIELDS if spec.get(f) is not None}
+        if fields:
+            out[(slug, attr)] = fields
+    return out
+
+
 def _apply_attr_classification_overrides(
     conn: sqlite3.Connection,
     blocks_dir: Path,
@@ -3737,6 +3906,9 @@ def _apply_attr_classification_overrides(
         combined.setdefault(key, {}).update(fields)
     # Layer 2.5: fx:* namespace (D432 integration — see docstring above).
     for key, fields in _collect_fx_attr_namespace_overrides(c).items():
+        combined.setdefault(key, {}).update(fields)
+    # Layer 2.6: editor-extension attributes (source='sgs-ext'), from extension-roster.json.
+    for key, fields in _collect_extension_attr_overrides(c).items():
         combined.setdefault(key, {}).update(fields)
     # Layer 3: hand-authored overrides — applied LAST so they win on any field
     # conflict with the derived layer (per-field merge, not whole-row replace).
@@ -4221,6 +4393,12 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"Stage 1 (fx-attr-rows): inserted={fx_row_counts['fx_attr_rows_inserted']} "
             f"row(s) across {fx_row_counts['fx_attr_rows_blocks']} block(s)."
         )
+        ext_row_counts = _seed_extension_attr_rows(conn, blocks_dir, dry_run=False)
+        print(
+            f"Stage 1 (ext-attr-rows): inserted={ext_row_counts['ext_rows_inserted']} "
+            f"updated={ext_row_counts['ext_rows_updated']} deleted={ext_row_counts['ext_rows_deleted']} "
+            f"across {ext_row_counts['ext_rows_blocks']} block(s)."
+        )
 
         # --- Stage 1 sub-step C: apply per-attr classification overrides ---
         # (AFTER canonical assignment so overrides are the final writer, and AFTER
@@ -4348,6 +4526,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"{fx_row_counts['fx_attr_rows_inserted']} row(s) across "
             f"{fx_row_counts['fx_attr_rows_blocks']} block(s)."
         )
+        _seed_extension_attr_rows(conn, blocks_dir, dry_run=True)
         _apply_attr_classification_overrides(conn, blocks_dir, dry_run=True)
 
     return {

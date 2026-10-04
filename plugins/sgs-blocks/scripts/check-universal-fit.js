@@ -952,8 +952,14 @@ function runSelfTest() {
 	process.exit( allOk ? 0 : 1 );
 }
 
-if ( process.argv.includes( '--self-test' ) ) {
-	runSelfTest();
-} else {
-	main();
+// Guarded so check-extension-roster.js can require this file for EXTENSIONS and readBlock
+// without running the report.
+if ( require.main === module ) {
+	if ( process.argv.includes( '--self-test' ) ) {
+		runSelfTest();
+	} else {
+		main();
+	}
 }
+
+module.exports = { EXTENSIONS, readBlock };

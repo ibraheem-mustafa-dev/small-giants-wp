@@ -1316,5 +1316,14 @@
     "added_commit": null,
     "budget_ms": 5000,
     "order": 145
+  },
+  {
+    "id": "check-extension-roster",
+    "cmd": "node scripts/check-extension-roster.js",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 146
   }
 ]
