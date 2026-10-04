@@ -14,7 +14,7 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
 import { waitOutHostCheck } from '../parity/lib/helpers.mjs';
-import { wordsByBlock, twinsByBlock, twinPlan, parentRef, wordMatch, choosePartner, chooseControlPartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
+import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
 import { collectTagged, liveBlocks, draftChains, formControls, handElements, openDraft } from './lib/pairs-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -41,7 +41,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	await waitOutHostCheck( live );
 	const dWords = await collectTagged( draft, 'draft', cfg );
 	const lWords = await collectTagged( live, 'live', cfg );
-	const { refs: liveRefs, boxes } = await liveBlocks( live, prefix );
+	const { refs: liveRefs, boxes, parents } = await liveBlocks( live, prefix );
 	const matches = matchWords( dWords, lWords ) || [];
 	const lRefsOfWord = lWords.map( ( w ) => liveRefs[ w.e ] || [] );
 	const twins = twinsByBlock( matches, wordsByBlock( lRefsOfWord ) );
@@ -59,7 +59,16 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		}
 	};
 	decide( await draftChains( draft, Object.fromEntries( [ ...plans ].filter( ( [ , p ] ) => p.sure.length ).map( ( [ ref, p ] ) => [ ref, { ...p, anchor: null } ] ) ), wordEls, match ) );
-	const second = [ ...plans ].filter( ( [ , p ] ) => ! p.sure.length ).map( ( [ ref, p ] ) => [ ref, { ...p, anchor: results[ parentRef( ref, lRefsOfWord ) ]?.partner?.path || null } ] );
+	// Hand pairs' elements (also read for reconcileHandPairs below): a hand pair on a block's root is that block's partner.
+	const handPairs = ( cfg.pairs || [] ).filter( ( p ) => p && p.name );
+	const serial = ( f ) => ( 'function' === typeof f ? null : f );
+	const hDraft = await handElements( draft, handPairs.map( ( p ) => serial( p.draft ) ), 'draft', prefix );
+	const hLive = await handElements( live, handPairs.map( ( p ) => serial( p.live ) ), 'live', prefix );
+	const partnerPath = { ...Object.fromEntries( handPairs.map( ( p, i ) => ( hLive[ i ]?.liveIsRoot && hDraft[ i ] ? [ hLive[ i ].liveRef, hDraft[ i ] ] : null ) ).filter( Boolean ) ) };
+	Object.entries( results ).forEach( ( [ ref, r ] ) => r.verdict.ok && ( partnerPath[ ref ] = r.partner.path ) );
+	// A block of repeated words only anchors on its parent block's partner, else on its child blocks' partners' common ancestor.
+	const anchorOf = ( ref ) => partnerPath[ parents[ ref ] ] || commonPath( Object.keys( parents ).filter( ( c ) => parents[ c ] === ref ).map( ( c ) => partnerPath[ c ] ) );
+	const second = [ ...plans ].filter( ( [ , p ] ) => ! p.sure.length ).map( ( [ ref, p ] ) => [ ref, { ...p, anchor: anchorOf( ref ) } ] );
 	decide( await draftChains( draft, Object.fromEntries( second ), wordEls, match ) );
 	const kept = [];
 	const left = [];
@@ -78,10 +87,6 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	}
 	// Hand pairs measuring a kept block's draft element on an element inside the block move to the block root, and
 	// the generated pair they then duplicate is dropped (lib/pairs.mjs::reconcileHandPairs).
-	const handPairs = ( cfg.pairs || [] ).filter( ( p ) => p && p.name );
-	const serial = ( f ) => ( 'function' === typeof f ? null : f );
-	const hDraft = await handElements( draft, handPairs.map( ( p ) => serial( p.draft ) ), 'draft', prefix );
-	const hLive = await handElements( live, handPairs.map( ( p ) => serial( p.live ) ), 'live', prefix );
 	const { retarget, duplicate } = reconcileHandPairs( handPairs.map( ( p, i ) => ( { name: p.name, draft: hDraft[ i ], liveRef: hLive[ i ]?.liveRef || null, liveIsRoot: !! hLive[ i ]?.liveIsRoot } ) ), kept.filter( ( k ) => ! k.textRun ) );
 	for ( let i = kept.length - 1; i >= 0; i-- ) {
 		duplicate.has( kept[ i ].ref ) && kept.splice( i, 1 );

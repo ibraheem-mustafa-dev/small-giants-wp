@@ -41,14 +41,16 @@ function paddingElsewhere( box, liveBox, tol ) {
 }
 
 // chain: the smallest draft element holding a block's twins, then its ancestors, nearest first (each { path, box,
-// content, inside }); liveBox: the block's { w, h, content }. Returns the partner: the first element, unless its
-// padding sits elsewhere, in which case the partner is the nearest ancestor that wraps it with padding of its own
+// content, inside }); liveBox: the block's { w, h, content }. Returns the partner: the first element, unless it holds no
+// padding while the block does, in which case the partner is the nearest ancestor that wraps it with padding of its own
 // (its content box is the first element's box, through any unpadded wrappers of the same size). With no such ancestor
 // the first element is returned and judgePairing leaves it out.
 export function paddedPartner( chain, liveBox, limits = PAIRING_LIMITS ) {
 	const tol = limits.boxTolerance;
 	const [ first ] = chain;
-	if ( ! first || ! paddingElsewhere( { ...first.box, content: first.content }, liveBox, tol ) ) {
+	// The draft element holds no padding while the block does: the padding sits on a wrapper (About's matched content
+	// boxes; Contact's columns differ in width, and its padding still sits on the wrapper).
+	if ( ! first || ! first.content || ! liveBox?.content || padded( { ...first.box, content: first.content }, tol ) || ! padded( liveBox, tol ) ) {
 		return first || null;
 	}
 	for ( const a of chain.slice( 1 ) ) {
@@ -102,16 +104,17 @@ export function twinPlan( draftIdx, words ) {
 	return { sure, repeated: texts.map( ( t ) => words.filter( ( w ) => w.t === t ).map( ( w ) => w.e ) ) };
 }
 
-// The block a ref sits in: the next ref out from it around any of its words (refsOfWords: per live word, the refs
-// around it, innermost first), or null.
-export function parentRef( ref, refsOfWords ) {
-	for ( const refs of refsOfWords ) {
-		const i = refs.indexOf( ref );
-		if ( i >= 0 ) {
-			return refs[ i + 1 ] || null;
-		}
+// The deepest element path the given draft paths share (their common ancestor, as draftChains writes paths), or null.
+export function commonPath( paths ) {
+	const split = paths.filter( Boolean ).map( ( p ) => p.split( ' > ' ) );
+	if ( ! split.length ) {
+		return null;
 	}
-	return null;
+	let n = 0;
+	while ( split.every( ( p ) => n < p.length && p[ n ] === split[ 0 ][ n ] ) ) {
+		n++;
+	}
+	return n > 1 ? split[ 0 ].slice( 0, n ).join( ' > ' ) : null;
 }
 
 // A regex source (flags 'iu') matching a text node that holds any of a block's words, as whole words.

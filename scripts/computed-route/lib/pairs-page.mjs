@@ -19,8 +19,9 @@ export function collectTagged( page, side, cfg ) {
 	}, [ collectAuto.toString(), cfg.auto?.root?.[ side ] || null, exclude ] );
 }
 
-// Live: the cr-ref classes around each tagged word, innermost first, and each block's border box, content box (the
-// border box minus its computed padding) and text run (the extent of all its rendered text, paint.mjs::textRun).
+// Live: the cr-ref classes around each tagged word, innermost first, each block's border box, content box (the border
+// box minus its computed padding) and text run (the extent of all its rendered text, paint.mjs::textRun), and each
+// block's parent block (the nearest enclosing ref of this surface, or null).
 export function liveBlocks( page, prefix ) {
 	return page.evaluate( ( [ pre, src ] ) => {
 		// eslint-disable-next-line no-new-func
@@ -36,8 +37,16 @@ export function liveBlocks( page, prefix ) {
 			return out;
 		};
 		const boxes = {};
+		const parents = {};
 		document.querySelectorAll( `[class*="${ pre }"]` ).forEach( ( el ) => {
 			const r = refOf( el );
+			if ( r && ! ( r in parents ) ) {
+				let a = el.parentElement;
+				while ( a && ! refOf( a ) ) {
+					a = a.parentElement;
+				}
+				parents[ r ] = a ? refOf( a ) : null;
+			}
 			const b = el.getBoundingClientRect();
 			const cs = getComputedStyle( el );
 			const px = ( p ) => parseFloat( cs[ p ] ) || 0;
@@ -49,7 +58,7 @@ export function liveBlocks( page, prefix ) {
 				run: run ? { w: run.box.w, h: run.box.h } : null,
 			} );
 		} );
-		return { refs: window.__crEls.map( refsAround ), boxes };
+		return { refs: window.__crEls.map( refsAround ), boxes, parents };
 	}, [ prefix, PAINT_SRC ] );
 }
 
@@ -140,14 +149,17 @@ export function formControls( page, prefix, side, idents = null ) {
 			for ( const c of controls ) {
 				const holder = [ ...document.querySelectorAll( `[class*="${ pre }"]` ) ].filter( ( b ) => b.contains( c ) ).pop();
 				const ref = holder && [ ...holder.classList ].find( ( x ) => x.startsWith( pre ) && /^\d+$/.test( x.slice( pre.length ) ) );
-				ref && ! out[ ref ] && ( out[ ref ] = { tag: c.tagName, id: ident( c ), name: c.name, idAttr: c.id, ph: c.placeholder || '' } );
+				ref && ! out[ ref ] && ( out[ ref ] = { tag: c.tagName, id: ident( c ), name: c.name, idAttr: c.id, ph: c.placeholder || '', only: 1 === controls.filter( ( x ) => x.tagName === c.tagName ).length } );
 			}
 			return out;
 		}
 		const out = {};
 		for ( const [ ref, want ] of Object.entries( ids ) ) {
-			const c = controls.find( ( x ) => x.tagName === want.tag && [ x.name, x.id, x.placeholder ].some( ( v ) => v && [ want.name, want.idAttr, want.ph ].includes( v ) ) )
-				|| controls.find( ( x ) => x.tagName === want.tag && ident( x ) && ident( x ) === want.id );
+			const sameTag = controls.filter( ( x ) => x.tagName === want.tag );
+			const c = sameTag.find( ( x ) => [ x.name, x.id, x.placeholder ].some( ( v ) => v && [ want.name, want.idAttr, want.ph ].includes( v ) ) )
+				|| sameTag.find( ( x ) => ident( x ) && ident( x ) === want.id )
+				// The only control of its kind on both pages is the same control (a select whose first options differ).
+				|| ( want.only && 1 === sameTag.length ? sameTag[ 0 ] : null );
 			if ( ! c ) {
 				out[ ref ] = null;
 				continue;

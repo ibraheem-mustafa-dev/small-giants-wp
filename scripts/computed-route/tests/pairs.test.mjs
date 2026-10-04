@@ -90,7 +90,7 @@ test( 'positive control: a hand pair on the root, on another draft element or an
 } );
 
 // Contact, 2026-10-04: repeated draft words, bare-text values beside their labels, an inline number against a block.
-import { twinPlan, parentRef, wordMatch, choosePartner } from '../lib/pairs.mjs';
+import { twinPlan, commonPath, wordMatch, choosePartner } from '../lib/pairs.mjs';
 
 test( 'MUST FAIL TO TRUST: a word that occurs twice on the draft is a candidate set, not a fixed twin', () => {
 	const words = [ { t: 'google', e: 1 }, { t: 'sketch', e: 1 }, { t: 'google', e: 7 }, { t: 'reviews', e: 8 } ];
@@ -98,9 +98,10 @@ test( 'MUST FAIL TO TRUST: a word that occurs twice on the draft is a candidate 
 	assert.deepEqual( twinPlan( [ 3 ], words ), { sure: [ 8 ], repeated: [] } );
 } );
 
-test( 'a block\'s parent is the next ref out around its words', () => {
-	assert.equal( parentRef( 'c-28', [ [ 'c-31', 'c-30' ], [ 'c-28', 'c-27', 'c-26' ] ] ), 'c-27' );
-	assert.equal( parentRef( 'c-0', [ [ 'c-0' ] ] ), null );
+test( 'a block of repeated words anchors on the common ancestor of its children\'s partners', () => {
+	assert.equal( commonPath( [ 'body > main:nth-child(3) > form:nth-child(2) > div:nth-child(1)', 'body > main:nth-child(3) > form:nth-child(2) > div:nth-child(4)' ] ), 'body > main:nth-child(3) > form:nth-child(2)' );
+	assert.equal( commonPath( [ null, undefined ] ), null );
+	assert.equal( commonPath( [ 'body > a:nth-child(1)', 'body > b:nth-child(2)' ] ), null );
 } );
 
 test( 'a word match finds whole words only', () => {
@@ -156,4 +157,15 @@ test( 'MUST FAIL TO MISS: a form-control block takes the draft wrapper nearest i
 test( 'positive control: no draft control, or none near the size, is left out with its reason', () => {
 	assert.match( chooseControlPartner( null, { w: 400, h: 44 } ).verdict.why, /no draft control/ );
 	assert.match( chooseControlPartner( [ { path: 'x', box: { w: 40, h: 10 } } ], { w: 400, h: 44 } ).verdict.why, /near its size/ );
+} );
+
+// Contact, 2026-10-04: the page container's draft partner was the unpadded element inside the padded <main> although
+// the content boxes differ (the draft's columns are narrower), and Solve wrote its padding as 0 (the guard reverted it).
+test( 'MUST FAIL TO KEEP: an unpadded partner climbs to its tight padded wrapper even when content boxes differ', () => {
+	const live = { w: 1440, h: 900, content: { w: 1336, h: 692 } };
+	const inner = { path: 'main > div', box: { w: 996, h: 600 }, content: { w: 996, h: 600 }, inside: [ 1 ] };
+	const outer = { path: 'main', box: { w: 1100, h: 738 }, content: { w: 996, h: 600 }, inside: [ 1 ] };
+	assert.equal( paddedPartner( [ inner, outer ], live ).path, 'main' );
+	assert.equal( paddedPartner( [ inner, { ...outer, content: { w: 1100, h: 738 } } ], live ).path, 'main > div' );
+	assert.equal( paddedPartner( [ inner, outer ], { w: 996, h: 600, content: { w: 996, h: 600 } } ).path, 'main > div' );
 } );
