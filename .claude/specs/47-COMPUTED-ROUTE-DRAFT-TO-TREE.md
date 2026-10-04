@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.4"
+spec_version: "0.5"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
-last_verified: 2026-10-03
+last_verified: 2026-10-04
 status: draft
 references:
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
@@ -60,7 +60,7 @@ framework database, the parity walker and the page builder, and no code. Spec 31
 | **R-47-6 Calibration is the slot truth** | Which rendered element a setting paints, and each block's default paint, come from calibration (§3.2). The database's `css_element` and `derived_selector` seed calibration; they never replace it. |
 | **R-47-7 Tokens before literals** | Values snap to the site's tokens, read from `sites/<client>/theme-snapshot.json`, in a fixed order: exact token, then nearest within tolerance (colour ΔE ≤ 2, lengths ±0.5px), then a literal flagged in the report. Every snap is logged with its distance. |
 | **R-47-8 Divergences are data** | Intentional differences live in the site's `divergences.json` (§3.5), read by Fill, Solve and the walker. |
-| **R-47-9 Bounded loop** | Solve runs at most three write rounds. After each round, a row that got worse (`lib/solve-rows.mjs::regressedRows`) is pinned on its own node, top-down (`lib/guard.mjs::guardRound`): a setting whose calibration explains the row (the property itself, a calibrated side effect, or a discovered layout effect) is reverted at once; otherwise one suspect setting is undone at a time (layout-mode settings first, then layout properties, then the latest) and the next walk decides, restoring an innocent one. Reverted settings are blocked and classified Hardcode, and only they count as wrong writes. A guard round is not a write round. A setting written in round N is rewritten later only if the match improves at every width. A write needs the row's element to be one calibration ties to that setting. |
+| **R-47-9 Bounded loop** | Solve runs at most three write rounds. After each round, a row that got worse (`lib/solve-rows.mjs::regressedRows`) is pinned on its own node, top-down (`lib/guard.mjs::guardRound`): a setting whose calibration explains the row (the property itself, a calibrated side effect, or a discovered layout effect) is reverted at once; otherwise one suspect setting is undone at a time (layout-mode settings first, then layout properties, then the latest) and the next walk decides, restoring an innocent one. A row on a node with no write of its own takes as suspects the writes inside that node and inside the pair a distance row is measured from (`guard.mjs::anchorRef`). Reverted settings are blocked and classified Hardcode, and only they count as wrong writes. A guard round is not a write round. A setting written in round N is rewritten later only if the match improves at every width. A write needs the row's element to be one calibration ties to that setting. |
 | **R-47-10 Gates** | Every tree passes `scripts/wp-build-page.js --dry-run` before a real build. The resolver writes only settings with `block_attributes.source = 'sgs'`; never a core `style` attribute or a `native_wp` setting, because those serialise as inline `style="…"` (Spec 32). `lint.mjs` enforces this on every tree the route writes, and fails a Fill skeleton that carries any attribute whose `css_property` is not null. Route code passes `python scripts/check-no-client-names.py --check`. Ref classes use the `cr-ref-` prefix, never `sgs-`. |
 | **R-47-11 Live-site safety** | The route writes only to the posts listed in `calibration-targets.json` and to the surface targets in the site's `surfaces.json` (§2). `lib/tree.mjs` refuses any write to the canary's homepage (2742) or posts page (2741), to a motion-QA fixture (2103, 2109, 2113, 2603, 2740, 3037), or to a target in neither list. It never deletes posts and never changes an active header, footer, drawer or snapshot pointer. Before a build it checks that no deploy or reseed is running on that site. |
 
@@ -84,7 +84,7 @@ framework database, the parity walker and the page builder, and no code. Spec 31
   has its own surface (`lint.mjs --surfaces` fails otherwise; the header and footer surfaces `provide` their template
   part), and Solve never writes to a linked placeholder.
 - **Output:** the surface's tree in `sites/<client>/build/`, built through `scripts/wp-build-page.js`, a report, and
-  for Fill a generated walker config.
+  a generated walker config (Fill writes one; Solve walks one made by `pairs.mjs` when the surface sets `walkerFull`).
 - **Not in scope:** content beyond what the draft shows (products, pages, Site Info), functional behaviour, asset
   upload (existing asset steps handle it), block swaps (Solve writes settings only; a wrong block type is reported).
 
@@ -211,8 +211,13 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
 **Each round:**
 1. Build: `node scripts/wp-build-page.js --env-file <envFile> --env-key <envKey> --tree <tree> --post-id <id>` (or
    `--template-part`).
-2. Walk: `node scripts/parity/draft-live-walk.mjs <walker> --headless --widths 375,768,1440,1920 --no-review --out
-   <run dir>/round-<N>`.
+2. Walk: one `node scripts/parity/draft-live-walk.mjs <walker> --headless --no-review --lean --widths <w> --draft-cache
+   <run dir>/draft-cache-<w>.json --out <run dir>/round-<N>/w<w>` per width (375, 768, 1440, 1920), all four at once,
+   merged into `round-<N>/report.json` (`solve.mjs::mergeReports`). `--lean` reads only what Solve uses (styles, boxes,
+   hover end states, structure); `--draft-cache` reads the draft once per run. `<walker>` is the surface's `walkerFull`
+   (every block paired, `pairs.mjs`) when it has one, else its hand config. Measured on About, 2026-10-04: lean 45s and
+   cached 21s against 123s full; four widths at once 49s against 126s, with no host bot check (eye-care-test's IP
+   allowlist on).
 3. Write. Consider each row in `report.json` whose kind is `style`, `hover` or `box`, which is not accepted and not
    matched in `divergences.json`:
    - The row's `ref` names the node; its `path` matches a calibration element exactly, giving the slot.
@@ -257,7 +262,8 @@ it fails the lint (R-47-10).
    consecutive children's border boxes along the parent's main axis; equal means within 0.5px.
    - A parent's gap is written only when every sibling gap is equal.
    - Otherwise the parent gap is 0 and each child gets its own margin.
-4. Give every node a `cr-ref-<surface>-<n>` class. Generate the walker config from the refs, with `refPrefix:
+4. Give every node a `cr-ref-<surface>-<n>` class. Generate the walker config from the refs (Solve's existing trees use
+   the same kind of generated config: `pairs.mjs`, §5 stage 3), with `refPrefix:
    'cr-ref-'` and the ledger path, so every mapped node is compared on every property.
 5. Output the filled tree, `fill-report.md`, and the UNMAPPED list (property, value, node, reason): the framework work
    for this surface, known before the first build.
@@ -314,6 +320,11 @@ before it counts (GAP-CHECKLIST §11).
    - `path`: its selector path from that element, as in §3.2.
 
    Without `refPrefix`, rows are unchanged.
+8. **Flow position** (ref-traced walks): unanchored pairs in draft reading order are measured top to top from the pair
+   before them, the first from the top of `<main>` (`compare-state.mjs::flowOffsets`); the identity transform matrix
+   equals `none` (`compare.mjs::sameValue`). GAP-CHECKLIST section 17.
+9. **Solve modes:** `--lean` (only what a settings writer reads) and `--draft-cache` (the draft read once per run);
+   `auto-collect.mjs` can tag each word with its element (`tagEls`) for block pairing.
 
 **Done when:** each item has a GAP-CHECKLIST section with its planted fault turning red. `node
 scripts/parity/benchmark.mjs --noise` still catches 5 of 5 with no new noise rows.
@@ -424,64 +435,60 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - Calibration also flagged `sgs/site-footer-row` per-device `gap` and `contentWidth` reaching 375 and 1440
        but not 768 (a one-width hardcode candidate), and dead settings per block (some are fixture artefacts, such
        as a border style with no border width). Each is proved before it is fixed.
-3. **Solve on every built Eye Care surface.** It shrinks the current fix register. In progress (2026-10-03).
-   - **State mapping: done.** Each `surfaces.json` entry names its walker states' setting state (`{ "<walker state>":
-     null | "scrolled" | "open" | "shrunk" | "current" }`); rows from an unmapped state are reported, never written, and
-     draft values are read only from the group's own states (`lib/solve-rows.mjs::settingState`, `writableGroups`,
-     `draftValues`). A stateful candidate with no calibration entry returns `uncalibrated`, not `no-setting`.
-   - **Surfaces: done.** 17 entries in `sites/eye-care-ward-end/build/surfaces.json` (pages, header, mobile menu, four
-     megas, size-guide modal, lens configurator, contact form post 285, shop and product templates), each walker config
-     with `refPrefix`,
-     `divergences` and 1920. Scoring: `sites/eye-care-ward-end/build/qa/solve-score.mjs` with one
-     `qa/score-items/<surface>.json` per surface, built from the register.
-   - **Reference blocks: done.** `lib/references.mjs` finds blocks that print another post from their render.php;
-     Solve never writes to a linked placeholder; `lint.mjs --surfaces` passes for Eye Care (§2).
-   - **Regression guard: done.** `lib/guard.mjs` pinpoints the culprit (R-47-9): a calibration-named setting, else one
-     suspect at a time verified by the next walk. Only culprits count as wrong writes. The surfaces solved before it
-     (About, Lenses, Contact, Home) lost correct writes to the old revert-everything-on-the-node guard and are re-run.
-   - **Calibration: 44 of the 45 SGS blocks these trees use.** Re-run on 2026-10-03 after the radius fix: 28 of the
-     29 blocks with a corner-radius setting now map it (accordion-item's `borderRadius` still reads dead: a lead). Fixtures come from each block's first use in the trees,
-     styling attributes back to default. `brand-strip` times out (its live brand query runs in every instance): it
-     needs a manual-logo fixture or a smaller chunk (done in the library-wide calibration below: CR5's time-out closed). Leads to prove are the register's "Computed route findings"
-     (CR1-CR6), including the box helper that sets unset sides to 0 (CR6, proven). The 27 core and WooCommerce blocks in
-     the shop and product templates have no `source = 'sgs'` settings, so Solve reports their rows and never writes them.
-   - **Box seeding.** The first side written into an empty box brings the other sides at their calibrated default paint
-     (`lib/resolve.mjs::resolve`), because `helpers-box.php::sgs_box_object_shorthand` prints 0 for unset sides.
-   - **Results per surface:**
-     - About: 4 of 5 items closed (105, 106); open style and box rows 594 to 281; 0 regressions. Wrong writes 3 to 4 of
-       about 27, over the 10% line, all on the WhatsApp button (its sizing differs from the draft's, register S4), all
-       reverted by the guard. 107 stays open: no walker pair measures the grid's columns (add one to `about.mjs`).
-     - Lenses: 99, 101, 102 and 100's margin closed (4 of 6); 0 regressions; 3 of 10 writes reverted on one button.
-     - Help: 119 closed, S5's hardcoded accordion size identified as a gap (2 of 5); 0 regressions, 0 wrong writes.
-       111 and 112 stay open.
-     - Contact: 124, 125, 129, 133, 136 closed (8 of 9); 128 open (its grid layout write was reverted). One regression
-       (the name field 23px lower at 375, from the subtext's 22px margin stacking with the form's spacing) fixed by
-       setting the subtext's phone margin to its calibrated default 0px, re-walked closed.
-     - Home: N19 and N22's resting border colour closed (2 of 2); 0 regressions; 5 of 25 writes reverted on one
-       container (a layout write plus four paddings).
-     - Next: re-run About, Lenses, Contact and Home under the new guard, then header, mobile menu, the four megas,
-       size guide, lens configurator, contact form, shop, product; each scored and committed with its register update.
-   - **Library-wide calibration: done 2026-10-03** (sandybrown, private page 4750, which runs the `mamas-munches`
-     snapshot: palette 30 of 30). 93 of the 95 SGS blocks have one cache file each (47 measured on eye-care-test, 46 on
-     sandybrown; 584 settings mapped on the 46). The 48 new fixtures start from each block.json `example` with styling
-     at defaults, forms unlinked and post or menu references unset; brand-strip uses manual logos; `before` places page
-     context ahead of an instance (a table of contents' headings). Not calibrated, with reasons: `decorative-image`
-     never prints its own class, so no instance can be found (register CR8, a framework repair first);
-     `theme-toggle` renders nothing on a site with no derived dark palette (`settings.custom.dark`), and no client
-     snapshot has one (CR12). Fixed on the way: the deploy key reads local text files as LF (`calibrate.mjs::lfText`),
-     and border-radius boxes calibrate and write as corners (CR7). Leads CR7 to CR13 are in the register.
-   - **Residual after the surfaces:**
-     - The functional flows (FR-47-7) and the walker's remaining items (FR-47-6 items 1 to 5): not started.
-     - **Gap typing:** a setting that paints a parent while a rule on a child overrides it (the hours day label) comes
-       out Missing setting; calibration should record the child's own value so Solve can name it Hardcode.
-     - About 107 needs a walker pair on the grid's `grid-template-columns` in `qa/parity/about.mjs` before Solve can
-       close it.
-     - **Calibration leads** (register CR8, CR10, CR11): `decorative-image` must print its wrapper class through
-       `get_block_wrapper_attributes()` (a block fix and deploy), then calibrate it on sandybrown; `aspect-ratio` joins
-       the walker's and calibration's property lists, then the 7 blocks with an aspect-ratio setting are re-calibrated;
-       border-style markers are paired with a border width so style can be mapped. CR9 (per-device settings that skip
-       one width) is proved together with CR1; CR12 (`theme-toggle`) is calibrated once a client snapshot carries a
-       derived dark palette.
+3. **Solve on every built Eye Care surface.** It shrinks the current fix register. In progress (2026-10-04).
+   - **Built and in use:** walker state mapping (each `surfaces.json` entry maps walker states to setting states; rows
+     from an unmapped state are reported, never written), 17 surfaces with walker configs and score items
+     (`sites/eye-care-ward-end/build/qa/solve-score.mjs`, `qa/score-items/<surface>.json`), reference blocks
+     (`lib/references.mjs`; a linked placeholder is never written; `lint.mjs --surfaces` passes), the pinpointing guard
+     (`lib/guard.mjs`, R-47-9), box seeding from the node's nearest wider tier (`resolve.mjs::WIDER_TIERS`), and the
+     divergence ledger (`sites/eye-care-ward-end/build/qa/divergences.json`; D-1 holds Contact's subtext margin at 0px
+     on phones).
+   - **Calibration:** 93 of 95 SGS blocks have one library-wide cache file each (47 measured on eye-care-test, page 668;
+     46 on sandybrown, page 4750, which runs the `mamas-munches` snapshot). Not calibrated: `decorative-image` (CR8, fixed
+     in the block; its sandybrown calibration is queued) and `theme-toggle` (CR12). A border-style marker carries its
+     companion width (CR11, proven on quote and info-box); the other affected blocks are re-calibrated only on Bean's go.
+     Fixtures come from each block's first use in the trees or its block.json `example`, styling at defaults.
+   - **Results under the new guard** (scored items from the register; the whole-page line, distinct style, hover and
+     box issues from `solve-report.mjs::wholePage`, appears from the next runs):
+     - About: 5 of 5 handled; 0 regressions; open style and box rows 281 to 186. Three draft-correct writes on the
+       WhatsApp button were reverted because the icon, which no pair measured, was 24px against 19px (CR14); the tree
+       now holds the home button's icon (20px) and gap, and 107's grid is `1.1fr 1fr`.
+     - Lenses: 6 of 6 handled; 0 regressions; 314 to 80. A box-seeding bug wrote the button's default 28px sides over the
+       node's 26px (fixed); the price cards dropped a flex gap that stacked on their margins.
+     - Contact: 8 of 9 handled; 0 regressions after D-1 and the guard's anchor rule (CR15). 128 was fixed in the tree:
+       Solve cannot write grid columns (CR16).
+     - Help (old guard) and the footer: as recorded in the register. Home was stopped at walk 5 on 2026-10-04 and rebuilt
+       from its committed tree; it re-runs with full coverage.
+     - An independent Playwright check (its own finders, 375/768/1440) confirmed Lenses 9 of 9 and About 9 of 12; the 3
+       are one missing 1px column border (register 107b).
+   - **Council, 2026-10-04 (qc-council, three raters).** Solve's coverage was the gap between §0's promise and its
+     results: §3.3 walked a hand-written config naming only some elements, the walker never compared where an element
+     sits, and success was scored on register items, not the page. Fixes, each with a measured baseline:
+     - F1 flow position rows (CR19) and F4 identity transform (CR20): done, 4606ba598.
+     - F2 every block paired through matched words (`pairs.mjs`, `lib/pairs.mjs`; plan
+       `.claude/plans/2026-10-04-spec47-full-coverage.md`): built; About 24 of 24 and Lenses 29 of 29 paired (before 16
+       and 7). The first full-coverage Solve on About regressed it: the page container was paired with a same-size draft
+       element whose padding sits on its parent, so its padding was written as 0 (content full width at 375; 61 new
+       issues), and the guard looks only at a row's own block, anchor and descendants, never its parent (CR21). About was
+       restored and full coverage switched off until both are fixed.
+     - F3 calibration paths: measured, mostly not needed (Help's link rows are a block swap, register 120/121; Contact's
+       form rows belong to the contact-form surface); one fixture gap (CR17).
+     - F5 whole-page score in the solve report: built.
+     - Speed: lean walks, the draft cache and four widths at once (step 2 above).
+   - **Residual:**
+     - Fix F2's padded-container pairing and the guard's ancestor suspects (CR21), prove F2 and F5 live (About, then
+       Lenses), then run every surface once with its full config: About, Lenses, Help,
+       Contact and Home, then header, mobile-menu, the four megas, size-guide, lens, contact-form, shop and product. Done
+       per surface: 0 regressions, wrong writes at most 10%, every newly closed register item marked, every proven gap in
+       the register.
+     - Calibration leads: CR10 (aspect-ratio joins the walker's and calibration's property lists, then the 7 blocks with
+       an aspect-ratio setting are re-calibrated), CR11's wider re-calibration (Bean's go), `sgs/modal` re-calibrated
+       without `modalRef`, CR17, and accordion and accordion-item after S5 (CR3).
+     - Route leads: CR14 (measure a pair's child media, or write a setting's calibrated side effects together) and CR16
+       (grid columns from the track count).
+     - Gap typing: a setting that paints a parent while a rule on a child overrides it (the hours day label) comes out
+       Missing setting; calibration should record the child's own value so Solve can name it Hardcode.
+     - The functional flows (FR-47-7) and the walker's items 1 to 5 (FR-47-6): not started.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer.
 5. **A second draft** from a different designer, to test generality.
 6. **Handover to Spec 31.** Spec 31 decides, under its own plan, whether `sc_var_responsive_bridge.py` is still needed

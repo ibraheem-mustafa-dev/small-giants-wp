@@ -43,8 +43,8 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-03).** eye-care-test runs 4ba8be0f1 and sandybrown 41768f371: the same plugin build as `main` (verify
-deploys by browser or checksum: the host's bot check returns 403 to the deploy's own probe). Step 0 is done: all 17
+**Now (2026-10-04).** eye-care-test runs 72aadd9ff (verify deploys by browser or checksum: the host's bot check
+returns 403 to the deploy's own probe). Step 0 is done: all 17
 trees rebuilt, zero invalid blocks, the header wordmark now 18px shrinking to 15px. The fix register
 `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list: 12 site-wide fixes (S1-S12), every surface's items,
 decisions D1-D9 taken, three build rules. Proven bugs in it: the add-to-bag route drops a second product and a 30s
@@ -52,24 +52,23 @@ cooldown blocks a second pair (N11); the gallery ignores WooCommerce's product g
 empty groups after clearing (N25); the drawer body overflows by its title row (15); a footer row given a width cap
 collapses to zero width (N46). No blockers.
 
-**Spec 47 (v0.4): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). Stages 1
-and 2 built; the footer proof passed (14 of 15 items handled). Stage 3 in progress (2026-10-03; local `main`, not
-pushed: the session's permission check refused the push). Built: walker state mapping, reference blocks (Solve never
-writes to a linked placeholder; every post a page prints has its own surface, 17 in `surfaces.json`), the pinpointing
-regression guard, and calibration of 44 of the 45 SGS blocks Eye Care uses (radius fixed). Solved: footer, About, Lenses,
-Help, Contact, Home (15 register items "Solve closed" plus N22's resting colour; 0 open regressions). About, Lenses, Contact and Home are re-run under
-the new guard next, then the other 11 surfaces. The library-wide calibration of the other 48 blocks is done (next paragraph).
-Register "Computed route findings" CR1-CR13 holds the leads (CR6, the box helper zeroing unset sides, is proven).
+**Spec 47 (v0.5): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`, "Solve"
+compares a built page with the draft and writes block settings). Stages 1 and 2 built; stage 3 in progress, all on
+`main` and pushed. S3, S4, S5, S11, CR8 and CR13 are live on eye-care-test; sandybrown's redeploy, its CR8 check and the
+decorative-image calibration were queued at close. Under the pinpointing guard: About
+5 of 5 items, Lenses 6 of 6, Contact 8 of 9, all with 0 regressions. A council (2026-10-04) found Solve only saw the
+elements a hand-written walker config names (About 16 of 24 blocks); fixes F1 (where an element sits in the page) and F4
+(identity transform) are done; F2 (every block paired with its draft element through matched words, `pairs.mjs`) paired
+About 24 of 24 and Lenses 29 of 29, but its first Solve regressed About (a padded container mispaired, and the guard
+never suspects a parent's write, CR21), so About was restored and full coverage is off until both are fixed; F5
+(whole-page score) is built. Solve now walks lean, reads the draft once and runs four widths at once (about 5 to 15 times faster), with
+eye-care-test's IP allowlisted against the host's bot check. Register "Computed route findings" CR1-CR20 holds the
+leads. Every surface except About, Lenses and Contact still needs a Solve run under the current route. Blocker: F2's
+two fixes block full-coverage runs (plan below).
 
-**Library-wide calibration (2026-10-03, local `main`, unpushed):** 93 of the 95 SGS blocks have one cache file each,
-whichever site measured it (Bean: no per-site split; `--recalibrate` replaces another site's file). The 48 blocks Eye
-Care does not use were measured on sandybrown's private page 4750. `decorative-image` (never prints its own class,
-CR8) and `theme-toggle` (no client has a dark palette, CR12) are recorded, not calibrated. The border-radius corner bug
-(CR7) is fixed and re-calibrated on both sites. Next for this track: repair CR8 and re-calibrate it; route leads CR10
-(aspect-ratio never read) and CR11 (border style needs a paired width marker).
-
-**The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:** Spec 47
-§5 stage 3, then the register in the plan's "Work plan" order.
+**The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**
+`plans/2026-10-04-spec47-full-coverage.md` "Progress", then Spec 47 §5 stage 3 "Residual", then the register in the plan's
+"Work plan" order.
 
 **Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info

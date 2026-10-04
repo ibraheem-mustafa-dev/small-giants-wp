@@ -144,7 +144,7 @@ sgs-blocks/
 │   │   ├── ResponsiveControl.js  # Breakpoint switcher (mobile/tablet/desktop)
 │   │   ├── ResponsiveOverride.js # Per-tier value override wrapper for tier-object attributes
 │   │   ├── DesignTokenPicker.js  # Colour picker that reads theme.json tokens
-│   │   ├── SpacingControl.js     # Margin/padding control with presets
+│   │   ├── SpacingControl.js     # Spacing control: presets, a free number-plus-unit box, or both (`custom`)
 │   │   ├── AnimationControl.js   # Animation type/trigger selector
 │   │   ├── MediaPicker.js        # Image/video picker
 │   │   ├── media/                # Media-atom panel layouts (atoms/, controls/, canvasStyle.js)
@@ -888,6 +888,8 @@ A tier left empty falls back to the desktop image at that width.
 </span>
 ```
 The span takes over the root role (uid, decorative `aria-hidden`/`role`, every `data-*` attribute); the inner `<img>` fills the span, and tier images use `sgs-decorative-image__media--{desktop,tablet,mobile}` with descendant selectors. `--treated` adds `.{uid}.sgs-decorative-image--treated>.sgs-decorative-image__media{display:block;width:100%;height:auto}`. With `imageDecorative` off, the span omits `aria-hidden` and `role`. A surface treatment combined with art-direction tiers samples the desktop image at every width, because the treatment module reads the first `<img>` in the wrapper.
+
+**Custom class and anchor:** whichever element is the root (the naked `<img>`, the treated or overlay span, the video span) carries the editor's Additional CSS class(es) and, on the first image only, the anchor id, both read from `get_block_wrapper_attributes()` (`decorative-image/render.php`).
 
 **Output markup, video:** when `decorMedia.type` is `video`, `plugins/sgs-blocks/includes/helpers-media.php::sgs_render_media` supplies the `<video>` and the block wraps it in a positioned span, again after the scoped `<style>`:
 ```html

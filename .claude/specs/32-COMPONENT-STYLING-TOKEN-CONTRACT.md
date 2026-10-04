@@ -600,7 +600,7 @@ by a line number cached in a doc.
 
 | Bucket | Token | Where the framework uses it |
 |---|---|---|
-| Raised | `surface-alt` | brand-strip tile bg + hover; countdown-timer `--elevated`/`--filled`; accordion `--card` item and hover/open state; button outline hover bg fallback; cta-section gradient; card-grid card bg + hover; buybox `value-ladder` selected row; form hover/preview-box states; google-reviews card, avatar and badge; info-box `--elevated`/`--filled`; modal dialog panel; product-faq hover/open; post-grid card + shimmer; product-card no-image box / media / thumb-strip bg (generic `#f5f7f7` fallback) and `value-ladder` selected row; product-search; social-icons pill; table-of-contents `--card`; tabs; team-member; testimonial classic-card / rating-led / corporate-logo / case-study-media / pull-quote-editorial; trust-bar |
+| Raised | `surface-alt` | brand-strip tile bg + hover; countdown-timer `--elevated`/`--filled`; accordion `--card` item; button outline hover bg fallback; cta-section gradient; card-grid card bg + hover; buybox `value-ladder` selected row; form hover/preview-box states; google-reviews card, avatar and badge; info-box `--elevated`/`--filled`; modal dialog panel; product-faq hover/open; post-grid card + shimmer; product-card no-image box / media / thumb-strip bg (generic `#f5f7f7` fallback) and `value-ladder` selected row; product-search; social-icons pill; table-of-contents `--card`; tabs; team-member; testimonial classic-card / rating-led / corporate-logo / case-study-media / pull-quote-editorial; trust-bar |
 | Inverse ink | `text-inverse` | `color:` on a coloured/dark fill: business-info icon/text on the primary-filled button; cta-section text; card-grid; google-reviews dark-theme review text; hero; product-card badge fg default; process-steps; social-icons; label |
 | Substrate | `surface` | The deliberate-blend cases in §12.4 |
 
@@ -614,8 +614,8 @@ literally the page. This is legitimate, not an instance of the bug, when BOTH ar
 2. An interaction state (hover/open/selected) explicitly switches the SAME element to `surface-alt` (or
    vice versa) as the visible signal that something changed.
 
-Examples kept as `surface` under this rule: accordion item header at rest (raises to `surface-alt` on
-hover/open), the FAQ item base (`product-faq`, same pattern), the option-picker `--soft` resting pill
+Examples kept as `surface` under this rule: accordion item header at rest (no ground change on
+hover or open by default; the block's header background settings add one), the FAQ item base (`product-faq`, same pattern), the option-picker `--soft` resting pill
 (its own comment calls it "a neutral surface/border-token resting pill"), the form input field fill
 (bordered field, no elevation intended), the trust-bar text-only badge's hover state (resting = raised
 `surface-alt`, hover recedes to the page), and the brand-strip fade masks (which blend the scrolling
