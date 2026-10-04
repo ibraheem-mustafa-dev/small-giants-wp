@@ -50,7 +50,6 @@ All brand, voice, and positioning docs live in `/docs/`. **Read these before any
 | About | `/about` |
 | Services | `/services` |
 | Case Studies / Work | `/work` |
-| Blog / Insights | `/insights` |
 | Contact | `/contact` |
 | Privacy Policy | `/privacy` |
 | Terms | `/terms` |
