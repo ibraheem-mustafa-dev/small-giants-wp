@@ -88,6 +88,9 @@ export const LAYOUT_CARRIED = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'fl
 // Enclosing blocks (trace.owners) are stamped as d.owners: [{ ref, block, path, tag }], nearest first, with the same
 // path choice (tag: the measured element's tag).
 const pathKey = ( d, t ) => {
+	if ( d.pseudo ) {
+		return 'path';
+	}
 	if ( [ 'style', 'hover' ].includes( d.kind ) && TEXT_CARRIED.includes( d.key ) && null != t.textPath ) {
 		return 'textPath';
 	}
@@ -99,7 +102,8 @@ const pathKey = ( d, t ) => {
 	}
 	return 'path';
 };
-const pathFor = ( d, t ) => t[ pathKey( d, t ) ];
+// A pseudo layer's row (d.pseudo) takes its element's path plus the pseudo: calibration keys the layer the same way.
+const pathFor = ( d, t ) => ( null == t[ pathKey( d, t ) ] ? t[ pathKey( d, t ) ] : t[ pathKey( d, t ) ] + ( d.pseudo || '' ) );
 export function stampRefs( diffs, trace ) {
 	if ( ! trace ) {
 		return diffs;

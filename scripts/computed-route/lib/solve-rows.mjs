@@ -40,7 +40,8 @@ export function openRows( report ) {
 // The draft's value of `prop` on a pair at every width it was measured (rest styles, or the hover end state), and the
 // draft font size there (for em conversions). Read from the pair snapshots, so widths with no difference count too.
 // walkerStates: only runs in these walker states are read (the states mapped to the group's setting state).
-export function draftValues( report, pair, prop, hover, walkerStates = null ) {
+// pseudo ('::before' / '::after'): the value is read on that painting layer of the pair's element.
+export function draftValues( report, pair, prop, hover, walkerStates = null, pseudo = null ) {
 	const perWidth = {};
 	const fontPx = {};
 	for ( const run of report.runs || [] ) {
@@ -52,7 +53,7 @@ export function draftValues( report, pair, prop, hover, walkerStates = null ) {
 			continue;
 		}
 		// A painted ground is a full-check value (chrome-walk.mjs stores it on extras), not a collected style.
-		const v = hover ? d.hover?.[ prop ] : ( 'painted-ground' === prop ? d.extras?.ground : d.styles?.[ prop ] );
+		const v = pseudo ? d.pseudo?.[ pseudo ]?.[ prop ] : ( hover ? d.hover?.[ prop ] : ( 'painted-ground' === prop ? d.extras?.ground : d.styles?.[ prop ] ) );
 		if ( undefined !== v ) {
 			perWidth[ run.width ] = v;
 		}
@@ -86,7 +87,7 @@ export function writableGroups( report, stateMap ) {
 		} else {
 			const k = groupKey( r, st );
 			if ( ! groups.has( k ) ) {
-				groups.set( k, { key: k, ref: r.ref, path: r.path, owners: r.owners || [], prop: r.key, state: st, pair: r.pair, walkerStates: [], rows: [] } );
+				groups.set( k, { key: k, ref: r.ref, path: r.path, owners: r.owners || [], prop: r.key, state: st, pair: r.pair, pseudo: r.pseudo || null, walkerStates: [], rows: [] } );
 			}
 			const g = groups.get( k );
 			g.rows.push( r );

@@ -13,7 +13,14 @@ export const DEFAULT_PROPS = [
 	'outline-style', 'outline-width', 'outline-color', 'outline-offset',
 	// The underline a visitor sees and an icon's colour: both read by collectPair, not from the element's own style.
 	'text-decoration-line', 'text-decoration-color', 'text-decoration-thickness', 'text-underline-offset', 'icon-fill', 'icon-stroke',
+	// Motion timings as ordinary rows (a setting can hold each), beside the motion rows' shorthand comparison.
+	'transition-duration', 'transition-delay', 'transition-timing-function', 'animation-duration', 'animation-delay', 'animation-timing-function',
 ];
+
+// Properties read on an element's ::before and ::after layers (a painted ring, an overlay ground), only where the layer
+// paints (its content is not none). Rows carry `pseudo` and the layer's path is the element's path plus the pseudo,
+// the key calibration gives the same layer (computed-route lib/calibrate-read.mjs).
+export const PSEUDO_PROPS = [ 'content', 'background-color', 'background-image', 'border-image-source', 'opacity', 'color', 'border-top-color', 'border-top-width', 'box-shadow', 'transform', 'width', 'height' ];
 
 // Properties read at rest and again at the hover end state.
 export const HOVER_PROPS = [ 'color', 'background-color', 'border-top-color', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'text-decoration-line', 'text-decoration-color', 'filter' ];
@@ -55,8 +62,9 @@ export function resolveFinder( finder ) {
 
 // Everything the comparison needs about one element pair, at rest. With a ref prefix (ref tracing,
 // lib/ref-trace.mjs) it also returns `trace`: the element's ref, block root class and selector paths.
-// in: [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc ]; paintSrc is paint.mjs::PAINT_SRC.
-export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc ] ) {
+// in: [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc, pseudoProps ]; paintSrc is paint.mjs::PAINT_SRC;
+// pseudoProps (PSEUDO_PROPS, or null to skip) are read on the element's painting ::before and ::after layers.
+export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc, pseudoProps = null ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
 	// eslint-disable-next-line no-new-func
@@ -157,6 +165,14 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		}
 		return `unresolved:${ name }`;
 	};
+	// The element's painting pseudo layers: { '::before': { prop: value } }, absent where content is none.
+	const pseudo = {};
+	for ( const ps of run || ! pseudoProps ? [] : [ '::before', '::after' ] ) {
+		const pcs = getComputedStyle( el, ps );
+		if ( ! [ 'none', 'normal', '' ].includes( pcs.getPropertyValue( 'content' ).trim() ) ) {
+			pseudo[ ps ] = Object.fromEntries( pseudoProps.map( ( p ) => [ p, /color$/.test( p ) ? srgb( pcs.getPropertyValue( p ).trim() ) : pcs.getPropertyValue( p ).trim() ] ) );
+		}
+	}
 	let trace;
 	if ( refPrefix ) {
 		// eslint-disable-next-line no-new-func
@@ -168,6 +184,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		keyframes: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : cs.animationName.split( ',' ).map( ( n ) => keyframes( n.trim() ) ).join( ' | ' ),
 		box: run ? run.box : { x: Math.round( r.x ), y: Math.round( r.y + window.scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
 		styles,
+		pseudo,
 		layoutDisplay: lcs.display,
 		tag: el.tagName.toLowerCase(),
 		motion: {

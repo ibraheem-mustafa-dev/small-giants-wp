@@ -118,9 +118,9 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			gaps[ g.key ] = { gap: 'linked', detail: `${ node.name } renders ${ ref.key } "${ ref.value }" from its own post: solve that post's surface` };
 			continue;
 		}
-		const { perWidth, fontPx } = draftValues( report, g.pair, g.prop, 'hover' === g.state, g.walkerStates );
+		const { perWidth, fontPx } = draftValues( report, g.pair, g.prop, 'hover' === g.state, g.walkerStates, g.pseudo );
 		// The element's other draft properties, for a setting calibration found (a layout mode decided by several properties).
-		const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === g.ref && o.path === g.path && ! o.state && o.prop !== g.prop ).map( ( o ) => [ o.prop, draftValues( report, o.pair, o.prop, false, o.walkerStates ).perWidth ] ) );
+		const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === g.ref && o.path === g.path && ! o.state && o.prop !== g.prop ).map( ( o ) => [ o.prop, draftValues( report, o.pair, o.prop, false, o.walkerStates, o.pseudo ).perWidth ] ) );
 		// Resolves the group on one block: its own (exact paths), or an enclosing one (anyIndex: paths without their
 		// :nth-of-type steps, since calibration's fixture places the child elsewhere).
 		const attempt = ( on, onPath, anyIndex, tag = null ) => {
@@ -195,6 +195,57 @@ export function wrongWrites( writes, reportAfter, stateMap ) {
 	} );
 }
 
+// The build, walk and write rounds (R-47-9): at most maxRounds write rounds. Guard rounds (revert a named culprit, try
+// one suspect, restore an innocent one) are not write rounds; the walk cap leaves room for a few per write round.
+// maxRounds 0 is measure-only: one build and one walk, never a write. Every step is passed in: build() → { ok, err },
+// walk( round ) → report, guard( prev, report, lastWrites ) → changed writes, write( report, round ) → { writes, gaps },
+// save() persists the tree. Returns { report, writes, gaps, rounds, lastWrote }.
+export async function solveLoop( { maxRounds, build, walk, guard, write, save, blocked = new Map(), log = console.log } ) {
+	const allWrites = [];
+	let gaps = {};
+	let report;
+	let rounds = 0;
+	let lastWrote = false;
+	let prev = null;
+	let lastWrites = [];
+	let writeRounds = 0;
+	for ( let round = 1; round <= maxRounds * 4 + 1; round++ ) {
+		const b = build( round );
+		if ( ! b.ok ) {
+			console.error( `[FAIL] build in round ${ round }: ${ b.err.slice( -800 ) }` );
+			break;
+		}
+		report = await walk( round );
+		// A round that made rows worse runs the guard against the walk the writes were computed from (prev stays that
+		// walk until the guard is done); the next round measures what it changed.
+		const changed = prev ? guard( prev, report, lastWrites ) : [];
+		if ( changed.length ) {
+			changed.filter( ( w ) => w.reverted ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
+			changed.filter( ( w ) => w.restored ).forEach( ( w ) => delete gaps[ w.group ] );
+			log( `round ${ round }: guard reverted ${ changed.filter( ( w ) => w.reverted ).length }, trying ${ changed.filter( ( w ) => w.trial ).length }, restored ${ changed.filter( ( w ) => w.restored && ! w.trial ).length }` );
+			save();
+			continue;
+		}
+		if ( writeRounds >= maxRounds ) {
+			break;
+		}
+		const r = write( report, round );
+		gaps = { ...gaps, ...r.gaps };
+		writeRounds++;
+		rounds = writeRounds;
+		lastWrote = r.writes.length > 0;
+		log( `round ${ round } (write round ${ writeRounds }): ${ r.writes.length } writes, ${ Object.keys( r.gaps ).length } gaps` );
+		if ( ! r.writes.length ) {
+			break;
+		}
+		allWrites.push( ...r.writes );
+		lastWrites = r.writes;
+		prev = report;
+		save();
+	}
+	return { report, writes: allWrites, gaps, rounds, lastWrote };
+}
+
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
 	const argv = process.argv.slice( 2 );
 	const flag = ( n ) => {
@@ -231,53 +282,20 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const tree = readTree( treeFile );
 	const added = addRefs( tree, surface );
 	writeTree( treeFile, tree );
-	const allWrites = [];
-	let gaps = {};
-	let report;
-	let rounds = 0;
-	let lastWrote = false;
-	let prev = null;
-	let lastWrites = [];
 	const blocked = new Map();
 	const trials = new Map();
-	// R-47-9: at most maxRounds write rounds. Guard rounds (revert a named culprit, try one suspect, restore an
-	// innocent one) are not write rounds; the walk cap leaves room for a few per write round.
-	let writeRounds = 0;
-	for ( let round = 1; round <= maxRounds * 4 + 1; round++ ) {
-		assertQuiet();
-		const b = build( s, treeFile );
-		if ( ! b.ok ) {
-			console.error( `[FAIL] build in round ${ round }: ${ b.err.slice( -800 ) }` );
-			break;
-		}
-		report = await walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates );
-		// A round that made rows worse runs the guard against the walk the writes were computed from (prev stays that
-		// walk until the guard is done); the next round measures what it changed.
-		const changed = prev ? guardRound( prev, report, tree, lastWrites, blocked, calibrationFor, trials ) : [];
-		if ( changed.length ) {
-			changed.filter( ( w ) => w.reverted ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
-			changed.filter( ( w ) => w.restored ).forEach( ( w ) => delete gaps[ w.group ] );
-			console.log( `round ${ round }: guard reverted ${ changed.filter( ( w ) => w.reverted ).length }, trying ${ changed.filter( ( w ) => w.trial ).length }, restored ${ changed.filter( ( w ) => w.restored && ! w.trial ).length }` );
-			writeTree( treeFile, tree );
-			continue;
-		}
-		if ( writeRounds >= maxRounds ) {
-			break;
-		}
-		const r = writeRound( report, tree, { ...ctx, round, blocked, stateMap: s.states } );
-		gaps = { ...gaps, ...r.gaps };
-		writeRounds++;
-		rounds = writeRounds;
-		lastWrote = r.writes.length > 0;
-		console.log( `round ${ round } (write round ${ writeRounds }): ${ r.writes.length } writes, ${ Object.keys( r.gaps ).length } gaps` );
-		if ( ! r.writes.length ) {
-			break;
-		}
-		allWrites.push( ...r.writes );
-		lastWrites = r.writes;
-		prev = report;
-		writeTree( treeFile, tree );
-	}
+	const { report, writes: allWrites, gaps, rounds, lastWrote } = await solveLoop( {
+		maxRounds,
+		blocked,
+		build: () => {
+			assertQuiet();
+			return build( s, treeFile );
+		},
+		walk: ( round ) => walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates ),
+		guard: ( prev, rep, lastWrites ) => guardRound( prev, rep, tree, lastWrites, blocked, calibrationFor, trials ),
+		write: ( rep, round ) => writeRound( rep, tree, { ...ctx, round, blocked, stateMap: s.states } ),
+		save: () => writeTree( treeFile, tree ),
+	} );
 	closeTrials( trials, blocked ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
 	const before = JSON.parse( fs.readFileSync( path.join( outDir, 'round-1', 'report.json' ), 'utf8' ) );
 	const classes = classify( report, { writes: allWrites, gaps, stateMap: s.states } );

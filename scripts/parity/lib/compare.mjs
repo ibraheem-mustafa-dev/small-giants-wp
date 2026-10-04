@@ -40,12 +40,20 @@ const allCovers = ( a, b ) => {
 	return !! all && list.every( ( part ) => timing( part ) === timing( all[ 0 ] ) );
 };
 
+// A motion timing longhand lists one value per transition or animation: compared as the set of distinct values, so
+// "0.25s, 0.25s" (two properties, one timing) matches "0.25s" (all).
+const TIMING = /^(transition|animation)-(duration|delay|timing-function)$/;
+const timingSet = ( v ) => [ ...new Set( v.split( /,(?![^(]*\))/ ).map( ( x ) => x.trim() ) ) ].sort().join( ', ' );
+
 export function sameValue( prop, a, b, pxTol ) {
 	if ( a === b ) {
 		return true;
 	}
 	if ( a === undefined || b === undefined ) {
 		return false;
+	}
+	if ( TIMING.test( prop ) ) {
+		return timingSet( a ) === timingSet( b );
 	}
 	if ( prop === 'font-family' ) {
 		return firstFamily( a ) === firstFamily( b );
@@ -130,6 +138,16 @@ function partIrrelevant( p, d, l ) {
 	return /^icon-/.test( p ) && ( undefined === d[ p ] || undefined === l[ p ] );
 }
 
+// Motion timings that run nothing: an animation's while neither side animates (no keyframes), a transition's delay and
+// easing while neither side's transition takes any time.
+function timingIrrelevant( p, d, l ) {
+	if ( /^animation-/.test( p ) ) {
+		return 'none' === ( d.keyframes ?? 'none' ) && 'none' === ( l.keyframes ?? 'none' );
+	}
+	const still = ( x ) => timingSet( x.styles[ 'transition-duration' ] ?? '0s' ) === '0s';
+	return /^transition-(delay|timing-function)$/.test( p ) && still( d ) && still( l );
+}
+
 // A single-line control (an input or a select) centres its text, so while its min-height sets its height on both
 // pages its top and bottom padding paint nothing.
 function controlPaddingIrrelevant( p, d, l ) {
@@ -162,11 +180,26 @@ export function comparePair( pair, d, l, tol ) {
 		}
 	}
 	for ( const p of new Set( [ ...Object.keys( d.styles ), ...Object.keys( l.styles ) ] ) ) {
-		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || equivalent( p, d.styles[ p ], l.styles[ p ] ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
+		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || timingIrrelevant( p, d, l ) || equivalent( p, d.styles[ p ], l.styles[ p ] ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
 			continue;
 		}
 		if ( ! sameValue( p, d.styles[ p ], l.styles[ p ], tol.px ) ) {
 			add( 'style', p, d.styles[ p ], l.styles[ p ] );
+		}
+	}
+	// Painting ::before / ::after layers: a layer on one side only is one content row; on both, each property compared.
+	if ( pair.pseudo !== false ) {
+		for ( const ps of new Set( [ ...Object.keys( d.pseudo || {} ), ...Object.keys( l.pseudo || {} ) ] ) ) {
+			const [ a, b ] = [ d.pseudo?.[ ps ], l.pseudo?.[ ps ] ];
+			if ( ! a || ! b ) {
+				diffs.push( { kind: 'style', key: 'content', pseudo: ps, draft: a?.content ?? 'none', live: b?.content ?? 'none' } );
+				continue;
+			}
+			for ( const p of Object.keys( a ) ) {
+				if ( ! borderColourIrrelevant( p, a, b ) && ! sameValue( p, a[ p ], b[ p ], tol.px ) ) {
+					diffs.push( { kind: 'style', key: p, pseudo: ps, draft: a[ p ], live: b[ p ] } );
+				}
+			}
 		}
 	}
 	if ( pair.motion !== false ) {

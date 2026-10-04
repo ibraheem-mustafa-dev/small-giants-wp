@@ -50,9 +50,10 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
 | `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
-| `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written). |
+| `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written); `--rounds 0` never calls the write round (A1) |
 | `tests/pairs.test.mjs` | Block pairing: a partner is kept only when it holds the block's words and none from outside it, at a similar size, with its padding where the block's is; hand pairs measuring a paired block's draft element move to the block root. |
 | `tests/entrance.test.mjs` | Entrance start: a hidden-live, shown-draft entrance gets `sgsAnimationStart: 'load'`; no entrance, a part, a hover, a half opacity or a hidden draft gets nothing. |
+| `tests/walker-reads.test.mjs` | A-1 at unit level: motion timings and `::before`/`::after` layers are rows Solve can write on calibration's layer path. |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching); flow position rows and the identity transform (GAP-CHECKLIST section 17). |
 
 `cache/` (gitignored) holds calibration files: one per block for the whole library, each recording the `site` that measured it.
@@ -150,7 +151,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `cssProp(key)` → the CSS property a walker row's key stands for: `icon-width`/`icon-height` (rows on the svg's own path) are its `width`/`height`; `painted-ground` is `background-color`.
 - `settingState(row, stateMap)` → the row's setting state from the surface's walker-state map (`null` rest, `'hover'`, `'scrolled'`, …), or undefined when the walker state is unmapped or the row is a hover outside rest.
 - `openRows(report)` → every unaccepted row with its walker state, width and pair.
-- `draftValues(report, pair, prop, hover, walkerStates?)` → `{ perWidth, fontPx }` from the draft snapshots, read only from runs in `walkerStates` when given.
+- `draftValues(report, pair, prop, hover, walkerStates?, pseudo?)` → `{ perWidth, fontPx }` from the draft snapshots, read only from runs in `walkerStates` when given, and on the `::before`/`::after` layer when `pseudo` is given (a group's `pseudo` comes from its rows).
 - `writableGroups(report, stateMap)` → `{ groups, box, unmapped, unmappedState, other }`; each group carries its setting `state` and `walkerStates`.
 - `rowDistance(row)` → px distance from the draft (0 or 1 for non-lengths).
 - `regressedRows(prev, report)` → open style or box rows that are new or further from the draft than last round (keyed per walker state).
@@ -212,6 +213,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `USED_VALUES`: computed properties that are used sizes (`width`), reported and never written.
 - `calibrationFor(block)` → the block's calibration file or null.
 - `writeRound(report, tree, { db, snapshot, round, log, blocked, stateMap, calFor? })` → `{ writes, gaps }`; only rows from mapped walker states are written.
+- `solveLoop({ maxRounds, build, walk, guard, write, save, blocked?, log? })` → `{ report, writes, gaps, rounds, lastWrote }`: the build, walk and write rounds with every step passed in; `maxRounds` 0 is measure-only (one build, one walk, never a write).
 - `revertRegressions(prev, report, tree, lastWrites, blocked, calFor?, trials?)` → the writes the guard undid this round (`lib/guard.mjs::guardRound`).
 - `wrongWrites(writes, reportAfter, stateMap)` → writes a later round reverted or that moved their rows further from the draft.
 

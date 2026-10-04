@@ -22,7 +22,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { DEFAULT_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles } from './lib/collect.mjs';
+import { DEFAULT_PROPS, PSEUDO_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles } from './lib/collect.mjs';
 import { PAINT_SRC } from './lib/paint.mjs';
 import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses } from './lib/state-passes.mjs';
 import { collectLinks, probeLinks, unseenLabels } from './lib/links.mjs';
@@ -165,7 +165,7 @@ async function walkSide( browser, side, width ) {
 		}
 		const snap = {};
 		for ( const p of pairs ) {
-			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH, PAINT_SRC ] );
+			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH, PAINT_SRC, refPrefix ? PSEUDO_PROPS : null ] );
 			snap[ p.name ].running = running[ p.name ];
 		}
 		// The page's own zero point for positions (the outermost <main>), so a pair's place on the page is compared

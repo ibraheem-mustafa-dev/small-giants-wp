@@ -293,3 +293,31 @@ test( 'MUST FAIL: a second element wanting one part of a shared setting at anoth
 	const agree = writeRound( report( '0px' ), tree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: formCal } );
 	assert.equal( Object.values( agree.gaps ).filter( ( x ) => 'conflict' === x.gap ).length, 0 );
 } );
+
+import { solveLoop } from '../solve.mjs';
+// A1: --rounds 0 is measure-only. Stub steps count what the loop calls.
+const loopSteps = () => {
+	const calls = { build: 0, walk: 0, write: 0 };
+	return { calls, steps: {
+		build: () => ( calls.build++, { ok: true } ),
+		walk: async () => ( calls.walk++, { runs: [] } ),
+		guard: () => [],
+		write: () => ( calls.write++, { writes: [ { group: 'g' } ], gaps: {} } ),
+		save: () => {},
+		log: () => {},
+	} };
+};
+
+test( 'MUST FAIL TO WRITE: rounds 0 builds and walks once and never calls the write round', async () => {
+	const { calls, steps } = loopSteps();
+	const out = await solveLoop( { maxRounds: 0, ...steps } );
+	assert.deepEqual( calls, { build: 1, walk: 1, write: 0 } );
+	assert.equal( out.rounds, 0 );
+	assert.deepEqual( out.writes, [] );
+} );
+
+test( 'positive control: rounds 1 calls the write round once, then walks what it wrote', async () => {
+	const { calls, steps } = loopSteps();
+	await solveLoop( { maxRounds: 1, ...steps } );
+	assert.deepEqual( calls, { build: 2, walk: 2, write: 1 } );
+} );
