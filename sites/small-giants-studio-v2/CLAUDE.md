@@ -4,7 +4,7 @@
 Website for Small Giants Studio — a Birmingham-based digital transformation consultancy founded by Ibraheem Mustafa. Serves UK SMEs, charities, and social enterprises.
 
 **Domain:** smallgiantsstudio.co.uk
-**Stack:** Next.js (deployed to Vercel)
+**Stack:** Next.js
 **Status and plans:** `.claude/state.md`, `.claude/handoff.md`, `.claude/plans/current_mission.md`
 
 ---
@@ -62,24 +62,3 @@ All brand, voice, and positioning docs live in `/docs/`. **Read these before any
 1. **Evertreen** — https://evertreen.com — Tree planting partner. Logo in `/docs/screenshots/Evertreen-logo.svg`
 2. **Muslims in Construction** — https://muslimsincontruction.co.uk — Built their website. Logo in `/docs/screenshots/Muslims-In-Construction-logo-4-1-green-V2.png`
 3. **Association of Muslim Engineers (AME)** — https://ame.org.uk — Help with events. Logo in `/docs/screenshots/cropped-AME_logo_final-01-e1741955008221.png`
-
----
-
-## Commands to Use
-
-### During Build
-- `/frontend-design` — For building polished UI components and pages
-- `/brainstorming` — Explore design direction and layout options
-
-### Review & QA
-- `/ui-ux-pro-max` — Visual design and UX critique
-- `/writing-clearly-and-concisely` — Tighten website copy
-- `/vercel-react-best-practices` — Next.js code quality and performance
-- `/deploy-check` — Pre-launch checks
-- `/requesting-code-review` — After completing each major feature
-
-### If Things Break
-- `/systematic-debugging` — Structured debugging, not guesswork
-
-### Session Management
-- `/handoff` — End of session summary
