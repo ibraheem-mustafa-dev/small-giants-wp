@@ -1,6 +1,7 @@
 // The per-state passes of draft-live-walk.mjs that move the page: scroll-in reveals, the reveal sweep
 // before a full-page shot, hover end states and keyboard focus rings.
-import { HOVER_PROPS, collectRunning, centreOf, hoverStyles, PAINT_SRC } from './collect.mjs';
+import { HOVER_PROPS, collectRunning, centreOf, hoverStyles } from './collect.mjs';
+import { PAINT_SRC } from './paint.mjs';
 import { hoverChrome } from './chrome-walk.mjs';
 import { focusPass } from './focus.mjs';
 

@@ -15,63 +15,6 @@ export const DEFAULT_PROPS = [
 	'text-decoration-line', 'text-decoration-color', 'text-decoration-thickness', 'text-underline-offset', 'icon-fill', 'icon-stroke',
 ];
 
-// Properties read from the element that lays out the pair's children (layoutElement), not the pair's element.
-export const LAYOUT_PROPS = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
-
-// Self-contained (passed to page.evaluate as source). The element whose layout a pair's layout properties describe:
-// the element itself when it is a flex or grid container, else the first flex or grid container down a chain of
-// single rendered children (a block whose wrapper holds one inner band carrying the layout), else the element.
-// The same rule on both sides, so a draft row element and a live wrapper-plus-inner band compare the same layout.
-export function layoutElement( el, styleOf = ( e ) => getComputedStyle( e ) ) {
-	const lays = ( e ) => /(^|-)(flex|grid)$/.test( styleOf( e ).display );
-	if ( lays( el ) ) {
-		return el;
-	}
-	for ( let a = el; ; ) {
-		const kids = [ ...a.children ].filter( ( k ) => k.getClientRects().length && 'none' !== styleOf( k ).display );
-		if ( 1 !== kids.length ) {
-			return el;
-		}
-		a = kids[ 0 ];
-		if ( lays( a ) ) {
-			return a;
-		}
-	}
-}
-
-// Self-contained. The element painting the first visible text inside el (a button's label span, not the button),
-// or null. Text properties at rest and on hover are read from it.
-export function textCarrier( el ) {
-	const walker = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, {
-		// The text node's own rects: its parent can be display:contents (no box of its own) and still paint it.
-		acceptNode: ( n ) => {
-			if ( ! n.textContent.trim() ) {
-				return NodeFilter.FILTER_SKIP;
-			}
-			const range = document.createRange();
-			range.selectNodeContents( n );
-			return range.getClientRects().length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-		},
-	} );
-	return walker.nextNode()?.parentElement || null;
-}
-
-// Self-contained. The underline a visitor sees on the text starting at `from`: text-decoration is not inherited but
-// paints through every in-flow descendant, so it comes from the nearest decorated element at or above the text. An
-// inline-block, a float or an out-of-flow box stops it reaching further up. Returns that element's computed style, or null.
-export function paintedDecoration( from ) {
-	for ( let a = from; a && a !== document.documentElement; a = a.parentElement ) {
-		const s = getComputedStyle( a );
-		if ( 'none' !== s.textDecorationLine ) {
-			return s;
-		}
-		if ( /^inline-/.test( s.display ) || 'none' !== s.cssFloat || /absolute|fixed/.test( s.position ) ) {
-			return null;
-		}
-	}
-	return null;
-}
-
 // Properties read at rest and again at the hover end state.
 export const HOVER_PROPS = [ 'color', 'background-color', 'border-top-color', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'text-decoration-line', 'text-decoration-color', 'filter' ];
 
@@ -106,8 +49,7 @@ export function resolveFinder( finder ) {
 
 // Everything the comparison needs about one element pair, at rest. With a ref prefix (ref tracing,
 // lib/ref-trace.mjs) it also returns `trace`: the element's ref, block root class and selector paths.
-// in: [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc ]; paintSrc is PAINT_SRC (the source of
-// textCarrier, paintedDecoration and layoutElement).
+// in: [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc ]; paintSrc is paint.mjs::PAINT_SRC.
 export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
@@ -124,7 +66,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	const TEXT_PROPS = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ];
 	const carrier = textCarrier( el );
 	const ccs = carrier ? getComputedStyle( carrier ) : null;
-	// Layout properties come from the element laying out the children (LAYOUT_PROPS, layoutElement).
+	// Layout properties come from the element laying out the children (paint.mjs::LAYOUT_PROPS, layoutElement).
 	const LAYOUT = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
 	const layoutEl = layoutElement( el );
 	const lcs = getComputedStyle( layoutEl );
@@ -160,6 +102,18 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		styles[ 'text-underline-offset' ] = deco ? deco.textUnderlineOffset : 'none';
 	}
 	// An icon's colour: the first painted shape of the pair's svg (or the svg the pair is).
+	// `line-height: normal` is the font's own line height: compared as the pixels it paints (a one-line probe in the
+	// carrier's font), so a draft's `normal` and a live number compare like for like and a numeric setting can match it.
+	if ( 'normal' === styles[ 'line-height' ] && ccs ) {
+		const probe = document.createElement( 'div' );
+		probe.textContent = 'Hg';
+		probe.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;line-height:normal;font:${ ccs.font };`;
+		document.body.appendChild( probe );
+		styles[ 'line-height' ] = `${ Math.round( probe.getBoundingClientRect().height * 100 ) / 100 }px`;
+		probe.remove();
+	}
+	// An icon: the first painted shape of the pair's svg (or the svg the pair is) gives its colour; the svg's box its size.
+	let iconEl = null;
 	if ( props.includes( 'icon-fill' ) ) {
 		const svg = 'svg' === el.tagName.toLowerCase() ? el : el.querySelector( 'svg' );
 		const shape = svg && [ ...svg.querySelectorAll( 'path, circle, rect, ellipse, line, polyline, polygon, use, text' ) ]
@@ -168,6 +122,10 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 			const ss = getComputedStyle( shape );
 			styles[ 'icon-fill' ] = 'none' === ss.fill ? 'none' : srgb( ss.fill );
 			styles[ 'icon-stroke' ] = 'none' === ss.stroke ? 'none' : srgb( ss.stroke );
+			const sb = svg.getBoundingClientRect();
+			styles[ 'icon-width' ] = `${ Math.round( sb.width * 100 ) / 100 }px`;
+			styles[ 'icon-height' ] = `${ Math.round( sb.height * 100 ) / 100 }px`;
+			iconEl = svg;
 		}
 	}
 	// Keyframes compared by content, so a namespaced name (sgs-x-pop) matches the draft's (pop).
@@ -192,7 +150,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	let trace;
 	if ( refPrefix ) {
 		// eslint-disable-next-line no-new-func
-		trace = new Function( `return (${ traceSrc });` )()( el, carrier, refPrefix, pathSrc, layoutEl );
+		trace = new Function( `return (${ traceSrc });` )()( el, carrier, refPrefix, pathSrc, layoutEl, iconEl );
 	}
 	return {
 		trace,
@@ -281,6 +239,3 @@ export function hoverStyles( [ finder, props, resolveSrc, paintSrc ] ) {
 	}
 	return out;
 }
-
-// The source collectPair and hoverStyles rebuild their paint helpers from.
-export const PAINT_SRC = [ textCarrier, paintedDecoration, layoutElement ].map( ( f ) => f.toString() ).join( ';\n' );

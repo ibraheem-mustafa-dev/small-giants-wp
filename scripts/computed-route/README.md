@@ -184,6 +184,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `mergeReports(parts)` → one report from the per-width walks (runs in width order, errors by width).
 - `WALK_FLAGS`: every round's walk is lean (`--lean`: only the styles, boxes, hover end states and structure Solve reads) and reuses the run's draft reads (`--draft-cache <run dir>/draft-cache.json`).
 - `USED_VALUES`: computed properties that are used sizes (`width`), reported and never written.
+- `cssProp(key)` → the CSS property a walker row's key stands for: `icon-width` and `icon-height` (rows on the svg's own path) are its declared `width` and `height`.
 - `calibrationFor(block)` → the block's calibration file or null.
 - `writeRound(report, tree, { db, snapshot, round, log, blocked, stateMap, calFor? })` → `{ writes, gaps }`; only rows from mapped walker states are written.
 - `revertRegressions(prev, report, tree, lastWrites, blocked, calFor?, trials?)` → the writes the guard undid this round (`lib/guard.mjs::guardRound`).

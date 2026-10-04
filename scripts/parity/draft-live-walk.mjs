@@ -22,7 +22,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { DEFAULT_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles, PAINT_SRC } from './lib/collect.mjs';
+import { DEFAULT_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles } from './lib/collect.mjs';
+import { PAINT_SRC } from './lib/paint.mjs';
 import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses } from './lib/state-passes.mjs';
 import { collectLinks, probeLinks, unseenLabels } from './lib/links.mjs';
 import { sampleEntrances } from './lib/entrances.mjs';

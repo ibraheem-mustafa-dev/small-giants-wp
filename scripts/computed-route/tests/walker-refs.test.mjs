@@ -85,7 +85,7 @@ test( 'a pair with a configured anchor keeps its own distance row and gets no fl
 // Layout properties are read from the element laying out the children (About, 2026-10-04): an SGS container's flex or
 // grid sits on its inner band, the draft's on the row element itself, so the walker compared the wrapper's `normal`
 // gap against the draft's 10px and never saw the page grid's 32px row gap against the draft's 48px.
-import { layoutElement } from '../../parity/lib/collect.mjs';
+import { layoutElement } from '../../parity/lib/paint.mjs';
 import { comparePair } from '../../parity/lib/compare.mjs';
 
 const box = ( display, kids = [] ) => ( { display, children: kids, getClientRects: () => [ 1 ] } );
@@ -132,4 +132,15 @@ test( 'MUST FAIL TO MATCH: a border style on a painted side is still a differenc
 	const d = styled( { 'border-top-style': 'none', 'border-top-width': '0px' } );
 	const l = styled( { 'border-top-style': 'solid', 'border-top-width': '3px' } );
 	assert.deepEqual( comparePair( { motion: false, text: false }, d, l, tol ).map( ( x ) => x.key ).sort(), [ 'border-top-style', 'border-top-width' ] );
+} );
+
+// An icon's size (About's WhatsApp button, 2026-10-04: draft 19px against live 20px, which no row measured) is a row
+// on the svg's own path, and Solve writes it as the svg's declared width or height (solve.mjs::cssProp).
+import { cssProp } from '../solve.mjs';
+
+test( 'MUST FAIL TO MISS: icon size rows carry the icon path and stand for width and height', () => {
+	const diffs = [ { kind: 'style', key: 'icon-width' }, { kind: 'style', key: 'icon-height' }, { kind: 'style', key: 'width' } ];
+	stampRefs( diffs, { ref: 'cr-ref-a-9', block: 'sgs-whatsapp-cta', path: '', textPath: '.sgs-whatsapp-cta__label', layoutPath: '', iconPath: '.sgs-whatsapp-cta__icon' } );
+	assert.deepEqual( diffs.map( ( d ) => d.path ), [ '.sgs-whatsapp-cta__icon', '.sgs-whatsapp-cta__icon', '' ] );
+	assert.deepEqual( [ 'icon-width', 'icon-height', 'width', 'icon-fill' ].map( cssProp ), [ 'width', 'height', 'width', 'icon-fill' ] );
 } );

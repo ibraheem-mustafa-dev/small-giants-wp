@@ -23,6 +23,9 @@ const WIDTHS = '375,768,1440,1920';
 // Computed values that are used sizes, never declared ones (getComputedStyle resolves auto to pixels).
 export const USED_VALUES = [ 'width' ];
 
+// The CSS property a row's key stands for: icon size rows (stamped with the svg's path) are its declared width/height.
+export const cssProp = ( key ) => key.replace( /^icon-(width|height)$/, '$1' );
+
 // The calibration file for a block, or null (the resolver then returns `uncalibrated`).
 export function calibrationFor( block ) {
 	const f = path.join( HERE, 'cache', `${ block.replace( /^sgs\//, '' ) }.json` );
@@ -115,7 +118,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 		const { perWidth, fontPx } = draftValues( report, g.pair, g.prop, 'hover' === g.state, g.walkerStates );
 		// The element's other draft properties, for a setting calibration found (a layout mode decided by several properties).
 		const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === g.ref && o.path === g.path && ! o.state && o.prop !== g.prop ).map( ( o ) => [ o.prop, draftValues( report, o.pair, o.prop, false, o.walkerStates ).perWidth ] ) );
-		const r = resolve( { block: node.name, slot: g.path, prop: g.prop, state: g.state, perWidth, fontPx, current: node.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
+		const r = resolve( { block: node.name, slot: g.path, prop: cssProp( g.prop ), state: g.state, perWidth, fontPx, current: node.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
 		if ( r.gap ) {
 			gaps[ g.key ] = r;
 			continue;
