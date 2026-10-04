@@ -9,7 +9,10 @@ Decided from the source and the DB, never from the calibration cache:
         with a reader, a declaration from an `includes/` hook emitter)
   js    an `anim:`/`fx:` pseudo-property, or a data attribute a front-end script or
         attribute selector reads
-  not   unit companions (checked through their base attribute), content roles,
+  not   unit companions (checked through their base attribute), settings that only
+        pick a query's rows or order (a `query_only` channel, or an enum of data-source
+        keywords) whatever their role or name suffix, media-element playback toggles
+        (loop, autoplay, muted, controls, playsinline), content roles,
         show/hide toggles (SWITCH_ROLES) with no class rule, custom property or
         paint declaration of their own (unless a hover/state/motion effect or a
         visual-effect runtime), and
@@ -40,6 +43,18 @@ EXTRA_SUFFIXES = (
     ("TextIndent", "text-indent"), ("Saturate", "filter"), ("Blur", "filter"),
     ("WritingMode", "writing-mode"), ("TextWrap", "text-wrap"),
 )
+# Values of a setting that picks the order or the rows of a query. A setting whose
+# options are all of these is data selection whatever its name or role suggests (`Order`
+# is also CSS `order`, but `name`/`count`/`term_order` sort terms).
+DATA_SOURCE_KEYWORDS = frozenset({
+    "name", "count", "term_order", "date", "title", "menu_order", "rand", "random", "id", "slug", "modified", "author",
+    "relevance", "popularity", "rating", "price", "comment_count", "meta_value", "meta_value_num", "asc", "desc",
+    "newest", "oldest", "latest",
+})
+# Media-element playback state (HTML attributes and properties), never appearance. A
+# runtime that drives a visual effect (Lottie, parallax, magnet, physics …) stays paint.
+PLAYBACK_RE = re.compile(r"(?:Loop|Autoplay|AutoPlay|Muted|Controls|PlaysInline|Playsinline)$")
+EFFECT_NAME_RE = re.compile(r"Lottie|Parallax|Magnet|Physics|Sequence|PathDraw|Reactive|KenBurns|Tilt|Particle|Shader|WebGL|Fx[A-Z]|^fx|^anim|Animation", re.I)
 MODIFIERS = ("Mobile", "Tablet", "Desktop", "Hover", "Unit", "Custom")
 STATE_RE = re.compile(r"(Hover|Focus|Active|Scrolled|Open|Pressed|Visited)(Gradient|Colour|Color)?$|Hover[A-Z]|Focus[A-Z]|Scrolled[A-Z]")
 MOTION_RE = re.compile(r"(Duration|Easing|EasingCustom|Delay|Stagger|Speed|Animation|Parallax|KenBurns|Reveal\w*)$|^sgsAnimation|^anim|^fx[A-Z]")
@@ -80,6 +95,11 @@ class PaintClassifier:
             if cssp.startswith(("anim:", "fx:")):
                 return "js", "db-pseudo-property"
             return "css", "db-css-property"
+        enum = signals.get("enum") or []
+        if signals.get("query_only"):
+            return "not", "query-only"
+        if enum and all(str(v).lower() in DATA_SOURCE_KEYWORDS for v in enum):
+            return "not", "data-source-enum"
         if role in PAINT_ROLES:
             return "css", "role:" + role
         hit = self.suffix_hit(attr)
@@ -111,6 +131,8 @@ class PaintClassifier:
             if effect and signals.get("decl_channel"):
                 return "css", "effect-toggle-decl"
             if signals.get("fx_data_consumed"):
+                if PLAYBACK_RE.search(strip_modifiers(attr)) and not EFFECT_NAME_RE.search(attr):
+                    return "not", "media-playback-behaviour"
                 return "js", "effect-toggle-runtime"
             return "not", "role:" + role
         if signals.get("decl_channel"):

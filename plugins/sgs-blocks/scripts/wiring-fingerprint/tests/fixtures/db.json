@@ -377,6 +377,42 @@
    "css_state": null,
    "role": "color",
    "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/query-order",
+   "attr_name": "listOrder",
+   "attr_type": "string",
+   "css_property": null,
+   "css_state": null,
+   "role": "layout",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/query-order",
+   "attr_name": "listPaged",
+   "attr_type": "string",
+   "css_property": null,
+   "css_state": null,
+   "role": "layout",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/query-order",
+   "attr_name": "rowOrder",
+   "attr_type": "string",
+   "css_property": null,
+   "css_state": null,
+   "role": "layout",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/query-order",
+   "attr_name": "listSort",
+   "attr_type": "string",
+   "css_property": null,
+   "css_state": null,
+   "role": "layout",
+   "tier_shape": null
   }
  ],
  "property_suffixes": [

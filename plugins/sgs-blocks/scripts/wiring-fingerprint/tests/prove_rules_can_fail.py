@@ -83,6 +83,17 @@ MUTANTS = {
     "baseline-advisory": ("wf_baseline.py", 'save(path, {gap_id(f) for f in findings if f["link"] not in advisory})',
                           "save(path, {gap_id(f) for f in findings})"),
     "accept-refuse": ("wf_baseline.py", "    if refused:\n        return [], refused", "    if False:\n        return [], refused"),
+    # Task 2 third review (tests/test_fix3.py).
+    "query-flag": ("wf_channel.py", "                ch.query = True", "                pass"),
+    "query-callee": ("wf_channel.py", "if QUERY_CALLEE_RE.search(stmt, 0, ob):", "if False:"),
+    "query-key": ("wf_channel.py", "if s <= off < e and QUERY_KEY_RE.match(", "if False and QUERY_KEY_RE.match("),
+    "query-static-method": ("wf_channel.py", "\w*Query::\w+\s*\(", "\w*QueryX::\w+\s*\("),
+    "query-only": ("wf_paint.py", 'return "not", "query-only"', "pass"),
+    "query-only-signal": ("wf_resolve.py", '"query_only": ch.query and not ch.kinds() and not ch.forwards,', '"query_only": False,'),
+    "data-source-enum": ("wf_paint.py", 'return "not", "data-source-enum"', "pass"),
+    "enum-signal": ("wf_resolve.py", '"enum": enum or [],', '"enum": [],'),
+    "playback-carve-out": ("wf_paint.py", 'return "not", "media-playback-behaviour"', "pass"),
+    "effect-name-guard": ("wf_paint.py", " and not EFFECT_NAME_RE.search(attr)", ""),
     "cli-detail": ("wf_cli.py", "print_gap(g, by_id[g])", 'print("    " + g)'),
 }
 

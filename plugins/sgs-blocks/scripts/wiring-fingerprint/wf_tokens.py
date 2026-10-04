@@ -101,6 +101,7 @@ class Channel:
     data: set = field(default_factory=set)
     fx_data: set = field(default_factory=set)      # data attributes a visual-effect runtime reads
     fwd: bool = False
+    query: bool = False                            # the value reaches a query/collection call (which rows, in what order)
     gate: bool = False
     helpers: set = field(default_factory=set)
     child_sel: set = field(default_factory=set)    # `> .sgs-<block>` subjects in emitted selectors
@@ -118,6 +119,7 @@ class Channel:
         self.gate_decl |= o.gate_decl
         self.value_decl |= o.value_decl
         self.fwd |= o.fwd
+        self.query |= o.query
         self.gate |= o.gate
         self.read |= o.read
         for k in ("cps", "cps_any", "classes", "data", "fx_data", "helpers", "child_sel", "inner_sel", "ctx_tokens",

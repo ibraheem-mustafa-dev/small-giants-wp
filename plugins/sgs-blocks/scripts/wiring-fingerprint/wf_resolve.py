@@ -66,9 +66,12 @@ class Resolver:
         self._done: dict[tuple[str, str], Resolved] = {}
         self._anim: dict[str, dict[str, str]] = {}
 
-    def signals(self, ch: Channel, toggle: bool) -> dict:
+    def signals(self, ch: Channel, toggle: bool, enum: list | None = None) -> dict:
         css, js = self.css, self.js
         return {
+            # The value only selects which rows come back, and in what order.
+            "query_only": ch.query and not ch.kinds() and not ch.forwards,
+            "enum": enum or [],
             "class_rule": any(css.has_class(c) for c in ch.classes if "--" in c),
             "cp_reader": any(css.cp_read(cp) for cp in ch.cps),
             "decl_channel": ch.decl or ch.gate_decl,
@@ -78,6 +81,10 @@ class Resolver:
             "data_consumed": data_consumed(ch.fx_data, css, js),
             "fx_data_consumed": data_consumed(ch.fx_data, css, js),
         }
+
+    def _enum(self, block: str, attr: str) -> list:
+        spec = (self.blockjson[block][1].get("attributes") or {}).get(attr) or {}
+        return list(spec.get("enum") or [])
 
     def get(self, block: str, attr: str, stack: tuple = ()) -> Resolved:
         key = (block, attr)
@@ -112,7 +119,7 @@ class Resolver:
             ch.fwd_tokens |= tokens
             ch.ctx_tokens |= tokens
             where = where or "forwarded"
-        category, basis = self.paint.classify(self.rows[key], self.signals(ch, toggle))
+        category, basis = self.paint.classify(self.rows[key], self.signals(ch, toggle, self._enum(block, attr)))
         res = Resolved(ch=ch, where=where, category=category, basis=basis)
         if not stack:
             self._done[key] = res

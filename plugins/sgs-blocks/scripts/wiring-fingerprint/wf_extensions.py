@@ -38,6 +38,8 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
                 "decl_channel": ch.decl or ch.gate_decl,
                 # State utility modifiers the framework styles (`sgs-on-dark`, `sgs-has-hover-overlay`).
                 "utility_class_rule": any(css.has_class(c) for c in ch.classes if c.startswith(("sgs-on-", "sgs-has-"))),
+                "query_only": ch.query and not ch.kinds() and not ch.forwards,
+                "enum": list((spec.get("enum") or [])),
                 "data_consumed": data_consumed(ch.data, css, js),
                 "fx_data_consumed": data_consumed(ch.fx_data, css, js),
             }

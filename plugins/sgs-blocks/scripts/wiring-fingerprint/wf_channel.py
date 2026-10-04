@@ -54,7 +54,30 @@ DYN_KEY_RE = re.compile(r"""\$\w+\s*\.\s*['"]([A-Z][A-Za-z0-9]*)['"]""")
 # the setting's value: `$q = new WP_Query( $args )` does not carry `$args`'s taint on.
 QUERY_CALL_RE = re.compile(
     r"\s*(?:new\s+\\?(?:WP_Query|WC_Product_Query|WP_Term_Query|WP_Comment_Query|WP_User_Query)\b"
-    r"|\\?(?:get_posts|get_pages|get_terms|get_comments|get_users|wc_get_products|wc_get_orders|wp_get_nav_menu_items|query_posts)\s*\()")
+    r"|\\?(?:get_posts|get_pages|get_terms|get_comments|get_users|wc_get_products|wc_get_orders|wp_get_nav_menu_items|query_posts)\s*\("
+    r"|\\?(?:\w+\\)*\w*Query::\w+\s*\()")
+# The same calls, read backwards from the `(` that opens their arguments.
+QUERY_CALLEE_RE = re.compile(
+    r"(?:new\s+\\?(?:WP_Query|WC_Product_Query|WP_Term_Query|WP_Comment_Query|WP_User_Query)"
+    r"|\\?(?:get_posts|get_pages|get_terms|get_comments|get_users|wc_get_products|wc_get_orders|wp_get_nav_menu_items|query_posts)"
+    r"|\\?(?:\w+\\)*\w*Query::\w+)\s*$")
+# Array keys of a query's arguments: which rows come back, how many, in what order.
+QUERY_KEY_RE = re.compile(
+    r"""['"](?:orderby|order|paged|posts_per_page|numberposts|number|offset|post__in|post__not_in|meta_key|meta_value|"""
+    r"""hide_empty|tax_query|meta_query|post_type|taxonomy)['"]\s*=>""")
+
+def reaches_query(stmt: str, offs: list[int]) -> bool:
+    """True when a reference sits in the arguments of a query/collection call, or in the
+    value of a query-argument key (`'orderby' => $orderby`)."""
+    for off in offs:
+        for ob in open_brackets(stmt, off):
+            if QUERY_CALLEE_RE.search(stmt, 0, ob):
+                return True
+            for s, e in split_arg_spans(stmt, ob):
+                if s <= off < e and QUERY_KEY_RE.match(stmt, s + len(stmt[s:e]) - len(stmt[s:e].lstrip())):
+                    return True
+    return False
+
 
 def func_spans(t: PhpText) -> list[tuple[int, int, set]]:
     """Function and closure body spans in a text, with each closure's `use` list."""
@@ -221,6 +244,8 @@ class ChannelAnalyser:
             ch.stmts += 1
             ch.read = True
             self.reader.read(stmt, attr, offs, ch)
+            if reaches_query(stmt, offs):
+                ch.query = True
             if ch.decl or ch.cps:
                 self._selector_vars(t, span[0], stmt, taint, ch)
             if RETURN_RE.match(stmt):

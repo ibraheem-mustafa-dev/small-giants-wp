@@ -1,0 +1,25 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/query-order",
+ "title": "query-order",
+ "attributes": {
+  "listOrder": {
+   "type": "string",
+   "default": "name",
+   "enum": ["name", "count", "term_order"]
+  },
+  "listSort": {
+   "type": "string",
+   "default": "name",
+   "enum": ["name", "count"]
+  },
+  "listPaged": {
+   "type": "string",
+   "default": "none"
+  },
+  "rowOrder": {
+   "type": "string",
+   "default": "0"
+  }
+ }
+}
