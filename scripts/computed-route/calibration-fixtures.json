@@ -1,18 +1,19 @@
 {
   "sgs/heading": {
     "attributes": {
-      "content": "Calibration heading",
+      "content": "Calibration heading with a <a href=\"https://example.com/\">link</a>",
       "level": "h4"
     }
   },
   "sgs/text": {
     "attributes": {
-      "text": "Calibration text for measuring."
+      "text": "Calibration text for measuring, with a <a href=\"https://example.com/\">link</a>."
     }
   },
   "sgs/container": {
     "attributes": {
-      "tagName": "div"
+      "tagName": "div",
+      "bgSvgContent": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"currentColor\"/></svg>"
     },
     "variants": [
       {},
@@ -24,6 +25,9 @@
       },
       {
         "layout": "stack"
+      },
+      {
+        "layout": "grid"
       }
     ],
     "inner": [
@@ -195,25 +199,30 @@
           },
           "name": "Brand two"
         }
-      ]
+      ],
+      "showNames": true
     },
     "variants": [
       {},
       {
         "logoLayout": "row"
+      },
+      {
+        "brandDisplay": "text"
       }
     ]
   },
   "sgs/breadcrumbs": {
     "attributes": {
       "showArchiveCrumb": false,
-      "showCurrentCrumb": false
+      "showCurrentCrumb": true
     }
   },
   "sgs/button": {
     "attributes": {
       "label": "Shop the range",
-      "url": "/shop/"
+      "url": "/shop/",
+      "icon": "arrow-right"
     },
     "variants": [
       {},
@@ -328,7 +337,8 @@
             "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/pilot.png",
             "alt": ""
           },
-          "_key": "cal-item-1"
+          "_key": "cal-item-1",
+          "subtitle": "Short subtitle 1"
         },
         {
           "title": "Wayfarer",
@@ -344,7 +354,8 @@
             "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.png",
             "alt": ""
           },
-          "_key": "cal-item-2"
+          "_key": "cal-item-2",
+          "subtitle": "Short subtitle 2"
         },
         {
           "title": "Round",
@@ -360,7 +371,8 @@
             "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.png",
             "alt": ""
           },
-          "_key": "cal-item-3"
+          "_key": "cal-item-3",
+          "subtitle": "Short subtitle 3"
         },
         {
           "title": "Cat-eye",
@@ -376,7 +388,8 @@
             "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cat-eye.png",
             "alt": ""
           },
-          "_key": "cal-item-4"
+          "_key": "cal-item-4",
+          "subtitle": "Short subtitle 4"
         },
         {
           "title": "Square",
@@ -392,7 +405,8 @@
             "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.png",
             "alt": ""
           },
-          "_key": "cal-item-5"
+          "_key": "cal-item-5",
+          "subtitle": "Short subtitle 5"
         },
         {
           "title": "Oversized",
@@ -403,7 +417,8 @@
             "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/oversized.png",
             "alt": ""
           },
-          "_key": "cal-item-6"
+          "_key": "cal-item-6",
+          "subtitle": "Short subtitle 6"
         }
       ],
       "variant": "overlay",
@@ -766,7 +781,8 @@
     "attributes": {
       "taxonomy": "product_brand",
       "placeholder": "Search brands",
-      "threshold": 2
+      "threshold": 2,
+      "searchMode": "taxonomy-terms"
     }
   },
   "sgs/form": {
@@ -825,6 +841,42 @@
           "required": true,
           "width": "full"
         }
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "Step 1"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/form-field-text",
+            "attributes": {
+              "fieldName": "step_1_name",
+              "label": "",
+              "placeholder": "Step 1 answer",
+              "required": false,
+              "width": "full"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "Step 2"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/form-field-text",
+            "attributes": {
+              "fieldName": "step_2_name",
+              "label": "",
+              "placeholder": "Step 2 answer",
+              "required": false,
+              "width": "full"
+            }
+          }
+        ]
       }
     ]
   },
@@ -1111,7 +1163,26 @@
           "date": "2 years ago",
           "meta": "6 reviews",
           "rating": 5,
-          "text": "Calibration review text: friendly service and a good choice of frames, explained clearly."
+          "text": "Calibration review text: friendly service and a good choice of frames, explained clearly.",
+          "url": "https://example.com/review-1"
+        },
+        {
+          "author": "Reviewer 2",
+          "avatarColour": "",
+          "date": "2 years ago",
+          "meta": "6 reviews",
+          "rating": 5,
+          "text": "Second calibration review: quick turnaround and clear advice.",
+          "url": "https://example.com/review-2"
+        },
+        {
+          "author": "Reviewer 3",
+          "avatarColour": "",
+          "date": "2 years ago",
+          "meta": "6 reviews",
+          "rating": 5,
+          "text": "Third calibration review: would recommend.",
+          "url": "https://example.com/review-3"
         }
       ],
       "seeAllLabel": "See all reviews",
@@ -1128,7 +1199,11 @@
   },
   "sgs/hero": {
     "attributes": {
-      "bgKenBurns": true
+      "bgKenBurns": true,
+      "bgVideo": {
+        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/calibration-loop.mp4",
+        "type": "video"
+      }
     },
     "inner": [
       {
@@ -1152,13 +1227,16 @@
       "source": "typed",
       "items": [
         {
-          "text": "UV400 protection"
+          "text": "UV400 protection",
+          "description": "A short second line under this item."
         },
         {
-          "text": "Anti-scratch hard coat"
+          "text": "Anti-scratch hard coat",
+          "description": "A short second line under this item."
         },
         {
-          "text": "Anti-reflective back surface, so you don't catch your own eye in the lens"
+          "text": "Anti-reflective back surface, so you don't catch your own eye in the lens",
+          "description": "A short second line under this item."
         },
         {
           "text": "Tint matched to the frame's original lenses"
@@ -1169,8 +1247,15 @@
         {
           "text": "Two-year guarantee on the lenses"
         }
-      ]
-    }
+      ],
+      "heading": "Why choose us"
+    },
+    "variants": [
+      {},
+      {
+        "markerType": "icon"
+      }
+    ]
   },
   "sgs/label": {
     "attributes": {
@@ -1182,7 +1267,8 @@
       "mediaType": "image",
       "imageId": 202,
       "imageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg",
-      "imageAlt": "Person wearing sunglasses outdoors"
+      "imageAlt": "Person wearing sunglasses outdoors",
+      "caption": "A short caption under the image."
     }
   },
   "sgs/mega-group": {
@@ -1402,11 +1488,55 @@
                 "name": "sgs/container",
                 "attributes": {
                   "tagName": "div"
-                }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/icon-list",
+                    "attributes": {
+                      "markerType": "icon",
+                      "items": [
+                        {
+                          "iconSource": "lucide",
+                          "iconName": "check",
+                          "text": "First link row",
+                          "url": "/one/"
+                        },
+                        {
+                          "iconSource": "lucide",
+                          "iconName": "check",
+                          "text": "Second link row",
+                          "url": "/two/"
+                        }
+                      ]
+                    }
+                  }
+                ]
               }
             ]
           }
         ]
+      },
+      {
+        "name": "sgs/mega-aside",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Aside feature text."
+            }
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {},
+      {
+        "style": "cards"
+      },
+      {
+        "variant": "brands",
+        "brandsEyebrow": "Our brands"
       }
     ]
   },
@@ -1499,7 +1629,10 @@
       "submenuModel": "accordion",
       "chromeSlotText": "MENU",
       "chromeSlotPlacement": "after-logo",
-      "itemStagger": 50
+      "itemStagger": 50,
+      "chromeLogoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
+      "chromeLogoId": 4080,
+      "chromeSlotType": "label"
     },
     "inner": [
       {
@@ -1576,6 +1709,20 @@
           }
         ]
       }
+    ],
+    "variants": [
+      {},
+      {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      {
+        "closeStyle": {
+          "desktop": "text-swap",
+          "tablet": "separate-x",
+          "mobile": "separate-x"
+        }
+      }
     ]
   },
   "sgs/process-steps": {
@@ -1583,15 +1730,18 @@
       "steps": [
         {
           "number": "1",
-          "title": "Pick a frame, then “Add my prescription”"
+          "title": "Pick a frame, then “Add my prescription”",
+          "description": "A short description of step 1."
         },
         {
           "number": "2",
-          "title": "Tell me what they're for, how thin, what finish"
+          "title": "Tell me what they're for, how thin, what finish",
+          "description": "A short description of step 2."
         },
         {
           "number": "3",
-          "title": "Send your prescription now, or later — no rush"
+          "title": "Send your prescription now, or later — no rush",
+          "description": "A short description of step 3."
         }
       ]
     }
@@ -1614,8 +1764,26 @@
       "attributeTagTerm": "polarised",
       "attributeTagText": "Polarised",
       "sourceMode": "wc-product",
-      "productId": 71
-    }
+      "productId": 71,
+      "ratingValue": 4.6,
+      "reviewCount": 12,
+      "overrideElements": [
+        "description"
+      ],
+      "description": "A short description with a <a href=\"https://example.com/\">link</a>."
+    },
+    "variants": [
+      {},
+      {
+        "sourceMode": "typed",
+        "productId": 0,
+        "productName": "Typed sample frame",
+        "priceLarge": "£49",
+        "showDescription": true,
+        "showCta": true,
+        "ctaUrl": "/shop/"
+      }
+    ]
   },
   "sgs/responsive-logo": {
     "attributes": {
@@ -1804,7 +1972,8 @@
           "icon": "rotate-ccw",
           "label": "30 days to return, free adjustments for life"
         }
-      ]
+      ],
+      "title": "Why shop with us"
     },
     "variants": [
       {},
@@ -1821,7 +1990,15 @@
       "variant": "inline",
       "message": "Hi, I'd like to know more about your services.",
       "label": "Message me"
-    }
+    },
+    "variants": [
+      {},
+      {
+        "variant": "card",
+        "cardTitle": "Chat to us",
+        "cardSubline": "We usually reply within the hour"
+      }
+    ]
   },
   "sgs/account": {
     "attributes": {}
@@ -1847,7 +2024,7 @@
   },
   "sgs/collapsible-text": {
     "attributes": {
-      "text": "<p>A first sample paragraph.</p><p>A second sample paragraph with enough words to wrap across more than one line at narrow widths.</p>",
+      "text": "<p>A first sample paragraph with a <a href=\"https://example.com/\">link</a>.</p><p>A second sample paragraph with enough words to wrap across more than one line at narrow widths.</p>",
       "collapsible": true,
       "collapsedLines": 2
     }
@@ -1873,7 +2050,14 @@
           "style": "accent",
           "url": "/"
         }
-      ]
+      ],
+      "backgroundMedia": {
+        "id": 3459,
+        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+        "alt": "Sample image",
+        "type": "image",
+        "mime": "image/jpeg"
+      }
     }
   },
   "sgs/decorative-image": {
@@ -2055,23 +2239,27 @@
           "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
           "alt": "Sample image",
           "type": "image",
-          "mime": "image/jpeg"
+          "mime": "image/jpeg",
+          "caption": "Caption 1"
         },
         {
           "id": 4080,
           "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
           "alt": "Second sample image",
           "type": "image",
-          "mime": "image/png"
+          "mime": "image/png",
+          "caption": "Caption 2"
         },
         {
           "id": 3459,
           "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
           "alt": "Sample image",
           "type": "image",
-          "mime": "image/jpeg"
+          "mime": "image/jpeg",
+          "caption": "Caption 3"
         }
-      ]
+      ],
+      "showCaptions": true
     },
     "variants": [
       {},
@@ -2158,11 +2346,43 @@
     ]
   },
   "sgs/nav-drawer-menu": {
-    "attributes": {},
+    "attributes": {
+      "itemOrnament": {
+        "desktop": "index"
+      },
+      "itemMedia": "featured-image",
+      "itemMediaReveal": {
+        "desktop": "always"
+      },
+      "itemMediaWidth": {
+        "desktop": "64px"
+      }
+    },
     "parents": [
       {
         "name": "sgs/nav-drawer",
         "attributes": {}
+      }
+    ],
+    "variants": [
+      {},
+      {
+        "ref": 96,
+        "disabledItemIds": [
+          "id:195"
+        ],
+        "itemTrailingIcons": {
+          "id:195": {
+            "source": "lucide",
+            "name": "arrow-right"
+          }
+        }
+      },
+      {
+        "ref": 96,
+        "featuredItemIds": [
+          "id:195"
+        ]
       }
     ]
   },
@@ -2171,7 +2391,44 @@
       "variant": "info",
       "icon": "info",
       "text": "A short sample notice."
-    }
+    },
+    "inner": [
+      {
+        "name": "sgs/notice-message",
+        "attributes": {
+          "label": "Slide 1"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "A short sample notice."
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/notice-message",
+        "attributes": {
+          "label": "Slide 2"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "A second sample notice."
+            }
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {},
+      {
+        "messageMode": "rotate",
+        "showMessageArrows": true
+      }
+    ]
   },
   "sgs/notice-message": {
     "attributes": {
@@ -2299,7 +2556,7 @@
   },
   "sgs/quote": {
     "attributes": {
-      "attribution": "Sample Author"
+      "attribution": "Sample Author, <a href=\"https://example.com/source\">Source</a>"
     },
     "inner": [
       {
@@ -2317,6 +2574,10 @@
       {
         "contentMode": "text",
         "contentText": "Or"
+      },
+      {
+        "contentMode": "icon",
+        "contentIconName": "star"
       }
     ]
   },
@@ -2388,11 +2649,12 @@
   },
   "sgs/testimonial": {
     "attributes": {
-      "quote": "A sample testimonial quotation.",
+      "quote": "A sample testimonial quotation with a <a href=\"https://example.com/review\">linked phrase</a>.",
       "reviewerName": "Sample Reviewer",
       "reviewerRole": "Sample role",
       "showRating": true,
-      "ratingStars": 5
+      "ratingStars": 5,
+      "orgName": "Sample Organisation"
     }
   },
   "sgs/testimonial-slider": {
@@ -2426,7 +2688,33 @@
     ]
   },
   "sgs/timeline": {
-    "attributes": {}
+    "attributes": {
+      "connectorProgressFill": true,
+      "rowStripes": true,
+      "entries": [
+        {
+          "date": "2018-01-01",
+          "title": "Company founded",
+          "description": "<p>Our story began with a handshake. <a href=\"https://example.com/story\">Read more</a>.</p>",
+          "icon": "building",
+          "image": 0
+        },
+        {
+          "date": "2020-06-01",
+          "title": "First milestone",
+          "description": "<p>Reached an important milestone. <a href=\"https://example.com/milestone\">Details</a>.</p>",
+          "icon": "flag",
+          "image": 0
+        },
+        {
+          "date": "2023-03-15",
+          "title": "National expansion",
+          "description": "<p>Grew our reach across the UK.</p>",
+          "icon": "map",
+          "image": 0
+        }
+      ]
+    }
   },
   "sgs/trustpilot-reviews": {
     "attributes": {

@@ -6,7 +6,7 @@ import path from 'path';
 
 export const DB_PATH = path.join( os.homedir(), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db' );
 
-const COLS = 'block_slug, attr_name, attr_type, default_value, enum_values, is_responsive, css_property, css_element, css_state, css_tier, tier_shape, box_family, source';
+const COLS = 'block_slug, attr_name, attr_type, default_value, enum_values, is_responsive, css_property, css_element, css_state, css_tier, tier_shape, box_family, source, role';
 
 // Opens the database read-only. `file` overrides the path (tests).
 export function openDb( file = DB_PATH ) {
@@ -42,4 +42,14 @@ export function siblings( db, block, attr ) {
 export function attrRow( db, block, attr ) {
 	const r = db.prepare( `SELECT ${ COLS } FROM block_attributes WHERE block_slug = ? AND attr_name = ?` ).get( block, attr );
 	return r ? plain( r ) : null;
+}
+
+// A block's variant setting and the settings that render only under one of its values (blocks.variant_attr and
+// variant_slots): calibration sets the variant before marking such a setting.
+export function variantInfo( db, block ) {
+	const b = db.prepare( 'SELECT variant_attr FROM blocks WHERE slug = ?' ).get( block );
+	if ( ! b?.variant_attr ) {
+		return { variantAttr: null, variantSlots: [] };
+	}
+	return { variantAttr: b.variant_attr, variantSlots: db.prepare( 'SELECT variant_value, unique_slot FROM variant_slots WHERE block_slug = ?' ).all( block ).map( plain ) };
 }

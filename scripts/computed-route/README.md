@@ -22,10 +22,10 @@ file names the rule it proves and has one case marked MUST FAIL.
 |---|---|
 | `README.md` | This index. |
 | `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, client names. |
-| `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
+| `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
 | `pairs.mjs` | Block pairing command: pairs every block of a surface with its draft element through the walker's word matcher, re-checks each kept finder at 375 and 768, and writes `<surface>.full.mjs` (the hand config plus one pair per block) and `qa/pairs/<surface>.json` (kept pairs and every left-out block with its reason). A surface's `walkerFull` in `surfaces.json` makes Solve walk it. |
-| `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`). |
+| `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`) and `image`, a media object on that site written into background-image markers and overlay preconditions. |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain, optional variants and optional `before` blocks (placed ahead of the instance, for a block that reads the page, such as a table of contents) per calibrated block. |
 | `ledger.mjs` | Divergence ledger command: `accept <report.json> <row id>` adds an entry dated today; `stale <report.json>` exits 1 while any entry is stale. |
 | `lib/db.mjs` | Read-only `block_attributes` queries. |
@@ -33,7 +33,12 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/resolve.mjs` | The one property-to-setting engine. |
 | `lib/tree.mjs` | Trees: read, write, refs, setting writes, live-site safety. |
 | `lib/cache.mjs` | The library-wide calibration cache: which site measured a block, and the cross-site guard. |
-| `lib/calibrate.mjs` | Calibration library: markers per setting shape, calibration trees, in-page reads, slot detection, default paint. |
+| `lib/calibrate.mjs` | Calibration library: calibration trees, slot detection, default paint; re-exports the calibration modules below. |
+| `lib/calibrate-props.mjs` | What calibration reads: the read and pseudo-layer properties and how a css_property maps onto them. |
+| `lib/calibrate-markers.mjs` | Marker values per setting shape (Spec 47 §3.2 marker table). |
+| `lib/calibrate-instances.mjs` | Which instances a block's calibration page holds: markers, their preconditions (variant, gating toggle, border partners, overlay image, layout mode) and state targets. |
+| `lib/calibrate-read.mjs` | The in-page reader and the per-width read under each state trigger. |
+| `lib/deploy-hash.mjs` | The deploy key: md5 of a block's front-end build files, locally and on the site. |
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, classification. |
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json`. |
 | `lib/references.mjs` | Reference blocks found from each block's render.php (linked placeholders, frames around another post's blocks, core template parts) and the surfaces lint that every printed post has a surface. |
@@ -47,6 +52,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/resolve.test.mjs` | FR-47-1: storage shapes and gaps; border-radius written as corners, never sides. |
 | `tests/tree.test.mjs` | R-47-11 and tree writes. |
 | `tests/calibrate.test.mjs` | FR-47-2: setting states calibrate only through a known trigger; the deploy key ignores webpack module numbering but not code; a run never replaces another site's cache file without `--recalibrate`; a border-style marker carries its companion width and maps against a width baseline (CR11). |
+| `tests/calibrate-classes.test.mjs` | FR-47-2: each dead or markerless class of the 2026-10-04 audit gets its marker, precondition or read (extension rows from the DB, gradients, keywords, media objects, transforms, wider lengths, non-length tiers, colour by role, box shapes, two weights, unit shapes, the silent drop, preconditions, layout modes, state targets, container-query tiers). |
+| `tests/calibrate-read.test.mjs` | FR-47-2 reader, in a local headless Chromium: elements past the 81st, `::after` and `::placeholder` layers, and an `aria-controls` panel outside the instance are read. |
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept. |
 | `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint. |
@@ -68,6 +75,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `enumSettings(db, block)` → enum settings with no css_property (calibration discovers what each value paints).
 - `siblings(db, block, attr)` → the `flat_sibling` rows sharing `attr`'s base name.
 - `attrRow(db, block, attr)` → one row whatever its source, or null.
+- `variantInfo(db, block)` → `{ variantAttr, variantSlots }` from `blocks.variant_attr` and `variant_slots`: the settings that render only under one variant value.
+- Rows carry `role` (`roles.classification`), which decides a colour marker for a setting painted under a non-colour property.
 
 ### `lib/normalise.mjs`
 - `COLOUR_DE`, `LENGTH_TOL`: snap tolerances (ΔE 2, 0.5px).
@@ -124,27 +133,47 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `cachedSite(file)` → the site a block's cache file was measured on, or null.
 - `skipReason(file, site, recalibrate?)` → why a run on `site` must leave the file alone (measured on another site, no `--recalibrate`), or null.
 
-### `lib/calibrate.mjs` (imports `scripts/parity/lib/collect.mjs` and `ref-trace.mjs`)
-- `WIDTHS`: 375, 768, 1440. `MARKER_HEX`, `MARKER_RGB`: the colour marker. `CAL_PREFIX`: `cr-ref-cal-`.
-- `READ_PROPS`: the properties read per element. `INHERITED`: never recorded as default paint.
-- `STATE_TRIGGERS`, `SCROLL_Y`: how each setting state is reached (`hover` real mouse, `scrolled` window scroll, `open` and `current` rendered by the fixture). `triggerFor(state)` → the trigger, `null` for rest, undefined when the state has none (reported, never calibrated).
-- `longhands(cssProperty)` → the walker longhands a setting covers.
-- `markersFor(row, schema, snapshot, current)` → `[{ label, attrs, expect, form?, base? }]` (§3.2 table); a border-style marker carries its companion width and `base` (the baseline attributes it is read against).
+### `lib/calibrate-props.mjs` (imports `scripts/parity/lib/collect.mjs` and `ref-trace.mjs`)
+- `WIDTHS`: 375, 768, 1440. `MARKER_HEX`, `MARKER_RGB`: the colour marker. `MARKER_GRADIENT`: the gradient marker. `CAL_PREFIX`: `cr-ref-cal-`.
+- `READ_PROPS`: the properties read per element: the walker's plus `CAL_EXTRA_PROPS` (height, stroke, fill, grid rows, writing-mode and others a setting can paint before the walker compares them). `INHERITED`: never recorded as default paint.
+- `PSEUDO_PROPS` (the walker's list) read on painting `::before`/`::after` layers; `TEXT_PSEUDO_PROPS` on `::placeholder` and `::first-letter`.
+- `longhands(cssProperty)` → the read properties a setting covers; a gradient text or border, a shadow colour and `flex`/`inset` map onto the properties the browser computes them under.
+
+### `lib/calibrate-markers.mjs`
+- `markersFor(row, schema, snapshot, current, ctx)` → `[{ label, attrs, expect, form?, base?, box? }]` (§3.2 table): colours by property or DB `role`, gradients, media objects (`ctx.image`), keywords for free-text settings (`KEYWORDS`), enums, booleans, boxes and corners (per device, `flat_sibling`), per-device lengths and non-length values (counts, keywords), two font weights in the setting's type, opacity, the transform family, letter-spacing, lengths, counts. A unit companion is written in its own shape.
+- `defOf(row, schema)` → the setting's schema: block.json's, else the DB row's type, enum and default (extension settings). `types(def)`.
 - `companionWidth(styleAttr, schema)` → `{ attr, attrs }`: the width a border-style marker needs (`<x>Style` → `<x>Width`, 3px in the attribute's own shape), or null.
+- `borderPartners(attr, prop, schema)` → the style (and width) a border colour or width needs to paint.
+
+### `lib/calibrate-instances.mjs`
+- `STATE_TRIGGERS`: how each setting state is reached (`hover` real mouse, `focus` keyboard-visible focus, `scrolled` window scroll, `shrunk` its ancestor class from `STATE_CLASSES`, `open` and `current` rendered by the fixture). `triggerFor(state)` → the trigger, `null` for rest, undefined when the state has none (reported, never calibrated).
+- `stateTarget(block, row)` → the BEM selector of the element a hover or focus marker acts on, or null for the root.
+- `preconditionsFor(row, schema, current, ctx)` → attributes the setting's element needs: its variant (`ctx.variantAttr`, `ctx.variantSlots` from `lib/db.mjs::variantInfo`), the show/enable toggle gating it, its border partners, a background image under an overlay.
+- `layoutModes(schema, current)` → the block's flex/grid mode settings and their other values; a layout property's markers are also tried under each.
+- `planInstances(block, { rows, enumRows, schema, snapshot, fixture, ctx })` → `{ instances, noMarker }`: defaults per variant, marked instances with `baseKey` (a baseline carrying the same preconditions), `trigger`, `target`, `stateClass`, and enum discovery instances.
+
+### `lib/calibrate-read.mjs` (imports `ref-trace.mjs`; Playwright pages)
+- Keys: an element's `elementPath` from the instance root; a layer is its element's key plus `::before`, `::after`, `::placeholder` or `::first-letter`; a panel the instance controls through `aria-controls` outside it (a cart dialog moved to `<body>`) is `@controls > <path>` (`@controls:2` for a second).
+- `readInstancesInPage([count, prefix, props, pathSrc, pseudoProps, textPseudoProps, only?])`: in-page; every element, layer and controlled panel of each instance (or only instance `only`).
+- `markTargetInPage([prefix, n, selector])`: in-page; marks the state target and its closed panel toggle.
+- `readAll(page, url, instances)` → per width reads, plus `scrolled`, `scrollMissed`, `hoverMissed` (state instances whose element stays hidden with its panel opened). `SCROLL_Y`: the scroll for scrolled markers (read twice when the header misses the first jump).
+
+### `lib/calibrate.mjs`
 - `buildTree(block, fixture, instances)` → the calibration tree.
-- `readInstancesInPage([count, prefix, props, pathSrc])`: in-page; every element of each instance by path.
-- `elementPath`: re-exported from `scripts/parity/lib/ref-trace.mjs`.
-- `slotFor(row, marker, defReads, markReads)` → `{ slot, slots, property, transform, reachedAt, oneWidth, effects }` or `{ dead }`.
+- `slotFor(row, marker, defReads, markReads, { containerQuery })` → `{ slot, slots, property, transform, reachedAt, oneWidth, containerTier?, effects }` or `{ dead }`; with `containerQuery` (the block's CSS has an `@container` rule) a tier reached at fewer page widths is `containerTier`, not `oneWidth`.
 - `discoverEffects(defReads, markReads)` → what one enum value changes: `{ prop: { slots, value } }`.
 - `defaultPaint(defReads)` → per element and width, non-inherited properties.
 
-### `calibrate.mjs` (runs `wp-build-page.js`, ssh, Playwright)
-- `REMOTE_PLUGIN`: the plugin folder on the host per site.
-- `CHUNK`: the most instances one calibration page holds (150); a larger block is built and read in chunks, each carrying every variant's default instance.
+### `lib/deploy-hash.mjs` (ssh)
+- `REMOTE_PLUGIN`: the plugin folder on the host per site. `md5(s)`.
 - `EDITOR_ONLY`: the editor bundles left out of the key (the same commit built in another folder gives a different `index.js`).
 - `BUNDLE_TEXT`, `normaliseBundle(rel, text)`: view bundles and asset files with webpack's folder-dependent module numbers and the asset version blanked (the same commit built in two folders numbers its modules differently).
 - `TEXT_FILE`, `lfText(buf)`: local text files read with LF endings (the deploy builds from a clean LF checkout; a working copy may carry CRLF).
 - `localBlockHash(dir)`, `remoteBlockHash(site, short)`: md5 of a block's front-end build files (bundles normalised), same listing both sides.
+
+### `calibrate.mjs` (runs `wp-build-page.js`, ssh, Playwright)
+- `CHUNK`: the most instances one calibration page holds (150); a larger block is built and read in chunks, each carrying every variant's default instance.
+- Re-exports `lib/deploy-hash.mjs`'s key functions.
 
 ### `lib/solve-rows.mjs`
 - `WRITABLE_KINDS`: style, hover, box. `groupKey(row, state)`: ref, path, property, setting state.

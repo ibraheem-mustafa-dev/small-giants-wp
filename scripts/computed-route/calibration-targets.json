@@ -2,11 +2,19 @@
   "eye-care-test": {
     "envFile": ".claude/secrets/eye-care-test.env",
     "envKey": "EYECARETEST",
-    "postId": 668
+    "postId": 668,
+    "image": {
+      "id": 458,
+      "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-varifocal.png"
+    }
   },
   "sandybrown": {
     "envFile": ".claude/secrets/sandybrown.env",
     "envKey": "SANDYBROWN",
-    "postId": 4750
+    "postId": 4750,
+    "image": {
+      "id": 3459,
+      "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+    }
   }
 }

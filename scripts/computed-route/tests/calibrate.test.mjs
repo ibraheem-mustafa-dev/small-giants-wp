@@ -10,12 +10,13 @@ test( 'each setting state the database uses has its trigger', () => {
 	assert.equal( triggerFor( 'scrolled' ), 'scroll' );
 	assert.equal( triggerFor( 'open' ), 'fixture' );
 	assert.equal( triggerFor( 'current' ), 'fixture' );
+	assert.equal( triggerFor( 'focus' ), 'focus' );
+	assert.equal( triggerFor( 'shrunk' ), 'class' );
 } );
 
 test( 'MUST FAIL TO CALIBRATE: a state with no trigger is undefined, never rest', () => {
-	assert.equal( triggerFor( 'focus' ), undefined );
-	assert.equal( triggerFor( 'shrunk' ), undefined );
-	assert.ok( ! Object.hasOwn( STATE_TRIGGERS, 'focus' ) );
+	assert.equal( triggerFor( 'visited' ), undefined );
+	assert.ok( ! Object.hasOwn( STATE_TRIGGERS, 'visited' ) );
 } );
 
 // The deploy key (§3.2): webpack's module number depends on the build folder, so two builds of one commit must hash
