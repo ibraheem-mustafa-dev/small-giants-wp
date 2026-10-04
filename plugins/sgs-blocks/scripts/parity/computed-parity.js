@@ -407,7 +407,7 @@ const BLOCK_LEGACY = new Set([
 function queryExcludedPropertiesDB() {
   const dbPath = path.join(os.homedir(), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db').replace(/\\/g, '/');
   const pyScript = `import sqlite3, json\nconn = sqlite3.connect("file:${dbPath}?mode=ro", uri=True)\nrows = conn.execute("SELECT css_property FROM excluded_properties").fetchall()\nprint(json.dumps([r[0] for r in rows]))`;
-  const out = execFileSync('python', ['-c', pyScript], { encoding: 'utf8' });
+  const out = execFileSync('python', ['-c', pyScript], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   return JSON.parse(out);
 }
 const DB_EXCLUDED_PROPERTIES = queryExcludedPropertiesDB();
@@ -1055,7 +1055,7 @@ function deriveLonghandFamilies() {
   const pyScript = `import sqlite3, json\nconn = sqlite3.connect("file:${dbPath}?mode=ro", uri=True)\nrows = conn.execute("SELECT suffix, css_property FROM property_suffixes WHERE css_property IS NOT NULL").fetchall()\nprint(json.dumps(rows))`;
   let rows;
   try {
-    const out = execFileSync('python', ['-c', pyScript], { encoding: 'utf8' });
+    const out = execFileSync('python', ['-c', pyScript], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
     rows = JSON.parse(out);
   } catch (e) {
     console.error('\n⚠⚠⚠ LONGHAND-COLLAPSE DISABLED — could not query sgs-framework.db property_suffixes: ' + e.message + '\n');

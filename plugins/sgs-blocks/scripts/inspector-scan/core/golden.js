@@ -939,6 +939,7 @@ function getColourCssPropertyMap( ctx ) {
 	const { spawnSync } = require( 'child_process' );
 	const result = spawnSync( 'python', [ EXPORT_COLOUR_CSS_PROPERTY_SCRIPT ], {
 		encoding: 'utf8',
+		maxBuffer: 64 * 1024 * 1024,
 	} );
 	if ( result.status !== 0 || ! result.stdout ) {
 		throw new Error(

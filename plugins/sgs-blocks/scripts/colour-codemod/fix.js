@@ -60,7 +60,7 @@ const COLOUR_HELPERS = [ 'sgs_colour_value', 'sgs_text_colour_decl', 'sgs_backgr
 // DB rows (same fail-closed contract as survey.js)
 // ---------------------------------------------------------------------------
 function loadDbRows() {
-	const out = execFileSync( 'python', [ EXPORTER, '--rich' ], { encoding: 'utf8' } );
+	const out = execFileSync( 'python', [ EXPORTER, '--rich' ], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 } );
 	if ( ! out || ! out.trim() ) {
 		throw new Error( 'fix: exporter returned nothing — refusing to treat every row as unresolved.' );
 	}

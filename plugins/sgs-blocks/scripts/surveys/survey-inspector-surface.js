@@ -902,7 +902,7 @@ import json
 print(json.dumps(out))
 `;
 	try {
-		const out = execFileSync( 'python', [ '-c', script ], { encoding: 'utf8' } );
+		const out = execFileSync( 'python', [ '-c', script ], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 } );
 		return { ok: true, data: JSON.parse( out.trim() ) };
 	} catch ( e ) {
 		return { ok: false, reason: e.message };

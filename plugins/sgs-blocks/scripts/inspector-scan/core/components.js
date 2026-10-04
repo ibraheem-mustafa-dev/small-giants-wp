@@ -414,8 +414,10 @@ const STRUCTURAL_ATTR_MAP_PY = [
 function getStructuralAttrMap( ctx ) {
 	if ( ctx.__tabGroupStructuralAttrMap ) return ctx.__tabGroupStructuralAttrMap;
 	const { spawnSync } = require( 'child_process' );
+	// The map is over 1 MB (Node's default output buffer): a smaller buffer fails the read with ENOBUFS.
 	const result = spawnSync( 'python', [ '-c', STRUCTURAL_ATTR_MAP_PY, ...DB_CANDIDATES ], {
 		encoding: 'utf8',
+		maxBuffer: 64 * 1024 * 1024,
 	} );
 	if ( result.status !== 0 || ! result.stdout ) {
 		throw new Error(

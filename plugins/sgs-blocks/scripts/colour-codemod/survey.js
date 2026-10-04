@@ -144,7 +144,7 @@ const EXPORTER = path.join(
  * indistinguishable from a correct answer. Same guard rule 31 already carries.
  */
 function loadDbRows() {
-	const out = execFileSync( 'python', [ EXPORTER, '--rich' ], { encoding: 'utf8' } );
+	const out = execFileSync( 'python', [ EXPORTER, '--rich' ], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 } );
 	if ( ! out || ! out.trim() ) {
 		throw new Error(
 			'survey: exporter returned nothing — refusing to treat every row as unresolved.'

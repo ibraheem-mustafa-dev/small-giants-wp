@@ -223,7 +223,7 @@ async function main() {
 		const out = execFileSync( 'python', [ '-c',
 			'import sqlite3,json,sys;c=sqlite3.connect("file:"+sys.argv[1]+"?mode=ro",uri=True);' +
 			'print(json.dumps([r[0]+"|"+r[1] for r in c.execute(sys.argv[2])]))',
-			db, query ], { encoding: 'utf8', timeout: 30000 } );
+			db, query ], { encoding: 'utf8', timeout: 30000, maxBuffer: 64 * 1024 * 1024 } );
 		JSON.parse( out ).forEach( ( k ) => { flatAttrs[ k ] = true; } );
 	} catch ( e ) {
 		console.error( `[warn] per-device shape check skipped (framework DB not readable: ${ String( e.message ).split( /\r?\n/ )[ 0 ] })` );

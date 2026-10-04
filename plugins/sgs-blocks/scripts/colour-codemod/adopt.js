@@ -74,7 +74,7 @@ const ALLOWED_STATE_PROPS = [ 'key', 'label', 'value', 'onChange', 'linked', 'gr
 // DB read — the plain (non --rich) shape: { slug: { attr: css_property|null } }
 // ---------------------------------------------------------------------------
 function loadDbRows() {
-	const out = execFileSync( 'python', [ EXPORTER ], { encoding: 'utf8' } );
+	const out = execFileSync( 'python', [ EXPORTER ], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 } );
 	if ( ! out || ! out.trim() ) {
 		throw new Error( 'adopt: exporter returned nothing — refusing to treat every row as unresolved.' );
 	}
