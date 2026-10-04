@@ -704,6 +704,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					gap={ gap }
 					showColumnsControl={ false }
 					padding={ attributes.padding }
+					showMargin
+					margin={ attributes.margin }
 					showItemPadding
 					itemPadding={ attributes.itemPadding }
 					itemMinHeight={ attributes.itemMinHeight }

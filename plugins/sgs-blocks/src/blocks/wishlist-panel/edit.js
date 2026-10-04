@@ -10,6 +10,8 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { SgsColourPanel, fillRow, textRow } from '../../components';
+import { usePreviewTier } from '../../utils';
+import { wishlistColourStyles, wishlistGridStyle } from './colour-preview';
 import WishlistLayoutPanel from './components/WishlistLayoutPanel';
 import LabelsPanel from './components/LabelsPanel';
 import AlertsSharingPanel from './components/AlertsSharingPanel';
@@ -36,10 +38,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	);
 	const mobileRows = 'grid' === previewLayout && 1 === Number( phoneTier ? columns[ phoneTier ] : 1 );
 
+	const previewTier = usePreviewTier();
+	const colourStyles = wishlistColourStyles( attributes );
+
 	const blockProps = useBlockProps( {
 		className: `sgs-wishlist-panel sgs-wishlist-panel--${ previewLayout }${
 			mobileRows ? ' sgs-wishlist-panel--mobile-rows' : ''
 		}`,
+		style: wishlistGridStyle( attributes, previewTier ),
 	} );
 
 	const colourRows = [
@@ -142,7 +148,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			<div { ...blockProps }>
 				<div className="sgs-wishlist-panel__bar-top">
-					<h2 className="sgs-wishlist-panel__heading">
+					<h2 className="sgs-wishlist-panel__heading" style={ colourStyles.heading }>
 						{ heading }
 						{ showCount && <span className="sgs-wishlist-panel__count">{ ` (${ sampleCount })` }</span> }
 					</h2>
@@ -152,19 +158,48 @@ export default function Edit( { attributes, setAttributes } ) {
 						</a>
 					) }
 				</div>
+				<div className="sgs-wishlist-panel__bar" style={ colourStyles.bar }>
+					<span className="sgs-wishlist-panel__bar-note">{ __( 'Alerts and sharing', 'sgs-blocks' ) }</span>
+					<input
+						type="text"
+						className="sgs-wishlist-panel__share-field"
+						style={ colourStyles.shareField }
+						readOnly
+						value={ __( 'Share link', 'sgs-blocks' ) }
+						aria-label={ __( 'Share link', 'sgs-blocks' ) }
+					/>
+				</div>
 				<div className="sgs-wishlist-panel__items">
 					{ Array.from( { length: cap }, ( _, i ) => (
 						<div className="sgs-wishlist-panel__row" key={ i }>
 							<span className="sgs-wishlist-panel__row-thumb sgs-wishlist-panel__row-thumb--placeholder" aria-hidden="true" />
 							<div className="sgs-wishlist-panel__row-info">
-								<span className="sgs-wishlist-panel__row-name">
+								<span className="sgs-wishlist-panel__row-name" style={ colourStyles.itemName }>
 									{ __( 'Saved product', 'sgs-blocks' ) } { i + 1 }
 								</span>
-								<span className="sgs-wishlist-panel__row-price">£0.00</span>
+								<span className="sgs-wishlist-panel__row-price" style={ colourStyles.price }>
+									£0.00
+								</span>
+								{ 0 === i && (
+									<>
+										<span className="sgs-wishlist-panel__row-price-drop" style={ colourStyles.priceDrop }>
+											{ __( 'Price dropped', 'sgs-blocks' ) }
+										</span>
+										<span className="sgs-wishlist-panel__row-stock" style={ colourStyles.stockChip }>
+											{ __( 'In stock', 'sgs-blocks' ) }
+										</span>
+									</>
+								) }
 							</div>
 							<div className="sgs-wishlist-panel__row-actions">
-								<span className="sgs-wishlist-panel__move-to-basket wp-element-button">{ moveLabel }</span>
-								{ 'strip' !== previewLayout && <span className="sgs-wishlist-panel__remove">{ removeLabel }</span> }
+								<span className="sgs-wishlist-panel__move-to-basket wp-element-button" style={ colourStyles.button }>
+									{ moveLabel }
+								</span>
+								{ 'strip' !== previewLayout && (
+									<span className="sgs-wishlist-panel__remove" style={ colourStyles.link }>
+										{ removeLabel }
+									</span>
+								) }
 							</div>
 						</div>
 					) ) }

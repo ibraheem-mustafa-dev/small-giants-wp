@@ -79,9 +79,6 @@
 			}
 		}
 	},
-	"usesContext": [
-		"sgs/formId"
-	],
 	"attributes": {
 		"label": {
 			"type": "string",

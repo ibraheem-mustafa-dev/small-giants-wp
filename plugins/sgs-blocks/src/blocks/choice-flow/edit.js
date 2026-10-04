@@ -18,7 +18,9 @@ import {
 } from '../../components';
 import fillRow from '../../components/colour-variants/fillRow';
 import textRow from '../../components/colour-variants/textRow';
-import { colourVar } from '../../utils';
+import { usePreviewTier } from '../../utils';
+import { buildWrapperStyle, buildBackButtonPreviewStyle } from './preview-style';
+import ChromePreview from './ChromePreview';
 import PricingSettingsPanel from './PricingSettingsPanel';
 import SummaryPanel from './SummaryPanel';
 import FlowLayoutPanel from './FlowLayoutPanel';
@@ -36,79 +38,6 @@ const LENGTH_UNITS = [
 	{ value: 'em', label: 'em' },
 	{ value: '%', label: '%' },
 ];
-
-// Editor canvas preview only (desktop styles; responsive tiers are PHP-side
-// @media, matches sgs/notice-banner/edit.js's buildWrapperStyle()). The
-// SAVED/RENDERED frontend output is dynamic (render.php) and carries zero
-// inline declarations (Spec 32) — this exists only for the live editor
-// preview.
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
-function buildWrapperStyle( attributes ) {
-	const { padding, maxWidth } = attributes;
-	const wrapperStyle = {};
-
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) {
-		wrapperStyle.padding = paddingPreview;
-	}
-	if ( maxWidth ) {
-		wrapperStyle.maxWidth = maxWidth;
-		wrapperStyle.marginLeft = 'auto';
-		wrapperStyle.marginRight = 'auto';
-	}
-	return wrapperStyle;
-}
-
-/**
- * Editor canvas preview of the Back button's colour/border styling — same
- * "inline style, editor-only" contract as buildWrapperStyle() above. Without
- * this, the Back-button colour/border panel writes attributes the canvas
- * never reflects at all (the block's own InnerBlocks are the only thing
- * rendered in edit.js otherwise) — caught by check-editor-render-parity.js's
- * CHECK A, 2026-09-15.
- *
- * @param {Object} attributes Block attributes.
- * @return {Object} Inline style object for the preview `<span>`.
- */
-function buildBackButtonPreviewStyle( attributes ) {
-	const {
-		backColourBackground,
-		backColourText,
-		backColourBorder,
-		backBorderStyle,
-		backBorderWidth,
-		backBorderRadius,
-	} = attributes;
-
-	const style = {
-		backgroundColor: backColourBackground ? colourVar( backColourBackground ) : 'transparent',
-		color: backColourText ? colourVar( backColourText ) : undefined,
-		borderStyle: backBorderStyle || 'solid',
-		borderColor: backColourBorder ? colourVar( backColourBorder ) : undefined,
-	};
-
-	const widthShorthand = boxShorthand( backBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( widthShorthand ) {
-		style.borderWidth = widthShorthand;
-	}
-
-	const radiusShorthand = boxShorthand( backBorderRadius, [
-		'topLeft',
-		'topRight',
-		'bottomRight',
-		'bottomLeft',
-	] );
-	if ( radiusShorthand ) {
-		style.borderRadius = radiusShorthand;
-	}
-
-	return style;
-}
 
 // Spec 43 §2/§9 (Phase 2) — sgs/choice-flow only ever contains sgs/form-step
 // children, reused unchanged as an inert step marker (FR-43-9). This mirrors
@@ -425,9 +354,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		summaryBaseLabel,
 	} = attributes;
 
+	const previewTier = usePreviewTier();
+	const hasHeader = !! attributes.showHeader || 'showcase' === attributes.flowLayout;
 	const blockProps = useBlockProps( {
-		className: `sgs-choice-flow sgs-choice-flow--layout-${ attributes.flowLayout || 'compact' } sgs-choice-flow--close-${ closeStyle || 'icon' }`,
-		style: buildWrapperStyle( attributes ),
+		className: `sgs-choice-flow sgs-choice-flow--layout-${ attributes.flowLayout || 'compact' } sgs-choice-flow--close-${ closeStyle || 'icon' }${ hasHeader ? ' sgs-choice-flow--has-header' : '' }`,
+		style: buildWrapperStyle( attributes, previewTier ),
 		'data-summary-base-label': summaryBaseLabel || '',
 		'data-opener-label': attributes.openerLabel || '',
 	} );
@@ -454,6 +385,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				.filter( ( block ) => block.name === 'sgs/form-step' ),
 		[ clientId ]
 	);
+
+	// Questions only, as render.php and flow-progress.js count them.
+	const questionTotal = steps.filter(
+		( step ) => 0 === findDescendantsByName( step, 'sgs/choice-flow-result' ).length
+	).length;
 
 	const errors = useMemo(
 		() => ( flowIsLinked ? [] : validateFlow( steps ) ),
@@ -620,9 +556,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						styleValue={ backBorderStyle }
 						onStyleChange={ ( val ) => setAttributes( { backBorderStyle: val } ) }
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						colourValue={ attributes.backColourBorder }
-						onColourChange={ ( val ) => setAttributes( { backColourBorder: val ?? '' } ) }
-						colourLinked
+						colourStates={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.backColourBorder,
+								onChange: ( val ) => setAttributes( { backColourBorder: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.backColourBorderHover,
+								onChange: ( val ) => setAttributes( { backColourBorderHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
 						radiusValues={ { base: backBorderRadius ?? {} } }
 						showRadiusResponsive={ false }
 						onRadiusChange={ ( _tier, next ) => setAttributes( { backBorderRadius: next } ) }
@@ -652,6 +601,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				<ChromePreview attributes={ attributes } questionTotal={ questionTotal } />
 				{ title && (
 					<p className="sgs-choice-flow__title-preview">
 						{ __( 'Flow:', 'sgs-blocks' ) } { title }

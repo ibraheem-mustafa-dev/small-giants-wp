@@ -597,6 +597,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					showColumnsControl
 					listColumns={ listColumns }
 					padding={ attributes.padding }
+					showMargin
+					margin={ attributes.margin }
 					showItemPadding
 					itemPadding={ attributes.itemPadding }
 					itemMinHeight={ attributes.itemMinHeight }

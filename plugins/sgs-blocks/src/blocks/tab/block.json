@@ -78,10 +78,6 @@
 			}
 		}
 	},
-	"usesContext": [
-		"sgs/tabsOrientation",
-		"sgs/tabsStyle"
-	],
 	"attributes": {
 		"label": {
 			"type": "string",

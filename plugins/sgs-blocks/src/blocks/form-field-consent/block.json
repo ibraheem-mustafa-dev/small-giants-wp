@@ -19,9 +19,6 @@
 		"sgs/form",
 		"sgs/form-step"
 	],
-	"usesContext": [
-		"sgs/formId"
-	],
 	"supports": {
 		"html": false,
 		"anchor": false,

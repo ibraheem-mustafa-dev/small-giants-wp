@@ -1,5 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import QuestionPreview from './QuestionPreview';
 import { useSelect } from '@wordpress/data';
 import {
 	PanelBody,
@@ -354,6 +355,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 
 			<div { ...blockProps }>
 				<VariationCoverageNotice attributes={ attributes } clientId={ clientId } context={ context } />
+				<QuestionPreview attributes={ attributes } />
 				<TextControl
 					label={ __( 'Question', 'sgs-blocks' ) }
 					value={ question }

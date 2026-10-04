@@ -813,9 +813,6 @@
 			"default": ""
 		}
 	},
-	"providesContext": {
-		"sgs/formId": "formId"
-	},
 	"allowedBlocks": [
 		"sgs/form-step",
 		"sgs/form-field-text",

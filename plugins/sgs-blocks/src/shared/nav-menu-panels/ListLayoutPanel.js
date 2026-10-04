@@ -27,6 +27,8 @@ import LinkExtrasItems from './LinkExtrasItems';
  *                                             `sgs/nav-bar-menu`.
  * @param {Object}   [root0.listColumns]       The block's `listColumns` attribute — drawer only.
  * @param {Object}   root0.padding             The block's `padding` attribute.
+ * @param {boolean}  [root0.showMargin]        Shows the "Margin" control (`margin`, a tier-of-boxes object).
+ * @param {Object}   [root0.margin]            The block's `margin` attribute.
  * @param {boolean}  [root0.showItemPadding]   True on `sgs/nav-bar-menu` only: shows
  *                                             "Link padding" (`itemPadding`) and the
  *                                             LinkExtrasItems rows.
@@ -46,6 +48,8 @@ export default function ListLayoutPanel( {
 	showColumnsControl,
 	listColumns,
 	padding,
+	showMargin = false,
+	margin,
 	showItemPadding = false,
 	itemPadding,
 	itemMinHeight,
@@ -63,6 +67,7 @@ export default function ListLayoutPanel( {
 				setAttributes( {
 					gap: { desktop: '8px' },
 					padding: {},
+					...( showMargin ? { margin: {} } : {} ),
 					...( showItemPadding ? { itemPadding: {}, itemMinHeight: {}, itemBadgePadding: {}, itemBadgeBorderRadius: '', itemBadgeGap: '' } : {} ),
 					...( showSubmenuLinkPadding ? { submenuLinkPadding: {} } : {} ),
 				} )
@@ -151,6 +156,29 @@ export default function ListLayoutPanel( {
 					) }
 				</ResponsiveOverride>
 			</ToolsPanelItem>
+
+			{ showMargin && (
+				<ToolsPanelItem
+					hasValue={ () => Object.keys( margin ?? {} ).length > 0 }
+					label={ __( 'Margin', 'sgs-blocks' ) }
+					onDeselect={ () => setAttributes( { margin: {} } ) }
+					isShownByDefault
+				>
+					<ResponsiveOverride
+						value={ margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</ToolsPanelItem>
+			) }
 
 			{ showItemPadding && (
 				<ToolsPanelItem

@@ -18,9 +18,6 @@
 		"sgs/form",
 		"sgs/form-step"
 	],
-	"usesContext": [
-		"sgs/formId"
-	],
 	"supports": {
 		"sgs": {
 			"iconPicker": true,
