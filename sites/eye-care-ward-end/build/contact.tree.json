@@ -15,7 +15,8 @@
       },
       "gap": {
         "desktop": "48px",
-        "mobile": "32px"
+        "mobile": "48px",
+        "tablet": "48px"
       },
       "alignItems": "start",
       "maxWidth": {
@@ -23,25 +24,45 @@
       },
       "padding": {
         "desktop": {
-          "top": "104px",
-          "bottom": "104px",
+          "top": "48px",
+          "bottom": "90px",
           "left": "52px",
           "right": "52px"
         },
         "tablet": {
-          "top": "104px",
-          "bottom": "104px",
+          "top": "48px",
+          "bottom": "90px",
           "left": "52px",
           "right": "52px"
         },
         "mobile": {
-          "top": "56px",
-          "bottom": "56px",
+          "top": "28px",
+          "bottom": "60px",
           "left": "20px",
           "right": "20px"
         }
       },
-      "className": "cr-ref-contact-0"
+      "className": "cr-ref-contact-0",
+      "margin": {
+        "mobile": {
+          "top": "0px",
+          "bottom": "0px",
+          "left": "0px",
+          "right": "0px"
+        },
+        "tablet": {
+          "top": "0px",
+          "bottom": "0px",
+          "left": "0px",
+          "right": "0px"
+        },
+        "desktop": {
+          "top": "0px",
+          "bottom": "0px",
+          "left": "0px",
+          "right": "0px"
+        }
+      }
     },
     "innerBlocks": [
       {
@@ -207,7 +228,8 @@
                   "top": "0px"
                 }
               },
-              "iconGap": "12px"
+              "iconGap": "12px",
+              "iconSize": "21px"
             }
           },
           {
@@ -246,7 +268,8 @@
                   "gap": {
                     "desktop": "6px"
                   },
-                  "className": "cr-ref-contact-7"
+                  "className": "cr-ref-contact-7",
+                  "flexDirection": "row"
                 },
                 "innerBlocks": [
                   {
@@ -307,7 +330,8 @@
                   "gap": {
                     "desktop": "6px"
                   },
-                  "className": "cr-ref-contact-10"
+                  "className": "cr-ref-contact-10",
+                  "flexDirection": "row"
                 },
                 "innerBlocks": [
                   {
@@ -368,7 +392,8 @@
                   "gap": {
                     "desktop": "6px"
                   },
-                  "className": "cr-ref-contact-13"
+                  "className": "cr-ref-contact-13",
+                  "flexDirection": "row"
                 },
                 "innerBlocks": [
                   {
@@ -429,7 +454,8 @@
                   "gap": {
                     "desktop": "6px"
                   },
-                  "className": "cr-ref-contact-16"
+                  "className": "cr-ref-contact-16",
+                  "flexDirection": "row"
                 },
                 "innerBlocks": [
                   {
@@ -597,7 +623,9 @@
           "gap": {
             "desktop": "14px"
           },
-          "className": "cr-ref-contact-24"
+          "className": "cr-ref-contact-24",
+          "flexDirection": "column",
+          "flexWrap": "nowrap"
         },
         "innerBlocks": [
           {
@@ -641,7 +669,13 @@
                       "right": "16px"
                     }
                   },
-                  "className": "cr-ref-contact-27"
+                  "className": "cr-ref-contact-27",
+                  "layout": "stack",
+                  "gap": {
+                    "mobile": "4px",
+                    "tablet": "4px",
+                    "desktop": "4px"
+                  }
                 },
                 "innerBlocks": [
                   {
@@ -694,7 +728,13 @@
                       "right": "16px"
                     }
                   },
-                  "className": "cr-ref-contact-30"
+                  "className": "cr-ref-contact-30",
+                  "layout": "stack",
+                  "gap": {
+                    "mobile": "4px",
+                    "tablet": "4px",
+                    "desktop": "4px"
+                  }
                 },
                 "innerBlocks": [
                   {

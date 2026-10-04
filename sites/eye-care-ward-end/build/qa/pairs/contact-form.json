@@ -1,0 +1,42 @@
+{
+ "surface": "contact-form",
+ "when": "2026-10-04T05:45:18.690Z",
+ "blocks": 6,
+ "kept": 1,
+ "coveredByHand": [
+  "cr-ref-contact-form-1",
+  "cr-ref-contact-form-2",
+  "cr-ref-contact-form-3",
+  "cr-ref-contact-form-4",
+  "cr-ref-contact-form-5"
+ ],
+ "retargeted": {
+  "field-name": ".cr-ref-contact-form-1",
+  "field-email": ".cr-ref-contact-form-2",
+  "field-phone": ".cr-ref-contact-form-3",
+  "field-topic": ".cr-ref-contact-form-4",
+  "field-message": ".cr-ref-contact-form-5",
+  "field-name-focus-look": ".cr-ref-contact-form-1"
+ },
+ "left": [],
+ "keptPairs": [
+  {
+   "ref": "cr-ref-contact-form-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > form:nth-child(6)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > form:nth-child(6) > div:nth-child(3) > input:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > form:nth-child(6) > div:nth-child(3) > input:nth-child(2)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > form:nth-child(6) > div:nth-child(3) > input:nth-child(3)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > form:nth-child(6) > div:nth-child(3) > select:nth-child(4)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > form:nth-child(6) > textarea:nth-child(4)"
+    ]
+   }
+  }
+ ]
+}

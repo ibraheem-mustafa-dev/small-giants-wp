@@ -1,0 +1,192 @@
+{
+ "surface": "contact",
+ "when": "2026-10-04T05:32:04.489Z",
+ "blocks": 32,
+ "kept": 14,
+ "coveredByHand": [
+  "cr-ref-contact-2",
+  "cr-ref-contact-3",
+  "cr-ref-contact-4",
+  "cr-ref-contact-5",
+  "cr-ref-contact-6",
+  "cr-ref-contact-8",
+  "cr-ref-contact-11",
+  "cr-ref-contact-10",
+  "cr-ref-contact-14",
+  "cr-ref-contact-13",
+  "cr-ref-contact-17",
+  "cr-ref-contact-16",
+  "cr-ref-contact-20",
+  "cr-ref-contact-21",
+  "cr-ref-contact-22",
+  "cr-ref-contact-28",
+  "cr-ref-contact-31"
+ ],
+ "retargeted": {},
+ "left": [
+  {
+   "ref": "cr-ref-contact-25",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  }
+ ],
+ "keptPairs": [
+  {
+   "ref": "cr-ref-contact-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 68,
+   "matched": 67,
+   "first": "contact",
+   "last": "message"
+  },
+  {
+   "ref": "cr-ref-contact-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 74,
+   "matched": 73,
+   "first": "contact",
+   "last": "@eyecare.birmingham"
+  },
+  {
+   "ref": "cr-ref-contact-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(1)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "phone",
+   "last": "8233"
+  },
+  {
+   "ref": "cr-ref-contact-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(1) > a:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(0121|729|8233)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "0121",
+   "last": "8233"
+  },
+  {
+   "ref": "cr-ref-contact-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(hello@eyecarebirmingham\\.co\\.uk)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "hello@eyecarebirmingham.co.uk",
+   "last": "hello@eyecarebirmingham.co.uk"
+  },
+  {
+   "ref": "cr-ref-contact-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(3)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(644|washwood|heath|birmingham|b8|2hq)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 7,
+   "matched": 6,
+   "first": "644",
+   "last": "2hq"
+  },
+  {
+   "ref": "cr-ref-contact-18",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(4)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(mon–sat|9\\.30–17\\.30)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "mon–sat",
+   "last": "9.30–17.30"
+  },
+  {
+   "ref": "cr-ref-contact-19",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(4)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(collections|by|arrangement)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "collections",
+   "last": "arrangement"
+  },
+  {
+   "ref": "cr-ref-contact-27",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > a:nth-child(1)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "google",
+   "last": "hours"
+  },
+  {
+   "ref": "cr-ref-contact-26",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3)",
+   "why": null,
+   "words": 6,
+   "matched": 6,
+   "first": "google",
+   "last": "@eyecare.birmingham"
+  },
+  {
+   "ref": "cr-ref-contact-24",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(google|reviews|&|hours|instagram|@eyecare\\.birmingham)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 6,
+   "matched": 6,
+   "first": "google",
+   "last": "@eyecare.birmingham"
+  },
+  {
+   "ref": "cr-ref-contact-29",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > a:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(reviews|&|hours)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "reviews",
+   "last": "hours"
+  },
+  {
+   "ref": "cr-ref-contact-30",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > a:nth-child(2)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "instagram",
+   "last": "@eyecare.birmingham"
+  },
+  {
+   "ref": "cr-ref-contact-32",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > a:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(@eyecare\\.birmingham)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "@eyecare.birmingham",
+   "last": "@eyecare.birmingham"
+  }
+ ]
+}

@@ -19,7 +19,8 @@
         "left": "28px"
       },
       "submitMinHeight": 52,
-      "fieldColumnsFrom": "480"
+      "fieldColumnsFrom": "480",
+      "className": "cr-ref-contact-form-0"
     },
     "innerBlocks": [
       {
@@ -29,7 +30,8 @@
           "label": "",
           "placeholder": "Your name",
           "required": true,
-          "width": "half"
+          "width": "half",
+          "className": "cr-ref-contact-form-1"
         }
       },
       {
@@ -39,7 +41,8 @@
           "label": "",
           "placeholder": "Email",
           "required": true,
-          "width": "half"
+          "width": "half",
+          "className": "cr-ref-contact-form-2"
         }
       },
       {
@@ -49,7 +52,8 @@
           "label": "",
           "placeholder": "Phone (optional)",
           "required": false,
-          "width": "half"
+          "width": "half",
+          "className": "cr-ref-contact-form-3"
         }
       },
       {
@@ -81,7 +85,8 @@
               "value": "something-else",
               "label": "Something else"
             }
-          ]
+          ],
+          "className": "cr-ref-contact-form-4"
         }
       },
       {
@@ -91,7 +96,8 @@
           "label": "",
           "placeholder": "Your message",
           "required": true,
-          "width": "full"
+          "width": "full",
+          "className": "cr-ref-contact-form-5"
         }
       }
     ]
