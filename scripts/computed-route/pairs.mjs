@@ -6,7 +6,7 @@
 // walker's own matcher (auto-compare.mjs::matchWords), and pairs each live block (cr-ref-<surface>-<n>) with the
 // smallest draft element holding its words' twins (lib/pairs.mjs). Doubtful pairings are left out with their reason.
 // A kept draft finder is re-checked at 375 and 768 (it must still hold the block's first and last matched words).
-// Writes sites/<client>/build/qa/parity/<walker>.full.mjs and sites/<client>/build/qa/pairs/<surface>.json.
+// Writes sites/<client>/build/qa/parity/<surface>.full.mjs and sites/<client>/build/qa/pairs/<surface>.json.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
@@ -232,7 +232,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const all = Object.keys( boxes ).filter( ( r ) => r.startsWith( prefix ) );
 	const unworded = all.filter( ( r ) => ! twins.has( r ) ).map( ( ref ) => ( { ref, why: 'no painted words (an image, an icon or an empty wrapper)' } ) );
 	const handFile = path.basename( s.walker );
-	const fullFile = handFile.replace( /\.mjs$/, '.full.mjs' );
+	// Named after the surface: two surfaces can share one hand config (a page and the form post it embeds).
+	const fullFile = `${ surface }.full.mjs`;
 	fs.writeFileSync( path.join( path.dirname( handPath ), fullFile ), configText( handFile, surface, kept, retarget ) );
 	fs.mkdirSync( path.join( buildDir, 'qa', 'pairs' ), { recursive: true } );
 	const report = { surface, when: new Date().toISOString(), blocks: all.length, kept: kept.length, coveredByHand: [ ...duplicate ], retargeted: Object.fromEntries( retarget ), left: [ ...left, ...unworded ], keptPairs: kept };

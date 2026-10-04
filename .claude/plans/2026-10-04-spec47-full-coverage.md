@@ -27,7 +27,7 @@ benchmarked 5 of 5), which already pairs every painted word on the draft with it
    - its box is within half to double the block's box at 1440.
 5. The kept pairs are appended to the hand config as `gen-<ref>` pairs (live finder `.cr-ref-…`, draft finder an
    element path from `<main>`), skipping blocks a hand pair already measures. Output:
-   `sites/<client>/build/qa/parity/<walker>.full.mjs`, which imports the hand config (states, draft navigation,
+   `sites/<client>/build/qa/parity/<surface>.full.mjs`, which imports the hand config (states, draft navigation,
    exclusions, divergences) and adds the pairs. `surfaces.json` gains `"walkerFull"`, which Solve walks when present.
 6. The draft finder is checked at 375, 768 and 1440 (it must resolve to an element holding the same words).
 
