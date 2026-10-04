@@ -133,3 +133,11 @@ test( 'MUST FAIL: an inherited setting records every element its value reached, 
 	assert.equal( r.slot, '' );
 	assert.deepEqual( r.reaches, [ '', '.x__link > .x__label' ] );
 } );
+
+test( 'MUST FAIL: a minimum size marks above the 44px touch-target floor', () => {
+	const row = { attr_name: 'fieldMinHeight', css_property: 'min-height', tier_shape: 'tier_object', box_family: null };
+	const [ m ] = markersFor( row, { fieldMinHeight: { type: 'object', default: {} } }, { palette: [], spacing: [], fontSizes: [] } );
+	assert.ok( Object.values( m.attrs.fieldMinHeight ).every( ( v ) => parseFloat( v ) > 44 ), JSON.stringify( m.attrs ) );
+	const flat = markersFor( { attr_name: 'minHeight', css_property: 'min-height', tier_shape: null, box_family: null }, { minHeight: { type: 'string', default: '' } }, { palette: [], spacing: [], fontSizes: [] } );
+	assert.ok( parseFloat( flat[ 0 ].attrs.minHeight ) > 44 );
+} );

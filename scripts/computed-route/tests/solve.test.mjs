@@ -259,3 +259,18 @@ test( 'MUST FAIL: a row its own block cannot write resolves on the nearest enclo
 	assert.equal( alone.writes.length, 0 );
 	assert.equal( Object.values( alone.gaps )[ 0 ].gap, 'no-setting' );
 } );
+
+test( 'MUST FAIL: an enclosing block\'s setting matches on the element\'s tag, so an input row never takes the textarea setting', () => {
+	const INPUT = '.sgs-form__inner > .sgs-form-field:nth-of-type(1) > .sgs-form-field__input';
+	const AREA = '.sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input';
+	const formCal = ( name ) => ( 'sgs/form' === name
+		? { elements: { [ INPUT ]: { 1440: { _tag: 'input' } }, [ AREA ]: { 1440: { _tag: 'textarea' } } }, settings: {
+			fieldMinHeight: { slot: INPUT, slots: [ INPUT ], property: 'min-height' },
+			fieldTextareaMinHeight: { slot: AREA, slots: [ AREA ], property: 'min-height' } } }
+		: { elements: { '': {}, '.sgs-form-field__input': {} }, settings: {} } );
+	const report = { runs: [ { state: 'opening', width: 1440, pairs: { email: { draft: { styles: { 'min-height': '52px' } }, diffs: [
+		{ kind: 'style', key: 'min-height', draft: '52px', live: '44px', ref: 'cr-ref-f-2', path: '.sgs-form-field__input',
+			owners: [ { ref: 'cr-ref-f-0', block: 'sgs-form', path: '.sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input', tag: 'input' } ] } ] } } } ] };
+	const r = writeRound( report, ownedFormTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: formCal } );
+	assert.deepEqual( r.writes.map( ( w ) => w.attr ), [ 'fieldMinHeight' ] );
+} );

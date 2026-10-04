@@ -229,6 +229,9 @@ export function resolve( input, ctx ) {
 	// compare without their :nth-of-type steps.
 	const loose = ( p ) => ( input.anyIndex ? String( p ).replace( /:nth-of-type\(\d+\)/g, '' ) : p );
 	const slot = loose( input.slot );
+	// An enclosing block's setting also matches on the element's tag where both sides know it (calibration's _tag).
+	const tagAt = ( p ) => Object.values( ctx.calibration?.elements?.[ p ] || {} ).find( ( v ) => v?._tag )?._tag;
+	const sameKind = ( p ) => ! input.anyIndex || ! input.tag || ! tagAt( p ) || tagAt( p ) === input.tag;
 	const { short, side } = splitProperty( prop );
 	const rows = [ ...candidates( ctx.db, block, short, state ), ...( short !== prop ? candidates( ctx.db, block, prop, state ) : [] ) ]
 		.filter( ( r, i, all ) => all.findIndex( ( x ) => x.attr_name === r.attr_name ) === i );
@@ -241,7 +244,7 @@ export function resolve( input, ctx ) {
 	// A setting painting the slot itself wins; otherwise one whose inherited value calibration saw reach the slot.
 	const tiedBy = ( paths ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && paths( c ).map( loose ).includes( slot ) && ( ! c.property || c.property === short || c.property === prop );
+		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || c.property === prop );
 	} );
 	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
 	const tied = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );

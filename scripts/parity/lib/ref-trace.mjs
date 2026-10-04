@@ -54,6 +54,7 @@ export function traceRef( el, carrier, prefix, pathSrc, layoutEl = null, iconEl 
 		return null;
 	}
 	const blockOf = ( r ) => [ ...r.classList ].find( ( c ) => /^sgs-[a-z0-9-]+$/.test( c ) && ! c.includes( '--' ) && ! c.startsWith( prefix ) && ! /-[0-9a-f]{8}$/.test( c ) ) || null;
+	const tagOf = ( e ) => ( e ? e.tagName.toLowerCase() : null );
 	const from = ( r, rRef ) => ( {
 		ref: rRef,
 		block: blockOf( r ),
@@ -61,6 +62,7 @@ export function traceRef( el, carrier, prefix, pathSrc, layoutEl = null, iconEl 
 		textPath: carrier && r.contains( carrier ) ? path( carrier, r ) : null,
 		layoutPath: layoutEl && r.contains( layoutEl ) ? path( layoutEl, r ) : null,
 		iconPath: iconEl && r.contains( iconEl ) ? path( iconEl, r ) : null,
+		tags: { path: tagOf( el ), textPath: tagOf( carrier ), layoutPath: tagOf( layoutEl ), iconPath: tagOf( iconEl ) },
 	} );
 	// The enclosing blocks, nearest first: a parent block's setting can paint an element of its child (a form's field
 	// style on each field's control), so Solve can resolve a row against them when the nearest block has no setting.
@@ -83,19 +85,21 @@ export const LAYOUT_CARRIED = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'fl
 // Node side: stamps ref, block and path on one pair's rows from the live snapshot's trace. Text properties (at rest and
 // on hover: hoverStyles reads colour from the same carrier) take the text path; layout properties the layout path;
 // an icon's size the icon's path.
-// Enclosing blocks (trace.owners) are stamped as d.owners: [{ ref, block, path }], nearest first, with the same path choice.
-const pathFor = ( d, t ) => {
+// Enclosing blocks (trace.owners) are stamped as d.owners: [{ ref, block, path, tag }], nearest first, with the same
+// path choice (tag: the measured element's tag).
+const pathKey = ( d, t ) => {
 	if ( [ 'style', 'hover' ].includes( d.kind ) && TEXT_CARRIED.includes( d.key ) && null != t.textPath ) {
-		return t.textPath;
+		return 'textPath';
 	}
 	if ( 'style' === d.kind && LAYOUT_CARRIED.includes( d.key ) && null != t.layoutPath ) {
-		return t.layoutPath;
+		return 'layoutPath';
 	}
 	if ( 'style' === d.kind && /^icon-(width|height)$/.test( d.key ) && null != t.iconPath ) {
-		return t.iconPath;
+		return 'iconPath';
 	}
-	return t.path;
+	return 'path';
 };
+const pathFor = ( d, t ) => t[ pathKey( d, t ) ];
 export function stampRefs( diffs, trace ) {
 	if ( ! trace ) {
 		return diffs;
@@ -108,7 +112,7 @@ export function stampRefs( diffs, trace ) {
 		d.block = trace.block;
 		d.path = pathFor( d, trace );
 		if ( trace.owners?.length ) {
-			d.owners = trace.owners.map( ( o ) => ( { ref: o.ref, block: o.block, path: pathFor( d, o ) } ) );
+			d.owners = trace.owners.map( ( o ) => ( { ref: o.ref, block: o.block, path: pathFor( d, o ), ...( o.tags ? { tag: o.tags[ pathKey( d, o ) ] } : {} ) } ) );
 		}
 	}
 	return diffs;

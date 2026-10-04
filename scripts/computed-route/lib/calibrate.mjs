@@ -25,6 +25,8 @@ export const triggerFor = ( state ) => ( state ? STATE_TRIGGERS[ state ] : null 
 export const INHERITED = [ 'color', 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'text-align', 'text-wrap', 'text-shadow' ];
 
 const TIER_PX = { desktop: 37, tablet: 23, mobile: 7 };
+// Minimum sizes a render floors at the 44px touch target.
+const FLOORED = /^min-(height|width)$/;
 const WIDTH_TIER = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
 const BOX = { desktop: [ 11, 13, 17, 19 ], tablet: [ 21, 23, 25, 27 ], mobile: [ 3, 5, 7, 9 ] };
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -144,7 +146,9 @@ export function markersFor( row, schema, snapshot, current = {} ) {
 		if ( 'line-height' === prop ) {
 			return [ { label: 'tiers', attrs: withUnit( { [ row.attr_name ]: { desktop: lengthIn( 37 ), tablet: lengthIn( 23 ), mobile: lengthIn( 7 ) } } ), expect: { 1440: '37px', 768: '23px', 375: '7px' } } ];
 		}
-		return [ { label: 'tiers', attrs: withUnit( { [ row.attr_name ]: { desktop: lengthIn( 37 ), tablet: lengthIn( 23 ), mobile: lengthIn( 7 ) } } ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ TIER_PX[ WIDTH_TIER[ w ] ] }px` ] ) ) } ];
+		// A minimum size is held at or above the 44px touch target (a render floors it there), so its markers sit above it.
+		const lift = FLOORED.test( prop ) ? 100 : 0;
+		return [ { label: 'tiers', attrs: withUnit( { [ row.attr_name ]: { desktop: lengthIn( 37 + lift ), tablet: lengthIn( 23 + lift ), mobile: lengthIn( 7 + lift ) } } ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ TIER_PX[ WIDTH_TIER[ w ] ] + lift }px` ] ) ) } ];
 	}
 	if ( box ) {
 		return [ { label: 'box', attrs: { [ row.attr_name ]: boxOf( 'desktop' ) }, expect: null, box: true } ];
@@ -157,7 +161,8 @@ export function markersFor( row, schema, snapshot, current = {} ) {
 		return [ { label: 'number', attrs: { [ row.attr_name ]: types( def ).includes( 'string' ) ? '0.37' : 0.37 }, expect: all( '0.37' ) } ];
 	}
 	if ( types( def ).some( ( t ) => [ 'number', 'string', 'integer' ].includes( t ) ) && /width|height|gap|size|radius|indent/.test( prop ) ) {
-		return [ { label: 'length', attrs: withUnit( { [ row.attr_name ]: lengthIn( 37 ) } ), expect: all( '37px' ) } ];
+		const px = FLOORED.test( prop ) ? 137 : 37;
+		return [ { label: 'length', attrs: withUnit( { [ row.attr_name ]: lengthIn( px ) } ), expect: all( `${ px }px` ) } ];
 	}
 	return [];
 }
@@ -197,7 +202,8 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc ] ) {
 			if ( key in els ) {
 				continue;
 			}
-			els[ key ] = Object.fromEntries( props.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) );
+			// _tag: the element's tag, so a setting matched without :nth-of-type steps keeps an input apart from a textarea.
+			els[ key ] = { ...Object.fromEntries( props.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) ), _tag: el.tagName.toLowerCase() };
 		}
 		out.push( els );
 	}
