@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-10-03
+last_updated: 2026-10-04
 ---
 
 # small-giants-wp — LEDGER (the one living status)
@@ -18,8 +18,9 @@ equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3
 Claude Design's gap map; the finished site becomes the pipeline's answer key. Every surface is built and live on eye-care-test, was walked against
 the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list, all decisions taken. Spec 47's tool
 (measure the draft, write the layout settings automatically) took the About page to 100% on 2026-10-04 (every
-difference closed or a recorded decision, confirmed by an independent check); Contact is next, then every other
-surface; then the register build (Front F).
+difference closed or a recorded decision, confirmed by an independent check). Contact is down from 134 differences to 19
+(2026-10-04) and the contact form from 94 to 46; Lenses is next, then every other surface; then the register build
+(Front F).
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -44,26 +45,26 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-04).** eye-care-test and sandybrown run the framework at c7d292638 (S1 site-wide button lift, S3 link
-hover fix, the 'Page loads' entrance start; deploys now run pending SGS migrations); the Eye Care snapshot with S1's
-default lift is pushed to eye-care-test. Step 0 is done: all 17
-trees rebuilt, zero invalid blocks, the header wordmark now 18px shrinking to 15px. The fix register
-`plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list: 12 site-wide fixes (S1-S12), every surface's items,
-decisions D1-D9 taken, three build rules. Proven bugs in it: the add-to-bag route drops a second product and a 30s
-cooldown blocks a second pair (N11); the gallery ignores WooCommerce's product gallery (75/82); the shop filters leave
-empty groups after clearing (N25); the drawer body overflows by its title row (15); a footer row given a width cap
-collapses to zero width (N46). No blockers.
+**Now (2026-10-04).** eye-care-test and sandybrown run the framework at bac2fb2cf (the form's Field style group, the
+business-info hours label weight and layout-neutral 44px tap area, label-less form fields without the floating-label
+gap); 508217f03 (the modal template's heading level) is on `main`, not yet deployed. Step 0 is done (all 17 trees
+rebuilt, zero invalid blocks). The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list:
+12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9 taken, three build rules. Proven bugs in it: the
+add-to-bag route drops a second product and a 30s cooldown blocks a second pair (N11); the gallery ignores
+WooCommerce's product gallery (75/82); the shop filters leave empty groups after clearing (N25); the drawer body
+overflows by its title row (15); a footer row given a width cap collapses to zero width (N46). No blockers.
 
-**Spec 47 (v0.6): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; "Solve"
+**Spec 47 (v0.7): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; "Solve"
 compares a built page with the draft and writes block settings). Every block of a surface is paired with its draft
-element (`pairs.mjs`, full coverage switched on per surface by `walkerFull` in `surfaces.json`), the guard reverts a
-parent's bad write (CR21), and `sites/eye-care-ward-end/build/qa/independent-check.mjs` is the second opinion.
-**About is at 100%** (50 distinct issues to 0, 0 wrong writes, 12 ledger entries citing register 104/S1/S4).
-**Contact is in progress:** 31 of 32 blocks paired (the map is register 418), its form post 6 of 6, 134 distinct
-issues open in five cause groups (plan Progress). S1, S3, S4, S5 and S11 are checked live (S3's header phone fixed).
-Hostinger's edge answers headless browsers and curl with a 403 browser check after bursts of traffic: run the route's
-host tools with `SGS_HEADED=1` (dev-setup.md). Recalibration: 28 of 66 border-style blocks done; the rest are listed
-in the plan. Not yet re-run with full coverage: Lenses, Help, Home and every remaining surface.
+element (`pairs.mjs`, switched on per surface by `walkerFull` in `surfaces.json`); a parent block's setting can now
+style its children (a form's field style), extension settings (child sizing, hover, entrance) are seeded in the
+framework DB as `source='sgs-ext'`, and `sites/eye-care-ward-end/build/qa/independent-check.mjs` is the second opinion.
+**About is at 100%.** **Contact: 19 distinct issues open** (from 134; 0 labelled gaps, 0 new rows, 0 wrong writes on
+its last Solve); the three open causes are in the plan's Progress. **Contact form: 46 open**; its last Solve regressed
+and was restored from git and rebuilt. **Lenses: paired (28 of 29 blocks), walks its full config**; its first Solve
+closed 25 but regressed 3 rows, so its tree was restored from git and rebuilt. Recalibration of every block with
+today's calibration changes: 6 done, the rest listed in the plan. Hostinger's edge answers headless browsers and curl with a 403 browser
+check after bursts of traffic: run the route's host tools with `SGS_HEADED=1` (dev-setup.md), one job at a time.
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**
 `plans/2026-10-04-spec47-full-coverage.md` "Progress", then Spec 47 §5 stage 3 "Residual", then the register in the plan's

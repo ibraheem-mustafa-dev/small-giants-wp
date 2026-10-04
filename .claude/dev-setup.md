@@ -2016,6 +2016,7 @@ for the verb you happen to have in mind.
 | `generate-block-reference.py` | manifest+script-call | SGS Blocks Reference Generator |
 | `generate-db-catalogue.py` | manifest+script-call | DERIVE the DB column catalogue in .claude/dev-setup.md. |
 | `generate-extension-attributes.js` | commit-gate+manifest+npm+script-call | Single source of truth for the cross-block `sgs*` editor-extension attributes. |
+| `check-extension-roster.js` | gate (fast) | Fails when `src/blocks/extensions/extension-roster.json` (every `sgs*` extension setting, its opt-in rule and routing, seeded into the framework DB as `source='sgs-ext'`) drifts from the extension JS or `check-universal-fit.js`. |
 | `generate-fx-effects-php.py` | manifest+script-call | writes includes/generated-fx-effects.php from fx_effects. |
 | `generate-fx-qualifying-blocks.py` | manifest+script-call | derives the block -> qualifying-fx-effects |
 | `generate-helper-catalogue.py` | manifest+script-call | DERIVE the helper/component/atom catalogue in |
@@ -3282,7 +3283,7 @@ meaning shows a blank cell rather than an invented sentence.
 |---|---|---|
 | `animation_tokens` | 8 | yes |
 | `array_item_schema` | 112 | yes |
-| `block_attributes` | 9448 | yes |
+| `block_attributes` | (query the DB) | yes |
 | `block_capabilities` | 553 | yes |
 | `block_composition` | 219 | yes |
 | `block_render_composition` | 8 | — |
@@ -3341,7 +3342,7 @@ meaning shows a blank cell rather than an invented sentence.
 | `tier` | TEXT | 0% | `block` 213, `class-section` 4 — Recognition tier — how the walker identifies this thing in a draft. |
 | `variant_attr` | TEXT | 98% | Names the attribute that selects the block's variant (FR-31-20). Pairs with the variant_slots table. |
 
-#### `block_attributes` — 9448 rows
+#### `block_attributes`
 
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
@@ -3359,7 +3360,7 @@ meaning shows a blank cell rather than an invented sentence.
 | `output_signature` | TEXT | 73% |  |
 | `equivalent_implementations` | TEXT | 79% | FOSSIL — holds stale synthetic Rosetta rows; no writer and no reader in current code. |
 | `inspector_control_type` | TEXT | 88% | `SelectControl` 269, `ToggleControl` 206, `TextControl` 205, `DesignTokenPicker` 162, `RangeControl` 110, `UnitControl` 53, `ToggleGroupControl` 40, `ResponsiveBoxControl` 25, `ShadowControl` 20, `NumberControl` 16, `MediaUpload` 13, `IconPicker` 9, `TextareaControl` 6, `ResponsiveTriStateControl` 5, +10 more — The editor control the client actually sees. Cross-tab against `attr_type` to find controls whose shape cannot hold their setting. |
-| `source` | TEXT | 0% | `sgs` 5724, `sgs-fx` 3217, `native_wp` 507 |
+| `source` | TEXT | 0% | `sgs` (declared in a block.json), `sgs-fx` (motion-effect settings per qualifying block), `sgs-ext` (editor-extension settings per opted-in block, from `src/blocks/extensions/extension-roster.json`), `native_wp` |
 | `emit_shape` | TEXT | 96% | `nested` 327, `child` 77 — How the converter emits it. Fails closed at converter/walk.py:581 when unseeded on a content-role attribute, so its NULLs are tracked gaps rather than silent ones. |
 | `alt_companion_attr` | TEXT | 100% |  |
 | `css_layer` | TEXT | 88% | `OUTER` 754, `GRID` 175, `CONTENT` 115, `GRID_AREA` 43 — Which layer of the 3-layer wrapper model (OUTER / CONTENT / GRID / GRID_AREA) the attribute belongs to. |

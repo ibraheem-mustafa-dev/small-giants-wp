@@ -40,7 +40,7 @@ text), `lib/pairs-page.mjs` (in-page collectors), `scripts/parity/lib/auto-compa
 `scripts/parity/lib/paint.mjs` (`textRun`, `groupBox` finders), `scripts/computed-route/solve.mjs` (`walkerFull`),
 tests, README.
 
-**Done when** (measured before the change, 2026-10-04; About met on 2026-10-04, Lenses not yet re-run):
+**Done when** (measured before the change, 2026-10-04; About met, and Lenses' pairing met (28 of 29 blocks) on 2026-10-04):
 - About: blocks measured 16 of 24 → at least 22 of 24, the page container (cr-ref-about-0) among them, and a Solve
   run writes its top padding (register S6: 104px against the draft's 48px).
 - Lenses: 7 of 29 → at least 26 of 29.
@@ -66,43 +66,56 @@ tests, README.
   over 24 blocks at 375/768/1440. Negative control: a planted 22px top padding on the page container was caught by
   both (Solve wrote it back; the check reported the inset and every block below at 1440 only), then restored.
   Distinct issues over the pilot: 50, 28, 19, 9, 6, 2, 0.
-- [ ] **Contact to 100% (in progress).** Paired: Contact 31 of 32 blocks (`qa/pairs/contact.json`; the map,
-  `cr-ref-contact-25`, is left out: register 418, the real Google Map replaces the draft's sketch), the contact form
-  (post 285, surface `contact-form`) 6 of 6 (the form block as its fields' group). Both walk only the rest state
-  (`walkStates: ["opening"]`; the hand config's form-flow states belong to FR-47-7). Solve so far: page container
-  padding 48/90, phone 28/60 (S6), page grid gap 48px, WhatsApp icon 21px; 0 wrong writes since the padded-wrapper
-  climb, 0 new rows. Open on the last run (`qa/solve/contact/2026-10-04T05-50-07/`): **134 distinct issues**, grouped:
-  1. Layout mechanism, not paint (about 45 rows): the draft stacks label and value as blocks; live uses flex column
-     with a 6px gap (`gap`, `row-gap`, `column-gap`, `flex-direction`, `display` rows on cr-ref-contact-7, 10, 13, 16
-     and 1). General walker fix to build: compare layout properties only when both sides' layout element is flex or
-     grid; the children's positions (flow rows) judge the rest. Same for `display` between block-level values.
-  2. The phone link's tap area (12 rows on cr-ref-contact-9 `.sgs-business-info__link`): live pads the link and
-     cancels it with negative margins (the 44px touch-target rule in CLAUDE.md non-negotiables); the text paints in
-     the same place. Ledger, citing that rule.
-  3. Decided divergences: the map (20 rows, register 418); WhatsApp hover lift 3px against the draft's 2px (S1).
-  4. Settings Solve should reach: the page grid's columns (`grid-template-columns`, draft 496.562px 451.438px, live
-     521.391px 426.609px at 1440: the tree's `1.1fr 1fr` against the draft), the phone label's hover colour (draft
-     rgb(111,97,82)), the WhatsApp button height (56 vs 44), the hours day weight (400 vs 600), the address label
-     line height (22.5px vs 24px), the Google and Instagram cards' ground (white) and widths.
-  5. Width rows (`width` is a used value, about 25): consequences of 4; they close with it.
-  Contact form (rest state, own blocks only): **101 distinct issues, 80 labelled framework gaps** (form field styling
-  settings: register N45 / N45b).
-- [ ] Lenses: re-pair with today's pairing, set its `walkerFull` again, Solve it.
+- [x] **Foundations built on 2026-10-04** (each a general fix with a MUST FAIL test and a tool-log line below): the
+  walker measures aspect ratio (CR10), min-height, flex-grow and a control's tag; layout rows compare only between flex
+  or grid sides except gaps (a block-flow side's gap reads as 0px); grid tracks compare and write as proportions (CR16);
+  calibration records where an inherited setting's value reaches (`reaches`) and each element's tag, and marks minimum
+  sizes above the 44px floor; Solve resolves a row on the nearest enclosing block whose setting paints that element (a
+  form's field style), matches enclosing slots on tag, and reports a second clashing value for one part of a shared
+  setting as a `conflict`; extension settings are seeded in the framework DB (`source='sgs-ext'`, from
+  `plugins/sgs-blocks/src/blocks/extensions/extension-roster.json`, gate `check-extension-roster`) and written through
+  calibration's discovered effects (`resolve.mjs::tierWrite` for per-device ones); the ledger takes one entry for every
+  property or every width (`ledger.mjs accept --rule --every-width --every-property`). Framework: the form's Field style
+  group (register N45), label-less fields without the floating-label gap, business-info `labelFontWeight` and the
+  address line height, the business-info link's 44px tap area takes one line in the flow.
+- [ ] **Contact to 100% (in progress): 19 distinct issues open, 0 labelled gaps** (last Solve
+  `qa/solve/contact/2026-10-04T11-15-35/`: 0 new rows, 0 wrong writes). Ledger D-16 (map, register 418), D-17 to D-30, D-32 and
+  D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). Open, all box rows:
+  1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. The block pairs as a text
+     run, and a text-run pair reads text only, so its inner row gap is never measured. Build: a text-run pair whose
+     block lays out rows with flex or grid also reads that layout element's gap (both sides; the draft side's rows are
+     the text run's line boxes, so compare their spacing), MUST FAIL test, then Solve writes the hours row gap setting.
+  2. The address (cr-ref-contact-13, 15, 17): the draft's address text is 168px wide at every width and wraps to two
+     lines at 375; live fills its column. Find the draft rule that caps it (read the draft CSS) and the business-info
+     setting that can express it (a max width on the address), then write it.
+  3. Consequences that close with 1 and 2: page and column heights (cr-ref-contact-0, 1, 20) and rows compared across
+     the two columns at 1440 (cr-ref-contact-14, 15, 27, 29).
+  Then the done line: fresh rebuild of the committed tree, 0 unexplained and 0 labelled gaps, 0 new rows, wrong writes at
+  most 10%, `independent-check.mjs --surface contact` 0 differences beyond the ledger, planted-fault control.
+- [ ] **Contact form (surface `contact-form`, post 285): 46 distinct issues open.** Paired 6 of 6 with every field
+  measured at its control (`liveControl`). The last Solve (`qa/solve/contact-form/2026-10-04T11-24-38/`) closed 27 but
+  regressed 4 rows with 7 wrong writes, so the tree was restored from git and rebuilt; two of its causes are now fixed
+  (the per-round `conflict` rule, tag matching). Still open before it can run clean: the draft's select is not the
+  inputs' 52px height, so `fieldMinHeight` (input and select) moved the textarea 6px; decide the select's own height
+  (a `fieldSelectMinHeight`, or the select measured against the inputs) at the framework, then re-run Solve.
+- [ ] **Lenses: paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
+  `walkerFull` set.** First Solve (`qa/solve/lenses/2026-10-04T11-32-37/`): 57 to 33 distinct issues, but 3 rows
+  regressed (a `gap: 0` write on cr-ref-lenses-22 shrank its parent cr-ref-lenses-21 at 375; the process-steps padding
+  and step gap writes moved the next item 16px at 1440) and only one write round ran; the tree was restored from git
+  and rebuilt. Also seen: cr-ref-lenses-25's gap setting holds 0 yet its inner band paints a 16px column gap (Hardcode
+  class). Diagnose those three, fix generally, re-run.
 - [ ] Pair and solve every other surface, in Spec 47 §5 stage 3 Residual's order (Help, Home, header, mobile-menu, the
   four megas, size-guide, lens, shop, product): `node scripts/computed-route/pairs.mjs --client eye-care-ward-end --surface <s>`,
   set its `walkerFull`, then Solve it. Surfaces whose states open a panel (Help's FAQ, the megas, size-guide, lens) are
-  paired at rest only today: blocks inside a closed panel paint no words and are listed as left out.
-- [ ] Recalibration (CR11 border styles, CR3, CR17, modal): 28 of 66 blocks done on 2026-10-04 with the parallel
-  reader. Redo (measured headed before scrollbars were hidden, so about 15px narrow): accordion-item, account, audio,
-  before-after, brand-strip, breadcrumbs. Still to run: heading, business-info, nav-bar-menu, nav-drawer,
-  nav-drawer-menu, notice-banner, option-picker, physics-canvas, post-grid, pricing-table, process-steps,
-  product-card, product-faq, product-faq-item, product-search, quote, responsive-logo, separator, site-footer,
-  site-footer-row, site-header, site-header-row, social-icons, star-rating, store-selector, tab, table-of-contents,
-  tabs, team-member, testimonial, testimonial-slider, text, timeline, trust-bar, trustpilot-reviews, whatsapp-cta (each
-  `node scripts/computed-route/calibrate.mjs --site <its cache file's "site"> --client <eye-care-ward-end or
-  mamas-munches> --blocks sgs/<slug> --recalibrate`, `SGS_HEADED=1` while the host challenges headless browsers).
-  sgs/modal fails: without `modalRef` the editor rewrites the block on first load ("changedOnReload"), so the
-  calibration page will not save; its fixture needs a modal it can render without a linked post.
+  paired at rest only today: blocks inside a closed panel paint no words and are listed as left out. CR10's live
+  planted-fault proof runs on the first image-heavy surface (Home).
+- [ ] **Recalibration of every block with today's calibration changes** (`reaches`, `_tag`, min-height, aspect ratio,
+  flex-grow, extension settings): done with all of them for form, accordion-item, accordion, account, audio and
+  before-after. Every other block in `scripts/computed-route/cache/` remains, business-info, container, whatsapp-cta,
+  card-grid, hero, product-card, gallery, post-grid, image-sequence, brand-strip and breadcrumbs included (their runs
+  predate `_tag`): each `node scripts/computed-route/calibrate.mjs --site <its cache file's "site"> --client
+  <eye-care-ward-end for eye-care-test, mamas-munches for sandybrown> --blocks sgs/<slug> --recalibrate`,
+  `SGS_HEADED=1`. sgs/modal's fixture now carries inner blocks (it failed "changedOnReload"); confirm it calibrates.
 
 ## Universal tool log
 

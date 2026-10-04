@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.6"
+spec_version: "0.7"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -444,18 +444,20 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      (`lib/guard.mjs`, R-47-9), box seeding from the node's nearest wider tier (`resolve.mjs::WIDER_TIERS`), and the
      divergence ledger (`sites/eye-care-ward-end/build/qa/divergences.json`; D-1 holds Contact's subtext margin at 0px
      on phones).
-   - **Calibration:** 94 of 95 SGS blocks have one library-wide cache file each (47 measured on eye-care-test, page 668;
-     47 on sandybrown, page 4750, which runs the `mamas-munches` snapshot), `decorative-image` included once CR8 was fixed.
-     Not calibrated: `theme-toggle` (CR12). A border-style marker carries its
-     companion width (CR11, proven on quote and info-box); the other border-style blocks are being re-calibrated (Bean's
-     go, 2026-10-04; calibration reads its three widths in parallel, `calibrate.mjs::readAll`).
-     Fixtures come from each block's first use in the trees or its block.json `example`, styling at defaults.
+   - **Calibration:** every SGS block but `theme-toggle` (CR12) has one library-wide cache file
+     (`scripts/computed-route/cache/<block>.json`, gitignored; its `site` names where it was measured: eye-care-test page
+     668, or sandybrown page 4750, which runs the `mamas-munches` snapshot). A border-style marker carries its companion
+     width (CR11); a minimum size marks above the 44px floor; an inherited setting records every element its value
+     reaches (`reaches`) and every element its tag (`_tag`); a per-device enum setting with no CSS property (an extension
+     setting such as `sgsChildSizing`) is discovered through its desktop tier. Calibration reads its three widths in
+     parallel (`calibrate.mjs::readAll`). Fixtures come from `scripts/computed-route/calibration-fixtures.json`, else each
+     block's first use in the trees or its block.json `example`, styling at defaults.
    - **Results under the new guard** (scored items from the register; the whole-page line, distinct style, hover and
      box issues from `solve-report.mjs::wholePage`, appears from the next runs):
      - About: at 100% with full coverage (F2 below).
-     - Lenses: 6 of 6 handled; 0 regressions; 314 to 80. A box-seeding bug wrote the button's default 28px sides over the
-       node's 26px (fixed); the price cards dropped a flex gap that stacked on their margins.
-     - Contact: fully paired, in progress (F2 below).
+     - Lenses (hand config): 6 of 6 handled; 0 regressions; 314 to 80. With full coverage (28 of 29 blocks, 2026-10-04)
+       its first Solve closed 25 of 57 distinct issues but regressed 3 rows, so its tree was restored (plan Progress).
+     - Contact: 134 to 19 distinct issues (2026-10-04), 0 labelled gaps; the contact form 94 to 46 (plan Progress).
      - Help (old guard) and the footer: as recorded in the register. Home was stopped at walk 5 on 2026-10-04 and rebuilt
        from its committed tree; it re-runs with full coverage.
      - An independent Playwright check (its own finders, 375/768/1440) confirmed Lenses 9 of 9.
@@ -470,24 +472,27 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        nearest first (CR21). **About is at 100%** (2026-10-04): 50 distinct issues to 0 on a fresh rebuild, 0 wrong writes,
        12 ledger entries citing register 104 / S1 / S4, confirmed by an independent check
        (`sites/eye-care-ward-end/build/qa/independent-check.mjs`, 0 differences at 375/768/1440) and a planted-fault
-       negative control. Contact pairs 31 of 32 blocks (the map is register 418) and its form 6 of 6; 134 distinct
-       issues open, grouped in the plan's Progress.
+       negative control. Contact pairs 31 of 32 blocks (the map is register 418) and its form 6 of 6; its distinct
+       issues went from 134 to 19 on 2026-10-04 (open causes in the plan's Progress).
      - F3 calibration paths: measured, mostly not needed (Help's link rows are a block swap, register 120/121; Contact's
        form rows belong to the contact-form surface); one fixture gap (CR17).
      - F5 whole-page score in the solve report: built.
      - Speed: lean walks, the draft cache and four widths at once (step 2 above).
    - **Residual:**
-     - Contact and its form post to 100% (the plan's Progress lists the five cause groups), then Lenses, then every
-       other surface with its full config: Help, Home, header, mobile-menu, the four megas, size-guide, lens, shop and
-       product. Done per surface: on a fresh rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the
-       whole-page line, 0 new rows, wrong writes at most 10%, the independent check agreeing, the register marked.
-     - Walker rule to build first for Contact: layout properties compared only where both sides lay out with flex or
-       grid (a draft block stack against a live flex column paints the same; flow rows judge the children).
-     - Calibration: 28 of 66 blocks re-calibrated on 2026-10-04 (border styles CR11, accordion and accordion-item CR3);
-       the rest, six redone for a scrollbar error, and `sgs/modal`'s fixture are listed in the plan's Progress. CR10
-       (aspect-ratio in the walker's and calibration's property lists) and CR17's business-info address variant remain.
-     - Route leads: CR16 (grid columns from the track count); gap typing (a setting that paints a parent while a rule on
-       a child overrides it comes out Missing setting; calibration should record the child's own value).
+     - Contact and its form post to 100%, then Lenses, then every other surface with its full config: Help, Home,
+       header, mobile-menu, the four megas, size-guide, lens, shop and product. Done per surface: on a fresh rebuild of
+       the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes at most
+       10%, the independent check agreeing, the register marked. The open causes per surface are in the plan's Progress
+       (Contact: the hours list's inner row gap, which text-run pairs do not measure, and the address width; the form:
+       the select's height; Lenses: three regressions to diagnose).
+     - Built on 2026-10-04 (the plan's Universal tool log lists each): enclosing-block settings, extension settings in
+       the framework DB (`source='sgs-ext'`), calibration `reaches` and `_tag`, the per-round `conflict` rule, grid
+       tracks as proportions (CR16), aspect ratio (CR10, live proof on the first image-heavy surface).
+     - Calibration: every block is re-calibrated with the 2026-10-04 changes; 6 are done, the rest are listed in the
+       plan's Progress. CR17's business-info `textBefore` element remains.
+     - Gap typing (a setting that paints a parent while a rule on a child overrides it comes out Missing setting): the
+       hours day weight closed through a dedicated label setting; calibration still records nothing for an overriding
+       child.
      - The functional flows (FR-47-7) and the walker's items 1 to 5 (FR-47-6): not started. Contact and its form walk
        only their rest state until FR-47-7 maps the form-flow states.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer.

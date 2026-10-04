@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 45
-spec_version: "1.7"
+spec_version: "1.8"
 title: "Classless Field Resolution"
 project: small-giants-wp
 created: 2026-09-15
@@ -340,7 +340,7 @@ styling attribute — exactly the out-of-scope write §2 rules out.
 
 ⚠ **Collision tiebreak.** `(block_slug, attr_name)` is not uniquely
 constrained on its own — the DB's real unique index also includes `source`
-(`sgs`/`sgs-fx`/`native_wp`), so the same attribute name could in principle
+(`sgs`/`sgs-fx`/`sgs-ext`/`native_wp`), so the same attribute name could in principle
 exist twice under different sources.
 The rule: **2+ exact-name matches
 = gap, never a silent pick of either row.**
