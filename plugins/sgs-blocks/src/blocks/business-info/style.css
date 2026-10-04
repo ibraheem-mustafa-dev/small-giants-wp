@@ -98,7 +98,6 @@
 
 .sgs-business-info__link:hover {
 	text-decoration: none;
-	opacity: 0.8;
 }
 
 /* ── Website credit (displayType="attribution") ───────────────────────────
@@ -183,8 +182,6 @@
 .sgs-business-attribution .sgs-business-info__link:hover,
 .sgs-business-attribution .sgs-business-info__link:focus-visible {
 	background-position: 0 0;
-	/* beat the generic __link:hover opacity:0.8 — dimming would mute the effect */
-	opacity: 1;
 }
 
 .sgs-business-attribution .sgs-business-info__link:hover::after,

@@ -22,11 +22,8 @@
 				"hover"
 			],
 			"hoverDefaults": {
-				"scalePreset": "1.02",
-				"shadow": "soft",
 				"imageZoom": false,
-				"focusRing": true,
-				"lift": 1
+				"focusRing": true
 			},
 			"hoverExcludeControls": [
 				"imageZoom",

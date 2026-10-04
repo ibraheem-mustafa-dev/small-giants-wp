@@ -250,6 +250,21 @@ $scoped_css[] = sgs_text_states_css(
 	)
 );
 
+// --- Icon colour follows the label colour. The glyph fills with currentColor, so it
+// takes its own `color`; the label rule above only reaches the label span. Flat
+// label colours only: a label gradient (background-clip:text) cannot paint an SVG
+// fill, so the icon then keeps the button's own colour. Hover is keyed to the whole
+// button (touch-guarded through sgs_hover_state_rules()), matching the label. ---
+$icon_colour_sel   = $root_sel . ' .sgs-whatsapp-cta__icon';
+$icon_label_flat   = '' !== (string) ( $attributes['labelColourGradient'] ?? '' ) ? '' : (string) ( $attributes['labelColour'] ?? '' );
+$icon_label_hover  = '' !== (string) ( $attributes['labelColourHoverGradient'] ?? '' ) ? '' : (string) ( $attributes['labelColourHover'] ?? '' );
+if ( '' !== $icon_label_flat ) {
+	$scoped_css[] = $icon_colour_sel . '{color:' . sgs_colour_value( $icon_label_flat ) . ';}';
+}
+if ( '' !== $icon_label_hover ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, 'color:' . sgs_colour_value( $icon_label_hover ), ':focus-visible', ' .sgs-whatsapp-cta__icon' );
+}
+
 // --- Base spacing + border-radius via the stable core style engine (skip-
 // serialised in block.json — exactly how WP core outputs `layout` support). ---
 

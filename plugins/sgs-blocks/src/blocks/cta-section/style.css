@@ -263,7 +263,6 @@
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 .sgs-cta-section__btn--gradient:hover {
-	opacity: 0.88;
 	transform: translateY(-1px);
 }
 
