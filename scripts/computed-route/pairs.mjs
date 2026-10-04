@@ -179,7 +179,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const cfg = ( await import( pathToFileURL( handPath ).href ) ).default;
 	const prefix = `${ cfg.refPrefix || 'cr-ref-' }${ surface }-`;
 	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
-	const browser = await chromium.launch( { headless: true } );
+	// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load).
+	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED } );
 	const draft = await openDraft( browser, cfg, 1440 );
 	const live = await browser.newPage( { viewport: { width: 1440, height: 900 } } );
 	await live.goto( cfg.live.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );

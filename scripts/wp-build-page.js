@@ -236,7 +236,8 @@ async function main() {
 	const closeOnExit = require( './lib/close-browser-on-exit' );
 	closeOnExit.closeBrowserOnExit();
 	const browser = await chromium.launch( {
-		headless: true,
+		// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load).
+		headless: ! process.env.SGS_HEADED,
 		args: [ ...closeOnExit.browserOwnerArgs(), ...( cloudProxy ? [ '--ignore-certificate-errors-spki-list=' + process.env.PARITY_PROXY_SPKI ] : [] ) ],
 		...( cloudProxy ? { proxy: { server: process.env.HTTPS_PROXY } } : {} ),
 		...( process.env.PARITY_CHROMIUM ? { executablePath: process.env.PARITY_CHROMIUM } : {} ),

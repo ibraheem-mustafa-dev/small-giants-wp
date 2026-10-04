@@ -54,7 +54,8 @@ function build( s, treeFile ) {
 // for like, and the draft side is read once per run and reused (--draft-cache): the draft does not change mid-run.
 // The widths walk in parallel, one walker each (4 at once against the shared host measured 2.6x faster than one walker
 // with no bot check, 2026-10-04, with the host's IP allowlist on); each keeps its own draft cache, and the reports merge.
-export const WALK_FLAGS = [ '--headless', '--no-review', '--lean' ];
+// SGS_HEADED=1 walks headed: Hostinger's edge answers a headless browser with a 403 browser check under load.
+export const WALK_FLAGS = [ ...( process.env.SGS_HEADED ? [] : [ '--headless' ] ), '--no-review', '--lean' ];
 export const WIDTH_GROUPS = WIDTHS.split( ',' ).map( ( w ) => [ Number( w ) ] );
 
 // One report from the per-width walks: their runs in width order and their errors by width.

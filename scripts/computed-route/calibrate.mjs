@@ -102,7 +102,8 @@ function build( target, treeFile, extra = [] ) {
 
 async function openBrowser( env ) {
 	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
-	const browser = await chromium.launch( { headless: true } );
+	// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load).
+	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED } );
 	const ctx = await browser.newContext( { ignoreHTTPSErrors: true } );
 	const page = await ctx.newPage();
 	await page.goto( `${ env.url }/wp-login.php`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
