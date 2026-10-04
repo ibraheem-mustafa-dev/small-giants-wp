@@ -50,22 +50,10 @@ chosen chair size. Neither is a plain on/off boolean.
 
 ## Reference Images
 
-⛔ **CORRECTED TWICE — read this carefully, the first correction was WRONG.**
-
-`sites/snooza-chair/assets/` exists and holds **19 files** plus an `assets/3d-model/` subdirectory.
-**But NONE of the filenames this document used to list actually exist.** There are no `ophir-01`..`14`,
-no `video-still-001`..`203`, no `fortuna-*.jpg`. The real contents are **Wix-CDN hash-named images**
-(`bc3963_<32-hex>~mv2.jpg`), presumably scraped from the client's current Wix site.
-
-⚠ **Why this is recorded rather than quietly rewritten:** the first correction (earlier the same day)
-fixed the DIRECTORY path and left the filename list untouched — which made the section look resolved
-(right folder, right file count) while every specific reference in it was still fiction. **A
-half-correct correction is worse than the original error**, because it stops the next reader checking.
-
-**What this means in practice:** nobody can cite a specific reference image by name. Whoever
-generates the 3D model must OPEN the directory and choose from what is actually there. There is no
-curated "best images for AI model generation" shortlist any more — the old one named files that do
-not exist.
+`sites/snooza-chair/assets/` holds Wix-CDN hash-named images (`bc3963_<32-hex>~mv2.jpg`, scraped from
+the client's current Wix site), an `assets/3d-model/` subdirectory and working scripts. No reference
+image is cited by name: whoever generates the 3D model opens the directory and chooses from what is
+there. `assets/image-shortlist.md` names files that do not exist and is not a usable shortlist.
 
 ## Source Pages
 

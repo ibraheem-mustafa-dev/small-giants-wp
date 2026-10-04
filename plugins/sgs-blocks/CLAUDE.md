@@ -152,7 +152,7 @@ palette in the editor sidebar.
 ## Key rules
 
 - Every block reads colours/fonts from theme.json tokens, never hardcode. Apply THE
-  DEFAULT-vs-HARDCODE TEST before any block literal — full test in Spec 32 §6.1: does it override a
+  DEFAULT-vs-HARDCODE TEST before any block literal — full test in Spec 32 §3: does it override a
   theme-wide default, or hinder the pipeline? A component's own constant (not a client value) may
   stay; `null` default = inherit is the canonical pattern. Enforced by `check-hardcoded-render-defaults.js`'s F3b.
 - CSS scroll-snap for carousels, Intersection Observer for scroll-triggered animations.

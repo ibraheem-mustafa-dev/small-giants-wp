@@ -28,7 +28,7 @@ research behind it — toward optometry practice sites instead of premium retail
 ## Why buy from her rather than a general retailer
 
 The optician credential is the commercial engine, not an identity statement. It cashes out
-three ways:
+as follows:
 
 1. **Price.** Trade access as an optician lets her price competitively. ⚠ Communicate this as
    a structural advantage, never as a "cheapest" claim — the large chains have far greater
@@ -247,8 +247,8 @@ Rules for that measurement:
 - Live design brief: the Claude Design prompt (see session scratchpad / paste from the
   artefact "The Short Brief").
 - Briefing method and its rationale: artefact **The Short Brief**.
-- Pipeline measurement context: `.claude/plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`
-  (Q1 section — re-read before running the pass; not verified this session).
+- Pipeline measurement context: `.claude/plans/archive/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`
+  (Q1 section — re-read before running the pass).
 
 ## Design standard — audience note
 

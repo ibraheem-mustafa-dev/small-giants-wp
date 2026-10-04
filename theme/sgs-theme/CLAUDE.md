@@ -13,7 +13,7 @@ sgs-theme/
 ├── style.css                 # Theme metadata header (required by WP)
 ├── theme.json                # Design tokens, settings, styles (v3)
 ├── functions.php             # Theme setup, font preloading, enqueuing, pattern categories
-├── inc/                      # colour-helpers.php, font-preloading.php
+├── inc/                      # PHP modules required by functions.php (colour helpers, font preloading, core block styles, shop filter and toolbar settings)
 ├── templates/                # Block templates:
 │   │                         #   index, page, single, archive, home, front-page, 404, search
 │   │                         #   archive-product, single-product, product-search-results,
@@ -113,7 +113,6 @@ Current theme version: read `style.css`; deployed to the sandybrown canary and t
 Open theme priorities:
 - `prefers-contrast` high-contrast support
 - `light-dark()` colour palette (`dark-mode.css` + `dark-mode.js` are scaffolded)
-- Block patterns library — hero, feature, testimonial, CTA, content, footer, header patterns
 
 ## Deploy
 

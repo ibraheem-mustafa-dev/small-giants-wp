@@ -153,11 +153,8 @@ sgs-configurator-pro/
 
 ## Snooza Chair Product Details
 
-- **6 colours:** Mandarin Orange, Royal Blue, Apple (green), Grey, Hot Pink, Black
-- **4 sizes:** Size 1-4 (12 months to adult)
-- **10 accessories:** Rocker Base, Mobile Base, Pommel, Leg Rest, Profile Headrest, Padded Tray, Side Infill Pads, Base Wedge, Back Rest Adjustment, Snooza Lite
-- **Base price:** From £1,164.71 (ex VAT)
-- **Reference images:** Product photos in `sites/snooza-chair/assets/product-images/`
+- **Product facts** (sizes, colours, headrest axis, accessories, price): `sites/snooza-chair/CLAUDE.md`
+- **Reference images:** `sites/snooza-chair/assets/` (Wix hash-named files; open the directory and choose)
 - **Client:** Ophir Solutions (ophirsolutions.co.uk)
 
 3D model-generation tool trial log: `.claude/reports/2026-03-20-snooza-chair-3d-tool-trials.md`.

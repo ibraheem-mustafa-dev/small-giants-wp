@@ -124,7 +124,7 @@ The plugin's frontend booking UI inherits the booking system's design system via
 - **Monday is the first day of the week** — all calendar UIs show Mon-Sun (UK/ISO 8601). The booking system uses `0 = Sunday` internally (JS `Date.getDay()`), so reorder when displaying.
 - **Provider step order is configurable** — `stepOrder` block attribute: `service-first` (default) or `provider-first`. Clinics pick doctor first, general sites pick service first.
 - UK English everywhere (organisation, colour, cancelled)
-- 44px minimum touch targets (WCAG 2.2 AA)
+- 44px minimum touch targets and visible focus (root CLAUDE.md accessibility baseline)
 - Currency defaults to GBP, timezone to `Europe/London`
 
 ## Security Rules (Non-Negotiable)

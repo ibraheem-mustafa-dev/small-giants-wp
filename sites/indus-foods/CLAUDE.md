@@ -92,7 +92,7 @@ Durable content rules:
 - **A parent-only dropdown menu item must have an EMPTY `_menu_item_url`.** A literal `#` makes `nav-bar-menu/render.php::from_link()`'s `has_url` check treat it as a real link and render `<a href="#">` instead of the non-link disclosure button. About / Sectors / Trade are stored with an empty URL.
 - The Brands drawer plain-link degrade points at an internal `?sgs_mega_menu=` query URL (the CPT is `public=>false`, no permalink) — expected per FR-36-5.
 
-Pages on the site: Home (30, published) and a draft privacy policy. Service pages (Food Service, Manufacturing, Retail, Wholesale), Trade Application, /brands/, /our-story/, /certifications/ and /blog/ are not built; the Brands mega menu is `sgs_mega_menu` post 6.
+Page state: `.claude/LEDGER.md`; IDs come from the live site (`wp post list`).
 
 ## Placeholder Items Awaiting Client
 

@@ -23,7 +23,6 @@ sgs-client-notes/
 │   ├── js/                           # annotation-mode, comment-panel, pin-renderer, screenshot
 │   ├── css/                          # Frontend overlay/pin styles + admin styles
 │   └── vendor/html2canvas.min.js     # Screenshot capture (~40KB, loaded on-demand only)
-└── templates/email/                  # N8N notification templates
 ```
 
 ## Database Tables
@@ -44,7 +43,7 @@ Positions stored as percentage offsets (not pixels). Viewport width recorded for
 ## User Roles
 
 - `sgs_client` — custom role with `read`, `sgs_create_notes`, `sgs_view_own_notes`. Cannot access wp-admin (except profile).
-- `administrator` gets `sgs_manage_notes` + `sgs_manage_client_users` on activation.
+- `administrator` and `editor` get the note caps on activation; `administrator` also gets `sgs_manage_client_users`.
 
 ## Key Rules
 
@@ -60,7 +59,3 @@ Positions stored as percentage offsets (not pixels). Viewport width recorded for
 ## Build & Deploy
 
 No npm build step — this plugin is pure PHP + vanilla JS. `build-deploy.py` does not cover this plugin (it only covers `sgs-blocks`/theme); deploy with `python plugins/sgs-blocks/scripts/deploy-client-notes-quick.py --target <target>` — a minimal standalone script (see its own docstring for what it does and does not do: no dirty-gate, no `.bak` rollback rotation, no post-deploy verify). A properly engineered third root inside `build-deploy.py` itself, matching its rollback/dirty-gate/self-test standard, is still open (Bean's call, 2026-09-27 — that script's safety architecture is real design work, not a quick patch, and the file is shared live infrastructure).
-
-## Build Phase
-
-This is **Phase 3** — independent of SGS Blocks. Can be built in parallel with Phase 2 (Forms Advanced) once the theme exists. (Historical phasing doc `06-BUILD-ORDER.md` is archived; live sequencing lives in `.claude/LEDGER.md`.)
