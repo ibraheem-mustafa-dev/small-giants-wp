@@ -29,7 +29,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 REPO = HERE.parents[3]
 SECRETS = [
     REPO / ".claude/secrets/ai-agent-credentials-and-info/api-keys.env",
-    pathlib.Path.home() / ".claude/secrets/openclaw.env",
+    pathlib.Path.home() / ".claude/secrets/api-keys.env",
 ]
 # Settings keys the public API accepts on update.
 SETTINGS_KEYS = {

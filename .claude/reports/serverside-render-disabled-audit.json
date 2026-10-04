@@ -1,5 +1,5 @@
 {
-	"generatedAt": "2026-10-01T13:12:20.218Z",
+	"generatedAt": "2026-10-04T00:16:25.720Z",
 	"total": 11,
 	"violations": 0,
 	"findings": [
@@ -30,7 +30,7 @@
 		{
 			"file": "src/blocks/brand-strip/edit.js",
 			"block": "sgs/brand-strip",
-			"line": 1147,
+			"line": 1136,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -42,7 +42,7 @@
 		{
 			"file": "src/blocks/business-info/edit.js",
 			"block": "sgs/business-info",
-			"line": 463,
+			"line": 475,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -54,7 +54,7 @@
 		{
 			"file": "src/blocks/card-grid/edit.js",
 			"block": "sgs/card-grid",
-			"line": 1540,
+			"line": 1541,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -77,7 +77,7 @@
 		{
 			"file": "src/blocks/nav-bar-menu/edit.js",
 			"block": "sgs/nav-bar-menu",
-			"line": 997,
+			"line": 944,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -88,7 +88,7 @@
 		{
 			"file": "src/blocks/nav-drawer-menu/edit.js",
 			"block": "sgs/nav-drawer-menu",
-			"line": 846,
+			"line": 773,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -99,7 +99,7 @@
 		{
 			"file": "src/blocks/product-card/edit.js",
 			"block": "sgs/product-card",
-			"line": 3156,
+			"line": 3157,
 			"wrapped": true,
 			"ancestors": [
 				"",

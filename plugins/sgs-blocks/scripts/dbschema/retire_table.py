@@ -106,6 +106,14 @@ def backup_db(db: Path) -> Path:
     finally:
         a.close()
         b.close()
+    # Keep only the newest three backups next to the live DB (and drop their sidecars).
+    siblings = sorted(
+        (p for p in db.parent.glob(db.name + ".bak*") if not p.name.endswith(("-shm", "-wal"))),
+        key=lambda p: p.stat().st_mtime, reverse=True)
+    for old in siblings[3:]:
+        for extra in (old, old.with_name(old.name + "-shm"), old.with_name(old.name + "-wal")):
+            if extra.exists():
+                extra.unlink()
     return dest
 
 
