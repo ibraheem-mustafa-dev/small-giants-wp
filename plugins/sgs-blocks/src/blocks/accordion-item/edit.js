@@ -11,7 +11,7 @@ import { PanelBody } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { colourVar, textPaintPreview } from '../../utils';
+import { colourVar, textPaintPreview, tierBoxShorthand } from '../../utils';
 import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
@@ -75,6 +75,25 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	const headerColour = context[ 'sgs/accordionHeaderColour' ];
 	const headerBackground = context[ 'sgs/accordionHeaderBackground' ];
 	const iconColour = context[ 'sgs/accordionIconColour' ];
+	const iconRotation = Number( context[ 'sgs/accordionIconRotation' ] ) || 0;
+
+	// Active editor device, so the canvas previews the same tier the inspector edits.
+	const tier = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device = ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
+	}, [] );
+	const iconSizes = context[ 'sgs/accordionIconSize' ] || {};
+	const iconSizeTier = [ tier, 'tablet', 'desktop' ]
+		.slice( tier === 'mobile' ? 0 : tier === 'tablet' ? 1 : 2 )
+		.map( ( t ) => iconSizes[ t ] )
+		.find( ( v ) => typeof v === 'number' && v > 0 );
+	const slotVars = {
+		'--sgs-accordion-header-pad': tierBoxShorthand( context[ 'sgs/accordionHeaderPadding' ], tier ),
+		'--sgs-accordion-content-pad': tierBoxShorthand( context[ 'sgs/accordionContentPadding' ], tier ),
+		'--sgs-accordion-icon-size': iconSizeTier ? `${ iconSizeTier }px` : undefined,
+		'--sgs-accordion-icon-rotate': iconRotation > 0 ? `${ iconRotation }deg` : undefined,
+	};
 
 	const className = [
 		'sgs-accordion-item',
@@ -86,7 +105,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 
 	const blockProps = useBlockProps( {
 		className,
-		style: textPaintPreview( textColour, textColourGradient, colourPalette ),
+		style: {
+			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+			...slotVars,
+		},
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -119,13 +141,15 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	};
 
 	const chevron = (
-		<span
-			className={ `sgs-accordion-item__icon ${
-				editorOpen ? 'sgs-accordion-item__icon--open' : ''
-			}` }
-			style={ iconStyle }
-		>
-			{ CHEVRON_SVG }
+		<span className="sgs-accordion-item__icons">
+			<span
+				className={ `sgs-accordion-item__icon-open ${
+					iconRotation > 0 ? 'sgs-accordion-item__icon-open--rotates' : ''
+				}` }
+				style={ iconStyle }
+			>
+				{ CHEVRON_SVG }
+			</span>
 		</span>
 	);
 

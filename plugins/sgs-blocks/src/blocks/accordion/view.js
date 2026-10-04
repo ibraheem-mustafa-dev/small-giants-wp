@@ -2,15 +2,65 @@
  * Accordion — frontend interactivity.
  *
  * Enhances native <details>/<summary> with:
- * - Smooth expand/collapse animation (CSS transitions)
- * - Single-open mode (closes siblings when one opens)
+ * - Single-open mode (an exclusive <details name> group, or a sibling-close
+ *   fallback where the name attribute is not supported)
  * - Respects data-allow-multiple and data-default-open attributes
+ * - A JS height animation ONLY in browsers without native ::details-content
+ *   animation (style.css animates natively where it is supported), so the
+ *   two animations never run together.
  *
  * Uses a WeakSet to track programmatic toggles, preventing
  * re-entrant animation loops when closing siblings.
  *
  * @package SGS\Blocks
  */
+
+const NATIVE_ANIMATION =
+	typeof CSS !== 'undefined' &&
+	CSS.supports( 'interpolate-size', 'allow-keywords' ) &&
+	CSS.supports( 'selector(::details-content)' );
+const NATIVE_GROUPS =
+	typeof document !== 'undefined' && 'name' in document.createElement( 'details' );
+
+let groupCounter = 0;
+
+function syncAriaExpanded( details ) {
+	const summary = details.querySelector( ':scope > summary' );
+	if ( summary ) {
+		summary.setAttribute( 'aria-expanded', details.open ? 'true' : 'false' );
+	}
+}
+
+/**
+ * Native-animation path: the browser toggles and animates the item; this only
+ * keeps aria-expanded in step and, without <details name> support, closes the
+ * siblings of a newly opened item.
+ */
+function initNativeItems( accordion, items, allowMultiple ) {
+	groupCounter += 1;
+	const groupName = 'sgs-accordion-group-' + groupCounter;
+
+	items.forEach( ( details ) => {
+		syncAriaExpanded( details );
+		details.addEventListener( 'toggle', () => {
+			syncAriaExpanded( details );
+			if ( allowMultiple || NATIVE_GROUPS || ! details.open ) {
+				return;
+			}
+			items.forEach( ( sibling ) => {
+				if ( sibling !== details && sibling.open ) {
+					sibling.open = false;
+				}
+			} );
+		} );
+	} );
+
+	if ( ! allowMultiple && NATIVE_GROUPS ) {
+		items.forEach( ( details ) => {
+			details.name = groupName;
+		} );
+	}
+}
 
 function initAccordions() {
 	const accordions = document.querySelectorAll( '.sgs-accordion' );
@@ -26,13 +76,18 @@ function initAccordions() {
 			':scope > .sgs-accordion-item'
 		);
 
-		// Track which items are being animated programmatically.
-		const animatingItems = new WeakSet();
-
 		// Open the default item if set.
 		if ( defaultOpen >= 0 && items[ defaultOpen ] ) {
 			items[ defaultOpen ].setAttribute( 'open', '' );
 		}
+
+		if ( NATIVE_ANIMATION ) {
+			initNativeItems( accordion, items, allowMultiple );
+			return;
+		}
+
+		// Fallback: JS-animated items (browsers without native animation).
+		const animatingItems = new WeakSet();
 
 		// Set up each accordion item.
 		items.forEach( ( details ) => {

@@ -34,49 +34,35 @@
 
 /* ─── HEADER ─── */
 
+/*
+ * Padding and font-size are not fixed values here: the header reads the
+ * headerPadding setting through --sgs-accordion-header-pad (falling back to
+ * the per-variant base below) and inherits font-size from the accordion's own
+ * typography setting, so every device follows the editor.
+ */
+.sgs-accordion-item {
+	--sgs-accordion-header-pad-base: 16px 20px;
+	--sgs-accordion-content-pad-base: 0 20px 16px;
+}
+
+.sgs-accordion--flush .sgs-accordion-item {
+	--sgs-accordion-header-pad-base: 16px 0;
+	--sgs-accordion-content-pad-base: 0 0 16px;
+}
+
 .sgs-accordion-item__header {
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	padding: 16px 20px;
-	font-size: 1rem;
+	padding: var(--sgs-accordion-header-pad, var(--sgs-accordion-header-pad-base));
 	line-height: 1.4;
-	min-height: 44px; /* WCAG 2.2 AA touch target */
+	min-height: 44px; /* touch target */
 	background-color: var(--wp--preset--color--surface, #ffffff);
-	transition:
-		background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
-		color            var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
-/* No rest-state colour fallback: the header is a <summary>, which inherits
- * theme.json styles.color.text = var:preset|color|text — the identical value
- * the old :not([style*=…]) guard forced. Deleting restores contextual
- * inheritance on dark surfaces (icon-list precedent, 2026-08-06).
- *
- * DO NOT 'restore' this rule. I re-added it on 2026-08-07 after a sweep
- * measured 2.38:1 here — but that sweep had FORCE-OPENED every <details>,
- * and the pink is the deliberate `.sgs-accordion-item[open] >` brand
- * highlight. At REST the header measures 11.86:1 by inheritance. Re-adding
- * a painted colour would make this header invisible inside a dark drawer,
- * which is precisely the icon-list defect. */
-
-.sgs-accordion-item__header:hover {
-	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
-	color: var(--wp--preset--color--primary, #0f7e80);
-}
-
-/* Open-state header */
-.sgs-accordion-item[open] > .sgs-accordion-item__header,
-.sgs-accordion-item[open] > summary > .sgs-accordion-item__header {
-	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
-	color: var(--wp--preset--color--primary, #0f7e80);
-	/* Rule 43 (WCAG 1.4.1): open state must not rely on colour alone — a
-	 * non-colour signal is required too. font-weight is the signal, but it is
-	 * NOT set here: sgs/accordion's headerFontWeight/headerFontWeightOpen
-	 * attributes (defaults 600/700, matching this rule's former hardcoded
-	 * values) are emitted per-instance by accordion-item/render.php, scoped
-	 * to `.{uid}[open] > .sgs-accordion-item__header`. */
-}
+/* The rest-state text colour is inherited from the theme, so the header stays
+ * readable on dark surfaces. Hover and open add no background or colour of
+ * their own: that paint comes only from the block's own settings. */
 
 /* :focus-visible ring */
 .sgs-accordion-item__header:focus-visible {
@@ -88,96 +74,88 @@
 	flex: 1;
 }
 
-/* ─── ICON (shared base for open/close spans) ─── */
+/* ─── ICON ─── */
+
+/*
+ * Both icons share one grid cell. With iconRotation 0 they cross-fade on
+ * [open]; with a rotation only the open icon is printed and it turns on
+ * [open]. Every icon transition uses the same duration and easing as the
+ * answer panel, so the icon moves in time with the motion.
+ */
+.sgs-accordion-item__icons {
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+	width: var(--sgs-accordion-icon-size, 24px);
+	height: var(--sgs-accordion-icon-size, 24px);
+}
 
 .sgs-accordion-item__icon-open,
 .sgs-accordion-item__icon-close {
+	grid-area: 1 / 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	flex-shrink: 0;
-	width: 24px;
-	height: 24px;
+	width: 100%;
+	height: 100%;
 	transition:
-		opacity var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
-		color   var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
+		opacity var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		rotate  var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		color   var(--wp--custom--duration--fast, 150ms)   var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
-/* Spec 32: no block emits an inline `style` property declaration any more,
- * so a `:not([style*=…])` guard always matches and the fallback is
- * unconditional. This value is PAINTED (not what the element inherits), so
- * it is kept — but de-specified via :where() (0,0,0) so the operator's own
- * scoped `.{uid}` rule always wins. */
+.sgs-accordion-item__icon-open > svg,
+.sgs-accordion-item__icon-close > svg {
+	width: 100%;
+	height: 100%;
+}
+
+/* This value is PAINTED (not inherited), so it is kept, de-specified via
+ * :where() so the operator's own scoped `.{uid}` rule always wins. */
 :where(.sgs-accordion-item__icon-open),
 :where(.sgs-accordion-item__icon-close) {
 	color: var(--wp--preset--color--text-muted, #555555);
 }
 
-/* Icon colour on header hover/open. Rule 43 (WCAG 1.4.1): this state rule's
- * own declared properties are colour-only — the icon SWAP (open vs closed
- * icon) is a separate mechanism the detector can't see from this rule alone,
- * so a real non-colour cue (a small scale) is added here directly. */
-.sgs-accordion-item__header:hover .sgs-accordion-item__icon-open,
-.sgs-accordion-item__header:hover .sgs-accordion-item__icon-close,
-.sgs-accordion-item[open] .sgs-accordion-item__icon-open,
-.sgs-accordion-item[open] .sgs-accordion-item__icon-close {
-	color: var(--wp--preset--color--primary, #0f7e80);
-	transform: scale(1.1);
+.sgs-accordion-item__icon-close {
+	opacity: 0;
 }
 
-/* ─── CHEVRON variant — single icon that rotates ─── */
+.sgs-accordion-item[open] .sgs-accordion-item__icon-open {
+	opacity: 0;
+}
 
-/*
- * When a block uses a single chevron icon (class: sgs-accordion-item__chevron)
- * instead of separate open/close icon spans, we rotate it 180° on open.
- * Rotation uses the medium duration + default easing per the audit spec.
- */
+.sgs-accordion-item[open] .sgs-accordion-item__icon-close {
+	opacity: 1;
+}
+
+/* Rotating mode: the single open icon stays visible and turns. */
+.sgs-accordion-item[open] .sgs-accordion-item__icon-open--rotates {
+	opacity: 1;
+	rotate: var(--sgs-accordion-icon-rotate, 0deg);
+}
+
+/* ─── CHEVRON — editor canvas icon that rotates ─── */
+
 .sgs-accordion-item__chevron {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	flex-shrink: 0;
-	width: 24px;
-	height: 24px;
+	width: var(--sgs-accordion-icon-size, 24px);
+	height: var(--sgs-accordion-icon-size, 24px);
 	color: var(--wp--preset--color--text-muted, #555555);
-	transition:
-		transform var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
-		color     var(--wp--custom--duration--fast, 150ms)   var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
-}
-
-/* Rule 43 (WCAG 1.4.1): declared properties on THIS selector are colour-only
- * — the [open] rotate lives on a separate selector the detector doesn't
- * union against this one, so a real non-colour cue (scale) is added here. */
-.sgs-accordion-item[open] .sgs-accordion-item__chevron,
-.sgs-accordion-item__header:hover .sgs-accordion-item__chevron {
-	color: var(--wp--preset--color--primary, #0f7e80);
-	transform: scale(1.1);
+	transition: transform var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 .sgs-accordion-item[open] .sgs-accordion-item__chevron {
 	transform: rotate(180deg);
 }
 
-/* ─── ICON SWAP — close state (default: item is closed) ─── */
-
-.sgs-accordion-item__icon-close {
-	display: none;
-}
-
-/* ─── ICON SWAP — open state ─── */
-
-.sgs-accordion-item[open] .sgs-accordion-item__icon-open {
-	display: none;
-}
-
-.sgs-accordion-item[open] .sgs-accordion-item__icon-close {
-	display: flex;
-}
-
 /* ─── CONTENT ─── */
 
 .sgs-accordion-item__content {
-	padding: 0 20px 16px;
+	padding: var(--sgs-accordion-content-pad, var(--sgs-accordion-content-pad-base));
 	overflow: hidden;
 }
 
@@ -239,16 +217,6 @@
 	border-bottom: 0;
 }
 
-.sgs-accordion--flush .sgs-accordion-item__header {
-	padding-left: 0;
-	padding-right: 0;
-}
-
-.sgs-accordion--flush .sgs-accordion-item__content {
-	padding-left: 0;
-	padding-right: 0;
-}
-
 /* ─── STYLE: CARD ─── */
 
 .sgs-accordion--card .sgs-accordion-item {
@@ -271,73 +239,49 @@
 /* ─── RESPONSIVE ─── */
 
 @media (max-width: 600px) {
-	.sgs-accordion-item__header {
-		padding: 14px 16px;
-		font-size: 0.9rem;
+	.sgs-accordion-item {
+		--sgs-accordion-header-pad-base: 14px 16px;
+		--sgs-accordion-content-pad-base: 0 16px 14px;
 	}
 
-	.sgs-accordion-item__content {
-		padding: 0 16px 14px;
+	.sgs-accordion--flush .sgs-accordion-item {
+		--sgs-accordion-header-pad-base: 14px 0;
+		--sgs-accordion-content-pad-base: 0 0 14px;
 	}
 }
 
-/* ─── @STARTING-STYLE ENTRY ANIMATION (#300) ─── */
+/* ─── NATIVE OPEN / CLOSE ANIMATION ─── */
 
 /*
- * CSS-only entry animation for accordion panel expand.
- *
- * @starting-style defines the values the browser interpolates FROM when
- * an element first enters the rendered tree — in this case when the
- * <details> element receives the [open] attribute. No JS timing hacks needed.
- *
- * Browser support: Baseline 2024 (Chrome 117+, Firefox 129+, Safari 17.5+).
- * Progressive enhancement: older browsers see an instant expand, not broken.
- *
- * Duration: medium (300ms) + easing: default per Group J audit spec.
- */
-.sgs-accordion-item__content {
-	transition:
-		opacity   var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
-		transform var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
-}
-
-.sgs-accordion-item[open] > .sgs-accordion-item__content {
-	opacity: 1;
-	transform: translateY(0);
-}
-
-@starting-style {
-	.sgs-accordion-item[open] > .sgs-accordion-item__content {
-		opacity: 0;
-		transform: translateY(-6px);
-	}
-}
-
-/*
- * Progressive enhancement: smooth block-size (height) transition on the
- * <details> element itself. Requires interpolate-size on :root (Chrome 129+,
- * Firefox 133+). The JS view.js animation remains as the reliable fallback
- * for browsers that do not support this property.
+ * The browser animates the <details> content slot itself (::details-content
+ * block-size, with content-visibility switching at the end of the
+ * transition). This is the only open/close animation in a browser that
+ * supports it; view.js runs its height animation only where it does not.
  */
 @supports (interpolate-size: allow-keywords) {
-	:root {
-		interpolate-size: allow-keywords;
-	}
+	@supports selector(::details-content) {
+		.sgs-accordion-item {
+			interpolate-size: allow-keywords;
+		}
 
-	.sgs-accordion-item {
-		transition: block-size var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
-	}
+		.sgs-accordion-item::details-content {
+			block-size: 0;
+			overflow: clip;
+			transition:
+				block-size         var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+				content-visibility var(--wp--custom--duration--medium, 300ms) allow-discrete;
+		}
 
-	/* ::details-content is the pseudo-element for the hidden part of <details> */
-	.sgs-accordion-item::details-content {
-		transition: block-size var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
-		overflow: hidden;
+		.sgs-accordion-item[open]::details-content {
+			block-size: auto;
+		}
 	}
 }
 
 /* ─── REDUCED MOTION ─── */
 
 @media (prefers-reduced-motion: reduce) {
+	.sgs-accordion-item::details-content,
 	.sgs-accordion-item__header,
 	.sgs-accordion-item__icon-open,
 	.sgs-accordion-item__icon-close,

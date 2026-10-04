@@ -51,6 +51,10 @@ $header_font_weight_open  = $block->context['sgs/accordionHeaderFontWeightOpen']
 $header_col_open          = $block->context['sgs/accordionHeaderColourOpen'] ?? '';
 $header_bg_open           = $block->context['sgs/accordionHeaderBackgroundOpen'] ?? '';
 $icon_col                 = $block->context['sgs/accordionIconColour'] ?? '';
+$header_padding_raw       = $block->context['sgs/accordionHeaderPadding'] ?? array();
+$content_padding_raw      = $block->context['sgs/accordionContentPadding'] ?? array();
+$icon_size_raw            = $block->context['sgs/accordionIconSize'] ?? array();
+$icon_rotation            = max( 0.0, min( 360.0, (float) ( $block->context['sgs/accordionIconRotation'] ?? 0 ) ) );
 // D636/D644 icon/SVG gradient sibling — non-empty wins over icon_col above.
 $icon_col_gradient       = $block->context['sgs/accordionIconColourGradient'] ?? '';
 $icon_col_hover          = $block->context['sgs/accordionIconColourHover'] ?? '';
@@ -67,9 +71,17 @@ $responsive_css = '';
 // Header background — moved to ::after layer (D292) so text-colour gradient
 // can use background-clip:text on the same element. Emitted BEFORE the text
 // colour decl so the background-layer rule establishes the ::after backdrop.
+// A flat header colour paints the header element itself. The ::after layer is
+// only used when a gradient (background or text) shares the element, because
+// background-clip:text and a background gradient would otherwise collide.
 $header_bg_paint_decl = sgs_background_paint_decl( $header_bg, $header_bg_gradient );
+$header_uses_gradient = '' !== sgs_css_gradient_value( $header_bg_gradient ) || '' !== sgs_css_gradient_value( $header_col_gradient );
 if ( '' !== $header_bg_paint_decl ) {
-	$responsive_css .= sgs_block_background_layer_css( $root_sel . ' .sgs-accordion-item__header', $header_bg_paint_decl );
+	if ( $header_uses_gradient ) {
+		$responsive_css .= sgs_block_background_layer_css( $root_sel . ' .sgs-accordion-item__header', $header_bg_paint_decl );
+	} else {
+		$responsive_css .= $root_sel . ' .sgs-accordion-item__header{' . $header_bg_paint_decl . ';}';
+	}
 }
 
 // Header text colour — was inline `style="…"` on <summary>, now a scoped
@@ -146,11 +158,52 @@ if ( '' !== $header_col_open_paint ) {
 $header_bg_open_paint = sgs_colour_value( (string) $header_bg_open );
 if ( '' !== $header_bg_open_paint ) {
 	$header_open_decls[] = 'background-color:' . $header_bg_open_paint;
-	$responsive_css     .= $root_sel . '[open] > .sgs-accordion-item__header::after,' . $root_sel . '[open] > summary > .sgs-accordion-item__header::after'
-		. '{background:' . $header_bg_open_paint . '}';
+	if ( $header_uses_gradient ) {
+		$responsive_css .= $root_sel . '[open] > .sgs-accordion-item__header::after,' . $root_sel . '[open] > summary > .sgs-accordion-item__header::after'
+			. '{background:' . $header_bg_open_paint . '}';
+	}
 }
 if ( $header_open_decls ) {
 	$responsive_css .= $header_open_sel . '{' . implode( ';', $header_open_decls ) . '}';
+}
+
+// Slot padding and icon size/rotation — per-device custom properties on the
+// item root; style.css reads each with its own default as the var() fallback,
+// so an empty setting leaves the stylesheet's values in force.
+$sgs_ai_var_tiers = array(
+	'desktop' => '',
+	'tablet'  => '@media(max-width:1023px)',
+	'mobile'  => '@media(max-width:767px)',
+);
+$sgs_ai_box_tiers = static function ( $raw, string $var ) use ( $root_sel, $sgs_ai_var_tiers ): string {
+	$tiers = sgs_responsive_normalise_object( $raw, true );
+	$out   = '';
+	foreach ( $sgs_ai_var_tiers as $tier => $media ) {
+		if ( ! is_array( $tiers[ $tier ] ?? null ) ) {
+			continue;
+		}
+		$short = sgs_box_object_shorthand( $tiers[ $tier ] );
+		if ( null === $short ) {
+			continue;
+		}
+		$rule = $root_sel . '{' . $var . ':' . $short . ';}';
+		$out .= '' === $media ? $rule : $media . '{' . $rule . '}';
+	}
+	return $out;
+};
+$responsive_css .= $sgs_ai_box_tiers( $header_padding_raw, '--sgs-accordion-header-pad' );
+$responsive_css .= $sgs_ai_box_tiers( $content_padding_raw, '--sgs-accordion-content-pad' );
+$icon_size_tiers = sgs_responsive_normalise_object( $icon_size_raw );
+foreach ( $sgs_ai_var_tiers as $tier => $media ) {
+	$size = $icon_size_tiers[ $tier ] ?? null;
+	if ( ! is_numeric( $size ) || (float) $size <= 0 ) {
+		continue;
+	}
+	$rule             = $root_sel . '{--sgs-accordion-icon-size:' . (float) $size . 'px;}';
+	$responsive_css .= '' === $media ? $rule : $media . '{' . $rule . '}';
+}
+if ( $icon_rotation > 0 ) {
+	$responsive_css .= $root_sel . '{--sgs-accordion-icon-rotate:' . $icon_rotation . 'deg;}';
 }
 
 // Icon colour — was inline `style="…"` on both icon spans, now a scoped rule.
@@ -263,10 +316,10 @@ $open_icon_svg  = sgs_get_lucide_icon( $open_icon );
 $close_icon_svg = sgs_get_lucide_icon( $close_icon );
 
 if ( ! $open_icon_svg ) {
-	$open_icon_svg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+	$open_icon_svg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 }
 if ( ! $close_icon_svg ) {
-	$close_icon_svg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18 15l-6-6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+	$close_icon_svg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18 15l-6-6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 }
 
 // D636/D644 — the gradient <defs> only needs to exist ONCE in the DOM
@@ -280,12 +333,23 @@ if ( '' !== $sgs_ai_icon_hover_grad['defs'] ) {
 	$open_icon_svg = sgs_svg_inject_defs( $open_icon_svg, $sgs_ai_icon_hover_grad['defs'] );
 }
 
-$icon_html = sprintf(
-	'<span class="sgs-accordion-item__icon-open" aria-hidden="true">%s</span>' .
-	'<span class="sgs-accordion-item__icon-close" aria-hidden="true">%s</span>',
-	$open_icon_svg,
-	$close_icon_svg
-);
+// A non-zero iconRotation prints only the open icon and turns it on [open];
+// zero prints both icons stacked in one cell and cross-fades them.
+if ( $icon_rotation > 0 ) {
+	$icon_html = sprintf(
+		'<span class="sgs-accordion-item__icons"><span class="sgs-accordion-item__icon-open sgs-accordion-item__icon-open--rotates" aria-hidden="true">%s</span></span>',
+		$open_icon_svg
+	);
+} else {
+	$icon_html = sprintf(
+		'<span class="sgs-accordion-item__icons">' .
+		'<span class="sgs-accordion-item__icon-open" aria-hidden="true">%s</span>' .
+		'<span class="sgs-accordion-item__icon-close" aria-hidden="true">%s</span>' .
+		'</span>',
+		$open_icon_svg,
+		$close_icon_svg
+	);
+}
 
 /*
  * aria-expanded on <summary> improves compatibility with legacy screen readers
@@ -400,7 +464,7 @@ if ( 'none' !== $border_style ) {
 	// class default) would otherwise keep painting even though the
 	// operator picked "no border". Cause-agnostic: harmless when no
 	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+	$responsive_css .= $root_sel . '{border-style:none;border-width:0;}';
 }
 
 // ── Block-private border-radius (radius is no longer native -- Shape B now

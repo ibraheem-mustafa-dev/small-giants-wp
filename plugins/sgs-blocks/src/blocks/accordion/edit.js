@@ -362,6 +362,71 @@ export default function Edit({ attributes, setAttributes }) {
           	) }
           </ResponsiveOverride>
         </PanelBody>
+        {/* Item header, answer and toggle icon — slot settings read by every
+            sgs/accordion-item through block context. Empty padding and size keep
+            the stylesheet's own values; the header font size follows Typography. */}
+        <PanelBody title={ __( "Header, answer & icon", "sgs-blocks" ) } initialOpen={ false }>
+          <ResponsiveOverride
+            value={ attributes.headerPadding }
+            onChange={ ( obj ) => setAttributes( { headerPadding: obj } ) }
+          >
+            { ( { ownValue, setOwnValue } ) => (
+              <SgsBoxControl
+                label={ __( 'Header padding', 'sgs-blocks' ) }
+                values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+                units={ BOX_UNITS }
+                presets
+                onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+              />
+            ) }
+          </ResponsiveOverride>
+          <hr style={ { margin: "16px 0" } } />
+          <ResponsiveOverride
+            value={ attributes.contentPadding }
+            onChange={ ( obj ) => setAttributes( { contentPadding: obj } ) }
+          >
+            { ( { ownValue, setOwnValue } ) => (
+              <SgsBoxControl
+                label={ __( 'Answer padding', 'sgs-blocks' ) }
+                values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+                units={ BOX_UNITS }
+                presets
+                onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+              />
+            ) }
+          </ResponsiveOverride>
+          <hr style={ { margin: "16px 0" } } />
+          <ResponsiveOverride
+            value={ attributes.iconSize }
+            onChange={ ( obj ) => setAttributes( { iconSize: obj } ) }
+          >
+            { ( { ownValue, setOwnValue } ) => (
+              <RangeControl
+                label={ __( "Icon size (px)", "sgs-blocks" ) }
+                help={ __( "Empty keeps 24px.", "sgs-blocks" ) }
+                value={ typeof ownValue === "number" ? ownValue : undefined }
+                onChange={ ( val ) => setOwnValue( val ) }
+                min={ 12 }
+                max={ 64 }
+                step={ 1 }
+                allowReset
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize
+              />
+            ) }
+          </ResponsiveOverride>
+          <RangeControl
+            label={ __( "Icon rotation when open (degrees)", "sgs-blocks" ) }
+            help={ __( "0 swaps between the open and close icons. A value such as 45 turns a plus into a cross in time with the panel.", "sgs-blocks" ) }
+            value={ attributes.iconRotation }
+            onChange={ ( val ) => setAttributes( { iconRotation: val ?? 0 } ) }
+            min={ 0 }
+            max={ 360 }
+            step={ 1 }
+            __nextHasNoMarginBottom
+            __next40pxDefaultSize
+          />
+        </PanelBody>
         {/* Border — block-private width/style/colour attrs (Shape B, 2026-08-30).
             Radius is deliberately NOT mounted here: it stays a WP-native support
             (`__experimentalBorder.radius`) with its own control in the Styles >

@@ -27,6 +27,16 @@
 	border-top: 1px dashed rgba(0, 0, 0, 0.06);
 }
 
+/* Open-state icon preview: style.css keys these on <details>[open], which the
+ * editor canvas does not use, so the same motion is keyed on the open class. */
+.sgs-accordion-item--open .sgs-accordion-item__icon-open {
+	rotate: 180deg;
+}
+
+.sgs-accordion-item--open .sgs-accordion-item__icon-open--rotates {
+	rotate: var(--sgs-accordion-icon-rotate, 0deg);
+}
+
 /* Collapsed state hint */
 .sgs-accordion-item__content[style*="display: none"] + .sgs-accordion-item__collapsed-hint {
 	display: block;

@@ -110,14 +110,16 @@
           "order": 3,
           "clusters": [
             "text",
-            "fill"
+            "fill",
+            "layout"
           ],
           "attrMap": {
             "css:color": "headerColour",
             "css:background-color": "headerBackground",
             "css:background-image": "headerBackgroundGradient",
             "css:color-gradient": "headerColourGradient",
-            "css:font-weight": "headerFontWeight"
+            "css:font-weight": "headerFontWeight",
+            "css:padding": "headerPadding"
           },
           "states": {
             "hover": {
@@ -143,11 +145,14 @@
           "order": 4,
           "clusters": [
             "text",
-            "fill"
+            "fill",
+            "layout"
           ],
           "attrMap": {
             "css:color": "iconColour",
-            "css:stroke": "iconColourGradient"
+            "css:stroke": "iconColourGradient",
+            "css:width": "iconSize",
+            "css:transform": "iconRotation"
           },
           "states": {
             "hover": {
@@ -157,11 +162,22 @@
               }
             }
           },
-          "_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient (2026-09-06, colour-conformance closeout) mirror the same mechanism, consumed by sgs/accordion-item via block context exactly like the resting pair (providesContext below)."
+          "_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient (2026-09-06, colour-conformance closeout) mirror the same mechanism, consumed by sgs/accordion-item via block context exactly like the resting pair (providesContext below).",
+          "layer": "OUTER"
+        },
+        "answer": {
+          "label": "Item answer",
+          "order": 5,
+          "clusters": [
+            "layout"
+          ],
+          "attrMap": {
+            "css:padding": "contentPadding"
+          }
         },
         "item": {
           "label": "Accordion item",
-          "order": 5,
+          "order": 6,
           "clusters": [],
           "_note": "Each item's title + body content is rendered by the child `sgs/accordion-item` block, which owns its own typography controls — this element documents that ownership, mirroring sgs/quote's quote-body."
         }
@@ -506,6 +522,28 @@
       "type": "string",
       "description": "CSS gradient string painting the header row text on :hover. Non-empty wins over headerColourHover. Relayed to accordion-item via block context.",
       "default": ""
+    },
+    "headerPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Item header padding as a per-device box {desktop,tablet,mobile}, each a {top,right,bottom,left} box. Empty = the stylesheet's 16px 20px (14px 16px under 600px)."
+    },
+    "contentPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Item answer padding as a per-device box {desktop,tablet,mobile}. Empty = the stylesheet's 0 20px 16px (0 16px 14px under 600px)."
+    },
+    "iconSize": {
+      "type": "object",
+      "default": {},
+      "description": "Toggle icon width and height in px, per device {desktop,tablet,mobile}. Empty = 24px."
+    },
+    "iconRotation": {
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 360,
+      "description": "Degrees the open icon turns when the item opens. Non-zero prints only the open icon and rotates it; 0 keeps both icons and cross-fades them."
     }
   },
   "providesContext": {
@@ -529,7 +567,11 @@
     "sgs/accordionHeaderFontWeight": "headerFontWeight",
     "sgs/accordionHeaderFontWeightOpen": "headerFontWeightOpen",
     "sgs/accordionHeaderColourOpen": "headerColourOpen",
-    "sgs/accordionHeaderBackgroundOpen": "headerBackgroundOpen"
+    "sgs/accordionHeaderBackgroundOpen": "headerBackgroundOpen",
+    "sgs/accordionHeaderPadding": "headerPadding",
+    "sgs/accordionContentPadding": "contentPadding",
+    "sgs/accordionIconSize": "iconSize",
+    "sgs/accordionIconRotation": "iconRotation"
   },
   "allowedBlocks": [
     "sgs/accordion-item"

@@ -107,7 +107,11 @@
 		"sgs/accordionHeaderFontWeight",
 		"sgs/accordionHeaderFontWeightOpen",
 		"sgs/accordionHeaderColourOpen",
-		"sgs/accordionHeaderBackgroundOpen"
+		"sgs/accordionHeaderBackgroundOpen",
+		"sgs/accordionHeaderPadding",
+		"sgs/accordionContentPadding",
+		"sgs/accordionIconSize",
+		"sgs/accordionIconRotation"
 	],
 	"attributes": {
 		"title": {
