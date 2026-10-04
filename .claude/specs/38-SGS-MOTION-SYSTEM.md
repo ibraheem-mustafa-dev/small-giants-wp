@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 38
-spec_version: 1.3
+spec_version: 1.4
 status: active
 title: SGS Motion System — the four-tier motion doctrine (V/G/H/W) + the GSAP (Tier G) effects layer
 created: 2026-07-29
@@ -1471,7 +1471,13 @@ seeder (`scripts/dbschema/seed-motion-shape-signatures.py::_extract_entrance_row
   their own that start together (in view at load, or in one observer batch) play 100ms apart.
   `supports.sgs.animationItems` hands a block's entrance to its repeated items (`sgs/card-grid`
   tiles), staggered by its declared `anim:stagger` attribute.
-- **When it plays.** An entrance plays once 1% of the block has passed its "Start when" line,
+- **When it plays.** `sgsAnimationStart` chooses the start: `''` (default, "Block scrolls into view")
+  or `'load'` ("Page loads", written as `data-sgs-animation-start="load"`). A `load` entrance plays
+  as the observer script starts, wherever the block sits (below the fold included), with its own
+  delay plus stagger offset; it never joins the near or play observers, ignores
+  `sgsAnimationTrigger`, and shares the 100ms automatic spacing with the blocks in view at load.
+  Reduced motion and a missing `animate()` or IntersectionObserver show the block unanimated, as for
+  every entrance. Otherwise an entrance plays once 1% of the block has passed its "Start when" line,
   `sgsAnimationTrigger` % of the screen height above the bottom edge (default 6, the Eye Care
   draft's reveal: threshold 0.01, rootMargin `0px 0px -6% 0px`); one IntersectionObserver per line.
   Past its line at load: at once. Otherwise the animation is created paused (start pose) within

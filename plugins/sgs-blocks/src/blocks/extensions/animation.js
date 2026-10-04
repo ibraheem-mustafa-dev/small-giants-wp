@@ -4,7 +4,7 @@
  *
  * Adds the entrance attributes (sgsAnimation, sgsAnimationDelay,
  * sgsAnimationDuration, sgsAnimationEasing, sgsAnimationDistance) and its
- * timing (sgsAnimationTrigger, sgsAnimationStagger,
+ * timing (sgsAnimationStart, sgsAnimationTrigger, sgsAnimationStagger,
  * sgsAnimationStaggerChildren, sgsAnimationStaggerMax — EntranceStaggerControls)
  * and outputs them as data-* attributes on the saved markup.
  * assets/js/animation-observer.js reads these and plays the entrance as a Web
@@ -97,6 +97,7 @@ function addAnimationAttributes( settings, name ) {
 			sgsAnimationDuration: { type: 'string', default: existingDuration      ?? 'medium' },
 			sgsAnimationEasing:   { type: 'string', default: existingEasing        ?? 'default' },
 			sgsAnimationDistance: { type: 'string', default: existingDistance      ?? '' },
+			sgsAnimationStart:           { type: 'string', default: '' },
 			sgsAnimationTrigger:         { type: 'string', default: '' },
 			sgsAnimationStagger:         { type: 'string', default: '' },
 			sgsAnimationStaggerChildren: { type: 'string', default: '' },
@@ -300,6 +301,9 @@ function addAnimationSaveProps( props, blockType, attributes ) {
 		if ( attributes.sgsAnimationDistance ) {
 			saveProps[ 'data-sgs-animation-distance' ] =
 				attributes.sgsAnimationDistance;
+		}
+		if ( 'load' === attributes.sgsAnimationStart ) {
+			saveProps[ 'data-sgs-animation-start' ] = 'load';
 		}
 		if ( attributes.sgsAnimationTrigger ) {
 			saveProps[ 'data-sgs-animation-trigger' ] =

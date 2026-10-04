@@ -5,23 +5,21 @@
 export const LAYOUT_PROPS = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
 
 // Self-contained (passed to page.evaluate as source). The element whose layout a pair's layout properties describe:
-// the element itself when it is a flex or grid container, else the first flex or grid container down a chain of
-// single rendered children (a block whose wrapper holds one inner band carrying the layout), else the element.
-// The same rule on both sides, so a draft row element and a live wrapper-plus-inner band compare the same layout.
+// the first flex or grid container with two or more rendered children, found from the element down a chain of single
+// rendered children (a block wrapper, flex or not, holding one inner band that lays out the items), else the element.
+// A gap or alignment between fewer than two items paints nothing. The same rule on both sides, so a draft row element
+// and a live wrapper-plus-inner band compare the same layout.
 export function layoutElement( el, styleOf = ( e ) => getComputedStyle( e ) ) {
 	const lays = ( e ) => /(^|-)(flex|grid)$/.test( styleOf( e ).display );
-	if ( lays( el ) ) {
-		return el;
-	}
 	for ( let a = el; ; ) {
 		const kids = [ ...a.children ].filter( ( k ) => k.getClientRects().length && 'none' !== styleOf( k ).display );
+		if ( kids.length >= 2 ) {
+			return lays( a ) ? a : el;
+		}
 		if ( 1 !== kids.length ) {
 			return el;
 		}
 		a = kids[ 0 ];
-		if ( lays( a ) ) {
-			return a;
-		}
 	}
 }
 

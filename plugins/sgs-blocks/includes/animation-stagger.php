@@ -6,6 +6,10 @@
  * sits close to the 300-line PHP limit). Runs after it at render_block
  * priority 11 and adds, onto the same root element:
  *
+ *   · data-sgs-animation-start            — sgsAnimationStart: 'load' plays the
+ *                                           entrance on page load whatever the
+ *                                           block's position; empty (default)
+ *                                           waits for the block to scroll into view.
  *   · data-sgs-animation-trigger          — sgsAnimationTrigger: how far above
  *                                           the bottom of the screen (0-50 %) the
  *                                           block starts its entrance.
@@ -90,6 +94,7 @@ function inject_entrance_stagger_attributes( string $block_content, array $block
 	}
 
 	$attrs    = $block['attrs'] ?? array();
+	$start    = 'load' === ( $attrs['sgsAnimationStart'] ?? '' ) ? 'load' : '';
 	$trigger  = sgs_entrance_clamp_int( $attrs['sgsAnimationTrigger'] ?? '', 0, 50 );
 	$stagger  = sgs_entrance_clamp_int( $attrs['sgsAnimationStagger'] ?? '', 0, 1000 );
 	$children = sgs_entrance_clamp_int( $attrs['sgsAnimationStaggerChildren'] ?? '', 0, 1000 );
@@ -105,7 +110,7 @@ function inject_entrance_stagger_attributes( string $block_content, array $block
 		}
 	}
 
-	if ( '' === $trigger && '' === $stagger && '' === $children && '' === $items ) {
+	if ( '' === $start && '' === $trigger && '' === $stagger && '' === $children && '' === $items ) {
 		return $block_content;
 	}
 
@@ -133,6 +138,7 @@ function inject_entrance_stagger_attributes( string $block_content, array $block
 
 	// Trigger, own stagger and items apply only to a block that has an entrance.
 	if ( null !== $processor->get_attribute( 'data-sgs-animation' ) ) {
+		$set( 'data-sgs-animation-start', $start );
 		$set( 'data-sgs-animation-trigger', $trigger );
 		$set( 'data-sgs-animation-stagger', $stagger );
 		$set( 'data-sgs-animation-items', $items );

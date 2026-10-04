@@ -13,7 +13,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import { collectAuto } from '../parity/lib/auto-collect.mjs';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
 import { AUTO_EXCLUDE } from '../parity/lib/auto-walk.mjs';
-import { makeHelpers } from '../parity/lib/helpers.mjs';
+import { makeHelpers, waitOutHostCheck } from '../parity/lib/helpers.mjs';
 import { resolveFinder } from '../parity/lib/collect.mjs';
 import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
 
@@ -153,6 +153,7 @@ async function openDraft( browser, cfg, width ) {
 	h.log = [];
 	await page.goto( cfg.draft.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
 	await page.waitForTimeout( 1500 );
+	await waitOutHostCheck( page );
 	if ( cfg.draft.open ) {
 		await cfg.draft.open( h );
 	}
@@ -185,6 +186,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const live = await browser.newPage( { viewport: { width: 1440, height: 900 } } );
 	await live.goto( cfg.live.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
 	await live.waitForTimeout( 2500 );
+	await waitOutHostCheck( live );
 	const dWords = await collectTagged( draft, 'draft', cfg );
 	const lWords = await collectTagged( live, 'live', cfg );
 	const { refs: liveRefs, boxes } = await liveBlocks( live, prefix );

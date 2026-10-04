@@ -7,6 +7,16 @@ import { centreOf } from './collect.mjs';
 // as a URL load; { quiet: true } waits until the network is idle (an Interactivity re-render).
 // onAction (the full checks) runs right after each click, tap or hover, before the settle wait, so
 // motion is sampled while it plays.
+// The host sometimes serves its "Checking your browser" page first, then swaps in the real one: a read from it
+// compares nothing, and a read during the swap loses its context. Waits for the real page (up to 15s), then idle.
+export async function waitOutHostCheck( page ) {
+	for ( let t = 0; t < 50 && /checking your browser/i.test( await page.title().catch( () => 'checking your browser' ) ); t++ ) {
+		await page.waitForTimeout( 300 );
+	}
+	await page.waitForLoadState( 'networkidle' ).catch( () => {} );
+	await page.waitForTimeout( 500 );
+}
+
 export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 	let inflight = 0;
 	page.on( 'request', () => inflight++ );
@@ -43,13 +53,7 @@ export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 		goto: async ( url ) => {
 			h.log.push( { type: 'goto', target: url } );
 			await page.goto( cb( url ), { waitUntil: 'networkidle' } );
-			// The host sometimes serves its "Checking your browser" page first, then swaps in the real one:
-			// a state read from it compares nothing (up to 15s).
-			for ( let t = 0; t < 50 && /checking your browser/i.test( await page.title().catch( () => 'checking your browser' ) ); t++ ) {
-				await page.waitForTimeout( 300 );
-			}
-			await page.waitForLoadState( 'networkidle' ).catch( () => {} );
-			await page.waitForTimeout( 500 );
+			await waitOutHostCheck( page );
 		},
 		// Clicks the smallest visible element whose rendered text matches the regex source.
 		clickText: async ( src, opts = {} ) => {

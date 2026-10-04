@@ -63,8 +63,9 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 			...compareScroll( d.snap[ p.name ].scroll, l.snap[ p.name ].scroll ),
 			...anchorOffset( p, d.snap, l.snap, { ...tol, ...( p.tolerance || {} ) } ),
 		];
-		stampRefs( diffs, l.snap[ p.name ].trace );
 		const all = header ? compareChrome( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) }, diffs ) : diffs;
+		// Stamped after the full-check rows too: a painted ground or text inset is the pair element's, like its styles.
+		stampRefs( all, l.snap[ p.name ].trace );
 		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, all ) };
 	}
 	if ( autoOn ) {

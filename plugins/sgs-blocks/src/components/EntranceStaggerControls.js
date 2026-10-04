@@ -2,11 +2,13 @@
  * EntranceStaggerControls — when an entrance starts and how blocks cascade.
  *
  * Rendered by src/blocks/extensions/animation.js under AnimationControl in
- * every block's Animation panel. Four string attributes, each empty for the
+ * every block's Animation panel. Five string attributes, each empty for the
  * default and written to the page as data attributes that
  * assets/js/animation-entrance-timing.js reads:
  *
- *   sgsAnimationTrigger         "Start when" (% of screen height above its
+ *   sgsAnimationStart           "Start when": '' = the block scrolls into view,
+ *                               'load' = the page loads (whatever the position).
+ *   sgsAnimationTrigger         Scroll start line (% of screen height above its
  *                               bottom edge, 0-50; empty = 6).
  *   sgsAnimationStagger         This block's own stagger step (ms) against
  *                               matching animated blocks beside it — reaches
@@ -22,6 +24,7 @@
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
+import { SelectControl } from '@wordpress/components';
 import { NumberControl } from './primitives';
 
 /**
@@ -54,6 +57,7 @@ export default function EntranceStaggerControls( {
 		[ clientId ]
 	);
 	const {
+		sgsAnimationStart,
 		sgsAnimationTrigger,
 		sgsAnimationStagger,
 		sgsAnimationStaggerChildren,
@@ -66,8 +70,21 @@ export default function EntranceStaggerControls( {
 		<>
 			{ hasAnimation && (
 				<>
+					<SelectControl
+						label={ __( 'Start when', 'sgs-blocks' ) }
+						help={ __( 'Page loads plays the entrance as the page opens, even for a block below the first screen. Block scrolls into view waits until the visitor reaches it.', 'sgs-blocks' ) }
+						value={ 'load' === sgsAnimationStart ? 'load' : '' }
+						options={ [
+							{ label: __( 'Block scrolls into view', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Page loads', 'sgs-blocks' ), value: 'load' },
+						] }
+						onChange={ ( val ) => setAttributes( { sgsAnimationStart: 'load' === val ? 'load' : '' } ) }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+					/>
+					{ 'load' !== sgsAnimationStart && (
 					<NumberControl
-						label={ __( 'Start when (% up from the screen bottom)', 'sgs-blocks' ) }
+						label={ __( 'Scroll line (% up from the screen bottom)', 'sgs-blocks' ) }
 						help={ __( 'The entrance starts once the block passes a line this far above the bottom of the screen. Empty uses 6%.', 'sgs-blocks' ) }
 						value={ sgsAnimationTrigger || '' }
 						placeholder="6"
@@ -76,6 +93,7 @@ export default function EntranceStaggerControls( {
 						onChange={ ( val ) => setAttributes( { sgsAnimationTrigger: toAttr( val, 0, 50 ) } ) }
 						__next40pxDefaultSize
 					/>
+					) }
 					<NumberControl
 						label={ __( 'Stagger with matching blocks beside it (ms)', 'sgs-blocks' ) }
 						help={ __( 'Each matching animated block beside this one starts this much later than the one before. Set it on the card of a repeated list (a product or post template). Overrides the parent’s “Stagger the blocks inside”.', 'sgs-blocks' ) }

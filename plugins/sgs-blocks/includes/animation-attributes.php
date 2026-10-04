@@ -122,6 +122,7 @@ function sgs_strip_animation_attributes( string $block_content ): string {
 		'data-sgs-animation-duration',
 		'data-sgs-animation-easing',
 		'data-sgs-animation-distance',
+		'data-sgs-animation-start',
 		'data-sgs-animation-trigger',
 		'data-sgs-animation-stagger',
 		'data-sgs-animation-items',

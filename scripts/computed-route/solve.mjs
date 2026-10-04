@@ -12,19 +12,17 @@ import { openDb } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve } from './lib/resolve.mjs';
 import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet } from './lib/tree.mjs';
-import { writableGroups, draftValues, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState } from './lib/solve-rows.mjs';
+import { writableGroups, draftValues, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState, cssProp } from './lib/solve-rows.mjs';
 import { writeSolveReport } from './lib/solve-report.mjs';
 import { guardRound, closeTrials } from './lib/guard.mjs';
 import { detectReferences, referenceOf } from './lib/references.mjs';
+import { entranceStart } from './lib/entrance.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
 const WIDTHS = '375,768,1440,1920';
 // Computed values that are used sizes, never declared ones (getComputedStyle resolves auto to pixels).
 export const USED_VALUES = [ 'width' ];
-
-// The CSS property a row's key stands for: icon size rows (stamped with the svg's path) are its declared width/height.
-export const cssProp = ( key ) => key.replace( /^icon-(width|height)$/, '$1' );
 
 // The calibration file for a block, or null (the resolver then returns `uncalibrated`).
 export function calibrationFor( block ) {
@@ -119,7 +117,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 		const { perWidth, fontPx } = draftValues( report, g.pair, g.prop, 'hover' === g.state, g.walkerStates );
 		// The element's other draft properties, for a setting calibration found (a layout mode decided by several properties).
 		const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === g.ref && o.path === g.path && ! o.state && o.prop !== g.prop ).map( ( o ) => [ o.prop, draftValues( report, o.pair, o.prop, false, o.walkerStates ).perWidth ] ) );
-		const r = resolve( { block: node.name, slot: g.path, prop: cssProp( g.prop ), state: g.state, perWidth, fontPx, current: node.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
+		const r = entranceStart( g, node, perWidth ) || resolve( { block: node.name, slot: g.path, prop: cssProp( g.prop ), state: g.state, perWidth, fontPx, current: node.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
 		if ( r.gap ) {
 			gaps[ g.key ] = r;
 			continue;

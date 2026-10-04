@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 2
-spec_version: "1.6"
+spec_version: "1.7"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: shipped
@@ -1335,7 +1335,8 @@ All SGS blocks receive animation and interaction controls via the block extensio
 - `sgsAnimationDuration` — the theme duration tokens: instant (60ms) | fast (150ms) | medium (300ms) | slow (500ms) | extra-slow (800ms), or a custom millisecond count 0-5000 (default: medium)
 - `sgsAnimationEasing` — the theme easing tokens: default | ease-out | ease-in | spring | linear, or CSS `ease`; a stored raw CSS easing string (e.g. `cubic-bezier(…)`) is used as-is (default: default)
 - `sgsAnimationDistance` — '' | 15 | 30 | 50 | 100 px or a custom 0-400 px, directional effects only (default: '' = the effect's own 30px fade or 100px slide)
-- `sgsAnimationTrigger` — "Start when": the entrance starts once 1% of the block passes a line this many % of the screen height above its bottom edge, 0-50 (default: '' = 6)
+- `sgsAnimationStart` — "Start when": '' = the block scrolls into view (default), 'load' = the page loads (plays on load wherever the block sits; the scroll line below is ignored)
+- `sgsAnimationTrigger` — scroll line: the entrance starts once 1% of the block passes a line this many % of the screen height above its bottom edge, 0-50 (default: '' = 6)
 - `sgsAnimationStagger` — the block's own stagger step, 0-1000 ms, against the matching animated blocks beside it; reaches cards in a repeated list whose parent is not an SGS block (a product template)
 - `sgsAnimationStaggerChildren` — "Stagger the blocks inside", 0-1000 ms: a parent's step for its animated blocks in page order; offered on blocks with inner blocks, animated or not. A block declaring its own stagger attribute (attrMap `anim:stagger`, e.g. `sgs/card-grid` `staggerDelay`) supplies it instead
 - `sgsAnimationStaggerMax` — the position after which the stagger stops growing, 1-50 (default: '' = 7)

@@ -96,12 +96,16 @@ test( 'MUST FAIL TO MISS: a wrapper holding one flex or grid band reads its layo
 	const wrapper = box( 'block', [ inner ] );
 	assert.equal( layoutElement( wrapper, styleOf ), inner );
 	const deep = box( 'flex', [ box( 'block' ), box( 'block' ) ] );
-	assert.equal( layoutElement( box( 'block', [ box( 'block', [ deep ] ) ] ), styleOf ), deep );
+	assert.equal( layoutElement( box( 'block', [ box( 'block', [ deep ] ) ] ), styleOf ), deep );	// About's credential column: the wrapper is itself flex but holds one inner band, which lays out the cards.
+	const band = box( 'flex', [ box( 'block' ), box( 'block' ), box( 'block' ) ] );
+	assert.equal( layoutElement( box( 'flex', [ band ] ), styleOf ), band );
 } );
 
-test( 'positive control: a flex element, a wrapper with two children, or one with no layout below keeps itself', () => {
-	const row = box( 'inline-flex', [ box( 'grid' ) ] );
+test( 'positive control: a flex element with two items, a wrapper with two children, or one with no layout below keeps itself', () => {
+	const row = box( 'inline-flex', [ box( 'block' ), box( 'grid' ) ] );
 	assert.equal( layoutElement( row, styleOf ), row );
+	const button = box( 'flex', [ box( 'block' ) ] );
+	assert.equal( layoutElement( button, styleOf ), button );
 	const two = box( 'block', [ box( 'grid' ), box( 'grid' ) ] );
 	assert.equal( layoutElement( two, styleOf ), two );
 	const plain = box( 'block', [ box( 'block', [ box( 'block' ), box( 'block' ) ] ) ] );
@@ -135,12 +139,12 @@ test( 'MUST FAIL TO MATCH: a border style on a painted side is still a differenc
 } );
 
 // An icon's size (About's WhatsApp button, 2026-10-04: draft 19px against live 20px, which no row measured) is a row
-// on the svg's own path, and Solve writes it as the svg's declared width or height (solve.mjs::cssProp).
-import { cssProp } from '../solve.mjs';
+// on the svg's own path, and Solve writes it as the svg's declared width or height (lib/solve-rows.mjs::cssProp).
+import { cssProp } from '../lib/solve-rows.mjs';
 
 test( 'MUST FAIL TO MISS: icon size rows carry the icon path and stand for width and height', () => {
 	const diffs = [ { kind: 'style', key: 'icon-width' }, { kind: 'style', key: 'icon-height' }, { kind: 'style', key: 'width' } ];
 	stampRefs( diffs, { ref: 'cr-ref-a-9', block: 'sgs-whatsapp-cta', path: '', textPath: '.sgs-whatsapp-cta__label', layoutPath: '', iconPath: '.sgs-whatsapp-cta__icon' } );
 	assert.deepEqual( diffs.map( ( d ) => d.path ), [ '.sgs-whatsapp-cta__icon', '.sgs-whatsapp-cta__icon', '' ] );
-	assert.deepEqual( [ 'icon-width', 'icon-height', 'width', 'icon-fill' ].map( cssProp ), [ 'width', 'height', 'width', 'icon-fill' ] );
+	assert.deepEqual( [ 'icon-width', 'icon-height', 'width', 'icon-fill', 'painted-ground' ].map( cssProp ), [ 'width', 'height', 'width', 'icon-fill', 'background-color' ] );
 } );

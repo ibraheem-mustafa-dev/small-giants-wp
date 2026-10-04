@@ -104,6 +104,7 @@ return array(
 	'sgsAnimationStagger' => array( 'type' => 'string' ),
 	'sgsAnimationStaggerChildren' => array( 'type' => 'string' ),
 	'sgsAnimationStaggerMax' => array( 'type' => 'string' ),
+	'sgsAnimationStart' => array( 'type' => 'string' ),
 	'sgsAnimationTrigger' => array( 'type' => 'string' ),
 	'sgsBlockLink' => array( 'type' => 'string' ),
 	'sgsBlockLinkLabel' => array( 'type' => 'string' ),

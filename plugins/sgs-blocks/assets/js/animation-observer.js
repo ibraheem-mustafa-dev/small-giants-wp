@@ -13,7 +13,9 @@
  * assets/js/animation-entrance-timing.js (sgsEntranceTiming, enqueued as this
  * script's dependency): an entrance plays once 1% of its block has passed the
  * block's "Start when" line (6% of the screen height above the bottom edge
- * unless set), elements past that line at load play at once, and a stagger
+ * unless set), elements past that line at load play at once, blocks set to start when
+ * the page loads (data-sgs-animation-start="load") play at once wherever they
+ * sit, and a stagger
  * set in the editor adds its step per position to the block's own delay. With
  * no stagger set, blocks with no delay of their own that start together play
  * 100ms apart. The rest are created — paused, which already paints their
@@ -392,12 +394,15 @@
 			return playObservers[ pct ];
 		};
 
-		// Elements already in the viewport on page load play at once — both
-		// observers fire async and would otherwise miss them.
+		// Elements already in the viewport on page load, and those set to start
+		// when the page loads, play at once — both observers fire async and
+		// would otherwise miss them.
 		const inViewOnLoad = [];
 		const viewHeight = globalThis.innerHeight || document.documentElement.clientHeight;
 		elements.forEach( function ( el ) {
-			if ( isInViewport( el ) ) {
+			// "Page loads" entrances (data-sgs-animation-start="load") play with
+			// the ones in view, wherever they sit, and never join the observers.
+			if ( T.startsOnLoad( el ) || isInViewport( el ) ) {
 				inViewOnLoad.push( el );
 				return;
 			}

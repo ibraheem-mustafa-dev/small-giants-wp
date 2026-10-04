@@ -2,6 +2,10 @@
 // (node, element, property), and the classification of the rows that survive the last round.
 export const WRITABLE_KINDS = [ 'style', 'hover', 'box' ];
 
+// The CSS property a row's key stands for: icon size rows (on the svg's path) are its width and height; a painted
+// ground (the colour an element shows, from its own background or a covering layer) is its background colour.
+export const cssProp = ( key ) => ( 'painted-ground' === key ? 'background-color' : key.replace( /^icon-(width|height)$/, '$1' ) );
+
 // The setting state a row's values belong to, from the surface's map of walker state to setting state
 // ({ "<walker state>": null | "scrolled" | "open" | "shrunk" | "current" }). undefined = not writable: the walker state
 // is unmapped, or the row is a hover in a non-rest state (no setting holds hover-while-scrolled).

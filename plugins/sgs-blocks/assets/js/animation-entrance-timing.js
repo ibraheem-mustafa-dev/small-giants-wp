@@ -7,6 +7,9 @@
  * src/blocks/extensions/animation.js (static blocks), each set by a control
  * in the block editor's Animation panel:
  *
+ *   data-sgs-animation-start            "load" plays the entrance on page load,
+ *                                       whatever the block's position; absent
+ *                                       waits for the block to scroll into view.
  *   data-sgs-animation-trigger          "Start when" — the entrance starts once
  *                                       1% of the block has passed a line this
  *                                       many % of the screen height above its
@@ -40,6 +43,7 @@
 		'data-sgs-animation-duration',
 		'data-sgs-animation-easing',
 		'data-sgs-animation-distance',
+		'data-sgs-animation-start',
 		'data-sgs-animation-trigger',
 	];
 
@@ -94,6 +98,16 @@
 				owner.removeAttribute( name );
 			} );
 		} );
+	}
+
+	/**
+	 * Whether the block's entrance plays on page load rather than on scroll.
+	 *
+	 * @param {Element} el Animated element.
+	 * @return {boolean} True when data-sgs-animation-start is "load".
+	 */
+	function startsOnLoad( el ) {
+		return 'load' === el.getAttribute( 'data-sgs-animation-start' );
 	}
 
 	/**
@@ -225,6 +239,7 @@
 
 	globalThis.sgsEntranceTiming = {
 		expandItems: expandItems,
+		startsOnLoad: startsOnLoad,
 		triggerPct: triggerPct,
 		observerOptions: observerOptions,
 		inTriggerZone: inTriggerZone,
