@@ -169,6 +169,56 @@
 					},
 					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value; progressBarColourGradient drives the `--sgs-progress-colour-gradient` sibling (2026-09-04). Both are custom-property-fed (not real declarations), so mapped explicitly. The gradient wins when set (render.php line 290 uses sgs_custom_property_gradient_decls). progressBarColourHover/progressBarColourHoverGradient (2026-09-06, hover-sibling closeout) feed the -hover/-hover-gradient custom-property siblings via the SAME 5-arg sgs_custom_property_gradient_decls() call, consumed by a new :hover/:focus-visible rule in style.css."
 				},
+				"field-input": {
+					"label": "Field controls",
+					"order": 6,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "fieldBackground",
+						"css:color": "fieldTextColour",
+						"css:border-width": "fieldBorderWidth",
+						"css:border-style": "fieldBorderStyle",
+						"css:border-color": "fieldBorderColour",
+						"css:border-radius": "fieldBorderRadius",
+						"css:padding": "fieldPadding",
+						"css:min-height": "fieldMinHeight",
+						"css:font-size": "fieldFontSize"
+					}
+				},
+				"field-placeholder": {
+					"label": "Field placeholder",
+					"order": 7,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "fieldPlaceholderColour"
+					}
+				},
+				"field-textarea": {
+					"label": "Textarea control",
+					"order": 8,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:min-height": "fieldTextareaMinHeight"
+					}
+				},
+				"submit-actions": {
+					"label": "Submit button row",
+					"order": 9,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:justify-content": "submitAlign"
+					}
+				},
 				"focus-ring": {
 					"label": "Focus ring",
 					"order": 5,
@@ -300,6 +350,88 @@
 			"type": "number",
 			"default": 0,
 			"description": "Submit button minimum height in px. 0 = the stylesheet's 44px."
+		},
+		"fieldBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Ground of every text-like field control (input, select, textarea): a palette slug or colour. Empty = the stylesheet's surface colour."
+		},
+		"fieldTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of every field control. Empty = the stylesheet's text colour."
+		},
+		"fieldPlaceholderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Placeholder colour of every field control, via --sgs-field-placeholder-colour. Empty = the stylesheet's muted text colour."
+		},
+		"fieldBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting border colour of every field control, via --sgs-field-edge-colour so the focus ring and the error border still win. Empty = the stylesheet's border colour."
+		},
+		"fieldBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Field control border width as a box {top,right,bottom,left}. Empty = the stylesheet's 1px."
+		},
+		"fieldBorderStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "",
+			"description": "Field control border style. Empty = solid when a width is set."
+		},
+		"fieldBorderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "Field control corner radius, per device: {desktop,tablet,mobile}, each {topLeft,topRight,bottomRight,bottomLeft}. Empty = the stylesheet's small radius."
+		},
+		"fieldPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "Field control padding, per device: {desktop,tablet,mobile}, each a box {top,right,bottom,left}. Empty = the stylesheet's 0.75rem 1rem."
+		},
+		"fieldMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Minimum height in px of single-line field controls (input and select), per device: {desktop,tablet,mobile}. Render raises anything under 44 to 44. Empty = the stylesheet's 44px."
+		},
+		"fieldTextareaMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Minimum height in px of a textarea, per device: {desktop,tablet,mobile}. Render raises anything under 44 to 44. Empty = the stylesheet's 100px."
+		},
+		"fieldFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size in px of every field control, per device: {desktop,tablet,mobile}. Empty = the stylesheet's small preset size."
+		},
+		"submitAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"start",
+				"center",
+				"end"
+			],
+			"default": "",
+			"description": "Where the submit button row sits: start, center or end. Empty = the stylesheet's end. A narrow form container still stacks the button full width."
 		},
 		"progressBarColour": {
 			"type": "string",

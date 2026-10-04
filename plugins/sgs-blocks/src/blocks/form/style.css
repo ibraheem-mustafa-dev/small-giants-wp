@@ -40,7 +40,16 @@
 .sgs-form-step {
 	display: grid;
 	grid-template-columns: 1fr;          /* mobile-first: single column */
+}
+
+.sgs-form__inner {
 	gap: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* A step takes the form's own gap, so the form's Gap setting reaches the rows
+   inside a step as well. */
+.sgs-form-step {
+	gap: inherit;
 }
 
 /* Multi-column layout kicks in at 560px container width (not viewport).
@@ -302,7 +311,7 @@
 	width: 100%;
 	max-width: 100%;
 	padding: 0.75rem 1rem;
-	border: 1px solid var(--wp--preset--color--border, #ccc);
+	border: 1px solid var(--sgs-field-edge-colour, var(--wp--preset--color--border, #ccc));
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
 	font-family: inherit;
@@ -377,7 +386,7 @@
 }
 
 .sgs-form-field__input::placeholder {
-	color: var(--wp--preset--color--text-muted, #555);
+	color: var(--sgs-field-placeholder-colour, var(--wp--preset--color--text-muted, #555));
 }
 
 textarea.sgs-form-field__input {
@@ -1176,16 +1185,6 @@ select.sgs-form-field__input {
 	top: 2.1rem;
 }
 
-/* A screen-reader-only label (labelStyle 'hidden') never floats: the field
-   keeps no room above the box for it and shows its placeholder instead. */
-.sgs-form-field:has(> .sgs-form-field__label.sgs-sr-only) {
-	padding-top: 0;
-}
-
-.sgs-form-field:has(> .sgs-form-field__label.sgs-sr-only) .sgs-form-field__input::placeholder {
-	color: var(--wp--preset--color--text-muted, #555);
-}
-
 .sgs-form-field--text:has(.sgs-form-field__input:focus) .sgs-form-field__label,
 .sgs-form-field--text:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
 .sgs-form-field--email:has(.sgs-form-field__input:focus) .sgs-form-field__label,
@@ -1228,5 +1227,17 @@ select.sgs-form-field__input {
 .sgs-form-field--phone .sgs-form-field__input:focus::placeholder,
 .sgs-form-field--number .sgs-form-field__input:focus::placeholder,
 .sgs-form-field--textarea .sgs-form-field__input:focus::placeholder {
-	color: var(--wp--preset--color--text-muted, #555);
+	color: var(--sgs-field-placeholder-colour, var(--wp--preset--color--text-muted, #555));
+}
+
+/* A field with no visible label (none set, or labelStyle 'hidden'; field_open()
+   adds the modifier) has nothing to float: no room above the box for a label,
+   and the placeholder shows at rest. Placed after the floating-label rules so it
+   wins their equal-specificity placeholder rule. */
+.sgs-form-field--no-label {
+	padding-top: 0;
+}
+
+.sgs-form-field--no-label .sgs-form-field__input::placeholder {
+	color: var(--sgs-field-placeholder-colour, var(--wp--preset--color--text-muted, #555));
 }

@@ -470,6 +470,21 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ 'hours' === displayType && (
+				<InspectorControls group="styles">
+					<PanelBody title={ __( 'Label typography', 'sgs-blocks' ) } initialOpen={ false }>
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="label"
+							showSize={ false }
+							showStyle={ false }
+							showLineHeight={ false }
+						/>
+					</PanelBody>
+				</InspectorControls>
+			) }
+
 			<div { ...blockProps }>
 				<SsrPreviewGuard>
 					<ServerSideRender

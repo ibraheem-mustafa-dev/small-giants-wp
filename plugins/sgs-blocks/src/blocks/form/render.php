@@ -417,6 +417,127 @@ if ( ! empty( $submit_typography_decls ) ) {
 	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $submit_typography_decls ) . '}';
 }
 
+// ---------------------------------------------------------------------------
+// Field style group (field*) — one set of settings for every text-like field
+// control (input, select, textarea), the way form builders put input styling on
+// the form so every field shares it. Scoped rules on `.uid .sgs-form-field__input`;
+// no inline style. Resting border colour and placeholder colour travel as custom
+// properties that style.css's base rules read, so the focus ring and the error
+// border (their own state rules) still win. An unset attribute emits nothing, so
+// an untouched form keeps the stylesheet's own look.
+// ---------------------------------------------------------------------------
+$sgs_field_sel      = '.' . $sgs_form_uid . ' .sgs-form-field__input';
+$sgs_field_decls    = array();
+$sgs_field_css      = '';
+$sgs_field_fill     = sgs_fill_decls( $attributes, array( 'base' => 'fieldBackground' ) );
+$sgs_field_text     = sgs_text_decls( $attributes, array( 'base' => 'fieldTextColour' ) );
+$sgs_field_decls    = array_merge( $sgs_field_fill['normal'], $sgs_field_text['normal'] );
+$sgs_field_border   = sgs_border_box_decls( $attributes['fieldBorderWidth'] ?? array(), $attributes['fieldBorderStyle'] ?? '' );
+$sgs_field_decls    = array_merge( $sgs_field_decls, $sgs_field_border );
+$sgs_field_radius   = sgs_border_radius_tiers( array( 'borderRadius' => $attributes['fieldBorderRadius'] ?? null ) );
+$sgs_field_radius_b = is_array( $sgs_field_radius['base'] ) ? sgs_corner_object_shorthand( $sgs_field_radius['base'] ) : ( is_string( $sgs_field_radius['base'] ) ? sgs_css_length_value( $sgs_field_radius['base'] ) : null );
+if ( null !== $sgs_field_radius_b && '' !== $sgs_field_radius_b ) {
+	$sgs_field_decls[] = 'border-radius:' . $sgs_field_radius_b;
+}
+if ( ! empty( $sgs_field_decls ) ) {
+	$sgs_field_css .= $sgs_field_sel . '{' . implode( ';', $sgs_field_decls ) . ';}';
+}
+$sgs_field_radius_t = sgs_corner_object_shorthand( $sgs_field_radius['tablet'] );
+$sgs_field_radius_m = sgs_corner_object_shorthand( $sgs_field_radius['mobile'] );
+if ( null !== $sgs_field_radius_t ) {
+	$sgs_field_css .= '@media(max-width:1023px){' . $sgs_field_sel . '{border-radius:' . $sgs_field_radius_t . ';}}';
+}
+if ( null !== $sgs_field_radius_m ) {
+	$sgs_field_css .= '@media(max-width:767px){' . $sgs_field_sel . '{border-radius:' . $sgs_field_radius_m . ';}}';
+}
+
+$sgs_field_vars    = array();
+$sgs_field_edge    = sgs_colour_value( (string) ( $attributes['fieldBorderColour'] ?? '' ) );
+$sgs_field_holder  = sgs_colour_value( (string) ( $attributes['fieldPlaceholderColour'] ?? '' ) );
+if ( '' !== $sgs_field_edge ) {
+	$sgs_field_vars[] = '--sgs-field-edge-colour:' . $sgs_field_edge;
+}
+if ( '' !== $sgs_field_holder ) {
+	$sgs_field_vars[] = '--sgs-field-placeholder-colour:' . $sgs_field_holder;
+}
+if ( ! empty( $sgs_field_vars ) ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . '{' . implode( ';', $sgs_field_vars ) . ';}';
+}
+
+// Heights never go under the 44px touch target (WCAG 2.2 target size, the SGS
+// standard): a smaller stored value is raised to 44.
+$sgs_field_height = static function ( $raw ): string {
+	return is_numeric( $raw ) ? (string) max( 44, (float) $raw ) . 'px' : '';
+};
+$sgs_field_tier_specs = array(
+	array(
+		$sgs_field_sel,
+		array(
+			array(
+				'value'        => $attributes['fieldPadding'] ?? null,
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+			array(
+				'value'        => $attributes['fieldFontSize'] ?? null,
+				'css'          => 'font-size',
+				'unit_default' => 'px',
+			),
+		),
+	),
+	array(
+		'.' . $sgs_form_uid . ' input.sgs-form-field__input,.' . $sgs_form_uid . ' select.sgs-form-field__input',
+		array(
+			array(
+				'value'     => $attributes['fieldMinHeight'] ?? null,
+				'css'       => 'min-height',
+				'transform' => $sgs_field_height,
+			),
+		),
+	),
+	array(
+		'.' . $sgs_form_uid . ' textarea.sgs-form-field__input',
+		array(
+			array(
+				'value'     => $attributes['fieldTextareaMinHeight'] ?? null,
+				'css'       => 'min-height',
+				'transform' => $sgs_field_height,
+			),
+		),
+	),
+);
+foreach ( $sgs_field_tier_specs as $sgs_field_spec ) {
+	$sgs_field_props = array_values(
+		array_filter(
+			$sgs_field_spec[1],
+			static fn( array $prop ): bool => is_array( $prop['value'] ) && array() !== $prop['value']
+		)
+	);
+	if ( array() !== $sgs_field_props ) {
+		$sgs_field_css .= sgs_emit_responsive_css( $sgs_field_spec[0], $sgs_field_props );
+	}
+}
+
+// Submit button row alignment (the stylesheet's own value is flex-end). Narrow
+// containers still stack the button full width (style.css @container rule).
+$sgs_submit_align_map = array(
+	'start'  => 'flex-start',
+	'center' => 'center',
+	'end'    => 'flex-end',
+);
+$sgs_submit_align     = $sgs_submit_align_map[ (string) ( $attributes['submitAlign'] ?? '' ) ] ?? '';
+if ( '' !== $sgs_submit_align ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__actions{justify-content:' . $sgs_submit_align . ';}';
+}
+
+if ( '' !== $sgs_field_css ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_field_css;
+}
+
 $submit_colour_hover = $attributes['submitColourHover'] ?? '';
 $submit_colour_gradient_hover = $attributes['submitColourHoverGradient'] ?? '';
 $submit_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $submit_colour_hover, $submit_colour_gradient_hover );

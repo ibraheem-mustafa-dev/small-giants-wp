@@ -15,13 +15,20 @@ import {
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { resolveTextColourPreviewStyle, backgroundPaintPreview } from '../../utils';
+import { resolveTextColourPreviewStyle, backgroundPaintPreview, borderBoxPreview } from '../../utils';
 import FormEmbedEdit from './FormEmbedEdit';
 import { FORM_CPT } from './SavedFormPicker';
 import EmailSettingsPanel from './EmailSettingsPanel';
+
+const SUBMIT_ALIGN_OPTIONS = [
+	{ label: __( 'Right (default)', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'start' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'end' },
+];
 
 const FIELD_COLUMNS_FROM_OPTIONS = [
 	{ label: __( '560px (default)', 'sgs-blocks' ), value: '560' },
@@ -102,6 +109,18 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		submitLetterSpacing,
 		submitPadding,
 		submitMinHeight,
+		submitAlign,
+		fieldBackground,
+		fieldTextColour,
+		fieldPlaceholderColour,
+		fieldBorderColour,
+		fieldBorderWidth,
+		fieldBorderStyle,
+		fieldBorderRadius,
+		fieldPadding,
+		fieldMinHeight,
+		fieldTextareaMinHeight,
+		fieldFontSize,
 		progressBarColour,
 		progressBarColourGradient,
 		progressBarColourHover,
@@ -276,6 +295,82 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 			: resolveColourToken( progressBarColourHover, palette )
 				? `background-color:${ resolveColourToken( progressBarColourHover, palette ) } !important;`
 				: '';
+
+	/*
+	 * Field style group canvas mirror: render.php's `.uid .sgs-form-field__input`
+	 * rules. The field controls are rendered by CHILD blocks, so (like the tile and
+	 * file-label mirrors above) this is a formPreviewScope-scoped `<style>` tag, not
+	 * an inline style. Border colour and placeholder colour ride as the same custom
+	 * properties the frontend uses, so style.css's own rules read them. Heights are
+	 * raised to the 44px touch target, as render.php does.
+	 */
+	const fieldTier = ( obj, tier ) =>
+		obj && 'object' === typeof obj
+			? obj[ tier ] ?? ( 'mobile' === tier ? obj.tablet ?? obj.desktop : 'tablet' === tier ? obj.desktop : undefined )
+			: undefined;
+	const hasValue = ( v ) => '' !== v && null !== v && undefined !== v;
+	const fieldBox = ( box ) =>
+		box && 'object' === typeof box && Object.values( box ).some( hasValue )
+			? [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => box[ side ] || '0' ).join( ' ' )
+			: '';
+	const fieldCorners = ( box ) =>
+		box && 'object' === typeof box && Object.values( box ).some( hasValue )
+			? [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ].map( ( c ) => box[ c ] || '0' ).join( ' ' )
+			: '';
+	const fieldHeight = ( v ) => ( hasValue( v ) && Number.isFinite( Number( v ) ) ? `${ Math.max( 44, Number( v ) ) }px` : '' );
+	const fieldPx = ( v ) => ( hasValue( v ) && Number.isFinite( Number( v ) ) ? `${ Number( v ) }px` : '' );
+	const fieldBorderDecls = borderBoxPreview( fieldBorderWidth, fieldBorderStyle );
+	const fieldBackgroundValue = resolveColourToken( fieldBackground, palette );
+	const fieldTextValue = resolveColourToken( fieldTextColour, palette );
+	const fieldEdgeValue = resolveColourToken( fieldBorderColour, palette );
+	const fieldHolderValue = resolveColourToken( fieldPlaceholderColour, palette );
+	const fieldVars = [
+		fieldEdgeValue && `--sgs-field-edge-colour:${ fieldEdgeValue };`,
+		fieldHolderValue && `--sgs-field-placeholder-colour:${ fieldHolderValue };`,
+	]
+		.filter( Boolean )
+		.join( '' );
+	const fieldSel = `.${ formPreviewScope } .sgs-form-field__input`;
+	const fieldTierDecls = ( tier ) =>
+		[
+			fieldBox( fieldTier( fieldPadding, tier ) ) && `padding:${ fieldBox( fieldTier( fieldPadding, tier ) ) };`,
+			fieldPx( fieldTier( fieldFontSize, tier ) ) && `font-size:${ fieldPx( fieldTier( fieldFontSize, tier ) ) };`,
+			fieldCorners( fieldTier( fieldBorderRadius, tier ) ) &&
+				`border-radius:${ fieldCorners( fieldTier( fieldBorderRadius, tier ) ) };`,
+		]
+			.filter( Boolean )
+			.join( '' );
+	const fieldSingleSel = `.${ formPreviewScope } input.sgs-form-field__input,.${ formPreviewScope } select.sgs-form-field__input`;
+	const fieldTextareaSel = `.${ formPreviewScope } textarea.sgs-form-field__input`;
+	const fieldHeightRule = ( tier, selector, source ) =>
+		fieldHeight( fieldTier( source, tier ) ) ? `${ selector }{min-height:${ fieldHeight( fieldTier( source, tier ) ) };}` : '';
+	const fieldBaseDecls = [
+		fieldBackgroundValue && `background-color:${ fieldBackgroundValue };`,
+		fieldTextValue && `color:${ fieldTextValue };`,
+		fieldBorderDecls.borderStyle && `border-style:${ fieldBorderDecls.borderStyle };`,
+		fieldBorderDecls.borderWidth && `border-width:${ fieldBorderDecls.borderWidth };`,
+		fieldTierDecls( 'desktop' ),
+	]
+		.filter( Boolean )
+		.join( '' );
+	const submitAlignValue = { start: 'flex-start', center: 'center', end: 'flex-end' }[ submitAlign ];
+	const fieldPreviewCss = [
+		fieldVars && `.${ formPreviewScope }{${ fieldVars }}`,
+		fieldBaseDecls && `${ fieldSel }{${ fieldBaseDecls }}`,
+		fieldHeightRule( 'desktop', fieldSingleSel, fieldMinHeight ),
+		fieldHeightRule( 'desktop', fieldTextareaSel, fieldTextareaMinHeight ),
+		fieldTierDecls( 'tablet' ) !== fieldTierDecls( 'desktop' ) &&
+			`@media(max-width:1023px){${ fieldSel }{${ fieldTierDecls( 'tablet' ) }}}`,
+		fieldTierDecls( 'mobile' ) !== fieldTierDecls( 'tablet' ) &&
+			`@media(max-width:767px){${ fieldSel }{${ fieldTierDecls( 'mobile' ) }}}`,
+		fieldHeightRule( 'mobile', fieldSingleSel, fieldMinHeight ) !== fieldHeightRule( 'desktop', fieldSingleSel, fieldMinHeight ) &&
+			`@media(max-width:767px){${ fieldHeightRule( 'mobile', fieldSingleSel, fieldMinHeight ) }}`,
+		fieldHeightRule( 'mobile', fieldTextareaSel, fieldTextareaMinHeight ) !== fieldHeightRule( 'desktop', fieldTextareaSel, fieldTextareaMinHeight ) &&
+			`@media(max-width:767px){${ fieldHeightRule( 'mobile', fieldTextareaSel, fieldTextareaMinHeight ) }}`,
+		submitAlignValue && `.${ formPreviewScope } .sgs-form__actions{justify-content:${ submitAlignValue };}`,
+	]
+		.filter( Boolean )
+		.join( '' );
 
 	const formHoverPreviewCss = [
 		submitBgHoverDecl &&
@@ -517,6 +612,27 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 					},
+					fillRow( {
+						key: 'field-background',
+						label: __( 'Field background colour', 'sgs-blocks' ),
+						attrs: { base: 'fieldBackground' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'field-text',
+						label: __( 'Field text colour', 'sgs-blocks' ),
+						attrs: { base: 'fieldTextColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'field-placeholder',
+						label: __( 'Field placeholder colour', 'sgs-blocks' ),
+						attrs: { base: 'fieldPlaceholderColour' },
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>
@@ -750,6 +866,15 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						help={ __( 'Leave blank for the default 44px.', 'sgs-blocks' ) }
 						__next40pxDefaultSize
 					/>
+					<SelectControl
+						label={ __( 'Button alignment', 'sgs-blocks' ) }
+						value={ submitAlign || '' }
+						options={ SUBMIT_ALIGN_OPTIONS }
+						onChange={ ( value ) => setAttributes( { submitAlign: value } ) }
+						help={ __( 'A narrow form still stacks the button full width.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 
 			</InspectorControls>
@@ -762,6 +887,95 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					full-replacement track). Root prefix "" since this is a
 					single-target block; defaults also expose weight/style, which
 					native typography never offered here. */ }
+				<PanelBody title={ __( 'Field style', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ fieldBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { fieldBorderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ fieldBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { fieldBorderStyle: val } ) }
+						colourLabel={ __( 'Field border colour', 'sgs-blocks' ) }
+						colourValue={ fieldBorderColour }
+						onColourChange={ ( val ) => setAttributes( { fieldBorderColour: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+							base: fieldBorderRadius?.desktop ?? {},
+							tablet: fieldBorderRadius?.tablet ?? {},
+							mobile: fieldBorderRadius?.mobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { fieldBorderRadius: { ...fieldBorderRadius, [ key ]: next } } );
+						} }
+					/>
+					<ResponsiveOverride
+						value={ fieldPadding }
+						onChange={ ( obj ) => setAttributes( { fieldPadding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Field padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						label={ __( 'Field minimum height (px)', 'sgs-blocks' ) }
+						value={ fieldMinHeight }
+						onChange={ ( obj ) => setAttributes( { fieldMinHeight: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<NumberControl
+								label={ __( 'Field minimum height (px)', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue ?? '' }
+								placeholder={ inherited ? effectiveValue : '44' }
+								min={ 44 }
+								onChange={ ( value ) => setOwnValue( value ? Math.max( 44, parseInt( value, 10 ) || 0 ) : undefined ) }
+								help={ __( 'Inputs and selects. Never below 44px; empty keeps the default 44px.', 'sgs-blocks' ) }
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						label={ __( 'Textarea minimum height (px)', 'sgs-blocks' ) }
+						value={ fieldTextareaMinHeight }
+						onChange={ ( obj ) => setAttributes( { fieldTextareaMinHeight: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<NumberControl
+								label={ __( 'Textarea minimum height (px)', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue ?? '' }
+								placeholder={ inherited ? effectiveValue : '100' }
+								min={ 44 }
+								onChange={ ( value ) => setOwnValue( value ? Math.max( 44, parseInt( value, 10 ) || 0 ) : undefined ) }
+								help={ __( 'Never below 44px; empty keeps the default 100px.', 'sgs-blocks' ) }
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						label={ __( 'Field text size (px)', 'sgs-blocks' ) }
+						value={ fieldFontSize }
+						onChange={ ( obj ) => setAttributes( { fieldFontSize: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<NumberControl
+								label={ __( 'Field text size (px)', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue ?? '' }
+								placeholder={ inherited ? effectiveValue : '' }
+								min={ 1 }
+								onChange={ ( value ) => setOwnValue( value ? parseInt( value, 10 ) || undefined : undefined ) }
+								help={ __( 'Empty keeps the theme default size.', 'sgs-blocks' ) }
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
@@ -883,6 +1097,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 			<div { ...blockProps }>
 				{ formPreviewCss && <style>{ formPreviewCss }</style> }
 				{ formHoverPreviewCss && <style>{ formHoverPreviewCss }</style> }
+				{ fieldPreviewCss && <style>{ fieldPreviewCss }</style> }
 				<div { ...innerBlocksProps } />
 				{ /* Editor-canvas-only submit button preview — render.php mirror.
 					There is no real <form> in the editor canvas, so without this

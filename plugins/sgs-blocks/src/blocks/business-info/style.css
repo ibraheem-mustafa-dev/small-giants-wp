@@ -260,7 +260,9 @@
  * sets a value) always wins. Sanctioned F3-exempt overridable-default pattern
  * (mirrors sgs/product-card's identical :where() block).
  */
-:where(.sgs-business-address) {
+/* The wrapper carries the default and the address and its label inherit it, so
+ * the uid-scoped lineHeight rule on the wrapper reaches them. */
+:where(.sgs-business-info-wrap--address) {
 	line-height: 1.6;
 }
 

@@ -63,6 +63,13 @@ function field_open( array $attributes, string $type, string $extra_class = '' )
 		'sgs-form-field--' . esc_attr( $width ),
 	);
 
+	// A field with no visible label (none set, or labelStyle 'hidden') has no
+	// floating label to make room for: style.css drops the label space and shows
+	// the placeholder for this modifier.
+	if ( '' === trim( (string) ( $attributes['label'] ?? '' ) ) || 'hidden' === ( $attributes['labelStyle'] ?? 'visible' ) ) {
+		$classes[] = 'sgs-form-field--no-label';
+	}
+
 	if ( ! empty( $extra_class ) ) {
 		$classes[] = esc_attr( $extra_class );
 	}

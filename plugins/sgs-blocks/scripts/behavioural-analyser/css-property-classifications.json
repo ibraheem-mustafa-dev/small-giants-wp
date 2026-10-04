@@ -888,6 +888,14 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "labelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "letterSpacing",
       "fields": {
         "css_property": "letter-spacing",
@@ -3373,6 +3381,41 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fieldBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldPlaceholderColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "field-placeholder"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -3554,6 +3597,15 @@
         "role": "color",
         "css_element": "prev-button",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitAlign",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "submit-actions"
       }
     },
     {
@@ -16805,6 +16857,63 @@
         "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldTextareaMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "field-textarea"
       }
     },
     {

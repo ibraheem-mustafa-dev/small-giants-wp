@@ -795,6 +795,36 @@
           "required": true,
           "width": "half"
         }
+      },
+      {
+        "name": "sgs/form-field-select",
+        "attributes": {
+          "fieldName": "topic",
+          "label": "",
+          "placeholder": "What can I help with?",
+          "required": true,
+          "width": "half",
+          "options": [
+            {
+              "value": "choosing-a-frame",
+              "label": "Choosing a frame"
+            },
+            {
+              "value": "something-else",
+              "label": "Something else"
+            }
+          ]
+        }
+      },
+      {
+        "name": "sgs/form-field-textarea",
+        "attributes": {
+          "fieldName": "message",
+          "label": "",
+          "placeholder": "Your message",
+          "required": true,
+          "width": "full"
+        }
       }
     ]
   },

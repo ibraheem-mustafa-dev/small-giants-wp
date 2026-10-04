@@ -755,6 +755,14 @@ if ( '' !== $label_colour_effective_hover ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel . ':hover', $label_colour_effective_hover );
 }
 
+// Label typography — labelFontWeight only (the one label* typography key this
+// block declares; the shared helper reads just the keys that exist). Same
+// target as the label colour above; empty emits nothing, so style.css's 600 stays.
+$label_typography_css = sgs_typography_css_rule( $attributes, 'label', $label_sel );
+if ( '' !== $label_typography_css ) {
+	$scoped_css[] = $label_typography_css;
+}
+
 // Attribution hover-sweep — same omit-when-unset contract as the icon colour
 // above. Unset falls back to style.css's `var(--sgs-bi-link-hover-bg, #d4a73c)` /
 // `var(--sgs-bi-link-hover-text, #d4a73c)`, the SGS credit sweep colour. Two
