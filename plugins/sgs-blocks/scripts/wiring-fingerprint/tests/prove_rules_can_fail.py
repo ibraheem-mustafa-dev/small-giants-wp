@@ -16,8 +16,9 @@ SRC = Path(__file__).resolve().parent.parent
 
 MUTANTS = {
     "L2": ("wf_links.py", 'missing.append("L2")', "pass"),
-    "L3": ("wf_links.py", 'link = "L3-state" if state else "L3"', 'link = "L3-state"'),
-    "L3-state": ("wf_links.py", 'link = "L3-state" if state else "L3"', 'link = "L3"'),
+    "L3": ("wf_links.py", 'link = "L3-state" if state else "L3-runtime" if runtime else "L3"', 'link = "L3-state"'),
+    "L3-state": ("wf_links.py", 'link = "L3-state" if state else "L3-runtime" if runtime else "L3"', 'link = "L3"'),
+    "L3-runtime": ("wf_links.py", 'link = "L3-state" if state else "L3-runtime" if runtime else "L3"', 'link = "L3-state" if state else "L3"'),
     "L3-tier": ("wf_links.py", 'missing.append("L3-tier")', "pass"),
     "L4": ("wf_links.py", 'missing.append("L4")', "pass"),
     "L5": ("wf_links.py", 'missing.append("L5")', "pass"),
@@ -32,7 +33,7 @@ MUTANTS = {
     "suffix": ("wf_paint.py", 'return "css", "suffix:" + hit', "pass"),
     "class-rule": ("wf_paint.py", 'return "css", "class-modifier-rule"', "pass"),
     "baseline-new": ("wf_cli.py", "return 1 if args.check else 0", "return 0"),
-    "advisory": ("wf_links.py", 'ADVISORY = frozenset({"L3-state", "L6-token"})', "ADVISORY = frozenset()"),
+    "advisory": ("wf_links.py", 'ADVISORY = frozenset({"L3-state", "L3-runtime", "L6-token"})', "ADVISORY = frozenset()"),
     # Task 2 review fixes (tests/test_review_fixes.py, tests/test_editor_facts.py).
     "loop-prefix": ("wf_frontend.py", "(loop_literals(t.src, t.mask, m.start(), vm.group(1)) if vm else [])", "[]"),
     "tuple-table": ("editor_facts.js", "tupleTablePrefixes( p );", "void 0;"),

@@ -27,7 +27,7 @@ BRIEF_EXTRA = {s for s, _css in EXTRA_SUFFIXES}
 
 COUNCIL = REPO / ".claude" / "reports" / "2026-10-04-route-data-audit" / "council"
 CACHE = REPO / "scripts" / "computed-route" / "cache"
-LINK_ALIASES = {"L3": ("L3", "L3-tier", "L3-state"), "L2": ("L2",), "L4": ("L4",), "L5": ("L5",), "L6": ("L6",), "L7": ("L7",), "C1": ("C1",)}
+LINK_ALIASES = {"L3": ("L3", "L3-tier", "L3-state", "L3-runtime"), "L2": ("L2",), "L4": ("L4",), "L5": ("L5",), "L6": ("L6",), "L7": ("L7",), "C1": ("C1",)}
 KNOWN_BUGS = (
     ("sgs/accordion-item", None, "B1"),
     ("sgs/team-member", None, "B2"),

@@ -83,3 +83,28 @@ def test_an_unrelated_assignment_is_not_a_control(facts):
     data, _ = facts
     assert "frameCount" in data["files"]["src/blocks/probe/edit.js"]["setKeys"]
     assert "ext" not in data["files"]["src/blocks/probe/edit.js"]["setKeys"]
+
+
+def test_must_fail_script_runtime_only_setting_is_advisory_not_a_canvas_gap():
+    from wf_links import ADVISORY, runtime_only
+    from wf_tokens import Channel
+    assert "L3-runtime" in ADVISORY
+    assert runtime_only("js", Channel(data={"data-drag-momentum"}, read=True))
+    # Anything a stylesheet applies keeps the blocking L3: a declaration, a custom property, a modifier class.
+    assert not runtime_only("js", Channel(decl=True, read=True))
+    assert not runtime_only("js", Channel(cps={"--sgs-x-speed"}, read=True))
+    assert not runtime_only("js", Channel(classes={"sgs-x--loop"}, read=True))
+    assert not runtime_only("css", Channel(data={"data-x"}, read=True))
+
+
+def test_must_fail_a_runtime_only_setting_with_no_canvas_takes_the_runtime_link():
+    from wf_editor import BlockEditor
+    from wf_links import _editor_links
+    be = BlockEditor()
+    be.control["dragMomentum"] = "setAttributes"
+    missing, details = [], {}
+    _editor_links("dragMomentum", False, None, be, missing, details, runtime=True)
+    assert missing == ["L3-runtime"]
+    missing = []
+    _editor_links("dragMomentum", False, None, be, missing, details, runtime=False)
+    assert missing == ["L3"]

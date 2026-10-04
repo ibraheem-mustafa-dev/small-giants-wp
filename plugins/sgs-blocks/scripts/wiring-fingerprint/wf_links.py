@@ -27,7 +27,7 @@ from wf_editor import BlockEditor, tier_only
 from wf_paint import is_motion, is_state
 from wf_tokens import FX_RUNTIME_RE, Channel
 
-ADVISORY = frozenset({"L3-state", "L6-token"})
+ADVISORY = frozenset({"L3-state", "L3-runtime", "L6-token"})
 
 # One line per link for the failure output (wf_cli).
 LINK_MEANING = {
@@ -35,6 +35,7 @@ LINK_MEANING = {
     "L3": "the editor canvas does not show it: no canvas read outside the controls, no server-side render",
     "L3-tier": "the editor canvas shows only one device tier of it",
     "L3-state": "a hover/focus/active/scrolled/motion setting with no editor-canvas preview (advisory)",
+    "L3-runtime": "painted only by a front-end script the editor never runs, so a static canvas has nothing to show (advisory)",
     "L4": "the front end never reads it",
     "L5": "the front end reads it but it reaches no CSS: no declaration, custom property, class or data attribute",
     "L6": "it has no live paint channel left: its custom property has no reader, its modifier class no rule or script",
@@ -90,12 +91,19 @@ def live_channels(ch: Channel, env: LinkEnv) -> list[str]:
     return out
 
 
-def _editor_links(attr: str, state: bool, canvas: str | None, be: BlockEditor, missing: list, details: dict) -> None:
+def runtime_only(category: str, ch: Channel) -> bool:
+    """Painted only through a front-end script (a data attribute or DB pseudo-property its view script reads, or an
+    effect runtime's toggle): no declaration, custom property or modifier class a stylesheet applies."""
+    return category == "js" and not (ch.decl or ch.gate_decl or ch.cps or any("--" in c for c in ch.classes))
+
+
+def _editor_links(attr: str, state: bool, canvas: str | None, be: BlockEditor, missing: list, details: dict,
+                  runtime: bool = False) -> None:
     if attr not in be.control:
         missing.append("L2")
         details["L2"] = "no inspector control writes it (no setAttributes key, control literal or extension control)"
     if canvas is None:
-        link = "L3-state" if state else "L3"
+        link = "L3-state" if state else "L3-runtime" if runtime else "L3"
         missing.append(link)
         details[link] = "no editor-canvas read outside the inspector controls and no server-side render of it"
     elif canvas == "direct" and tier_only(be.canvas[attr]):
@@ -156,7 +164,7 @@ def assess(row: dict, category: str, ch: Channel, dump_row: dict, be: BlockEdito
     details: dict[str, str] = {}
     state = is_state(attr, row.get("css_state")) or is_motion(attr, row.get("css_property"))
     canvas = canvas_mode(be, attr, ctx_canvas, row.get("role") == "layout")
-    _editor_links(attr, state, canvas, be, missing, details)
+    _editor_links(attr, state, canvas, be, missing, details, runtime_only(category, ch))
     kinds = ch.kinds()
     if category == "js" and ch.read and not kinds:
         kinds = ["DATA"]

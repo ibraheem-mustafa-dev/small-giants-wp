@@ -12,7 +12,7 @@ from wf_css import CssIndex, data_consumed
 from wf_editor import EditorModel
 from wf_frontend import FrontEnd
 from wf_inputs import Inputs
-from wf_links import ADVISORY
+from wf_links import ADVISORY, runtime_only
 from wf_paint import PaintClassifier, is_motion, is_state
 
 
@@ -61,7 +61,7 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
                 details["L2"] = "no extension file writes it with setAttributes"
             if not canvas:
                 state = is_state(attr, spec.get("css_state")) or is_motion(attr, spec.get("css_property"))
-                link = "L3-state" if state else "L3"
+                link = "L3-state" if state else "L3-runtime" if runtime_only(cat, ch) else "L3"
                 missing.append(link)
                 details[link] = "the extension's editor.BlockListBlock filter never reads it"
             if not ch.read:
