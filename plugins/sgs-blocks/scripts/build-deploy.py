@@ -682,6 +682,17 @@ def theme_json_guard_decision(live_md5: str | None, payload_md5: str,
     return "replace"
 
 
+def uncommitted_snapshot_md5(wc_bytes: bytes, payload: bytes) -> str | None:
+    """The md5 of the working copy's theme.json when it holds an uncommitted snapshot, else None. Pure.
+
+    A working copy that differs from the payload only in line endings (a Windows checkout writes CRLF,
+    git stores LF) holds no uncommitted change, so it never blocks a deploy."""
+    import hashlib
+    if wc_bytes.replace(b"\r\n", b"\n") == payload.replace(b"\r\n", b"\n"):
+        return None
+    return hashlib.md5(wc_bytes).hexdigest()
+
+
 def _remote_md5(use_alias: bool, path: str) -> tuple[str | None, str]:
     """(md5 or None, status) of a remote file. status: found | absent | error."""
     remote_cmd = (f"if [ -f {shlex.quote(path)} ]; then md5sum {shlex.quote(path)}; "
@@ -724,7 +735,7 @@ def step_theme_json_guard(use_alias: bool, target: dict, payload: bytes, label: 
         if snap.is_file():
             try:
                 wc_bytes, _ = _load_push_module().deploy_theme_json_bytes(snap)
-                checkout_md5 = hashlib.md5(wc_bytes).hexdigest()
+                checkout_md5 = uncommitted_snapshot_md5(wc_bytes, payload)
             except (OSError, ValueError):
                 checkout_md5 = None
     decision = theme_json_guard_decision(live_md5, payload_md5, checkout_md5)
@@ -862,6 +873,11 @@ def self_test_theme_json() -> list[str]:
             got = theme_json_guard_decision(*args_)
             if got != want:
                 failures.append(f"guard{args_} -> {got}, expected {want}")
+        # 14b. A working copy differing only in line endings holds no uncommitted snapshot; a real edit does.
+        if uncommitted_snapshot_md5(SNAPSHOT.replace(b"\n", b"\r\n"), SNAPSHOT) is not None:
+            failures.append("guard: a CRLF-only working copy was treated as an uncommitted snapshot")
+        if uncommitted_snapshot_md5(SNAPSHOT + b" ", SNAPSHOT) is None:
+            failures.append("guard: an edited working copy was not treated as an uncommitted snapshot")
         # 15. Post-deploy verify: mismatch and unreadable both FAIL.
         if theme_json_verify_result(sn, fw) or theme_json_verify_result(sn, None):
             failures.append("verify: a live theme.json that is not the payload passed")
