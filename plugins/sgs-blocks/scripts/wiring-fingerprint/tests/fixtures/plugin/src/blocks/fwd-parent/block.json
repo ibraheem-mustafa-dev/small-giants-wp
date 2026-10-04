@@ -1,0 +1,15 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/fwd-parent",
+ "title": "fwd-parent",
+ "attributes": {
+  "pickerTick": {
+   "type": "boolean",
+   "default": true
+  },
+  "pickerItems": {
+   "type": "boolean",
+   "default": false
+  }
+ }
+}

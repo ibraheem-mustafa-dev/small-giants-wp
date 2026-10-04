@@ -1,0 +1,13 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/toggle-paint",
+ "title": "toggle-paint",
+ "attributes": {
+  "hairline": { "type": "boolean", "default": false },
+  "showBox": { "type": "boolean", "default": false },
+  "smartContrast": { "type": "boolean", "default": false },
+  "showCaption": { "type": "boolean", "default": false },
+  "itemColour": { "type": "string" },
+  "labelColour": { "type": "string" }
+ }
+}

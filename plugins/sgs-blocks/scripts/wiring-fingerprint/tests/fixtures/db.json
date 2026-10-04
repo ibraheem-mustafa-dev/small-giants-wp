@@ -287,6 +287,96 @@
    "css_state": null,
    "role": "behaviour",
    "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/fwd-parent",
+   "attr_name": "pickerTick",
+   "attr_type": "boolean",
+   "css_property": null,
+   "css_state": null,
+   "role": "boolean-visibility",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/fwd-parent",
+   "attr_name": "pickerItems",
+   "attr_type": "boolean",
+   "css_property": null,
+   "css_state": null,
+   "role": "boolean-visibility",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/fwd-child",
+   "attr_name": "showTick",
+   "attr_type": "boolean",
+   "css_property": null,
+   "css_state": null,
+   "role": "boolean-visibility",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/fwd-child",
+   "attr_name": "items",
+   "attr_type": "array",
+   "css_property": null,
+   "css_state": null,
+   "role": "content",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/toggle-paint",
+   "attr_name": "hairline",
+   "attr_type": "boolean",
+   "css_property": null,
+   "css_state": null,
+   "role": "boolean-visibility",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/toggle-paint",
+   "attr_name": "showBox",
+   "attr_type": "boolean",
+   "css_property": null,
+   "css_state": null,
+   "role": "boolean-visibility",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/toggle-paint",
+   "attr_name": "smartContrast",
+   "attr_type": "boolean",
+   "css_property": null,
+   "css_state": null,
+   "role": "boolean-visibility",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/toggle-paint",
+   "attr_name": "showCaption",
+   "attr_type": "boolean",
+   "css_property": null,
+   "css_state": null,
+   "role": "boolean-visibility",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/toggle-paint",
+   "attr_name": "itemColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/toggle-paint",
+   "attr_name": "labelColour",
+   "attr_type": "string",
+   "css_property": "color",
+   "css_state": null,
+   "role": "color",
+   "tier_shape": null
   }
  ],
  "property_suffixes": [

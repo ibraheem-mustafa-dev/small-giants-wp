@@ -1,0 +1,15 @@
+{
+ "apiVersion": 3,
+ "name": "sgs/fwd-child",
+ "title": "fwd-child",
+ "attributes": {
+  "showTick": {
+   "type": "boolean",
+   "default": true
+  },
+  "items": {
+   "type": "array",
+   "default": []
+  }
+ }
+}

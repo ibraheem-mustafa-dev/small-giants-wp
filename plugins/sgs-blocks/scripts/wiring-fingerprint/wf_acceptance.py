@@ -64,7 +64,9 @@ def rater_a(report: dict) -> dict | None:
                 fn += 1
                 fns.append(f"{r['block']}::{r['attr']} ({r['verdict']})")
         prec = round(100 * tp / (tp + fp), 1) if (tp + fp) else None
-        out[link] = {"flagged": tp + fp, "true_flagged": tp, "precision_pct": prec, "false_flags": fps, "true_not_flagged": fns}
+        rec = round(100 * tp / (tp + fn), 1) if (tp + fn) else None
+        out[link] = {"flagged": tp + fp, "true_flagged": tp, "precision_pct": prec, "recall_pct": rec,
+                     "false_flags": fps, "true_not_flagged": fns}
     return out
 
 
@@ -162,8 +164,8 @@ def main() -> int:
         Path(args.out).write_text(json.dumps(m, indent=1, sort_keys=True), encoding="utf-8")
     ra = m["rater_a"] or {}
     for link, v in ra.items():
-        print(f"Rater A {link}: flagged {v['flagged']}, true {v['true_flagged']}, precision {v['precision_pct']}%  "
-              f"(true gaps not flagged {len(v['true_not_flagged'])})")
+        print(f"Rater A {link}: flagged {v['flagged']}, true {v['true_flagged']}, precision {v['precision_pct']}%, "
+              f"recall {v['recall_pct']}% (true gaps not flagged {len(v['true_not_flagged'])})")
     rb = m["rater_b"]
     if rb:
         print(f"Rater B: painting rows inside {rb['painting_rows_in_population_pct']}% of {rb['painting_rows']} "

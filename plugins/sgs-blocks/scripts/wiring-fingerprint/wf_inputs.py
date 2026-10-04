@@ -89,8 +89,8 @@ def load_blockjson(roots: Roots) -> tuple[dict, dict]:
     for p in sorted(roots.blocks.glob("*/block.json")):
         try:
             d = json.loads(p.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            continue
+        except ValueError as e:
+            raise ValueError(f"invalid block.json {p.as_posix()}: {e}") from e
         name = d.get("name")
         if not name:
             continue

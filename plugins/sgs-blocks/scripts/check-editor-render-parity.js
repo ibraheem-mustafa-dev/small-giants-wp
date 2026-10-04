@@ -905,7 +905,9 @@ function listBlockSourceFiles( dir ) {
 
 function readsContextKey( code, key ) {
 	const escaped = key.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
-	return new RegExp( `context(?:\\?\\.)?\\[\\s*(['"])${ escaped }\\1\\s*\\]` ).test( code );
+	// Left boundary: `context` is never the tail of a longer name (`mycontext['k']`);
+	// `$context[`, `->context[` and a destructured `context?.[` still match.
+	return new RegExp( `(?<![A-Za-z0-9_])context(?:\\?\\.)?\\[\\s*(['"])${ escaped }\\1\\s*\\]` ).test( code );
 }
 
 /**
@@ -4282,6 +4284,18 @@ function runSelfTest() {
 	assertTrue(
 		buildConsumedContextKeys( [ ctxPhpDir ] ).has( 'sgs/fixtureCardPadding' ),
 		'context php fixture: render.php reading $block->context[key] counts as a reader',
+		failuresA
+	);
+	assertTrue(
+		readsContextKey( "$context['sgs/fixtureCardPadding']", 'sgs/fixtureCardPadding' ) &&
+			readsContextKey( "$block->context['sgs/fixtureCardPadding']", 'sgs/fixtureCardPadding' ),
+		'context boundary positive control: $context[key] and ->context[key] are reads',
+		failuresA
+	);
+	assertTrue(
+		! readsContextKey( "$mycontext['sgs/fixtureCardPadding']", 'sgs/fixtureCardPadding' ) &&
+			! readsContextKey( "mycontext[ 'sgs/fixtureCardPadding' ]", 'sgs/fixtureCardPadding' ),
+		'context boundary negative control: mycontext[key] (context as the tail of a longer name) is not a read',
 		failuresA
 	);
 

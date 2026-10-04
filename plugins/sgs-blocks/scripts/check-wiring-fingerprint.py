@@ -5,6 +5,14 @@ end (control, editor canvas, front-end read, CSS channel, consumer, parity).
     python scripts/check-wiring-fingerprint.py --check            # fail on a NEW gap
     python scripts/check-wiring-fingerprint.py --update-baseline  # rewrite the ratchet
     python scripts/check-wiring-fingerprint.py --json report.json # full report
+    python scripts/check-wiring-fingerprint.py --accept <id> ...  # baseline named gaps only
+
+The gate's own checks (full tier) and the on-demand measurement against the QC
+council's labelled rows:
+
+    python -m pytest scripts/wiring-fingerprint/tests -q
+    python scripts/wiring-fingerprint/tests/prove_rules_can_fail.py
+    python scripts/wiring-fingerprint/tests/acceptance_check.py
 
 The implementation lives in scripts/wiring-fingerprint/ (one module per job);
 the baseline is scripts/wiring-fingerprint-baseline.json. Design: the route data

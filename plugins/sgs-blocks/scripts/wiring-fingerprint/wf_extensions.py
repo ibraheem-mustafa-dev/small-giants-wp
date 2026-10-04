@@ -51,20 +51,25 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
             ctl = any(attr in files.get(f, {}).get("setKeys", []) or (files.get(f, {}).get("callsSet") and attr in files.get(f, {}).get("literals", []))
                       for f in all_ext)
             canvas = blb and any(attr in files.get(f, {}).get("canvasReads", {}) for f in fam_files)
-            missing = []
+            missing, details = [], {}
             if not ctl:
                 missing.append("L2")
+                details["L2"] = "no extension file writes it with setAttributes"
             if not canvas:
                 state = is_state(attr, spec.get("css_state")) or is_motion(attr, spec.get("css_property"))
-                missing.append("L3-state" if state else "L3")
+                link = "L3-state" if state else "L3"
+                missing.append(link)
+                details[link] = "the extension's editor.BlockListBlock filter never reads it"
             if not ch.read:
                 missing.append("L4")
+                details["L4"] = "no includes/ hook emitter reads it"
             elif not ch.kinds():
                 missing.append("L5")
+                details["L5"] = "a hook emitter reads it but reaches no declaration, custom property, class or data attribute"
             blocking = [m for m in missing if m not in ADVISORY]
             rec.update({"control": "extension" if ctl else None, "canvas": "blockListBlock" if canvas else None,
                         "channel": ch.kinds(), "cps": sorted(ch.cps), "missing": missing,
                         "class": "full" if not missing else ("advisory" if not blocking else "partial")})
             records.append(rec)
-            out += [{"block": ident, "attr": attr, "link": m} for m in missing]
+            out += [{"block": ident, "attr": attr, "link": m, "detail": details[m]} for m in missing]
     return out, records

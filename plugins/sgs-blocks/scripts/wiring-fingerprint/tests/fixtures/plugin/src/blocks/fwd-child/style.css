@@ -1,0 +1,2 @@
+.sgs-fwd-child--no-tick .sgs-fwd-child__item::before { display: none; }
+.sgs-fwd-child__item--on { color: currentColor; }

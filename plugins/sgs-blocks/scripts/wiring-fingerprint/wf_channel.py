@@ -24,8 +24,10 @@ from __future__ import annotations
 
 import re
 
-from wf_php import PhpIndex, PhpText, brace_body, rx, split_arg_spans
-from wf_tokens import ARRAY_KW_RE, CP_SET_RE, CSS_KEY_RE, Channel, DECL_RE, TokenReader, blank_index, open_brackets
+from wf_php import PhpIndex, PhpText, brace_body, loop_literals, rx, split_arg_spans
+from wf_returns import CALL_HEAD_RE, KeyedReturns
+from wf_tokens import (ARRAY_KW_RE, CP_SET_RE, CSS_KEY_RE, DECL_RE, FWD_ATTRS_RE, FWD_BLOCK_RE, Channel, TokenReader,
+                       blank_index, constant_paint_props, open_brackets, paint_prop)
 
 # A statement may open with template HTML (`?> <div …> <?php`); heads are matched after it.
 HEAD = r"^\s*(?:(?:\?>.*?)?<\?php\s*)?"
@@ -48,6 +50,11 @@ ATTR_INDEX_BEFORE_RE = re.compile(r"""(?:\$\w*attr\w*|\$atts|\[\s*['"]attrs['"]\
 SEL_VAR_RE = re.compile(r"\$(\w+)")
 NEW_RE = re.compile(r"\s*new\s+[\\\w]")
 DYN_KEY_RE = re.compile(r"""\$\w+\s*\.\s*['"]([A-Z][A-Za-z0-9]*)['"]""")
+# A query's result is the content a setting selects (which posts, products, terms), not
+# the setting's value: `$q = new WP_Query( $args )` does not carry `$args`'s taint on.
+QUERY_CALL_RE = re.compile(
+    r"\s*(?:new\s+\\?(?:WP_Query|WC_Product_Query|WP_Term_Query|WP_Comment_Query|WP_User_Query)\b"
+    r"|\\?(?:get_posts|get_pages|get_terms|get_comments|get_users|wc_get_products|wc_get_orders|wp_get_nav_menu_items|query_posts)\s*\()")
 
 def func_spans(t: PhpText) -> list[tuple[int, int, set]]:
     """Function and closure body spans in a text, with each closure's `use` list."""
@@ -80,9 +87,26 @@ def var_refs(t: PhpText, var: str, after: int, key: str | None) -> list[int]:
         inner = _scope_of(t, p)
         if inner != (s, e) and not any(fs == inner[0] and var in u for fs, _fe, u in func_spans(t)):
             continue
-        if keyed is None or keyed.match(t.src, p) or not rx(r"\$" + re.escape(var) + r"\s*\[").match(t.src[p:p + len(var) + 8]):
+        if keyed is None or keyed.match(t.src, p) or not rx(r"\$" + re.escape(var) + r"\s*\[").match(t.src, p):
             out.append(p)
+        elif not rx(r"\$" + re.escape(var) + r"""\s*\[\s*['"]""").match(t.src, p) and key in dyn_index_keys(t, p + 1 + len(var), {key}):
+            out.append(p)   # a dynamic index resolving to the key
     return out
+
+
+DYN_INDEX_RE = re.compile(r"""\s*\[\s*\$(\w+)\s*(?:\.\s*['"]([A-Za-z0-9_-]+)['"]\s*)?\]""")
+
+
+def dyn_index_keys(t: PhpText, at: int, keys: set[str]) -> set[str]:
+    """The keys among `keys` a dynamic index at `at` (`[ $k ]`, `[ $p . 'Suffix' ]`) can
+    name: a loop variable over literals gives those literals; a suffix concatenation
+    gives the keys ending in that suffix. Anything else names none."""
+    m = DYN_INDEX_RE.match(t.src, at)
+    if not m:
+        return set()
+    if m.group(2):
+        return {k for k in keys if k.endswith(m.group(2)) and len(k) > len(m.group(2))}
+    return set(loop_literals(t.src, t.mask, at, m.group(1))) & keys
 
 
 def dyn_sites(t: PhpText) -> dict[str, list[int]]:
@@ -129,6 +153,13 @@ class ChannelAnalyser:
         self._param_memo: dict[tuple, Channel] = {}
         self._stack: set[tuple] = set()
         self.reader = TokenReader(self.emits_css, block_slugs)
+        self.returns = KeyedReturns(self)
+
+    def reset_memo(self) -> None:
+        """Forget every parameter channel (a memo filled inside a recursion carries
+        that recursion's cut, so a fresh start keeps results order-independent)."""
+        self._param_memo.clear()
+        self._stack.clear()
 
     def emits_css(self, fname: str) -> bool:
         if fname not in self._emits:
@@ -141,9 +172,9 @@ class ChannelAnalyser:
         return self._emits[fname]
 
     @staticmethod
-    def _refs(stmt: str, attr: str, taint: dict) -> list[tuple[int, str, str | None, bool]]:
-        """(offset, var, key, keyed_read) for each tainted reference in `stmt`;
-        var '' marks a direct read of the attribute."""
+    def _refs(stmt: str, attr: str, taint: dict, t: PhpText | None = None, base: int = 0) -> list[tuple[int, str, str | None, bool]]:
+        """(offset, var, key, keyed_read) for each tainted reference in `stmt` (at
+        `base` in `t`); var '' marks a direct read of the attribute."""
         out = []
         head = TARGET_RE.match(stmt)
         target_at = head.start(1) - 1 if head else -1  # the written variable is not a read
@@ -158,15 +189,20 @@ class ChannelAnalyser:
                 if km:
                     if km.group(1) in keys:
                         out.append((m.start(), var, km.group(1), True))
-                elif not stmt[m.end():].lstrip().startswith("["):
+                elif stmt[m.end():].lstrip().startswith("["):
+                    hit = dyn_index_keys(t, base + m.end(), keys) if t is not None else set()
+                    out.extend((m.start(), var, k, True) for k in sorted(hit))
+                else:
                     out.extend((m.start(), var, k, False) for k in keys)
         if attr:
             for m in rx(r"""(['"])""" + re.escape(attr) + r"""\1""").finditer(stmt):
                 out.append((m.start(), "", None, True))
         return out
 
-    def flow(self, t: PhpText, seeds: list[int], attr: str, ch: Channel, taint: dict | None = None) -> bool:
-        """Follow the value from `seeds` through `t`; True if it reaches a `return`."""
+    def flow(self, t: PhpText, seeds: list[int], attr: str, ch: Channel, taint: dict | None = None,
+             taint_out: dict | None = None) -> bool:
+        """Follow the value from `seeds` through `t`; True if it reaches a `return`.
+        `taint_out` receives the variables the value reached."""
         done: set[tuple[int, int]] = set()
         taint = dict(taint or {})
         work = list(seeds)
@@ -178,7 +214,7 @@ class ChannelAnalyser:
                 continue
             done.add(span)
             stmt = t.src[span[0]:span[1]]
-            refs = self._refs(stmt, attr, taint)
+            refs = self._refs(stmt, attr, taint, t, span[0])
             if not refs and pos not in seeds:
                 continue
             offs = [r[0] for r in refs] or [pos - span[0]]
@@ -192,6 +228,7 @@ class ChannelAnalyser:
             if GATE_HEAD_RE.match(stmt):
                 body = t.block_after(pos)
                 if body:
+                    ch.gate_sites.add((t, span[1] - 1, span[1] - 1 + len(body)))
                     sub = Channel()
                     self.reader.read(body, attr, [], sub)
                     if sub.kinds():
@@ -199,25 +236,40 @@ class ChannelAnalyser:
                         if len(body) <= GATE_BODY_MAX:
                             sub.read = False
                             ch.gate_decl |= sub.decl
+                            ch.gate_paint |= constant_paint_props(body)
                             sub.decl = False
                             sub.value_decl = False
                             ch.merge(sub)  # a short guarded block is the toggle's own output
                     if RETURN_IN_BODY_RE.search(body):
                         returns = True  # the function's result depends on the value
+            if "blockName" in stmt:
+                ch.forwards |= self._forwards(stmt, refs)
             new: list[tuple[str, str | None]] = []
             for pm in PREG_OUT_RE.finditer(stmt):
                 if any(pm.start() <= o < pm.end() for o in offs):
                     new.append((pm.group(1), None))  # preg_match( $re, <value>, $out ) fills $out
             m = ASSIGN_RE.match(stmt)
-            if m and m.group(1) not in ("attributes", "this"):
+            head, hoffs, at = stmt, offs, span[0]
+            if not m and refs:
+                # A closure inside an array literal splits the statement at its braces:
+                # the assignment head sits before them (`$a = array( 'f' => function () { … }, 'k' => $v );`).
+                ls, le = t.logical_span(span[0])
+                if ls < span[0]:
+                    head, hoffs, at = t.src[ls:le], [o + span[0] - ls for o in offs], ls
+                    m = ASSIGN_RE.match(head)
+            if m and m.group(1) not in ("attributes", "this") and not QUERY_CALL_RE.match(head, m.end()):
                 index = m.group(2)
                 if index is None:
-                    if not rx(r"\$" + re.escape(m.group(1)) + r"\b").search(stmt, m.end()):
+                    if not rx(r"\$" + re.escape(m.group(1)) + r"\b").search(head, m.end()):
                         # `$x = array_merge( $x, … )` accumulates like `$x[] =`; anything else taints x.
-                        key = self._pair_key(stmt, m.end(), offs)
-                        if key is None and NEW_RE.match(stmt, m.end()):
-                            key = self._enclosing_pair_key(stmt, offs)
-                        new.append((m.group(1), key))
+                        key = self._pair_key(head, m.end(), hoffs)
+                        if key is None and NEW_RE.match(head, m.end()):
+                            key = self._enclosing_pair_key(head, hoffs)
+                        keys = self._returned_keys(head, m.end(), hoffs) if key is None else None
+                        if keys is None:
+                            new.append((m.group(1), key))
+                        else:
+                            new += [(m.group(1), k) for k in sorted(keys)]
                 elif index.strip():
                     lit = re.fullmatch(r"""\s*(['"])([^'"]+)\1\s*""", index)
                     new.append((m.group(1), lit.group(2) if lit else None))
@@ -240,8 +292,34 @@ class ChannelAnalyser:
                     continue
                 else:
                     taint[var] = cur | {key}
-                work.extend(var_refs(t, var, span[0], key))
+                work.extend(var_refs(t, var, at, key))
+        if taint_out is not None:
+            taint_out.update(taint)
         return returns
+
+    @staticmethod
+    def is_gate(stmt: str) -> bool:
+        return bool(GATE_HEAD_RE.match(stmt))
+
+    def _returned_keys(self, head: str, rhs_at: int, offs: list[int]) -> set[str] | None:
+        """`$r = f( … $v … )` with `f` returning array literals: the keys the value
+        reaches (wf_returns); None when the call is not that shape."""
+        cm = CALL_HEAD_RE.match(head, rhs_at)
+        if not cm or cm.group(1) not in self.index.funcs:
+            return None
+        spans = split_arg_spans(head, cm.end() - 1)
+        # The call must be the whole right-hand side (`)` then `;`) and hold every reference.
+        if not spans or head[spans[-1][1]:spans[-1][1] + 1] != ")" or head[spans[-1][1] + 1:].strip() not in ("", ";") \
+                or not all(any(s <= o < e for s, e in spans) for o in offs):
+            return None
+        out: set[str] = set()
+        for i, (s, e) in enumerate(spans):
+            if any(s <= o < e for o in offs):
+                keys = self.returns.keys_for(cm.group(1), i)
+                if keys is None:
+                    return None
+                out |= keys
+        return out
 
     def _selector_vars(self, t: PhpText, at: int, stmt: str, taint: dict, ch: Channel) -> None:
         """A selector held in a variable (`$sel = '.' . $uid . ' > .sgs-card';` then
@@ -261,6 +339,70 @@ class ChannelAnalyser:
                     ch.child_sel |= child
                     ch.inner_sel |= inner
                     break
+
+    @staticmethod
+    def _forwards(stmt: str, refs: list) -> set[tuple[str, str]]:
+        """(block, attribute) pairs a nested render forwards the value to:
+        `render_block( array( 'blockName' => 'sgs/x', 'attrs' => array( 'k' => $v ) ) )`,
+        or `'attrs' => $a` where `$a` carries the value under key `k`."""
+        bm = FWD_BLOCK_RE.search(stmt)
+        if not bm:
+            return set()
+        out: set[tuple[str, str]] = set()
+        for am in FWD_ATTRS_RE.finditer(stmt):
+            ob = open_brackets(stmt, am.start())
+            if not ob:
+                continue
+            el = next(((s, e) for s, e in split_arg_spans(stmt, ob[-1]) if s <= am.start() < e), None)
+            if el is None:
+                continue
+            arr = ARRAY_OPEN_RE.match(stmt, am.end())
+            if arr:
+                for s, e in split_arg_spans(stmt, arr.end() - 1):
+                    km = PAIR_KEY_RE.match(stmt, s)
+                    if km and any(s <= r[0] < e for r in refs):
+                        out.add((bm.group(1), km.group(2)))
+                continue
+            for off, var, key, keyed_read in refs:
+                if am.end() <= off < el[1] and var and key and not keyed_read:
+                    out.add((bm.group(1), key))
+        return out
+
+    def control_paint(self, sites) -> bool:
+        """Control dependence: a variable the guarded block reassigns (`$v = …`, not an
+        accumulator; `$v` already assigned before the guard in the same scope, so the
+        toggle switches an existing value rather than introducing its own content),
+        followed to the end of its function, reaches a paint declaration or a custom
+        property (a toggle that switches `$colour` to a computed contrast colour later
+        written as `color:` paints)."""
+        for t, s, e in sorted(sites, key=lambda x: (x[0].path, x[0].name, x[1])):
+            scope = _scope_of(t, s)
+            for p in t.stmt_starts(s, e):
+                span = t.stmt_span(p)
+                m = ASSIGN_RE.match(t.src[span[0]:span[1]])
+                if not m or m.group(2) is not None or m.group(1) in ("attributes", "this"):
+                    continue
+                if not self._assigned_before(t, m.group(1), scope[0], s):
+                    continue
+                seeds = var_refs(t, m.group(1), span[0], None)
+                if not seeds:
+                    continue
+                ctl = Channel()
+                self.flow(t, seeds, "", ctl, taint={m.group(1): None})
+                if (ctl.value_decl and any(paint_prop(x) for x in ctl.decl_props)) or ctl.cps:
+                    return True
+        return False
+
+    @staticmethod
+    def _assigned_before(t: PhpText, var: str, start: int, end: int) -> bool:
+        """`$var = …` (or `$var ??=`) as a statement head in [start, end)."""
+        for p in t.variables.get(var, ()):
+            if start <= p < end:
+                s, e = t.stmt_span(p)
+                am = ASSIGN_RE.match(t.src[s:e])
+                if am and am.group(1) == var and am.group(2) is None and s <= p < s + am.end():
+                    return True
+        return False
 
     @staticmethod
     def _enclosing_pair_key(stmt: str, offs: list[int]) -> str | None:

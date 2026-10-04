@@ -64,6 +64,29 @@ CALLEE_BEFORE_RE = re.compile(r"(\w+)\s*\($")
 VALUE_LIST_FUNCS = frozenset({"in_array", "array_search", "array_key_exists", "array_keys", "array_intersect", "array_diff", "isset"})
 ARRAY_KW_RE = re.compile(r"\barray\s*$")
 CHILD_SEL_RE = re.compile(r">\s*\.sgs-([a-z][a-z0-9-]*[a-z0-9])(?![\w-])")
+# A declaration with a literal value (`border-top:1px solid ' . …`): the statement fixes
+# the value itself rather than passing another setting's value on (`color:' . $x`).
+CONST_DECL_RE = re.compile(r"""['"\s;{(](""" + CSS_PROPS + r""")\s*:(?!:)\s*(?=[^'"\s;}])""")
+# Properties that show, hide, size or place a box rather than paint it: a show/hide
+# toggle that only switches these is switching content, not a look.
+NON_PAINT_PROPS = frozenset({
+    "display", "visibility", "position", "top", "right", "bottom", "left", "z-index", "order", "content",
+    "width", "height", "inline-size", "block-size", "overflow", "overflow-x", "overflow-y", "clip", "clip-path",
+    "white-space", "gap", "row-gap", "column-gap", "cursor", "will-change", "isolation",
+})
+NON_PAINT_PREFIXES = ("min-", "max-", "inset", "margin", "padding", "flex", "grid", "justify-", "align-", "place-", "scroll-")
+# `'blockName' => 'sgs/x'` beside `'attrs' => …` in a nested render: the attributes forwarded.
+FWD_BLOCK_RE = re.compile(r"""['"]blockName['"]\s*=>\s*['"](sgs/[a-z0-9-]+)['"]""")
+FWD_ATTRS_RE = re.compile(r"""['"]attrs['"]\s*=>\s*""")
+
+
+def paint_prop(prop: str) -> bool:
+    return prop not in NON_PAINT_PROPS and not prop.startswith(NON_PAINT_PREFIXES)
+
+
+def constant_paint_props(text: str) -> set[str]:
+    """Paint properties `text` declares with a literal value."""
+    return {m.group(1) for m in CONST_DECL_RE.finditer(blank_index(text)) if paint_prop(m.group(1))}
 
 
 @dataclass
@@ -83,6 +106,10 @@ class Channel:
     child_sel: set = field(default_factory=set)    # `> .sgs-<block>` subjects in emitted selectors
     inner_sel: set = field(default_factory=set)    # `__inner > .sgs-<block>` subjects
     ctx_tokens: set = field(default_factory=set)   # classes/CPs only a block-context consumer emits
+    fwd_tokens: set = field(default_factory=set)   # classes/CPs only a block the value is forwarded to emits
+    forwards: set = field(default_factory=set)     # (block name, attribute) the value is forwarded to
+    gate_paint: set = field(default_factory=set)   # paint properties a short block the value guards fixes
+    gate_sites: set = field(default_factory=set)   # (text, start, end) of every block the value guards
     stmts: int = 0
     read: bool = False                             # any seed found
 
@@ -93,7 +120,8 @@ class Channel:
         self.fwd |= o.fwd
         self.gate |= o.gate
         self.read |= o.read
-        for k in ("cps", "cps_any", "classes", "data", "fx_data", "helpers", "child_sel", "inner_sel", "ctx_tokens", "decl_props"):
+        for k in ("cps", "cps_any", "classes", "data", "fx_data", "helpers", "child_sel", "inner_sel", "ctx_tokens",
+                  "decl_props", "fwd_tokens", "forwards", "gate_paint", "gate_sites"):
             getattr(self, k).update(getattr(o, k))
         self.stmts += o.stmts
 

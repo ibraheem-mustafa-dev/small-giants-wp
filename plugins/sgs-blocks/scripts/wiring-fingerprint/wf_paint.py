@@ -10,8 +10,9 @@ Decided from the source and the DB, never from the calibration cache:
   js    an `anim:`/`fx:` pseudo-property, or a data attribute a front-end script or
         attribute selector reads
   not   unit companions (checked through their base attribute), content roles,
-        show/hide toggles (SWITCH_ROLES) with no class rule or custom property
-        (unless a hover/state/motion effect or a visual-effect runtime), and
+        show/hide toggles (SWITCH_ROLES) with no class rule, custom property or
+        paint declaration of their own (unless a hover/state/motion effect or a
+        visual-effect runtime), and
         everything with no paint signal (the reason is the role)
 
 `classification` on the DB `roles` table cannot make this call (it files colour
@@ -91,15 +92,21 @@ class PaintClassifier:
         if signals.get("cp_reader"):
             return "css", "cp-with-reader"
         if role in SWITCH_ROLES:
-            # A show/hide toggle paints only through a class with a rule (a modifier,
-            # or a state utility class such as `sgs-on-dark`) or a custom property; a
-            # declaration it merely gates (or a data attribute it sets) is the content
-            # or behaviour it switches. A hover,
-            # state or motion effect toggle (`shadowLiftOnHover`, `bgHoverZoom`)
-            # paints through the declaration it gates, and a visual-effect runtime
-            # toggle (`bgLottieLoop`, `itemMagnetEnabled`) through its data attribute.
+            # A show/hide toggle paints through a class with a rule (a modifier, a
+            # state utility class such as `sgs-on-dark`, or one in a block the value
+            # is forwarded to) or a custom property; through a paint declaration it
+            # fixes itself, in the block it guards (`border-top:1px solid …`) or by
+            # switching a variable a later paint declaration writes (a smart-contrast
+            # colour). Any other declaration it gates (one that shows, hides, sizes or
+            # places a box, or carries another setting's value), and a data attribute
+            # it sets, are the content or behaviour it switches. A hover, state or
+            # motion effect toggle (`shadowLiftOnHover`, `bgHoverZoom`) paints through
+            # the declaration it gates, and a visual-effect runtime toggle
+            # (`bgLottieLoop`, `itemMagnetEnabled`) through its data attribute.
             if signals.get("utility_class_rule"):
                 return "css", "class-rule"
+            if signals.get("toggle_paint"):
+                return "css", "toggle-paint-decl"
             effect = is_state(attr, row.get("css_state")) or is_motion(attr, cssp)
             if effect and signals.get("decl_channel"):
                 return "css", "effect-toggle-decl"

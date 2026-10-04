@@ -513,7 +513,7 @@
     "tier": "fast",
     "added_D": null,
     "added_commit": "7cd04abc1",
-    "budget_ms": 15100,
+    "budget_ms": 9720,
     "order": 58
   },
   {
@@ -1334,5 +1334,25 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 147
+  },
+  {
+    "id": "wiring-fingerprint-tests",
+    "cmd": "python -m pytest scripts/wiring-fingerprint/tests -q -p no:cacheprovider",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 7010,
+    "order": 148,
+    "tier_reason": "The wiring-fingerprint gate's own fixture tests (one per link, bug class and mechanism, with negative controls). Pre-deploy: they change only when the gate's code does; the gate itself runs in the fast tier. The real-repo acceptance measurement is tests/acceptance_check.py, run on demand."
+  },
+  {
+    "id": "wiring-fingerprint-mutation-proof",
+    "cmd": "python scripts/wiring-fingerprint/tests/prove_rules_can_fail.py",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 25220,
+    "order": 149,
+    "tier_reason": "Proves every wiring-fingerprint rule can fail: each mutant disables one rule in a throwaway copy and the fixture tests must turn red. Pre-deploy: about 65 pytest runs in parallel."
   }
 ]

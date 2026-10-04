@@ -8,40 +8,45 @@ from __future__ import annotations
 import re
 from collections import Counter
 
-from wf_bugs import root_prefix_bug, scope_hash_bug
-from wf_channel import ChannelAnalyser
-from wf_css import build_css_index, data_consumed, frontend_js, js_cp_reads
+from wf_bugs import root_prefix_bug
+from wf_css import build_css_index, frontend_js, js_cp_reads
 from wf_editor import EditorModel
 from wf_extensions import scan_extensions
-from wf_frontend import FrontEnd, prefix_helpers
 from wf_inputs import Inputs
 from wf_links import LinkEnv, assess
-from wf_paint import PaintClassifier
+from wf_paint import SWITCH_ROLES, PaintClassifier
+from wf_pass import BlockJob, FrontPass, PassRun
 from wf_paths import Roots
-from wf_php import PhpIndex
+from wf_resolve import Resolver
 
 
-def manifest_motion_attrs(bjson: dict) -> dict[str, str]:
-    """attr -> pseudo-property for `supports.sgs.elements[].attrMap` motion/fx entries
-    (the element manifest's hook emitters, e.g. includes/animation-stagger.php, read them)."""
-    els = ((bjson.get("supports") or {}).get("sgs") or {}).get("elements") or []
-    if isinstance(els, dict):
-        els = list(els.values())
-    out = {}
-    for el in els:
-        if isinstance(el, dict):
-            for k, v in (el.get("attrMap") or {}).items():
-                if isinstance(v, str) and k.startswith(("anim:", "fx:")) and not v.startswith("native:"):
-                    out[v] = k
-    return out
+def jobs_for(roots: Roots, inp: Inputs, by_block: dict[str, list[dict]]) -> list[BlockJob]:
+    jobs = []
+    for block in sorted(by_block):
+        if block not in inp.blockjson:
+            continue
+        bdir, bjson = inp.blockjson[block]
+        ctx_of = {a: k for k, a in (bjson.get("providesContext") or {}).items()}
+        consumers = []
+        for r in by_block[block]:
+            key = ctx_of.get(r["attr_name"])
+            if key:
+                dirs = tuple(inp.blockjson[cb][0] for cb in sorted(inp.uses_context.get(key, ())) if cb in inp.blockjson)
+                consumers.append((r["attr_name"], key, dirs))
+        attrs = tuple((r["attr_name"], (r.get("role") or "") in SWITCH_ROLES) for r in by_block[block])
+        jobs.append(BlockJob(block=block, bdir=bdir, attrs=attrs, consumers=tuple(consumers)))
+    return jobs
 
 
 def scan(roots: Roots, inp: Inputs) -> dict:
-    index = PhpIndex(sorted(roots.includes.glob("**/*.php")) + sorted(roots.blocks.glob("**/*.php")))
-    slugs = {d.name for d in roots.blocks.iterdir() if (d / "block.json").exists()} if roots.blocks.exists() else set()
-    analyser = ChannelAnalyser(index, slugs)
+    by_block: dict[str, list[dict]] = {}
+    for r in inp.rows:
+        by_block.setdefault(r["block_slug"], []).append(r)
+    run = PassRun(roots, jobs_for(roots, inp, by_block))   # workers start now
+    local = FrontPass(roots)
+    index, fe = local.index, local.fe
+    slugs = local.slugs
     css = build_css_index(roots.plugin, roots.theme, list(index.files.values()))
-    fe = FrontEnd(index, analyser, prefix_helpers(index, roots.plugin / "scripts" / "check-dead-controls.js"), roots.includes)
     js = frontend_js(roots.plugin)
     css.js_cp_readers = js_cp_reads(js)
     env = LinkEnv(css=css, js=js, root_class_re=re.compile(
@@ -52,72 +57,51 @@ def scan(roots: Roots, inp: Inputs) -> dict:
     # An extension attribute may be controlled by any extension file
     # (conditional-visibility.js writes responsive-visibility.js's toggles).
     ext_attrs = {a for ext in inp.roster for a in (ext.get("attributes") or {})}
+    passed = run.result(local)
+    resolver = Resolver(passed, {(r["block_slug"], r["attr_name"]): r for r in inp.rows}, inp.blockjson, inp.dump, css, js, paint)
 
     records: list[dict] = []
     findings: list[dict] = []
-    by_block: dict[str, list[dict]] = {}
-    for r in inp.rows:
-        by_block.setdefault(r["block_slug"], []).append(r)
-
     for block in sorted(by_block):
         if block not in inp.blockjson:
             continue
         bdir, bjson = inp.blockjson[block]
-        texts, derived = fe.block_texts(bdir)
+        res = passed[block]
+        derived = res.derived
         declared = set((bjson.get("attributes") or {}).keys())
         be = editor.block(bdir.name, bjson, ext_files if declared & ext_attrs else [])
         ctx_of = {a: k for k, a in (bjson.get("providesContext") or {}).items()}
-        anim_map = manifest_motion_attrs(bjson)
         named_typo = {re.sub(r"FontSize$", "", a) for a in derived if a.endswith("FontSize") and a != "fontSize"}
         root_emitted = any(a in derived for a in ("fontSize", "lineHeight", "fontWeight"))
         b2 = set(root_prefix_bug(declared, be.control, root_emitted, named_typo))
-        scoped_ctx = scope_hash_bug([t for t in texts if t.path.startswith(bdir.as_posix() + "/")], analyser)
-        if scoped_ctx:
+        if res.scoped_ctx:
             findings.append({"block": block, "attr": "(scope-hash)", "link": "B1",
-                             "detail": "uid hash omits $block->context; context in scoped CSS: " + ", ".join(scoped_ctx)})
+                             "detail": "uid hash omits $block->context; context in scoped CSS: " + ", ".join(res.scoped_ctx)})
         for r in by_block[block]:
             attr = r["attr_name"]
             key = ctx_of.get(attr)
-            consumers = [(fe.block_texts(inp.blockjson[cb][0])[0], key)
-                         for cb in sorted(inp.uses_context.get(key, ())) if key and cb in inp.blockjson]
-            ch, where = fe.channel(attr, texts, derived, consumers, block, bdir.as_posix() + "/")
+            rv = resolver.get(block, attr)
+            ch, where, cat, basis = rv.ch, rv.where, rv.category, rv.basis
             d = inp.dump.get((block, attr), {})
-            if attr in anim_map and not ch.kinds():
-                ch.read = True
-                ch.data.add("attrMap:" + anim_map[attr])
-                where = where or "manifest"
-            if d.get("renderVia") == "media-element-atom" and not ch.kinds():
-                ch.read = True
-                ch.decl = True
-                ch.helpers.add("sgs_media_element_style")
-                where = where or "media-atom"
-            signals = {
-                "class_rule": any(css.has_class(c) for c in ch.classes if "--" in c),
-                "cp_reader": any(css.cp_read(cp) for cp in ch.cps),
-                "decl_channel": ch.decl or ch.gate_decl,
-                # State utility modifiers the framework styles (`sgs-on-dark`, `sgs-has-hover-overlay`).
-                "utility_class_rule": any(css.has_class(c) for c in ch.classes if c.startswith(("sgs-on-", "sgs-has-"))),
-                "data_consumed": data_consumed(ch.fx_data, css, js),
-                "fx_data_consumed": data_consumed(ch.fx_data, css, js),
-            }
-            cat, basis = paint.classify(r, signals)
             rec = {"block": block, "attr": attr, "role": r.get("role"), "css_property": r.get("css_property"),
                    "category": cat, "basis": basis, "classes": sorted(ch.classes)[:8], "data": sorted(ch.data)[:6],
                    "props": sorted(ch.decl_props)[:10]}
+            if ch.forwards:
+                rec["forwards"] = sorted(f"{b}::{a}" for b, a in ch.forwards)
             if cat == "not":
                 rec["class"] = "not-paint"
                 records.append(rec)
                 continue
             ctx_canvas = bool(key) and any(editor.child_reads_context(inp.blockjson[cb][0].name, key)
                                            for cb in inp.uses_context.get(key, ()) if cb in inp.blockjson)
-            res = assess(r, cat, ch, d, be, ctx_canvas, b2, env, frozenset(bjson.get("allowedBlocks") or ()))
-            rec.update({"control": be.control.get(attr), "canvas": res["canvas"], "frontend": where or d.get("renderVia"),
-                        "channel": res["channel"], "cps": sorted(ch.cps), "helpers": sorted(ch.helpers)[:8],
-                        "missing": res["missing"], "class": res["class"]})
-            if res["unconsumed"]:
-                rec["unconsumed"] = res["unconsumed"]
+            res_l = assess(r, cat, ch, d, be, ctx_canvas, b2, env, frozenset(bjson.get("allowedBlocks") or ()))
+            rec.update({"control": be.control.get(attr), "canvas": res_l["canvas"], "frontend": where or d.get("renderVia"),
+                        "channel": res_l["channel"], "cps": sorted(ch.cps), "helpers": sorted(ch.helpers)[:8],
+                        "missing": res_l["missing"], "class": res_l["class"]})
+            if res_l["unconsumed"]:
+                rec["unconsumed"] = res_l["unconsumed"]
             records.append(rec)
-            findings += [{"block": block, "attr": attr, "link": m} for m in res["missing"]]
+            findings += [{"block": block, "attr": attr, "link": m, "detail": res_l["details"].get(m, "")} for m in res_l["missing"]]
     ext_findings, ext_records = scan_extensions(inp, fe, css, js, editor, paint)
     findings += ext_findings
     records += ext_records

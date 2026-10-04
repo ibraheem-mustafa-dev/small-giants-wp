@@ -9,7 +9,9 @@ and they feed S1.
 """
 from __future__ import annotations
 
+import json
 import re
+import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -21,8 +23,9 @@ CLASS_TOKEN_RE = re.compile(r"\.(-?[_a-zA-Z][_a-zA-Z0-9-]*)")
 DATA_ATTR_SEL_RE = re.compile(r"\[\s*(data-[a-z0-9-]+)")
 DECL_PROP_RE = re.compile(r"(?:^|;)\s*([a-z-]+)\s*:")
 EDITOR_SHEET_RE = re.compile(r"(^|/)editor[^/]*\.s?css$")
-# Postbuild scripts that rewrite built CSS (package.json::scripts.postbuild).
-INJECTOR_GLOBS = ("scripts/shadow-lift/*.js", "scripts/shadow-fallback/*.js", "scripts/hover-guard/*.js")
+# Used only when package.json exists but its postbuild cannot be read (a loud warning names why).
+FALLBACK_INJECTOR_GLOBS = ("scripts/shadow-lift/*.js", "scripts/shadow-fallback/*.js", "scripts/hover-guard/*.js")
+POSTBUILD_NODE_RE = re.compile(r"\bnode\s+(\S+\.js)((?:\s+--?[\w-]+)*)")
 
 
 def _strip_comments(src: str, scss: bool) -> str:
@@ -117,13 +120,45 @@ class CssIndex:
         return bool(self.cp_readers.get(cp)) or cp in others
 
 
+def injector_globs(plugin: Path) -> tuple[str, ...]:
+    """Globs over the postbuild steps that rewrite built CSS: each `node <script>.js`
+    in package.json::scripts.postbuild run with `--build`, or a `*transform*` script,
+    contributes its folder's scripts (a script directly in scripts/ contributes
+    itself). No package.json (a fixture tree) means no injectors; one whose postbuild
+    cannot be read falls back to FALLBACK_INJECTOR_GLOBS with a warning on stderr."""
+    pkg = plugin / "package.json"
+    if not pkg.exists():
+        return ()
+    try:
+        postbuild = json.loads(pkg.read_text(encoding="utf-8"))["scripts"]["postbuild"]
+        if not isinstance(postbuild, str):
+            raise TypeError("scripts.postbuild is not a string")
+    except (OSError, ValueError, KeyError, TypeError) as e:
+        print(f"[wiring-fingerprint] WARNING: cannot read {pkg} scripts.postbuild ({e!r}); "
+              f"falling back to {', '.join(FALLBACK_INJECTOR_GLOBS)}", file=sys.stderr)
+        return FALLBACK_INJECTOR_GLOBS
+    out: list[str] = []
+    for m in POSTBUILD_NODE_RE.finditer(postbuild):
+        script, flags = m.group(1), m.group(2).split()
+        if "--build" not in flags and "transform" not in Path(script).name:
+            continue
+        parent = Path(script).parent.as_posix()
+        glob = f"{parent}/*.js" if parent not in ("scripts", ".") else script
+        if glob not in out:
+            out.append(glob)
+    return tuple(out)
+
+
 def stylesheet_files(plugin: Path, theme: Path) -> list[Path]:
-    files: list[Path] = []
+    """Front-end and editor stylesheets; anything under a `build/` or `node_modules/`
+    folder of the plugin or theme is skipped (tested on the path relative to its root,
+    so a checkout that itself sits under a folder named `build` still scans)."""
+    files: list[tuple[Path, Path]] = []
     for pat in ("src/**/*.css", "src/**/*.scss", "assets/**/*.css"):
-        files += plugin.glob(pat)
+        files += [(f, plugin) for f in plugin.glob(pat)]
     if theme.exists():
-        files += theme.glob("**/*.css")
-    return sorted(f for f in files if "node_modules" not in f.parts and "build" not in f.parts)
+        files += [(f, theme) for f in theme.glob("**/*.css")]
+    return sorted(f for f, root in files if not {"node_modules", "build"} & set(f.relative_to(root).parts))
 
 
 def build_css_index(plugin: Path, theme: Path, php_texts) -> CssIndex:
@@ -151,7 +186,8 @@ def build_css_index(plugin: Path, theme: Path, php_texts) -> CssIndex:
         idx.class_tokens.update(m.group(1) for m in PHP_SELECTOR_CLASS_RE.finditer(t.src))
         idx.data_attrs.update(DATA_ATTR_SEL_RE.findall(t.src))
     idx.php_cp_readers |= dynamic_var_reads(php_texts)
-    for pat in INJECTOR_GLOBS:
+    idx.class_tokens |= concat_selector_classes(php_texts)
+    for pat in injector_globs(plugin):
         for f in sorted(plugin.glob(pat)):
             idx.injector_cp_readers.update(CP_READ_RE.findall(read(f)))
     return idx
@@ -190,6 +226,92 @@ def dynamic_var_reads(php_texts) -> set[str]:
                         if lm:
                             out.add("--" + lm.group(1) + tail)
                 break
+    return out
+
+
+# `' .' . $bem_root . '__item--featured'`: a selector whose block root a variable carries.
+CONCAT_SEL_RE = re.compile(r"""\.['"]\s*\.\s*\$(\w+)\s*\.\s*['"]((?:__|--)[a-z0-9][a-z0-9_-]*[a-z0-9])""")
+LIT_ROOT_RE = re.compile(r"""\s*['"]((?:sgs|is|has)-[a-z0-9][a-z0-9-]*[a-z0-9])['"]\s*$""")
+VAR_ARG_RE = re.compile(r"\s*\$(\w+)\s*$")
+
+
+class RootLiterals:
+    """Literal class roots a variable holds at a position: the latest `$name = 'sgs-x';`
+    before it in the same text, or, when `$name` is a parameter of the enclosing
+    function or closure, the literal each call passes at that parameter (followed
+    through a caller that passes its own parameter on, up to four levels). Call
+    sites, heads and assignments are indexed once per text or function."""
+
+    def __init__(self, php_texts) -> None:
+        self.texts = list(php_texts)
+        self._heads: dict[int, list] = {}
+        self._assigns: dict[tuple[int, str], list] = {}
+        self._calls: dict[tuple, list] = {}
+        self._param: dict[tuple, frozenset] = {}
+
+    def heads(self, t) -> list:
+        if id(t) not in self._heads:
+            hs = [(h.start(), "closure", h.group(1), h.group(2)) for h in CLOSURE_HEAD_RE.finditer(t.src)]
+            hs += [(h.start(), "named", h.group(1), h.group(2)) for h in NAMED_HEAD_RE.finditer(t.src)]
+            self._heads[id(t)] = sorted(hs, reverse=True)
+        return self._heads[id(t)]
+
+    def assigns(self, t, name: str) -> list:
+        key = (id(t), name)
+        if key not in self._assigns:
+            self._assigns[key] = [(m.start(), m.group(1)) for m in re.finditer(
+                r"\$" + re.escape(name) + r"""\s*=\s*['"]((?:sgs|is|has)-[a-z0-9-]*[a-z0-9])['"]\s*;""", t.src)]
+        return self._assigns[key]
+
+    def calls(self, kind: str, fname: str, t) -> list:
+        key = (kind, fname, id(t) if kind == "closure" else None)
+        if key not in self._calls:
+            call_re = re.compile((r"\$" + re.escape(fname) if kind == "closure" else r"(?<![\w$>:])" + re.escape(fname)) + r"\s*\(")
+            pool = self.texts if kind == "named" else [t]
+            self._calls[key] = [(tt, cm.start(), cm.end() - 1) for tt in pool if fname in tt.src for cm in call_re.finditer(tt.src)]
+        return self._calls[key]
+
+    def at(self, t, pos: int, name: str, depth: int = 0) -> set[str]:
+        from wf_php import split_args
+
+        if depth > 4:
+            return set()
+        before = [v for p, v in self.assigns(t, name) if p < pos]
+        if before:
+            return {before[-1]}
+        for hpos, kind, fname, params in self.heads(t):
+            if hpos >= pos:
+                continue
+            pnames = [(re.search(r"\$(\w+)", p) or [None, ""])[1] for p in params.split(",")]
+            if name not in pnames:
+                continue
+            idx = pnames.index(name)
+            memo = (kind, fname, idx, id(t) if kind == "closure" else None)
+            if memo not in self._param:
+                self._param[memo] = frozenset()   # recursion guard
+                out: set[str] = set()
+                for tt, cstart, paren in self.calls(kind, fname, t):
+                    args = split_args(tt.src, paren)
+                    if idx >= len(args):
+                        continue
+                    lm = LIT_ROOT_RE.match(args[idx])
+                    vm = VAR_ARG_RE.match(args[idx])
+                    if lm:
+                        out.add(lm.group(1))
+                    elif vm:
+                        out |= self.at(tt, cstart, vm.group(1), depth + 1)
+                self._param[memo] = frozenset(out)
+            return set(self._param[memo])
+        return set()
+
+
+def concat_selector_classes(php_texts) -> set[str]:
+    """Class tokens of selectors built from a variable block root and a BEM tail."""
+    roots = RootLiterals(php_texts)
+    out: set[str] = set()
+    for t in roots.texts:
+        for m in CONCAT_SEL_RE.finditer(t.src):
+            out |= {root + m.group(2) for root in roots.at(t, m.start(), m.group(1))}
     return out
 
 

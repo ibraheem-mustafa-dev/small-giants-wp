@@ -37,6 +37,7 @@ def read(path) -> str:
 STRING_RE = re.compile(r"""'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*\"""", re.S)
 COMMENT_OR_STRING_RE = re.compile(r"""'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|/\*.*?(?:\*/|\Z)|//[^\n]*|#(?!\[)[^\n]*""", re.S)
 BOUND_RE = re.compile(r"[;{}]")
+BRACKET_OR_BOUND_RE = re.compile(r"[;{}()\[\]]")
 BRACE_RE = re.compile(r"[{}]")
 
 
@@ -181,6 +182,43 @@ class PhpText:
     def stmt(self, pos: int) -> str:
         s, e = self.stmt_span(pos)
         return self.src[s:e]
+
+    def logical_span(self, pos: int) -> tuple[int, int]:
+        """The statement holding `pos` with bounds inside brackets ignored, so a
+        closure inside an array literal (`$a = array( 'f' => function () { … }, 'k' => $v );`)
+        stays part of the assignment it sits in."""
+        depth = self.cache.get("bound_depth")
+        if depth is None:
+            depth, d = [0], 0            # the leading -1 bound
+            for m in BRACKET_OR_BOUND_RE.finditer(self.mask):
+                c = m.group(0)
+                if c in "([":
+                    d += 1
+                elif c in ")]":
+                    d = max(0, d - 1)
+                else:
+                    depth.append(d)
+            depth.append(0)              # the trailing len(src) bound
+            self.cache["bound_depth"] = depth
+        k = bisect.bisect_left(self._bounds, pos)
+        s = k - 1
+        while s > 0 and depth[s] > 0:
+            s -= 1
+        e = k
+        while e < len(self._bounds) - 1 and depth[e] > 0:
+            e += 1
+        start = self._bounds[s] + 1 if s >= 0 else 0
+        return start, min(self._bounds[e] + 1, len(self.src))
+
+    def stmt_starts(self, start: int, end: int) -> list[int]:
+        """Start offsets of the statements that open after a bound inside [start, end)."""
+        out = []
+        for b in self._bounds[bisect.bisect_left(self._bounds, start):]:
+            if b >= end:
+                break
+            if b + 1 < end:
+                out.append(b + 1)
+        return out
 
     def block_after(self, pos: int) -> str:
         """The `{ … }` body opened by the statement at `pos` (an `if`/`foreach` head)."""
