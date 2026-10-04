@@ -25,6 +25,7 @@
       "postId": 187
     },
     "walker": "qa/parity/about.mjs",
+    "walkerFull": "qa/parity/about.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
     "states": {
       "opening": null

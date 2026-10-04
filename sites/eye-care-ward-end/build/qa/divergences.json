@@ -13,5 +13,95 @@
     },
     "reason": "At 375 the live form stacks its own top spacing under this subtext, so the draft 22px bottom margin lands the name field 23px lower than the draft (Solve 2026-10-03: y-from-form-subtext 45 to 68). 0px keeps the field where the draft has it; tablet and desktop keep 22px.",
     "decided": "2026-10-03 Spec 47 Solve, contact regression"
+  },
+  {
+    "id": "D-2",
+    "scope": "about",
+    "node": "cr-ref-about-10",
+    "state": "opening",
+    "property": "transform",
+    "widths": [
+      768
+    ],
+    "expected": {
+      "value": "matrix(1, 0, 0, 1, 0, -3)"
+    },
+    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-3",
+    "scope": "about",
+    "node": "cr-ref-about-10",
+    "state": "opening",
+    "property": "hover-effects",
+    "widths": [
+      768
+    ],
+    "expected": {
+      "value": "ground appears, lifts"
+    },
+    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-4",
+    "scope": "about",
+    "node": "cr-ref-about-10",
+    "state": "opening",
+    "property": "transform",
+    "widths": [
+      1440
+    ],
+    "expected": {
+      "value": "matrix(1, 0, 0, 1, 0, -3)"
+    },
+    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-5",
+    "scope": "about",
+    "node": "cr-ref-about-10",
+    "state": "opening",
+    "property": "hover-effects",
+    "widths": [
+      1440
+    ],
+    "expected": {
+      "value": "ground appears, lifts"
+    },
+    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-6",
+    "scope": "about",
+    "node": "cr-ref-about-10",
+    "state": "opening",
+    "property": "transform",
+    "widths": [
+      1920
+    ],
+    "expected": {
+      "value": "matrix(1, 0, 0, 1, 0, -3)"
+    },
+    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-7",
+    "scope": "about",
+    "node": "cr-ref-about-10",
+    "state": "opening",
+    "property": "hover-effects",
+    "widths": [
+      1920
+    ],
+    "expected": {
+      "value": "ground appears, lifts"
+    },
+    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+    "decided": "2026-10-04 Bean"
   }
 ]

@@ -15,7 +15,8 @@
       },
       "gap": {
         "desktop": "48px",
-        "mobile": "32px"
+        "mobile": "48px",
+        "tablet": "48px"
       },
       "alignItems": "start",
       "maxWidth": {
@@ -23,20 +24,20 @@
       },
       "padding": {
         "desktop": {
-          "top": "104px",
-          "bottom": "104px",
+          "top": "48px",
+          "bottom": "90px",
           "left": "52px",
           "right": "52px"
         },
         "tablet": {
-          "top": "104px",
-          "bottom": "104px",
+          "top": "48px",
+          "bottom": "90px",
           "left": "52px",
           "right": "52px"
         },
         "mobile": {
-          "top": "56px",
-          "bottom": "56px",
+          "top": "28px",
+          "bottom": "60px",
           "left": "20px",
           "right": "20px"
         }
@@ -123,7 +124,7 @@
             "name": "sgs/text",
             "attributes": {
               "text": "BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care",
-              "textColour": "text-muted",
+              "textColour": "text-subtle",
               "fontSize": {
                 "desktop": "15px"
               },
@@ -224,7 +225,9 @@
               "layout": "flex",
               "flexWrap": "wrap",
               "gap": {
-                "desktop": "10px"
+                "desktop": "10px",
+                "mobile": "10px",
+                "tablet": "10px"
               },
               "margin": {
                 "desktop": {
@@ -250,7 +253,7 @@
                     "tablet": 1.5,
                     "desktop": 1.5
                   },
-                  "iconSize": "20px",
+                  "iconSize": "19px",
                   "iconGap": "11px",
                   "minHeight": "50px",
                   "padding": {
@@ -328,10 +331,12 @@
           "metadata": {
             "name": "Credential stack"
           },
-          "layout": "flex",
+          "layout": "stack",
           "flexWrap": "nowrap",
           "gap": {
-            "desktop": "1px"
+            "desktop": "1px",
+            "mobile": "1px",
+            "tablet": "1px"
           },
           "separators": {
             "row": {
@@ -362,7 +367,9 @@
           "sgsAnimationDistance": "18",
           "sgsAnimationEasing": "ease",
           "className": "cr-ref-about-11",
-          "flexDirection": "column"
+          "flexDirection": "column",
+          "sgsAnimationStart": "load",
+          "backgroundColour": "border"
         },
         "innerBlocks": [
           {
@@ -485,7 +492,27 @@
                   "fontSize": {
                     "desktop": "14.5px"
                   },
-                  "className": "cr-ref-about-17"
+                  "className": "cr-ref-about-17",
+                  "margin": {
+                    "mobile": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "6px"
+                    },
+                    "tablet": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "6px"
+                    },
+                    "desktop": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "6px"
+                    }
+                  }
                 }
               }
             ]
@@ -547,7 +574,27 @@
                   "fontSize": {
                     "desktop": "14.5px"
                   },
-                  "className": "cr-ref-about-20"
+                  "className": "cr-ref-about-20",
+                  "margin": {
+                    "mobile": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "6px"
+                    },
+                    "tablet": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "6px"
+                    },
+                    "desktop": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "6px"
+                    }
+                  }
                 }
               }
             ]
@@ -604,7 +651,27 @@
                   "fontSize": {
                     "desktop": "14.5px"
                   },
-                  "className": "cr-ref-about-23"
+                  "className": "cr-ref-about-23",
+                  "margin": {
+                    "mobile": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "6px"
+                    },
+                    "tablet": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "6px"
+                    },
+                    "desktop": {
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px",
+                      "top": "6px"
+                    }
+                  }
                 }
               }
             ]
