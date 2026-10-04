@@ -133,10 +133,9 @@ Engineering:
   `gates.json` (tier fast) with the baseline generated from the real repo; `python plugins/sgs-blocks/scripts/run-gates.py
   --tier fast` passes for this gate.
 
-## Minor findings carried (final review triages)
+## Minor findings carried
 
-- Task 1: `check-dead-controls.js` (`liveContextKeys`/`isConsumed`) and `check-editor-render-parity.js`
-  (`buildConsumedContextKeys`) each decide "is this context key consumed" differently; move both onto one shared helper.
-- Task 1: `check-editor-render-parity.js` is 5,261 lines; split it by check (A, B, …) into modules.
-- Task 1: `getConsumedContextKeys` scans every block's source even when keys are passed explicitly (speed only).
-- Task 1: `readsContextKey`'s regex has no left boundary, so `mycontext['key']` would count as a read (no such code today).
+Triaged by the final whole-branch review (2026-10-04): `readsContextKey`'s left boundary is fixed in this plan's
+review fixes; the shared context-consumed helper, the split of `check-editor-render-parity.js` and the three further
+orphan context keys are Session 0 group S0-7 of `plans/2026-10-04-eye-care-sweep-audit-fix.md`; the
+`getConsumedContextKeys` full scan is speed only (the check runs in 3.7 s) and stays as is.

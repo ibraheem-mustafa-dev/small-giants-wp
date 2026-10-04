@@ -171,3 +171,14 @@ scope hash without context, a root-prefix helper with no root control (team-memb
 Real defects confirmed in passing: team-member root typography; `nav-bar-menu::margin`, `nav-drawer-menu::margin`,
 `choice-flow::backColourBorderHover` have no control; `wishlist-panel::columns` never reaches the canvas.
 All 21 fixes are Task 2 of `.claude/plans/2026-10-04-wiring-fingerprint-gate.md`.
+
+## 6. The production gate (2026-10-04, `check-wiring-fingerprint.py`)
+
+Built from the prototype with the council's 21 blind spots and two review rounds fixed (`plans/2026-10-04-wiring-fingerprint-gate.md`).
+On Rater A's labelled rows it has 100% precision on every link and 100% recall except L2 (44%: the misses are
+`tagName`/`templateLock`-type settings outside the paint population by design); Rater B's population agreement is
+≥95% both ways; no calibrated setting carries an L5 or L7 finding; it finds all three framework bugs. Counts at
+8d81a084f: 5,804 attributes (prototype 5,741; extension attributes added), not paint 1,292, full 2,139, partial
+1,737, advisory-only 636. Links: L3 1,591 (72 blocks), L3-state 640 (advisory), L3-tier 99, L2 26, L6-token 21
+(advisory), L5 18, C1 15, B3 11, L6 10, B2 4, L7 3, S1 2, B1 1, L4 1. Blocking gaps are baselined (1,781); `--check`
+fails only on a new one. Rerun: `python plugins/sgs-blocks/scripts/check-wiring-fingerprint.py --json <file>`.
