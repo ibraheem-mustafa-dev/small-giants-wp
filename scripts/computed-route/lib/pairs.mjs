@@ -194,14 +194,18 @@ export function reconcileHandPairs( hand, kept ) {
 	return { retarget, duplicate };
 }
 
+// The controls a form-control pair measures (lib/pairs-page.mjs::formControls counts the same ones).
+const CONTROL_SELECTOR = ':is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)';
+
 // The generated walker config: the hand config plus one pair per kept block. The hand config keeps its states, draft
 // navigation, exclusions and divergence ledger; refPrefix is restated so Solve accepts the file. retarget: hand pair
 // name -> the live finder replacing its own (reconcileHandPairs).
 export function configText( handFile, surface, pairs, retarget = new Map() ) {
 	// A text-run pair (choosePartner) measures the block's rendered text on both sides (paint.mjs::textRun); a group pair
 	// (chooseGroupPartner) the union box of its children's partners against the block's box (paint.mjs::groupBox).
+	// A control pair whose draft partner is the control itself (liveControl) measures the block's own control on live.
 	const finder = ( p, side ) => {
-		const within = 'draft' === side ? p.draft : `.${ p.ref }`;
+		const within = 'draft' === side ? p.draft : `.${ p.ref }${ p.liveControl ? ` ${ CONTROL_SELECTOR }` : '' }`;
 		if ( p.group ) {
 			return { group: { paths: 'draft' === side ? p.group.paths : [ within ] } };
 		}

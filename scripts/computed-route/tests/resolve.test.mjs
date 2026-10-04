@@ -130,10 +130,13 @@ test( 'MUST FAIL TO WRITE: a border-radius write never carries side keys', () =>
 test( 'MUST FAIL (CR16): measured px grid tracks write as fr proportions; 1440 and 1920 agree when their proportions do', () => {
 	const r = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'grid-template-columns', perWidth: { 1440: '496.562px 451.438px', 1920: '628.562px 571.438px' } },
 		{ db, snapshot, calibration: cal( { gridTemplateColumns: { slot: '.sgs-container__inner', property: 'grid-template-columns' } } ) } );
-	assert.deepEqual( r.writes, [ { attr: 'gridTemplateColumns', value: { desktop: '1.1fr 1fr' }, merge: 'deep' } ] );
+	assert.deepEqual( r.writes, [ { attr: 'gridTemplateColumns', value: { desktop: 'minmax(0, 1.1fr) minmax(0, 1fr)' }, merge: 'deep' } ] );
 	const kw = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'grid-template-columns', perWidth: { 1440: 'none' } },
 		{ db, snapshot, calibration: cal( { gridTemplateColumns: { slot: '.sgs-container__inner', property: 'grid-template-columns' } } ) } );
 	assert.equal( kw.gap, 'shape' );
+	const equal = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'grid-template-columns', perWidth: { 768: '205.328px 205.328px 205.328px' } },
+		{ db, snapshot, calibration: cal( { gridTemplateColumns: { slot: '.sgs-container__inner', property: 'grid-template-columns' } } ) } );
+	assert.deepEqual( equal.writes[ 0 ].value, { tablet: 'repeat(3, minmax(0, 1fr))' } );
 } );
 
 test( 'MUST FAIL: an inherited setting writes a descendant row its value reaches; a setting painting the slot itself wins', () => {

@@ -230,3 +230,11 @@ test( 'MUST FAIL: a text run or group reports no painted ground; an element pair
 	assert.deepEqual( grounds( { name: 'run', draft: { textRun: { within: '.a' } }, live: { textRun: { within: '.b' } } } ), [] );
 	assert.deepEqual( grounds( { name: 'grp', draft: { group: { paths: [] } }, live: '.b' } ), [] );
 } );
+
+test( 'stamping: enclosing blocks are stamped nearest first, each with the same path choice', () => {
+	const diffs = [ { kind: 'style', key: 'padding-top' }, { kind: 'style', key: 'font-size' } ];
+	stampRefs( diffs, { ref: 'cr-ref-f-2', block: 'sgs-form-field', path: '.sgs-form-field__input', textPath: '.sgs-form-field__label', owners: [
+		{ ref: 'cr-ref-f-0', block: 'sgs-form', path: '.sgs-form__inner > .sgs-form-field > .sgs-form-field__input', textPath: '.sgs-form__inner > .sgs-form-field > .sgs-form-field__label' } ] } );
+	assert.deepEqual( diffs[ 0 ].owners, [ { ref: 'cr-ref-f-0', block: 'sgs-form', path: '.sgs-form__inner > .sgs-form-field > .sgs-form-field__input' } ] );
+	assert.equal( diffs[ 1 ].owners[ 0 ].path, '.sgs-form__inner > .sgs-form-field > .sgs-form-field__label' );
+} );

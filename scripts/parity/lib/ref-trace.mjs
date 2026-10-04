@@ -1,6 +1,6 @@
 // Ref tracing (GAP-CHECKLIST.md section 16). A config with `refPrefix` (e.g. 'cr-ref-') gets, on every style,
 // hover and box row, the measured live element's nearest ancestor-or-self carrying a class with that prefix
-// (`ref`) and the element's selector path from it (`path`). A tool that wrote the ref classes into a layout can
+// (`ref`) and the element's selector path from it (`path`), and every enclosing ref with its own path (`owners`). A tool that wrote the ref classes into a layout can
 // then map each row back to one block and one rendered element of it.
 
 // Extra properties measured when a config sets refPrefix: the spacing and width a layout setting writes, which
@@ -53,15 +53,25 @@ export function traceRef( el, carrier, prefix, pathSrc, layoutEl = null, iconEl 
 	if ( ! refEl ) {
 		return null;
 	}
-	const block = [ ...refEl.classList ].find( ( c ) => /^sgs-[a-z0-9-]+$/.test( c ) && ! c.includes( '--' ) && ! c.startsWith( prefix ) && ! /-[0-9a-f]{8}$/.test( c ) ) || null;
-	return {
-		ref,
-		block,
-		path: path( el, refEl ),
-		textPath: carrier && refEl.contains( carrier ) ? path( carrier, refEl ) : null,
-		layoutPath: layoutEl && refEl.contains( layoutEl ) ? path( layoutEl, refEl ) : null,
-		iconPath: iconEl && refEl.contains( iconEl ) ? path( iconEl, refEl ) : null,
-	};
+	const blockOf = ( r ) => [ ...r.classList ].find( ( c ) => /^sgs-[a-z0-9-]+$/.test( c ) && ! c.includes( '--' ) && ! c.startsWith( prefix ) && ! /-[0-9a-f]{8}$/.test( c ) ) || null;
+	const from = ( r, rRef ) => ( {
+		ref: rRef,
+		block: blockOf( r ),
+		path: path( el, r ),
+		textPath: carrier && r.contains( carrier ) ? path( carrier, r ) : null,
+		layoutPath: layoutEl && r.contains( layoutEl ) ? path( layoutEl, r ) : null,
+		iconPath: iconEl && r.contains( iconEl ) ? path( iconEl, r ) : null,
+	} );
+	// The enclosing blocks, nearest first: a parent block's setting can paint an element of its child (a form's field
+	// style on each field's control), so Solve can resolve a row against them when the nearest block has no setting.
+	const owners = [];
+	for ( let a = refEl.parentElement; a && a !== document.documentElement; a = a.parentElement ) {
+		const r = [ ...a.classList ].find( ( c ) => c.startsWith( prefix ) );
+		if ( r ) {
+			owners.push( from( a, r ) );
+		}
+	}
+	return { ...from( refEl, ref ), owners };
 }
 
 // The properties collectPair reads from the text carrier rather than the element.
@@ -73,6 +83,19 @@ export const LAYOUT_CARRIED = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'fl
 // Node side: stamps ref, block and path on one pair's rows from the live snapshot's trace. Text properties (at rest and
 // on hover: hoverStyles reads colour from the same carrier) take the text path; layout properties the layout path;
 // an icon's size the icon's path.
+// Enclosing blocks (trace.owners) are stamped as d.owners: [{ ref, block, path }], nearest first, with the same path choice.
+const pathFor = ( d, t ) => {
+	if ( [ 'style', 'hover' ].includes( d.kind ) && TEXT_CARRIED.includes( d.key ) && null != t.textPath ) {
+		return t.textPath;
+	}
+	if ( 'style' === d.kind && LAYOUT_CARRIED.includes( d.key ) && null != t.layoutPath ) {
+		return t.layoutPath;
+	}
+	if ( 'style' === d.kind && /^icon-(width|height)$/.test( d.key ) && null != t.iconPath ) {
+		return t.iconPath;
+	}
+	return t.path;
+};
 export function stampRefs( diffs, trace ) {
 	if ( ! trace ) {
 		return diffs;
@@ -83,14 +106,9 @@ export function stampRefs( diffs, trace ) {
 		}
 		d.ref = trace.ref;
 		d.block = trace.block;
-		if ( [ 'style', 'hover' ].includes( d.kind ) && TEXT_CARRIED.includes( d.key ) && null != trace.textPath ) {
-			d.path = trace.textPath;
-		} else if ( 'style' === d.kind && LAYOUT_CARRIED.includes( d.key ) && null != trace.layoutPath ) {
-			d.path = trace.layoutPath;
-		} else if ( 'style' === d.kind && /^icon-(width|height)$/.test( d.key ) && null != trace.iconPath ) {
-			d.path = trace.iconPath;
-		} else {
-			d.path = trace.path;
+		d.path = pathFor( d, trace );
+		if ( trace.owners?.length ) {
+			d.owners = trace.owners.map( ( o ) => ( { ref: o.ref, block: o.block, path: pathFor( d, o ) } ) );
 		}
 	}
 	return diffs;

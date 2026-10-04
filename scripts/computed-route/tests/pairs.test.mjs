@@ -189,3 +189,9 @@ test( 'positive control: one paired child, no group box, or a group far from the
 	assert.equal( chooseGroupPartner( [ 'a', 'b' ], null, { w: 1, h: 1 } ).verdict.ok, false );
 	assert.match( chooseGroupPartner( [ 'body > a', 'body > b' ], { w: 100, h: 300 }, { w: 450, h: 320 } ).verdict.why, /wide/ );
 } );
+
+test( 'MUST FAIL: a control paired with the draft control itself is measured at the live block\'s control', () => {
+	const src = configText( 'form.mjs', 'form', [ { ref: 'cr-ref-form-2', draft: 'body > form > input:nth-child(2)', liveControl: true }, { ref: 'cr-ref-form-3', draft: 'body > form > div:nth-child(3)' } ] );
+	assert.match( src, /live: "\.cr-ref-form-2 :is\(input:not\(\[type=hidden\]\)/ );
+	assert.match( src, /live: "\.cr-ref-form-3" \}/ );
+} );

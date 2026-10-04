@@ -86,7 +86,7 @@ export function writableGroups( report, stateMap ) {
 		} else {
 			const k = groupKey( r, st );
 			if ( ! groups.has( k ) ) {
-				groups.set( k, { key: k, ref: r.ref, path: r.path, prop: r.key, state: st, pair: r.pair, walkerStates: [], rows: [] } );
+				groups.set( k, { key: k, ref: r.ref, path: r.path, owners: r.owners || [], prop: r.key, state: st, pair: r.pair, walkerStates: [], rows: [] } );
 			}
 			const g = groups.get( k );
 			g.rows.push( r );

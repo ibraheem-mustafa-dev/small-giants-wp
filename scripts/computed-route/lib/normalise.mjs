@@ -98,11 +98,15 @@ export function ratioSetting( raw, def ) {
 	return r && ! r.auto ? { value: `${ r.w } / ${ r.h }` } : { error: `${ raw } cannot be held` };
 }
 
-// Measured grid tracks in px as the setting's fr proportions ("496.562px 451.438px" → "1.1fr 1fr"); tracks not all in
-// px cannot be held.
+// Measured grid tracks in px as the setting's fr proportions, each floored at 0 as the framework's own tracks are (a
+// long word never widens a track past its share): "496.562px 451.438px" → "minmax(0, 1.1fr) minmax(0, 1fr)", equal
+// tracks → "repeat(3, minmax(0, 1fr))". Tracks not all in px cannot be held.
 export function tracksSetting( raw ) {
 	const r = trackRatios( raw );
-	return r ? { value: r.map( ( n ) => `${ n }fr` ).join( ' ' ) } : { error: `${ raw } cannot be held as track proportions` };
+	if ( ! r ) {
+		return { error: `${ raw } cannot be held as track proportions` };
+	}
+	return { value: r.every( ( n ) => 1 === n ) ? `repeat(${ r.length }, minmax(0, 1fr))` : r.map( ( n ) => `minmax(0, ${ n }fr)` ).join( ' ' ) };
 }
 
 // The site's tokens: palette colours, spacing sizes and font sizes, each with a px value where it has one.

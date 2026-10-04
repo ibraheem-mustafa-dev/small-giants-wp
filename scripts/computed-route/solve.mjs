@@ -109,26 +109,47 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			gaps[ g.key ] = { gap: 'linked', detail: `${ node.name } renders ${ ref.key } "${ ref.value }" from its own post: solve that post's surface` };
 			continue;
 		}
-		const cal = calFor( node.name );
-		if ( cal && ! ( g.path in ( cal.elements || {} ) ) && ! Object.values( cal.settings || {} ).some( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ].includes( g.path ) ) ) {
-			gaps[ g.key ] = { gap: 'unmapped-element', detail: `${ node.name } path "${ g.path }" is not a calibrated element` };
-			continue;
-		}
 		const { perWidth, fontPx } = draftValues( report, g.pair, g.prop, 'hover' === g.state, g.walkerStates );
 		// The element's other draft properties, for a setting calibration found (a layout mode decided by several properties).
 		const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === g.ref && o.path === g.path && ! o.state && o.prop !== g.prop ).map( ( o ) => [ o.prop, draftValues( report, o.pair, o.prop, false, o.walkerStates ).perWidth ] ) );
-		const r = entranceStart( g, node, perWidth ) || resolve( { block: node.name, slot: g.path, prop: cssProp( g.prop ), state: g.state, perWidth, fontPx, current: node.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
+		// Resolves the group on one block: its own (exact paths), or an enclosing one (anyIndex: paths without their
+		// :nth-of-type steps, since calibration's fixture places the child elsewhere).
+		const attempt = ( on, onPath, anyIndex ) => {
+			const cal = calFor( on.name );
+			const loose = ( p ) => ( anyIndex ? String( p ).replace( /:nth-of-type\(\d+\)/g, '' ) : p );
+			const known = [ ...Object.keys( cal?.elements || {} ), ...Object.values( cal?.settings || {} ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ) ];
+			if ( cal && ! known.map( loose ).includes( loose( onPath ) ) ) {
+				return { gap: 'unmapped-element', detail: `${ on.name } path "${ onPath }" is not a calibrated element` };
+			}
+			return ( on === node && entranceStart( g, node, perWidth ) ) || resolve( { block: on.name, slot: onPath, anyIndex, prop: cssProp( g.prop ), state: g.state, perWidth, fontPx, current: on.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
+		};
+		let r = attempt( node, g.path, false );
+		let target = { node, ref: g.ref, path: g.path };
+		// A row whose own block has no setting for it resolves on the nearest enclosing block with one (a form's field
+		// style painting each field's control).
+		for ( const o of [ 'no-setting', 'unmapped-element' ].includes( r.gap ) ? g.owners || [] : [] ) {
+			const on = nodeByRef( tree, o.ref );
+			if ( ! on || 'linked' === referenceOf( on, refs )?.kind ) {
+				continue;
+			}
+			const r2 = attempt( on, o.path, true );
+			if ( ! r2.gap ) {
+				r = r2;
+				target = { node: on, ref: o.ref, path: o.path };
+				break;
+			}
+		}
 		if ( r.gap ) {
 			gaps[ g.key ] = r;
 			continue;
 		}
 		for ( const w of r.writes ) {
-			const same = JSON.stringify( setAttr( structuredClone( node ), w ).after ) === JSON.stringify( node.attributes?.[ w.attr ] );
+			const same = JSON.stringify( setAttr( structuredClone( target.node ), w ).after ) === JSON.stringify( target.node.attributes?.[ w.attr ] );
 			if ( same ) {
 				continue;
 			}
-			const { before, after } = setAttr( node, w );
-			writes.push( { round, group: g.key, ref: g.ref, block: node.name, path: g.path, prop: g.prop, state: g.state, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
+			const { before, after } = setAttr( target.node, w );
+			writes.push( { round, group: g.key, ref: target.ref, block: target.node.name, path: target.path, prop: g.prop, state: g.state, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
 		}
 	}
 	return { writes, gaps };

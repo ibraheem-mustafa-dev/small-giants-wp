@@ -84,7 +84,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const controlChains = controlRefs.length ? await formControls( draft, prefix, 'draft', Object.fromEntries( controlRefs.map( ( r ) => [ r, liveControls[ r ] ] ) ) ) : {};
 	for ( const ref of controlRefs ) {
 		const { partner, verdict } = chooseControlPartner( controlChains[ ref ], boxes[ ref ] );
-		( verdict.ok ? kept : left ).push( { ref, draft: partner?.path || null, control: liveControls[ ref ].id, why: verdict.why, words: 0, matched: 0, first: null, last: null } );
+		// Paired with the draft control itself, the block is measured at its own control (not its label and wrapper).
+		const liveControl = !! partner && partner === controlChains[ ref ]?.[ 0 ];
+		( verdict.ok ? kept : left ).push( { ref, draft: partner?.path || null, control: liveControls[ ref ].id, ...( liveControl ? { liveControl } : {} ), why: verdict.why, words: 0, matched: 0, first: null, last: null } );
 	}
 	// A block left out for sharing its draft element with other blocks' words, whose children are paired, is paired as
 	// the group of its children's partners (box only).

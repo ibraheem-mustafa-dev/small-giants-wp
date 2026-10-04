@@ -195,7 +195,11 @@ function radiusWrite( attr, tiers, def ) {
 }
 
 export function resolve( input, ctx ) {
-	const { block, slot, prop, state = null, perWidth, fontPx = {}, current = {} } = input;
+	const { block, prop, state = null, perWidth, fontPx = {}, current = {} } = input;
+	// anyIndex (a setting of an enclosing block): calibration's fixture repeats the child at other positions, so paths
+	// compare without their :nth-of-type steps.
+	const loose = ( p ) => ( input.anyIndex ? String( p ).replace( /:nth-of-type\(\d+\)/g, '' ) : p );
+	const slot = loose( input.slot );
 	const { short, side } = splitProperty( prop );
 	const rows = [ ...candidates( ctx.db, block, short, state ), ...( short !== prop ? candidates( ctx.db, block, prop, state ) : [] ) ]
 		.filter( ( r, i, all ) => all.findIndex( ( x ) => x.attr_name === r.attr_name ) === i );
@@ -208,7 +212,7 @@ export function resolve( input, ctx ) {
 	// A setting painting the slot itself wins; otherwise one whose inherited value calibration saw reach the slot.
 	const tiedBy = ( paths ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && paths( c ).includes( slot ) && ( ! c.property || c.property === short || c.property === prop );
+		return c && paths( c ).map( loose ).includes( slot ) && ( ! c.property || c.property === short || c.property === prop );
 	} );
 	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
 	const tied = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
@@ -258,7 +262,8 @@ export function resolve( input, ctx ) {
 		if ( ! side || ( existing && Object.keys( existing ).length ) ) {
 			return {};
 		}
-		const paint = ctx.calibration.elements?.[ slot ]?.[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || {};
+		const elementKey = Object.keys( ctx.calibration.elements || {} ).find( ( k ) => loose( k ) === slot ) ?? slot;
+		const paint = ctx.calibration.elements?.[ elementKey ]?.[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || {};
 		// An empty tier shows the node's nearest wider tier (desktop is the base rule, tablet and mobile are max-width
 		// media rules over it), so its other sides come from that tier (an unset side there prints 0, CR6), and from the
 		// default paint only when no wider tier holds any: seeding a phone tier from the default would override the node's

@@ -240,3 +240,22 @@ test( 'MUST FAIL TO COUNT: a neighbour surface\'s rows are not this surface\'s i
 	assert.equal( wholePage( rep( [] ), rep( rows ), {}, 'cr-ref-contact-form-' ).after, 2 );
 	assert.equal( wholePage( rep( [] ), rep( rows ), {} ).after, 3 );
 } );
+
+// Enclosing-block settings: a field's control styled by its form's setting.
+const FIELD_PATH = '.sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input';
+const ownedFormTree = () => [ { name: 'sgs/form', attributes: { className: 'cr-ref-f-0' }, innerBlocks: [ { name: 'sgs/form-field-email', attributes: { className: 'cr-ref-f-2' } } ] } ];
+const ownedFormCal = ( name ) => ( 'sgs/form' === name
+	? { elements: { '.sgs-form__inner > .sgs-form-field:nth-of-type(1) > .sgs-form-field__input': {} }, settings: { padding: { slot: '.sgs-form__inner > .sgs-form-field:nth-of-type(1) > .sgs-form-field__input', property: 'padding' } } }
+	: { elements: { '': {}, '.sgs-form-field__input': {} }, settings: {} } );
+const fieldReport = ( owners ) => ( { runs: [ { state: 'opening', width: 1440, pairs: { email: { draft: { styles: { 'padding-top': '14px' } }, diffs: [
+	{ kind: 'style', key: 'padding-top', draft: '14px', live: '12px', ref: 'cr-ref-f-2', path: '.sgs-form-field__input', ...( owners ? { owners } : {} ) } ] } } } ] } );
+
+test( 'MUST FAIL: a row its own block cannot write resolves on the nearest enclosing block whose setting paints that element', () => {
+	const t = ownedFormTree();
+	const r = writeRound( fieldReport( [ { ref: 'cr-ref-f-0', block: 'sgs-form', path: FIELD_PATH } ] ), t, { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: ownedFormCal } );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.ref, w.attr ] ), [ [ 'cr-ref-f-0', 'padding' ] ] );
+	assert.equal( t[ 0 ].innerBlocks[ 0 ].attributes.padding, undefined );
+	const alone = writeRound( fieldReport( null ), ownedFormTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: ownedFormCal } );
+	assert.equal( alone.writes.length, 0 );
+	assert.equal( Object.values( alone.gaps )[ 0 ].gap, 'no-setting' );
+} );
