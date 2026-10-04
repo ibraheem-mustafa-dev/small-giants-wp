@@ -125,3 +125,11 @@ test( 'MUST FAIL TO BE DEAD: a dashed style is mapped against its width baseline
 test( 'a style setting with no width companion keeps its plain markers', () => {
 	assert.equal( companionWidth( 'lineStyle', blockSchema( 'sgs/separator' ) ), null );
 } );
+
+test( 'MUST FAIL: an inherited setting records every element its value reached, never a child whose own rule holds it', () => {
+	const COLOUR_ROW = { attr_name: 'textColourHover', css_property: 'color', tier_shape: null, box_family: null };
+	const reads = ( c ) => Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { '': { color: c }, '.x__link > .x__label': { color: c }, '.x__day': { color: 'rgb(0, 0, 0)' } } ] ) );
+	const r = slotFor( COLOUR_ROW, { attrs: {} }, reads( 'rgb(1, 1, 1)' ), reads( 'rgb(19, 87, 155)' ) );
+	assert.equal( r.slot, '' );
+	assert.deepEqual( r.reaches, [ '', '.x__link > .x__label' ] );
+} );

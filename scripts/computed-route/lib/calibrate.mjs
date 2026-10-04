@@ -246,7 +246,10 @@ export function slotFor( row, marker, defReads, markReads ) {
 	const reachedAt = [ ...new Set( at.map( ( c ) => c.w ) ) ].sort( ( a, b ) => a - b );
 	const transform = marker.expect && ! best.hit ? Object.fromEntries( changes.filter( ( c ) => c.path === best.path ).map( ( c ) => [ c.w, c.value ] ) ) : null;
 	const effects = [ ...side ].filter( ( e ) => slots.includes( e.split( '|' )[ 0 ] ) );
-	return { slot: best.path, slots, property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, effects };
+	// An inherited property also records every element the marker reached (a link's label inheriting the root's
+	// colour); a descendant whose own rule overrides the value never changes, so it is never among them.
+	const reaches = inherited ? [ ...new Set( pool.map( ( c ) => c.path ) ) ].sort( ( a, b ) => depth( a ) - depth( b ) ) : null;
+	return { slot: best.path, slots, ...( reaches ? { reaches } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, effects };
 }
 
 // What one enum value of a setting with no css_property changes: every read property that differs from the default

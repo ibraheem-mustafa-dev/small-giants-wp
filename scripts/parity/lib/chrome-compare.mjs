@@ -4,13 +4,15 @@
 import { sameValue } from './compare.mjs';
 
 
-// Text inset is compared only on pairs that carry text (a container's first text is whatever sits in it).
-export function compareExtras( d, l, tol, withText = true ) {
+// Text inset is compared only on pairs that carry text (a container's first text is whatever sits in it). The painted
+// ground only on pairs with an element of their own: a text run or a group measures text or a box, and the element
+// around a text run is its parent's pair.
+export function compareExtras( d, l, tol, withText = true, withGround = true ) {
 	const out = [];
 	if ( ! d || ! l ) {
 		return out;
 	}
-	if ( d.ground !== l.ground && ! sameValue( 'background-color', d.ground, l.ground, 0 ) ) {
+	if ( withGround && d.ground !== l.ground && ! sameValue( 'background-color', d.ground, l.ground, 0 ) ) {
 		out.push( { kind: 'style', key: 'painted-ground', draft: d.ground, live: l.ground } );
 	}
 	for ( const k of withText ? [ 'textX', 'textY' ] : [] ) {

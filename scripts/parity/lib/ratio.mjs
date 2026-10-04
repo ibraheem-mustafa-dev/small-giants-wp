@@ -21,3 +21,22 @@ export function sameRatio( a, b ) {
 	const y = parseRatio( b );
 	return !! x && !! y && x.auto === y.auto && Math.abs( x.ratio - y.ratio ) <= TOL * Math.max( x.ratio, y.ratio );
 }
+
+// A computed grid-template-columns ("496.562px 451.438px") as track proportions to the smallest track, rounded to two
+// decimals ([ 1.1, 1 ]); null unless every track is in px.
+export function trackRatios( v ) {
+	const px = String( v ).trim().split( /\s+/ ).map( ( t ) => ( /^\d*\.?\d+px$/.test( t ) ? parseFloat( t ) : NaN ) );
+	if ( ! px.length || px.some( ( n ) => ! ( n > 0 ) ) ) {
+		return null;
+	}
+	const min = Math.min( ...px );
+	return px.map( ( n ) => Math.round( ( n / min ) * 100 ) / 100 );
+}
+
+// Two track lists paint the same proportions when they have as many tracks and each ratio is within 1%. The tracks'
+// pixel widths follow the container's width, which the children's boxes judge.
+export function sameTracks( a, b ) {
+	const x = trackRatios( a );
+	const y = trackRatios( b );
+	return !! x && !! y && x.length === y.length && x.every( ( r, i ) => Math.abs( r - y[ i ] ) <= 0.01 * Math.max( r, y[ i ] ) );
+}

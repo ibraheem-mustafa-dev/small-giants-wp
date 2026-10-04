@@ -196,3 +196,37 @@ test( 'MUST FAIL: layout rows compare only where both sides lay out with flex or
 	// A snapshot without layoutDisplay (an older reader) keeps every row.
 	assert.deepEqual( keys( { box: { w: 1, h: 1 }, styles: { gap: 'normal' } }, { box: { w: 1, h: 1 }, styles: { gap: '6px' } } ), [ 'gap' ] );
 } );
+
+test( 'MUST FAIL: grid tracks compare as proportions, not pixels', () => {
+	const tol = { box: 1, px: 0.5 };
+	const keys = ( a, b ) => comparePair( { text: false, motion: false }, { box: { w: 1, h: 1 }, styles: { 'grid-template-columns': a } }, { box: { w: 1, h: 1 }, styles: { 'grid-template-columns': b } }, tol ).map( ( x ) => x.key );
+	assert.deepEqual( keys( '236.281px 236.281px', '248.688px 248.703px' ), [] );
+	assert.deepEqual( keys( '496.562px 451.438px', '521.391px 426.609px' ), [ 'grid-template-columns' ] );
+	assert.deepEqual( keys( '205.328px 205.328px 205.328px', '320px 320px' ), [ 'grid-template-columns' ] );
+} );
+
+test( 'MUST FAIL: min-height is a row only where the draft sets one', () => {
+	const tol = { box: 1, px: 0.5 };
+	const keys = ( a, b ) => comparePair( { text: false, motion: false }, { box: { w: 1, h: 1 }, styles: { 'min-height': a } }, { box: { w: 1, h: 1 }, styles: { 'min-height': b } }, tol ).map( ( x ) => x.key );
+	assert.deepEqual( keys( '56px', '44px' ), [ 'min-height' ] );
+	assert.deepEqual( keys( 'auto', '44px' ), [] );
+	assert.deepEqual( keys( '0px', '44px' ), [] );
+} );
+
+test( 'MUST FAIL: a transition naming no property covers a list with the same timing', async () => {
+	const { sameValue } = await import( '../../parity/lib/compare.mjs' );
+	assert.equal( sameValue( 'transition', 'transform 0.25s, background 0.25s', '0.25s', 0 ), true );
+	assert.equal( sameValue( 'transition', 'transform 0.25s, background 0.25s', 'all 0.25s', 0 ), true );
+	assert.equal( sameValue( 'transition', 'transform 0.25s, background 0.25s', '0.5s', 0 ), false );
+	assert.equal( sameValue( 'transition', 'transform 0.25s, background 0.4s', '0.25s', 0 ), false );
+	assert.equal( sameValue( 'transition', 'transform 0.25s', 'opacity 0.25s', 0 ), false );
+} );
+
+test( 'MUST FAIL: a text run or group reports no painted ground; an element pair does', async () => {
+	const { compareChrome } = await import( '../../parity/lib/chrome-walk.mjs' );
+	const snap = ( ground ) => ( { extras: { ground, textX: null, textY: null } } );
+	const grounds = ( p ) => compareChrome( p, snap( 'rgb(255, 255, 255)' ), snap( 'none' ), { box: 1 }, [] ).map( ( x ) => x.key );
+	assert.deepEqual( grounds( { name: 'el', draft: '.a', live: '.b' } ), [ 'painted-ground' ] );
+	assert.deepEqual( grounds( { name: 'run', draft: { textRun: { within: '.a' } }, live: { textRun: { within: '.b' } } } ), [] );
+	assert.deepEqual( grounds( { name: 'grp', draft: { group: { paths: [] } }, live: '.b' } ), [] );
+} );

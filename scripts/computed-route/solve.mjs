@@ -110,7 +110,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			continue;
 		}
 		const cal = calFor( node.name );
-		if ( cal && ! ( g.path in ( cal.elements || {} ) ) && ! Object.values( cal.settings || {} ).some( ( s ) => ( s.slots || [ s.slot ] ).includes( g.path ) ) ) {
+		if ( cal && ! ( g.path in ( cal.elements || {} ) ) && ! Object.values( cal.settings || {} ).some( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ].includes( g.path ) ) ) {
 			gaps[ g.key ] = { gap: 'unmapped-element', detail: `${ node.name } path "${ g.path }" is not a calibrated element` };
 			continue;
 		}

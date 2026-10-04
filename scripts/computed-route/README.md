@@ -81,6 +81,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `snapColour(value, snapshot, { log, where, prefer })` → `{ form: 'slug'|'hex', value, distance, kind }`, logged.
 - `snapLength(px, tokens, { log, where })` → `{ slug, distance, kind }` or null, logged.
 - `ratioSetting(raw, def)` → `{ value }` or `{ error }`: a measured `aspect-ratio` in the setting's form (the enum value painting the same ratio, `"w / h"` for a free string, `auto` as the empty setting; `auto w / h` cannot be held).
+- `tracksSetting(raw)` → `{ value }` or `{ error }`: measured px grid tracks as fr proportions to the smallest track (`"496.562px 451.438px"` → `"1.1fr 1fr"`).
 
 ### `lib/resolve.mjs` (reads block.json files)
 - `BLOCKS_DIR`: the block sources folder.

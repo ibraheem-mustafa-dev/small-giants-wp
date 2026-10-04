@@ -8,7 +8,7 @@ export const DEFAULT_PROPS = [
 	'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color',
 	'border-left-width', 'border-right-width', 'border-radius', 'box-shadow',
 	'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
-	'grid-template-columns', 'column-gap', 'row-gap', 'justify-content', 'align-items', 'object-fit', 'aspect-ratio',
+	'grid-template-columns', 'column-gap', 'row-gap', 'justify-content', 'align-items', 'object-fit', 'aspect-ratio', 'min-height',
 	'border-left-color', 'border-right-color', 'text-shadow', 'transform', 'rotate', 'scale', 'translate', 'backdrop-filter',
 	'outline-style', 'outline-width', 'outline-color', 'outline-offset',
 	// The underline a visitor sees and an icon's colour: both read by collectPair, not from the element's own style.

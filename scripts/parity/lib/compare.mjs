@@ -1,6 +1,6 @@
 // Compares one pair's draft and live snapshots and returns the differences.
 import { compareFocus } from './focus.mjs';
-import { sameRatio } from './ratio.mjs';
+import { sameRatio, sameTracks } from './ratio.mjs';
 import { layoutComparable } from './paint.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
@@ -28,6 +28,17 @@ function normColour( v ) {
 
 // Transition shorthands ordered by property so "color .2s, background .2s" matches in either order.
 const normTransition = ( v ) => v.split( /,(?![^(]*\))/ ).map( ( s ) => s.trim() ).sort().join( ', ' );
+// One transition that names no property (Chrome prints "all 0.25s" as "0.25s") covers a list whose every part has
+// the same timing: the listed properties animate the same way.
+const PROPLESS = /^(-?\d|cubic-bezier|steps|ease|linear)/;
+const timing = ( part ) => ( PROPLESS.test( part ) ? part : part.replace( /^\S+\s+/, '' ) );
+const allCovers = ( a, b ) => {
+	const pa = normTransition( a ).split( ', ' );
+	const pb = normTransition( b ).split( ', ' );
+	const one = ( p ) => 1 === p.length && ( PROPLESS.test( p[ 0 ] ) || /^all\s/.test( p[ 0 ] ) );
+	const [ all, list ] = one( pa ) ? [ pa, pb ] : ( one( pb ) ? [ pb, pa ] : [ null, null ] );
+	return !! all && list.every( ( part ) => timing( part ) === timing( all[ 0 ] ) );
+};
 
 export function sameValue( prop, a, b, pxTol ) {
 	if ( a === b ) {
@@ -49,6 +60,10 @@ export function sameValue( prop, a, b, pxTol ) {
 	if ( prop === 'aspect-ratio' ) {
 		return sameRatio( a, b );
 	}
+	// Grid tracks in px compare as proportions (sameTracks): their widths follow the container's.
+	if ( prop === 'grid-template-columns' && sameTracks( a, b ) ) {
+		return true;
+	}
 	if ( PX.test( a ) && PX.test( b ) ) {
 		return Math.abs( parseFloat( a ) - parseFloat( b ) ) <= pxTol;
 	}
@@ -59,7 +74,7 @@ export function sameValue( prop, a, b, pxTol ) {
 		return la.every( ( x, i ) => Math.abs( parseFloat( x ) - parseFloat( lb[ i ] ) ) <= pxTol );
 	}
 	if ( prop === 'transition' ) {
-		return normTransition( normColour( a ) ) === normTransition( normColour( b ) );
+		return normTransition( normColour( a ) ) === normTransition( normColour( b ) ) || allCovers( normColour( a ), normColour( b ) );
 	}
 	// A single colour: each channel within 2/255 (rounding in colour-mix and relative colours).
 	const ca = normColour( a ).match( /^rgba\(([^)]+)\)$/ );
@@ -98,13 +113,19 @@ function borderColourIrrelevant( p, d, l ) {
 
 // Parts that paint nothing on their own: an underline's colour, thickness and offset while either side
 // has no underline (the line row says it), an outline's width, colour and offset while either side's
-// style is none, and an icon colour where one side has no svg (presence is the inventory's job).
+// style is none, an icon colour where one side has no svg (presence is the inventory's job), and a min-height the
+// draft does not set.
 function partIrrelevant( p, d, l ) {
 	if ( /^(text-decoration-(color|thickness)|text-underline-offset)$/.test( p ) ) {
 		return 'none' === d[ 'text-decoration-line' ] || 'none' === l[ 'text-decoration-line' ];
 	}
 	if ( /^outline-(width|color|offset)$/.test( p ) ) {
 		return 'none' === d[ 'outline-style' ] || 'none' === l[ 'outline-style' ];
+	}
+	// A min-height is a difference only where the draft sets one: a live floor the draft lacks (a 44px touch target)
+	// shows in the box rows when it changes the height.
+	if ( 'min-height' === p ) {
+		return ! ( parseFloat( d[ p ] ) > 0 );
 	}
 	return /^icon-/.test( p ) && ( undefined === d[ p ] || undefined === l[ p ] );
 }

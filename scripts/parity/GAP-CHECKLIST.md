@@ -380,6 +380,9 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   properties compare only where both sides lay out with flex or grid, grid tracks only where both are grid, flex wrap
   and direction only where both are flex; `display` between two block-level values is no row (a block stack and a flex
   column paint the same; the children's flow rows judge where the children sit).
+  `ratio.mjs::sameTracks`: grid tracks compare as proportions. `compare.mjs`: `min-height` only where the draft sets
+  one, a property-less `transition` covers a list with the same timing (`allCovers`). `chrome-walk.mjs::compareChrome`:
+  no painted-ground row for text-run or group pairs.
   `draft-live-walk.mjs`: `<main>`'s position read with the pair boxes. `compare-state.mjs`: refs stamped after the
   full-check rows (painted ground, text inset), so they reach Solve.
 - **Proof (2026-10-04):** unit cases in `scripts/computed-route/tests/walker-refs.test.mjs` (layout element, stamping,

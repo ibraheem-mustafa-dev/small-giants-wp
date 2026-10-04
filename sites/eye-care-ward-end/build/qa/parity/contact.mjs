@@ -170,15 +170,12 @@ const config = {
 		// embedded Google map on the live site"); live already carries the real Google Maps iframe
 		// the note asks for, so only presence and place are worth comparing, not the painted look.
 		{ name: 'map', text: false, structure: false, draft: 'a[href*="maps.google.com"]', live: '.sgs-business-map', box: [ 'w' ] },
-		// The two link cards under the map (Google reviews, Instagram).
+		// The two link cards under the map (Google reviews, Instagram). On the draft the whole card is the link, so
+		// its value line has no anchor of its own; the generated text-run pairs measure the value lines.
 		{ name: 'social-google-label', draft: { text: '^google$', tag: 'span,div,p', within: 'main' }, live: { text: '^google$', tag: 'p', within: '#sgs-page-contact' }, box: [ 'h' ],
 			props: [ 'font-size', 'letter-spacing', 'text-transform', 'color' ] },
-		{ name: 'social-google-link', anchor: 'social-google-label', hover: true, draft: { text: '^reviews & hours$', tag: 'a', within: 'main' }, live: { text: '^reviews & hours$', tag: 'a', within: '#sgs-page-contact' },
-			props: [ 'font-size', 'color' ] },
 		{ name: 'social-instagram-label', draft: { text: '^instagram$', tag: 'span,div,p', within: 'main' }, live: { text: '^instagram$', tag: 'p', within: '#sgs-page-contact' }, box: [ 'h' ],
 			props: [ 'font-size', 'letter-spacing', 'text-transform', 'color' ] },
-		{ name: 'social-instagram-link', anchor: 'social-instagram-label', hover: true, draft: { text: '^@eyecare\\.birmingham$', tag: 'a', within: 'main' }, live: { text: '^@eyecare\\.birmingham$', tag: 'a', within: '#sgs-page-contact' },
-			props: [ 'font-size', 'color' ] },
 	],
 	// Links (GAP-CHECKLIST 14), checked against the live page's hrefs (2026-10-02).
 	links: {

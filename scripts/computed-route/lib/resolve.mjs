@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { candidates, siblings } from './db.mjs';
-import { parseLength, toPx, pxTo, snapColour, ratioSetting, round } from './normalise.mjs';
+import { parseLength, toPx, pxTo, snapColour, ratioSetting, tracksSetting, round } from './normalise.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const BLOCKS_DIR = path.resolve( HERE, '../../../plugins/sgs-blocks/src/blocks' );
@@ -73,6 +73,9 @@ export function tiersOf( perWidth, prop ) {
 }
 
 const sameMeasured = ( prop, a, b ) => {
+	if ( 'grid-template-columns' === prop ) {
+		return tracksSetting( a ).value === tracksSetting( b ).value;
+	}
 	const la = parseLength( a );
 	const lb = parseLength( b );
 	return la && lb ? la.unit === lb.unit && Math.abs( la.n - lb.n ) <= 0.5 : String( a ) === String( b );
@@ -92,6 +95,9 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 	}
 	if ( 'aspect-ratio' === prop ) {
 		return ratioSetting( raw, def );
+	}
+	if ( 'grid-template-columns' === prop ) {
+		return tracksSetting( raw );
 	}
 	if ( Array.isArray( def?.enum ) ) {
 		return def.enum.includes( raw ) ? { value: raw } : { error: `${ raw } is not one of ${ def.enum.join( ', ' ) }` };
@@ -199,10 +205,13 @@ export function resolve( input, ctx ) {
 	if ( ! ctx.calibration ) {
 		return { gap: 'uncalibrated', detail: `${ block } has no calibration file` };
 	}
-	const tied = rows.filter( ( r ) => {
+	// A setting painting the slot itself wins; otherwise one whose inherited value calibration saw reach the slot.
+	const tiedBy = ( paths ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && ( c.slots || [ c.slot ] ).includes( slot ) && ( ! c.property || c.property === short || c.property === prop );
+		return c && paths( c ).includes( slot ) && ( ! c.property || c.property === short || c.property === prop );
 	} );
+	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
+	const tied = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
 	// A state setting calibration never measured (no trigger for that state yet) is unproven, not missing.
 	if ( ! tied.length && state && ! rows.some( ( r ) => ctx.calibration.settings?.[ r.attr_name ] ) ) {
 		return { gap: 'uncalibrated', detail: `${ block } ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) } (${ state }) not calibrated` };

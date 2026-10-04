@@ -126,3 +126,21 @@ test( 'MUST FAIL TO WRITE: a border-radius write never carries side keys', () =>
 		assert.ok( ! [ 'top', 'right', 'bottom', 'left' ].some( ( k ) => k in tier ) );
 	}
 } );
+
+test( 'MUST FAIL (CR16): measured px grid tracks write as fr proportions; 1440 and 1920 agree when their proportions do', () => {
+	const r = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'grid-template-columns', perWidth: { 1440: '496.562px 451.438px', 1920: '628.562px 571.438px' } },
+		{ db, snapshot, calibration: cal( { gridTemplateColumns: { slot: '.sgs-container__inner', property: 'grid-template-columns' } } ) } );
+	assert.deepEqual( r.writes, [ { attr: 'gridTemplateColumns', value: { desktop: '1.1fr 1fr' }, merge: 'deep' } ] );
+	const kw = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'grid-template-columns', perWidth: { 1440: 'none' } },
+		{ db, snapshot, calibration: cal( { gridTemplateColumns: { slot: '.sgs-container__inner', property: 'grid-template-columns' } } ) } );
+	assert.equal( kw.gap, 'shape' );
+} );
+
+test( 'MUST FAIL: an inherited setting writes a descendant row its value reaches; a setting painting the slot itself wins', () => {
+	const row = { block: 'sgs/business-info', slot: '.sgs-business-info__link > .sgs-business-info__label', prop: 'color', state: 'hover', perWidth: { 768: 'rgb(111, 97, 82)', 1440: 'rgb(111, 97, 82)' } };
+	const reach = { textColourHover: { slot: '', slots: [ '' ], reaches: [ '', row.slot ], property: 'color', state: 'hover' } };
+	assert.deepEqual( resolve( row, { db, snapshot, calibration: cal( reach ) } ).writes.map( ( w ) => w.attr ), [ 'textColourHover' ] );
+	const both = { ...reach, labelColourHover: { slot: row.slot, slots: [ row.slot ], property: 'color', state: 'hover' } };
+	assert.deepEqual( resolve( row, { db, snapshot, calibration: cal( both ) } ).writes.map( ( w ) => w.attr ), [ 'labelColourHover' ] );
+	assert.equal( resolve( { ...row, slot: '.sgs-business-hours__day' }, { db, snapshot, calibration: cal( reach ) } ).gap, 'no-setting' );
+} );

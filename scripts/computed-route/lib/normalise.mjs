@@ -3,7 +3,7 @@
 // tolerance (colour ΔE ≤ 2, length ±0.5px), then a literal flagged in the log. Every snap is logged with its distance.
 import fs from 'fs';
 import path from 'path';
-import { parseRatio, sameRatio } from '../../parity/lib/ratio.mjs';
+import { parseRatio, sameRatio, trackRatios } from '../../parity/lib/ratio.mjs';
 
 export const COLOUR_DE = 2;
 export const LENGTH_TOL = 0.5;
@@ -96,6 +96,13 @@ export function ratioSetting( raw, def ) {
 		return { value: '' === def?.default ? '' : 'auto' };
 	}
 	return r && ! r.auto ? { value: `${ r.w } / ${ r.h }` } : { error: `${ raw } cannot be held` };
+}
+
+// Measured grid tracks in px as the setting's fr proportions ("496.562px 451.438px" → "1.1fr 1fr"); tracks not all in
+// px cannot be held.
+export function tracksSetting( raw ) {
+	const r = trackRatios( raw );
+	return r ? { value: r.map( ( n ) => `${ n }fr` ).join( ' ' ) } : { error: `${ raw } cannot be held as track proportions` };
 }
 
 // The site's tokens: palette colours, spacing sizes and font sizes, each with a px value where it has one.

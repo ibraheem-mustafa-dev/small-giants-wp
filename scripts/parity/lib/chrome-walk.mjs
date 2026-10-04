@@ -77,7 +77,7 @@ export function compareChrome( p, d, l, tol, diffs ) {
 	if ( d.missing || l.missing ) {
 		return kept;
 	}
-	const out = [ ...kept, ...compareExtras( d.extras, l.extras, tol, false !== p.text ), ...compareInventory( d.inventory, l.inventory, p.inventoryIgnore ) ];
+	const out = [ ...kept, ...compareExtras( d.extras, l.extras, tol, false !== p.text, ! [ p.draft, p.live ].some( ( f ) => f?.textRun || f?.group ) ), ...compareInventory( d.inventory, l.inventory, p.inventoryIgnore ) ];
 	if ( d.timeline && l.timeline ) {
 		out.push( ...compareTimeline( p.name, d.timeline, l.timeline ) );
 	}
