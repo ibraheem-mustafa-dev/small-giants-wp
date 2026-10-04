@@ -245,3 +245,12 @@ test( 'stamping: enclosing blocks are stamped nearest first, each with the same 
 	assert.deepEqual( diffs[ 0 ].owners, [ { ref: 'cr-ref-f-0', block: 'sgs-form', path: '.sgs-form__inner > .sgs-form-field > .sgs-form-field__input' } ] );
 	assert.equal( diffs[ 1 ].owners[ 0 ].path, '.sgs-form__inner > .sgs-form-field > .sgs-form-field__label' );
 } );
+
+test( 'MUST FAIL: a single-line control held at its min-height paints no difference in vertical padding; a textarea does', () => {
+	const tol = { box: 1, px: 0.5 };
+	const snap = ( tag, h, pad ) => ( { tag, box: { w: 300, h }, styles: { 'min-height': '52px', 'padding-top': pad, 'padding-bottom': pad } } );
+	const keys = ( d, l ) => comparePair( { text: false, motion: false }, d, l, tol ).map( ( x ) => x.key ).sort();
+	assert.deepEqual( keys( snap( 'input', 52, '0px' ), snap( 'input', 52, '12px' ) ), [] );
+	assert.deepEqual( keys( snap( 'textarea', 120, '12px' ), snap( 'textarea', 120, '0px' ) ), [ 'padding-bottom', 'padding-top' ] );
+	assert.deepEqual( keys( snap( 'input', 52, '0px' ), snap( 'input', 70, '12px' ) ), [ 'h', 'padding-bottom', 'padding-top' ] );
+} );

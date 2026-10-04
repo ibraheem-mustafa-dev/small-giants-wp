@@ -169,6 +169,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		box: run ? run.box : { x: Math.round( r.x ), y: Math.round( r.y + window.scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
 		styles,
 		layoutDisplay: lcs.display,
+		tag: el.tagName.toLowerCase(),
 		motion: {
 			animation: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : `${ cs.animationDuration } ${ cs.animationTimingFunction } ${ cs.animationDelay } ${ cs.animationIterationCount } ${ cs.animationFillMode }`,
 			transition: cs.transitionProperty === 'all' && cs.transitionDuration === '0s' ? 'none' : cs.transition.replace( /\s+/g, ' ' ),

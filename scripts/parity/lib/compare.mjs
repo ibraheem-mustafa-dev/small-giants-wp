@@ -130,6 +130,16 @@ function partIrrelevant( p, d, l ) {
 	return /^icon-/.test( p ) && ( undefined === d[ p ] || undefined === l[ p ] );
 }
 
+// A single-line control (an input or a select) centres its text, so while its min-height sets its height on both
+// pages its top and bottom padding paint nothing.
+function controlPaddingIrrelevant( p, d, l ) {
+	if ( ! /^padding-(top|bottom)$/.test( p ) ) {
+		return false;
+	}
+	const floored = ( s ) => /^(input|select)$/.test( s.tag || '' ) && Math.abs( s.box.h - parseFloat( s.styles[ 'min-height' ] ) ) <= 1;
+	return floored( d ) && floored( l );
+}
+
 const SAME = { 'text-align': [ [ 'start', 'left' ] ] };
 const equivalent = ( p, a, b ) => ( SAME[ p ] || [] ).some( ( set ) => set.includes( a ) && set.includes( b ) );
 
@@ -152,7 +162,7 @@ export function comparePair( pair, d, l, tol ) {
 		}
 	}
 	for ( const p of new Set( [ ...Object.keys( d.styles ), ...Object.keys( l.styles ) ] ) ) {
-		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || equivalent( p, d.styles[ p ], l.styles[ p ] ) || ! layoutComparable( p, d, l ) ) {
+		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || equivalent( p, d.styles[ p ], l.styles[ p ] ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
 			continue;
 		}
 		if ( ! sameValue( p, d.styles[ p ], l.styles[ p ], tol.px ) ) {

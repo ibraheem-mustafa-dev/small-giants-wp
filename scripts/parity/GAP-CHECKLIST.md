@@ -384,6 +384,8 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   `ratio.mjs::sameTracks`: grid tracks compare as proportions. `compare.mjs`: `min-height` only where the draft sets
   one, a property-less `transition` covers a list with the same timing (`allCovers`). `chrome-walk.mjs::compareChrome`:
   no painted-ground row for text-run or group pairs.
+  `compare.mjs::controlPaddingIrrelevant`: a single-line control (input, select) held at its min-height on both pages
+  shows no vertical-padding row (its text centres).
   `draft-live-walk.mjs`: `<main>`'s position read with the pair boxes. `compare-state.mjs`: refs stamped after the
   full-check rows (painted ground, text inset), so they reach Solve.
 - **Proof (2026-10-04):** unit cases in `scripts/computed-route/tests/walker-refs.test.mjs` (layout element, stamping,
