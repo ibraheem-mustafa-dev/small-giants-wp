@@ -10,6 +10,32 @@ import { compareLinks } from './links.mjs';
 import { stampRefs } from './ref-trace.mjs';
 import { judgeDivergence } from './divergences.mjs';
 
+// Where each pair sits in the page's flow (ref-traced walks): pairs with no configured anchor, in draft reading
+// order, are measured from the pair before them (top to top), and the first from the top of <main>. A shift is then
+// one row where it starts, not one per pair below it (the automatic check's "moved" rows work the same way).
+// Returns { pairName: [rows] }.
+export function flowOffsets( pairs, ds, ls, mainY, t ) {
+	const seen = pairs.filter( ( p ) => ds[ p.name ] && ls[ p.name ] && ! ds[ p.name ].missing && ! ls[ p.name ].missing && ds[ p.name ].box?.h > 0 && ls[ p.name ].box?.h > 0 );
+	const order = [ ...seen ].sort( ( a, b ) => ds[ a.name ].box.y - ds[ b.name ].box.y || ds[ a.name ].box.x - ds[ b.name ].box.x );
+	const out = {};
+	order.forEach( ( p, i ) => {
+		if ( p.anchor ) {
+			return;
+		}
+		const prev = order[ i - 1 ];
+		const from = prev ? ( s ) => s[ prev.name ].box.y : null;
+		if ( ! from && ( null === mainY.draft || null === mainY.live || undefined === mainY.draft ) ) {
+			return;
+		}
+		const dy = ds[ p.name ].box.y - ( from ? from( ds ) : mainY.draft );
+		const ly = ls[ p.name ].box.y - ( from ? from( ls ) : mainY.live );
+		if ( Math.abs( dy - ly ) > t.box ) {
+			( out[ p.name ] = out[ p.name ] || [] ).push( { kind: 'box', key: prev ? `y-after-${ prev.name }` : 'y-in-main', draft: dy, live: ly } );
+		}
+	} );
+	return out;
+}
+
 export function compareState( run, d, l, { state, width, cfg, accept, divergences = [], tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks } ) {
 	// Box differences are judged first: a notPainted accept holds only while every
 	// box difference on the pair is itself accepted (a 44px touch target, say).
@@ -28,8 +54,10 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 		return diffs;
 	};
 	run.pairs[ '(state)' ] = { draft: d.log, live: l.log, diffs: judge( '(state)', driveDiffs( d.log, l.log ) ) };
+	const flow = cfg.refPrefix ? flowOffsets( pairsFor( state ), d.snap, l.snap, { draft: d.mainY, live: l.mainY }, tol ) : {};
 	for ( const p of pairsFor( state ) ) {
 		const diffs = [
+			...( flow[ p.name ] || [] ),
 			...comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) } ),
 			...compareStructure( p.name, d.structure, l.structure ),
 			...compareScroll( d.snap[ p.name ].scroll, l.snap[ p.name ].scroll ),

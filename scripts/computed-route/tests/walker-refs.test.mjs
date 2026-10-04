@@ -41,3 +41,43 @@ test( 'MUST FAIL TO ACCEPT: a value divergence reopens when live drifts from the
 	assert.equal( judgeDivergence( entries, ctx, drifted, 0.5 ), null );
 	assert.equal( drifted.draft, '44px (D-1)' );
 } );
+
+// The identity transform paints exactly as none (a finished reveal leaves matrix(1, 0, 0, 1, 0, 0) on one side): no
+// row. Any other matrix still compares (About and Lenses read 56 and 24 identity rows on 2026-10-03).
+import { sameValue } from '../../parity/lib/compare.mjs';
+
+test( 'the identity matrix and none are the same transform', () => {
+	assert.equal( sameValue( 'transform', 'matrix(1, 0, 0, 1, 0, 0)', 'none', 0.5 ), true );
+	assert.equal( sameValue( 'transform', 'none', 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)', 0.5 ), true );
+} );
+
+test( 'MUST FAIL TO MATCH: a lift, a half-pixel shift or a scale is still a difference', () => {
+	assert.equal( sameValue( 'transform', 'matrix(1, 0, 0, 1, 0, -3)', 'none', 0.5 ), false );
+	assert.equal( sameValue( 'transform', 'matrix(1, 0, 0, 1, 0, 0.5)', 'none', 0.5 ), false );
+	assert.equal( sameValue( 'transform', 'matrix(1.02, 0, 0, 1.02, 0, -1)', 'none', 0.5 ), false );
+} );
+
+// F1: a pair's place in the page's flow. About at 1440 (2026-10-03): the eyebrow sat at y 168 on the draft and 225 on
+// live (the page container's 104px top padding against the draft's 48px), and no row reported it.
+import { flowOffsets } from '../../parity/lib/compare-state.mjs';
+
+const at = ( y, h = 20 ) => ( { box: { x: 222, y, w: 400, h } } );
+const flowPairs = [ { name: 'eyebrow' }, { name: 'name' }, { name: 'intro' } ];
+const draftSnap = { eyebrow: at( 168 ), name: at( 200 ), intro: at( 260 ) };
+
+test( 'MUST FAIL TO MISS: a whole page sitting 57px low is one row, on the first pair, from the top of main', () => {
+	const live = { eyebrow: at( 225 ), name: at( 257 ), intro: at( 317 ) };
+	const out = flowOffsets( flowPairs, draftSnap, live, { draft: 120, live: 120 }, { box: 2 } );
+	assert.deepEqual( out, { eyebrow: [ { kind: 'box', key: 'y-in-main', draft: 48, live: 105 } ] } );
+} );
+
+test( 'a gap that changes between two pairs is one row on the later pair; a matching page has none', () => {
+	const live = { eyebrow: at( 168 ), name: at( 216 ), intro: at( 276 ) };
+	assert.deepEqual( flowOffsets( flowPairs, draftSnap, live, { draft: 120, live: 120 }, { box: 2 } ), { name: [ { kind: 'box', key: 'y-after-eyebrow', draft: 32, live: 48 } ] } );
+	assert.deepEqual( flowOffsets( flowPairs, draftSnap, { ...draftSnap }, { draft: 120, live: 120 }, { box: 2 } ), {} );
+} );
+
+test( 'a pair with a configured anchor keeps its own distance row and gets no flow row', () => {
+	const live = { eyebrow: at( 225 ), name: at( 257 ), intro: at( 317 ) };
+	assert.deepEqual( flowOffsets( [ { name: 'eyebrow', anchor: 'x' }, ...flowPairs.slice( 1 ) ], draftSnap, live, { draft: 120, live: 120 }, { box: 2 } ), {} );
+} );

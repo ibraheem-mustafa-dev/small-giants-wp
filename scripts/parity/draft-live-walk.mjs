@@ -207,7 +207,13 @@ async function walkSide( browser, side, width ) {
 		if ( header && ! lean ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 		}
-		states[ state.name ] = { snap, shot, log, structure, auto, links, entrances: state.name === firstState ? entrances : null };
+		// The page's own zero point for positions (the outermost <main>), so a pair's place on the page is compared
+		// without the header above it (ref-traced walks only: compare-state.mjs::flowOffsets).
+		const mainY = refPrefix ? await page.evaluate( () => {
+			const m = document.querySelector( 'main' );
+			return m ? Math.round( m.getBoundingClientRect().top + window.scrollY ) : null;
+		} ) : null;
+		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, entrances: state.name === firstState ? entrances : null };
 		if ( state.autoScrolled ) {
 			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
 		}

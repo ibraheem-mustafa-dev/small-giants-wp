@@ -2,6 +2,8 @@
 import { compareFocus } from './focus.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
+// The identity transform in both forms the computed style gives (2D and 3D), whitespace removed.
+const IDENTITY = new Set( [ 'matrix(1,0,0,1,0,0)', 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)' ] );
 
 // First family only, unquoted and lower-case: "Inter", sans-serif == inter, system-ui.
 const firstFamily = ( v ) => v.split( ',' )[ 0 ].replace( /["']/g, '' ).trim().toLowerCase();
@@ -34,6 +36,12 @@ export function sameValue( prop, a, b, pxTol ) {
 	}
 	if ( prop === 'font-family' ) {
 		return firstFamily( a ) === firstFamily( b );
+	}
+	// The identity matrix paints exactly as no transform (a finished reveal animation leaves it behind on one side);
+	// any other matrix still compares by value.
+	if ( prop === 'transform' ) {
+		const flat = ( v ) => ( IDENTITY.has( v.replace( /\s+/g, '' ) ) ? 'none' : v );
+		return flat( a ) === flat( b );
 	}
 	if ( PX.test( a ) && PX.test( b ) ) {
 		return Math.abs( parseFloat( a ) - parseFloat( b ) ) <= pxTol;

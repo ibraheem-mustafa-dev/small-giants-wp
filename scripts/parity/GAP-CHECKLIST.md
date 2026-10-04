@@ -347,3 +347,17 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
 - Word-multiset text comparison (DOM order ignored). Real-data differences (review counts, stock counts,
   pennies) and draft bugs (a filter returning 0) are accepts with Bean's dated decision in the reason.
   Anything "PROPOSED to Bean" is open work until answered.
+
+## 17. Where a pair sits in the page, and transforms that paint nothing (Spec 47 stage 3, F1 and F4)
+
+- **Gap:** box rows compared only a pair's size and its distance to a configured anchor, so a whole page sitting 57px
+  low (a page container's 104px top padding against the draft's 48px) produced no row at all; and `transform:
+  matrix(1, 0, 0, 1, 0, 0)` (the identity a finished reveal leaves behind) against `none` produced rows that paint nothing.
+- **Detected by (ref-traced walks, `refPrefix`):** `lib/compare-state.mjs::flowOffsets`. Pairs with no `anchor`, in draft
+  reading order, are measured top to top from the pair before them (`y-after-<pair>`), and the first from the top of the
+  outermost `<main>` (`y-in-main`), so a shift is one row where it starts. `lib/compare.mjs::sameValue` treats the identity
+  matrix (2D or 3D) as `none`; any other matrix still compares.
+- **Proof (2026-10-04):** unit cases in `scripts/computed-route/tests/walker-refs.test.mjs` (a page 57px low is one
+  `y-in-main` row; a lift, a half-pixel shift and a scale stay differences). Live lean walks: About's identity rows 56 to 0
+  with the WhatsApp scale and the shop button's 3px lift still reported; About's eyebrow `y-in-main` 68 against 124 at 1440
+  (28 against 56 at 375), and Contact's form fields 62 against 87 apart at 375. Configs without `refPrefix` are unchanged.
