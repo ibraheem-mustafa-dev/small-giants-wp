@@ -280,11 +280,11 @@
 
 | Ref | What is wrong | Fix | Type | Status |
 |---|---|---|---|---|
-| 104 | Shop the range hover | S1 (lifts like every button) | | |
+| 104 | Shop the range hover | S1 (lifts like every button) | | done (2026-10-04): lifts 3px, no ground; ledgered (D-2, D-4, D-6, D-7..D-9) as the decided difference from the draft |
 | 105 | Heading, credentials and intro spacing | name heading bottom margin 20px | tree | Solve closed (2026-10-03) |
 | 106 | Credential cards come out shorter | card headings line height 1.5, bottom margin 6px | tree | Solve closed (2026-10-03) |
 | 107 | Columns the wrong widths | grid columns 1.1fr 1fr | tree | closed (2026-10-03): the tree held `1.1fr 0.9fr`; set to `1.1fr 1fr` and the credential column width reads closed on the Solve re-walk |
-| 107b | Credential column 2px narrower than the draft at every width (independent check, 2026-10-04) | The cards match; the column's own 1px border (rgb(230,225,218)) paints on the draft and not live, though the tree sets borderWidth, borderStyle and borderColour on cr-ref-about-11. Trace which element paints it (wrapper or inner) | tree or framework repair | to prove |
+| 107b | Credential column 2px narrower than the draft at every width (independent check, 2026-10-04) | The cards match; the column's own 1px border (rgb(230,225,218)) paints on the draft and not live, though the tree sets borderWidth, borderStyle and borderColour on cr-ref-about-11. Trace which element paints it (wrapper or inner) | tree or framework repair | closed (2026-10-04): the border paints on the column's root once Solve measured the root (hand pair moved off the inner band); Solve also wrote the column's ground (border token), 1px gap and 'Page loads' entrance |
 | 108, 109 | WhatsApp button | S4. Sizing done in the tree (2026-10-03): the home button's icon 20px and gap 11px, no vertical padding, 50px tall (draft); 1px wider than the draft from the 20px icon (draft 19px, your rule 109). Icon colour and the hover grow-and-shadow stay with S4 | tree (done) + S4 | proven |
 | N42 | Content starts too low | S6 | | |
 

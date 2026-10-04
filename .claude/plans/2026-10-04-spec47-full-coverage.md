@@ -66,8 +66,13 @@ README.
   tier: writes inside the node or its anchor pair, then each ancestor's writes, nearest first. Tests:
   `tests/solve.test.mjs` (MUST FAIL TO MISS: a row on a node with no writes tries the nearest ancestor's write;
   proven red against the previous guard).
-- [ ] Re-run the proof: About, then Lenses, with `walkerFull` set again: 0 regressions, wrong writes at most 10%, S6's
-  top padding written as the draft's 48px and the side padding kept.
+- [x] **About at 100% (2026-10-04).** Judged on a fresh rebuild of the committed tree: Whole page 0 unexplained, 0
+  labelled gaps, 0 new rows, 0 wrong writes; 12 ledger entries, all citing register 104 / S1 / S4 (Shop the range and
+  WhatsApp hover lifts). Independent check (`sites/eye-care-ward-end/build/qa/independent-check.mjs`): 0 differences
+  over 24 blocks at 375/768/1440. Negative control: a planted 22px top padding on the page container was caught by
+  both (Solve wrote it back; the check reported the inset and every block below at 1440 only), then restored.
+  Distinct issues over the pilot: 50, 28, 19, 9, 6, 2, 0.
+- [ ] Contact to 100% (second surface, a grid, a linked form post, a map), then Lenses.
 - [ ] Pair and solve every other surface: `node scripts/computed-route/pairs.mjs --client eye-care-ward-end --surface <s>`,
   set its `walkerFull`, then Solve it. Surfaces whose states open a panel (Help's FAQ, the megas, size-guide, lens) are
   paired at rest only today: blocks inside a closed panel paint no words and are listed as left out.
