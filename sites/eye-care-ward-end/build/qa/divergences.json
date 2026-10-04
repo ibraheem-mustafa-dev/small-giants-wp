@@ -385,5 +385,29 @@
     },
     "reason": "Register S1 (Bean, 2026-10-02): every button lifts 3px on hover site-wide; the draft's WhatsApp button lifts 2px",
     "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-32",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "y-from-detail-phone-label",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link's box is its 44px tap area, which starts above the text it centres; the text itself sits on the draft's line (layout-neutral since the business-info link fix)",
+    "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-33",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "opening",
+    "property": "y-after-detail-phone-value",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link's box is its 44px tap area, which starts above the text it centres; the text itself sits on the draft's line (layout-neutral since the business-info link fix)",
+    "decided": "2026-10-04 Bean"
   }
 ]
