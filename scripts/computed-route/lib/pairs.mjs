@@ -5,8 +5,10 @@
 
 // A pairing is doubtful, and left out, when the partner holds under `coverage` of the block's matched words, when it
 // holds a matched word whose live twin sits outside the block, or when its box at 1440 is outside `boxRatio` of the
-// block's box on either axis.
-export const PAIRING_LIMITS = { coverage: 0.8, boxRatio: [ 0.5, 2 ], minWords: 1 };
+// block's box on either axis. It is also left out when it holds no padding while the block does and their content
+// boxes match (within `boxTolerance` px, the walker's box tolerance): the padding sits on a draft ancestor, and
+// pairing the inner element would write that padding as 0 (About, 2026-10-04).
+export const PAIRING_LIMITS = { coverage: 0.8, boxRatio: [ 0.5, 2 ], minWords: 1, boxTolerance: 2 };
 
 // liveRefs[i]: the cr-ref classes around live word i, innermost first. Returns Map ref -> [live word indices].
 export function wordsByBlock( liveRefs ) {
@@ -29,8 +31,40 @@ export function twinsByBlock( matches, blocks ) {
 	return out;
 }
 
-// Judges one pairing. block: { ref, live: [i], draft: [j], liveBox }; partner: { inside: [draft word indices inside
-// it], box }; liveRefsOfDraft: Map draftIndex -> refs around its live twin. Returns { ok, why }.
+const near = ( a, b, tol ) => Math.abs( a.w - b.w ) <= tol && Math.abs( a.h - b.h ) <= tol;
+const padded = ( b, tol ) => ! near( b, b.content, tol );
+
+// A partner that holds no padding while the block does, with the same content box: the block's padding sits on a draft
+// ancestor (About, 2026-10-04: the page container was paired with the draft element inside its padded <main>).
+function paddingElsewhere( box, liveBox, tol ) {
+	return !! ( box.content && liveBox?.content && ! padded( box, tol ) && padded( liveBox, tol ) && near( box.content, liveBox.content, tol ) );
+}
+
+// chain: the smallest draft element holding a block's twins, then its ancestors, nearest first (each { path, box,
+// content, inside }); liveBox: the block's { w, h, content }. Returns the partner: the first element, unless its
+// padding sits elsewhere, in which case the partner is the nearest ancestor that wraps it with padding of its own
+// (its content box is the first element's box, through any unpadded wrappers of the same size). With no such ancestor
+// the first element is returned and judgePairing leaves it out.
+export function paddedPartner( chain, liveBox, limits = PAIRING_LIMITS ) {
+	const tol = limits.boxTolerance;
+	const [ first ] = chain;
+	if ( ! first || ! paddingElsewhere( { ...first.box, content: first.content }, liveBox, tol ) ) {
+		return first || null;
+	}
+	for ( const a of chain.slice( 1 ) ) {
+		if ( ! a.content || ! near( a.content, first.box, tol ) ) {
+			break;
+		}
+		if ( padded( { ...a.box, content: a.content }, tol ) ) {
+			return a;
+		}
+	}
+	return first;
+}
+
+// Judges one pairing. block: { ref, live: [i], draft: [j], liveBox: { w, h, content? } }; partner: { inside: [draft
+// word indices inside it], box, content? }; liveRefsOfDraft: Map draftIndex -> refs around its live twin.
+// Returns { ok, why }.
 export function judgePairing( block, partner, liveRefsOfDraft, limits = PAIRING_LIMITS ) {
 	if ( block.draft.length < limits.minWords ) {
 		return { ok: false, why: 'no matched words' };
@@ -49,6 +83,9 @@ export function judgePairing( block, partner, liveRefsOfDraft, limits = PAIRING_
 		if ( r < lo || r > hi ) {
 			return { ok: false, why: `its ${ 'w' === k ? 'width' : 'height' } is ${ partner.box[ k ] }px on the draft against ${ block.liveBox[ k ] }px live` };
 		}
+	}
+	if ( paddingElsewhere( { ...partner.box, content: partner.content }, block.liveBox, limits.boxTolerance ) ) {
+		return { ok: false, why: 'it holds no padding where the block does: the padding sits on a draft ancestor with no padding of its own around it' };
 	}
 	return { ok: true, why: null };
 }

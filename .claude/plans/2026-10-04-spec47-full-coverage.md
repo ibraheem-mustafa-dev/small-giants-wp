@@ -56,14 +56,27 @@ README.
   size whose padding sits on its parent, so Solve read the draft's padding as 0. Content went full width at 375 (335px to
   375px wide); whole page 63 issues before, 108 after (61 new). The guard did not revert it (CR21 below). About's tree was
   restored from git and rebuilt; `walkerFull` was removed from about and lenses until the two fixes below land.
-- [ ] Fix the pairing for padded containers: a block's partner must also match the block's content box (its box minus
-  padding) within tolerance; where the matched-word element matches the content box but not the border box, take the
-  nearest ancestor whose border box matches (it holds the padding), else leave the block out. Add a MUST FAIL test built
-  from this case (a padded live container against a draft whose padding is on the parent).
-- [ ] Fix the guard (register CR21): a regressed box or width row whose own node, anchor and descendants hold no write
-  takes as suspects the writes on its ancestors, nearest first (a parent's padding changes every child's width).
+- [x] Pairing for padded containers (`lib/pairs.mjs::paddedPartner`, `PAIRING_LIMITS.boxTolerance`): a partner that
+  holds no padding where the block does, with matching content boxes, climbs to the nearest draft ancestor wrapping it
+  with padding of its own; with none, `judgePairing` leaves it out. Border boxes are not required to match: About's
+  draft `<main>` is 1100x672 (padding 48px 52px 90px) against live 1100x742 (104px 52px), a real difference Solve must
+  close. Re-pair: About 24 of 24, `cr-ref-about-0` paired to the draft `<main>`. Tests: `tests/pairs.test.mjs`
+  (MUST FAIL TO KEEP: an unpadded partner of a padded block).
+- [x] Guard CR21 (`lib/guard.mjs::guardRound`): with no write on a regressed row's node, suspects are tried tier by
+  tier: writes inside the node or its anchor pair, then each ancestor's writes, nearest first. Tests:
+  `tests/solve.test.mjs` (MUST FAIL TO MISS: a row on a node with no writes tries the nearest ancestor's write;
+  proven red against the previous guard).
 - [ ] Re-run the proof: About, then Lenses, with `walkerFull` set again: 0 regressions, wrong writes at most 10%, S6's
   top padding written as the draft's 48px and the side padding kept.
 - [ ] Pair and solve every other surface: `node scripts/computed-route/pairs.mjs --client eye-care-ward-end --surface <s>`,
   set its `walkerFull`, then Solve it. Surfaces whose states open a panel (Help's FAQ, the megas, size-guide, lens) are
   paired at rest only today: blocks inside a closed panel paint no words and are listed as left out.
+
+## Universal tool log
+
+One line per route fix: issue class → general fix → which drafts it now covers.
+
+| Date | Issue class | General fix | Drafts covered |
+|---|---|---|---|
+| 2026-10-04 | A block's padding sits on a draft ancestor of the element holding its words | `lib/pairs.mjs::paddedPartner` climbs to the nearest padded wrapper; `judgePairing` leaves out an unpadded partner of a padded block | Any draft that pads an outer wrapper (page shells, section wrappers) |
+| 2026-10-04 | A regression caused by a write on a row's ancestor (a parent's padding resizes every child) | `lib/guard.mjs::guardRound` tries ancestor writes, nearest first, when the row's node and its inside hold none | Every surface Solve runs |

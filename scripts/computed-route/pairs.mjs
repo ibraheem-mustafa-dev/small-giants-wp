@@ -15,7 +15,7 @@ import { matchWords } from '../parity/lib/auto-compare.mjs';
 import { AUTO_EXCLUDE } from '../parity/lib/auto-walk.mjs';
 import { makeHelpers } from '../parity/lib/helpers.mjs';
 import { resolveFinder } from '../parity/lib/collect.mjs';
-import { wordsByBlock, twinsByBlock, judgePairing, configText } from './lib/pairs.mjs';
+import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, configText } from './lib/pairs.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -33,7 +33,8 @@ function collectTagged( page, side, cfg ) {
 	}, [ collectAuto.toString(), cfg.auto?.root?.[ side ] || null, exclude ] );
 }
 
-// In-page (live): the cr-ref classes around each tagged word, innermost first, and each block's box.
+// In-page (live): the cr-ref classes around each tagged word, innermost first, and each block's border box and
+// content box (the border box minus its computed padding).
 function liveBlocks( page, prefix ) {
 	return page.evaluate( ( pre ) => {
 		const refOf = ( el ) => [ ...el.classList ].find( ( c ) => c.startsWith( pre ) );
@@ -49,15 +50,22 @@ function liveBlocks( page, prefix ) {
 		document.querySelectorAll( `[class*="${ pre }"]` ).forEach( ( el ) => {
 			const r = refOf( el );
 			const b = el.getBoundingClientRect();
-			r && ! boxes[ r ] && b.width > 0 && ( boxes[ r ] = { w: Math.round( b.width ), h: Math.round( b.height ) } );
+			const cs = getComputedStyle( el );
+			const px = ( p ) => parseFloat( cs[ p ] ) || 0;
+			r && ! boxes[ r ] && b.width > 0 && ( boxes[ r ] = {
+				w: Math.round( b.width ),
+				h: Math.round( b.height ),
+				content: { w: Math.round( b.width - px( 'paddingLeft' ) - px( 'paddingRight' ) ), h: Math.round( b.height - px( 'paddingTop' ) - px( 'paddingBottom' ) ) },
+			} );
 		} );
 		return { refs: window.__crEls.map( refsAround ), boxes };
 	}, prefix );
 }
 
-// In-page (draft): for each block, the smallest element holding its twins' elements, as a CSS path from <body>, its
-// box, and every tagged word element inside it.
-function draftPartners( page, wanted, wordEls ) {
+// In-page (draft): for each block, the smallest element holding its twins' elements and each of its ancestors below
+// <body>, nearest first: a CSS path from <body>, border box, content box, and every tagged word element inside it.
+// lib/pairs.mjs::paddedPartner picks the partner from that chain.
+function draftChains( page, wanted, wordEls ) {
 	return page.evaluate( ( [ want, wEls ] ) => {
 		const els = window.__crEls;
 		const lca = ( list ) => list.reduce( ( a, b ) => {
@@ -74,6 +82,16 @@ function draftPartners( page, wanted, wordEls ) {
 			}
 			return [ 'body', ...steps ].join( ' > ' );
 		};
+		const boxOf = ( el ) => {
+			const b = el.getBoundingClientRect();
+			const cs = getComputedStyle( el );
+			const px = ( p ) => parseFloat( cs[ p ] ) || 0;
+			return {
+				w: Math.round( b.width ),
+				h: Math.round( b.height ),
+				content: { w: Math.round( b.width - px( 'paddingLeft' ) - px( 'paddingRight' ) ), h: Math.round( b.height - px( 'paddingTop' ) - px( 'paddingBottom' ) ) },
+			};
+		};
 		const out = {};
 		for ( const [ ref, idx ] of Object.entries( want ) ) {
 			const p = lca( [ ...new Set( idx ) ].map( ( i ) => els[ i ] ) );
@@ -81,8 +99,11 @@ function draftPartners( page, wanted, wordEls ) {
 				out[ ref ] = null;
 				continue;
 			}
-			const b = p.getBoundingClientRect();
-			out[ ref ] = { path: pathOf( p ), box: { w: Math.round( b.width ), h: Math.round( b.height ) }, inside: wEls.map( ( e, j ) => ( p.contains( els[ e ] ) ? j : -1 ) ).filter( ( j ) => j >= 0 ) };
+			out[ ref ] = [];
+			for ( let a = p; a && a !== document.body; a = a.parentElement ) {
+				const box = boxOf( a );
+				out[ ref ].push( { path: pathOf( a ), box: { w: box.w, h: box.h }, content: box.content, inside: wEls.map( ( e, j ) => ( a.contains( els[ e ] ) ? j : -1 ) ).filter( ( j ) => j >= 0 ) } );
+			}
 		}
 		return out;
 	}, [ wanted, wordEls ] );
@@ -134,7 +155,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const twins = twinsByBlock( matches, wordsByBlock( lRefsOfWord ) );
 	const liveRefsOfDraft = new Map( matches.map( ( [ d, l ] ) => [ d, lRefsOfWord[ l ] ] ) );
 	const wanted = Object.fromEntries( [ ...twins ].filter( ( [ , t ] ) => t.draft.length ).map( ( [ ref, t ] ) => [ ref, t.draft.map( ( j ) => dWords[ j ].e ) ] ) );
-	const partners = await draftPartners( draft, wanted, dWords.map( ( w ) => w.e ) );
+	const chains = await draftChains( draft, wanted, dWords.map( ( w ) => w.e ) );
+	const partners = Object.fromEntries( Object.entries( chains ).map( ( [ ref, chain ] ) => [ ref, chain && paddedPartner( chain, boxes[ ref ] ) ] ) );
 	const kept = [];
 	const left = [];
 	for ( const [ ref, t ] of twins ) {

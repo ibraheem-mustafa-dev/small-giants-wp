@@ -8,7 +8,9 @@
 //      property, then the latest: it is undone and the next walk decides. Regression gone: the culprit, kept
 //      reverted and blocked. Regression still there: innocent, restored, and the next suspect is tried.
 // Suspects are whole settings (every write to one attribute on one node), because writes to one attribute chain:
-// each write's `before` is the previous write's `after`.
+// each write's `before` is the previous write's `after`. With no write on the row's own node the suspects are, tier by
+// tier: writes inside the node or inside the pair a distance row is measured from, then writes on each ancestor,
+// nearest first.
 import { refAncestors, nodeByRef } from './tree.mjs';
 import { regressedRows } from './solve-rows.mjs';
 
@@ -84,7 +86,7 @@ function confirm( s, rows, blocked, how ) {
 }
 
 // base: the report the last writes were computed from; report: the latest walk; lastWrites: the last write round's
-// writes; blocked: groupKey → breaks-layout gap; trials: Map ref → { setting, rows, tried: Set<attr> } carried between
+// writes; blocked: groupKey → breaks-layout gap; trials: Map ref → { setting, rows, tried: Set<'ref|attr'> } carried between
 // rounds. Mutates the tree. Returns every write whose state changed this round (reverted, under trial, or restored);
 // an empty list means the guard is done.
 export function guardRound( base, report, tree, lastWrites, blocked, calFor, trials ) {
@@ -104,7 +106,7 @@ export function guardRound( base, report, tree, lastWrites, blocked, calFor, tri
 			redo( tree, t.setting );
 			t.setting.writes.forEach( ( w ) => ( w.trial = false, w.restored = true ) );
 			changed.push( ...t.setting.writes );
-			t.tried.add( t.setting.attr );
+			t.tried.add( `${ t.setting.ref }|${ t.setting.attr }` );
 			t.setting = null;
 		}
 	}
@@ -114,12 +116,20 @@ export function guardRound( base, report, tree, lastWrites, blocked, calFor, tri
 			continue;
 		}
 		let open = settingsOf( lastWrites.filter( ( w ) => w.ref === r.ref && ! w.reverted ) );
-		// No write on the row's own node: a node moves with writes inside it, and a distance row also moves with writes
-		// inside the pair it is measured from (Contact, 2026-10-03: the subtext's bottom margin pushed the name field
-		// 23px down, and the row carried the form card's ref, which held no write). Those writes are the suspects.
+		// Suspects in tiers, tried tier by tier. No write on the row's own node: a node moves with writes inside it, and
+		// a distance row also moves with writes inside the pair it is measured from (Contact, 2026-10-03: the subtext's
+		// bottom margin pushed the name field 23px down, and the row carried the form card's ref, which held no write).
+		// Then a node moves with writes on its ancestors, nearest first (About, 2026-10-04: the page container's padding
+		// written as 0 widened every child, and no child held a write).
+		let tiers = [ open ];
 		if ( ! open.length ) {
 			const from = anchorRef( report, r );
-			open = settingsOf( lastWrites.filter( ( w ) => ! w.reverted && ( under( w.ref, r.ref ) || ( from && under( w.ref, from ) ) ) ) );
+			const live = lastWrites.filter( ( w ) => ! w.reverted );
+			tiers = [
+				settingsOf( live.filter( ( w ) => under( w.ref, r.ref ) || ( from && under( w.ref, from ) ) ) ),
+				...[ ...( anc.get( r.ref ) || [] ) ].reverse().map( ( a ) => settingsOf( live.filter( ( w ) => w.ref === a ) ) ),
+			].filter( ( tier ) => tier.length );
+			open = tiers.flat();
 		}
 		if ( ! open.length ) {
 			continue;
@@ -137,7 +147,8 @@ export function guardRound( base, report, tree, lastWrites, blocked, calFor, tri
 			continue;
 		}
 		const t = trials.get( r.ref ) || { tried: new Set() };
-		const next = suspectOrder( open.filter( ( s ) => ! t.tried.has( s.attr ) ), calFor )[ 0 ];
+		const tried = ( s ) => t.tried.has( `${ s.ref }|${ s.attr }` );
+		const next = tiers.map( ( tier ) => suspectOrder( tier.filter( ( s ) => ! tried( s ) ), calFor )[ 0 ] ).find( Boolean );
 		if ( ! next ) {
 			trials.delete( r.ref );
 			continue;

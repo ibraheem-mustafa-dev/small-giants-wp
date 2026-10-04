@@ -2,7 +2,7 @@
 // is kept only when it holds its words and nothing that belongs outside it.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { wordsByBlock, twinsByBlock, judgePairing, configText } from '../lib/pairs.mjs';
+import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, configText } from '../lib/pairs.mjs';
 
 // Live words 0-3: 0-1 in a heading (ref h) inside a section (ref s), 2-3 in a text (ref t) inside the same section.
 const liveRefs = [ [ 'h', 's' ], [ 'h', 's' ], [ 't', 's' ], [ 't', 's' ] ];
@@ -30,6 +30,34 @@ test( 'MUST FAIL TO KEEP: a partner that also holds another block\'s words is le
 test( 'MUST FAIL TO KEEP: too few matched words, or a box far from the block\'s, is left out', () => {
 	assert.equal( judgePairing( { ref: 'h', live: [ 0, 1, 5, 6, 7 ], draft: [ 10 ], liveBox: { w: 400, h: 40 } }, { inside: [ 10 ], box: { w: 400, h: 40 } }, ofDraft ).ok, false );
 	assert.equal( judgePairing( { ref: 'h', ...twins.get( 'h' ), liveBox: { w: 400, h: 40 } }, { inside: [ 10, 11 ], box: { w: 1200, h: 40 } }, ofDraft ).ok, false );
+} );
+
+// About, 2026-10-04 (measured at 1440): the page container (live 1100x742, padding 104px 52px, content 996x534) was
+// paired with the draft's unpadded 996x534 element inside a padded <main> (1100x672, padding 48px 52px 90px), and
+// Solve wrote the container's padding as 0. The draft's vertical padding really differs (Solve's job to close).
+const padLive = { w: 1100, h: 742, content: { w: 996, h: 534 } };
+const padInner = { path: 'body > main:nth-child(3) > div:nth-child(1)', box: { w: 996, h: 534 }, content: { w: 996, h: 534 }, inside: [ 10, 11 ] };
+const padOuter = { path: 'body > main:nth-child(3)', box: { w: 1100, h: 672 }, content: { w: 996, h: 534 }, inside: [ 10, 11 ] };
+const page = { path: 'body > div:nth-child(1)', box: { w: 1440, h: 1257 }, content: { w: 1440, h: 1257 }, inside: [ 10, 11 ] };
+
+test( 'MUST FAIL TO KEEP: a partner with no padding where the block holds padding, content boxes matching, is left out', () => {
+	const v = judgePairing( { ref: 'h', ...twins.get( 'h' ), liveBox: padLive }, padInner, ofDraft );
+	assert.equal( v.ok, false );
+	assert.match( v.why, /padding sits on a draft ancestor/ );
+} );
+
+test( 'the partner climbs through unpadded same-size wrappers to the nearest ancestor holding padding, and is kept', () => {
+	const wrap = { ...padInner, path: 'body > main:nth-child(3) > div:nth-child(1) > div:nth-child(1)' };
+	const p = paddedPartner( [ wrap, padInner, padOuter, page ], padLive );
+	assert.equal( p.path, padOuter.path );
+	assert.deepEqual( judgePairing( { ref: 'h', ...twins.get( 'h' ), liveBox: padLive }, p, ofDraft ), { ok: true, why: null } );
+} );
+
+test( 'positive control: a padded partner, an unpadded block, or no padded wrapper leaves the partner where it is', () => {
+	assert.equal( paddedPartner( [ padOuter, page ], padLive ).path, padOuter.path );
+	assert.equal( paddedPartner( [ padInner, padOuter ], { w: 996, h: 534, content: { w: 996, h: 534 } } ).path, padInner.path );
+	assert.equal( paddedPartner( [ padInner, page ], padLive ).path, padInner.path );
+	assert.equal( judgePairing( { ref: 'h', ...twins.get( 'h' ), liveBox: { w: 996, h: 534, content: { w: 996, h: 534 } } }, padInner, ofDraft ).ok, true );
 } );
 
 test( 'the generated config keeps the hand config and adds one ref-finder pair per kept block', () => {

@@ -163,7 +163,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `lintSurfaces(surfaces, buildDir, refs?)` → problems: a tree prints a post that no surface targets (frames) or `provides` (linked blocks, template parts).
 
 ### `lib/pairs.mjs`
-- `PAIRING_LIMITS`: a pairing is left out under 80% of the block's words matched, with a word from outside the block, or with a box outside half to double the block's.
+- `PAIRING_LIMITS`: a pairing is left out under 80% of the block's words matched, with a word from outside the block, with a box outside half to double the block's, or when it holds no padding where the block does and their content boxes match within `boxTolerance` (2px) (the padding sits on a draft ancestor).
+- `paddedPartner(chain, liveBox, limits?)` → the partner from the draft chain (smallest element holding the twins, then its ancestors, nearest first): the first element, or, when its padding sits elsewhere, the nearest ancestor wrapping it with padding of its own.
 - `wordsByBlock(liveRefs)` → Map ref → live word indices (every word inside the block, nested blocks included).
 - `twinsByBlock(matches, blocks)` → Map ref → `{ live, draft }` (the block's words and their draft twins).
 - `judgePairing(block, partner, liveRefsOfDraft, limits?)` → `{ ok, why }`.

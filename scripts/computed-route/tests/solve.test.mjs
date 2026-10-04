@@ -105,6 +105,45 @@ test( 'positive control: a distance row whose anchor pair holds no write reverts
 	assert.equal( guardRound( formRun( [] ), movedField, formTree(), w, new Map(), () => ( { settings: {} } ), new Map() ).length, 0 );
 } );
 
+// A row on a node with no writes on it or inside it (About, 2026-10-04): the page container's padding written as 0
+// widened its child. The write on the nearest ancestor holding one is the suspect.
+const padTree = () => [ { name: 'sgs/container', attributes: { className: 'cr-ref-a-0' }, innerBlocks: [
+	{ name: 'sgs/container', attributes: { className: 'cr-ref-a-1', padding: { desktop: { left: '0px', right: '0px' } } }, innerBlocks: [
+		{ name: 'sgs/heading', attributes: { className: 'cr-ref-a-2' } } ] } ] } ];
+const pw = () => [
+	{ round: 1, group: 'g-root', ref: 'cr-ref-a-0', block: 'sgs/container', attr: 'margin', prop: 'margin-top', before: undefined, after: { desktop: { top: '8px' } } },
+	{ round: 1, group: 'g-pad', ref: 'cr-ref-a-1', block: 'sgs/container', attr: 'padding', prop: 'padding-left', before: { desktop: { left: '20px', right: '20px' } }, after: { desktop: { left: '0px', right: '0px' } } },
+];
+const padRun = ( diffs ) => ( { runs: [ { state: 'opening', width: 1440, pairs: { head: { live: { trace: { ref: 'cr-ref-a-2' } }, diffs } } } ] } );
+const widened = padRun( [ { kind: 'box', key: 'width', draft: 1400, live: 1440, ref: 'cr-ref-a-2', path: '' } ] );
+
+test( 'MUST FAIL TO MISS: a row on a node with no writes tries the nearest ancestor\'s write and reverts it', () => {
+	const t = padTree();
+	const w = pw();
+	const trials = new Map();
+	const out = guardRound( padRun( [] ), widened, t, w, new Map(), () => ( { settings: {} } ), trials );
+	assert.deepEqual( out.map( ( x ) => x.ref ), [ 'cr-ref-a-1' ] );
+	assert.deepEqual( t[ 0 ].innerBlocks[ 0 ].attributes.padding, { desktop: { left: '20px', right: '20px' } } );
+	guardRound( padRun( [] ), padRun( [] ), t, w, new Map(), () => ( { settings: {} } ), trials );
+	assert.equal( w[ 1 ].reverted, true );
+	assert.ok( ! w[ 0 ].reverted );
+} );
+
+test( 'an innocent nearest ancestor is restored and the next ancestor out is tried', () => {
+	const t = padTree();
+	const w = pw();
+	const trials = new Map();
+	guardRound( padRun( [] ), widened, t, w, new Map(), () => ( { settings: {} } ), trials );
+	const r2 = guardRound( padRun( [] ), widened, t, w, new Map(), () => ( { settings: {} } ), trials );
+	assert.deepEqual( t[ 0 ].innerBlocks[ 0 ].attributes.padding, { desktop: { left: '0px', right: '0px' } } );
+	assert.ok( r2.some( ( x ) => 'cr-ref-a-0' === x.ref && x.trial ) );
+} );
+
+test( 'positive control: no write on the node, inside it or on an ancestor reverts nothing', () => {
+	const w = pw().map( ( x ) => ( { ...x, ref: 'cr-ref-z-9' } ) );
+	assert.equal( guardRound( padRun( [] ), widened, padTree(), w, new Map(), () => ( { settings: {} } ), new Map() ).length, 0 );
+} );
+
 // Walker state mapping (Spec 47 §5 stage 3): rows are written only from walker states the surface maps to a setting
 // state; a scrolled run's values never land in rest settings, and draft values come only from the group's own states.
 import { writeRound } from '../solve.mjs';
