@@ -508,13 +508,22 @@
     "order": 57
   },
   {
+    "id": "check-wiring-fingerprint",
+    "cmd": "python scripts/check-wiring-fingerprint.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 15920,
+    "order": 58
+  },
+  {
     "id": "check-ksort-before-hash",
     "cmd": "python scripts/check-ksort-before-hash.py --check",
     "tier": "fast",
     "added_D": "D736",
     "added_commit": "914c2ad4",
     "budget_ms": 109,
-    "order": 58
+    "order": 59
   },
   {
     "id": "check-tier-object-cast",
@@ -523,7 +532,7 @@
     "added_D": "D736",
     "added_commit": "914c2ad4",
     "budget_ms": 536,
-    "order": 59
+    "order": 60
   },
   {
     "id": "check-single-instance-invariants",
@@ -532,7 +541,7 @@
     "added_D": "D736",
     "added_commit": "914c2ad4",
     "budget_ms": 60,
-    "order": 60
+    "order": 61
   },
   {
     "id": "check-withdrawn-figures",
@@ -541,7 +550,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 1407,
-    "order": 61
+    "order": 62
   },
   {
     "id": "migrate-length-sanitiser",
@@ -550,7 +559,7 @@
     "added_D": "D734",
     "added_commit": "a2f6d5df9",
     "budget_ms": 163,
-    "order": 62
+    "order": 63
   },
   {
     "id": "run-gates-selftest",
@@ -559,7 +568,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 168,
-    "order": 63
+    "order": 64
   },
   {
     "id": "check-doc-citations",
@@ -568,7 +577,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 95,
-    "order": 64
+    "order": 65
   },
   {
     "id": "migrate-tier-object-db-parity",
@@ -577,7 +586,7 @@
     "added_D": "D775",
     "added_commit": null,
     "budget_ms": null,
-    "order": 65
+    "order": 66
   },
   {
     "id": "lint-patterns-personal-data",
@@ -586,7 +595,7 @@
     "added_D": "D776",
     "added_commit": null,
     "budget_ms": null,
-    "order": 66
+    "order": 67
   },
   {
     "id": "font-source-audit",
@@ -595,7 +604,7 @@
     "added_D": "D776",
     "added_commit": null,
     "budget_ms": null,
-    "order": 67
+    "order": 68
   },
   {
     "id": "migrate-render-closures",
@@ -604,7 +613,7 @@
     "added_D": "D776",
     "added_commit": null,
     "budget_ms": null,
-    "order": 68
+    "order": 69
   },
   {
     "id": "migrate-theme-native-spacing",
@@ -613,7 +622,7 @@
     "added_D": "D776",
     "added_commit": null,
     "budget_ms": null,
-    "order": 69
+    "order": 70
   },
   {
     "id": "migrate-shadow-mounts",
@@ -622,7 +631,7 @@
     "added_D": "D776",
     "added_commit": null,
     "budget_ms": null,
-    "order": 70
+    "order": 71
   },
   {
     "id": "fanout-overlay-sibling-attrs",
@@ -631,7 +640,7 @@
     "added_D": "D776",
     "added_commit": null,
     "budget_ms": null,
-    "order": 71
+    "order": 72
   },
   {
     "id": "check-child-lift",
@@ -640,7 +649,7 @@
     "added_D": "D793",
     "added_commit": null,
     "budget_ms": 400,
-    "order": 72
+    "order": 73
   },
   {
     "id": "check-fx-registration",
@@ -649,7 +658,7 @@
     "added_D": "D789",
     "added_commit": null,
     "budget_ms": 400,
-    "order": 73
+    "order": 74
   },
   {
     "id": "check-colour-preview-resolver",
@@ -658,7 +667,7 @@
     "added_D": "D792",
     "added_commit": null,
     "budget_ms": 400,
-    "order": 74
+    "order": 75
   },
   {
     "id": "check-border-style-without-width",
@@ -667,7 +676,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 1500,
-    "order": 75
+    "order": 76
   },
   {
     "id": "check-control-helper-parity",
@@ -676,7 +685,7 @@
     "added_D": "D809",
     "added_commit": null,
     "budget_ms": 1500,
-    "order": 76
+    "order": 77
   },
   {
     "id": "survey-border-control-migration",
@@ -685,7 +694,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 1500,
-    "order": 77
+    "order": 78
   },
   {
     "id": "border-shape-b-selftest",
@@ -694,7 +703,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 4000,
-    "order": 78
+    "order": 79
   },
   {
     "id": "border-shape-b-check",
@@ -703,7 +712,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 4000,
-    "order": 79
+    "order": 80
   },
   {
     "id": "check-hover-state-classification",
@@ -712,7 +721,7 @@
     "added_D": "D885",
     "added_commit": "c50066bff",
     "budget_ms": 150,
-    "order": 80
+    "order": 81
   },
   {
     "id": "check-transform-parity",
@@ -721,7 +730,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 400,
-    "order": 81
+    "order": 82
   },
   {
     "id": "generate-svg-allowlist",
@@ -739,7 +748,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 82
+    "order": 83
   },
   {
     "id": "test-sanitise-svg",
@@ -748,7 +757,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 83
+    "order": 84
   },
   {
     "id": "test-media-attr-parity",
@@ -757,7 +766,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 84
+    "order": 85
   },
   {
     "id": "generate-media-attributes",
@@ -775,7 +784,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 85
+    "order": 86
   },
   {
     "id": "test-media-injection-parity",
@@ -784,7 +793,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 86
+    "order": 87
   },
   {
     "id": "check-media-breakpoints",
@@ -793,7 +802,7 @@
     "added_D": 909,
     "added_commit": null,
     "budget_ms": null,
-    "order": 87
+    "order": 88
   },
   {
     "id": "test-media-atom-parity",
@@ -802,7 +811,7 @@
     "added_D": 909,
     "added_commit": null,
     "budget_ms": null,
-    "order": 88
+    "order": 89
   },
   {
     "id": "generate-media-stylesheet",
@@ -820,7 +829,7 @@
     "added_D": 909,
     "added_commit": null,
     "budget_ms": null,
-    "order": 89
+    "order": 90
   },
   {
     "id": "check-media-atom-purity",
@@ -829,7 +838,7 @@
     "added_D": 909,
     "added_commit": null,
     "budget_ms": null,
-    "order": 90
+    "order": 91
   },
   {
     "id": "check-media-disclosure-coverage",
@@ -838,7 +847,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 91
+    "order": 92
   },
   {
     "id": "check-enum-control-shape",
@@ -847,7 +856,7 @@
     "added_D": "D812",
     "added_commit": null,
     "budget_ms": null,
-    "order": 92
+    "order": 93
   },
   {
     "id": "test-hover-state-guard",
@@ -856,7 +865,7 @@
     "added_D": "D922",
     "added_commit": null,
     "budget_ms": null,
-    "order": 93
+    "order": 94
   },
   {
     "id": "check-preset-absence-no-slug-literal",
@@ -865,7 +874,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 50,
-    "order": 94
+    "order": 95
   },
   {
     "id": "audit-bindable-attrs",
@@ -874,7 +883,7 @@
     "added_D": "D962",
     "added_commit": null,
     "budget_ms": null,
-    "order": 96
+    "order": 97
   },
   {
     "id": "wire-border-contrast",
@@ -883,7 +892,7 @@
     "added_D": "D963",
     "added_commit": null,
     "budget_ms": null,
-    "order": 97
+    "order": 98
   },
   {
     "id": "check-colour-attr-css-property",
@@ -892,7 +901,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 98
+    "order": 99
   },
   {
     "id": "check-render-tier-object-spacing",
@@ -901,7 +910,7 @@
     "added_D": "D976",
     "added_commit": null,
     "budget_ms": null,
-    "order": 99
+    "order": 100
   },
   {
     "id": "nav-qa-logical-props",
@@ -910,7 +919,7 @@
     "added_D": 987,
     "added_commit": null,
     "budget_ms": 250,
-    "order": 100
+    "order": 101
   },
   {
     "id": "classify-end-shape",
@@ -919,7 +928,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 101
+    "order": 102
   },
   {
     "id": "check-style-blob-sanitisation",
@@ -928,7 +937,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 102
+    "order": 103
   },
   {
     "id": "check-ungated-paint-rules",
@@ -937,7 +946,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 103
+    "order": 104
   },
   {
     "id": "audit-serverside-render-disabled",
@@ -946,7 +955,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 104
+    "order": 105
   },
   {
     "id": "test-create-drawer-seed",
@@ -955,7 +964,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 105
+    "order": 106
   },
   {
     "id": "test-nonmodal-freeze-background",
@@ -964,7 +973,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 106
+    "order": 107
   },
   {
     "id": "test-panel-bounds",
@@ -973,7 +982,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 107
+    "order": 108
   },
   {
     "id": "test-float-defaults",
@@ -982,7 +991,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 108
+    "order": 109
   },
   {
     "id": "check-fixture-fidelity",
@@ -991,7 +1000,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 109
+    "order": 110
   },
   {
     "id": "check-fixture-fidelity-self-test",
@@ -1000,7 +1009,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 110
+    "order": 111
   },
   {
     "id": "check-shadow-fallback-php",
@@ -1009,7 +1018,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 111
+    "order": 112
   },
   {
     "id": "check-shadow-fallback-php-self-test",
@@ -1018,7 +1027,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 112
+    "order": 113
   },
   {
     "id": "test-shadow-fallback-css-self-test",
@@ -1027,7 +1036,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 113
+    "order": 114
   },
   {
     "id": "test-shadow-layers-js",
@@ -1036,7 +1045,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 114
+    "order": 115
   },
   {
     "id": "test-shadow-model",
@@ -1045,7 +1054,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 115
+    "order": 116
   },
   {
     "id": "check-shadow-presets",
@@ -1054,7 +1063,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 116
+    "order": 117
   },
   {
     "id": "check-shadow-presets-self-test",
@@ -1063,7 +1072,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 117
+    "order": 118
   },
   {
     "id": "check-snapshot-shadow-presets",
@@ -1072,7 +1081,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 118
+    "order": 119
   },
   {
     "id": "check-snapshot-shadow-presets-self-test",
@@ -1081,7 +1090,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 119
+    "order": 120
   },
   {
     "id": "check-shadow-colour-rows",
@@ -1090,7 +1099,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 120
+    "order": 121
   },
   {
     "id": "check-shadow-colour-rows-self-test",
@@ -1099,7 +1108,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 121
+    "order": 122
   },
   {
     "id": "check-shadow-sources-self-test",
@@ -1108,7 +1117,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 122
+    "order": 123
   },
   {
     "id": "surface-ground-fanout-self-test",
@@ -1117,7 +1126,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 123
+    "order": 124
   },
   {
     "id": "surface-ground-fanout-check",
@@ -1126,7 +1135,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 124
+    "order": 125
   },
   {
     "id": "check-shadow-sources",
@@ -1135,7 +1144,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 125
+    "order": 126
   },
   {
     "id": "shadow-lift-self-test",
@@ -1144,7 +1153,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 126
+    "order": 127
   },
   {
     "id": "shadow-lift-check",
@@ -1153,7 +1162,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 127
+    "order": 128
   },
   {
     "id": "shadow-lift-attr-fanout-self-test",
@@ -1162,7 +1171,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 128
+    "order": 129
   },
   {
     "id": "shadow-lift-attr-fanout-check",
@@ -1171,7 +1180,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 129
+    "order": 130
   },
   {
     "id": "check-scrim-self-test",
@@ -1180,7 +1189,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 130
+    "order": 131
   },
   {
     "id": "check-scrim",
@@ -1189,7 +1198,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 131
+    "order": 132
   },
   {
     "id": "check-no-src-requires",
@@ -1198,7 +1207,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 132
+    "order": 133
   },
   {
     "id": "check-exit-guards",
@@ -1207,7 +1216,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 136
+    "order": 137
   },
   {
     "id": "check-nested-global-settings",
@@ -1216,7 +1225,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 400,
-    "order": 133
+    "order": 134
   },
   {
     "id": "check-text-on-primary",
@@ -1225,7 +1234,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 134
+    "order": 135
   },
   {
     "id": "check-raw-box-control",
@@ -1234,7 +1243,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 135
+    "order": 136
   },
   {
     "id": "check-custom-colour-survives",
@@ -1243,7 +1252,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 137
+    "order": 138
   },
   {
     "id": "audit-ssr-http-method",
@@ -1252,7 +1261,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 138
+    "order": 139
   },
   {
     "id": "test-media-enum-vocabulary",
@@ -1261,7 +1270,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": null,
-    "order": 139
+    "order": 140
   },
   {
     "id": "check-border-width-without-style",
@@ -1270,7 +1279,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 1500,
-    "order": 140
+    "order": 141
   },
   {
     "id": "check-border-width-without-style-selftest",
@@ -1279,7 +1288,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 1500,
-    "order": 141
+    "order": 142
   },
   {
     "id": "check-separators-through-helper",
@@ -1288,7 +1297,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 1500,
-    "order": 142
+    "order": 143
   },
   {
     "id": "check-separators-through-helper-selftest",
@@ -1297,7 +1306,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 1500,
-    "order": 143
+    "order": 144
   },
   {
     "id": "check-no-client-names",
@@ -1306,7 +1315,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 20000,
-    "order": 144
+    "order": 145
   },
   {
     "id": "check-no-client-names-selftest",
@@ -1315,7 +1324,7 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 5000,
-    "order": 145
+    "order": 146
   },
   {
     "id": "check-extension-roster",
@@ -1324,6 +1333,6 @@
     "added_D": null,
     "added_commit": null,
     "budget_ms": 1500,
-    "order": 146
+    "order": 147
   }
 ]
