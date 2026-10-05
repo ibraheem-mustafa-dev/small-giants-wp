@@ -159,9 +159,31 @@ Each item is named so nothing is lost; none blocks Session A.
 - **P0-10 Calibration memory (Session C, before its serial tail's recalibration):** one `calibrate.mjs` run over 46
   blocks ran out of Node's default 4 GB heap after 43 minutes (on site-header); site-header itself needs
   `--max-old-space-size=8192` and `SGS_CAL_CHUNK=50`. Find what the run holds between blocks.
-- **P0-11 Unclassified calibration outcomes (Session B, with B2's classification):** the 605 dead, 40 oneWidth and 55 untestedStates of 2026-10-05 are not
-  split by cause (`calibration/classify_dead.py` defines classifiers only). The largest: cart 83, nav-bar-menu 58 (a
-  menu paints only inside a real site header, which the calibration page lacks), product-card 51, nav-drawer-menu 39.
+- **P0-11 Unclassified calibration outcomes — DONE 2026-10-05 (Session B):** the 605 dead, 40 oneWidth and 55
+  untestedStates are split by cause in `.claude/reports/2026-10-05-session-b/calibration-outcomes.md` (data in
+  `calibration-outcomes.json`, rerun with `classify-outcomes.py`, which imports `classify_dead.py::classify` unchanged
+  after generating the `layer.json` it needs). Totals confirmed independently by the main thread against the 94 cache
+  files: dead 605, oneWidth 40, untestedStates 55, top blocks cart 83, nav-bar-menu 58, product-card 51,
+  nav-drawer-menu 39, hero 35, mega-panel 29.
+  Dead by cause: FIXTURE_LACKS_ELEMENT 221, RESIDUAL 152, PORTAL_OR_CLOSED_SURFACE 94, READ_CAP_81 60,
+  HOVER_POINTER_MISSES_CHILD 28, NEEDS_OVERLAY_COMPANION 12, NEEDS_BORDER_COMPANION 12,
+  STATE_NOT_RENDERED_BY_FIXTURE 11, PSEUDO_ELEMENT 8, NEEDS_LAYOUT_MODE 7. The three `STALE_*` causes are empty
+  (0, 0, 0) and every cache was measured on 2026-10-05, which confirms the rerun cleared the stale-measurement
+  causes and leaves only structural ones.
+  **No labelled cause needs block code**: FIXTURE_LACKS_ELEMENT, both NEEDS_*_COMPANION, NEEDS_LAYOUT_MODE and
+  STATE_NOT_RENDERED_BY_FIXTURE are `calibration-fixtures.json` edits; PORTAL_OR_CLOSED_SURFACE, READ_CAP_81,
+  HOVER_POINTER_MISSES_CHILD, PSEUDO_ELEMENT and both untestedStates causes are harness changes. Four fixes clear
+  **203 of the 605** with no block code: open the cart surface (82), lift the 81-element read cap for nav-bar-menu
+  (46), give product-card fixture content (47) and give mega-panel fixture content (28).
+  Still unknown: the 152 RESIDUAL. The same file's newer `classify3` splits them into UNEXPLAINED 106,
+  HOVER_POINTER_MISSES_ELEMENT 21, DB_STATE_MISSING_HOVER 11, NEEDS_BG_IMAGE 7, NEEDS_VARIANT_OR_TOGGLE 4,
+  STATE_FOCUS_UNROUTED 2, NEEDS_LAYOUT_MODE 1, so any real framework gap is inside the 106 UNEXPLAINED.
+  oneWidth (40) groups by which widths resolved (missing 768 only 21; multi-button 8, site-footer-row 7,
+  site-header-row 7); the likely cause is that tiers follow container width, unproven. untestedStates (55) is
+  51 hover elements hidden by an open panel (nav-drawer-menu 25, nav-bar-menu 11, nav-drawer 8, modal 4) and
+  4 where site-header never took `is-header-scrolled`.
+  Caveat recorded by the run: the labels are inferred from element presence and attribute names, not proved by a
+  render, so they are strong leads rather than proofs.
 
 ## Track P: route prep, in a second session beside Session 0
 
