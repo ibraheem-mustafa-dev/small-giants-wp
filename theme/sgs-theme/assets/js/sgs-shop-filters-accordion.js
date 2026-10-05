@@ -72,6 +72,27 @@
 		return headings.length;
 	}
 
+	// A group left with no heading inside it (the heading was re-rendered away).
+	function emptyGroups( root ) {
+		return Array.from( root.querySelectorAll( 'details.' + GROUP ) ).filter( function ( g ) {
+			return ! g.querySelector( HEADING );
+		} );
+	}
+
+	// Dissolves each headless group: its summary is dropped, any other content is
+	// moved back out in place so no filter control is lost, then the shell is removed.
+	function unwrapEmptyGroups( root ) {
+		emptyGroups( root ).forEach( function ( group ) {
+			Array.from( group.childNodes ).forEach( function ( child ) {
+				if ( child.nodeType === 1 && child.matches( 'summary' ) ) {
+					return;
+				}
+				group.parentNode.insertBefore( child, group );
+			} );
+			group.parentNode.removeChild( group );
+		} );
+	}
+
 	function watch( dialog ) {
 		const openState = {};
 		dialog.addEventListener( 'toggle', function ( event ) {
@@ -93,10 +114,11 @@
 				const loose = Array.from( dialog.querySelectorAll( HEADING ) ).some( function ( h ) {
 					return ! h.closest( '.' + GROUP );
 				} );
-				if ( ! loose ) {
+				if ( ! loose && ! emptyGroups( dialog ).length ) {
 					return;
 				}
 				observer.disconnect();
+				unwrapEmptyGroups( dialog );
 				build( dialog, openState );
 				dialog.dispatchEvent( new CustomEvent( 'sgs-shop-filters:rebuilt' ) );
 				observer.observe( dialog, { childList: true, subtree: true } );
