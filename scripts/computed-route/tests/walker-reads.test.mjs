@@ -134,3 +134,12 @@ test( 'MUST FAIL TO OVERWRITE A DECISION: a declared width replaces the draft on
 	assert.deepEqual( t.perWidth, { 375: '30px', 768: '44px' } );
 	assert.equal( usedValueTarget( 'width', { perWidth: { 375: '320px' }, declared: {}, held: [] } ).gap, 'used-value' );
 } );
+
+// Triage (B1, 2026-10-05) found Lenses' process steps reported justify-content normal against flex-start and
+// align-items normal against stretch: on a flex container each pair lays out the same.
+test( 'MUST FAIL TO REPORT NOISE: flex alignment keywords that lay out the same are no row; on grid they still compare', () => {
+	const flex = ( jc, ai, display = 'flex' ) => snap( { 'justify-content': jc, 'align-items': ai, display }, { layoutDisplay: display } );
+	assert.deepEqual( comparePair( { text: false }, flex( 'normal', 'normal' ), flex( 'flex-start', 'stretch' ), tol ), [] );
+	assert.deepEqual( keys( comparePair( { text: false }, flex( 'normal', 'normal' ), flex( 'center', 'center' ), tol ) ), [ 'align-items', 'justify-content' ] );
+	assert.deepEqual( keys( comparePair( { text: false }, flex( 'normal', 'normal', 'grid' ), flex( 'start', 'stretch', 'grid' ), tol ) ), [ 'align-items', 'justify-content' ] );
+} );

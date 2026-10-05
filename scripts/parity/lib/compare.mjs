@@ -159,7 +159,9 @@ function controlPaddingIrrelevant( p, d, l ) {
 }
 
 const SAME = { 'text-align': [ [ 'start', 'left' ] ] };
-const equivalent = ( p, a, b ) => ( SAME[ p ] || [] ).some( ( set ) => set.includes( a ) && set.includes( b ) );
+// On a flex container (CSS Box Alignment): justify-content normal lays out as flex-start, align-items normal as stretch.
+const FLEX_SAME = { 'justify-content': [ [ 'normal', 'flex-start', 'start' ] ], 'align-items': [ [ 'normal', 'stretch' ] ] };
+const equivalent = ( p, a, b, flex = false ) => [ ...( SAME[ p ] || [] ), ...( flex ? FLEX_SAME[ p ] || [] : [] ) ].some( ( set ) => set.includes( a ) && set.includes( b ) );
 
 // Returns [{ kind, key, draft, live }] for one pair in one state at one width.
 export function comparePair( pair, d, l, tol ) {
@@ -180,7 +182,7 @@ export function comparePair( pair, d, l, tol ) {
 		}
 	}
 	for ( const p of new Set( [ ...Object.keys( d.styles ), ...Object.keys( l.styles ) ] ) ) {
-		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || timingIrrelevant( p, d, l ) || equivalent( p, d.styles[ p ], l.styles[ p ] ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
+		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || timingIrrelevant( p, d, l ) || equivalent( p, d.styles[ p ], l.styles[ p ], [ d, l ].every( ( x ) => /(^|-)flex$/.test( x.layoutDisplay || '' ) ) ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
 			continue;
 		}
 		if ( ! sameValue( p, d.styles[ p ], l.styles[ p ], tol.px ) ) {
