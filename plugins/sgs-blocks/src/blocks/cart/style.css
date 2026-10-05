@@ -163,6 +163,12 @@
    badgeTextColour, at the same size as the icon trigger's overlay badge. */
 .sgs-cart--pill-count-bubble .sgs-cart__badge {
 	position: relative;
+	/* The base .sgs-cart__badge rule offsets the icon-only overlay badge by
+	 * top/right 2px against its corner. A relatively positioned bubble is in
+	 * flow, so those offsets would nudge the circle 2px down and left off the
+	 * label's text line; cleared here, where the two-class selector wins. */
+	top: auto;
+	right: auto;
 	z-index: 0;
 	min-width: 20px;
 	height: 20px;
