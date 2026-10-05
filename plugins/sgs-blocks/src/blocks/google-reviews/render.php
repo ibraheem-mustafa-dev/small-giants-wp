@@ -317,10 +317,10 @@ $gr_btn_attrs = static function ( string $prefix ) use ( $attributes ): array {
 	}
 	$hover_defaults = array(
 		'arrow'       => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-tint)', 'ColourBorderHover' => 'var(--sgs-gr-blue)' ),
-		'writeReview' => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-tint)', 'ColourBorderHover' => 'var(--sgs-gr-blue)' ),
+		'writeReview' => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-tint)', 'ColourBorderHover' => 'var(--sgs-gr-blue)', 'ColourTextHover' => 'var(--sgs-gr-blue-dark)' ),
 		'seeAll'      => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-dark)' ),
 	);
-	$gradient_of    = array( 'ColourBackgroundHover' => 'ColourBackgroundHoverGradient', 'ColourBorderHover' => 'ColourBorderHoverGradient' );
+	$gradient_of    = array( 'ColourBackgroundHover' => 'ColourBackgroundHoverGradient', 'ColourBorderHover' => 'ColourBorderHoverGradient', 'ColourTextHover' => 'ColourTextHoverGradient' );
 	foreach ( $hover_defaults[ $prefix ] ?? array() as $suffix => $default ) {
 		if ( empty( $out[ $prefix . $suffix ] ) && empty( $out[ $prefix . $gradient_of[ $suffix ] ] ) ) {
 			$out[ $prefix . $suffix ] = $default;

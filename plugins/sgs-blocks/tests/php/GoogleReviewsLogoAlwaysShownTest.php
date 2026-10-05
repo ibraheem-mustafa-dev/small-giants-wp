@@ -288,6 +288,10 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		$this->assertStringContainsString( 'border-color: var( --sgs-gr-blue );', $wh[1] );
 		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__see-all:hover \) \{([^}]*)\}#', $css, $sh ) );
 		$this->assertStringContainsString( 'var( --sgs-gr-blue-dark )', $sh[1] );
+		// Targets are 44px by default (the project standard), and the focus ring is Google blue.
+		$this->assertMatchesRegularExpression( '#min-height: 44px;\s*padding: 0 22px#', $css );
+		$this->assertStringContainsString( 'var( --sgs-slider-nav-arrow-size, 44px )', $css );
+		$this->assertMatchesRegularExpression( '#__see-all:focus-visible \{\s*outline: 2px solid var\( --sgs-gr-blue \)#', $css );
 		// The pressed state stays in the stylesheet.
 		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__arrow:active \) \{([^}]*)\}#', $css, $act ) );
 		$this->assertStringContainsString( 'var( --sgs-gr-blue-tint-strong )', $act[1] );
@@ -324,6 +328,8 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		$this->assertStringContainsString( 'border-color:var(--sgs-gr-blue)', $arrow_hover );
 		$this->assertStringContainsString( 'var(--sgs-gr-blue-tint)', $this->rule_decls( $css, '.sgs-google-reviews__write-review:hover::after' ) );
 		$this->assertStringContainsString( 'var(--sgs-gr-blue-dark)', $this->rule_decls( $css, '.sgs-google-reviews__see-all:hover::after' ) );
+		// Accessibility: the 14px label on the hover tint needs the darker blue (blue on tint is 3.9:1, below AA).
+		$this->assertStringContainsString( 'color:var(--sgs-gr-blue-dark)', $this->rule_decls( $css, '.sgs-google-reviews__write-review:hover' ) );
 	}
 
 	/** A hover colour set in the inspector replaces the default for that property only. */

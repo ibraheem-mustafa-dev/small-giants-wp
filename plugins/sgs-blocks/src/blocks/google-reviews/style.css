@@ -695,10 +695,10 @@ a.sgs-google-reviews__author:hover {
 	display: inline-flex;
 	align-items: center;
 	box-sizing: border-box;
-	min-height: 40px;
+	min-height: 44px;
 	padding: 0 22px;
 	border: 1px solid transparent;
-	border-radius: 20px;
+	border-radius: 22px;
 	background-color: var( --sgs-gr-blue );
 	color: var( --sgs-gr-on-blue );
 	text-decoration: none;
@@ -730,6 +730,16 @@ a.sgs-google-reviews__author:hover {
 :where( .sgs-google-reviews__write-review:hover ) {
 	background-color: var( --sgs-gr-blue-tint );
 	border-color: var( --sgs-gr-blue );
+	/* Blue on the tint is 3.9:1; the darker Google blue is 4.9:1, which the 14px label needs. */
+	color: var( --sgs-gr-blue-dark );
+}
+
+/* Keyboard focus: Google blue, 2px, clear of the border (the shared slider-nav ring is the theme's primary). */
+.sgs-google-reviews .sgs-google-reviews__arrow:focus-visible,
+.sgs-google-reviews .sgs-google-reviews__write-review:focus-visible,
+.sgs-google-reviews .sgs-google-reviews__see-all:focus-visible {
+	outline: 2px solid var( --sgs-gr-blue );
+	outline-offset: 2px;
 }
 
 /* Site-wide button hover (buttonPresets.default): the lift and its timing. With no
@@ -812,8 +822,8 @@ a.sgs-google-reviews__author:hover {
    defaults. The size reads the shared navigation's custom property, so the overlay-inset gutter and the
    button always agree. */
 :where( .sgs-google-reviews__arrow ) {
-	width: var( --sgs-slider-nav-arrow-size, 40px );
-	height: var( --sgs-slider-nav-arrow-size, 40px );
+	width: var( --sgs-slider-nav-arrow-size, 44px );
+	height: var( --sgs-slider-nav-arrow-size, 44px );
 	border: 1px solid var( --sgs-gr-line );
 	border-radius: 50%;
 	background-color: var( --sgs-gr-surface );
