@@ -45,6 +45,8 @@
 	--sgs-gr-blue: #1a73e8;
 	--sgs-gr-blue-dark: #1765cc;
 	--sgs-gr-on-blue: #fff;
+	--sgs-gr-blue-tint: #e8f0fe;
+	--sgs-gr-blue-tint-strong: #d2e3fc;
 }
 
 /* Google's dark-mode counterparts. */
@@ -58,6 +60,8 @@
 	--sgs-gr-blue: #8ab4f8;
 	--sgs-gr-blue-dark: #aecbfa;
 	--sgs-gr-on-blue: #202124;
+	--sgs-gr-blue-tint: #313846;
+	--sgs-gr-blue-tint-strong: #3d4a63;
 }
 
 .sgs-google-reviews {
@@ -724,7 +728,8 @@ a.sgs-google-reviews__author:hover {
 }
 
 :where( .sgs-google-reviews__write-review:hover ) {
-	background-color: color-mix( in srgb, var( --sgs-gr-blue ) 6%, var( --sgs-gr-surface ) );
+	background-color: var( --sgs-gr-blue-tint );
+	border-color: var( --sgs-gr-blue );
 }
 
 /* Site-wide button hover (buttonPresets.default): the lift and its timing. With no
@@ -825,7 +830,20 @@ a.sgs-google-reviews__author:hover {
    sgs_button_element_style_css() at real specificity. The rule below is the DEFAULT look, kept at
    zero specificity via :where(). The focus ring itself is slider-nav.css's. */
 :where( .sgs-google-reviews__arrow:hover, .sgs-google-reviews__arrow:focus-visible ) {
-	background-color: color-mix( in srgb, var( --sgs-gr-blue ) 6%, var( --sgs-gr-surface ) );
+	background-color: var( --sgs-gr-blue-tint );
+	border-color: var( --sgs-gr-blue );
+	color: var( --sgs-gr-blue );
+}
+
+:where( .sgs-google-reviews__arrow:active ) {
+	background-color: var( --sgs-gr-blue-tint-strong );
+	border-color: var( --sgs-gr-blue-dark );
+}
+
+@media ( prefers-reduced-motion: no-preference ) {
+	:where( .sgs-google-reviews__arrow ) {
+		transition: background-color 150ms ease, border-color 150ms ease;
+	}
 }
 
 /* 44px min touch target (project standard, beats WCAG 2.2's 24px) via

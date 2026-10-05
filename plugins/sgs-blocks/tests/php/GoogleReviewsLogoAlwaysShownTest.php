@@ -280,5 +280,13 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__write-review \) \{([^}]*)\}#', $css, $w ) );
 		$this->assertStringContainsString( 'background-color: var( --sgs-gr-surface );', $w[1] );
 		$this->assertStringContainsString( 'color: var( --sgs-gr-blue );', $w[1] );
+		// Hover and pressed states are Google's blue tint, never the theme: the arrows and "Write a review" both tint and take a blue border on hover.
+		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__arrow:hover, \.sgs-google-reviews__arrow:focus-visible \) \{([^}]*)\}#', $css, $h ) );
+		$this->assertStringContainsString( 'background-color: var( --sgs-gr-blue-tint );', $h[1] );
+		$this->assertStringContainsString( 'border-color: var( --sgs-gr-blue );', $h[1] );
+		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__arrow:active \) \{([^}]*)\}#', $css, $act ) );
+		$this->assertStringContainsString( 'var( --sgs-gr-blue-tint-strong )', $act[1] );
+		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__write-review:hover \) \{([^}]*)\}#', $css, $wh ) );
+		$this->assertStringContainsString( 'border-color: var( --sgs-gr-blue );', $wh[1] );
 	}
 }
