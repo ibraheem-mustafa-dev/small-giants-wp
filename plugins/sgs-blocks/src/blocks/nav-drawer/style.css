@@ -125,14 +125,27 @@
 .sgs-nav-drawer .wp-block-sgs-nav-drawer-menu .sgs-nav-drawer-menu__bar { display: flex; flex-direction: column; }
 .sgs-nav-drawer .wp-block-sgs-nav-drawer-menu .sgs-nav-drawer-menu__toggle-wrap { display: none; }
 
-/* The editable content column. Flex so drawerGap (gap) + drawerAlign
-   (align-items) apply; min-height:100% lets a short menu still fill the screen
-   so the background reads as full-bleed. Default padding fallback until the
-   operator sets drawerPadding. */
-.sgs-nav-drawer__body {
+/* The open drawer is a column: the chrome row keeps its own height and the body
+   takes the space that is left, so a short menu still fills the screen and the
+   drawer's bottom group stays on it. Scoped to [open] on purpose: the UA rule
+   `dialog:not([open]){display:none}` stays intact while the drawer is closed
+   (see the gate at the top of this file). */
+.wp-block-sgs-nav-drawer[open] {
 	display: flex;
 	flex-direction: column;
-	min-height: 100%;
+}
+
+/* The editable content column. Flex so drawerGap (gap) + drawerAlign
+   (align-items) apply. As a flex child of the open drawer it grows to fill
+   whatever the chrome row leaves, so a short menu still reaches the bottom of
+   the screen. flex-shrink is 0 on purpose: a menu taller than the screen keeps
+   its content height and the drawer itself scrolls, rather than the body
+   shrinking and its content spilling past its own bottom padding. Default
+   padding fallback until the operator sets drawerPadding. */
+.sgs-nav-drawer__body {
+	display: flex;
+	flex: 1 0 auto;
+	flex-direction: column;
 	box-sizing: border-box;
 	padding: clamp(16px, 6vw, 32px);
 	/* The chrome row above the body reserves the top band, so the body adds
@@ -151,6 +164,7 @@
 .sgs-nav-drawer__chrome {
 	position: relative;
 	display: flex;
+	flex: none;
 	align-items: center;
 	box-sizing: border-box;
 }
