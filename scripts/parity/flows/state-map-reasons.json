@@ -1,0 +1,127 @@
+{
+	"spec": "FR-47-7",
+	"plan": ".claude/plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md (C0.7)",
+	"mapping": "sites/eye-care-ward-end/build/surfaces.json, each surface's `states` object (walker state to setting state; null is rest)",
+	"stateless": [],
+	"statelessNote": "Every walker state a committed unmapped-state verdict names is mapped in surfaces.json, so no row is left without a mapped state and none needs a stated reason for having none. tests/state-map.test.mjs fails if one reappears.",
+	"stateConflicts": {
+		"owner": "L8.8: the guard that refuses a group whose mapped states disagree belongs to scripts/computed-route/lib/solve-rows.mjs, not to this lane. This file only names the seven so L8 can test against them.",
+		"keys": "Each entry is a committed triage verdict (sites/eye-care-ward-end/build/qa/triage/<surface>.json, verdicts[].key) whose pair is measured in two or more walker states that now map to the SAME setting state with different draft values. Writing the group would take the last run's value. The `mappedTo` list is each walker state's mapped setting state as committed. The reasons state only what is committed (the states and where they map); the differing draft values are as recorded in C0.7.",
+		"entries": [
+			{
+				"surface": "home",
+				"key": "cr-ref-home-5||hover|transform",
+				"pair": "hero-btn-shop",
+				"walkerStates": [
+					"reviews-next"
+				],
+				"mappedTo": [
+					"reviews-next->rest"
+				],
+				"reason": "measured in reviews-next and in opening; reviews-next and opening all map to rest. C0.7 records the draft values as different, so the last run would win."
+			},
+			{
+				"surface": "product",
+				"key": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|color",
+				"pair": "tab-description-heading",
+				"walkerStates": [
+					"tab-details",
+					"tab-sizing",
+					"gallery-thumbnail",
+					"pick-colour",
+					"pick-size",
+					"accordion-open",
+					"bag-added",
+					"size-guide"
+				],
+				"mappedTo": [
+					"tab-details->rest",
+					"tab-sizing->rest",
+					"gallery-thumbnail->rest",
+					"pick-colour->current",
+					"pick-size->current",
+					"accordion-open->open",
+					"bag-added->rest",
+					"size-guide->rest"
+				],
+				"reason": "measured in tab-details, tab-sizing, gallery-thumbnail, pick-colour, pick-size, accordion-open, bag-added, size-guide and in opening; tab-details, tab-sizing, gallery-thumbnail, bag-added, size-guide and opening all map to rest; the others map to current/open. C0.7 records the draft values as different, so the last run would win."
+			},
+			{
+				"surface": "product",
+				"key": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|border-bottom-color",
+				"pair": "tab-description-heading",
+				"walkerStates": [
+					"tab-details",
+					"tab-sizing",
+					"gallery-thumbnail",
+					"pick-colour",
+					"pick-size",
+					"accordion-open",
+					"bag-added",
+					"size-guide"
+				],
+				"mappedTo": [
+					"tab-details->rest",
+					"tab-sizing->rest",
+					"gallery-thumbnail->rest",
+					"pick-colour->current",
+					"pick-size->current",
+					"accordion-open->open",
+					"bag-added->rest",
+					"size-guide->rest"
+				],
+				"reason": "measured in tab-details, tab-sizing, gallery-thumbnail, pick-colour, pick-size, accordion-open, bag-added, size-guide and in opening; tab-details, tab-sizing, gallery-thumbnail, bag-added, size-guide and opening all map to rest; the others map to current/open. C0.7 records the draft values as different, so the last run would win."
+			},
+			{
+				"surface": "product",
+				"key": "cr-ref-product-12||style|painted-ground",
+				"pair": "gen-product-12",
+				"walkerStates": [
+					"tab-details"
+				],
+				"mappedTo": [
+					"tab-details->rest"
+				],
+				"reason": "measured in tab-details and in opening; tab-details and opening all map to rest. C0.7 records the draft values as different, so the last run would win."
+			},
+			{
+				"surface": "shop",
+				"key": "cr-ref-shop-4||style|width",
+				"pair": "gen-shop-4",
+				"walkerStates": [
+					"brand-ray-ban",
+					"panel-after-click"
+				],
+				"mappedTo": [
+					"brand-ray-ban->rest",
+					"panel-after-click->rest"
+				],
+				"reason": "measured in brand-ray-ban, panel-after-click and in opening; brand-ray-ban, panel-after-click and opening all map to rest. C0.7 records the draft values as different, so the last run would win."
+			},
+			{
+				"surface": "shop",
+				"key": "cr-ref-shop-31|.sgs-filter-search__input|style|outline-color",
+				"pair": "brand-search",
+				"walkerStates": [
+					"brand-typed"
+				],
+				"mappedTo": [
+					"brand-typed->rest"
+				],
+				"reason": "measured in brand-typed and in opening; brand-typed and opening all map to rest. C0.7 records the draft values as different, so the last run would win."
+			},
+			{
+				"surface": "shop",
+				"key": "cr-ref-shop-28|div > div:nth-of-type(1) > input:nth-of-type(2)|style|outline-style",
+				"pair": "price-slider",
+				"walkerStates": [
+					"price-moved"
+				],
+				"mappedTo": [
+					"price-moved->rest"
+				],
+				"reason": "measured in price-moved and in opening; price-moved and opening all map to rest. C0.7 records the draft values as different, so the last run would win."
+			}
+		]
+	}
+}
