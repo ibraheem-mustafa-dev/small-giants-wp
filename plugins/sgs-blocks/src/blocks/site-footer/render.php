@@ -36,6 +36,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/sgs-footer-rows-full-width-css.php';
 
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation rather than the per-request counter
@@ -245,6 +246,11 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 		$css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
 	}
 }
+
+// ── N46: each row stays full width. The footer shell is a flex column, so a row
+// with a width cap carries centring auto margins that cancel its stretch and
+// collapse it to zero content width. See the helper for the full cause. ──
+$css .= sgs_footer_rows_full_width_css( $root_sel );
 
 if ( '' !== $css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied; $css from pre-sanitised values only (wp_style_engine_get_styles()).
