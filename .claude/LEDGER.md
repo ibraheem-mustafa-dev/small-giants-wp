@@ -51,7 +51,7 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-05).** eye-care-test and sandybrown both run block code at `b70e3688d` (the google-reviews track, `plans/archive/2026-10-05-google-reviews-attribution.md`, is done on both). Re-verify live = HEAD by checksum before measuring.
+**Now (2026-10-05).** eye-care-test and sandybrown both run block code at `7f375f765` (the google-reviews track, `plans/archive/2026-10-05-google-reviews-attribution.md`, is done on both). Re-verify live = HEAD by checksum before measuring.
 Step 0 is done (all 17 trees
 rebuilt, zero invalid blocks). The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list:
 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9 taken, three build rules, and the proven

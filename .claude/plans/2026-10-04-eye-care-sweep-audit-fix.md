@@ -382,7 +382,7 @@ still marked open that the findings do not cover get a live verdict too, and **e
 Spec 47 gap, listed against the section that should have caught it.** Only then does Bean get one yes/no list, and
 only approved items become framework fixes (the old W1 and W2, one owner per block, under gates W1, W2 and TAIL).
 
-Google reviews attribution (2026-10-05): done and live on eye-care-test and sandybrown (deploys at `b70e3688d`; detail in `.claude/plans/archive/2026-10-05-google-reviews-attribution.md`). The block's colours and sizes follow Google's UI (40px pills and arrows), an accepted difference from the theme's colours and the 44px target (Bean, 2026-10-05); do not flag them as gaps.
+Google reviews attribution (2026-10-05): done and live on eye-care-test and sandybrown (deploys at `7f375f765`; detail in `.claude/plans/archive/2026-10-05-google-reviews-attribution.md`). The block's colours and sizes follow Google's UI (40px pills and arrows), an accepted difference from the theme's colours and the 44px target (Bean, 2026-10-05); do not flag them as gaps.
 
 ## Session D: back to walker work
 
