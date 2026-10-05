@@ -33,6 +33,103 @@ is the order I would build in.
 
 ---
 
+## Validated before dispatch (`/qc-council`, 2026-10-05)
+
+Three Tier 1 proposals went through an empirical pre-dispatch gate. **One was falsified as written**,
+and building it as stated would have produced invalid CSS across ~160 call sites. Each row below gives
+the predicted outcome, the baseline, the validation command and the commit gate. Do not re-derive these.
+
+### N11(a) — VALIDATED. The mechanism is proven and the fix is one line.
+
+The register's wording ("the route builds the bag without loading the saved one") is crude but right,
+and an early grep wrongly cleared it because `class-cart-proxy.php` does call `wc_load_cart()`. That
+call only CONSTRUCTS `WC_Cart` and the session; it does not read the saved items. Verified against the
+**installed WooCommerce 11.1.0** on the canary, not trunk:
+
+- `class-wc-cart.php:663-665` — the saved items load lazily: `if ( ! did_action( 'woocommerce_load_cart_from_session' ) ) { $this->session->get_cart_from_session(); }`
+- `class-wc-cart.php:132` — `add_action( 'woocommerce_add_to_cart', array( $this, 'calculate_totals' ), 20, 0 )`
+- `add_to_cart()` reads `$this->cart_contents` directly and never triggers that load
+
+So: the new line is written into an unloaded cart; `woocommerce_add_to_cart` fires; `calculate_totals()`
+calls `is_empty()` → `get_cart()`, the FIRST such call, which runs `get_cart_from_session()`; that
+calls `set_cart_contents()` from the saved session and **replaces the in-memory contents, discarding the
+new line**; `set_session` at priority 1000 then saves the old-only bag. It fits every facet: the first
+add survives (saved bag empty, the `! empty()` guard skips the replacement), the second is dropped, the
+success flag is still `true` because `add_to_cart()` returned a key, and WooCommerce's own route is
+immune because `CartController::load_cart()` calls `get_cart()` BEFORE adding.
+
+- **Fix shape:** load the saved bag before adding — call `WC()->cart->get_cart()` in
+  `includes/class-cart-proxy.php` before `WC()->cart->add_to_cart()`, mirroring `CartController::load_cart()`.
+- **Baseline (run it first, as a guest in a private window):** add product A, read `/wp-json/wc/store/v1/cart`, add a different product B, read again. Expect `[A]` both times.
+- **Predicted post-fix:** the second read returns `[A, B]`.
+- **Negative control that must come back negative:** a **stock-managed** product B should NOT show the
+  bug even before the fix, because `add_to_cart()` calls `get_cart_item_quantities()` → `get_cart()`
+  (`class-wc-cart.php:883`), which loads the saved bag first. If a stock-managed B is also dropped, this
+  mechanism is refuted — stop and re-diagnose.
+- **Commit gate:** do not commit unless the bag holds both products after two sequential adds, AND a
+  third add of a product at the global cap still returns 429 (proving the other rate limit survives).
+
+### 52 — VALIDATED mechanism, TWO causes, and a cause-agnostic fix
+
+The register names one cause; the code holds two, and both are live:
+
+1. `brand-strip/view.js::init()` waits on every image with `Promise.all(pending)` and **no timeout**,
+   resolving only on `load`/`error`. The logos are lazy: `includes/helpers-media.php:29` sets
+   `'loading' => 'lazy'` and passes it to `wp_get_attachment_image()` at line 37. Below the fold, nothing
+   fetches, so `measure()` never runs.
+2. `view.js::measure()` returns early when `setWidth === 0` with **no retry**, so a single zero reading
+   (a collapsed or hidden ancestor) stops the strip permanently.
+
+Cause 1 alone predicts "starts late, once scrolled into view", not "never". So **measure before fixing**:
+
+- **Baseline:** load the canary page carrying the strip WITHOUT scrolling, read whether the animation is
+  running and whether `measure()` ran; then scroll the strip into view and read again. Two readings
+  separate "never" from "late" and tell you which cause is live.
+- **Predicted post-fix:** the strip animates without the viewer having to scroll to it.
+- **Fix shape (cause-agnostic, so it is safe even if the baseline is ambiguous):** give the image wait a
+  timeout fallback, and make `measure()` retry instead of bailing permanently at zero width (a
+  `ResizeObserver` or a bounded retry). Permitted without a single proven cause because it helps
+  whichever of the two is live (`~/.claude/rules/prove-the-cause-before-fix.md`).
+- **Commit gate:** do not commit unless the strip animates on first paint with the strip off-screen, AND
+  still animates when the images are warm in cache (the path where `img.complete` is already true).
+
+### CR6 — **FALSIFIED as written. Do not build the fix in the backlog's words.**
+
+The diagnosis is confirmed (`helpers-box.php::sgs_box_object_shorthand` lines 184-187 fill unset sides
+with `0`). **The fix shape was wrong**, and the blast radius is measured: **182 call sites across 57
+files**.
+
+- **157 call sites** interpolate the value after the property name — `"padding:" . $v`. A longhand
+  return would emit `padding:padding-top:12px`, invalid CSS the browser drops entirely. The helper has
+  **no test coverage at all**.
+- **6 sites plus `includes/helpers-container.php::sgs_serialise_box_sides`** store it in a CSS custom
+  property read as `padding: var(--x)`, where a longhand cannot work at any price (the accordion-item
+  pair, `nav-menu-submenu-css.php`, `multi-button`, `trust-bar`, `--sgs-gi-padding`).
+- **A JS consumer encodes the zero-fill deliberately**: `scripts/computed-route/lib/resolve.mjs::seedSides`,
+  with a test named **"MUST FAIL TO ZERO"** asserting the current behaviour. ⛔ **That directory is
+  another session's owned, frozen territory — so CR6 has a cross-session dependency and cannot be
+  built without coordinating with the Spec 47 route work.**
+- **Four sibling helpers share the identical defect** and would be left inconsistent:
+  `sgs_corner_object_shorthand`, `helpers-container.php::sgs_serialise_box_corners`, and the two media
+  atoms in `includes/media/atoms/` (one with a JS twin, `sidesToShorthand()`).
+- **A precedent exists, so this is reuse not invention:** `includes/class-sgs-container-wrapper.php`
+  ~2711-2736 and ~2856-2928 already emit per-side longhands for set sides only, and
+  `includes/helpers-responsive.php::sgs_responsive_side_order()` gives the canonical side order.
+- **One behavioural decision is owed before any block migrates:** today a mobile tier setting one side
+  resets the others, so it wipes a tablet tier's values. Longhands would let them inherit. That is
+  arguably better, but it is a silent change for any block relying on the reset.
+
+**Validated shape:** a NEW sibling function returning a declaration list (or an array keyed by
+property), with the old function retained for the `var()` consumers until they get per-side variables, so
+the 157 sites migrate deliberately rather than all at once.
+
+**Commit gate:** do not commit until the new function has a standalone test with a negative control, the
+old function is byte-identical, and `scripts/computed-route/` has been coordinated with its owning
+session.
+
+**Re-tiering:** CR6 is no longer "build this first". Its cross-session dependency puts it behind the
+Spec 47 route work. Build N11(a), 75/82/158, 91 and 52 first.
+
 ## Tier 1 — a shopper cannot finish the job (build these first)
 
 | Ref | What a user hits | What to build | Prove first? |
