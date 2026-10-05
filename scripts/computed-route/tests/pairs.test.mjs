@@ -222,3 +222,109 @@ test( 'MUST FAIL: an excluded landmark holding the surface blocks is lifted; one
 	assert.deepEqual( liftExclusions( exclude, ( sel ) => [ 'header', '.sgs-site-header' ].includes( sel ) ), [ 'header', '.sgs-site-header' ] );
 	assert.deepEqual( liftExclusions( exclude, () => false ), [] );
 } );
+
+// ---- Session C, lane L4 (2026-10-05) ----
+import { rootFor, mergeWidthFinders, assertReachable, chooseMediaPartner, pairingStates } from '../lib/pairs.mjs';
+
+// L4.2: the open live phone drawer is moved to <body> by store.js::reparentToBody, so the header root never holds its words.
+test( 'MUST FAIL: a state with its own pairRoot walks that root; no state, or a state without one, keeps auto.root', () => {
+	const cfg = { auto: { root: { draft: 'header', live: 'header.sgs-site-header' } }, pairRoot: { 'drawer-open': { live: '.sgs-nav-drawer[open]', draft: { js: '(r) => 1' } } } };
+	const drawer = { name: 'drawer-open' };
+	assert.equal( rootFor( cfg, 'live', drawer ), '.sgs-nav-drawer[open]' );
+	assert.deepEqual( rootFor( cfg, 'draft', drawer ), { js: '(r) => 1' } );
+	assert.equal( rootFor( cfg, 'live', null ), 'header.sgs-site-header' );
+	assert.equal( rootFor( cfg, 'draft', { name: 'mega-shop' } ), 'header' );
+	assert.equal( rootFor( { auto: {} }, 'live', drawer ), null );
+	assert.equal( rootFor( { pairRoot: { s: { live: '.x' } } }, 'draft', { name: 's' } ), null );
+} );
+
+// L4.3: the draft rebuilds its layout per width, so a block's partner can be a different element at 375.
+const WIDTHS = [ 1440, 768, 375, 1920 ];
+const ownAt = ( map ) => ( sel, w ) => ( map[ w ] ?? null );
+test( 'MUST FAIL: a block whose draft partner differs at 375 is kept with one joined finder that resolves to its own element at every width', () => {
+	const per = { 1440: 'body > a:nth-child(1)', 768: 'body > a:nth-child(1)', 375: 'body > b:nth-child(2)', 1920: 'body > a:nth-child(1)' };
+	const r = mergeWidthFinders( per, ownAt( per ), WIDTHS );
+	assert.equal( r.ok, true );
+	assert.equal( r.draft, 'body > b:nth-child(2), body > a:nth-child(1)' );
+	assert.deepEqual( r.drafts, per );
+} );
+
+test( 'negative control: a joined finder that resolves to another element at some width, or a width with no partner, leaves the block out', () => {
+	const per = { 1440: 'A', 768: 'A', 375: 'B', 1920: 'A' };
+	const wrong = mergeWidthFinders( per, ( sel, w ) => ( 375 === w ? 'A' : per[ w ] ), WIDTHS );
+	assert.equal( wrong.ok, false );
+	assert.match( wrong.why, /375/ );
+	const missing = mergeWidthFinders( { ...per, 375: null }, ownAt( per ), WIDTHS );
+	assert.equal( missing.ok, false );
+	assert.match( missing.why, /no partner at 375/ );
+} );
+
+test( 'positive control: one path at every width stays that path', () => {
+	const per = { 1440: 'A', 768: 'A', 375: 'A', 1920: 'A' };
+	assert.deepEqual( mergeWidthFinders( per, ownAt( per ), WIDTHS ), { ok: true, draft: 'A', drafts: per, why: null } );
+} );
+
+test( 'a kept pair with per-width drafts writes the joined paths into the generated config, for an element and a text run', () => {
+	const drafts = { 1440: 'body > a', 768: 'body > a', 375: 'body > b', 1920: 'body > a' };
+	const src = configText( 'shop.mjs', 'shop', [ { ref: 'cr-ref-shop-3', draft: 'body > a', drafts }, { ref: 'cr-ref-shop-4', draft: 'body > a', drafts, textRun: { direct: true, match: '(x)' } } ] );
+	assert.match( src, /name: "gen-shop-3", text: false, structure: false, draft: "body > b, body > a", live: "\.cr-ref-shop-3"/ );
+	assert.match( src, /draft: \{"textRun":\{"within":"body > b, body > a","direct":true/ );
+} );
+
+// L4.4: a hand pair's block is measured even when no generated pair exists for it (lenses cr-ref-lenses-28, hand pair choose-a-frame).
+test( 'MUST FAIL: a hand pair on a block that is not kept is listed as measured, and the duplicate set is unchanged', () => {
+	const r = reconcileHandPairs( [ { name: 'choose-a-frame', draft: 'body > main > button', liveRef: 'cr-ref-lenses-28', liveIsRoot: false }, { name: 'orphan', draft: null, liveRef: 'cr-ref-lenses-5', liveIsRoot: true }, { name: 'nolive', draft: 'body > p', liveRef: null, liveIsRoot: false } ], keptCol );
+	assert.deepEqual( r.measured, [ 'cr-ref-lenses-28' ] );
+	assert.equal( r.duplicate.size, 0 );
+	assert.equal( r.retarget.size, 0 );
+} );
+
+test( 'positive control: a hand pair on a kept block is listed and still duplicates it; refs are listed once', () => {
+	const r = reconcileHandPairs( [ { name: 'a', draft: keptCol[ 0 ].draft, liveRef: 'cr-ref-about-11', liveIsRoot: true }, { name: 'b', draft: 'body > x', liveRef: 'cr-ref-about-11', liveIsRoot: true } ], keptCol );
+	assert.deepEqual( r.measured, [ 'cr-ref-about-11' ] );
+	assert.deepEqual( [ ...r.duplicate ], [ 'cr-ref-about-11' ] );
+} );
+
+// L4.5: an empty report from an unreachable page must be a loud failure.
+test( 'MUST FAIL: an empty URL, no blocks, a missing required element or a failed order notice is refused', () => {
+	const ok = { url: 'https://x/confirmation/', blocks: 12, words: 40, requiresFound: null, notice: '' };
+	assert.doesNotThrow( () => assertReachable( ok ) );
+	assert.throws( () => assertReachable( { ...ok, url: '' } ), /no live url/i );
+	assert.throws( () => assertReachable( { ...ok, blocks: 0 } ), /no blocks/i );
+	assert.throws( () => assertReachable( { ...ok, requiresFound: false, requires: '.woocommerce-order-overview' } ), /woocommerce-order-overview/ );
+	assert.throws( () => assertReachable( { ...ok, notice: 'Your order was cancelled.' } ), /cancelled/i );
+	assert.throws( () => assertReachable( { ...ok, notice: 'Unfortunately your order cannot be processed' } ), /cannot be processed|failed/i );
+	assert.doesNotThrow( () => assertReachable( { ...ok, requiresFound: true, requires: '.x', notice: 'Thank you. Your order has been received.' } ) );
+} );
+
+// L4.1 group C: a block with no painted words pairs by its media's place among the media of its paired ancestor.
+test( 'MUST FAIL: a media-only block pairs with the draft media at the same place, and is left out when the counts differ', () => {
+	const chain = [ { path: 'svg', box: { w: 28, h: 28 } }, { path: 'span', box: { w: 40, h: 40 } } ];
+	const live = { kind: 'svg', index: 1, count: 3 };
+	const ok = chooseMediaPartner( live, { count: 3, chain }, { w: 28, h: 28 } );
+	assert.equal( ok.verdict.ok, true );
+	assert.equal( ok.partner.path, 'svg' );
+	const off = chooseMediaPartner( live, { count: 2, chain }, { w: 28, h: 28 } );
+	assert.equal( off.verdict.ok, false );
+	assert.match( off.verdict.why, /3 svg live against 2/ );
+	assert.equal( chooseMediaPartner( live, { count: 3, chain: null }, { w: 28, h: 28 } ).verdict.ok, false );
+	assert.equal( chooseMediaPartner( null, { count: 0, chain: null }, { w: 5, h: 5 } ).verdict.ok, false );
+} );
+
+// L4.1 group A: --state a,b,c pairs once per state, each pair scoped to its state.
+test( 'MUST FAIL: --state a,b pairs each state scoped; one state or none stays unscoped; rest scopes to opening', () => {
+	const mk = ( n ) => ( { name: n, draft: async () => {}, live: async () => {} } );
+	const cfg = { states: [ { name: 'opening' }, mk( 'tab-details' ), mk( 'tab-sizing' ) ] };
+	const two = pairingStates( cfg, 'tab-details,tab-sizing' );
+	assert.deepEqual( two.map( ( s ) => [ s.state.name, s.scope ] ), [ [ 'tab-details', 'tab-details' ], [ 'tab-sizing', 'tab-sizing' ] ] );
+	assert.deepEqual( pairingStates( cfg, 'tab-details' ).map( ( s ) => s.scope ), [ null ] );
+	assert.deepEqual( pairingStates( cfg, null ), [ { state: null, scope: null } ] );
+	const mixed = pairingStates( cfg, 'rest,tab-sizing' );
+	assert.deepEqual( mixed.map( ( s ) => [ s.state?.name ?? null, s.scope ] ), [ [ null, 'opening' ], [ 'tab-sizing', 'tab-sizing' ] ] );
+	assert.throws( () => pairingStates( cfg, 'tab-details,nope' ), /no state "nope"/ );
+} );
+
+test( 'a state-scoped pair is written with its states and a state-suffixed name', () => {
+	const src = configText( 'product.mjs', 'product', [ { ref: 'cr-ref-product-9', draft: 'body > p', scope: 'tab-details' } ] );
+	assert.match( src, /name: "gen-product-9-tab-details", states: \["tab-details"\], text: false/ );
+} );

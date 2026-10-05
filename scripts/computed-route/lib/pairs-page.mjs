@@ -3,21 +3,27 @@
 import { collectAuto } from '../../parity/lib/auto-collect.mjs';
 import { AUTO_EXCLUDE } from '../../parity/lib/auto-walk.mjs';
 import { makeHelpers, waitOutHostCheck } from '../../parity/lib/helpers.mjs';
-import { liftExclusions } from './pairs.mjs';
+import { liftExclusions, rootFor, assertReachable } from './pairs.mjs';
 import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
 
 // The words (tagged with their elements) of the page, as the walker's automatic check collects them.
-export function collectTagged( page, side, cfg, lifted = [] ) {
+export function collectTagged( page, side, cfg, lifted = [], state = null ) {
 	const exclude = [ ...AUTO_EXCLUDE.filter( ( sel ) => ! lifted.includes( sel ) ), ...( cfg.auto?.exclude?.[ side ] || [] ) ];
-	return page.evaluate( ( [ fn, rootSel, ex ] ) => {
+	return page.evaluate( ( [ fn, rootSel, ex, resolveSrc, strict ] ) => {
 		// eslint-disable-next-line no-new-func
 		const collect = new Function( `return (${ fn });` )();
 		// eslint-disable-next-line no-new-func
 		const excludeEls = ex.filter( ( e ) => e && e.js ).map( ( e ) => new Function( 'root', `return (${ e.js })(root);` )( document ) ).filter( Boolean );
-		const root = rootSel ? document.querySelector( rootSel ) : null;
+		// eslint-disable-next-line no-new-func
+		const resolve = new Function( `return (${ resolveSrc });` )();
+		const root = rootSel ? ( 'string' === typeof rootSel ? document.querySelector( rootSel ) : resolve( rootSel ) ) : null;
+		// A root a state names itself (cfg.pairRoot) must exist: a missing one would silently walk <body>.
+		if ( strict && rootSel && ! root ) {
+			throw new Error( 'the pair root for this state was not found on the page' );
+		}
 		return collect( [ { root, modal: null, excludeEls, tagEls: true }, ex.filter( ( e ) => 'string' === typeof e ), 4000 ] ).words;
-	}, [ collectAuto.toString(), cfg.auto?.root?.[ side ] || null, exclude ] );
+	}, [ collectAuto.toString(), rootFor( cfg, side, state ), exclude, resolveFinder.toString(), rootFor( cfg, side, state ) !== ( cfg.auto?.root?.[ side ] ?? null ) ] );
 }
 
 // Live: the cr-ref classes around each tagged word, innermost first, each block's border box, content box (the border
@@ -251,9 +257,16 @@ export async function openDraft( browser, cfg, width, state = null ) {
 	return page;
 }
 
+// A live page that cannot be opened is a failure, never an empty report (lib/pairs.mjs::assertReachable). Only a
+// networkidle timeout is tolerated (a page with a long-poll still paints).
 export async function openLive( browser, cfg, width, state = null ) {
+	assertReachable( { url: cfg.live?.url, blocks: 1 } );
 	const page = await browser.newPage( { viewport: { width, height: 900 } } );
-	await page.goto( cfg.live.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
+	await page.goto( cfg.live.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( ( e ) => {
+		if ( 'TimeoutError' !== e?.name ) {
+			throw new Error( `the live page ${ cfg.live.url } did not open: ${ e.message }` );
+		}
+	} );
 	await page.waitForTimeout( 2500 );
 	await waitOutHostCheck( page );
 	const h = makeHelpers( page, 'live', { cb: ( u ) => u.replace( '{cb}', String( Date.now() ) ), RESOLVE: resolveFinder.toString(), onAction: null } );
@@ -267,6 +280,64 @@ export async function openLive( browser, cfg, width, state = null ) {
 		await page.waitForTimeout( 700 );
 	}
 	return page;
+}
+
+// What the live page shows about being the right page: whether its `live.requires` element exists (null when the
+// config sets none) and the text of any order notice (a failed or cancelled order has no confirmation to pair).
+export function liveReach( page, cfg ) {
+	return page.evaluate( ( req ) => ( {
+		requiresFound: req ? !! document.querySelector( req ) : null,
+		notice: [ ...document.querySelectorAll( '.woocommerce-thankyou-order-failed, .woocommerce-notice, .woocommerce-error, .woocommerce-message, .woocommerce-info' ) ].map( ( e ) => e.textContent.replace( /\s+/g, ' ' ).trim() ).join( ' | ' ),
+	} ), cfg.live?.requires || null );
+}
+
+// Media (an image, an icon, a video) for blocks with no painted words. `want`: ref -> { anchor: the ancestor's live ref
+// (live) or draft path (draft), kind, index }. Live returns ref -> { kind, index, count }: the block's first media among
+// its ancestor's visible media of that kind (null for a block holding none). Draft returns ref -> { count, chain } for
+// the ancestor's media at that index: the media then every ancestor up to the anchor holding no other of them, nearest
+// first ({ path, box }); chain null when the index is past the end.
+export function mediaPartners( page, side, want ) {
+	return page.evaluate( ( [ sd, w ] ) => {
+		const MEDIA = 'img, svg, video, picture, canvas';
+		const shown = ( e ) => e.getClientRects().length && e.getBoundingClientRect().width > 0 && 'hidden' !== getComputedStyle( e ).visibility;
+		// Top-level media only: an <img> inside a <picture>, or a shape inside an <svg>, is part of its parent.
+		const mediaIn = ( root, kind ) => [ ...root.querySelectorAll( MEDIA ) ].filter( ( m ) => shown( m ) && kind === m.tagName.toLowerCase() && ! m.parentElement.closest( 'picture, svg' ) );
+		const pathOf = ( el ) => {
+			const steps = [];
+			for ( let a = el; a && a !== document.body; a = a.parentElement ) {
+				steps.unshift( `${ a.tagName.toLowerCase() }:nth-child(${ [ ...a.parentElement.children ].indexOf( a ) + 1 })` );
+			}
+			return [ 'body', ...steps ].join( ' > ' );
+		};
+		const out = {};
+		for ( const [ ref, spec ] of Object.entries( w ) ) {
+			if ( 'live' === sd ) {
+				const block = [ ...document.querySelectorAll( `.${ ref }` ) ].find( shown );
+				const anchor = [ ...document.querySelectorAll( `.${ spec.anchor }` ) ].find( shown );
+				const own = block && [ ...( block.matches( MEDIA ) ? [ block ] : [] ), ...block.querySelectorAll( MEDIA ) ].find( ( m ) => shown( m ) && ! m.parentElement.closest( 'picture, svg' ) );
+				if ( ! own || ! anchor ) {
+					out[ ref ] = null;
+					continue;
+				}
+				const kind = own.tagName.toLowerCase();
+				const list = mediaIn( anchor, kind );
+				out[ ref ] = list.includes( own ) ? { kind, index: list.indexOf( own ), count: list.length } : null;
+				continue;
+			}
+			const anchor = document.querySelector( spec.anchor );
+			const list = anchor ? mediaIn( anchor, spec.kind ) : [];
+			const m = list[ spec.index ];
+			out[ ref ] = { count: list.length, chain: null };
+			if ( m ) {
+				out[ ref ].chain = [];
+				for ( let a = m; a && a !== document.body && anchor.contains( a ) && ( a === m || list.filter( ( x ) => a.contains( x ) ).length === 1 ); a = a.parentElement ) {
+					const b = a.getBoundingClientRect();
+					out[ ref ].chain.push( { path: pathOf( a ), box: { w: Math.round( b.width ), h: Math.round( b.height ) } } );
+				}
+			}
+		}
+		return out;
+	}, [ side, want ] );
 }
 
 // The automatic check's exclusions (AUTO_EXCLUDE) whose live element holds one of this surface's blocks

@@ -144,6 +144,10 @@ export default {
 	// The automatic whole-header comparison: every painted word, media and position inside the header on both
 	// sides. The root holds the header, so the default header exclusion no longer applies to it.
 	auto: { root: ROOT },
+	// Block pairing (scripts/computed-route/pairs.mjs) walks this root instead of `auto.root` in the named state: the open
+	// live drawer is appended to <body> on first open (store.js::reparentToBody), outside the header, and the draft's fixed
+	// "Close menu" layer is outside <header> too, so the header root never holds the drawer's words.
+	pairRoot: { 'drawer-open': { live: LDRAWER, draft: din( '(p) => p' ) } },
 	// Links are read inside the header only.
 	linkRoot: ROOT,
 	links: LINKS,

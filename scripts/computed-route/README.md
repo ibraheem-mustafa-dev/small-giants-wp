@@ -233,6 +233,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `openDraft(browser, cfg, width, state?)` → the draft page opened through the hand config's navigation with every scroll reveal fired, then the walker state's draft action run (a panel surface).
 - `openLive(browser, cfg, width, state?)` → the live page loaded past the host check and opened through the hand config's live navigation (`live.open`), then the walker state's live action run.
 - `liftedExclusions(page, prefix)` → the automatic check's landmark exclusions whose live element holds one of this surface's blocks (lifted for its pairing).
+- `liveReach(page, cfg)` → `{ requires, requiresFound, notice }`: whether the surface's `live.requires` element is present and the text of any order notice, for `lib/pairs.mjs::assertReachable`.
+- `mediaPartners(page, side, cfg, prefix)` → the media elements per block (live) or per draft ancestor chain (draft), for `chooseMediaPartner`.
 
 ### `lib/pairs.mjs`
 - `PAIRING_LIMITS`: a pairing is left out under 80% of the block's words matched, with a word from outside the block, with a box outside half to double the block's, or when it holds no padding where the block does and their content boxes match within `boxTolerance` (2px) (the padding sits on a draft ancestor).
@@ -250,6 +252,13 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `configText(handFile, surface, pairs, retarget?)` → the generated walker config's source (hand pairs named in `retarget` measure the given live finder).
 - `liftExclusions(exclude, holdsSurface)` → the selector exclusions that hold the surface (a header, footer or drawer surface pairs its own words).
 - `pairingState(cfg, name)` → the hand config's walker state that opens a panel surface on both sides (`pairs.mjs --state`), null without a name; throws when the state is missing or lacks a draft or live action.
+- `rootFor(cfg, side, state?)` → the root the pairing collectors walk on one side: the hand config's `pairRoot[<state>][side]` for a panel that leaves the landmark it opens from (the live phone drawer, which `store.js::reparentToBody` appends to `<body>`), else `auto.root`.
+- `RECHECK_WIDTHS`: the widths a kept finder is re-checked at besides the pairing width (375, 768, 1920).
+- `joinFinders(perWidth)` → one CSS selector list from a block's distinct per-width draft paths, in width order.
+- `mergeWidthFinders(perWidth, resolvesAt, widths?)` → `{ ok, draft, drafts, why }`: one joined finder for a block whose draft partner differs per width, kept only when the joined selector resolves at every width to that width's own element, so it can never measure another element.
+- `assertReachable({ url, blocks, words?, requires?, requiresFound?, notice? })`: throws on an empty live URL, no blocks, a missing `live.requires` element, or a failed or cancelled order notice, so an unreachable page fails loudly instead of writing an empty report.
+- `chooseMediaPartner(live, draft, limits?)` → `{ partner, verdict }` for a block with no painted words but a media element: the draft media at the same place among its paired ancestor's media, left out when the two sides' counts differ.
+- `pairingStates(cfg, names)` → the hand config's walker states for a multi-state pairing run (`pairs.mjs --state a,b,c`), `rest` meaning the page at rest.
 
 ### `lib/guard.mjs`
 - `explains(w, r, cal)` → true when calibration ties write `w` to regressed row `r` (its own property, a calibrated side effect, or a discovered layout effect).
@@ -275,6 +284,10 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `SOLVE_CLASSES`: Solve's classes for a surviving row, in the order both readers walk them (`hardcode`, `missing`, `unresolved`, `derived`); the first class to hold a key keeps it.
 - `UNMAPPED`: the class for a visual row from a walker state the surface maps to no setting state (`unmapped-state`), walked last.
 - `issueKey(x)` → `solve-report.mjs::wholePage`'s key: one element and property whatever the width or state (`pair` stands in for a row with no ref).
+
+### `pairs.mjs`
+- `runPairing(opts)` → one pairing pass: collects both sides, chooses each block's partner, and returns the kept pairs and the left-out blocks with their reasons.
+- `recheckWidths(kept, opts)` → re-reads each kept finder at `RECHECK_WIDTHS`, re-pairing at a width where it fails and keeping a joined finder only when `mergeWidthFinders` allows it.
 
 ### `lib/sweep.mjs`
 - `latestReport(solveDir, surface)` → the newest `solve-report.json` of a surface (the last timestamp folder holding one), or null.
