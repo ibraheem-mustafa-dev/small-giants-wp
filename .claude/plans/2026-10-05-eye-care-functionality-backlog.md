@@ -22,7 +22,7 @@ below disagrees with its register row, the register wins.
 
 **What was deliberately excluded:** page-tree values (sizes, spacing, colours, weights), content
 (product data, copy, missing pages), pure styling, the Spec 47 measuring route and its calibration
-findings (another session owns those), and `sgs/google-reviews` (its own track). Also excluded:
+findings (another session owns those). Also excluded:
 everything already built — S1, S5, S11, S12, 15, 38, 68, 76, 87, N3/17B, N11(b), N17b, N25, N46, and
 the framework half of N45.
 
@@ -99,16 +99,17 @@ Each is already decided in the register. Grouped so one sitting can close a them
 | **37** | **New `sgs/business-info` setting: address link — none / Google Business profile / directions.** The Google Business link is already in Site Info |
 | **N13** | **The floating WhatsApp button steps aside** while the footer's bottom strip is on screen, so it stops covering the bottom-right links. Extend its existing "hide near another WhatsApp button" watcher with a generic opt-in on the footer row |
 | **135** | The contact form's narrow-width stretch becomes **switchable**, so the Send button can be full width on a phone |
+| **N24** | **The Google logo on each review card becomes a link** to that review, falling back to the listing — Google's display rules require each review to show its source with a link back. Today the per-card logo is `<img alt="" aria-hidden="true">`, correctly decorative; once it is a link it needs a real accessible name, so this is an accessibility change as well as a functional one. `showReviewLink` (a separate "Read the full review" text link, default off) does not cover it | `sgs/google-reviews` is **no longer owned by a separate track** (2026-10-05) — it is available to build. Its colours and sizes still follow Google's own interface, which is an accepted difference and never a gap |
 | **S2** | **One text-link underline mechanism.** An underline sweeps in left to right on hover and retracts right to left, in the link's own colour. The repair: the theme's existing underline-slide utility currently retracts the wrong way and breaks on links that wrap, and the plugin carries an unused duplicate to delete. Then the header menu's existing "sweep" setting is switched on, and mega links get a "link" button style using the same sweep | Covers 2, 6, 7, 32, 33, 44, 131 |
 
 ### Checkout and confirmation
 
-This is the least-started area and the one with a real unknown in it.
+This is the least-started area and the one with a real unknown in it. Note the scope: Eye Care gets its
+own checkout template. Nothing here changes the checkout every other SGS client gets.
 
 | Ref | The feature | Notes |
 |---|---|---|
-| **149, 150** | **A per-site checkout template part**, so Eye Care can say "Pay now" with the price on the right and carry its own secure-payment note | **Open question to answer first: can `wp-build-page.js` build template parts?** If it cannot, this needs another route. WordPress does save a Site Editor edit of a part per site |
-| **154** | **Checkout restyled to the draft, through tokens** — numbered small uppercase step headings, white fields, a flat summary card, a 1200px column, delivery cards. The shared checkout stylesheet reads tokens, so every client benefits and Eye Care's look lives in its own token file | The **prescription step and the express-pay row need the planned plugin work** — scope those separately before committing to them |
+| **154 + 149 + 150** | **Build the draft's checkout as Eye Care's own checkout template.** One job, not three. It becomes the checkout template for **this site only** and must not become the template every SGS site gets. That covers the draft's look (numbered small uppercase step headings, white fields, a flat summary card, a 1200px column, delivery cards), the "Pay now" label with the price on the right, and Eye Care's secure-payment note | **Open question to answer first: can `wp-build-page.js` build a template or template part?** If it cannot, this needs another route — WordPress does save a Site Editor edit of a part per site. **Scope separately, do not fold in:** the draft's prescription step and express-pay row need the planned plugin work |
 | **156** | **Build the confirmation screen**: tick icon, "Thank you", short message, "Back to the shop", centred. The order table is deliberately left out; the email carries the details | Wording per client |
 | **157** | The confirmation grid **collapses to one column when the shipping box is empty**, instead of leaving the billing box alone in the right half | Small |
 | **155** | **Hide WooCommerce's collapsed top summary on phones**, so the order summary appears once, below the form | Needs the selector proving first |
@@ -155,6 +156,12 @@ Worth doing in one sitting together, since each is a single control plus a reade
 
 ---
 
+## Checked and needing no build
+
+| Ref | The question | The answer, from the code |
+|---|---|---|
+| **D7** | Can the Google rating badge be placed on its own, without the review cards and without being a sticky/floating feature? | **Yes, and it needs no framework work — it is a tree value.** `sgs/google-reviews` has two separate variants. `variant: "badge"` is **in flow**: `style.css` gives it `display: inline-flex` with no positioning, and `render.php`'s badge branch renders stars, score, count and the Google attribution then **skips the review-cards list entirely**. `variant: "floating-badge"` is the sticky one, and only it adds `position: fixed; bottom: 2rem; right: 2rem; z-index: 999`. So: set the block's `variant` to `badge` in `sites/eye-care-ward-end/build/header.tree.json`. Nothing to build |
+
 ## What I would do first, and why
 
 If you want one sitting: **Tier 1 in order.** N11(a) and 75/82/158 are the two items where a shopper
@@ -166,8 +173,8 @@ one "shop journey" sitting.** Those five together are what makes the shop feel f
 functional, and S10 is a dependency of 59/61, so they belong in the same pass.
 
 Three items need an answer before they can be built, and none of them needs you: N11(a)'s mechanism
-(test on the canary), 52's cause (read the live page), and 149's template-part question (check whether
-`wp-build-page.js` can build parts).
+(test on the canary), 52's cause (read the live page), and the checkout item's template question (check
+whether `wp-build-page.js` can build a template or template part).
 
 ## Effort
 
