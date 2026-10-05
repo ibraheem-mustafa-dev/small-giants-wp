@@ -13,7 +13,7 @@ sync_site() {
 
   # sgs-blocks: the built plugin without sources, tests or dev dependencies.
   rsync -a --delete \
-    --exclude=node_modules --exclude=src --exclude=tests --exclude=.phpunit.cache \
+    --exclude=node_modules --exclude=/src --exclude=/tests --exclude=/.phpunit.cache \
     "$REPO/plugins/sgs-blocks/" "$dir/wp-content/plugins/sgs-blocks/"
 
   # Every other plugins/sgs-* folder that already exists on this site's copy.
@@ -21,7 +21,7 @@ sync_site() {
     name="$(basename "$p")"
     [ "$name" = "sgs-blocks" ] && continue
     if [ -d "$dir/wp-content/plugins/$name" ]; then
-      rsync -a --delete --exclude=node_modules --exclude=tests --exclude=.phpunit.cache \
+      rsync -a --delete --exclude=node_modules --exclude=/tests --exclude=/.phpunit.cache \
         "$p" "$dir/wp-content/plugins/$name/"
     fi
   done
