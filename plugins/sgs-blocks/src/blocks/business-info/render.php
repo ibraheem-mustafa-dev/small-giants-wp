@@ -757,7 +757,8 @@ if ( '' !== $label_colour_effective_hover ) {
 
 // Label typography — labelFontWeight only (the one label* typography key this
 // block declares; the shared helper reads just the keys that exist). Same
-// target as the label colour above; empty emits nothing, so style.css's 600 stays.
+// target as the label colour above; empty emits nothing, so the day label
+// follows the block's own weight (style.css has `font-weight: inherit`).
 $label_typography_css = sgs_typography_css_rule( $attributes, 'label', $label_sel );
 if ( '' !== $label_typography_css ) {
 	$scoped_css[] = $label_typography_css;

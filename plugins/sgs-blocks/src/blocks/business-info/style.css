@@ -288,7 +288,11 @@
  * each row's ::before by includes/helpers-separators-line-css.php. */
 
 .sgs-business-hours__day {
-	font-weight: 600;
+	/* `inherit` so an unset labelFontWeight follows the block's own weight; a
+	 * literal here would beat the inherited value and no setting could reach it.
+	 * labelFontWeight, when set, is emitted by render.php on a two-class
+	 * selector and wins over this rule. */
+	font-weight: inherit;
 	min-width: 6em;
 	color: var(--sgs-bi-label-colour, currentColor);
 }

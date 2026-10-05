@@ -182,7 +182,7 @@
 		"labelFontWeight": {
 			"type": "string",
 			"default": "",
-			"description": "Weight of the label text, currently painted on .sgs-business-hours__day. Empty = the stylesheet's 600."
+			"description": "Weight of the label text, currently painted on .sgs-business-hours__day. Empty = the block's own weight (style.css inherits)."
 		},
 		"attributionHoverColour": {
 			"type": "string",
