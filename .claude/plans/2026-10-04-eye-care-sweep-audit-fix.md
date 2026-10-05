@@ -364,7 +364,7 @@ Shape:
    --tier full`, one reseed from clean HEAD, one deploy to eye-care-test then sandybrown, recalibrate the touched
    blocks through the queue, one measure-only sweep.
 
-Google reviews attribution (2026-10-05): done and live on eye-care-test and sandybrown (deploys at `b70e3688d`; detail in `.claude/plans/archive/2026-10-05-google-reviews-attribution.md`). Open for Bean: the Eye Care draft sets the google-reviews arrows and both buttons to 40px (`sites/eye-care-ward-end/build/home.tree.json`: `arrowSize`, `seeAllMinHeight`, `writeReviewMinHeight`), below the 44px standard; an author value beats the block's 44px default, so the home page stays at 40px until the draft values change.
+Google reviews attribution (2026-10-05): done and live on eye-care-test and sandybrown (deploys at `b70e3688d`; detail in `.claude/plans/archive/2026-10-05-google-reviews-attribution.md`). The block's colours and sizes follow Google's UI (40px pills and arrows), an accepted difference from the theme's colours and the 44px target (Bean, 2026-10-05); do not flag them as gaps.
 
 ## Session D: back to walker work
 

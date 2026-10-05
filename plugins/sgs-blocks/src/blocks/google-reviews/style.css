@@ -695,10 +695,10 @@ a.sgs-google-reviews__author:hover {
 	display: inline-flex;
 	align-items: center;
 	box-sizing: border-box;
-	min-height: 44px;
+	min-height: 40px;
 	padding: 0 22px;
 	border: 1px solid transparent;
-	border-radius: 22px;
+	border-radius: 20px;
 	background-color: var( --sgs-gr-blue );
 	color: var( --sgs-gr-on-blue );
 	text-decoration: none;
@@ -831,8 +831,8 @@ a.sgs-google-reviews__author:hover {
    defaults. The size reads the shared navigation's custom property, so the overlay-inset gutter and the
    button always agree. */
 :where( .sgs-google-reviews__arrow ) {
-	width: var( --sgs-slider-nav-arrow-size, 44px );
-	height: var( --sgs-slider-nav-arrow-size, 44px );
+	width: var( --sgs-slider-nav-arrow-size, 40px );
+	height: var( --sgs-slider-nav-arrow-size, 40px );
 	border: 1px solid var( --sgs-gr-line );
 	border-radius: 50%;
 	background-color: var( --sgs-gr-surface );

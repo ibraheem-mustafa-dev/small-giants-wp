@@ -295,9 +295,9 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		$this->assertStringContainsString( 'border-color: var( --sgs-gr-blue );', $wh[1] );
 		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__see-all:hover \) \{([^}]*)\}#', $css, $sh ) );
 		$this->assertStringContainsString( 'var( --sgs-gr-blue-dark )', $sh[1] );
-		// Targets are 44px by default (the project standard), and the focus ring is Google blue.
-		$this->assertMatchesRegularExpression( '#min-height: 44px;\s*padding: 0 22px#', $css );
-		$this->assertStringContainsString( 'var( --sgs-slider-nav-arrow-size, 44px )', $css );
+		// Sizes follow Google's UI (40px pills and arrows), not the project's 44px target; the focus ring is Google blue.
+		$this->assertMatchesRegularExpression( '#min-height: 40px;\s*padding: 0 22px#', $css );
+		$this->assertStringContainsString( 'var( --sgs-slider-nav-arrow-size, 40px )', $css );
 		$this->assertMatchesRegularExpression( '#__see-all:focus-visible \{\s*outline: 2px solid var\( --sgs-gr-blue \)#', $css );
 		// The pressed state stays in the stylesheet.
 		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__arrow:active \) \{([^}]*)\}#', $css, $act ) );
