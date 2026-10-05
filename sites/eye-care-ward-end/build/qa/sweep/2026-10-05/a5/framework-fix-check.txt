@@ -1,0 +1,42 @@
+PASS S5a-header-font-size 375 measured 17px, tree 17px
+PASS S5c-one-animation 375 0 height/open animation(s); all running: [{"target":"sgs-accordion-item__icon-open","pseudo":"","props":"opacity","name":""},{"target":"sgs-accordion-item__icon-close","pseudo":"","props":"opacity","name":""}]
+PASS S5b-no-ground 375 rest rgb(250, 248, 245)|none|after:rgba(0, 0, 0, 0) | hover rgb(250, 248, 245)|none|after:rgba(0, 0, 0, 0) | open rgb(250, 248, 245)|none|after:rgba(0, 0, 0, 0)
+INFO S5d-icon-rotation 375 tree sets no iconRotation; rest none, open none
+PASS S11-gap-social-icons-cr-ref-footer-6 375 tree 10px = 10px; DIV.sgs-social-icons row-gap 10px, column-gap 10px
+INFO S3-header-phone 375 link hidden at this width
+PASS S3-footer-phone 375 opacity 1 -> 1; colour rgb(20, 20, 20) -> rgb(20, 20, 20); tree hover none set
+PASS S4-cr-ref-about-9-icon-colour 375 label rgb(11, 43, 23); svg fill rgb(11, 43, 23), svg color rgb(11, 43, 23), shape fill rgb(11, 43, 23)
+PASS S4-cr-ref-about-9-hover 375 scale 1/1 (scale prop none); translate 0,-3 (S1 lift, allowed); shadow none -> none
+PASS S3-contact-phone 375 opacity 1 -> 1; colour rgb(20, 20, 20) -> rgb(111, 97, 82); tree hover accent-text = rgb(111, 97, 82)
+PASS S3-contact-email 375 opacity 1 -> 1; colour rgb(20, 20, 20) -> rgb(15, 15, 15); tree hover none set
+PASS S4-cr-ref-contact-5-icon-colour 375 label rgb(11, 43, 23); svg fill rgb(11, 43, 23), svg color rgb(11, 43, 23), shape fill rgb(11, 43, 23)
+PASS S4-cr-ref-contact-5-hover 375 scale 1/1 (scale prop none); translate 0,-3 (S1 lift, allowed); shadow none -> none
+PASS S11-gap-icon-list-cr-ref-lenses-24 375 tree 11px = 11px; UL.sgs-icon-list row-gap 11px, column-gap 11px
+PASS S5a-header-font-size 768 measured 17px, tree 17px
+PASS S5c-one-animation 768 0 height/open animation(s); all running: [{"target":"sgs-accordion-item__icon-open","pseudo":"","props":"opacity","name":""},{"target":"sgs-accordion-item__icon-close","pseudo":"","props":"opacity","name":""}]
+PASS S5b-no-ground 768 rest rgb(250, 248, 245)|none|after:rgba(0, 0, 0, 0) | hover rgb(250, 248, 245)|none|after:rgba(0, 0, 0, 0) | open rgb(250, 248, 245)|none|after:rgba(0, 0, 0, 0)
+INFO S5d-icon-rotation 768 tree sets no iconRotation; rest none, open none
+PASS S11-gap-social-icons-cr-ref-footer-6 768 tree 10px = 10px; DIV.sgs-social-icons row-gap 10px, column-gap 10px
+INFO S3-header-phone 768 link hidden at this width
+PASS S3-footer-phone 768 opacity 1 -> 1; colour rgb(20, 20, 20) -> rgb(20, 20, 20); tree hover none set
+PASS S4-cr-ref-about-9-icon-colour 768 label rgb(11, 43, 23); svg fill rgb(11, 43, 23), svg color rgb(11, 43, 23), shape fill rgb(11, 43, 23)
+PASS S4-cr-ref-about-9-hover 768 scale 1/1 (scale prop none); translate 0,-3 (S1 lift, allowed); shadow none -> none
+PASS S3-contact-phone 768 opacity 1 -> 1; colour rgb(20, 20, 20) -> rgb(111, 97, 82); tree hover accent-text = rgb(111, 97, 82)
+PASS S3-contact-email 768 opacity 1 -> 1; colour rgb(20, 20, 20) -> rgb(15, 15, 15); tree hover none set
+PASS S4-cr-ref-contact-5-icon-colour 768 label rgb(11, 43, 23); svg fill rgb(11, 43, 23), svg color rgb(11, 43, 23), shape fill rgb(11, 43, 23)
+PASS S4-cr-ref-contact-5-hover 768 scale 1/1 (scale prop none); translate 0,-3 (S1 lift, allowed); shadow none -> none
+PASS S11-gap-icon-list-cr-ref-lenses-24 768 tree 11px = 11px; UL.sgs-icon-list row-gap 11px, column-gap 11px
+PASS S5a-header-font-size 1440 measured 17px, tree 17px
+PASS S5c-one-animation 1440 0 height/open animation(s); all running: [{"target":"sgs-accordion-item__icon-open","pseudo":"","props":"opacity","name":""},{"target":"sgs-accordion-item__icon-close","pseudo":"","props":"opacity","name":""}]
+PASS S5b-no-ground 1440 rest rgb(250, 248, 245)|none|after:rgba(0, 0, 0, 0) | hover rgb(250, 248, 245)|none|after:rgba(0, 0, 0, 0) | open rgb(250, 248, 245)|none|after:rgba(0, 0, 0, 0)
+INFO S5d-icon-rotation 1440 tree sets no iconRotation; rest none, open none
+PASS S11-gap-social-icons-cr-ref-footer-6 1440 tree 10px = 10px; DIV.sgs-social-icons row-gap 10px, column-gap 10px
+PASS S3-header-phone 1440 opacity 1 -> 1; colour rgb(74, 69, 62) -> rgb(20, 20, 20); tree hover text = rgb(20, 20, 20)
+PASS S3-footer-phone 1440 opacity 1 -> 1; colour rgb(20, 20, 20) -> rgb(20, 20, 20); tree hover none set
+PASS S4-cr-ref-about-9-icon-colour 1440 label rgb(11, 43, 23); svg fill rgb(11, 43, 23), svg color rgb(11, 43, 23), shape fill rgb(11, 43, 23)
+PASS S4-cr-ref-about-9-hover 1440 scale 1/1 (scale prop none); translate 0,-3 (S1 lift, allowed); shadow none -> none
+PASS S3-contact-phone 1440 opacity 1 -> 1; colour rgb(20, 20, 20) -> rgb(111, 97, 82); tree hover accent-text = rgb(111, 97, 82)
+PASS S3-contact-email 1440 opacity 1 -> 1; colour rgb(20, 20, 20) -> rgb(15, 15, 15); tree hover none set
+PASS S4-cr-ref-contact-5-icon-colour 1440 label rgb(11, 43, 23); svg fill rgb(11, 43, 23), svg color rgb(11, 43, 23), shape fill rgb(11, 43, 23)
+PASS S4-cr-ref-contact-5-hover 1440 scale 1/1 (scale prop none); translate 0,-3 (S1 lift, allowed); shadow none -> none
+PASS S11-gap-icon-list-cr-ref-lenses-24 1440 tree 11px = 11px; UL.sgs-icon-list row-gap 11px, column-gap 11px
