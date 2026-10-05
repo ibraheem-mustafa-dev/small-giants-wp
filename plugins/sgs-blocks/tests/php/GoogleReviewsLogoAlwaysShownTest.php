@@ -93,7 +93,7 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 	 */
 	public function test_logo_always_rendered( array $attrs ): void {
 		$html = $this->render( $attrs );
-		$this->assertMatchesRegularExpression( '#<img[^>]*src="[^"]*assets/google-maps-logo-(?:dark|light)\.svg"[^>]*alt="Google Maps"#', $html );
+		$this->assertMatchesRegularExpression( '#<img[^>]*src="[^"]*assets/google-maps-logo-(?:colour\.png|light\.svg)"[^>]*alt="Google Maps"#', $html );
 		// Negative control: the old "G" never stands in for the attribution.
 		$this->assertDoesNotMatchRegularExpression( '#<img[^>]*src="[^"]*assets/google-logo\.svg"[^>]*alt="Google"#', $html );
 	}

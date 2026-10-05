@@ -94,6 +94,8 @@ studio/
 
 # Large image files in repo root
 *.png
+# Shipped plugin brand assets (the coloured Google Maps logo) are PNGs the block serves.
+!plugins/sgs-blocks/assets/*.png
 *.jpg
 *.webp
 !theme/sgs-theme/**/*.png

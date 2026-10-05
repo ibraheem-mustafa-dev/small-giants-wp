@@ -174,7 +174,7 @@
 	max-width: none;
 }
 
-/* Dark-text logo on a light ground (the default); the white-text one replaces it on a dark ground. */
+/* The colour Google Maps logo on a light ground (the default); the white official one replaces it on a dark ground. */
 .sgs-google-reviews__maps-logo--light {
 	display: none;
 }
@@ -184,8 +184,8 @@
 	display: block;
 }
 
-.sgs-google-reviews--theme-dark .sgs-google-reviews__maps-logo--dark,
-.sgs-on-dark .sgs-google-reviews__maps-logo--dark {
+.sgs-google-reviews--theme-dark .sgs-google-reviews__maps-logo--colour,
+.sgs-on-dark .sgs-google-reviews__maps-logo--colour {
 	display: none;
 }
 

@@ -845,7 +845,7 @@ $gr_google_logo_url = plugins_url( 'assets/google-logo.svg', SGS_BLOCKS_PATH . '
 /*
  * The Google Maps attribution (Places API policy): the official logo at a fixed 18px with its clear space,
  * on every render of every variant, plus one "View on Google Maps" link to the place when Google sent its
- * googleMapsUri. The dark-text logo is the default; the white-text one is shown by style.css on a dark
+ * googleMapsUri. The colour logo is the default; the white-text one is shown by style.css on a dark
  * ground (theme-dark, or a .sgs-on-dark surface), so there is no setting for it.
  */
 $gr_new_tab_hint = '<span class="sgs-sr-only">' . esc_html__( ' (opens in a new tab)', 'sgs-blocks' ) . '</span>';
@@ -854,12 +854,15 @@ $gr_https_url    = static function ( $url ): string {
 	return 1 === preg_match( '#^https://#i', $url ) ? $url : '';
 };
 $gr_logo_img     = static function ( string $tone ): string {
-	return '<img src="' . esc_url( plugins_url( 'assets/google-maps-logo-' . $tone . '.svg', SGS_BLOCKS_PATH . 'sgs-blocks.php' ) ) . '"'
+	// The Google Maps logo in Google's colours (a 262x48 PNG, about 2.7x the 18px it shows at) on a light ground;
+	// Google's white official logo file on a dark one, where the colour logo's grey "Maps" would not read.
+	$file = 'colour' === $tone ? 'google-maps-logo-colour.png' : 'google-maps-logo-light.svg';
+	return '<img src="' . esc_url( plugins_url( 'assets/' . $file, SGS_BLOCKS_PATH . 'sgs-blocks.php' ) ) . '"'
 		. ' alt="Google Maps" class="sgs-google-reviews__maps-logo sgs-google-reviews__maps-logo--' . $tone . '" width="98" height="18" />';
 };
 
 $gr_place_maps_url   = 'synced' === $data_source ? $gr_https_url( $data['googleMapsUri'] ?? '' ) : '';
-$gr_attribution_html = '<div class="sgs-google-reviews__attribution">' . $gr_logo_img( 'dark' ) . $gr_logo_img( 'light' );
+$gr_attribution_html = '<div class="sgs-google-reviews__attribution">' . $gr_logo_img( 'colour' ) . $gr_logo_img( 'light' );
 if ( '' !== $gr_place_maps_url ) {
 	$gr_attribution_html .= '<a href="' . esc_url( $gr_place_maps_url ) . '" class="sgs-google-reviews__maps-link sgs-google-reviews__maps-link--place" target="_blank" rel="noopener noreferrer">'
 		. esc_html__( 'View on Google Maps', 'sgs-blocks' ) . $gr_new_tab_hint . '</a>';
