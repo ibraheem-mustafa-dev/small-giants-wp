@@ -75,7 +75,7 @@ final class ReviewsAggregateTest extends TestCase {
 	 * review count, inside the row's text block) or in the badge (before its text block).
 	 */
 	private function aggregateStars( string $html ): int {
-		if ( preg_match( '#<div class="sgs-google-reviews__aggregate">(.*?)<div class="sgs-google-reviews__aggregate-text">.*?(?:sgs-google-reviews__cta|sgs-google-reviews__google-logo|</div>\s*</div>)#s', $html, $m ) ) {
+		if ( preg_match( '#<div class="sgs-google-reviews__aggregate">(.*?)<div class="sgs-google-reviews__aggregate-text">.*?(?:sgs-google-reviews__cta|sgs-google-reviews__attribution|</div>\s*</div>)#s', $html, $m ) ) {
 			$row = substr( $m[0], strpos( $m[0], 'sgs-google-reviews__aggregate-text' ) );
 			return substr_count( $row, 'sgs-google-reviews__star ' );
 		}

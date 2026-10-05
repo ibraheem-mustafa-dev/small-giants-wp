@@ -264,3 +264,43 @@ if ( ! function_exists( 'sgs_reviews_may_emit_schema' ) ) {
 			&& (int) ( $data['userRatingCount'] ?? 0 ) > 0;
 	}
 }
+
+if ( ! function_exists( 'sgs_reviews_log_missing_attribution' ) ) {
+
+	/**
+	 * Log, once per request, that live Places data lacks the fields the Google attribution links need.
+	 *
+	 * A cache written before `googleMapsUri` and `authorAttribution.uri` were requested has neither. The
+	 * block then renders no link at all (never an empty href) and this notes why, so the operator knows to
+	 * refresh the cache from Settings > SGS Google Reviews.
+	 *
+	 * @param array<string, mixed> $data The Places-shaped live data.
+	 * @return void
+	 */
+	function sgs_reviews_log_missing_attribution( array $data ): void {
+		static $logged = false;
+		if ( $logged ) {
+			return;
+		}
+
+		$missing = array();
+		if ( '' === trim( (string) ( $data['googleMapsUri'] ?? '' ) ) ) {
+			$missing[] = 'googleMapsUri';
+		}
+		foreach ( (array) ( $data['reviews'] ?? array() ) as $review ) {
+			if ( '' === trim( (string) ( $review['googleMapsUri'] ?? '' ) ) && ! in_array( 'review googleMapsUri', $missing, true ) ) {
+				$missing[] = 'review googleMapsUri';
+			}
+			if ( '' === trim( (string) ( $review['authorAttribution']['uri'] ?? '' ) ) && ! in_array( 'authorAttribution.uri', $missing, true ) ) {
+				$missing[] = 'authorAttribution.uri';
+			}
+		}
+
+		if ( array() === $missing ) {
+			return;
+		}
+
+		$logged = true;
+		error_log( 'sgs/google-reviews: the Places data lacks ' . implode( ', ', $missing ) . '; the matching Google Maps links are not shown. Clear the cache in Settings > SGS Google Reviews.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- the operator's only signal.
+	}
+}

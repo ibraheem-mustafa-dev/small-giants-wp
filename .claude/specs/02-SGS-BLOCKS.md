@@ -717,7 +717,6 @@ The icon circle has an overridable default border; a title placeholder never lea
 - `sortBy` — newest | highest | lowest (default: newest)
 - `showAggregate` — boolean (default: true — show overall rating header)
 - `showBreakdown` — boolean (default: false — show rating distribution bar chart in header)
-- `showAvatar` — boolean (default: true)
 - `showDate` — boolean (default: true)
 - `reviewRequestUrl` — URL (optional — "Write a review" CTA linking to Google)
 - `theme` — light | dark | transparent (default: light)
@@ -773,7 +772,8 @@ Output as `<script type="application/ld+json">` in render.php — enables Google
 - Review cards: `article` element with `aria-label="Review by {name}, {rating} stars"`
 - Star rating: `aria-label="{rating} out of 5 stars"` — stars are `aria-hidden="true"`
 - Slider: same carousel accessibility as testimonial-slider (arrow key navigation, aria-live)
-- Google logo: `alt="Google"` — required attribution
+- Google attribution (Places API policy): the official Google Maps logo, `alt="Google Maps"`, 18px high with 10px clear space left, right and top and 5px below, prints on every render of every variant (the white-text logo replaces the dark-text one on a dark ground). It has no setting.
+- Every review shows the author's avatar (initial letter when Google sends no photo) and name; the name links to the author's Google profile, each review links to its Google Maps page ("View on Google Maps"), and the block links to the place; all open in a new tab (`rel="noopener noreferrer"`, visually-hidden "(opens in a new tab)"). A link whose Google field is missing is not drawn.
 
 **Performance:**
 - Server-side rendering — no client-side API calls, no loading spinners

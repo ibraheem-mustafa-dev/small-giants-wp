@@ -10,7 +10,9 @@
  * fetch is driven by two environment variables:
  *
  *   SGS_GR_TEST_MODE           live | error | empty | unrated  (what the Google fetch returns;
- *                              `unrated` = one review, no rating and no count: ReviewsAggregateTest)
+ *                              `unrated` = one review, no rating and no count: ReviewsAggregateTest;
+ *                              `nolinks` = live data from a cache written before the attribution fields
+ *                              (no uri, googleMapsUri or photoUri anywhere))
  *   SGS_GR_TEST_SETTINGS_PLACE the site-wide place ID from the plugin settings ('' = none)
  *
  * Because the harness only declares its stand-in when the class does not exist yet, this one wins.
@@ -69,13 +71,16 @@ namespace SGS\Blocks {
 				}
 				if ( 'unrated' === $mode ) {
 					return array(
-						'displayName' => array( 'text' => 'Example Opticians' ),
-						'reviews'     => array(
+						'displayName'   => array( 'text' => 'Example Opticians' ),
+						'googleMapsUri' => 'https://maps.google.com/?cid=111',
+						'reviews'       => array(
 							array(
 								'authorAttribution' => array(
 									'displayName' => 'Unrated Google Reviewer',
+									'uri'         => 'https://www.google.com/maps/contrib/3',
 									'photoUri'    => '',
 								),
+								'googleMapsUri'     => 'https://www.google.com/maps/reviews/data=3',
 								'text'              => array( 'text' => 'A review that carries no star rating.' ),
 								'publishTime'       => '2026-08-01T10:00:00Z',
 							),
@@ -83,16 +88,41 @@ namespace SGS\Blocks {
 					);
 				}
 
+				if ( 'nolinks' === $mode ) {
+					return array(
+						'displayName'     => array( 'text' => 'Example Opticians' ),
+						'rating'          => 4.7,
+						'userRatingCount' => 132,
+						'reviews'         => array(
+							array(
+								'authorAttribution' => array( 'displayName' => 'Old Cache Reviewer' ),
+								'rating'            => 5,
+								'text'              => array( 'text' => 'Cached before the attribution fields existed.' ),
+								'publishTime'       => '2026-08-01T10:00:00Z',
+							),
+							array(
+								'authorAttribution' => array( 'displayName' => 'Second Old Reviewer' ),
+								'rating'            => 4,
+								'text'              => array( 'text' => 'Also without links.' ),
+								'publishTime'       => '2026-07-01T10:00:00Z',
+							),
+						),
+					);
+				}
+
 				return array(
 					'displayName'     => array( 'text' => 'Example Opticians' ),
+					'googleMapsUri'   => 'https://maps.google.com/?cid=111',
 					'rating'          => 4.7,
 					'userRatingCount' => 132,
 					'reviews'         => array(
 						array(
 							'authorAttribution' => array(
 								'displayName' => 'Live Reviewer One',
+								'uri'         => 'https://www.google.com/maps/contrib/1',
 								'photoUri'    => '',
 							),
+							'googleMapsUri'     => 'https://www.google.com/maps/reviews/data=1',
 							'rating'            => 5,
 							'text'              => array( 'text' => 'Genuinely fetched from Google, review one.' ),
 							'publishTime'       => '2026-08-01T10:00:00Z',
@@ -100,8 +130,10 @@ namespace SGS\Blocks {
 						array(
 							'authorAttribution' => array(
 								'displayName' => 'Live Reviewer Two',
-								'photoUri'    => '',
+								'uri'         => 'https://www.google.com/maps/contrib/2',
+								'photoUri'    => 'https://lh3.googleusercontent.com/a/two',
 							),
+							'googleMapsUri'     => 'https://www.google.com/maps/reviews/data=2',
 							'rating'            => 4,
 							'text'              => array( 'text' => 'Genuinely fetched from Google, review two.' ),
 							'publishTime'       => '2026-07-01T10:00:00Z',

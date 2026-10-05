@@ -3,12 +3,12 @@
  *
  * THE BASELINE IS THE GOOGLE REVIEWS WIDGET (design 2026-09-23 §2, §3.5). A block with no setting
  * touched looks like it: 340px cards (270px on a phone) with a 1px hairline, 8px corners and 20px
- * padding, 40px round initials, 15px stars, a header with a 30px leading "G", a 32px score and a
+ * padding, 40px round initials, 15px stars, a header with the leading Google Maps logo, a 32px score and a
  * hairline divider, pill buttons, a thin visible scrollbar and 40px round arrows under the rail.
  * Colours come from the theme's tokens, each falling back to the widget's own value.
  *
  * How a value gets here (Spec 32), in ascending strength:
- *  1. A DEFAULT in this file. Every value an attribute owns (logo size, avatar box, arrow box, card
+ *  1. A DEFAULT in this file. Every value an attribute owns (avatar box, arrow box, card
  *     box, clamp lines, scrollbar, type) is wrapped in :where() so it has no specificity.
  *  2. A ready-made look (`cardStyle`): `.sgs-google-reviews--card-{slug} .sgs-google-reviews__el`,
  *     exactly TWO classes, layered on the baseline. The looks are derived into
@@ -116,13 +116,69 @@
 	color: var( --wp--preset--color--text-muted, #5f6368 );
 }
 
-/* The Google "G": 30px and LEADING (before the caption) unless `logoPosition` says trailing. */
-:where( .sgs-google-reviews__google-logo ) {
+/* The Google attribution (Places API policy): the official Maps logo at a fixed 18px (policy range 16-19px) and
+   LEADING (before the caption) unless `logoPosition` says trailing. Clear space around it: 10px left, right and
+   top, 5px below. It prints on every render, so it has no settings of its own. */
+.sgs-google-reviews__attribution {
 	order: -1;
-	width: 30px;
-	height: 30px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: 12px;
 	margin-left: 0;
-	opacity: 1;
+	padding: 10px 10px 5px 10px;
+}
+
+.sgs-google-reviews__maps-logo {
+	display: block;
+	width: auto;
+	height: 18px;
+	max-width: none;
+}
+
+/* Dark-text logo on a light ground (the default); the white-text one replaces it on a dark ground. */
+.sgs-google-reviews__maps-logo--light {
+	display: none;
+}
+
+.sgs-google-reviews--theme-dark .sgs-google-reviews__maps-logo--light,
+.sgs-on-dark .sgs-google-reviews__maps-logo--light {
+	display: block;
+}
+
+.sgs-google-reviews--theme-dark .sgs-google-reviews__maps-logo--dark,
+.sgs-on-dark .sgs-google-reviews__maps-logo--dark {
+	display: none;
+}
+
+/* Visually hidden "(opens in a new tab)" hint on the links that open Google in a new tab. */
+.sgs-google-reviews .sgs-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset( 50% );
+	white-space: nowrap;
+	border: 0;
+}
+
+/* "View on Google Maps" (the place, and each review): a 44px-high target, underlined so colour is not its only cue. */
+.sgs-google-reviews__maps-link {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	font-size: 13.5px;
+	color: var( --wp--preset--color--primary, #1a73e8 );
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.sgs-google-reviews__maps-link:focus-visible,
+a.sgs-google-reviews__author:focus-visible {
+	outline: 2px solid var( --wp--preset--color--primary, #1a73e8 );
+	outline-offset: 2px;
 }
 
 /* ─── Ratings Breakdown (per-star distribution) ──────────────────────────── */
@@ -445,6 +501,18 @@
 :where( .sgs-google-reviews__review-header:has( .sgs-google-reviews__meta ) .sgs-google-reviews__author ) {
 	grid-row: 1;
 	align-self: end;
+}
+
+/* The reviewer's name links to their Google profile: a 44px-high target as a default (authorLineHeight still owns the
+   line height), underlined on hover. */
+:where( a.sgs-google-reviews__author ) {
+	display: block;
+	line-height: 44px;
+	text-decoration: none;
+}
+
+a.sgs-google-reviews__author:hover {
+	text-decoration: underline;
 }
 
 /* The per-card Google "G" (on by default, `showCardLogo`): 17px at the top right, as Google shows it. */
@@ -937,7 +1005,7 @@
 /* ─── Structural choices (written by render.php only when the author made them) ─
  * After the looks, so at the same two-class specificity these win. */
 
-.sgs-google-reviews--logo-leading .sgs-google-reviews__google-logo {
+.sgs-google-reviews--logo-leading .sgs-google-reviews__attribution {
 	order: -1;
 	margin-left: 0;
 }
@@ -951,7 +1019,7 @@
 	flex: 1 1 auto;
 }
 
-.sgs-google-reviews--logo-trailing .sgs-google-reviews__google-logo {
+.sgs-google-reviews--logo-trailing .sgs-google-reviews__attribution {
 	order: 0;
 	margin-left: auto;
 }

@@ -334,7 +334,7 @@ CONTRACT = [   # (attr, type, role, derived_selector): what the redesign lists f
     ("footnote", "string", "text-content", ".sgs-google-reviews__footnote"),
     ("headerGap", "object", None, ".sgs-google-reviews__aggregate, .sgs-google-reviews__header"),
     ("railPadding", "object", None, ".sgs-google-reviews__list, .sgs-google-reviews__rail"),
-    ("arrowSize", "string", None, ".sgs-google-reviews__arrow"), ("logoSize", "string", None, ".sgs-google-reviews__google-logo"),
+    ("arrowSize", "string", None, ".sgs-google-reviews__arrow"),
     ("cardLogoSize", "string", None, ".sgs-google-reviews__card-logo"), ("showArrows", "boolean", None, ".sgs-google-reviews__show-arrows"),
 ]
 

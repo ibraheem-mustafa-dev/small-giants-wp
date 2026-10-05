@@ -26,6 +26,12 @@ class Google_Reviews_Settings {
 	const CACHE_KEY_PREFIX = 'sgs_google_reviews_';
 
 	/**
+	 * The Place Details field mask. The cache key carries a hash of it, so a transient written under an
+	 * older mask (one without the attribution fields) is never served after the mask changes.
+	 */
+	const FIELD_MASK = 'reviews,rating,userRatingCount,displayName,googleMapsUri';
+
+	/**
 	 * Initialise the settings page.
 	 */
 	public static function init(): void {
@@ -169,7 +175,7 @@ class Google_Reviews_Settings {
 	 * @return array|WP_Error  Reviews data or error.
 	 */
 	public static function fetch_reviews( string $place_id, bool $force = false ) {
-		$cache_key = self::CACHE_KEY_PREFIX . md5( $place_id );
+		$cache_key = self::CACHE_KEY_PREFIX . md5( $place_id . '|' . self::FIELD_MASK );
 
 		// Check transient cache unless force refresh.
 		if ( ! $force ) {
@@ -188,10 +194,11 @@ class Google_Reviews_Settings {
 		// Google Places API (New) endpoint.
 		$url = 'https://places.googleapis.com/v1/places/' . $place_id;
 
-		$response = wp_remote_post( $url, [
+		// Place Details (New) is an HTTP GET; the field mask travels in the X-Goog-FieldMask header.
+		$response = wp_remote_get( $url, [
 			'headers' => [
 				'X-Goog-Api-Key'    => $api_key,
-				'X-Goog-FieldMask'  => 'reviews,rating,userRatingCount,displayName',
+				'X-Goog-FieldMask'  => self::FIELD_MASK,
 			],
 			'timeout' => 10,
 		] );

@@ -10,7 +10,7 @@
  *
  * Negative controls. Each guard was proven able to fail by breaking its binding in the source and
  * re-running this file (every one failed, then the source was restored):
- *   1 logoSize bound to the wrong attribute        -> "logo position, opacity, size and caption"
+ *   1 logoPosition bound to the wrong attribute    -> "logo position and caption"
  *   2 clearing a border style stores ''            -> 4 tests (card, buttons, arrow, borderStyleValue)
  *   3 an attribute dropped from a section          -> "no block.json attribute is left without a control"
  *   4 a button border loses contrastAgainst        -> "each button border keeps Normal + Hover colour"
@@ -287,7 +287,7 @@ describe( 'the sections together own every attribute that needs a control', () =
 			...ColourPanel.COLOUR_ATTRS,
 		] );
 		const missing = uncontrolled( owned, otherControlsText() );
-		expect( missing ).toEqual( expect.arrayContaining( [ 'logoSize', 'headerGap', 'sourceLabelFontSize' ] ) );
+		expect( missing ).toEqual( expect.arrayContaining( [ 'logoPosition', 'headerGap', 'sourceLabelFontSize' ] ) );
 	} );
 
 	test( 'every typography prefix block.json declares has a TypographyControls target', () => {
@@ -375,22 +375,29 @@ describe( 'Card', () => {
 } );
 
 describe( 'Header', () => {
-	test( 'logo position, opacity, size and caption write their attributes', () => {
+	test( 'logo position and caption write their attributes', () => {
 		const m = mount( HeaderPanel.default );
-		// 2026-09-23: leading and opacity 1 are the defaults (the Google baseline), so write values off them.
+		// 2026-09-23: leading is the default (the Google baseline), so write a value off it.
 		expect( SCHEMA.logoPosition.default ).toBe( 'leading' );
-		expect( SCHEMA.logoOpacity.default ).toBe( 1 );
 		m.type( 'select[aria-label="Google logo position"]', 'trailing' );
-		m.type( 'input[aria-label="Google logo opacity"]', '0.8' );
-		m.type( 'input[aria-label="Google logo size"]', '30px' );
 		m.type( 'input[aria-label="Source caption"]', 'Google Reviews' );
 		expect( lastPatch( m ) ).toEqual( {
 			logoPosition: 'trailing',
-			logoOpacity: 0.8,
-			logoSize: { desktop: '30px' },
 			sourceLabel: 'Google Reviews',
 		} );
 		expect( [ 'leading', 'trailing' ].sort() ).toEqual( [ ...SCHEMA.logoPosition.enum ].sort() );
+		m.unmount();
+	} );
+
+	test( 'the Maps logo has a fixed size and opacity and the avatar always shows: those settings no longer exist', () => {
+		// Places API attribution policy: the logo is 18px and always shown, the avatar is part of each review.
+		for ( const removed of [ 'logoSize', 'logoOpacity', 'showAvatar' ] ) {
+			expect( SCHEMA ).not.toHaveProperty( removed );
+			expect( HeaderPanel.HEADER_ATTRS ).not.toContain( removed );
+		}
+		const m = mount( HeaderPanel.default );
+		expect( m.q( 'input[aria-label="Google logo size"]' ) ).toBeNull();
+		expect( m.q( 'input[aria-label="Google logo opacity"]' ) ).toBeNull();
 		m.unmount();
 	} );
 

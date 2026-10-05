@@ -74,7 +74,6 @@ $exclude_keywords   = $attributes['excludeKeywords'] ?? '';
 $sort_by            = $attributes['sortBy'] ?? 'newest';
 $show_aggregate     = $attributes['showAggregate'] ?? true;
 $show_breakdown     = $attributes['showBreakdown'] ?? false;
-$show_avatar        = $attributes['showAvatar'] ?? true;
 $show_date          = $attributes['showDate'] ?? true;
 $review_request_url = $attributes['reviewRequestUrl'] ?? '';
 $theme              = $attributes['theme'] ?? 'light';
@@ -108,6 +107,10 @@ if ( null === $sgs_gr_resolved ) {
 }
 $data_source = $sgs_gr_resolved['source'];
 $data        = $sgs_gr_resolved['data'];
+if ( 'synced' === $data_source ) {
+	// A cache written before the attribution fields existed lacks the links: log it once per request.
+	sgs_reviews_log_missing_attribution( $data );
+}
 
 $all_reviews   = $data['reviews'] ?? array();
 /*
@@ -473,12 +476,6 @@ if ( null !== $gr_divider_width ) {
 	$gr_responsive_css .= $gr_header_sel . '{border-bottom-width:' . $gr_divider_width . ';}';
 }
 
-// ── Google logo: size and opacity. Opacity is written only once the author moved it off the default. ──
-$gr_logo_sel        = $gr_root_sel . ' .sgs-google-reviews__google-logo';
-$gr_responsive_css .= $gr_len_rule( $gr_logo_sel, $attributes['logoSize'] ?? null, array( 'width', 'height' ) );
-if ( $gr_is_set( 'logoOpacity', 1 ) && is_numeric( $attributes['logoOpacity'] ?? null ) ) {
-	$gr_responsive_css .= $gr_logo_sel . '{opacity:' . max( 0, min( 1, (float) $attributes['logoOpacity'] ) ) . ';}';
-}
 
 // ── Source caption, rating figure, review count, header stars. ──
 $gr_responsive_css .= $gr_colour_rule( $gr_root_sel . ' .sgs-google-reviews__source-label', 'color', $attributes['sourceLabelColour'] ?? '' );
@@ -819,6 +816,31 @@ if ( '' !== $gr_see_all_url || ! empty( $review_request_url ) ) {
 }
 
 $gr_google_logo_url = plugins_url( 'assets/google-logo.svg', SGS_BLOCKS_PATH . 'sgs-blocks.php' );
+
+/*
+ * The Google Maps attribution (Places API policy): the official logo at a fixed 18px with its clear space,
+ * on every render of every variant, plus one "View on Google Maps" link to the place when Google sent its
+ * googleMapsUri. The dark-text logo is the default; the white-text one is shown by style.css on a dark
+ * ground (theme-dark, or a .sgs-on-dark surface), so there is no setting for it.
+ */
+$gr_new_tab_hint = '<span class="sgs-sr-only">' . esc_html__( ' (opens in a new tab)', 'sgs-blocks' ) . '</span>';
+$gr_https_url    = static function ( $url ): string {
+	$url = is_string( $url ) ? trim( $url ) : '';
+	return 1 === preg_match( '#^https://#i', $url ) ? $url : '';
+};
+$gr_logo_img     = static function ( string $tone ): string {
+	return '<img src="' . esc_url( plugins_url( 'assets/google-maps-logo-' . $tone . '.svg', SGS_BLOCKS_PATH . 'sgs-blocks.php' ) ) . '"'
+		. ' alt="Google Maps" class="sgs-google-reviews__maps-logo sgs-google-reviews__maps-logo--' . $tone . '" width="98" height="18" />';
+};
+
+$gr_place_maps_url   = 'synced' === $data_source ? $gr_https_url( $data['googleMapsUri'] ?? '' ) : '';
+$gr_attribution_html = '<div class="sgs-google-reviews__attribution">' . $gr_logo_img( 'dark' ) . $gr_logo_img( 'light' );
+if ( '' !== $gr_place_maps_url ) {
+	$gr_attribution_html .= '<a href="' . esc_url( $gr_place_maps_url ) . '" class="sgs-google-reviews__maps-link sgs-google-reviews__maps-link--place" target="_blank" rel="noopener noreferrer">'
+		. esc_html__( 'View on Google Maps', 'sgs-blocks' ) . $gr_new_tab_hint . '</a>';
+}
+$gr_attribution_html .= '</div>';
+$gr_is_badge          = in_array( $variant, array( 'badge', 'floating-badge' ), true );
 $gr_header_shown    = $show_aggregate && ! in_array( $variant, array( 'badge', 'floating-badge' ), true ) && ( $has_rating || $has_count );
 
 if ( $gr_header_shown ) :
@@ -846,13 +868,7 @@ if ( $gr_header_shown ) :
 			</div>
 			<?php endif; ?>
 		</div>
-		<img
-			src="<?php echo esc_url( $gr_google_logo_url ); ?>"
-			alt="Google"
-			class="sgs-google-reviews__google-logo"
-			width="16"
-			height="16"
-		/>
+		<?php echo $gr_attribution_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_url() / esc_html() only. ?>
 		</div>
 		<?php echo $gr_actions_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_url() / esc_html() only. ?>
 	</div>
@@ -921,7 +937,12 @@ if ( $show_breakdown && ! in_array( $variant, array( 'badge', 'floating-badge' )
 	endif;
 endif;
 
-if ( in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
+// Neither the header nor the badge carries it: it still prints, on its own, above the reviews.
+if ( ! $gr_header_shown && ! $gr_is_badge ) {
+	echo $gr_attribution_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_url() / esc_html() only.
+}
+
+if ( $gr_is_badge ) :
 	?>
 	<div class="sgs-google-reviews__badge">
 		<?php
@@ -937,12 +958,7 @@ if ( in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
 				<span><?php echo esc_html( $gr_count_label( $rating_count ) ); ?></span>
 			<?php endif; ?>
 		</div>
-		<img
-			src="<?php echo esc_url( plugins_url( 'assets/google-logo.svg', SGS_BLOCKS_PATH . 'sgs-blocks.php' ) ); ?>"
-			alt="Google"
-			width="16"
-			height="16"
-		/>
+		<?php echo $gr_attribution_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_url() / esc_html() only. ?>
 	</div>
 	<?php
 else :
@@ -975,6 +991,8 @@ else :
 			++$gr_card_n;
 			$author        = ( $review['authorAttribution']['displayName'] ?? '' ) ?: __( 'Anonymous', 'sgs-blocks' );
 			$author_photo  = $review['authorAttribution']['photoUri'] ?? '';
+			$author_url    = $gr_https_url( $review['authorAttribution']['uri'] ?? '' );
+			$review_maps   = $gr_https_url( $review['googleMapsUri'] ?? '' );
 			$text          = $review['text']['text'] ?? '';
 			// Absent for a written review with no rating: no stars are drawn for it.
 			$review_rating = $review['rating'] ?? null;
@@ -990,26 +1008,28 @@ else :
 			?>
 			<article class="sgs-google-reviews__review">
 				<div class="sgs-google-reviews__review-header">
-					<?php if ( $show_avatar ) : ?>
-						<div class="sgs-google-reviews__avatar">
-							<?php if ( ! empty( $author_photo ) ) : ?>
-								<img
-									src="<?php echo esc_url( $author_photo ); ?>"
-									alt=""
-									loading="lazy"
-									width="48"
-									height="48"
-									<?php echo $gr_media_classes ? 'class="' . esc_attr( implode( ' ', $gr_media_classes ) ) . '"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped via esc_attr() above. ?>
-								/>
-							<?php else : ?>
-								<div class="sgs-google-reviews__avatar-initials">
-									<?php echo esc_html( strtoupper( substr( $author, 0, 1 ) ) ); ?>
-								</div>
-							<?php endif; ?>
-						</div>
-					<?php endif; ?>
+					<div class="sgs-google-reviews__avatar">
+						<?php if ( ! empty( $author_photo ) ) : ?>
+							<img
+								src="<?php echo esc_url( $author_photo ); ?>"
+								alt=""
+								loading="lazy"
+								width="48"
+								height="48"
+								<?php echo $gr_media_classes ? 'class="' . esc_attr( implode( ' ', $gr_media_classes ) ) . '"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped via esc_attr() above. ?>
+							/>
+						<?php else : ?>
+							<div class="sgs-google-reviews__avatar-initials">
+								<?php echo esc_html( strtoupper( mb_substr( $author, 0, 1 ) ) ); ?>
+							</div>
+						<?php endif; ?>
+					</div>
 
-					<strong class="sgs-google-reviews__author"><?php echo esc_html( $author ); ?></strong>
+					<?php if ( '' !== $author_url ) : ?>
+						<a href="<?php echo esc_url( $author_url ); ?>" class="sgs-google-reviews__author" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $author ); ?><?php echo $gr_new_tab_hint; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_html__() only. ?></a>
+					<?php else : ?>
+						<strong class="sgs-google-reviews__author"><?php echo esc_html( $author ); ?></strong>
+					<?php endif; ?>
 
 					<?php if ( '' !== $review_meta ) : ?>
 						<span class="sgs-google-reviews__meta"><?php echo esc_html( $review_meta ); ?></span>
@@ -1040,6 +1060,10 @@ else :
 
 					<?php if ( ! empty( $text ) ) : ?>
 						<p class="sgs-google-reviews__text"><?php echo esc_html( $text ); ?></p>
+					<?php endif; ?>
+
+					<?php if ( '' !== $review_maps ) : ?>
+						<a href="<?php echo esc_url( $review_maps ); ?>" class="sgs-google-reviews__maps-link" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View on Google Maps', 'sgs-blocks' ); ?><?php echo $gr_new_tab_hint; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_html__() only. ?></a>
 					<?php endif; ?>
 
 					<?php if ( $gr_show_review_link && '' !== $review_url ) : ?>

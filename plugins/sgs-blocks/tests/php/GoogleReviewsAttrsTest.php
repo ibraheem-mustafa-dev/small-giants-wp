@@ -141,17 +141,6 @@ final class GoogleReviewsAttrsTest extends TestCase {
 					"{$r} .sgs-google-reviews__aggregate{border-bottom-width:1px;}",
 				),
 			),
-			'logo'    => array(
-				array(
-					'logoSize'    => array( 'desktop' => '30px' ),
-					// 2026-09-23: the default opacity is 1 (the Google baseline), so the group moves it off the default.
-					'logoOpacity' => 0.8,
-				),
-				array(
-					"{$r} .sgs-google-reviews__google-logo{width:30px;height:30px;}",
-					"{$r} .sgs-google-reviews__google-logo{opacity:0.8;}",
-				),
-			),
 			'colours' => array(
 				array(
 					'sourceLabelColour' => '#5F6368',
@@ -330,11 +319,9 @@ final class GoogleReviewsAttrsTest extends TestCase {
 		}
 	}
 
-	public function test_the_logo_opacity_and_scrollbar_defaults_do_not_beat_a_look(): void {
-		// 2026-09-23 defaults: logoOpacity 1, pagination scrollbar, scrollbarStyle thin (the Google baseline).
+	public function test_the_scrollbar_defaults_do_not_beat_a_look(): void {
 		$css = $this->render(
 			array(
-				'logoOpacity'    => 1,
 				'pagination'     => 'scrollbar',
 				'scrollbarStyle' => 'thin',
 				'textClampLines' => 8,
@@ -701,7 +688,6 @@ final class GoogleReviewsAttrsTest extends TestCase {
 		$css = (string) preg_replace( '#/\*.*?\*/#s', '', $css );
 
 		$named = array(
-			'.sgs-google-reviews__google-logo'                                    => array( 'width: 30px', 'opacity: 1' ),
 			'.sgs-google-reviews__avatar'                                         => array( 'width: 40px', 'height: 40px', 'border-radius: 50%' ),
 			'.sgs-google-reviews__avatar-initials'                                => array( 'border-radius: 50%', 'font-weight: 700' ),
 			'.sgs-google-reviews__text'                                           => array( '-webkit-line-clamp: 8' ),
@@ -719,7 +705,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 			}
 		}
 		// The replacement: each literal survives ONLY as a zero-specificity default.
-		foreach ( array( '.sgs-google-reviews__google-logo', '.sgs-google-reviews__avatar', '.sgs-google-reviews__text', '.sgs-google-reviews__arrow' ) as $selector ) {
+		foreach ( array( '.sgs-google-reviews__avatar', '.sgs-google-reviews__text', '.sgs-google-reviews__arrow' ) as $selector ) {
 			$this->assertStringContainsString( ':where( ' . $selector . ' )', $css, "{$selector} keeps a :where() default" );
 		}
 		$this->assertStringContainsString( ':where( .sgs-google-reviews--slider .sgs-google-reviews__list )', $css );

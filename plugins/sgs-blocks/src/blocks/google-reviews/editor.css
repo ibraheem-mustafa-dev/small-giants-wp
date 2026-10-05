@@ -49,13 +49,15 @@
 .sgs-google-reviews-editor .sgs-google-reviews__see-all,
 .sgs-google-reviews-editor .sgs-google-reviews__write-review,
 .sgs-google-reviews-editor .sgs-google-reviews__review-link,
+.sgs-google-reviews-editor .sgs-google-reviews__maps-link,
+.sgs-google-reviews-editor a.sgs-google-reviews__author,
 .sgs-google-reviews-editor .sgs-google-reviews__arrow,
 .sgs-google-reviews-editor .sgs-google-reviews__dot {
 	cursor: default;
 }
 
 /* Decorative marks: a click or drag on them selects the block rather than grabbing the graphic. */
-.sgs-google-reviews-editor .sgs-google-reviews__google-logo,
+.sgs-google-reviews-editor .sgs-google-reviews__maps-logo,
 .sgs-google-reviews-editor .sgs-google-reviews__card-logo,
 .sgs-google-reviews-editor .sgs-google-reviews__aggregate-stars,
 .sgs-google-reviews-editor .sgs-google-reviews__star--empty,

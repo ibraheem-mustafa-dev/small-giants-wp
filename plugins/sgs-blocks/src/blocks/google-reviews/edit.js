@@ -55,7 +55,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		sortBy,
 		showAggregate,
 		showBreakdown,
-		showAvatar,
 		showDate,
 		reviewRequestUrl,
 		theme,
@@ -429,22 +428,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 
-					<ToggleControl
-						label={ __( 'Show avatars', 'sgs-blocks' ) }
-						checked={ showAvatar }
-						onChange={ ( value ) => setAttributes( { showAvatar: value } ) }
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						blockSlug="sgs/google-reviews"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
 					/>
-
-					{ showAvatar && (
-						<MediaElementPanel
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							blockSlug="sgs/google-reviews"
-							insertion="element"
-							atoms={ [ 'object-fit' ] }
-							mediaType="image"
-						/>
-					) }
 
 					<ToggleControl
 						label={ __( 'Show dates', 'sgs-blocks' ) }

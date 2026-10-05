@@ -236,21 +236,6 @@
 					},
 					"_note": "headerDividerColour / headerDividerWidth are the header row's bottom divider (the row draws one edge only, border-bottom); they register on the border-colour / border-width members because the vocabulary has no per-edge bottom member."
 				},
-				"google-logo": {
-					"label": "Google logo",
-					"order": 7,
-					"layer": "OUTER",
-					"clusters": [
-						"fill",
-						"layout"
-					],
-					"prefix": "logo",
-					"attrMap": {
-						"css:height": "logoSize",
-						"css:width": "logoSize",
-						"css:opacity": "logoOpacity"
-					}
-				},
 				"source-label": {
 					"label": "Source caption",
 					"order": 8,
@@ -698,10 +683,6 @@
 			"type": "boolean",
 			"default": false
 		},
-		"showAvatar": {
-			"type": "boolean",
-			"default": true
-		},
 		"showDate": {
 			"type": "boolean",
 			"default": true
@@ -1018,14 +999,6 @@
 		"headerDividerWidth": {
 			"type": "string",
 			"default": ""
-		},
-		"logoSize": {
-			"type": "object",
-			"default": {}
-		},
-		"logoOpacity": {
-			"type": "number",
-			"default": 1
 		},
 		"logoPosition": {
 			"type": "string",

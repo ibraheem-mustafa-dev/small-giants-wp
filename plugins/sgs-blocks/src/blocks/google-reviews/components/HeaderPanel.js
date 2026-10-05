@@ -10,7 +10,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl, RangeControl } from '@wordpress/components';
+import { SelectControl, TextControl } from '@wordpress/components';
 import { DesignTokenPicker, SgsLengthControl, BOX_UNITS } from '../../../components';
 import { Section, Row, typographyAttrs } from './panel-kit';
 import { TierBox, TierLength, TypographyRow, typoTarget } from './panel-fields';
@@ -20,8 +20,6 @@ export const HEADER_TYPOGRAPHY_PREFIXES = [ 'sourceLabel', 'score', 'count' ];
 /** Every attribute this section owns (drives "Reset all"). */
 export const HEADER_ATTRS = [
 	'logoPosition',
-	'logoSize',
-	'logoOpacity',
 	'sourceLabel',
 	'headerGap',
 	'headerPadding',
@@ -45,20 +43,6 @@ export default function HeaderPanel( { attributes, setAttributes } ) {
 						{ label: __( 'At the end of the row (right)', 'sgs-blocks' ), value: 'trailing' },
 					] }
 					onChange={ ( value ) => setAttributes( { logoPosition: value } ) }
-					__next40pxDefaultSize
-				/>
-			</Row>
-			<Row label={ __( 'Google logo size', 'sgs-blocks' ) } attrs={ [ 'logoSize' ] } { ...shared }>
-				<TierLength label={ __( 'Google logo size', 'sgs-blocks' ) } attr="logoSize" { ...shared } />
-			</Row>
-			<Row label={ __( 'Google logo opacity', 'sgs-blocks' ) } attrs={ [ 'logoOpacity' ] } { ...shared }>
-				<RangeControl
-					label={ __( 'Google logo opacity', 'sgs-blocks' ) }
-					value={ attributes.logoOpacity }
-					onChange={ ( value ) => setAttributes( { logoOpacity: value } ) }
-					min={ 0 }
-					max={ 1 }
-					step={ 0.05 }
 					__next40pxDefaultSize
 				/>
 			</Row>
