@@ -678,7 +678,10 @@
 	color: var(--sgs-op-sel-text, var(--wp--preset--color--text, currentColor));
 	border-color: var(--sgs-op-sel-border, var(--wp--preset--color--primary, #1F7A7A));
 	border-width: 2px;
-	padding: 0 0 5px; /* compensate the +1px border so the tile height doesn't jump on selection */
+	/* Compensate the +1px border on the bottom only. Writing the padding
+	   shorthand here would reset a caption-only tile's top padding to 0 and
+	   shrink the tile on selection. */
+	padding-bottom: 5px;
 	border-radius: var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
 }
 
@@ -745,11 +748,18 @@
 	font-size: 0.68em;
 }
 
-/* No image/colour meta on a tile option -- the tile still needs its
-   44x44 WCAG touch target and a sensible minimum height even with a
-   caption-only tile (option with no term-meta image). */
+/* Every tile keeps the 44x44 WCAG touch target, whatever it shows. */
 .sgs-option-picker--tile .sgs-option-picker__pill {
 	min-height: 44px;
+}
+
+/* The caption-only tile (no term-meta image and no colour swatch) carries top
+   padding so its single line of text is not flush against the border. A tile
+   showing an image or a colour block fills that space itself and takes the
+   base rule's `padding: 0 0 6px`, so render.php's --has-image/--has-colour
+   markers scope the padding to the tiles that need it. */
+.sgs-option-picker--tile
+	.sgs-option-picker__pill:not(.sgs-option-picker__pill--has-image):not(.sgs-option-picker__pill--has-colour) {
 	padding-top: 6px;
 }
 
