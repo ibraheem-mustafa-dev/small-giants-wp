@@ -52,7 +52,7 @@ sweep measures a repaired framework and the route sees the settings the seeder a
 Known limits of the labels: Solve's "Missing setting" means only "no DB row routes this property to this element". It
 is a lookup result, not a proven gap. Of Lenses' and the form's labels, several read like walker artefacts
 (container `transform` and `opacity` rows, likely mid-entrance-animation; `display` on form inputs) or settings that
-exist elsewhere (textarea `max-width`). Session B proves each one.
+exist elsewhere (textarea `max-width`). Each was proved or disproved in B2; the answers are Appendix B.
 
 Register: 187 surface items plus 21 route findings (CR1 to CR21); about 30 marked closed. Its Type column (tree,
 framework repair, framework new, content, client) was set by investigation on 2026-10-03 and has not been reconciled
@@ -268,10 +268,10 @@ webpack's module ids are set aside, and the deployed theme.json equals the snaps
   (verdicts and brief in `qa/sweep/2026-10-05/a4/`). Groups 4 and 5 were re-run once Help and the product page were mapped to the size-guide surface
   (`lib/register-sweep.mjs::SECTION_SURFACES`). Register items recorded closed or clean but open on the sweep:
   100, 101, 102, 104 and 131 (Lenses, About, Contact) and N15 (the See all reviews button black where the draft is
-  blue). N41 and 113 are open only because S1's agreed lift has no ledger entry on Lenses and Help yet. The main thread checked 6 still-open verdicts and every clean one against their rows, 7 of the
+  blue); each is explained in Appendix B. N41 and 113 are closed: B4 ledgered S1's lift on Lenses and Help (D-34 to D-39). The main thread checked 6 still-open verdicts and every clean one against their rows, 7 of the
   not-walker-measurable items and every closed claim without a report.
 - **A5:** `qa/sweep/2026-10-05/a5/README.md`: framework fixes 37/37 PASS; About independent 0 differences; Contact
-  independent 106 rows against the walker's 27 (Session B input); the header sticks but CR2's scrolled-state class was not
+  independent 106 rows against the walker's 27 (reconciled in Session B to a 6-row residual, Appendix B); the header sticks but CR2's scrolled-state class was not
   seen (still to prove); drawer links show no fade entrance (14 open; the rise was not sampled). S3's framework half
   holds (no hover fade: footer and contact phone PASS; the header phone is hidden at 375 and 768, so untested); its tree
   half (black hover colour) is open, and the sweep shows the footer business-info hover colour still differing.
@@ -295,9 +295,12 @@ None blocks Session B.
 
 ## Session B: audit the three-way split, protect decisions, plan the fixes
 
-**Done when:** the route's use of the block source and DB is audited (B0); every open distinct issue from Session A sits in exactly one class below with its proof; every not-measured or partly measured register item carries its measure-gap tag (below); every real
-framework gap is grouped by mechanism and matched to a shared helper; Bean's decided differences can no longer be
-overwritten by Solve; Session C's plan is written. **Estimate:** ~1 h 10 (realistic ~2 h).
+**Done 2026-10-05.** All five units and both appendices landed (`97ac6f95a`, `4e36e5775`, `124993395`, `427277644`,
+`919c23be4`, `314add9c6`). Every one of the 2,373 open issues carries one class with proof (W 1,710, F 163, T 447,
+U 28, D 17, deferred 8); the 78 unmeasurable register items carry a measure-gap tag; Bean's decisions can no longer
+be overwritten (B4, N41 and 113 closed); Session C's plan is written
+(`plans/2026-10-05-eye-care-session-c-framework-fixes.md`). **Gate B is the only thing left and it waits on Bean.**
+Actual against the estimate: about 2 h, matching the realistic figure.
 
 ### The classes (written into Spec 47 §5 as the rule)
 
@@ -361,18 +364,7 @@ Shape:
    --tier full`, one reseed from clean HEAD, one deploy to eye-care-test then sandybrown, recalibrate the touched
    blocks through the queue, one measure-only sweep.
 
-Google reviews attribution (2026-10-05): its own parallel track (Bean), not Session B or C. It ships the five policy fixes below, the `showGoogleLogo` live rebuild and the reseed, then removes this note:
-- **`showGoogleLogo` removed** (`f19a66e27`, not deployed; Google's Places API policy makes attribution mandatory). After
-  the deploy, rebuild eye-care-test's single-product template from its tree (it was saved with the setting), check the
-  deploy's oldshape audit for live pages still carrying it, and include it in the reseed (/sgs-update regenerates
-  `plugins/sgs-blocks/scripts/consistency/` and the block reference).
-- **Google reviews attribution gaps (Bean approved fixing all five, 2026-10-05; policy
-  https://developers.google.com/maps/documentation/places/web-service/policies):** the block prints a plain "G"
-  (`plugins/sgs-blocks/assets/google-logo.svg`), not the Google Maps logo or the text "Google Maps"; the logo exists
-  only with the aggregate header or a badge variant, so a list variant with `showAggregate` off prints no attribution;
-  `style.css::.sgs-google-reviews__google-logo` allows 30px against the policy's 16 to 19; `showAvatar` can hide the
-  author avatar the policy requires at minimum; the author name has no profile link; nothing links the place on Google
-  Maps (`googleMapsUri`).
+Google reviews attribution (2026-10-05): done and live on eye-care-test (deploy at `2f3280554`; commits `a818861ab`, `463b18ab5`, `b551d9eb5`, `31a199682`, `063244054`, `38d97b4e4`, `2f3280554`; the block's detail is in `.claude/plans/2026-10-05-google-reviews-attribution.md`); sandybrown is not deployed, because `build-deploy.py --target sandybrown` aborts on the oldshape audit for the 155 old-shape `sgs/cta-section` blocks on its calibration page 4750.
 
 ## Session D: back to walker work
 

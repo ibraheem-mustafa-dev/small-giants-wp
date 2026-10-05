@@ -205,6 +205,22 @@ W0  R1 seed the NULL rows ─┐
                                      writing 38 controls          one at a time)           isolated worktrees)
 ```
 
+**W0a — the cheapest item in the session: extend eight ledger entries, close 14 rows, write no code.**
+Of the 17 D rows, 14 are `sgs/business-info`'s link padding and margin on the **footer** (`cr-ref-footer-24`, all
+eight properties) and the **header** (`cr-ref-header-11`, six of them). `divergences.json::D-17`–`D-24` already
+decide those exact properties on that exact element with `expected: { rule: 'touch-target' }`, but they are pinned to
+`cr-ref-contact-9` alone, so the same decided mechanism re-reports as 14 fresh candidates on the other two surfaces.
+Add the entries for those two nodes (a house rule, so they cite no register item —
+`lint.mjs::HOUSE_RULES` exempts `touch-target` and `accessibility`). The measured negative margin equals the
+padding, so the text paints where the draft's does.
+
+Also D, and needing one new entry each: `cr-ref-product-4`'s option `transform` (draft a 2px lift, live 3px — S1's
+decision that every button lifts 3px) citing `S1`. The two `sgs/google-reviews` timing rows are the parallel track's.
+
+Do W0a before anything else: it is a ledger edit, needing no host and no build. It closes **14 of the 17 D rows**,
+which sit outside the 157 F rows, so the F count does not change — what it removes is 14 rows that would otherwise
+re-report as fresh candidates on the footer and header every time those surfaces are measured.
+
 **W0 — route fixes and the one browser read.** No block files. Touches `scripts/computed-route/` and the seeder under
 `plugins/sgs-blocks/scripts/`. Each fix needs a MUST-FAIL test shown red before it and a negative control after.
 **The browser read moves here from W1**: the three medium-confidence rows it settles sit on `sgs/site-footer` and
@@ -311,7 +327,7 @@ no historical calibration; each basis is its file count plus the named precedent
 
 | Unit | Rows | Headline | PERT | Band |
 |---|---|---|---|---|
-| R1 seed the NULL rows | unblocks 181 W | 5 min | 12 | Quick |
+| R1 route the NULL rows | unblocks an unproven share of 181 W | 5 min | 12 | Quick |
 | R2 context resolver | unblocks 11+ | 10 min | 22 | Block |
 | W0 browser read (3 medium rows) | 3 | 5 min | — | Micro |
 | W0b re-sweep | — | 20 min | — | Block |

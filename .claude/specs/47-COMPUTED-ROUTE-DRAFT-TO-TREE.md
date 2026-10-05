@@ -564,8 +564,9 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        surfaces (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`; per surface in the plan
        `2026-10-04-spec47-full-coverage.md` Progress), and every fix-register item carries a sweep status (77 still
        open, 63 not walker-measurable, 19 closed earlier, 15 partly measured, 27 clean on the walker; each still-open
-       verdict cites one exact element row and its values). Next: Session B
-       sorts what stays open into its classes and plans the fixes; Session C makes the framework fixes.
+       verdict cites one exact element row and its values). Session B (2026-10-05) sorted every one of the 2,373 into
+       one class with proof (W 1,710, F 163, T 447, U 28, D 17, deferred 8) and wrote Session C's plan. Next:
+       Session C makes the framework fixes, on Bean's Gate B answer.
      - Then (Session D) each surface to 100%, in the order the sweep ranks, Contact and its form first. Every surface has
        its full config (2026-10-05; panel surfaces pair with their walker state open). Done per surface: on a fresh
        rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes

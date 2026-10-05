@@ -86,11 +86,15 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). Open, all box rows:
   1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. The walker now measures
      it (`f7d9003f5`: a text run's rows give a `row-gap` row from the space between line boxes, and Solve reads the
-     draft's); left: a Solve run on Contact to write the hours row gap setting.
+     draft's); left: a Solve run on Contact to write the hours row gap setting. Session B's triage (2026-10-05)
+     found the row gap is a confirmed framework gap: `sgs/business-info` has no gap control for the hours row, so it
+     is in Session C's group G1 (`hoursRowGap`, css_element `hours-row`).
   2. The address (cr-ref-contact-13, 15, 17): the draft's address text is 168px wide at every width and wraps to two
      lines at 375; live fills its column. The walker now reads the draft's declared width from its matched rules
-     (`f7d9003f5`, `devtools.mjs::declaredValues`) and Solve writes a declared width; left: a Solve run on Contact,
-     and if no business-info setting holds the address width, the gap goes to Session B's triage.
+     (`f7d9003f5`, `devtools.mjs::declaredValues`) and Solve writes a declared width; left: a Solve run on Contact. Session B's triage
+     (2026-10-05) answered the open question: **no width row remains open** on cr-ref-contact-13, 15 or 17, so the
+     declared-width write holds and no business-info width control is needed. What is left on those refs is box rows
+     (`w`, `h`, `y-after-*`) that close with the spacing above them.
   3. Consequences that close with 1 and 2: page and column heights (cr-ref-contact-0, 1, 20) and rows compared across
      the two columns at 1440 (cr-ref-contact-14, 15, 27, 29).
   Then the done line: fresh rebuild of the committed tree, 0 unexplained and 0 labelled gaps, 0 new rows, wrong writes at

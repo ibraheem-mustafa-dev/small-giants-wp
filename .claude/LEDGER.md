@@ -53,7 +53,7 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-05).** eye-care-test runs the block code at `4726700c1` and sandybrown the identical block build at `7f770ebb5`.
+**Now (2026-10-05).** eye-care-test ran the block code at `4726700c1` and sandybrown the identical build at `7f770ebb5`, but **the google-reviews track was mid-deploy to eye-care-test at handoff** (`build-deploy.py --target eye-care-test`, PIDs 5200/35928), so re-verify live = HEAD by checksum before measuring anything.
 Step 0 is done (all 17 trees
 rebuilt, zero invalid blocks). The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list:
 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9 taken, three build rules. Proven bugs in it: the
@@ -81,9 +81,8 @@ untested at 375/768) but its black hover colour is not yet in the trees. Parked 
 **Session B, the audit (2026-10-05, complete; measure and read only, no block writes, no deploys).** Every one of the
 2,373 open issues now sits in exactly one class with proof (`plans/2026-10-04-eye-care-sweep-audit-fix.md`
 Appendix B): **W 1,710, F 163, T 447, U 28, D 17, deferred 8** (the google-reviews track's). Six parallel Opus agents
-grouped by mechanism proved or disproved all 338 candidate-F rows under a citation gate; **only 48% survived** as real
-framework gaps, and all 130 confirmed combos name an existing precedent, so none needs a new control primitive
-(verdicts `.claude/reports/2026-10-05-session-b/b2/`). `triage.mjs` gained the sweep's fifth class so no row is left
+proved or disproved all 338 candidate-F rows under a citation gate; **only 48% survived**, and all 130 confirmed
+combos name an existing precedent, so none needs a new control primitive (verdicts `reports/2026-10-05-session-b/b2/`). `triage.mjs` gained the sweep's fifth class so no row is left
 unclassed (`97ac6f95a`: 323 unmapped-state rows had none). The 78 unmeasurable register items each carry a
 measure-gap tag (Appendix A): 51 of them wait on route work, not block work. B4 closed register N41 and 113 by
 ledgering S1's agreed lift on Lenses and Help (`D-34`-`D-39`). P0-11 is closed: the 605 dead, 40 oneWidth and 55
@@ -91,20 +90,20 @@ untestedStates calibration outcomes are split by cause and **no cause needs bloc
 fixes clear 203). Spec 47 to v0.14: its role counts were stale (`boolean-visibility` 600, not 94) and its text read is
 scoped to 84 `content` rows when most of this register's words live in 235 `text-content` rows — a §6 question for Bean.
 Contact's 106 independent rows against the walker's 27 reconcile to a **6-row residual**, all padding, hypothesis
-recorded and unproven (`.claude/reports/2026-10-05-session-b/contact-independent-reconciliation.md`).
+recorded and unproven (`reports/2026-10-05-session-b/contact-independent-reconciliation.md`).
 
 **Gate B is open and waits on Bean.** The brief is an artifact (2026-10-05); the question is whether Session C fixes
 the eight groups, route fixes first. Session C's plan is written and ready:
-`plans/2026-10-05-eye-care-session-c-framework-fixes.md` — **157 rows**, parallelised **by block, not by mechanism**
+`plans/2026-10-05-eye-care-session-c-framework-fixes.md`: **157 rows**, parallelised **by block, not by mechanism**
 (every group shares a block with another; `sgs/social-icons` and `sgs/buybox` each appear in six), with a
-pre-dispatch collision check (`.claude/reports/2026-10-05-session-b/check-queue-collisions.mjs`). Three rows are
+pre-dispatch collision check (`reports/2026-10-05-session-b/check-queue-collisions.mjs`). Three rows are
 deferred to their own session: their fix would change a spacing rule on `sgs/container` (5,022 occurrences in Eye
 Care's trees, live on other clients) on an unproven cause. **R1 was mis-scoped and corrected in review**: the
 resolver never reads `css_element`, routing an enum row would delete a working discovery path, and the animation
 half needs a resolver change — of 188 NULL rows, 28 must be left alone, 128 are resolver work, 32 are routable.
 
 **Session 0 (2026-10-05, complete):** the route data audit's repairs (`.claude/reports/2026-10-04-route-data-audit/README.md`),
-every block recalibrated on the WSL mirrors; parked P0-1 to P0-11 in the sweep plan. The wiring gate
+every block recalibrated on the WSL mirrors; parked P0-3 to P0-10 in the sweep plan (P0-1, P0-2 and P0-11 closed). The wiring gate
 (`check-wiring-fingerprint.py`) blocks new gaps only (201 baselined).
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**

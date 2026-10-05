@@ -274,7 +274,7 @@
 | 103 | "Choose a frame" text too bold | weight 400 | tree | closed (2026-10-03): weight 400, with the button's draft padding box (0 26px) and 50px height | partly measured |
 | N39 | Content starts too low | S6 (the top spacing is the main fault: it pushes every page down). Side margins: re-measure at 1280, 1366 and 1920 and fix only if they differ. | tree | proven (top); to prove (sides) | still open |
 | N40 | Gap above the button too big | Match the draft's gap (same cause as 101: a default heading/text bottom margin) | tree | to prove | still open |
-| N41 | "Choose a frame" does not lift | S1 | | | still open |
+| N41 | "Choose a frame" does not lift | S1 | | | closed 2026-10-05: the lift is Bean's S1 decision against the draft, ledgered as `D-34` and `D-35` on `cr-ref-lenses-28` |
 
 ## About
 
@@ -295,7 +295,7 @@
 | 110, 122 | Accordion | S5 (also remove the 20px gap that spaces the rows apart) | | | still open |
 | 111 | FAQ answers wrap differently | answer width 72ch (the draft's value) | tree | proven | still open |
 | 112 | "Call the clinic" grey and height | colour text-muted, line height 1.5, no minimum height | tree | proven | still open |
-| 113 | Call / Contact me hover | S1 | | | still open |
+| 113 | Call / Contact me hover | S1 | | | closed 2026-10-05: ledgered as `D-36` to `D-39` on `cr-ref-help-39` ("Contact me") and `cr-ref-help-40` ("Call") |
 | 115 | Size-guide pop-up first sentence lighter | colour text-soft | tree | proven | still open |
 | 116 | Size numbers smaller on a phone | 32px on phone | tree | proven | still open |
 | 117, 123, 69, 81, N29 | Size pop-up: wider at tablet, no header bar, padding wrong, close button has a grey circle | (1) Close button: transparent ground, square. (2) Header bar as a container in the pop-up's own layout file: title, divider, sticky. Pop-up gets a padding setting (draft: flat 24px; header 20px 24px). (3) Screen-edge gap from a token: 32px each side above phone size, 16px on a phone. | framework repair + framework new + tree | proven | still open |
