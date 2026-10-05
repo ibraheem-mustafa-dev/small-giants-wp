@@ -170,6 +170,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - Keys: an element's `elementPath` from the instance root; a layer is its element's key plus `::before`, `::after`, `::placeholder` or `::first-letter`; a panel the instance controls through `aria-controls` outside it (a cart dialog moved to `<body>`) is `@controls > <path>` (`@controls:2` for a second).
 - `readInstancesInPage([count, prefix, props, pathSrc, pseudoProps, textPseudoProps, only?])`: in-page; every element, layer and controlled panel of each instance (or only instance `only`).
 - `markTargetInPage([prefix, n, selector])`: in-page; marks the state target and its closed panel toggle.
+- `openToggle(page)`: clicks the marked panel toggle; one hidden at the read width is clicked in the page (`el.click()`), so its handler runs.
 - `readAll(page, url, instances)` → per width reads, plus `scrolled`, `scrollMissed`, `hoverMissed` (state instances whose element stays hidden with its panel opened). `SCROLL_Y`: the scroll for scrolled markers (read twice when the header misses the first jump).
 
 ### `lib/calibrate.mjs`
