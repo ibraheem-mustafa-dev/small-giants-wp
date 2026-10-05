@@ -49,7 +49,7 @@ tests, README.
 
 **Then:** every paused surface once with its full config (Spec 47 §5 stage 3, residual). F5, the whole-page score, is built in `lib/solve-report.mjs::wholePage`.
 
-## Progress (2026-10-04)
+## Progress (2026-10-05)
 
 Per-surface work below pauses for `plans/2026-10-04-eye-care-sweep-audit-fix.md` (whole-site sweep, gap audit,
 framework fixes); it resumes in that plan's Session D, ranked by the sweep.
@@ -81,7 +81,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   property or every width (`ledger.mjs accept --rule --every-width --every-property`). Framework: the form's Field style
   group (register N45), label-less fields without the floating-label gap, business-info `labelFontWeight` and the
   address line height, the business-info link's 44px tap area takes one line in the flow.
-- [ ] **Contact to 100% (in progress): 19 distinct issues open, 0 labelled gaps** (last Solve
+- [ ] **Contact to 100% (in progress): 27 distinct issues open on the 2026-10-05 sweep (19 on 2026-10-04, before the walker's DevTools reads), 0 labelled gaps** (last Solve
   `qa/solve/contact/2026-10-04T11-15-35/`: 0 new rows, 0 wrong writes). Ledger D-16 (map, register 132 and 141), D-17 to D-30, D-32 and
   D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). Open, all box rows:
   1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. The walker now measures
@@ -95,23 +95,53 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
      the two columns at 1440 (cr-ref-contact-14, 15, 27, 29).
   Then the done line: fresh rebuild of the committed tree, 0 unexplained and 0 labelled gaps, 0 new rows, wrong writes at
   most 10%, `independent-check.mjs --surface contact` 0 differences beyond the ledger, planted-fault control.
-- [ ] **Contact form (surface `contact-form`, post 285): 46 distinct issues open.** Paired 6 of 6 with every field
+- [ ] **Contact form (surface `contact-form`, post 285): 58 distinct issues open on the 2026-10-05 sweep.** Paired 6 of 6 with every field
   measured at its control (`liveControl`). The last Solve (`qa/solve/contact-form/2026-10-04T11-24-38/`) closed 27 but
   regressed 4 rows with 7 wrong writes, so the tree was restored from git and rebuilt; two of its causes are now fixed
   (the per-round `conflict` rule, tag matching). Still open before it can run clean: the draft's select is not the
   inputs' 52px height, so `fieldMinHeight` (input and select) moved the textarea 6px; decide the select's own height
   (a `fieldSelectMinHeight`, or the select measured against the inputs) at the framework, then re-run Solve.
-- [ ] **Lenses: paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
+- [ ] **Lenses (58 distinct issues open on the 2026-10-05 sweep): paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
   `walkerFull` set.** First Solve (`qa/solve/lenses/2026-10-04T11-32-37/`): 57 to 33 distinct issues, but 3 rows
   regressed (a `gap: 0` write on cr-ref-lenses-22 shrank its parent cr-ref-lenses-21 at 375; the process-steps padding
   and step gap writes moved the next item 16px at 1440) and only one write round ran; the tree was restored from git
   and rebuilt. Also seen: cr-ref-lenses-25's gap setting holds 0 yet its inner band paints a 16px column gap (Hardcode
   class). Diagnose those three, fix generally, re-run.
-- [ ] Pair and solve every other surface, in Spec 47 §5 stage 3 Residual's order (Help, Home, header, mobile-menu, the
-  four megas, size-guide, lens, shop, product): `node scripts/computed-route/pairs.mjs --client eye-care-ward-end --surface <s>`,
-  set its `walkerFull`, then Solve it. Surfaces whose states open a panel (Help's FAQ, the megas, size-guide, lens) are
-  paired at rest only today: blocks inside a closed panel paint no words and are listed as left out. CR10's live
-  planted-fault proof runs on the first image-heavy surface (Home).
+- [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
+  `walkerFull`; panel surfaces pair with their walker state open on both sides (`pairs.mjs --state --width --recheck`)
+  and a surface inside the header or footer landmark pairs its own words (`lib/pairs.mjs::liftExclusions`). One
+  measure-only Solve run per surface (`--rounds 0`, no writes), aggregated by `sweep.mjs` into
+  `sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json` (`run-manifest.tsv` names each report). "Unmapped
+  state" issues come from walker states Solve does not map to a setting state (shop's filters, sort and brand states).
+  The register's Sweep column gives each register item its status.
+
+| Surface | Blocks measured (paired + hand) | Open issues | Unresolved | Derived | Unmapped state |
+|---|---|---|---|---|---|
+| footer | 31 of 34 | 201 | 138 | 63 | 0 |
+| about | 24 of 24 | 1 | 1 | 0 | 0 |
+| lenses | 28 of 29 | 58 | 32 | 26 | 0 |
+| help | 25 of 41 | 167 | 121 | 46 | 0 |
+| contact | 31 of 32 | 27 | 10 | 17 | 0 |
+| home | 65 of 79 | 349 | 273 | 43 | 33 |
+| header | 6 of 13 | 94 | 77 | 17 | 0 |
+| mobile-menu | 0 of 16 (drawer-open open) | 48 | 42 | 6 | 0 |
+| mega-sunglasses | 31 of 31 (mega-shop open) | 182 | 151 | 31 | 0 |
+| mega-brands | 48 of 48 (mega-brands open) | 277 | 235 | 42 | 0 |
+| mega-lenses | 21 of 21 (mega-lenses open) | 135 | 113 | 22 | 0 |
+| mega-help | 22 of 22 (mega-help open) | 59 | 50 | 9 | 0 |
+| size-guide | 21 of 32 (size-guide open) | 80 | 39 | 41 | 0 |
+| lens | 1 of 3 shown at step 1 | 88 | 64 | 6 | 18 |
+| shop | 10 of 45 | 216 | 44 | 9 | 163 |
+| product | 16 of 37 | 333 | 180 | 44 | 109 |
+| contact-form | 6 of 6 | 58 | 48 | 10 | 0 |
+| **Site** (a row two surfaces share counts once) | | **2,373** | 1,618 | 432 | 323 |
+
+  Pairing left out, with reasons in `qa/pairs/<surface>.json`: mobile-menu pairs nothing (the collector reads no words
+  inside the open live drawer, cause unproven; header.mjs's drawer pairs still measure it); shop's and product's draft
+  finders hold other words at 375 and 768 (the draft rebuilds its layout per width); Help's FAQ items are 319px on the
+  draft against 996px live; lens shows 3 of its 24 blocks at step 1 (lens.mjs's hand pairs walk the later steps). Bag,
+  checkout and confirmation are walked by their hand configs (`qa/sweep/2026-10-05/walks/`; confirmation against the
+  one cancelled order, so partly).
 - [x] **Recalibration of every block with today's calibration changes:** done 2026-10-05 for all 94 cache files on the
   local WSL mirrors (Session 0 of `plans/2026-10-04-eye-care-sweep-audit-fix.md`; counts in
   `.claude/reports/2026-10-04-route-data-audit/README.md` section 7). sgs/modal calibrates (22 settings).

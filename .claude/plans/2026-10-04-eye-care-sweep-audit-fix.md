@@ -208,13 +208,49 @@ LEDGER Front F state the result. **Estimate:** realistic ~3 h, about 2 h of it u
 **A4 status rules (decided):**
 - **still open:** a `sweep.json` row on the item's surface touches the element and property the item names.
 - **clean on the walker:** a paired ref covers the item's element and no row touches it. A site-wide item (S1 to S12) is clean only when every surface in its Covers column is clean; one unmeasured surface makes it **partly measured**.
-- **not walker-measurable:** the item is behaviour, motion timing, keyboard, a11y, content or Site Info. The agent decides; the main thread checks 10% of them (at least 5), plus every item marked clean or closed earlier without a cited report path.
+- **not walker-measurable:** the item is behaviour, entrance or load motion (the walker compares animation timings only where both sides use CSS keyframes; SGS entrances are script-driven), keyboard, focus, a11y, content or Site Info. Hover is walker-measurable: the walker forces `:hover` on every pair (`scripts/parity/lib/devtools.mjs::forcedHover`). The agent decides; the main thread checks 10% of them (at least 5), plus every item marked clean or closed earlier without a cited report path.
 - **closed earlier:** the register already records it closed with evidence, and the sweep agrees. If the sweep disagrees, it is **still open** (a regression), flagged in the handoff.
 - A5 takes every clean, closed earlier and partly measured item for a live check.
 
 **Gate A (review-gate):** pass when every surface has a report from A0's recorded HEAD (a report from another HEAD fails) and every register item has a
 status. Fail when a surface cannot be measured (host 403, pairing below half its blocks): record it with its reason
 and continue; never block the session on one surface.
+
+### Session A status (2026-10-05): done
+
+All units ran on the hosted test site (no captcha; one host job at a time). Live = HEAD was proven by checksum before
+measuring: every file of the deployed sgs-blocks build equals the local build of `4726700c1` once line endings and
+webpack's module ids are set aside, and the deployed theme.json equals the snapshot's. Recorded HEAD for every report:
+`1ea514ae8` (no block code after `4726700c1`).
+- **A1:** the rounds-0 test (`tests/solve.test.mjs`) already existed; shown red with the break removed.
+- **A2:** every surface paired. Two pairing fixes on the way: `pairs.mjs --state --width --recheck` pairs a panel with
+  its walker state open (`e32edfbf6`; the megas went from nothing at rest to all their blocks), and pairing runs the
+  hand config's `live.open` and lifts a landmark exclusion holding the surface (`ebf518e89`; lens). Coverage per
+  surface: the Spec 47 plan's Progress table.
+- **A3:** `qa/sweep/2026-10-05/sweep.json`: 2,373 distinct open issues over 17 surfaces, each surface's total equal to its
+  report's `wholePage` count once the sweep counted unmapped-state rows (`62f1f0e04`; shop had lost 163). About's walk
+  35s against 31s on 2026-10-04: the DevTools lookups stay unbatched.
+- **A4:** the register's Sweep column (`3ee5274ff`): 84 still open, 62 not walker-measurable, 31 closed earlier, 15 partly
+  measured, 9 clean on the walker. The main thread re-judged the hover and motion items (the agents applied the old
+  rule), checked 7 of the 62 not-walker-measurable items and every closed claim without a report.
+- **A5:** `qa/sweep/2026-10-05/a5/README.md`: framework fixes 37/37 PASS; About independent 0 differences; Contact
+  independent 106 rows against the walker's 27 (Session B input); sticky header holds; the drawer stagger (14) is
+  absent. S3 is fixed in the header but the footer's business-info hover colour still differs.
+
+### Parked from Session A
+
+None blocks Session B.
+- **PA-1 Drawer pairing:** `pairs.mjs` collects no words inside the open live phone drawer (`.sgs-nav-drawer[open]`;
+  no landmark exclusion applies; cause unproven). mobile-menu is measured by header.mjs's drawer pairs only.
+- **PA-2 Per-width draft finders:** shop's and product's kept finders hold other words at 375 and 768 (the draft
+  rebuilds its layout per width), so 17 shop blocks are left out. A finder chosen per width would keep them.
+- **PA-3 Hand-pair refs in the A4 validator:** `register-sweep.mjs merge` counts only auto-paired refs as measured;
+  a hand pair's live trace names its block (`header-phone` is `cr-ref-header-11`), so N1 had to be recorded closed
+  earlier rather than clean.
+- **PA-4 Independent check reads off-screen text:** `independent-check.mjs` counts screen-reader-only text parked at
+  -9999px as painted (9 Contact rows); the walker's collector skips it (`auto-collect.mjs::srOnly`).
+- **PA-5 Confirmation needs a paid test order:** the only order on eye-care-test is cancelled (652), so its page lacks
+  the tick and continue link; a paid test order makes the walk complete.
 
 ---
 

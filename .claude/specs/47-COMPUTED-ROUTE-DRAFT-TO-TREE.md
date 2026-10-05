@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.11"
+spec_version: "0.12"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -533,24 +533,26 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - F5 whole-page score in the solve report: built.
      - Speed: lean walks, the draft cache and four widths at once (step 2 above).
    - **Residual:**
-     - First (plan `plans/2026-10-04-eye-care-sweep-audit-fix.md`): Session 0 repairs what the 2026-10-04 route data
-       audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved: ~628 working settings the seeder never
-       routes (so Solve calls them Missing), calibration's dead and no-marker classes (fixture preconditions, an
-       81-element read cap, closed surfaces, hover on the root, `::after` paint, 641 settings `longhands()` drops; the
-       calibration code for all of these is built (Session 0, `c0d6c1d0d`) and every block was recalibrated with it on 2026-10-05), and
-       the framework bugs and editor-canvas gaps the new wiring gate (`check-wiring-fingerprint.py`) reports; then a
-       measure-only sweep of every surface, an audit of what stays open, and the framework fixes it needs.
-     - Then Contact and its form post to 100%, then Lenses, then every other surface with its full config: Help, Home,
-       header, mobile-menu, the four megas, size-guide, lens, shop and product. Done per surface: on a fresh rebuild of
-       the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes at most
-       10%, the independent check agreeing, the register marked. The open causes per surface are in the plan's Progress
-       (Contact: the hours list's inner row gap, which text-run pairs do not measure, and the address width; the form:
-       the select's height; Lenses: three regressions to diagnose).
+     - First (plan `plans/2026-10-04-eye-care-sweep-audit-fix.md`): Session 0 (2026-10-05) repaired what the route data
+       audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved and recalibrated every block. Session A
+       (2026-10-05) measured every surface from `1ea514ae8` without writing: 2,373 distinct open issues across 17
+       surfaces (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`; per surface in the plan
+       `2026-10-04-spec47-full-coverage.md` Progress), and every fix-register item carries a sweep status (84 still
+       open, 62 not walker-measurable, 31 closed earlier, 15 partly measured, 9 clean on the walker). Next: Session B
+       sorts what stays open into its classes and plans the fixes; Session C makes the framework fixes.
+     - Then (Session D) each surface to 100%, in the order the sweep ranks, Contact and its form first. Every surface has
+       its full config (2026-10-05; panel surfaces pair with their walker state open). Done per surface: on a fresh
+       rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes
+       at most 10%, the independent check agreeing, the register marked. The open causes per surface are in the plan's
+       Progress (Contact: the hours list's row gap and the address width; the form: the select's height; Lenses: three
+       regressions to diagnose). Known measuring gaps (2026-10-05): the collector reads no words inside the open live
+       phone drawer; shop's and product's draft finders change words between widths; the independent check counts
+       off-screen screen-reader text as painted (Contact).
      - Built on 2026-10-04 (the plan's Universal tool log lists each): enclosing-block settings, extension settings in
        the framework DB (`source='sgs-ext'`), calibration `reaches` and `_tag`, the per-round `conflict` rule, grid
        tracks as proportions (CR16), aspect ratio (CR10, live proof on the first image-heavy surface).
-     - Calibration: every block is re-calibrated with the 2026-10-04 changes; 6 are done, the rest are listed in the
-       plan's Progress. CR17's business-info `textBefore` element remains.
+     - Calibration: every block was re-calibrated on 2026-10-05 (94 cache files, on the local WSL mirrors). CR17's
+       business-info `textBefore` element remains.
      - Gap typing (a setting that paints a parent while a rule on a child overrides it comes out Missing setting): the
        hours day weight closed through a dedicated label setting; calibration still records nothing for an overriding
        child.
