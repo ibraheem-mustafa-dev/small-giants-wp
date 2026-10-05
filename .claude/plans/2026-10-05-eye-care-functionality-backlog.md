@@ -2,7 +2,7 @@
 title: "Eye Care: the functionality and feature backlog pulled out of the fix register"
 project: small-giants-wp
 created: 2026-10-05
-status: not started
+status: Tier 1 built except CR6 (2026-10-05, 65573118c + c06f71ea6); Tier 2-4 not started
 governs: what to build next, after the register-proven repairs track closed
 references:
   - .claude/plans/2026-10-02-eye-care-fix-register.md
@@ -131,6 +131,29 @@ session.
 Spec 47 route work. Build N11(a), 75/82/158, 91 and 52 first.
 
 ## Tier 1 — a shopper cannot finish the job (build these first)
+
+> **Built and verified on the sandybrown canary, 2026-10-05** (`65573118c`, plus `c06f71ea6` for the
+> tabs correction): **N11(a)**, **52**, **75/82/158** and **91**. Each one's register row carries the
+> commit hash, what was measured and what was not. **CR6 remains deliberately unbuilt** - see its
+> falsified entry above; it needs `scripts/computed-route/lib/resolve.mjs`, which another session owns.
+>
+> Three findings from building them that change what the rows above say:
+>
+> - **52's cause was neither of the two the gate listed.** The strip's logos are outside the viewport
+>   **horizontally** - one set is 2784px wide inside a 1440px `overflow: hidden` strip - so a lazy
+>   image there is never fetched and no amount of scrolling reveals it. That is why the symptom is
+>   never rather than late. The zero-width cause was measured and is NOT live (`setWidth` was 2784).
+>   The cited line was wrong too: the strip uses `sgs_render_media()`, not `sgs_responsive_image()`.
+> - **N11(a)'s stock-managed negative control cannot be run on the canary at all.** Every canary
+>   product has `stock = NULL`, and `class-cart-limits.php::enforce_add_to_cart_limits` returns early
+>   for unmanaged stock, so no canary product can ever reach the global cap and the commit gate's 429
+>   is unreachable there. Rate limiting was proven intact by a different route instead - see the
+>   register row. A cheaper, read-only control replaced it: A then A again survives (that path already
+>   called `get_cart()`), while A then a different B did not.
+> - **Compensating a changed border width with padding does not work**, which cost a second deploy.
+>   Browsers snap a border to whole device pixels while padding keeps its full value, so the two never
+>   cancel. Keep the border width constant and change only its colour, as the draft does.
+
 
 | Ref | What a user hits | What to build | Prove first? |
 |---|---|---|---|
