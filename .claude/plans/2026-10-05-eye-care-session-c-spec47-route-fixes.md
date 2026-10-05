@@ -489,6 +489,86 @@ Nothing is dropped. Every item below is named with where it goes.
 
 **No lane failed its gate, so no lane's items are left open for that reason.**
 
+### QC council on Session C's merged work, 2026-10-05. Three raters, cross-model (no Opus), read-only.
+
+Run at Bean's request after Gate 1, as a **diagnostic council plus a retrospective falsifiability gate**: for each
+recorded claim, is it measured or asserted, what command reproduces it, and **would it turn red if the underlying
+fix were reverted**. Raters: a falsifiability auditor and an overlap/proof auditor (Sonnet), and a code-path tracer
+(Haiku). Structural pre-gate first: **all 21 `file::symbol` citations in the commit messages and this plan exist.**
+
+**What held.** All six numeric claims reproduced exactly, from the committed baseline and a fresh run: F 338 → 177,
+W 1562 → 1764, T 445 and U 28 unchanged, total 2373 → 2414, ambiguous 43, `enumSettings` 633,
+`calibration.discovered` 623/94. The transition matrix diffed key by key: **exactly 161 / 33 / 26 / 41 new (13 text,
+28 presence) / 0 gone / 0 duplicates.** The sweep-to-triage identity holds on all 17 surfaces. The code-path tracer
+confirmed **12 of 12** load-bearing symbols do what their commit messages say, including the `1 === reach.length`
+write guard (0 and 2 both skip), the raw-path dedupe in `reachedDescendants`, state-strict candidates, and
+`grid-template-columns:count` returning its exact stored string.
+
+#### ⚠️ Correction: "the hop is falsifiable by deleting one call" is FALSE
+
+That claim appears in lane L1's commit message and in this plan. The council falsified it.
+
+With `lib/resolve.mjs::resolveViaAncestor` never called, **F stays 177, W stays 1764, T stays 445, and the suite is
+322/322 green.** Only one evidence field differs (`where: 'ancestor'`) across 295 rows. So:
+
+- **The 161/33/26 reclassifications are driven by `lib/triage.mjs::canvasSettable` plus the manifest `canvas` flag,
+  not by the hop.** `triageIssue` reads `const settable = res.cite || canvasSettable( issue, ctx )`, and
+  `canvasSettable` is a **superset** of the hop: it searches ancestors *and* siblings. Forcing `ctx.canvas` false
+  gives **F 338**; disabling both the hop and `canvasSettable` gives **F 338** and turns exactly two tests red.
+- **The hop has never produced a write on this data.** T is unchanged with it off, which is consistent with L1.1's
+  own premise (0 of 318 rows were `owner-should-have-resolved`).
+- **The tests cannot separate the two.** `tests/triage.test.mjs` stubs `ancestorHop: () => null`, so the triage
+  canvas case and its negative control prove only `canvasSettable`; `tests/resolve.test.mjs` proves only the hop.
+
+**So the hop's classification half is redundant today, and this is the overlap `prove-the-cause-before-fix.md`
+forbids: two fixes covering one behaviour, neither shown necessary.** It is **not** deleted now, for one stated
+reason: its unique contribution is the **proven-write path**, which Wave 2's **L8.7** needs when
+`solve.mjs::writeRound` starts writing through it. **The hop must earn its place at L8.7 by producing at least one
+write, or be deleted.** That is a condition on L8.7, recorded here so it cannot be forgotten.
+
+#### Three further downgrades, each from asserted to its real strength
+
+| Claim | Its real strength |
+|---|---|
+| **"Zero class changes on any non-canvas surface"** | True and measured, but it is a **property of the manifest, not the code**. A rater set `canvas: true` on the five pages in a scratch manifest and **home's F fell 58 → 15 and help's 36 → 20**: 59 real F rows would be masked. So the canvas roster is load-bearing, and Session C2 must treat a wrong roster as able to hide genuine page gaps |
+| **"Ambiguous held at 43"** | True, and the resolver's real gap *is* preserved beside the citation (verified on `mega-brands` `cr-ref-mega-brands-41`, which carries both an `ambiguous` resolver gap and a `canvas-settable` citation). But the count reads the **evidence**, not the verdict, so 26 of the 43 are now `W/canvas-settable` and **the number cannot detect a reclassification by itself**. It is a weaker gate than it reads |
+| **"0 of 318 F/no-setting verdicts were `owner-should-have-resolved`"** | **Asserted, not reproducible**: the join script was never committed, and those diagnosis labels appear only in this plan. Corroborated indirectly only — T stays 445 with the hop on or off, so the hop never wrote. Treat the figure as a diagnosis, not a measurement |
+| `enumSettings` 633 and `discovered` 623/94 | Correct, but they are **"nothing touched it" statements**: one is a database fact and the other a gitignored local cache, so no code change in this session could move either. They evidence no fix |
+
+Also corrected: "the 977 `fx:` rows are `source='sgs-fx'`" is imprecise — **29 `fx:` rows carry `source='sgs'`**; the
+977 is the count of `sgs-fx` rows.
+
+#### The untested line that matters most
+
+**`triage.mjs::runTriage`'s manifest read has no test.** Forcing `canvas: false` there leaves the suite at 322/322
+while measured F doubles from 177 to 338. The session's headline result is protected only by re-running triage by
+hand. **Gate 2 and C3.7 must therefore assert the F count explicitly against the canvas roster**, rather than
+relying on the suite, and that assertion is now part of those gates.
+
+#### The three-way identity is not yet one definition
+
+`lib/solve-report.mjs::wholePage` still filters on `VISUAL.includes( x.kind )` while `lib/sweep.mjs` and
+`lib/triage.mjs` use `isIssue`, which also counts link-coverage rows (kind `auto`, keys `link-missing`/
+`link-extra`). Lane L6 flagged it; only the `triage.mjs` half was routed to L1, because `solve-report.mjs` is lane
+**L8's** file. Latent at 0 link rows, and it diverges the moment L2's link rows reach a Solve report. **L8 switches
+`wholePage` to `isIssue`.**
+
+#### The ledger attribution, corrected
+
+`D-40` to `D-51` carried `decided: "2026-10-05 Bean (…)"`. Bean decided the **rule** and the **contact** node
+(`D-17` to `D-24`); extending it to the footer and header nodes was this session's inference. The field now reads
+`2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this
+entry extends it to this node by the same mechanism)`, and each `reason` now states plainly that
+**`lint.mjs::lintLedger` skips `HOUSE_RULES` before any evidence check, so nothing verifies the 44px tap target.**
+All 28 house-rule entries in the ledger are unlinted for the same reason. The row matching itself was independently
+re-verified: 40 row-instances, 4 per footer entry and 2 per header entry, **0 matched by any other entry**, and the
+three held-back rows were confirmed correct — `cr-ref-product-4` really does carry three F-class hover `transform`
+rows on different paths, so one entry would have closed two undecided findings.
+
+**No lane weakened a test or a gate.** The only test-line removals across the six lane commits are import widenings
+and two fixtures changing `kind: 'text'` to `kind: 'motion'`, which the new content class requires. No threshold was
+raised, no check skipped, no branch short-circuited.
+
 **A clean stop.** Sitting i ends here. A follow-on session resumes at Wave 2 from this plan without re-reading
 anything else.
 
@@ -559,7 +639,10 @@ PASS: everything Gate 1 requires, plus:
       (every surface's triage count equals its sweep count), with every delta against 2,373
       explained row-for-row in the commit;
       L7.3's text read covers both role content and role text-content, or Bean's answer is recorded
-      and the scope matches it
+      and the scope matches it;
+      AND the F count is asserted explicitly against the canvas roster, because triage.mjs::runTriage's
+      manifest read has NO test: forcing canvas false leaves the suite green while measured F doubles
+      from 177 to 338 (QC council, 2026-10-05)
 FAIL: the identity breaks and a delta cannot be explained
 TYPE: auto-gate, then a main-thread read of every diff
 ```

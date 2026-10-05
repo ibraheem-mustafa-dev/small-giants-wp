@@ -585,8 +585,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-41",
@@ -597,8 +597,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-42",
@@ -609,8 +609,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-43",
@@ -621,8 +621,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-44",
@@ -633,8 +633,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-45",
@@ -645,8 +645,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-46",
@@ -657,8 +657,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-47",
@@ -669,8 +669,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area and cancels the padding with negative margins, so its text paints where the draft's does. Measured 2026-10-05 on cr-ref-footer-24 (pair link-phone, state opening): the draft declares 0px on all eight; live pads 7px top/bottom and 8.4px left/right and pulls back -11.5px top/bottom and -8.4px left/right. The side pair cancels exactly; the vertical pair over-pulls by 4.5px each side, which keeps the text centre and shortens the box, and is the same mechanism D-17 to D-24 decide on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-48",
@@ -685,8 +685,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-49",
@@ -701,8 +701,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-50",
@@ -717,8 +717,8 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   },
   {
     "id": "D-51",
@@ -733,7 +733,7 @@
     "expected": {
       "rule": "touch-target"
     },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9",
-    "decided": "2026-10-05 Bean (touch-target house rule, D-17 precedent)"
+    "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
+    "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
   }
 ]
