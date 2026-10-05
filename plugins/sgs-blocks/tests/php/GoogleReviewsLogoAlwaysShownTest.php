@@ -280,13 +280,67 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__write-review \) \{([^}]*)\}#', $css, $w ) );
 		$this->assertStringContainsString( 'background-color: var( --sgs-gr-surface );', $w[1] );
 		$this->assertStringContainsString( 'color: var( --sgs-gr-blue );', $w[1] );
-		// Hover and pressed states are Google's blue tint, never the theme: the arrows and "Write a review" both tint and take a blue border on hover.
+		// With no colour set, the stylesheet carries Google's hover defaults (render.php emits nothing then).
 		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__arrow:hover, \.sgs-google-reviews__arrow:focus-visible \) \{([^}]*)\}#', $css, $h ) );
 		$this->assertStringContainsString( 'background-color: var( --sgs-gr-blue-tint );', $h[1] );
 		$this->assertStringContainsString( 'border-color: var( --sgs-gr-blue );', $h[1] );
-		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__arrow:active \) \{([^}]*)\}#', $css, $act ) );
-		$this->assertStringContainsString( 'var( --sgs-gr-blue-tint-strong )', $act[1] );
 		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__write-review:hover \) \{([^}]*)\}#', $css, $wh ) );
 		$this->assertStringContainsString( 'border-color: var( --sgs-gr-blue );', $wh[1] );
+		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__see-all:hover \) \{([^}]*)\}#', $css, $sh ) );
+		$this->assertStringContainsString( 'var( --sgs-gr-blue-dark )', $sh[1] );
+		// The pressed state stays in the stylesheet.
+		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__arrow:active \) \{([^}]*)\}#', $css, $act ) );
+		$this->assertStringContainsString( 'var( --sgs-gr-blue-tint-strong )', $act[1] );
+	}
+
+	/** Pulls the declarations of every emitted rule whose selector ends in the given text. */
+	private function rule_decls( string $css, string $selector_tail ): string {
+		preg_match_all( '#([^{}]*' . preg_quote( $selector_tail, '#' ) . ')\{([^}]*)\}#', $css, $m );
+		return implode( '', $m[2] );
+	}
+
+	/**
+	 * A draft carries resting colours and no hover colours. The block supplies Google's hover colours through the
+	 * same emitter an author's value uses, so they paint on the `::after` layer above that resting fill.
+	 */
+	public function test_hover_colours_default_to_googles_even_with_resting_colours_from_a_draft(): void {
+		$r = $this->render_full(
+			array(
+				'dataSource'                => 'inline',
+				'variant'                   => 'slider',
+				'reviews'                   => array( array( 'author' => 'A', 'text' => 'Fine', 'rating' => 5 ) ),
+				'seeAllUrl'                 => 'https://example.test/all',
+				'reviewRequestUrl'          => 'https://example.test/write',
+				'arrowColourBackground'     => '#fff',
+				'arrowColourBorder'         => '#DADCE0',
+				'arrowColourText'           => '#1A73E8',
+				'writeReviewColourBackground' => '#fff',
+				'seeAllColourBackground'    => '#1A73E8',
+			)
+		);
+		$css = $r['css'];
+		$arrow_hover = $this->rule_decls( $css, '.sgs-google-reviews__arrow:hover::after' ) . $this->rule_decls( $css, '.sgs-google-reviews__arrow:hover' );
+		$this->assertStringContainsString( 'var(--sgs-gr-blue-tint)', $arrow_hover );
+		$this->assertStringContainsString( 'border-color:var(--sgs-gr-blue)', $arrow_hover );
+		$this->assertStringContainsString( 'var(--sgs-gr-blue-tint)', $this->rule_decls( $css, '.sgs-google-reviews__write-review:hover::after' ) );
+		$this->assertStringContainsString( 'var(--sgs-gr-blue-dark)', $this->rule_decls( $css, '.sgs-google-reviews__see-all:hover::after' ) );
+	}
+
+	/** A hover colour set in the inspector replaces the default for that property only. */
+	public function test_an_author_hover_colour_replaces_the_default(): void {
+		$r = $this->render_full(
+			array(
+				'dataSource'              => 'inline',
+				'variant'                 => 'slider',
+				'reviews'                 => array( array( 'author' => 'A', 'text' => 'Fine', 'rating' => 5 ) ),
+				'arrowColourBackground'   => '#fff',
+				'arrowColourBackgroundHover' => '#ffeecc',
+			)
+		);
+		$hover = $this->rule_decls( $r['css'], '.sgs-google-reviews__arrow:hover::after' );
+		$this->assertStringContainsString( '#ffeecc', $hover );
+		$this->assertStringNotContainsString( 'blue-tint', $hover );
+		// The border default still applies: the author set only the background hover.
+		$this->assertStringContainsString( 'border-color:var(--sgs-gr-blue)', $this->rule_decls( $r['css'], '.sgs-google-reviews__arrow:hover' ) );
 	}
 }

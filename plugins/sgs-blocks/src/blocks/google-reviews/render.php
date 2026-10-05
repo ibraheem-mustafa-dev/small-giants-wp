@@ -300,6 +300,32 @@ $gr_btn_attrs = static function ( string $prefix ) use ( $attributes ): array {
 	foreach ( array( 'FontSize', 'FontWeight', 'Padding', 'BorderWidth', 'BorderStyle', 'BorderRadius', 'WidthType' ) as $suffix ) {
 		unset( $out[ $prefix . $suffix ] );
 	}
+	// Google's hover colours (blue tint and blue border on the outlined arrows and Write a review, the darker blue on
+	// the filled See all) are the default. With no colour set, style.css supplies them and nothing is emitted. Once
+	// the author sets a RESTING colour (a draft's colours arrive this way, and a draft has no hover colours), that
+	// colour is painted by the helper on a layer that outranks any stylesheet hover rule, so the same defaults are
+	// written through the helper too. A hover colour or gradient set in the inspector replaces the default for that
+	// property. The tokens (--sgs-gr-*, style.css) switch for the dark theme.
+	$has_resting_colour = false;
+	foreach ( array( 'ColourBackground', 'ColourBackgroundGradient', 'ColourBorder', 'ColourBorderGradient', 'ColourText', 'ColourTextGradient' ) as $suffix ) {
+		if ( ! empty( $out[ $prefix . $suffix ] ) ) {
+			$has_resting_colour = true;
+		}
+	}
+	if ( ! $has_resting_colour ) {
+		return $out;
+	}
+	$hover_defaults = array(
+		'arrow'       => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-tint)', 'ColourBorderHover' => 'var(--sgs-gr-blue)' ),
+		'writeReview' => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-tint)', 'ColourBorderHover' => 'var(--sgs-gr-blue)' ),
+		'seeAll'      => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-dark)' ),
+	);
+	$gradient_of    = array( 'ColourBackgroundHover' => 'ColourBackgroundHoverGradient', 'ColourBorderHover' => 'ColourBorderHoverGradient' );
+	foreach ( $hover_defaults[ $prefix ] ?? array() as $suffix => $default ) {
+		if ( empty( $out[ $prefix . $suffix ] ) && empty( $out[ $prefix . $gradient_of[ $suffix ] ] ) ) {
+			$out[ $prefix . $suffix ] = $default;
+		}
+	}
 	return $out;
 };
 $gr_responsive_css .= sgs_button_element_style_css( $gr_btn_attrs( 'writeReview' ), 'writeReview', $gr_root_sel . ' .sgs-google-reviews__write-review', true, false );

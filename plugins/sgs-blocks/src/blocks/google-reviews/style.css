@@ -826,9 +826,10 @@ a.sgs-google-reviews__author:hover {
 	}
 }
 
-/* Hover/focus-visible colours are client-controllable — emitted by render.php via
-   sgs_button_element_style_css() at real specificity. The rule below is the DEFAULT look, kept at
-   zero specificity via :where(). The focus ring itself is slider-nav.css's. */
+/* Hover/focus colours are client-controllable — emitted by render.php via sgs_button_element_style_css() at real
+   specificity. The rule below is the DEFAULT look (Google's blue tint and blue border), kept at zero specificity via
+   :where(). When the author sets a resting colour, render.php writes the same defaults through the helper, because
+   the resting colour is painted on a layer that outranks this rule. The focus ring itself is slider-nav.css's. */
 :where( .sgs-google-reviews__arrow:hover, .sgs-google-reviews__arrow:focus-visible ) {
 	background-color: var( --sgs-gr-blue-tint );
 	border-color: var( --sgs-gr-blue );
