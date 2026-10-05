@@ -230,9 +230,15 @@ webpack's module ids are set aside, and the deployed theme.json equals the snaps
 - **A3:** `qa/sweep/2026-10-05/sweep.json`: 2,373 distinct open issues over 17 surfaces, each surface's total equal to its
   report's `wholePage` count once the sweep counted unmapped-state rows (`62f1f0e04`; shop had lost 163). About's walk
   35s against 31s on 2026-10-04: the DevTools lookups stay unbatched.
-- **A4:** the register's Sweep column (`3ee5274ff`): 84 still open, 62 not walker-measurable, 31 closed earlier, 15 partly
-  measured, 9 clean on the walker. The main thread re-judged the hover and motion items (the agents applied the old
-  rule), checked 7 of the 62 not-walker-measurable items and every closed claim without a report.
+- **A4:** the register's Sweep column: 71 still open, 63 not walker-measurable, 32 closed earlier, 22 partly measured,
+  13 clean on the walker. A first Sonnet pass was rejected as shallow (it cited any row on a wrapper block and gave no
+  values); `register-sweep.mjs merge` now refuses a still-open verdict that does not cite one exact row (report, ref,
+  element path, property) and quote its values with a sentence tying the item to that element, a clean claim without
+  that sentence, and hover given alone as unmeasurable (`79ad3953f`). Eight Opus agents redid it under that gate
+  (verdicts and brief in `qa/sweep/2026-10-05/a4/`). It found two register "closed" items open again: 101 (the
+  Lenses icon list sits 16px further below its heading) and N15 (the See all reviews button paints black where the
+  draft paints blue). The main thread checked 6 still-open verdicts and every clean one against their rows, 7 of the
+  not-walker-measurable items and every closed claim without a report.
 - **A5:** `qa/sweep/2026-10-05/a5/README.md`: framework fixes 37/37 PASS; About independent 0 differences; Contact
   independent 106 rows against the walker's 27 (Session B input); sticky header holds; the drawer stagger (14) is
   absent. S3 is fixed in the header but the footer's business-info hover colour still differs.

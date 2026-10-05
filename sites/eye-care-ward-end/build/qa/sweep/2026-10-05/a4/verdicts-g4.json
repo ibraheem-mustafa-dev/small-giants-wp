@@ -1,0 +1,420 @@
+[
+ {
+  "id": "61",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Register 61 is 'Same as 59': colour dots that cannot be focused or clicked, fixed by making them real buttons that swap their own card's photo. That is keyboard and click behaviour. The card-dot pair on cr-ref-shop-50 differs only in text-align, which is not what this fix changes."
+  }
+ },
+ {
+  "id": "62",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-05T10-33-39/solve-report.json",
+   "ref": "cr-ref-shop-22",
+   "path": "fieldset > div > button:nth-of-type(1)",
+   "property": "width",
+   "draft": "61.6719px",
+   "live": "81.3438px",
+   "element": "Row on cr-ref-shop-22 (the size filter's product-filter-chips block, attribute 10, showCounts: true in archive-product.tree.json), first chip button in the size-open state. The round-1 size-small pair reads 'Small' on the draft and 'Small (4)' live, which is why this chip is 20px wider."
+  }
+ },
+ {
+  "id": "64",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "A top bar that stays pinned while the filter drawer scrolls is scroll behaviour. The walker measures each state at rest; the only rows on cr-ref-shop-11's .sgs-shop-filters__header are the heading's typography and the close icon's size."
+  }
+ },
+ {
+  "id": "65A",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-05T10-33-39/solve-report.json",
+   "ref": "cr-ref-shop-50",
+   "path": "div:nth-of-type(3) > .sgs-product-card__title-row > .sgs-product-card__attribute-tag",
+   "property": "margin-left",
+   "draft": "0px",
+   "live": "55.3125px",
+   "element": "The path ends in .sgs-product-card__title-row > .sgs-product-card__attribute-tag, the 'POLARISED' tag on the product card (round-1 pair tag-holbrook). At 375 its live margin-left (product-card style.css applies margin-left:auto when the tag wraps) pushes it to the right of its own row."
+  }
+ },
+ {
+  "id": "65B",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The defect is at 320px, and the walker measures only 375, 768, 1440 and 1920, so the one-column floor at 320px is never measured. The row 'h' on cr-ref-shop-1/2 (whole grid height) does not show the column count."
+  }
+ },
+ {
+  "id": "65C",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The product card (cr-ref-shop-50) is measured only by hand pairs (card-price, card-rrp), which the A4 validator does not count as paired (parked PA-3); its only row is the RRP text-decoration-line, and no row covers where the price and RRP sit, so the wrap is not confirmed either way."
+  }
+ },
+ {
+  "id": "N25",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Choosing and then clearing a filter, which leaves empty group shells, is behaviour after an interaction (the test is a group count against a heading count), not a style. The panel-after-click rows on cr-ref-shop-32/35 (for example y-after-brand-search 48 vs 228) may be a symptom, but they do not count groups."
+  }
+ },
+ {
+  "id": "N26",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "S10's whole-card stretched link is link-area behaviour (what is clickable), not a computed style the walker compares."
+  }
+ },
+ {
+  "id": "N27",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "S7: removing the 'No reviews yet' text is content. The round-1 card pairs show it only as a text difference, and text is not a sweep style row."
+  }
+ },
+ {
+  "id": "67",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-12",
+   "path": ".sgs-tabs__panels > .sgs-tabs__panel:nth-of-type(1)",
+   "property": "padding-left",
+   "draft": "0px",
+   "live": "24px",
+   "element": "Row on the sgs/tabs block (cr-ref-product-12) at .sgs-tabs__panels > .sgs-tabs__panel:nth-of-type(1), the Description panel, in the tab-description state. Its 24px padding is the inset the item names (text-inset-x on the same panel reads 0 vs 24)."
+  }
+ },
+ {
+  "id": "68",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-4",
+   "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+   "property": "h",
+   "draft": 106,
+   "live": 114,
+   "element": "The path is the first .sgs-option-picker__option in option picker 1, the colour picker (round-1 pair colour-swatch, 'Ivory'). The tile is 8px taller live than on the draft (106 vs 114), the extra height the item names."
+  }
+ },
+ {
+  "id": "69",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The size pop-up's dialog and header are not among this bundle's refs: the size-guide refs are the copy inside it, and no product row is on .sgs-modal__dialog. The product round-1 report does measure the dialog (pair size-guide-box: margin 0 vs 45/24px, width 704 vs 720 at 768), but under cr-ref-footer-33, which belongs to the footer surface, outside this bundle."
+  }
+ },
+ {
+  "id": "70",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-91",
+   "path": ".sgs-accordion-item__header",
+   "property": "painted-ground",
+   "draft": "none",
+   "live": "rgba(250, 248, 245, 1)",
+   "element": "The path is the .sgs-accordion-item__header of the product 'Good to know' accordion item (cr-ref-product-91, the accordion-open state). S5 says there is no ground when open, but live paints one."
+  }
+ },
+ {
+  "id": "71",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-4",
+   "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill > .sgs-option-picker__pill-text > .sgs-option-picker__pill-label",
+   "property": "font-weight",
+   "draft": "400",
+   "live": "500",
+   "element": "The path ends .sgs-option-picker:nth-of-type(1) ... .sgs-option-picker__pill-label, the colour swatch's name ('Ivory') in the colour picker. Live is heavier than the draft, and the same element's font-size is 10.5 vs 12.6px."
+  }
+ },
+ {
+  "id": "72",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-11",
+   "path": "",
+   "property": "transform",
+   "draft": "matrix(1, 0, 0, 1, 0, 26)",
+   "live": "none",
+   "element": "cr-ref-product-11 is the sgs/container section holding the tabs and the Good-to-know column (margin-top 84px, one of the three section containers). At opening, the draft holds it at translateY(26px), waiting to fade up; live has no offset (opacity 0 vs 1 on the same root). The other two sections are cr-ref-product-100/110."
+  }
+ },
+ {
+  "id": "73",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "A fade-in on load for the main gallery photo is entrance motion. SGS entrances are script-driven, and the walker compares keyframes only where both sides use CSS keyframes."
+  }
+ },
+ {
+  "id": "74, 78, 79",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-9",
+   "path": ".sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-title",
+   "property": "font-weight",
+   "draft": "400",
+   "live": "600",
+   "element": "The path .sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-title is the product page WhatsApp card's title ('Need advice?', cr-ref-product-9). S4 says the card text stops inheriting the button's bold, and it is still 600 vs 400."
+  }
+ },
+ {
+  "id": "75, 82, 158",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "No sweep row is on a gallery thumbnail or a colour-swatch photo. The only gallery row (.sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el) is the main photo, and the option-picker rows cover the tiles' type and borders, not their image. The product round-1 report's gallery-thumb pair has a presence diff (draft present, live missing: the thumbnails are absent), but presence diffs are not sweep rows."
+  }
+ },
+ {
+  "id": "76",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "S1 (built c7d292638, live-checked 2026-10-04) puts the lift into the tile's transition: option-picker style.css::.sgs-option-picker--tile .sgs-option-picker__pill ends with transform at the button hover-transition. The sweep agrees: in the pick-colour state, the colour tile pill's row reads transition-duration '0.15s, 0.15s, 0.15s, 0.15s, 0.25s', and its round-1 transition shows 'transform 0.25s'. The 3px lift against the draft's 2px is the agreed S1 rule."
+  }
+ },
+ {
+  "id": "77",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-4",
+   "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(2) > .sgs-option-picker__pill",
+   "property": "border-top-width",
+   "draft": "1px",
+   "live": "2px",
+   "element": "The path is .sgs-option-picker__pill of the second colour option (option picker 1) in the pick-colour state, after Black is chosen (round-1 pair colour-chosen). Its border is the chosen-tile frame, 2px live vs 1px on the draft."
+  }
+ },
+ {
+  "id": "81, N29",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The close button is .sgs-modal__dialog > .sgs-modal__close, and no row in this bundle is on it. The product round-1 report measures it (pair size-guide-close: painted-ground none vs rgba(240, 240, 240, 1), border-radius 0px vs 50%), so the grey circle is still there, but under cr-ref-footer-33 (the footer surface), outside this bundle."
+  }
+ },
+ {
+  "id": "83",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-8",
+   "path": "",
+   "property": "padding-left",
+   "draft": "22px",
+   "live": "28px",
+   "element": "cr-ref-product-8 is the sgs/button 'Add my prescription' (single-product.tree.json; round-1 pair add-prescription). Its root's side padding is 28px vs 22px, which puts the text 6px further in (text-inset-x 22 vs 28)."
+  }
+ },
+ {
+  "id": "87",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-3",
+   "property": "font-weight",
+   "element": "cr-ref-product-3 is the sgs/breadcrumbs block ('Home / Sunglasses / Gucci' on both sides). Its only row is the first crumb's link colour; no row touches any crumb's font-weight, so the current crumb's weight matches. The product name as the last crumb is content the draft does not have either, so the walker cannot measure that half."
+  }
+ },
+ {
+  "id": "88",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "No sweep row or round-1 pair is on the stock line ('In stock — dispatched next working day'). cr-ref-product-4's rows cover the price span, pickers, buttons, gallery and bag notice, never the stock line. buybox block.json has no stock-text weight setting yet."
+  }
+ },
+ {
+  "id": "89",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "No row is on the add-to-bag button's price span (.buybox__cart-price). The add-to-bag rows cover the button, its padding and gap, and the label span (form > button > span:nth-of-type(1) > span) line-height, and the round-1 add-to-bag pair has no font-weight diff. buybox style.css::.sgs-buybox .buybox__cart-price still sets font-weight: 700."
+  }
+ },
+ {
+  "id": "90, N36B",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "No row is on the 'from +£59' note (.sgs-button__note) inside cr-ref-product-8. That block's rows are its padding, max-width, hover lift and text inset, and the round-1 colour diff is on .sgs-button__label. button style.css::.sgs-button__note still mixes the colour to 70%."
+  }
+ },
+ {
+  "id": "91",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "The fallback 'In stock' / 'Out of stock' text in the Details tab is content. The tab-details state has no pair on the Details panel copy."
+  }
+ },
+ {
+  "id": "93",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-4",
+   "path": ".sgs-buybox__config-col > div:nth-of-type(7) > p",
+   "property": "color",
+   "draft": "rgb(250, 248, 245)",
+   "live": "rgb(138, 31, 33)",
+   "element": "The path .sgs-buybox__config-col > div:nth-of-type(7) is the notice shown after Add to bag (round-1 pair bag-toast: draft '✓ Added to bag View bag', live 'Added to your basket.'). Its text is red live (rgb(138, 31, 33)) where the draft toast is light; on the same element, position is fixed vs static."
+  }
+ },
+ {
+  "id": "94",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-4",
+   "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+   "property": "transform",
+   "draft": "matrix(1.04, 0, 0, 1.04, 0, 0)",
+   "live": "none",
+   "element": "The path .sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el is the main gallery photo (round-1 pair gallery-photo-zoom). Under forced hover the draft scales to 1.04 and live does not; the brighten is the same element's filter row."
+  }
+ },
+ {
+  "id": "95",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Empty spec rows (Style, Frame type, Material, Hinge, Nose pads) are missing product data, which is content."
+  }
+ },
+ {
+  "id": "N28",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The size pop-up's WhatsApp card has no row in this bundle. It is measured only inside the product round-1 size-guide-box pair under cr-ref-footer-33 (footer surface), and there only the icon's width (19 vs 20px) differs, with no row on the card's title or subline text."
+  }
+ },
+ {
+  "id": "N30",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Bean chose plain '56 · 17 · 145' in place of the box glyph, a content choice: the draft itself shows '56□17 145' (round-1 size-button-m: draft 'M 56□17 145', live 'M 55□17 120'), so the walker has no target to compare."
+  }
+ },
+ {
+  "id": "N31",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "S7: deleting the 'no reviews on this frame yet' panel is content. The rows on cr-ref-product-100 compare that panel's styling with the draft's reviews block, not whether the panel is there."
+  }
+ },
+ {
+  "id": "N32",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-91",
+   "path": ".sgs-accordion-item__header",
+   "property": "padding-top",
+   "draft": "18px",
+   "live": "14px",
+   "element": "The path is .sgs-accordion-item__header on the product accordion item (cr-ref-product-91, the accordion-open state). S5 repairs the header padding so the header reads its settings, and it is 14px live vs 18px on the draft."
+  }
+ },
+ {
+  "id": "N33A",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "S9 swaps the typed brand for the brand logo, a content and data choice: the draft shows typed 'GUCCI' too (round-1 brand pair: GUCCI / GUCCI), so the walker has no logo to compare."
+  }
+ },
+ {
+  "id": "N33B",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Turning off the photo's Save tag goes beyond the draft: the draft shows 'SAVE £51 OFF RRP' on the photo as well (gen-product-4 draft text), so the walker would count removing it as a difference. That makes it Bean's content choice, outside what the walker measures."
+  }
+ },
+ {
+  "id": "N34",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "S8 (hiding '.00'): price text is content. Round-1 records the text diff as accepted ('Pennies on every price')."
+  }
+ },
+ {
+  "id": "N35",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-4",
+   "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(2) > .sgs-option-picker__options > .sgs-option-picker__option > .sgs-option-picker__pill",
+   "property": "text-align",
+   "draft": "center",
+   "live": "start",
+   "element": "The path is .sgs-option-picker__pill in option picker 2, the size buttons (round-1 pair size-button-m / size-chosen). Its text-align is start live, center on the draft, so the size letter is not centred."
+  }
+ },
+ {
+  "id": "N36A",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The grey measurements are .sgs-option-picker__sub-label inside the selected size pill, and no row is on that path. The size pill rows reach only the pill and .sgs-option-picker__pill-label (colour rgb(250, 248, 245) vs rgb(255, 255, 255), which is the letter, not the measurements). option-picker style.css::.sgs-option-picker__sub-label still sets opacity 0.72 with no selected override."
+  }
+ },
+ {
+  "id": "N36C",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-4",
+   "property": "background-color",
+   "element": "The add-to-bag button is .sgs-buybox__config-col > form > button in cr-ref-product-4 (round-1 pair add-to-bag), measured under forced hover. Its only hover row is transform (-2 vs -3px, the S1 lift); no row touches its hover ground."
+  }
+ },
+ {
+  "id": "N36D",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-9",
+   "path": ".sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-title",
+   "property": "line-height",
+   "draft": "21.75px",
+   "live": "14px",
+   "element": "The path .sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-title is the WhatsApp card's title on the product page (cr-ref-product-9). S4 says the card text stops inheriting the button's tight line height, and it is 14px live vs 21.75px."
+  }
+ },
+ {
+  "id": "N36E, N36F",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "No row is on the 'Which size am I?' link (the picker label link to #size-guide) or on the Sizing tab's copy. The picker-label-row rows are on .sgs-buybox__picker-selected-value, the chosen colour name, and the tab-sizing state pairs only the tab headings."
+  }
+ },
+ {
+  "id": "N36S",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The Sizing tab panel's contents (table rows, description column, note) are not paired: in the tab-sizing state the walker pairs only the three tab headings, and no row is on .sgs-tabs__panel:nth-of-type(3). Lens height and the diagram (D1) also depend on product data and a new block."
+  }
+ },
+ {
+  "id": "96",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "The keyboard focus ring's colour is focus styling, which the walker does not force or measure."
+  }
+ },
+ {
+  "id": "N37",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Advancing a step on pick (keeping Continue) and announcing each step change to screen readers are behaviour and a11y."
+  }
+ },
+ {
+  "id": "N38",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "'Skip adds to bag' changes what the skip button does, which is behaviour."
+  }
+ }
+]

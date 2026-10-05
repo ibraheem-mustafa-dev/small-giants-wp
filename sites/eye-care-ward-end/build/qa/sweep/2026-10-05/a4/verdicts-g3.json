@@ -1,0 +1,222 @@
+[
+ {
+  "id": "50, 60",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-5",
+   "path": "",
+   "property": "transition-duration",
+   "draft": "0.25s, 0.25s",
+   "live": "0.3s",
+   "element": "cr-ref-home-5 is the hero's sgs/button 'Shop sunglasses' (item 50; path \"\" is the button itself); the lift now fires on hover in the opening state, but it runs over live 0.3s instead of the draft's 0.25s, the open half of S1 (button/render.php always writes its 300ms default); 'Add your prescription' (cr-ref-home-6) and 'How lenses work here' (cr-ref-home-66, item 60) carry the same 0.3s row."
+  }
+ },
+ {
+  "id": "51",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "A one-off zoom-out on page load is load motion the walker does not compare; the only transform row on the hero photo (cr-ref-home-0 .sgs-hero__bg-img, hero-scrolled state) is the scroll drift of item 53, not a load zoom."
+  }
+ },
+ {
+  "id": "52",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-8",
+   "path": ".sgs-brand-strip__track",
+   "property": "transform",
+   "draft": "matrix(1, 0, 0, 1, -148.117, 0)",
+   "live": "none",
+   "element": "cr-ref-home-8 is the sgs/brand-strip (the brand logo strip) and .sgs-brand-strip__track is the element that scrolls: the draft's track is mid-scroll (translated -148px) while live sits at none, so the strip has not started moving; the animation-name row on the same track (marquee vs sgs-brand-scroll) agrees."
+  }
+ },
+ {
+  "id": "53",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-0",
+   "path": ".sgs-container__inner > .sgs-hero__bg-img",
+   "property": "transform",
+   "draft": "matrix(1, 0, 0, 1, 0, 54)",
+   "live": "none",
+   "element": "cr-ref-home-0 is the sgs/hero and .sgs-hero__bg-img is its photo; in the hero-scrolled state the draft photo has drifted 54px (matrix ty 54) while live stays at none, which is exactly the missing drift mode."
+  }
+ },
+ {
+  "id": "54, 55",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-77",
+   "property": "icon-fill",
+   "element": "cr-ref-home-77 is the sgs/whatsapp-cta 'Message me on WhatsApp' button the items name; it is a measured ref with hover forced and its only row is transition-timing-function, so no colour, icon-fill or hover-colour row (54 the label going near-black on hover, 55 the icon colour) remains."
+  }
+ },
+ {
+  "id": "57",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The register records it closed (Bean keeps the pre-filled message); the message text is content the walker cannot read, and no cr-ref-home-77 row contradicts it."
+  }
+ },
+ {
+  "id": "58",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "A fade-up entrance on the hero button group (cr-ref-home-4) is script-driven entrance motion; the walker reads no opacity or translate row on cr-ref-home-4, as expected for an unmeasured entrance."
+  }
+ },
+ {
+  "id": "59",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Colour dots becoming focusable buttons that switch the card photo is keyboard, focus and behaviour; the product cards (cr-ref-home-16 to 23) are not in the measured refs either."
+  }
+ },
+ {
+  "id": "N14",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-6",
+   "path": "",
+   "property": "transition-duration",
+   "draft": "0.25s, 0.25s, 0.25s",
+   "live": "0.3s",
+   "element": "cr-ref-home-6 is the hero's sgs/button 'Add your prescription' (path \"\" is the button itself); the S1 hover standard is a 3px lift over 0.25s and this button transitions over live 0.3s against the draft's 0.25s; its hover-effects row also shows the draft's ground change missing (draft 'ground appears, lifts', live 'lifts')."
+  }
+ },
+ {
+  "id": "N15",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-58",
+   "path": ".sgs-google-reviews__aggregate > .sgs-google-reviews__cta > .sgs-google-reviews__see-all",
+   "property": "painted-ground",
+   "draft": "rgba(26, 115, 232, 1)",
+   "live": "rgba(20, 20, 20, 1)",
+   "element": "The path ends in .sgs-google-reviews__see-all inside the reviews block's CTA row, which is the 'See all reviews' button; the item's hover ground #1765CC is the darker shade of the draft's blue ground, and live paints that button black (rgba(20, 20, 20)) where the draft paints blue (rgba(26, 115, 232)), so the ground the hover darkens is itself wrong."
+  }
+ },
+ {
+  "id": "N16a",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-58",
+   "path": ".sgs-google-reviews__aggregate > .sgs-google-reviews__cta > .sgs-google-reviews__write-review",
+   "property": "transform",
+   "draft": "none",
+   "live": "matrix(1, 0, 0, 1, 0, -3)",
+   "element": "The path ends in .sgs-google-reviews__write-review in the reviews CTA row, one of the two review buttons; live now lifts it 3px on hover (matrix ty -3, the S1 lift landed) while the draft's own reading is none, so the row stays open as the S1-decided divergence from the draft (the See all button carries the same row)."
+  }
+ },
+ {
+  "id": "N16b",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Swapping 8 hand-picked cards for WooCommerce's live best-sellers collection is content and query behaviour, not a computed style."
+  }
+ },
+ {
+  "id": "N17a",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-58",
+   "property": "transform",
+   "element": "cr-ref-home-58 is the sgs/google-reviews block itself and path \"\" is its root; it is measured with hover forced and no root row touches transform, box-shadow or hover-effects (the root's only row is icon-fill), so the whole block no longer grows on hover.",
+   "path": ""
+  }
+ },
+ {
+  "id": "N17b",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-1",
+   "path": "",
+   "property": "y-after-gen-home-0",
+   "draft": 0,
+   "live": 104,
+   "element": "cr-ref-home-1 is the hero label '40 designer brands · Birmingham', the first line of the hero text group, and its offset from the hero's top shows the vertical position: the draft's text group starts at 0 of its bottom-placed content box while live sits 104px down the full-height hero (the vertically centred text)."
+  }
+ },
+ {
+  "id": "N18",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The register records it closed (Bean keeps the live, lighter overlay); no cr-ref-home-0 row is on an overlay element (the hero rows are on the root and .sgs-hero__bg-img), so nothing contradicts it."
+  }
+ },
+ {
+  "id": "N19",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-14",
+   "path": "",
+   "property": "hover-effects",
+   "draft": "none",
+   "live": "lifts",
+   "element": "cr-ref-home-14 is the sgs/button 'See everything' (path \"\" is the link itself); on forced hover the draft shows no lift while live lifts it (a text link that S1 says must use the never-lifting Link style), so its hover is still not the draft's; 'All 12 styles' (cr-ref-home-52) carries the same row."
+  }
+ },
+ {
+  "id": "N20",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-47",
+   "path": "",
+   "property": "painted-ground",
+   "draft": "none",
+   "live": "rgba(243, 240, 235, 1)",
+   "element": "cr-ref-home-47 is the shapes section (draft main > section:nth-child(5), 'not sure what suits you ... oversized') and path \"\" is the section itself: live paints a grey ground rgba(243, 240, 235) where the draft has none, the band the item names (now measured at 1920 too)."
+  }
+ },
+ {
+  "id": "N21",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-47",
+   "path": "",
+   "property": "painted-ground",
+   "draft": "none",
+   "live": "rgba(243, 240, 235, 1)",
+   "element": "The grey tint behind the shape tiles is the ground of their section, cr-ref-home-47 (the card grid cr-ref-home-53 has no ground row on its root), and live paints rgba(243, 240, 235) where the draft has none, as the item suspected (same band as N20)."
+  }
+ },
+ {
+  "id": "N22",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-53",
+   "property": "border-color",
+   "element": "cr-ref-home-53 is the sgs/card-grid of shape tiles; it is measured with hover forced and none of its 19 rows (aspect-ratio, transitions, glyph, labels, tile 6 ground) touches a border colour at rest or on hover."
+  }
+ },
+ {
+  "id": "N23",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-58",
+   "property": "background-color",
+   "element": "cr-ref-home-58 is the sgs/google-reviews block holding the slider arrows (.sgs-google-reviews__arrow) and the Write a review button; with hover forced no arrow has a hover row, and Write a review's hover row shows the ground appearing on both sides (only the S1 lift differs), so the light-blue hover ground matches."
+  }
+ },
+ {
+  "id": "N24",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Making the Google logo in each review card a link is content and behaviour (an href), not a computed style the walker compares."
+  }
+ }
+]

@@ -1,0 +1,163 @@
+[
+ {
+  "id": "25",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records the padding Solve-closed (2026-10-03). The main row (cr-ref-footer-1), bottom row (cr-ref-footer-27) and footer root (cr-ref-footer-0) are all measured and carry no padding-* row; their remaining rows are max-width, margins, gaps and heights, which the register assigns to 29, 30, 34, 48 and N46."
+  }
+ },
+ {
+  "id": "26",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The wordmark is sgs/heading cr-ref-footer-3 (paired by hand as brand-wordmark, box h); it is in the measured refs and the sweep has no row on it at all, agreeing with the 2026-10-03 Solve close."
+  }
+ },
+ {
+  "id": "27",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "BIRMINGHAM (cr-ref-footer-4), tagline (cr-ref-footer-5) and social row (cr-ref-footer-6) are measured; no margin-*, font-size or letter-spacing row on any of them. The only spacing rows (ref-5/ref-6 y-after-* against other columns' links at 768/1440) are cross-column alignment, not the margins this item set."
+  }
+ },
+ {
+  "id": "28",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The tagline is cr-ref-footer-5 (brand-tagline/description pairs); it is measured and carries no width or text-wrap row, agreeing with the recorded Solve close."
+  }
+ },
+ {
+  "id": "29",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The three column headings (cr-ref-footer-8, -15, -22) are measured with no rows; the columns (cr-ref-footer-7, -14, -21) have no gap rows (only flex-grow and heights driven by the link lists of item 30), so the recorded close holds."
+  }
+ },
+ {
+  "id": "30",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json",
+   "ref": "cr-ref-footer-10",
+   "path": "a",
+   "property": "font-size",
+   "draft": "14px",
+   "live": "16px",
+   "element": "cr-ref-footer-10 is the core/list-item 'Sunglasses' inside the Shop core/list (cr-ref-footer-9) and path 'a' is its link text, which the fix should set to 14px when the list becomes sgs/icon-list."
+  }
+ },
+ {
+  "id": "32, 33, 44",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json",
+   "ref": "cr-ref-footer-23",
+   "path": "",
+   "property": "text-decoration-line",
+   "draft": "none",
+   "live": "underline",
+   "element": "cr-ref-footer-23 is the sgs/text holding only the 'About Eye Care' footer link (hand pair link-about); live shows a resting underline where S2 wants none at rest and a hover sweep instead."
+  }
+ },
+ {
+  "id": "34, 35",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json",
+   "ref": "cr-ref-footer-24",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "property": "h",
+   "draft": 21,
+   "live": 44,
+   "element": "cr-ref-footer-24 is the phone sgs/business-info (paired on '0121 ... 8233') and .sgs-business-info__link is the tel: link itself, 44px tall live against the draft's 21px line."
+  }
+ },
+ {
+  "id": "36",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Content fix (the Site Info address text with a line break). The walker does see its effect (cr-ref-footer-25 h draft 42 vs live 22) but the fix is a stored content value, not a block setting."
+  }
+ },
+ {
+  "id": "37",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Whether the address is a link (and its target) is behaviour/content; the address pair compares style only, and ref cr-ref-footer-25 shows no link-related row to judge it."
+  }
+ },
+ {
+  "id": "38",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json",
+   "ref": "cr-ref-footer-26",
+   "path": ".sgs-business-info > .sgs-business-hours__row > .sgs-business-hours__day",
+   "property": "font-weight",
+   "draft": "400",
+   "live": "600",
+   "element": "cr-ref-footer-26 is the hours sgs/business-info and .sgs-business-hours__day is the day label whose hardcoded 600 weight the item names."
+  }
+ },
+ {
+  "id": "45",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Creating the /privacy and /terms pages is content; the footer walker measures the links' styling (cr-ref-footer-30/-31), not whether their targets exist."
+  }
+ },
+ {
+  "id": "47",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json",
+   "ref": "cr-ref-footer-10",
+   "path": "",
+   "property": "y-after-col-shop-heading",
+   "draft": 32,
+   "live": 47,
+   "element": "cr-ref-footer-10 is the 'Sunglasses' link item and this row is its vertical position after the Shop heading at 375, i.e. footer text that still sits in a different place after the rebuild."
+  }
+ },
+ {
+  "id": "48",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json",
+   "ref": "cr-ref-footer-0",
+   "path": "",
+   "property": "margin-top",
+   "draft": "40px",
+   "live": "0px",
+   "element": "cr-ref-footer-0 is the sgs/site-footer root itself (pair footer-root) and its top margin is the space above the footer."
+  }
+ },
+ {
+  "id": "N46",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json",
+   "ref": "cr-ref-footer-1",
+   "path": "",
+   "property": "max-width",
+   "draft": "1440px",
+   "live": "none",
+   "element": "cr-ref-footer-1 is the sgs/site-footer-row columns row (pair columns-row); live carries no width cap at all because a capped footer row collapses, which is the fault the item names."
+  }
+ },
+ {
+  "id": "N13",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Behaviour: the floating button stepping aside while the footer bottom strip is on screen depends on scroll and a watcher script; the walker's footer run has autoScroll off and leaves the floating button (cr-ref-footer-32) unpaired."
+  }
+ },
+ {
+  "id": "49",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "Label weight/size and icon size are style properties, but the floating WhatsApp button (sgs/whatsapp-cta cr-ref-footer-32) is in pairs/footer.json 'left' ('no painted words') and not among the footer refs or rows; the item has no surface with a sweep report (surfaces [null])."
+  }
+ }
+]

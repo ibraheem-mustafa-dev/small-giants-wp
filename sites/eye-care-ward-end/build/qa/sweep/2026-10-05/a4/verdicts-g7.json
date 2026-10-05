@@ -1,0 +1,122 @@
+[
+ {
+  "id": "S1",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-5",
+   "path": "",
+   "property": "transition-duration",
+   "draft": "0.25s, 0.25s",
+   "live": "0.3s",
+   "element": "cr-ref-home-5 is the home hero's 'Shop sunglasses' sgs/button and path \"\" is the button itself; its hover transition runs 0.3s, not S1's 0.25s site setting, because button/render.php's per-instance 300ms transition wins."
+  }
+ },
+ {
+  "id": "S2",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json",
+   "ref": "cr-ref-footer-23",
+   "path": "",
+   "property": "text-decoration-line",
+   "draft": "none",
+   "live": "underline",
+   "element": "cr-ref-footer-23 is the footer sgs/text block whose only content is the plain 'About Eye Care' text link (footer.full.mjs maps the link-about pair to it); S2's sweep rule leaves such links un-underlined at rest, but live paints a static underline, so the rule is not switched on for plain links in text."
+  }
+ },
+ {
+  "status": "partly measured",
+  "id": "S3",
+  "evidence": {
+   "reason": "No row shows the fade: header phone (cr-ref-header-11, hover pair at 1440/1920), footer phone (cr-ref-footer-24) and contact phone/email (cr-ref-contact-9, cr-ref-contact-12) have no opacity row, matching the 2026-10-05 live check. Their hover-colour rows (footer-24 and contact-12 labels: draft taupe/grey, live rgb(20, 20, 20)) show live already at S3's chosen black, so they are the decided divergence, not the failure. The open tree half (the contact phone still hovers to taupe per framework-fix-check.txt) matches the draft, so the walker cannot see it, and the contact-form surface has no phone or email element."
+  }
+ },
+ {
+  "id": "S4",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/solve-report.json",
+   "ref": "cr-ref-product-9",
+   "path": ".sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-title",
+   "property": "font-weight",
+   "draft": "400",
+   "live": "600",
+   "element": "cr-ref-product-9 is the product page's WhatsApp card ('Need ... help') and the path is its card title, which S4 says must stop inheriting the button's bold; it is still 600 against the draft's 400."
+  }
+ },
+ {
+  "id": "S5",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-05T10-12-55/solve-report.json",
+   "ref": "cr-ref-help-19",
+   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+   "property": "transform",
+   "draft": "matrix(0.707107, 0.707107, -0.707107, 0.707107, 0, 0)",
+   "live": "none",
+   "element": "cr-ref-help-19 is the Help FAQ accordion item 'How are you cheaper than the high street?' and the path is its + icon; in the faq-item2-open state the draft rotates it 45 degrees into an x, while live leaves it unrotated (the tree sets no iconRotation)."
+  }
+ },
+ {
+  "id": "S6",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/solve-report.json",
+   "ref": "cr-ref-lenses-0",
+   "path": "",
+   "property": "padding-top",
+   "draft": "48px",
+   "live": "104px",
+   "element": "cr-ref-lenses-0 is the Lenses page's outer container (paired to the draft's main), and its top padding is still the 104px section spacing instead of the 48px page spacing S6 sets."
+  }
+ },
+ {
+  "id": "S7",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Content removal: the 'No reviews yet' text on product cards and the product page's no-reviews panel; the walker compares styles and boxes of paired elements, not whether a piece of copy exists."
+  }
+ },
+ {
+  "id": "S8",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Content: whether prices print '.00'. The walker pairs text runs by words and compares styles, so a price-format change is not a measured property."
+  }
+ },
+ {
+  "id": "S9",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Content: brand logo images in place of typed brand names on cards, the product top and bag lines; a content swap, not a style property of a paired element."
+  }
+ },
+ {
+  "id": "S10",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Behaviour: the stretched-link click area on product cards and the header logo row; the walker reads computed styles and boxes, not which area is clickable."
+  }
+ },
+ {
+  "id": "S11",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json",
+   "ref": "cr-ref-footer-12",
+   "path": "",
+   "property": "y-after-link-all-brands",
+   "draft": 31,
+   "live": 24,
+   "element": "cr-ref-footer-12 is the 'Prescription lenses' item of the footer Shop link list, still a core/list item (register item 30: becomes an sgs/icon-list with a 10px gap); its offset after 'All brands' is 31px in the draft (21px line plus the 10px gap) and 24px live (24px line, no gap), so the link list's gap is not applied. The social icons' gap (item 40) is clean: cr-ref-footer-6 has no gap row."
+  }
+ },
+ {
+  "id": "S12",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Focus: the underline drawn on a focused or clicked link; the walker forces :hover but does not measure focus states."
+  }
+ }
+]

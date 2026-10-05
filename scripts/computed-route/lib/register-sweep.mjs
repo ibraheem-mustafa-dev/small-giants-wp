@@ -121,6 +121,8 @@ const same = ( a, b ) => JSON.stringify( a ?? null ) === JSON.stringify( b ?? nu
 const quotes = ( values, e ) => ( values || [] ).some( ( v ) => same( v.draft, e.draft ) && same( v.live, e.live ) );
 // The sentence tying the item's words to the cited element (a verdict without it is a guess).
 const ELEMENT_MIN = 20;
+// The kinds of item the walker cannot see; a reason naming one of them may mention hover in passing.
+const NOT_HOVER = /behaviou?r|click|focus|keyboard|scroll|a11y|accessib|screen.?reader|announce|content|site info|motion|animation|entrance|timing|calibrat|toast/i;
 
 // A still-open verdict's row: one sweep row matched exactly (report, ref or pair, path, property) whose values it quotes, or
 // an open diff of a walk report (evidence.walk: the walk's folder, with pair, property, draft and live). -> problem or null.
@@ -181,7 +183,9 @@ export function checkStatuses( items, verdicts, sweep, measured = null, walks = 
 			p && problems.push( p );
 			continue;
 		}
-		if ( 'not walker-measurable' === status && /\bhover/i.test( evidence.reason || '' ) ) {
+		// Hover is measured; a reason that names hover and no other kind (a click, focus, scroll or content behaviour that
+		// merely mentions a hover pause) is a hover item called unmeasurable.
+		if ( 'not walker-measurable' === status && /\bhover/i.test( evidence.reason || '' ) && ! NOT_HOVER.test( evidence.reason || '' ) ) {
 			problems.push( `${ key }: not walker-measurable gives hover as the reason, but the walker measures hover (forced :hover on every pair)` );
 			continue;
 		}
@@ -200,7 +204,8 @@ export function checkStatuses( items, verdicts, sweep, measured = null, walks = 
 		if ( surfaceRefs && evidence.ref && SITE_WIDE !== item.section && ! surfaceRefs.includes( evidence.ref ) ) {
 			problems.push( `${ key }: clean cites ${ evidence.ref }, which no pairing of its surfaces measured` );
 		}
-		const touching = rows.filter( ( r ) => r.ref === evidence.ref && ( ! evidence.property || r.property === evidence.property ) );
+		// With a path, only rows on that element of the block count (a row on a child element is another element).
+		const touching = rows.filter( ( r ) => r.ref === evidence.ref && ( ! evidence.property || r.property === evidence.property ) && ( undefined === evidence.path || ( r.path ?? '' ) === evidence.path ) );
 		if ( touching.length ) {
 			problems.push( `${ key }: clean, but ${ touching.length } sweep row(s) touch ${ evidence.ref }${ evidence.property ? ' ' + evidence.property : '' }` );
 		}

@@ -1,0 +1,267 @@
+[
+ {
+  "id": "1",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-05T10-22-16/solve-report.json",
+   "ref": "cr-ref-header-0",
+   "path": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
+   "property": "font-size",
+   "draft": "12.5px",
+   "live": "14px",
+   "element": "cr-ref-header-0 is the trust-ticker pair (the top bar) and .sgs-trust-bar__label is the sentence text of a top-bar item, not its icon."
+  }
+ },
+ {
+  "id": "2",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-05T10-22-16/solve-report.json",
+   "ref": "cr-ref-header-12",
+   "path": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__link > .sgs-nav-bar-menu__link-text",
+   "property": "color",
+   "draft": "rgb(111, 97, 82)",
+   "live": "rgb(20, 20, 20)",
+   "element": "cr-ref-header-12 is the header-about hover pair and the path ends on the nav bar menu item's own link text, the menu word whose hover colour the item fixes (kind hover)."
+  }
+ },
+ {
+  "id": "3",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "A load animation (the bag count circle popping in on page load); SGS entrances are script-driven and the walker only compares settled styles, so no row can measure it."
+  }
+ },
+ {
+  "id": "4",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-05T10-22-16/solve-report.json",
+   "ref": "cr-ref-header-13",
+   "property": "opacity",
+   "element": "cr-ref-header-13 is the header-bag hover pair (live .sgs-cart__trigger, hover forced) and has no hover row on opacity or any other property; the phone's header-phone hover pair (cr-ref-header-11) likewise has only resting-state rows and no hover row."
+  }
+ },
+ {
+  "id": "N1",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records it closed (framework repair, proven in code); the phone is the header-phone hover pair on cr-ref-header-11, and its 10 bundle rows are all resting-state padding, margin, width and text-wrap rows with no hover colour row, so the sweep does not contradict it."
+  }
+ },
+ {
+  "id": "N2A",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Which part of the logo row is a link is behaviour and markup (link target and accessible name), not a painted style the walker compares."
+  }
+ },
+ {
+  "id": "N2B",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-05T10-22-16/solve-report.json",
+   "ref": "cr-ref-header-8",
+   "path": "",
+   "property": "text-wrap",
+   "draft": "wrap",
+   "live": "balance",
+   "element": "cr-ref-header-8 is the header-wordmark pair (the EYE CARE h2, measured on its own root, path \"\"), and text-wrap is the property the fix sets; the transient 240ms wrap itself is motion the walker does not sample."
+  }
+ },
+ {
+  "id": "N4",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Behaviour: the top bar switching to a scrolling strip when items no longer fit, pausing on hover and focus, and a WCAG 2.2.2 pause button; the trust-ticker rows (cr-ref-header-0) only compare static label and badge styles."
+  }
+ },
+ {
+  "id": "D7",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Content: adding the Google rating badge as a new top-bar item; there is no draft element for it to pair with in the trust-ticker rows."
+  }
+ },
+ {
+  "id": "6",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-05T10-22-16/solve-report.json",
+   "ref": "cr-ref-header-12",
+   "path": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__link > .sgs-nav-bar-menu__link-text",
+   "property": "color",
+   "draft": "rgb(111, 97, 82)",
+   "live": "rgb(20, 20, 20)",
+   "element": "The top menu word is the nav bar menu link text in the header (the mega surfaces open from it); its hover colour stays black where the draft keeps its taupe. Cited on the header surface, where the row is filed."
+  }
+ },
+ {
+  "id": "7",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-05T10-24-38/solve-report.json",
+   "ref": "cr-ref-mega-sunglasses-5",
+   "path": ".sgs-button__label",
+   "property": "color",
+   "draft": "rgb(111, 97, 82)",
+   "live": "rgb(20, 20, 20)",
+   "element": "cr-ref-mega-sunglasses-5 is the 'Pilot' link in the Sunglasses panel's By style column (shop-link-pilot pair, an sgs-button) and .sgs-button__label is its own text, whose hover colour differs (kind hover); the Help links (mega-help-5 and others) show the same row."
+  }
+ },
+ {
+  "id": "8",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-05T10-24-38/solve-report.json",
+   "ref": "cr-ref-mega-sunglasses-2",
+   "path": "",
+   "property": "padding-left",
+   "draft": "0px",
+   "live": "52px",
+   "element": "cr-ref-mega-sunglasses-2 is the panel's first container (the By style column container, words 'by .. oversized') and its own root adds the second 52px left padding the draft does not have; mega-help-2 shows the same row."
+  }
+ },
+ {
+  "id": "9",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Accessibility: the Ferrari tile's accessible name reading twice (title plus image text alternative) is not a computed style."
+  }
+ },
+ {
+  "id": "11",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-05T10-26-00/solve-report.json",
+   "ref": "cr-ref-mega-brands-9",
+   "path": ".sgs-button__label",
+   "property": "font-weight",
+   "draft": "400",
+   "live": "600",
+   "element": "cr-ref-mega-brands-9 is the 'Gucci' row of the All 40 brands list (an sgs-button) and .sgs-button__label is its text, bolder on live than the draft's 400 that the fix sets."
+  }
+ },
+ {
+  "id": "12",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-05T10-27-52/solve-report.json",
+   "ref": "cr-ref-mega-lenses-3",
+   "path": "",
+   "property": "line-height",
+   "draft": "17.25px",
+   "live": "13.8px",
+   "element": "cr-ref-mega-lenses-3 is the 'Single vision' label inside the first lens card (lenses-title-single pair), whose line height the fix sets to 1.5; the card itself (mega-lenses-2) is 152px tall against the draft's 166px."
+  }
+ },
+ {
+  "id": "N5",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-05T10-24-38/solve-report.json",
+   "ref": "cr-ref-mega-sunglasses-0",
+   "path": "",
+   "property": "margin-left",
+   "draft": "240px",
+   "live": "0px",
+   "element": "cr-ref-mega-sunglasses-0 is the sgs-mega-panel root; at 1920 the draft's 1440 content sits centred (240px each side) while live sits at 0, left-aligned, as the item describes."
+  }
+ },
+ {
+  "id": "N6",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Behaviour on click (the active or visited state of a Lenses card); the walker forces :hover only, and the lens card hover rows (mega-lenses-2 and others) do not cover a click state."
+  }
+ },
+ {
+  "id": "13",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-05T10-23-32/solve-report.json",
+   "ref": "cr-ref-mobile-menu-0",
+   "path": "",
+   "property": "padding-left",
+   "draft": "24px",
+   "live": "0px",
+   "element": "cr-ref-mobile-menu-0 is the drawer-panel pair on the sgs-nav-drawer root: the draft's 20px 24px inset is what keeps the title and close button off the screen edges, and live has 0px, the inset the fix restores on the title row."
+  }
+ },
+ {
+  "id": "14",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Entrance motion: links staggering in one by one on drawer open; SGS entrances are script-driven and the walker reads the settled drawer-open state only."
+  }
+ },
+ {
+  "id": "15",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-05T10-23-32/solve-report.json",
+   "ref": "cr-ref-mobile-menu-11",
+   "path": "",
+   "property": "y-after-drawer-link-contact",
+   "draft": 132,
+   "live": 173,
+   "element": "cr-ref-mobile-menu-11 is the drawer-phone pair, the phone button that heads the drawer's bottom group, and on live it sits 41px further below the Contact link, the push toward the fold the item names."
+  }
+ },
+ {
+  "id": "N7",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "Only the WhatsApp button is paired (drawer-whatsapp, hover forced), and it lands on its sgs-child-sizing wrapper cr-ref-mobile-menu-15 whose rows are text-align and transition-duration only; the other two social buttons are unpaired, mobile-menu has no refs in its surface list, and the target (the draft footer's colours) is not a pair on this surface."
+  }
+ },
+ {
+  "id": "17",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Motion: the bag count pop's size, timing and on-load trigger are a script-driven animation; the bag drawer has no surface report in this bundle."
+  }
+ },
+ {
+  "id": "18",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Behaviour and a11y: an 'Added to bag' toast with a polite announcement, auto-close and pause on hover or focus; it does not exist on live to pair and is not a static style."
+  }
+ },
+ {
+  "id": "19",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Motion: the free-delivery bar's fill duration is a script-driven animation timing, and the bag drawer has no surface report in this bundle."
+  }
+ },
+ {
+  "id": "N8",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Behaviour: a transient wordmark wrap triggered by opening the bag drawer; the walker samples settled states, and the bag drawer has no surface report here."
+  }
+ },
+ {
+  "id": "N9",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Content: price formatting ('.00' shown) is text, not a computed style."
+  }
+ },
+ {
+  "id": "N10",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Content: the brand name typed into the bag line is text content, not a style."
+  }
+ },
+ {
+  "id": "N11",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Behaviour: the add-to-bag route dropping a second product and the 30-second per-item cooldown are server and cart logic, not paint."
+  }
+ }
+]

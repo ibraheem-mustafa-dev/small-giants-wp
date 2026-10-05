@@ -179,6 +179,12 @@ test( 'MUST FAIL: hover is no reason for not walker-measurable, and a clean clai
 	assert.match( checkStatuses( items, hover, sweep() ).join( '\n' ), /1: not walker-measurable gives hover as the reason/ );
 	const keyboard = withOne( { id: '1', status: 'not walker-measurable', evidence: { reason: 'Keyboard focus order.' } } );
 	assert.deepEqual( checkStatuses( items, keyboard, sweep() ), [] );
+	const pauseOnHover = withOne( { id: '1', status: 'not walker-measurable', evidence: { reason: 'Behaviour: a strip that scrolls and pauses on hover.' } } );
+	assert.deepEqual( checkStatuses( items, pauseOnHover, sweep() ), [] );
+	const onRoot = [ ...ALL_OPEN.slice( 0, 1 ), clean( '1', 'ref-h-1', 'r/header.json', { property: 'gap', path: '' } ), ...ALL_OPEN.slice( 2 ) ];
+	assert.deepEqual( checkStatuses( items, onRoot, sweep() ), [], 'the row sits on path .x, not the block root' );
+	const onChild = [ ...ALL_OPEN.slice( 0, 1 ), clean( '1', 'ref-h-1', 'r/header.json', { property: 'gap', path: '.x' } ), ...ALL_OPEN.slice( 2 ) ];
+	assert.match( checkStatuses( items, onChild, sweep() ).join( ' ' ), /1: clean, but 1 sweep row/ );
 	const bare = [ ...ALL_OPEN.slice( 0, 3 ), clean( '126', 'ref-c-9', 'r/contact.json', { element: '' } ), ALL_OPEN[ 4 ] ];
 	assert.match( checkStatuses( items, bare, sweep() ).join( '\n' ), /126, 137: clean needs evidence.element/ );
 } );

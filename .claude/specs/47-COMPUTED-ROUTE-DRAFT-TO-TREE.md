@@ -537,8 +537,9 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved and recalibrated every block. Session A
        (2026-10-05) measured every surface from `1ea514ae8` without writing: 2,373 distinct open issues across 17
        surfaces (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`; per surface in the plan
-       `2026-10-04-spec47-full-coverage.md` Progress), and every fix-register item carries a sweep status (84 still
-       open, 62 not walker-measurable, 31 closed earlier, 15 partly measured, 9 clean on the walker). Next: Session B
+       `2026-10-04-spec47-full-coverage.md` Progress), and every fix-register item carries a sweep status (71 still
+       open, 63 not walker-measurable, 32 closed earlier, 22 partly measured, 13 clean on the walker; each still-open
+       verdict cites one exact element row and its values). Next: Session B
        sorts what stays open into its classes and plans the fixes; Session C makes the framework fixes.
      - Then (Session D) each surface to 100%, in the order the sweep ranks, Contact and its form first. Every surface has
        its full config (2026-10-05; panel surfaces pair with their walker state open). Done per surface: on a fresh

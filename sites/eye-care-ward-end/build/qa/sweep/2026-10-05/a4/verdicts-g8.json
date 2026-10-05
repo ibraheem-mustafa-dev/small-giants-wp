@@ -1,0 +1,149 @@
+[
+ {
+  "id": "CR1",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "A calibration finding about the route's own tooling (site-header-row and site-footer-row per-device gap/width markers missing 768), not a painted difference on a surface; the bundle carries no surface or sweep row for it."
+  }
+ },
+ {
+  "id": "CR2",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Scroll-triggered behaviour (the is-header-scrolled class switched on by a script) found by calibration; the walker measures no scrolled state and the bundle has no surface or row for it."
+  }
+ },
+ {
+  "id": "CR3",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "A calibration finding on sgs/accordion's dead header settings, awaiting the recalibration queue; it is route tooling with no surface in the bundle and no sweep row."
+  }
+ },
+ {
+  "id": "CR4",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Triage of calibration dead sets (nav-bar-menu, product-card, cart, mega-panel, nav-drawer, icon-list), mostly unshown states; tooling work awaiting recalibration, no surface or sweep row in the bundle."
+  }
+ },
+ {
+  "id": "CR6",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "A framework helper defect (includes/helpers-box.php::sgs_box_object_shorthand zeroing unset sides) recorded as proven but not fixed; it has no surface in the bundle, and its painted effect on About would only show as rows on that surface, which this bundle does not carry."
+  }
+ },
+ {
+  "id": "CR5",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Blocks not yet calibrated (brand-strip, heading shrunk size, nav-drawer hover); route tooling awaiting the recalibration queue, no surface or sweep row in the bundle."
+  }
+ },
+ {
+  "id": "CR7",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "A calibration/Solve key-shape fix for border radius (topLeft etc.), recorded fixed with accordion-item still dead; route tooling with no surface or sweep row in the bundle."
+  }
+ },
+ {
+  "id": "CR8",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Checked plugins/sgs-blocks/src/blocks/decorative-image/render.php: it now calls get_block_wrapper_attributes(); scripts/computed-route/cache/decorative-image.json exists (measured 2026-10-05T04:23:54Z, site local-sandybrown) and maps 6 settings (width, maxWidthPercent, opacity and the three hide toggles) with an empty dead list, which agrees with the register's closure."
+  }
+ },
+ {
+  "id": "CR9",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Calibration finding of per-device settings skipping one width (gallery, mega-aside, notice-banner, form-field-tiles), still to prove with CR1; route tooling with no surface or sweep row in the bundle."
+  }
+ },
+ {
+  "id": "CR10",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Route capability for aspect-ratio (walker, calibration, Solve); the route side exists (scripts/parity/lib/ratio.mjs and scripts/computed-route/lib/normalise.mjs reference sameRatio) but the recalibration and planted-fault proof remain open; no surface or sweep row in the bundle."
+  }
+ },
+ {
+  "id": "CR11",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Calibration of border-style with a companion width marker, awaiting recalibration of the remaining blocks; route tooling with no surface or sweep row in the bundle."
+  }
+ },
+ {
+  "id": "CR12",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "The theme-toggle rendering nothing without a dark palette is behaviour/Site-token content (no settings.custom.dark in any theme snapshot), recorded open; the walker has no surface or row for it in this bundle."
+  }
+ },
+ {
+  "id": "CR13",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Checked plugins/sgs-blocks/src/blocks/form-field-hidden/block.json: its example now uses fieldName \"source\" and defaultValue \"website-contact-form\" (attributes fieldName and defaultValue declared), with no name/value keys in the example, which agrees with the register's fix."
+  }
+ },
+ {
+  "id": "CR14",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Solve/walker coverage of a pair's child media, recorded partly fixed (icon size rows added) with other child media still unmeasured; route tooling with no surface or sweep row in the bundle."
+  }
+ },
+ {
+  "id": "CR15",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Checked scripts/computed-route/lib/guard.mjs: guardRound and anchorRef exist and guardRound uses anchorRef to suspect writes inside the node and its anchor pair, as the fix describes. The Contact 23px name-field drop it cites is now tracked separately under N45b, not as a guard defect."
+  }
+ },
+ {
+  "id": "CR16",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Checked scripts/parity/lib/ratio.mjs::sameTracks and scripts/computed-route/lib/normalise.mjs::tracksSetting: both exist as the register cites, so tracks compare as proportions and are written as fr tracks."
+  }
+ },
+ {
+  "id": "CR17",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "A calibration fixture gap for business-info's text-before element; recalibration still to run; route tooling with no surface or sweep row in the bundle."
+  }
+ },
+ {
+  "id": "CR18",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Walker coverage tooling (scripts/computed-route/pairs.mjs exists and writes the full configs), done for About and Contact with the other surfaces still to re-pair; tooling with no surface or sweep row in the bundle."
+  }
+ },
+ {
+  "id": "CR19",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Checked scripts/parity/lib/compare-state.mjs: it emits box rows keyed y-in-main for the first pair and y-after-<previous pair> for later ones, as the register's fix describes; GAP-CHECKLIST.md and tests/walker-refs.test.mjs also reference y-in-main."
+  }
+ },
+ {
+  "id": "CR20",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Checked scripts/parity/lib/compare.mjs: an IDENTITY set (matrix(1,0,0,1,0,0) and the matrix3d identity) is treated as equal to none, with other matrices still compared by value, matching the register's fix."
+  }
+ },
+ {
+  "id": "CR21",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Checked scripts/computed-route/lib/guard.mjs: its header and guardRound comments describe the tier that, with no write on the regressed node, tries writes inside the node or its anchor pair and then each ancestor's writes nearest first, matching the register's fix."
+  }
+ }
+]

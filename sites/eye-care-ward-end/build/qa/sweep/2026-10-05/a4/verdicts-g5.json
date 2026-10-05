@@ -1,0 +1,409 @@
+[
+ {
+  "id": "99",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The register records it Solve-closed (2026-10-03); the h1 'Three questions, then leave the rest to me.' is cr-ref-lenses-2, a measured ref on the lenses sweep, and no row of any kind (line-height included) sits on it."
+  }
+ },
+ {
+  "id": "100",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/solve-report.json",
+   "ref": "cr-ref-lenses-9",
+   "path": "",
+   "property": "h",
+   "draft": 163,
+   "live": 147,
+   "element": "cr-ref-lenses-9 is the Varifocal price card (the sgs/container holding 'Varifocal' / 'from £129') and its own root height is still shorter than the draft at 375; its price cr-ref-lenses-11 also still lacks the draft's 10px/6px margins (only the first card's price carries them in the tree)."
+  }
+ },
+ {
+  "id": "101",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/solve-report.json",
+   "ref": "cr-ref-lenses-24",
+   "path": "",
+   "property": "y-from-benefits-heading",
+   "draft": 106,
+   "live": 122,
+   "element": "cr-ref-lenses-24 is the icon list directly under the 'In every lens, no extra charge' h2 (cr-ref-lenses-23, still carrying a 16px bottom margin in the tree); its distance from that heading is 16px more than the draft, the exact gap the item names, so the register's 'closed' is contradicted."
+  }
+ },
+ {
+  "id": "102",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/solve-report.json",
+   "ref": "cr-ref-lenses-27",
+   "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number",
+   "property": "font-weight",
+   "draft": "500",
+   "live": "700",
+   "element": "The path is the first step's number element inside the 'How it goes' process-steps block (cr-ref-lenses-27), the number the item says is too bold; its font-size (15.5px vs 21/22px) also still differs."
+  }
+ },
+ {
+  "id": "103",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The register records weight 400 closed (2026-10-03). 'Choose a frame' is cr-ref-lenses-28 (sgs/button, hand pair choose-a-frame); the sweep measured it (it carries transition-duration and hover rows) and no font-weight row sits on it or its label."
+  }
+ },
+ {
+  "id": "N39",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/solve-report.json",
+   "ref": "cr-ref-lenses-0",
+   "path": "",
+   "property": "padding-top",
+   "draft": "28px",
+   "live": "56px",
+   "element": "cr-ref-lenses-0 is the page's outer section (first word 'prescription', last 'frame'); its own top padding is what pushes the content down, still 56px against the draft's 28px at 375 (104 vs 48 at desktop), so S6 is not applied on Lenses."
+  }
+ },
+ {
+  "id": "N40",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/solve-report.json",
+   "ref": "cr-ref-lenses-27",
+   "path": "",
+   "property": "padding-bottom",
+   "draft": "0px",
+   "live": "24px",
+   "element": "cr-ref-lenses-27 is the 'How it goes' steps list that sits directly above the 'Choose a frame' button; its own 24px bottom padding (draft 0) is extra space between the list and the button."
+  }
+ },
+ {
+  "id": "N41",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/solve-report.json",
+   "ref": "cr-ref-lenses-28",
+   "path": "",
+   "property": "hover-effects",
+   "draft": "none",
+   "live": "lifts",
+   "element": "cr-ref-lenses-28 is the 'Choose a frame' sgs/button root; live now lifts on hover (the S1 fix) while the draft's button does not, so the remaining row is the decided S1 lift against the static draft."
+  }
+ },
+ {
+  "id": "104",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-05T10-11-41/solve-report.json",
+   "ref": "cr-ref-about-10",
+   "property": "hover-effects",
+   "element": "cr-ref-about-10 is the 'Shop the range' sgs/button (hand pair shop-button, hover forced); no hover row (transform or hover-effects) sits on it, only a resting transition-duration row."
+  }
+ },
+ {
+  "id": "105",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records Solve-closed (2026-10-03); the 'Fatima Nawaz' h1 is cr-ref-about-3, a measured ref with no rows (no margin-bottom or position row) on the about sweep."
+  }
+ },
+ {
+  "id": "106",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records Solve-closed (2026-10-03); the credential cards (cr-ref-about-12/15/18/21) and their h3s (cr-ref-about-13/16/19/22) are measured refs with no rows on the about sweep."
+  }
+ },
+ {
+  "id": "107",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records 1.1fr 1fr closed (2026-10-03); the grid cr-ref-about-0 and both columns (cr-ref-about-1, cr-ref-about-11) are measured refs with no width or grid rows on the about sweep."
+  }
+ },
+ {
+  "id": "107b",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records the column border closed (2026-10-04); the credential column cr-ref-about-11 is a measured ref with no rows (no border, width or ground row) on the about sweep."
+  }
+ },
+ {
+  "id": "108, 109",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-05T10-11-41/solve-report.json",
+   "ref": "cr-ref-about-9",
+   "property": "width",
+   "element": "cr-ref-about-9 is the 'Message me' sgs/whatsapp-cta (hand pair whatsapp-cta, hover forced); no row of any kind (size, icon colour or hover) sits on it."
+  }
+ },
+ {
+  "id": "N42",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-05T10-11-41/solve-report.json",
+   "ref": "cr-ref-about-0",
+   "property": "padding-top",
+   "element": "cr-ref-about-0 is the About page's outer main container (first word 'about', last 'child.') whose own padding sets where content starts; no padding row sits on it and the eyebrow cr-ref-about-2 has no position row."
+  }
+ },
+ {
+  "id": "110, 122",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-05T10-12-55/solve-report.json",
+   "ref": "cr-ref-help-16",
+   "path": "",
+   "property": "gap",
+   "draft": "0px",
+   "live": "20px",
+   "element": "cr-ref-help-16 is the FAQ sgs/accordion itself (first word 'are', last 'fitted?'); its own 20px gap spaces the rows apart where the draft has 0, the gap the item asks to remove (header padding, icon and ground rows on cr-ref-help-17 also still differ)."
+  }
+ },
+ {
+  "id": "111",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-05T10-12-55/solve-report.json",
+   "ref": "cr-ref-help-17",
+   "path": ".sgs-accordion-item__content",
+   "property": "max-width",
+   "draft": "732.096px",
+   "live": "none",
+   "element": "The path is the answer content element of the first FAQ item (cr-ref-help-17); it has no max-width live where the draft caps it at 72ch (732px), so the answers wrap differently."
+  }
+ },
+ {
+  "id": "112",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-05T10-12-55/solve-report.json",
+   "ref": "cr-ref-help-37",
+   "path": ".sgs-business-info > .sgs-business-info__before",
+   "property": "color",
+   "draft": "rgb(94, 88, 79)",
+   "live": "rgb(74, 69, 62)",
+   "element": "The path is the 'Call the clinic on' text-before span of business-info cr-ref-help-37; it paints text-soft rgb(74, 69, 62) where the draft is text-muted rgb(94, 88, 79)."
+  }
+ },
+ {
+  "id": "113",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-05T10-12-55/solve-report.json",
+   "ref": "cr-ref-help-40",
+   "path": "",
+   "property": "hover-effects",
+   "draft": "ground appears",
+   "live": "lifts",
+   "element": "cr-ref-help-40 is the 'Call' sgs/button root; on hover the draft fills a ground while live lifts ('Contact me', cr-ref-help-39, likewise lifts against a static draft)."
+  }
+ },
+ {
+  "id": "115",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The size-guide pop-up is not on the help surface's sweep: its measured refs (cr-ref-help-0 to -38) are page blocks only and no help row's ref or path touches a pop-up element; searched every help row."
+  }
+ },
+ {
+  "id": "116",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The size numbers live in the size-guide pop-up, which has no ref or row on the help sweep (refs cr-ref-help-0 to -38 are page blocks only); searched every help row ref and path."
+  }
+ },
+ {
+  "id": "117, 123, 69, 81, N29",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The close button, header bar, padding and screen-edge gap all belong to the size-guide pop-up, which has no ref or row on the help sweep; searched every help row ref and path for pop-up or modal classes and found none."
+  }
+ },
+ {
+  "id": "119",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records Solve-closed (2026-10-03); the h1 is cr-ref-help-2, a measured ref with no rows (line-height included) on the help sweep."
+  }
+ },
+ {
+  "id": "120, 121",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-05T10-12-55/solve-report.json",
+   "ref": "cr-ref-help-15",
+   "path": "a:nth-of-type(1)",
+   "property": "border-bottom-width",
+   "draft": "1px",
+   "live": "0px",
+   "element": "The path is the first link ('Size guide') inside the sgs/text cr-ref-help-15 beside the Questions heading; the draft's static 1px line 3px under the text is missing live, which shows a plain underline instead (both links still sit in one sgs/text)."
+  }
+ },
+ {
+  "id": "N43",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-05T10-12-55/solve-report.json",
+   "ref": "cr-ref-help-0",
+   "path": "",
+   "property": "padding-top",
+   "draft": "28px",
+   "live": "56px",
+   "element": "cr-ref-help-0 is the Help page's outer section (first word 'help', last 'call'); its own top padding is still 56px against the draft's 28px at 375, so S6 is not applied on Help."
+  }
+ },
+ {
+  "id": "124",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records Solve-closed (2026-10-03); the h1 'You'll be talking to me, not a help desk.' is cr-ref-contact-3, a measured ref with no rows on the contact sweep."
+  }
+ },
+ {
+  "id": "125",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records Solve-closed (2026-10-03); the eyebrow cr-ref-contact-2 and intro cr-ref-contact-4 are measured refs with no rows (margin or position) on the contact sweep."
+  }
+ },
+ {
+  "id": "126, 137",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The two columns (cr-ref-contact-1, cr-ref-contact-24) are measured with no width rows, but the map itself (business-info cr-ref-contact-25) is not among the contact refs; the only map-related row is cr-ref-contact-27's y-after-map (draft 316, live 414 at 375), which sits on the card below, not the map."
+  }
+ },
+ {
+  "id": "127, 138",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-05T10-14-26/solve-report.json",
+   "ref": "cr-ref-contact-5",
+   "property": "hover-effects",
+   "element": "cr-ref-contact-5 is the 'WhatsApp 07960 5978' sgs/whatsapp-cta; no row of any kind (size, icon colour or hover) sits on it."
+  }
+ },
+ {
+  "id": "128",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records the phone stacking done (2026-10-04); the details grid cr-ref-contact-6 is a measured ref with no grid or width rows on the contact sweep."
+  }
+ },
+ {
+  "id": "129",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-05T10-14-26/solve-report.json",
+   "ref": "cr-ref-contact-7",
+   "property": "gap",
+   "element": "cr-ref-contact-7 is the Phone detail cell (the stack of the 'Phone' label and its number); no gap or position row sits on it, on its label cr-ref-contact-8 or on its value cr-ref-contact-9 (which has only a hover ::after content row)."
+  }
+ },
+ {
+  "id": "130",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-05T10-14-26/solve-report.json",
+   "ref": "cr-ref-contact-18",
+   "path": "",
+   "property": "w",
+   "draft": 135,
+   "live": 335,
+   "element": "cr-ref-contact-18 is the Hours business-info block itself; at 375 it spans the full 335px live where the draft's condensed inline hours are 135px wide, the split layout item 130 (footer 38) names (no day-label font-weight row remains here)."
+  }
+ },
+ {
+  "id": "131",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-05T10-14-26/solve-report.json",
+   "ref": "cr-ref-contact-12",
+   "path": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__label",
+   "property": "color",
+   "draft": "rgb(119, 113, 106)",
+   "live": "rgb(20, 20, 20)",
+   "element": "The path is the email address label inside the email link of business-info cr-ref-contact-12; its hover colour still differs from the draft (the phone, cr-ref-contact-9, carries the S2 sweep ::after the draft lacks)."
+  }
+ },
+ {
+  "id": "133",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records Solve-closed (2026-10-03); the form heading 'Or send me a message' is cr-ref-contact-21, a measured ref with no rows on the contact sweep."
+  }
+ },
+ {
+  "id": "134",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records Solve-closed (2026-10-04, both cards fill); the social cards cr-ref-contact-27 and cr-ref-contact-30 carry no width rows on the contact sweep (only a hover border-top-color row and position rows, not the card sizing)."
+  }
+ },
+ {
+  "id": "135",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-05T10-40-59/solve-report.json",
+   "ref": "cr-ref-contact-form-0",
+   "path": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button",
+   "property": "width",
+   "draft": "166.391px",
+   "live": "335px",
+   "element": "The path is the form's 'Send message' button inside cr-ref-contact-form-0; at 375 it stretches to 335px where the draft keeps its 166px width."
+  }
+ },
+ {
+  "id": "136",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "Register records Solve-closed (2026-10-03); the intro cr-ref-contact-4 is a measured ref with no rows (text-wrap included) on the contact sweep."
+  }
+ },
+ {
+  "id": "139",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-05T10-14-26/solve-report.json",
+   "ref": "cr-ref-contact-12",
+   "path": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__label",
+   "property": "color",
+   "draft": "rgb(119, 113, 106)",
+   "live": "rgb(20, 20, 20)",
+   "element": "The path is the email label inside the email link of business-info cr-ref-contact-12, the email whose hover fade the item names; its hover colour still differs from the draft."
+  }
+ },
+ {
+  "id": "140",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Same as footer 36: a Site Info content fix (the stored address with a line break). The walker does see its effect (cr-ref-contact-15 h draft 42 vs live 19 at 375), but the fix is a stored content value, not a block setting."
+  }
+ },
+ {
+  "id": "N44",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-05T10-14-26/solve-report.json",
+   "ref": "cr-ref-contact-0",
+   "property": "padding-top",
+   "element": "cr-ref-contact-0 is the Contact page's outer main container (first word 'contact'), whose own padding sets where content starts; no padding row sits on it and the eyebrow cr-ref-contact-2 has no position row."
+  }
+ },
+ {
+  "id": "N45b",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-05T10-40-59/solve-report.json",
+   "ref": "cr-ref-contact-form-1",
+   "path": ".sgs-form-field__input",
+   "property": "y-from-form-subtext",
+   "draft": 45,
+   "live": 23,
+   "element": "The path is the 'Your name' input (cr-ref-contact-form-1), the first field below the form subtext; its distance from the subtext still differs from the draft at 375 (field heights 52 vs 47 and the form's height also differ)."
+  }
+ }
+]

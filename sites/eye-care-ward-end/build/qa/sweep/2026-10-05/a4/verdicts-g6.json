@@ -1,0 +1,132 @@
+[
+ {
+  "id": "147",
+  "status": "still open",
+  "evidence": {
+   "walk": "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/walks/checkout",
+   "pair": "page-heading",
+   "property": "font-size",
+   "draft": "48px",
+   "live": "63.36px",
+   "element": "checkout.mjs pairs page-heading as the h1 on both sides, the 'Checkout' page title; at 1440 (opening) it reads 48px on the draft and 63.36px live, the exact 48 vs 63 gap the item names."
+  }
+ },
+ {
+  "id": "148",
+  "status": "still open",
+  "evidence": {
+   "walk": "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/walks/checkout",
+   "pair": "section-payment",
+   "property": "keyframes",
+   "draft": "0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:none}",
+   "live": "none",
+   "element": "section-payment is the pair checkout.mjs set up to measure the draft's section rise-in stagger (the payment section, the 0.9s end); the draft carries the fade-up keyframes as CSS, live has none, so the walker does measure this entrance here (live has no script entrance on WooCommerce's checkout either)."
+  }
+ },
+ {
+  "id": "149",
+  "status": "still open",
+  "evidence": {
+   "walk": "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/walks/checkout",
+   "pair": "place-order",
+   "property": "text",
+   "draft": "PAY NOW £418",
+   "live": "Place Order",
+   "element": "place-order pairs the draft's 'Pay now' button with live's 'Place order' button, the submit button whose label and price-on-button the item names (its justify-content space-between vs center row is the price-on-the-right style)."
+  }
+ },
+ {
+  "id": "150",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "Searched checkout.mjs pairs and every checkout walk diff: no pair targets the secure-payment line under the Pay now bar (only the review text mentions it), so the note's absence is not measured; only place-order and section-payment around it are."
+  }
+ },
+ {
+  "id": "151",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Shipping method titles and descriptions are content; the delivery-ship and delivery-collect pairs only record live's option controls as missing at the inferred selectors, not their wording."
+  }
+ },
+ {
+  "id": "152",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Whether coupon, order note and terms can be switched off without code is an editor/settings capability, not anything the walker renders; no checkout pair targets them."
+  }
+ },
+ {
+  "id": "153",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The register records the extra fields kept by Bean's reading (closed); checkout.mjs has no pair on the country, flat, phone, billing or guest fields, and the group-address diffs are only heading font and width styling, so nothing contradicts it."
+  }
+ },
+ {
+  "id": "154",
+  "status": "still open",
+  "evidence": {
+   "walk": "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/walks/checkout",
+   "pair": "summary-heading",
+   "property": "font-size",
+   "draft": "12px",
+   "live": "20px",
+   "element": "summary-heading pairs the draft's small uppercase 'YOUR BAG' card heading with live's default WooCommerce 'Order summary' heading, one of the bespoke-look pieces the item names (small uppercase headings on the summary card); live stays at WooCommerce's 20px default."
+  }
+ },
+ {
+  "id": "155",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "Searched checkout.mjs pairs and the 375 opening diffs: summary-heading, summary-item and the totals pairs each find one element per side, and no pair targets WooCommerce's collapsed top summary on phones, so the second summary is not measured."
+  }
+ },
+ {
+  "id": "156",
+  "status": "still open",
+  "evidence": {
+   "walk": "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/walks/confirmation",
+   "pair": "tick-circle",
+   "property": "element",
+   "draft": "present",
+   "live": "missing",
+   "element": "tick-circle pairs the draft's 64px accent disc with the white tick against live's .sgs-order-confirmed__tick, the tick icon the item asks the shared confirmation part to build; live has none (continue-link, the 'Back to the shop' button, is missing live too)."
+  }
+ },
+ {
+  "id": "157",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "The confirmation walk ran against a cancelled order: order-details, order-meta and confirmation-message read missing on both sides, and no pair targets the billing or shipping address boxes or their grid, so the one-column collapse is not measured."
+  }
+ },
+ {
+  "id": "159",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Which photos appear (no photo of Fatima, a clinic photo for Home wanted) is a content decision, not a measured property."
+  }
+ },
+ {
+  "id": "160",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The register records keeping the pre-filled WhatsApp message as decided (closed); it is message content, and the walks exclude the draft's WhatsApp bubble, so no row contradicts it."
+  }
+ },
+ {
+  "id": "161",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Brand links pointing to brand pages with unique intros is content and link targets (D9), not a computed style; no walk or sweep row measures link destinations or intro copy."
+  }
+ },
+ {
+  "id": "162",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The register records keeping the contact form's empty-submit messages as decided (closed); these are validation messages (behaviour and content), and this group's walks carry no contact-form pair that contradicts it."
+  }
+ }
+]
