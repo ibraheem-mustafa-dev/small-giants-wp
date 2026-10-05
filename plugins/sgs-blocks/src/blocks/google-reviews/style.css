@@ -728,10 +728,7 @@ a.sgs-google-reviews__author:hover {
 }
 
 :where( .sgs-google-reviews__write-review:hover ) {
-	background-color: var( --sgs-gr-blue-tint );
 	border-color: var( --sgs-gr-blue );
-	/* Blue on the tint is 3.9:1; the darker Google blue is 4.9:1, which the 14px label needs. */
-	color: var( --sgs-gr-blue-dark );
 }
 
 /* Keyboard focus: Google blue, 2px, clear of the border (the shared slider-nav ring is the theme's primary). */
@@ -838,12 +835,11 @@ a.sgs-google-reviews__author:hover {
 
 /* Hover/focus colours are client-controllable — emitted by render.php via sgs_button_element_style_css() at real
    specificity. The rule below is the DEFAULT look (Google's blue tint and blue border), kept at zero specificity via
-   :where(). When the author sets a resting colour, render.php writes the same defaults through the helper, because
+   :where(). Outlined buttons (the arrows, Write a review) turn their border blue and change nothing else; See all takes
+   the darker blue. When the author sets a resting colour, render.php writes the same defaults through the helper, because
    the resting colour is painted on a layer that outranks this rule. The focus ring itself is slider-nav.css's. */
 :where( .sgs-google-reviews__arrow:hover, .sgs-google-reviews__arrow:focus-visible ) {
-	background-color: var( --sgs-gr-blue-tint );
 	border-color: var( --sgs-gr-blue );
-	color: var( --sgs-gr-blue );
 }
 
 :where( .sgs-google-reviews__arrow:active ) {

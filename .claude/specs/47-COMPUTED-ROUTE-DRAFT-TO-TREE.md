@@ -194,7 +194,7 @@ A setting whose marker fails `wp-build-page.js` validation is reported as `marke
 that appear or disappear when it flips, recorded as `presence: { shows: [paths], hides: [paths] }` (a style change alone
 is not presence). A setting marked `role` `content` is rendered with a marker string and records the element whose text
 it prints (`text: <path>`), and a link or URL setting the element it makes a link (`link: <path>`). Not built
-(2026-10-05): calibration records only computed-style changes, so `showAvatar`-type settings are in no list.
+(2026-10-05): calibration records only computed-style changes, so `showDate`-type settings are in no list.
 
 **Where and how it renders:**
 - Each site has one calibration page, created once with `wp-build-page.js --create page --title "CR calibration"

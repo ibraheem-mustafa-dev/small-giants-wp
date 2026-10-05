@@ -299,8 +299,8 @@ $gr_btn_attrs = static function ( string $prefix ) use ( $attributes ): array {
 	foreach ( array( 'FontSize', 'FontWeight', 'Padding', 'BorderWidth', 'BorderStyle', 'BorderRadius', 'WidthType' ) as $suffix ) {
 		unset( $out[ $prefix . $suffix ] );
 	}
-	// Google's hover colours (blue tint and blue border on the outlined arrows and Write a review, the darker blue on
-	// the filled See all) are the default. With no colour set, style.css supplies them and nothing is emitted. Once
+	// Google's hover colours (a blue border on the outlined arrows and Write a review, nothing else changing; the
+	// darker blue on the filled See all) are the default. With no colour set, style.css supplies them and nothing is emitted. Once
 	// the author sets a RESTING colour (a draft's colours arrive this way, and a draft has no hover colours), that
 	// colour is painted by the helper on a layer that outranks any stylesheet hover rule, so the same defaults are
 	// written through the helper too. A hover colour or gradient set in the inspector replaces the default for that
@@ -315,8 +315,8 @@ $gr_btn_attrs = static function ( string $prefix ) use ( $attributes ): array {
 		return $out;
 	}
 	$hover_defaults = array(
-		'arrow'       => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-tint)', 'ColourBorderHover' => 'var(--sgs-gr-blue)' ),
-		'writeReview' => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-tint)', 'ColourBorderHover' => 'var(--sgs-gr-blue)', 'ColourTextHover' => 'var(--sgs-gr-blue-dark)' ),
+		'arrow'       => array( 'ColourBorderHover' => 'var(--sgs-gr-blue)' ),
+		'writeReview' => array( 'ColourBorderHover' => 'var(--sgs-gr-blue)' ),
 		'seeAll'      => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-dark)' ),
 	);
 	$gradient_of    = array( 'ColourBackgroundHover' => 'ColourBackgroundHoverGradient', 'ColourBorderHover' => 'ColourBorderHoverGradient', 'ColourTextHover' => 'ColourTextHoverGradient' );

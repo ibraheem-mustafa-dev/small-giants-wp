@@ -53,7 +53,7 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-05).** eye-care-test ran the block code at `4726700c1` and sandybrown the identical build at `7f770ebb5`, but **the google-reviews track was mid-deploy to eye-care-test at handoff** (`build-deploy.py --target eye-care-test`, PIDs 5200/35928), so re-verify live = HEAD by checksum before measuring anything.
+**Now (2026-10-05).** eye-care-test runs block code at `2f3280554`, sandybrown at `7f770ebb5`. The google-reviews track (`plans/2026-10-05-google-reviews-attribution.md`) is live on eye-care-test only: sandybrown's deploy aborts on 155 old-shape `sgs/cta-section` blocks on calibration page 4750. Re-verify live = HEAD by checksum before measuring.
 Step 0 is done (all 17 trees
 rebuilt, zero invalid blocks). The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list:
 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9 taken, three build rules. Proven bugs in it: the
@@ -80,7 +80,7 @@ untested at 375/768) but its black hover colour is not yet in the trees. Parked 
 
 **Session B, the audit (2026-10-05, complete; measure and read only, no block writes, no deploys).** Every one of the
 2,373 open issues now sits in exactly one class with proof (`plans/2026-10-04-eye-care-sweep-audit-fix.md`
-Appendix B): **W 1,710, F 163, T 447, U 28, D 17, deferred 8** (the google-reviews track's). Six parallel Opus agents
+Appendix B): **W 1,710, F 163, T 447, U 28, D 17, deferred 8**. Six parallel Opus agents
 proved or disproved all 338 candidate-F rows under a citation gate; **only 48% survived**, and all 130 confirmed
 combos name an existing precedent, so none needs a new control primitive (verdicts `reports/2026-10-05-session-b/b2/`). `triage.mjs` gained the sweep's fifth class so no row is left
 unclassed (`97ac6f95a`: 323 unmapped-state rows had none). The 78 unmeasurable register items each carry a
