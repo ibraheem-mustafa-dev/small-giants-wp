@@ -62,6 +62,7 @@ as `file::symbol` or a named test, recorded in this plan beside the item.
 | Block controls, `block.json`, `render.php`, block `style.css`, theme CSS, shared helpers | Session C2 step 4, after Bean's per-item yes |
 | The 447 **T** rows (values the next run writes) and the 28 **U** rows | Session D, `plans/2026-10-04-spec47-full-coverage.md` "Progress" |
 | `sgs/google-reviews`: 3 F rows, 8 deferred icon combos, all attribution work | the parallel Google reviews track (closed 2026-10-05, `plans/archive/2026-10-05-google-reviews-attribution.md`); expect it to deploy |
+| The register items whose cause is already proven in code and whose fix is already decided | a parallel track, `plans/2026-10-05-eye-care-register-proven-repairs.md`, which runs beside this session and touches only `plugins/` and `theme/` |
 | Spec 47 stage 5, a second draft from a different designer | blocked: no second draft exists. See "The one item not built" |
 | Spec 47 stage 6, handover to Spec 31 | a Spec 31 decision under Spec 31's own plan (`sc_var_responsive_bridge.py`) |
 
@@ -138,7 +139,7 @@ Two or more sessions share this worktree, so the commit discipline is part of th
 | id | Item | Done when | Time |
 |---|---|---|---|
 | **C0.1** | Confirm live = HEAD by checksum | the deployed sgs-blocks build is checksum-equal to the local build of HEAD, with the command recorded. The Google reviews track was mid-deploy to eye-care-test at Session B's handoff, so the recorded block code `4726700c1` may be stale | 5 min |
-| **C0.2** | Clear the sandybrown deploy blocker | `build-deploy.py --target sandybrown` passes its oldshape audit. It aborts today on 155 old-shape `sgs/cta-section` blocks on the Spec 47 calibration page (post 4750). Migrate with `scripts/wp-migrate-oldshape-blocks.js` or empty the page (calibration replaces it with an empty tree at the end of each run anyway). **Never `--skip-oldshape-audit`** | 10 min |
+| **C0.2** | Clear the sandybrown deploy blocker | `build-deploy.py --target sandybrown` passes its oldshape audit. It aborts today on 155 old-shape `sgs/cta-section` blocks on the Spec 47 calibration page (post 4750). Migrate with `scripts/wp-migrate-oldshape-blocks.js` or empty the page (calibration replaces it with an empty tree at the end of each run anyway). **Never `--skip-oldshape-audit`**. The parallel repairs track needs sandybrown too: whoever reaches this first does it, and the other checks whether it is already cleared | 10 min |
 | **C0.3** | W0a: 15 new ledger entries | see "W0a in detail" below. `node scripts/computed-route/lint.mjs --register .claude/plans/2026-10-02-eye-care-fix-register.md --surfaces sites/eye-care-ward-end/build/surfaces.json` passes, and a planted bogus register id turns it red | 10 min |
 | **C0.4** | Record the baselines | four numbers written into this plan: the route test count, the **ambiguous-row count**, the F count (163), and `calibration.discovered` counts per block. Every later gate compares against these | 5 min |
 
@@ -366,7 +367,7 @@ TYPE: auto-gate, then a main-thread read of every diff
 | **C3.3** | The database consistency check | `python plugins/sgs-blocks/scripts/db-consistency/run.py --check` passes, invariants A, B and C green |
 | **C3.4** | **Recalibrate every block whose code OR routing columns changed**, on the local WSL mirrors. Includes CR17's `sgs/business-info` and CR12's `theme-toggle` | each block's cache file regenerates; for every row C3.1 routed, `settings[<attr>].slots` contains the cited selector; no new `dead` or `noMarker` outcome |
 | **C3.5** | **A paid test order on eye-care-test**, so the confirmation surface paints its tick and continue link (PA-5) | the confirmation walk is complete |
-| **C3.6** | **One measure-only sweep**, all 17 surfaces, same command and flags as the 2026-10-05 baseline, from clean HEAD | `sweep.json` written, with the surfaces measured stated beside the result |
+| **C3.6** | **One measure-only sweep**, all 17 surfaces, same command and flags as the 2026-10-05 baseline, from clean HEAD | `sweep.json` written, with the surfaces measured stated beside the result **and the block code it was measured at**. The parallel repairs track holds its eye-care-test deploy until this has run, precisely so this count is attributable to the route and nothing else: confirm with it before measuring |
 | **C3.7** | **Re-triage all 17 surfaces** | the sweep-to-triage identity holds; every delta against 2,373 explained |
 | **C3.8** | **Record the new F count and what moved** | a table in this plan: F before, F after, and per lane the rows it reclassified with the reason, **plus the path of the post-C triage output** (`sites/eye-care-ward-end/build/qa/triage/*.json`) and **the list of rows still open**, row by row. The table explains the move; the row list is what Session C2 actually consumes |
 

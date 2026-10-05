@@ -60,6 +60,7 @@ item marked "still open" or "partly measured"; and the framework fixes for whate
 |---|---|
 | Any Spec 47 route or logic work | Session C |
 | The 447 **T** rows and the 28 **U** rows | Session D, `plans/2026-10-04-spec47-full-coverage.md` "Progress" |
+| The register items the parallel repairs track already built (`sgs/button` hover timing, `sgs/business-info` day-label weight, `sgs/site-footer-row` full width, the nav drawer body height, the cart cooldown, the colour tile padding, and whatever else that track records as done) | `plans/2026-10-05-eye-care-register-proven-repairs.md`. Judge the remaining findings against the repaired code, never against today's |
 | `sgs/google-reviews`: its F rows, 8 deferred icon combos, all attribution work | the parallel Google reviews track. Its colours and sizes follow Google's UI (40px pills and arrows), an **accepted difference** from the theme and the 44px target (Bean, 2026-10-05): never flag them as gaps |
 | Writing page-tree or Site Info values | Session D |
 
@@ -116,6 +117,12 @@ looks right and has challenged the mega-menu rows.
 
 **Done when:** every post-C row carries either a register Ref or an explicit "not in the register", and every
 change against the table above is listed with its reason.
+
+⚠️ **Re-measure before matching.** Session C's count is taken on unrepaired block code, because the parallel
+repairs track (`plans/2026-10-05-eye-care-register-proven-repairs.md`) holds its deploy so that count stays
+attributable to the route. That track closes register-decided rows on `sgs/button`, `sgs/business-info`,
+`sgs/site-footer-row`, the nav drawer, the cart proxy and the colour tiles. **Confirm it has deployed, then
+take a fresh measure-only sweep**, or this session re-judges rows that are already fixed.
 
 **Expect the C table to shrink a lot.** Session C's canvas-awareness rule (FR-47-8) targets exactly the mega-menu
 22 and much of the lens-pop-up 35, and its walker guards retire the two WooCommerce width rows. A row Session C

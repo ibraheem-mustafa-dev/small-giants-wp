@@ -67,22 +67,20 @@ focus and active states, pairing gaps, gap typing, Fill) are Session C's scope, 
 Hostinger shows a captcha (`scripts/local-wp/README.md`).
 
 **Session A, the whole-site sweep (2026-10-05, complete, measure only, from `1ea514ae8`).** 2,373 distinct open
-issues over 17 surfaces (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`; per surface in the Spec 47
-plan's Progress). Every register item has a Sweep status (77 still open, 63 not walker-measurable, 19 closed
-earlier, 15 partly measured, 27 clean). Still open from its live checks: S3's black hover colour is not in the
-trees, and the header phone is untested at 375/768. Parked PA-1 to PA-5 in the sweep plan; Session C lane L4 owns
-PA-1, PA-2, PA-3 and PA-5, and lane L5 owns PA-4.
+issues over 17 surfaces (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`). Every register item has a Sweep status
+(counts in the sweep plan). Still open:
+S3's black hover colour is not in the trees, and the header phone is untested at 375/768. PA-1 to PA-5 are Session
+C's lanes L4 and L5.
 
 **Session B, the audit (2026-10-05, complete; measure and read only, no block writes, no deploys).** Every one
 of the 2,373 open issues sits in exactly one class with proof (`plans/2026-10-04-eye-care-sweep-audit-fix.md`
 Appendix B): **W 1,710, F 163, T 447, U 28, D 17, deferred 8**. Six parallel Opus agents proved or disproved
 all 338 candidate-F rows under a citation gate and **only 48% survived** (`reports/2026-10-05-session-b/b2/`).
-`triage.mjs` gained the sweep's fifth class so no row is left unclassed (`97ac6f95a`: 323 unmapped-state rows
-had none). The 78 unmeasurable register items each carry a measure-gap tag (Appendix A): 51 wait on route
-work, not block work. B4 closed register N41 and 113 by ledgering S1's agreed lift (`D-34`-`D-39`). P0-11 is
-closed: the 605 dead, 40 oneWidth and 55 untestedStates calibration outcomes are split by cause and **no cause
-needs block code** (four fixture or harness fixes clear 203; Session C lane L5 builds them). Contact's 106
-independent rows against the walker's 27 reconcile to a **6-row residual**, all padding, hypothesis unproven
+`triage.mjs` gained the sweep's fifth class, so no row is unclassed (`97ac6f95a`). The 78 unmeasurable
+register items each carry a measure-gap tag (Appendix A): 51 wait on route work, not block work. B4 closed register N41 and 113 by ledgering S1's agreed lift (`D-34`-`D-39`). P0-11 is
+closed: the 700 calibration outcomes are split by cause and **no cause needs block code** (four fixture or harness
+fixes clear 203; Session C lane L5 builds them, L5.6 owns the rest). Contact's 106 independent rows against
+the walker's 27 reconcile to a **6-row residual**, all padding, hypothesis unproven
 (`reports/2026-10-05-session-b/contact-independent-reconciliation.md`).
 
 **Gate B answered 2026-10-05: yes, route fixes first, and the work re-split (Bean).** The fix register is the source
@@ -105,15 +103,19 @@ block work the first draft called W1 and W2 lives there, behind that approval, w
 collision check (`reports/2026-10-05-session-b/check-queue-collisions.mjs`) carried over.
 
 **R1 routes 32 rows, not 188**: the resolver never reads `css_element`, routing an enum row would delete a working
-discovery path, and the animation half is resolver work (28 leave alone, 128 resolver, 32 routable). The three
-`!important` spacing rows are diagnosed from the source as **two** causes, core's
-`.is-layout-constrained > :where(:not(.alignfull)) { margin: auto !important }` beating the band's side margins
-(`sgs/hero` already solves it by leaving that selector's match set) and an inline WP-native base margin beating a
-class rule on the footer (the same block's tablet and mobile tiers already solve it). Both go on the C2 list.
+discovery path, and the animation half is resolver work. The three `!important` spacing rows are diagnosed from the
+source as two causes (core's constrained-layout rule, which `sgs/hero` already steps out of, and an inline
+WP-native base margin), so both go on the C2 list rather than waiting.
 
-**Session 0 (2026-10-05, complete):** the route data audit's repairs (`.claude/reports/2026-10-04-route-data-audit/README.md`),
-every block recalibrated on the WSL mirrors; parked P0-3 to P0-10 in the sweep plan (P0-1, P0-2 and P0-11 closed). The wiring gate
-(`check-wiring-fingerprint.py`) blocks new gaps only (201 baselined).
+**Parallel track, the register-proven repairs (not started)** (`plans/2026-10-05-eye-care-register-proven-repairs.md`).
+Beside Session C, touching only `plugins/` and `theme/`: no file overlap with the route work. Twelve register items
+whose cause is proven in code and whose fix is decided, so none needs Bean or C2 (five re-verified against the
+source, five to locate, two possibly done). **It holds its eye-care-test deploy and its reseed until Session C's
+Wave 3 sweep has run**, or C's gap count stops being attributable to the route; C2 re-measures before matching.
+
+**Session 0 (2026-10-05, complete):** the route data audit's repairs
+(`.claude/reports/2026-10-04-route-data-audit/README.md`), every block recalibrated on the WSL mirrors; parked
+P0-3 to P0-10 in the sweep plan. The wiring gate blocks new gaps only (201 baselined).
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**
 **Session C's first action** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`): confirm live = HEAD by
