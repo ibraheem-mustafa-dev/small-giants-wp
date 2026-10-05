@@ -2384,7 +2384,6 @@
                       },
                       "writeReviewTextDecoration": "none",
                       "variant": "badge",
-                      "showGoogleLogo": true,
                       "showAggregate": true,
                       "className": "cr-ref-product-104"
                     }

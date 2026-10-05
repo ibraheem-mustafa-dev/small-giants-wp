@@ -706,10 +706,6 @@
 			"type": "boolean",
 			"default": true
 		},
-		"showGoogleLogo": {
-			"type": "boolean",
-			"default": true
-		},
 		"reviewRequestUrl": {
 			"type": "string",
 			"default": ""

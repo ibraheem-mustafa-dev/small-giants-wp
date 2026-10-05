@@ -76,7 +76,6 @@ $show_aggregate     = $attributes['showAggregate'] ?? true;
 $show_breakdown     = $attributes['showBreakdown'] ?? false;
 $show_avatar        = $attributes['showAvatar'] ?? true;
 $show_date          = $attributes['showDate'] ?? true;
-$show_google_logo   = $attributes['showGoogleLogo'] ?? true;
 $review_request_url = $attributes['reviewRequestUrl'] ?? '';
 $theme              = $attributes['theme'] ?? 'light';
 $card_style         = $attributes['cardStyle'] ?? 'google-card';
@@ -847,15 +846,13 @@ if ( $gr_header_shown ) :
 			</div>
 			<?php endif; ?>
 		</div>
-		<?php if ( $show_google_logo ) : ?>
-			<img
-				src="<?php echo esc_url( $gr_google_logo_url ); ?>"
-				alt="Google"
-				class="sgs-google-reviews__google-logo"
-				width="16"
-				height="16"
-			/>
-		<?php endif; ?>
+		<img
+			src="<?php echo esc_url( $gr_google_logo_url ); ?>"
+			alt="Google"
+			class="sgs-google-reviews__google-logo"
+			width="16"
+			height="16"
+		/>
 		</div>
 		<?php echo $gr_actions_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_url() / esc_html() only. ?>
 	</div>
@@ -940,14 +937,12 @@ if ( in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
 				<span><?php echo esc_html( $gr_count_label( $rating_count ) ); ?></span>
 			<?php endif; ?>
 		</div>
-		<?php if ( $show_google_logo ) : ?>
-			<img
-				src="<?php echo esc_url( plugins_url( 'assets/google-logo.svg', SGS_BLOCKS_PATH . 'sgs-blocks.php' ) ); ?>"
-				alt="Google"
-				width="16"
-				height="16"
-			/>
-		<?php endif; ?>
+		<img
+			src="<?php echo esc_url( plugins_url( 'assets/google-logo.svg', SGS_BLOCKS_PATH . 'sgs-blocks.php' ) ); ?>"
+			alt="Google"
+			width="16"
+			height="16"
+		/>
 	</div>
 	<?php
 else :

@@ -57,7 +57,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		showBreakdown,
 		showAvatar,
 		showDate,
-		showGoogleLogo,
 		reviewRequestUrl,
 		theme,
 		starColour,
@@ -451,13 +450,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Show dates', 'sgs-blocks' ) }
 						checked={ showDate }
 						onChange={ ( value ) => setAttributes( { showDate: value } ) }
-					/>
-
-					<ToggleControl
-						label={ __( 'Show Google logo', 'sgs-blocks' ) }
-						help={ __( 'Required by Google attribution policy', 'sgs-blocks' ) }
-						checked={ showGoogleLogo }
-						onChange={ ( value ) => setAttributes( { showGoogleLogo: value } ) }
 					/>
 
 					<TextControl

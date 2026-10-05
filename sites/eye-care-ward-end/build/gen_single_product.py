@@ -163,7 +163,7 @@ def _find(nodes, name):
 # The clinic's Google rating comes from the same Google reviews block settings as Home, shown compact.
 with open(HOME, encoding='utf-8') as fh:
     GOOGLE = dict(_find(json.load(fh), 'sgs/google-reviews')['attributes'])
-GOOGLE.update(variant="badge", showGoogleLogo=True, showAggregate=True)
+GOOGLE.update(variant="badge", showAggregate=True)
 # Inside the card the badge sits bare: no frame, ground or padding of its own.
 for _k in [k for k in GOOGLE if k.startswith(('border', 'background', 'padding', 'boxShadow', 'shadow'))]:
     del GOOGLE[_k]

@@ -719,7 +719,6 @@ The icon circle has an overridable default border; a title placeholder never lea
 - `showBreakdown` — boolean (default: false — show rating distribution bar chart in header)
 - `showAvatar` — boolean (default: true)
 - `showDate` — boolean (default: true)
-- `showGoogleLogo` — boolean (default: true — required by Google attribution policy)
 - `reviewRequestUrl` — URL (optional — "Write a review" CTA linking to Google)
 - `theme` — light | dark | transparent (default: light)
 - `cardStyle` — flat | bordered | elevated (default: bordered)
