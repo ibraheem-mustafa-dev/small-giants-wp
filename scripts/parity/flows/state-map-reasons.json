@@ -1,12 +1,12 @@
 {
 	"spec": "FR-47-7",
-	"plan": ".claude/plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md (C0.7)",
-	"mapping": "sites/eye-care-ward-end/build/surfaces.json, each surface's `states` object (walker state to setting state; null is rest)",
+	"plan": "Spec 47 FR-47-7; the walker-state maps were applied as Session C item C0.7",
+	"mapping": "sites/<client>/build/surfaces.json, each surface's `states` object (walker state to setting state; null is rest)",
 	"stateless": [],
 	"statelessNote": "Every walker state a committed unmapped-state verdict names is mapped in surfaces.json, so no row is left without a mapped state and none needs a stated reason for having none. tests/state-map.test.mjs fails if one reappears.",
 	"stateConflicts": {
 		"owner": "L8.8: the guard that refuses a group whose mapped states disagree belongs to scripts/computed-route/lib/solve-rows.mjs, not to this lane. This file only names the seven so L8 can test against them.",
-		"keys": "Each entry is a committed triage verdict (sites/eye-care-ward-end/build/qa/triage/<surface>.json, verdicts[].key) whose pair is measured in two or more walker states that now map to the SAME setting state with different draft values. Writing the group would take the last run's value. The `mappedTo` list is each walker state's mapped setting state as committed. The reasons state only what is committed (the states and where they map); the differing draft values are as recorded in C0.7.",
+		"keys": "Each entry is a committed triage verdict (sites/<client>/build/qa/triage/<surface>.json, verdicts[].key) whose pair is measured in two or more walker states that now map to the SAME setting state with different draft values. Writing the group would take the last run's value. The `mappedTo` list is each walker state's mapped setting state as committed. The reasons state only what is committed (the states and where they map); the differing draft values are as recorded in C0.7.",
 		"entries": [
 			{
 				"surface": "home",
