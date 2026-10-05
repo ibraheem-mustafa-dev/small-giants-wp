@@ -120,7 +120,7 @@ re-run by hand). The process for this review was `plans/archive/2026-10-01-eye-c
   product states, shop filter states, image hovers, reveal sections), 2026-10-02.
 - **Added 2026-10-03 (section 16):** ref tracing (`refPrefix`: each row names its layout node and element) and the
   divergence ledger (`sites/eye-care-ward-end/build/qa/divergences.json`). Benchmark 5 of 5, 0 noise rows.
-- **Next upgrades:** Spec 47 FR-47-6 items 1-5 (overlays drawn as pseudo-elements, 1920 in every run, states on every
+- **Walker and flow upgrades — BUILT 2026-10-05** (Session C sitting i): FR-47-6 item 2 (1920 in every run), item 4 (link coverage), item 5 (line counts during transitions) and the focus and active half of item 3, each with a GAP-CHECKLIST section (20 to 26) and a planted fault; plus all of FR-47-7 (the four shopping flows as scripted tests, in `scripts/parity/flows/`, run live in Wave 3). Item 1 (pseudo-element paint) was already built. Detail: Spec 47 §3.6 and §3.7.
   interactive element, link coverage, line counts during transitions) and FR-47-7 (shopping flows as scripted tests). Bean's review found the misses that motivate each (register "Walker
   improvements").
 

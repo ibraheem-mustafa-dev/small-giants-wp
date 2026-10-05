@@ -1,9 +1,27 @@
 Invoke /autopilot before doing anything else.
 
-> **Session C updates this file at its handoff** with the real F count, which lanes reclassified what, whether the
-> canvas rule shrank the mega-menu and lens-pop-up rows as expected, which lanes left items open, and whether the
-> repairs track has deployed. If this note is still here, Session C has not handed over yet: read its C3.8 output
-> before trusting the numbers below.
+> **DO NOT START THIS SESSION YET (updated 2026-10-05 by Session C's sitting-i handoff).**
+>
+> Session C is **part-done**. Its Wave 0, Wave 1 (six lanes) and Gate 1 have passed; **Waves 2 and 3 are
+> outstanding**, so **C3.8 — the post-route count that is this session's whole input — does not exist.** The next
+> session is Session C's **sitting ii**, not this one.
+>
+> What Gate 1 measured, so the numbers below are not read as current: **raw F fell 338 to 177**, and that is the
+> **raw** triage figure against a **raw** baseline of 338. The **163 quoted throughout this prompt is Session B's
+> AUDITED figure**, and the two are not comparable — Session B audited the 338 raw-F rows down to 163 (148 to W,
+> 17 D, 8 deferred, 2 T). A post-sweep figure does not exist until Wave 3's C3.6 and C3.7 run.
+>
+> Already true, and this session must absorb it when it does start: **161 rows moved from F to `W/canvas-settable`**,
+> each citing a block and attribute — that citation is a **claim to test live, never a closure**, and task 2 tests it.
+> The mega-menu and lens-flow rows shrank as expected (mega-lenses 24 to 4, lens 38 to 34, mobile-menu 12 to 4,
+> header 15 to 0, contact-form 10 to 0). **41 content rows** (13 text, 28 presence) entered the sweep under a new
+> `content` class. The canvas roster is **12 of the 17 surfaces** (every CPT plus the shop and product templates);
+> ⚠️ a QC council showed that roster is **load-bearing** — marking an ordinary page a canvas would mask real gaps
+> (59 on home and help alone), so treat it as evidence, not furniture. **No lane failed its gate.**
+>
+> **The parallel repairs track has finished and pushed** (`75364c71a`), but it has **not** deployed to eye-care-test;
+> Session C's Wave 3 does that after its sweep. So when this session finally runs, re-measure first: task 0 already
+> says so, and it is now certain rather than conditional.
 
 Context: Eye Care (client slug eye-care-ward-end) is being rebuilt from a Claude Design draft onto the SGS
 WordPress block framework. Bean's fix register (`.claude/plans/2026-10-02-eye-care-fix-register.md`) is the source

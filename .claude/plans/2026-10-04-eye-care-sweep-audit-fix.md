@@ -16,6 +16,8 @@ per-surface walker work resumes.
 134 to 19 issues, and 13 of 17 surfaces have never been measured with today's walker, so nobody knows what is already
 fixed, what the register still needs, or whether "missing setting" labels are true.
 
+**Session C sitting i is done (2026-10-05):** Wave 0, Wave 1's six lanes and Gate 1 all passed, so Spec 47 §5 stage 3's walker items 2, 4 and 5 and the focus and active half of item 3 are built, FR-47-7's flows are built, and FR-47-8 canvas awareness is live. Raw F fell 338 to 177 (not comparable to Session B's audited 163). Sitting ii — Wave 2, Gate 2 and Wave 3's host jobs — is outstanding, and Wave 3 is what produces the count Session C2 consumes. Detail: `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`.
+
 **Order:** Session 0 (repair everything the 2026-10-04 audit proved) → Session A (sweep) → Session B (audit what is
 still open + divergence protection + writes Session C's plan) → Session C (repair the measuring route: every unbuilt Spec 47 item) → Session C2 (assess each
 remaining finding against the fix register, then fix what Bean approves) →
@@ -258,7 +260,7 @@ webpack's module ids are set aside, and the deployed theme.json equals the snaps
   its walker state open (`e32edfbf6`; the megas went from nothing at rest to all their blocks), and pairing runs the
   hand config's `live.open` and lifts a landmark exclusion holding the surface (`ebf518e89`; lens). Coverage per
   surface: the Spec 47 plan's Progress table.
-- **A3:** `qa/sweep/2026-10-05/sweep.json`: 2,373 distinct open issues over 17 surfaces, each surface's total equal to its
+- **A3:** `qa/sweep/2026-10-05/sweep.json`: 2,373 distinct open issues over 17 surfaces (**2,414 after Session C's Gate 1**, a new content class of 41), each surface's total equal to its
   report's `wholePage` count once the sweep counted unmapped-state rows (`62f1f0e04`; shop had lost 163). About's walk
   35s against 31s on 2026-10-04: the DevTools lookups stay unbatched.
 - **A4:** the register's Sweep column: 77 still open, 63 not walker-measurable, 19 closed earlier, 15 partly measured,
@@ -297,7 +299,7 @@ None blocks Session B.
 ## Session B: audit the three-way split, protect decisions, plan the fixes
 
 **Done 2026-10-05.** All five units and both appendices landed (`97ac6f95a`, `4e36e5775`, `124993395`, `427277644`,
-`919c23be4`, `314add9c6`). Every one of the 2,373 open issues carries one class with proof (W 1,710, F 163, T 447,
+`919c23be4`, `314add9c6`). Every one of the 2,373 open issues carries one **audited** class with proof (W 1,710, F 163, T 447,
 U 28, D 17, deferred 8); the 78 unmeasurable register items carry a measure-gap tag; Bean's decisions can no longer
 be overwritten (B4, N41 and 113 closed); Session C's plan is written
 (since re-split into `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`
@@ -357,7 +359,7 @@ No-go: the F gaps stay in the register (Sweep column) and work goes straight to 
 `plans/2026-10-05-eye-care-session-c2-finding-assessment.md`.
 
 **Why the split.** The fix register (`plans/2026-10-02-eye-care-fix-register.md`) is the source of truth: it already
-holds the decided issues and the agreed fixes. The 163 **F** rows are *findings to assess*, not a list of gaps to
+holds the decided issues and the agreed fixes. The **audited** 163 **F** rows (raw 338, which Session C's Gate 1 took to 177) are *findings to assess*, not a list of gaps to
 build, and a walker row never creates a new fix. Many of those findings ignore how the framework works — a mega
 menu, a modal and a choice flow are CPT canvases composed from blocks, and a setting can arrive from a parent by
 block context — so "this block declares no setting" is not a defect by itself. Bean: the lens flow looks almost
@@ -369,7 +371,7 @@ already decide link behaviour).
 
 **Session C: Spec 47 route and logic gaps only. No block controls, no shared CSS files.** Every "not built", "not
 started", "open" and "known measuring gap" in Spec 47, plus the new canvas-awareness rule (**FR-47-8**, **R-47-12**),
-plus the calibration-failure fixtures and the sandybrown oldshape blocker. The main thread writes no feature code:
+plus the calibration-failure fixtures. (The sandybrown oldshape blocker was found already clear at C0.2.) The main thread writes no feature code:
 nine lanes in three waves, each lane one worktree subagent with a fixed file list, a gate after each wave.
 **Done when** a fresh measure-only sweep and triage have run on the repaired route and the new F count is recorded.
 Nothing is deferred; the one item not built is Spec 47 stage 5, a second draft, which is blocked on a second draft

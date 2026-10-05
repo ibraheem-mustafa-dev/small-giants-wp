@@ -14,6 +14,8 @@ references:
 
 # Eye Care Session C2: assess every finding, then fix what Bean approves
 
+⚠️ **This session cannot start yet (2026-10-05).** Session C is **part-done**: its Wave 0, Wave 1 and Gate 1 have passed, but **Waves 2 and 3 are outstanding**, and C3.8 — the post-route framework-gap count that is this session's input — **does not exist**. Gate 1's figure is **raw F 177 against a raw baseline of 338**, measured on the committed Solve reports; it is **not** comparable to the audited 163 this plan was written against, and it is not the post-sweep number either, because the fresh measure-only sweep is Wave 3's C3.6. Wait for Session C's sitting ii. What already changed that this plan must absorb when it does start: 161 rows moved from F to `W/canvas-settable` with a cited block and attribute (a claim to test live, never a closure), the mega-menu and lens-flow rows shrank as expected, 41 content rows entered the sweep as a new `content` class, and the canvas roster is 12 of 17 surfaces. See `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md` sections "Gate 1 PASSED" and "QC council".
+
 **Goal:** every walker finding on the post-Session-C sweep is matched to the fix register where one fits,
 fact-checked against how the framework really works, and live-tested; Bean approves or rejects each one; and only
 the approved items become framework fixes.

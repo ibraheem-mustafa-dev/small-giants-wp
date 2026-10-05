@@ -607,7 +607,10 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        `2026-10-04-spec47-full-coverage.md` Progress), and every fix-register item carries a sweep status (77 still
        open, 63 not walker-measurable, 19 closed earlier, 15 partly measured, 27 clean on the walker; each still-open
        verdict cites one exact element row and its values). Session B (2026-10-05) sorted every one of the 2,373 into
-       one class with proof (W 1,710, F 163, T 447, U 28, D 17, deferred 8).
+       one class with proof, **audited**: W 1,710, F 163, T 447, U 28, D 17, deferred 8. The committed
+       `qa/triage/*.json` hold the **raw** classification those were audited from: W 1,562, F 338, T 445, U 28.
+       **Session C sitting i then passed Gate 1 (2026-10-05): raw F 338 to 177, total 2,373 to 2,414** (a new
+       `content` class of 41), so a triage re-run compares to 338 and never to the audited 163.
        **The remaining work runs in two sessions.** The fix register (`plans/2026-10-02-eye-care-fix-register.md`)
        is the source of truth: the 163 F rows are findings to assess, not a list of gaps to build, and many of them ignore how the
        framework works (a CPT canvas composes blocks, and a setting can arrive from a parent by context), which is a route defect.
@@ -646,7 +649,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        `presence-boolean` 3, `content` 84, `text-content` 235; counted 2026-10-05). §3.2 scopes the text read to
        `role` `content` alone, which would miss the 235 `text-content` rows that hold most of this register's words
        (`sgs/product-card::noReviewsText`, `::brandName`, `sgs/buybox::stockInStockLabel`, `sgs/whatsapp-cta::cardTitle`):
-       §6 carries the question, with the recommendation to read both roles. §3.3's `handover` owners are
+       §6's question is **answered: read both roles, 319 settings** (Bean, 2026-10-05), and §3.2 carries it. §3.3's `handover` owners are
        `site-info`, `product-data`, `content-page` and `behaviour`; a fifth, `woocommerce-text`, is used by one
        register item below and is recommended as an owner in its own right. Session C lanes L7 and L8 build all
        of this. The sweep (`lib/sweep.mjs`) keeps style, hover and box rows only, so
@@ -655,8 +658,9 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        `plans/2026-10-04-eye-care-sweep-audit-fix.md`, the data `.claude/reports/2026-10-05-session-b/measure-gap-tags.json`).
        Of the 78 register items the walker could not fully see: **8 `content-fixable`** (a setting holds the value and only
        §3.2/§3.3's unbuilt presence, text and link reads block it: S7, 9, N16b, N27, N30, N31, N33B, 159), **17 `pairing`**
-       (the element sits on a measured surface but no pair reaches it), **28 `FR-47-6`** (an unbuilt walker read: focus and
-       active states, script-driven entrance motion, link coverage; 13 of these have no setting at all and carry
+       (the element sits on a measured surface but no pair reaches it), **28 `FR-47-6`** (a walker read that was unbuilt: focus and
+       active states, script-driven entrance motion and link coverage — **all three built in Session C sitting i**, so these
+       28 are now measurable and are re-judged on Wave 3's sweep; 13 of these have no setting at all and carry
        "no setting exists; framework gap" in their reason, so they are Session C2's findings, not content's), **15 `behaviour`**
        (FR-47-7 flows), **6 `handover`** (`site-info` 2, `content-page` 2, `product-data` 1, `woocommerce-text` 1), and one
        each of `PA-1` (N7), `PA-3` (103, measured by the hand pair `choose-a-frame` and refused only by the A4 validator)

@@ -15,18 +15,21 @@ evaluator is wired in. A2 DONE (D1134): the draft's links and loop copy fill in 
 equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3, Track D). Detail: D1132-D1145.
 
 **Eye Care: now built by hand first (D1149, 2026-09-24).** The Eye Care site is built by hand to client-ready
-from Claude Design's gap map; the finished site becomes the pipeline's answer key. Every surface is built and
-live on eye-care-test, and the fix register (2026-10-03) is the work list with all decisions taken. Spec 47's
-tool measures the draft against the live site and writes the layout settings automatically; it took the About
-page to 100%. The whole-site sweep found 2,373 differences and the sort put every one in a labelled box with
-evidence: **163 came out as candidate gaps in the framework**, the rest are measuring artefacts, knock-on effects or
-values that write themselves.
+from Claude Design's gap map; the finished site becomes the pipeline's answer key. Every surface is built and live
+on eye-care-test, and the fix register is the work list with all decisions taken. Spec 47's tool measures the draft
+against the live site and writes the layout settings automatically; it took the About page to 100%. The whole-site sweep found 2,373 differences and the sort put every one in a labelled box with
+evidence: **163 came out as candidate gaps in the framework** after a hand audit, the rest are measuring artefacts,
+knock-on effects or values that write themselves.
 
 **You answered Gate B on 5 October: yes, with the measuring-tool fixes first**, and you re-cut the rest. Your
-fix list stays the source of truth, so the 163 are now findings to check against it rather than a list to
-build, and the tool gets repaired before anything is judged — several of those findings ignore how the
-framework works. Two sessions are planned and neither has started: one repairs the measuring tool, one checks
-every finding against your list and brings you a yes/no list before any code.
+fix list stays the source of truth, so those findings are checked against it rather than built, and the tool gets
+repaired before anything is judged — several of them ignore how the framework works.
+
+**Half of the tool repair is done (5 October).** Six lanes landed and its first gate passed: the machine's raw count
+of candidate gaps **fell 338 to 177**, every row movement accounted for, 322 tests green, no block code touched.
+⚠️ **177 is the machine's raw number; the 163 above is the hand-audited one — not the same scale**, so never compare
+them. Outstanding: three more lanes, then the host jobs that give the real post-repair count. **Checking findings
+against your list cannot start until that count exists.** It also corrected one of its own claims that did not hold.
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -51,7 +54,7 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-05).** sandybrown runs `a62ae6fdb`; eye-care-test still runs `7f375f765`, held so Session C's gap count stays attributable to the route. Re-verify live = HEAD by checksum before measuring.
+**Now (2026-10-05).** sandybrown runs `1b96cf786`; eye-care-test still runs `7f375f765`, held so Session C's gap count stays attributable to the route. Session C's sitting ii must measure at `7f375f765` FIRST, then deploy `75364c71a` (the repairs track's finished range `7689ebb70..75364c71a`, block and theme code only). Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not by a liveness check.
 Step 0 is done (all 17 trees
 rebuilt, zero invalid blocks). The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list:
 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9 taken, three build rules, and the proven
@@ -60,68 +63,58 @@ behaviour bugs (N11, 75/82, N25, 15, N46). It is the source of truth for what ge
 **Spec 47 (v0.15): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
 compares a built page with the draft and writes block settings; `--rounds 0` measures only. The walker (the
 draft-vs-live comparison tool, `scripts/parity/`) reads what DevTools shows. Every surface is paired (`pairs.mjs`;
-a panel pairs with its walker state open, `--state`). **About is at 100%**; Contact 27 open, its form 58, Lenses 58 (causes in `plans/2026-10-04-spec47-full-coverage.md` Progress).
-Unbuilt and known-broken parts (presence, text and link reads and writes, the handover list, functional flows,
-focus and active states, pairing gaps, gap typing, Fill) are Session C's scope, with the new FR-47-8 canvas rule. Run host tools with `SGS_HEADED=1`, one job at a time (dev-setup.md); local WSL mirrors at localhost:8081/8082 if
+a panel pairs with its walker state open, `--state`). **About is at 100%.** Per-surface counts moved at Gate 1: read
+`qa/triage/*.json`, never a cached figure (causes in `plans/2026-10-04-spec47-full-coverage.md` "Progress").
+Built by Session C's sitting i: the FR-47-8 canvas rule, the walker's 1920 default, focus and active on every
+interactive element, link coverage, line counts, region entrances, the four functional flows, the pairing gaps, and
+the calibration fixtures and harness. Still unbuilt and owned by its **sitting ii**: calibration's presence, text
+and link reads, Solve writing them, the handover list, gap typing, and Fill. Run host tools with `SGS_HEADED=1`, one job at a time (dev-setup.md); local WSL mirrors at localhost:8081/8082 if
 Hostinger shows a captcha (`scripts/local-wp/README.md`).
 
-**Session A, the whole-site sweep (2026-10-05, complete, measure only, from `1ea514ae8`).** 2,373 distinct open
-issues over 17 surfaces (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`). Every register item has a Sweep status
-(counts in the sweep plan). Still open:
-S3's black hover colour is not in the trees, and the header phone is untested at 375/768. PA-1 to PA-5 are Session
-C's lanes L4 and L5.
+**Sessions A and B (2026-10-05, both complete, measure and read only).** The whole-site sweep measured all 17
+surfaces at **2,373** distinct open issues (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`), and the
+audit put every one in exactly one class with proof: **W 1,710, F 163, T 447, U 28, D 17, deferred 8**
+(`plans/2026-10-04-eye-care-sweep-audit-fix.md` Appendix B; per-surface in `plans/2026-10-04-spec47-full-coverage.md`).
+⚠️ **Those are AUDITED figures.** `qa/triage/*.json` holds the **raw** classification, W 1,562 / F 338 / T 445 /
+U 28; Session B audited the 338 raw-F rows to 163 (148 W, 17 D, 8 deferred, 2 T). Both total 2,373, and **a triage
+re-run compares to 338, never to 163.** Every register item carries a Sweep status; the 78 unmeasurable ones carry a
+measure-gap tag (Appendix A).
 
-**Session B, the audit (2026-10-05, complete; measure and read only, no block writes, no deploys).** Every one
-of the 2,373 open issues sits in exactly one class with proof (`plans/2026-10-04-eye-care-sweep-audit-fix.md`
-Appendix B): **W 1,710, F 163, T 447, U 28, D 17, deferred 8**. Six parallel Opus agents proved or disproved
-all 338 candidate-F rows under a citation gate and **only 48% survived** (`reports/2026-10-05-session-b/b2/`).
-`triage.mjs` gained the sweep's fifth class, so no row is unclassed (`97ac6f95a`). The 78 unmeasurable
-register items each carry a measure-gap tag (Appendix A): 51 wait on route work, not block work. B4 closed register N41 and 113 by ledgering S1's agreed lift (`D-34`-`D-39`). P0-11 is
-closed: the 700 calibration outcomes are split by cause and **no cause needs block code** (four fixture or harness
-fixes clear 203; Session C lane L5 builds them, L5.6 owns the rest). Contact's 106 independent rows against
-the walker's 27 reconcile to a **6-row residual**, all padding, hypothesis unproven
-(`reports/2026-10-05-session-b/contact-independent-reconciliation.md`).
+**Session C — sitting i DONE at `cac1f346f`, sitting ii outstanding** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`,
+resume at "Wave 2"). No block code was touched. Wave 0, Wave 1's six lanes and Gate 1 all passed, 17 commits.
+**Raw F 338 to 177**, W 1,562 to 1,764, T and U unchanged, total 2,373 to 2,414 (41 content rows), every transition
+accounted for, the identity holding on all 17 surfaces, 322 tests green. ⚠️ **177 is RAW and NOT comparable to the
+audited 163.** Canvas roster: 12 of 17 (every CPT plus shop and product); text read covers both roles, 319 settings
+(both Bean's answers). A QC council falsified one of the session's own claims: the canvas **hop** is not what moved
+F — `triage.mjs::canvasSettable` plus the manifest flag is — and the hop must earn its place at L8.7 or be deleted.
+**Sitting ii:** Wave 2 (L7 calibration reads, L8 Solve writes with new items L8.7 and L8.8, L9 Fill), Gate 2, then
+Wave 3's host jobs C3.1 to C3.8 — which produce the post-route count. R1 is already decided: **2 rows routed of the
+32**, both on `sgs/hero`, the other 31 must stay NULL. Twelve open items each carry an owner in the plan's
+"Gate 1 PASSED" section. Only Spec 47 stage 5 (a second draft) is not built: no second draft exists.
 
-**Gate B answered 2026-10-05: yes, route fixes first, and the work re-split (Bean).** The fix register is the source
-of truth, so the 163 F rows are findings to assess, not gaps to build, and many ignore how the framework works (CPT
-canvases compose blocks; a setting can arrive from a parent by context). That is a route defect, so the route is
-repaired first. The grouping G1 to G8 is rejected as a unit of work.
-
-**Session C — Spec 47 route and logic gaps only, not started** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`).
-No block controls and no shared CSS. Every unbuilt or known-broken Spec 47 item, plus the new canvas-awareness rule
-(FR-47-8, R-47-12: a row on a canvas surface cannot be a framework gap until the ancestors, the canvas siblings and
-the block context channel have been checked), the calibration-failure fixtures and the sandybrown oldshape blocker.
-Nine lanes in three waves, one worktree subagent per lane, main thread verifies only, a gate per wave, two sittings
-with a clean stop at Gate 1. Done when a fresh sweep and triage run on the repaired route and the new F count is
-recorded. Only Spec 47 stage 5 (a second draft) is not built: no second draft exists.
-
-**Session C2 — assess every finding, not started** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`),
-on the post-C sweep, never on the old 163: match each row to a register Ref, fact-check it with a cited
+**Session C2 — assess every finding, BLOCKED until Session C's Wave 3 runs** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`).
+Its input is C3.8's post-route count, which does not exist yet; Gate 1's raw 177 is not that number. On the post-C sweep, never on the old 163: match each row to a register Ref, fact-check it with a cited
 `file::symbol` or DB row, live-test it at 375/768/1440/1920, then one yes/no list for Bean before any code. The
 block work the first draft called W1 and W2 lives there, behind that approval, with the queue partition and the
 collision check (`reports/2026-10-05-session-b/check-queue-collisions.mjs`) carried over.
 
-**R1 routes 32 rows, not 188**: the resolver never reads `css_element`, routing an enum row would delete a working
-discovery path, and the animation half is resolver work. The three `!important` spacing rows are diagnosed from the
-source as two causes (core's constrained-layout rule, which `sgs/hero` already steps out of, and an inline
-WP-native base margin), so both go on the C2 list rather than waiting.
+**R1 is decided: 2 rows get routed, not 32** — both on `sgs/hero`; the other 31 must stay NULL because the extension
+roster's policy is deliberate (reasons per family in the plan's "R1 decided"). The three `!important` spacing rows
+are diagnosed from the source as two causes, so both go on the C2 list rather than waiting.
 
-**Parallel track, the register-proven repairs — built, verified on sandybrown, pushed (`a62ae6fdb`)**
-(`plans/2026-10-05-eye-care-register-proven-repairs.md`). All twelve done: 38/130, 87, N3+17B, 68, S1 (button and
-heading), 15, N11(b), N25, N46, N17b, S12; 76 was already closed. Four register citations were wrong and are
-corrected in their rows. **Open: its eye-care-test deploy and reseed are handed to Session C's Wave 3.** The
-register's remaining functional work is tiered in `plans/2026-10-05-eye-care-functionality-backlog.md`.
+**Parallel track, the register-proven repairs — CLOSED, all twelve built and verified on sandybrown, pushed**
+(`plans/2026-10-05-eye-care-register-proven-repairs.md`; detail and the corrected register citations are in their
+rows). **Open: its eye-care-test deploy (`75364c71a`) and the one reseed are handed to Session C's Wave 3.** Its
+remaining functional work is tiered in `plans/2026-10-05-eye-care-functionality-backlog.md`.
 
-**Session 0 (2026-10-05, complete):** the route data audit's repairs
-(`.claude/reports/2026-10-04-route-data-audit/README.md`), every block recalibrated on the WSL mirrors; parked
-P0-3 to P0-10 in the sweep plan. The wiring gate blocks new gaps only (201 baselined).
+**Session 0 (complete).** P0-3 to P0-10 are parked in the sweep plan; the wiring gate blocks new gaps only (201 baselined).
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Paste-ready prompts** for Sessions C and C2: `.claude/prompts/` (single-use; C's handoff updates C2's).
 **Resume from:**
-**Session C's first action** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`): confirm live = HEAD by
-checksum: sandybrown runs `a62ae6fdb`, eye-care-test `7f375f765`. Then Wave 0, then
-the six Wave 1 lanes. Session C2 runs on Session C's C3.8 output. Per-surface Solve work
-(`plans/2026-10-04-spec47-full-coverage.md` "Progress") is that Session D.
+**Session C sitting ii** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`, resume at "Wave 2"): three
+lanes (L7, L8 with its new L8.7 and L8.8, L9), Gate 2, then Wave 3's host jobs C3.1 to C3.8. Session C2 runs on
+C3.8's output and cannot start before it. Per-surface Solve work is Session D
+(`plans/2026-10-04-spec47-full-coverage.md` "Progress").
 
 **Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info

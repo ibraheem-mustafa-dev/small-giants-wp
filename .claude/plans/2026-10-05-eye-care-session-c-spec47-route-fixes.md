@@ -18,7 +18,7 @@ references:
 that ignore how the framework works, and a fresh measure-only sweep and triage on the repaired route record a new
 framework-gap count. **No block controls and no shared CSS files are touched in this session.**
 
-**Status: in progress.** Wave 0 is done (results below). Bean approved this work and set its order: the route first, the findings afterwards.
+**Status: sitting i DONE at `cac1f346f`** — Wave 0, Wave 1's six lanes and Gate 1 all passed. **Resume at "Wave 2".** Bean approved this work and set its order: the route first, the findings afterwards.
 The brief he worked from is the Gate B doc, https://claude.ai/code/artifact/d3b24008-a0bc-403f-83ae-a8788dd7501f.
 
 ## Why the route is repaired before any finding is judged
@@ -139,9 +139,9 @@ Two or more sessions share this worktree, so the commit discipline is part of th
 | id | Item | Done when | Time |
 |---|---|---|---|
 | **C0.1** | Confirm live = HEAD by checksum | the deployed sgs-blocks build is checksum-equal to the local build of HEAD, with the command recorded. The Google reviews track was mid-deploy to eye-care-test at Session B's handoff, so the recorded block code `4726700c1` may be stale | 5 min |
-| **C0.2** | Clear the sandybrown deploy blocker | `build-deploy.py --target sandybrown` passes its oldshape audit. It aborts today on 155 old-shape `sgs/cta-section` blocks on the Spec 47 calibration page (post 4750). Migrate with `scripts/wp-migrate-oldshape-blocks.js` or empty the page (calibration replaces it with an empty tree at the end of each run anyway). **Never `--skip-oldshape-audit`**. The parallel repairs track needs sandybrown too: whoever reaches this first does it, and the other checks whether it is already cleared | 10 min |
+| **C0.2** | Clear the sandybrown deploy blocker | `build-deploy.py --target sandybrown` passes its oldshape audit. **Found already clear at C0.2** (page 4750 held 1 byte and 0 `sgs/cta-section` blocks; the gate's own audit passed over 483 posts). It had aborted on 155 old-shape blocks there. Migrate with `scripts/wp-migrate-oldshape-blocks.js` or empty the page (calibration replaces it with an empty tree at the end of each run anyway). **Never `--skip-oldshape-audit`**. The parallel repairs track needs sandybrown too: whoever reaches this first does it, and the other checks whether it is already cleared | 10 min |
 | **C0.3** | W0a: 15 new ledger entries | see "W0a in detail" below. `node scripts/computed-route/lint.mjs --register .claude/plans/2026-10-02-eye-care-fix-register.md --surfaces sites/eye-care-ward-end/build/surfaces.json` passes, and a planted bogus register id turns it red | 10 min |
-| **C0.4** | Record the baselines | four numbers written into this plan: the route test count, the **ambiguous-row count**, the F count (163), and `calibration.discovered` counts per block. Every later gate compares against these | 5 min |
+| **C0.4** | Record the baselines | four numbers written into this plan: the route test count, the **ambiguous-row count**, the F count (**raw 338**; the audited figure is 163 and the two are not comparable), and `calibration.discovered` counts per block. Every later gate compares against these | 5 min |
 
 **C0.4 matters most.** Two Wave 1 changes (L1.1's context hop and L1.4's canvas hop) widen the candidate set, so
 rows that resolve today can become `ambiguous`. A rise in that count is a **fail**, and it cannot be detected
@@ -344,10 +344,10 @@ with its planted fault turning red**, which is FR-47-6's own done-condition.
 
 | id | Item | Spec 47 |
 |---|---|---|
-| **L2.1** | 1920 in every standard run | FR-47-6 item 2, not started |
-| **L2.2** | Focus and active states on every interactive element of a compared region (hover is built, `devtools.mjs::forcedHover`) | FR-47-6 item 3 remainder, not built |
-| **L2.3** | Link coverage: the same text must sit inside a link on both sides | FR-47-6 item 4, not started |
-| **L2.4** | Line counts sampled during state transitions (header shrink and grow, drawer open) | FR-47-6 item 5, not started |
+| **L2.1** | 1920 in every standard run | FR-47-6 item 2 — **BUILT sitting i** (`aa483b9a6`, GAP-CHECKLIST §22) |
+| **L2.2** | Focus and active states on every interactive element of a compared region | FR-47-6 item 3 remainder — **BUILT sitting i** (`aa483b9a6`, §23) |
+| **L2.3** | Link coverage: the same text must sit inside a link on both sides | FR-47-6 item 4 — **BUILT sitting i** (`aa483b9a6`, §24; emitted as kind `auto` with keys `link-missing`/`link-extra`) |
+| **L2.4** | Line counts sampled during state transitions (header shrink and grow, drawer open) | FR-47-6 item 5 — **BUILT sitting i** (`aa483b9a6`, §25) |
 | **L2.5** | Script-driven entrance motion read | §5 R7's `FR-47-6` tag |
 | **L2.6** | **Tag-mismatch guard.** 4 combos in Session B compared a draft `<div>` to a live `<img>`, or a `<span>` to an `<h1>` | a B2 finding |
 | **L2.7** | **Drop style rows from refs the pairing left unmatched** (`qa/pairs/*.json::left`). Would have removed 24 of one agent's 58 rows before triage saw them, and retires two medium-confidence `woocommerce/product-template` rows | a B2 finding |
@@ -360,7 +360,7 @@ Files: `scripts/parity/flows/` (new), and the state mapping those flows need.
 
 | id | Item | Spec 47 |
 |---|---|---|
-| **L3.1** | The four flows: two products in the bag; a second unit of the same product; apply then clear a filter; the lens pop-up's skip-to-bag | FR-47-7, not started |
+| **L3.1** | The four flows: two products in the bag; a second unit of the same product; apply then clear a filter; the lens pop-up's skip-to-bag | FR-47-7 — **BUILT sitting i** (`44d5058a4`); the live run is Wave 3's |
 | **L3.2** | State mapping for the **form flow**. Contact and its form walk only their rest state today | FR-47-7; §5 R8 |
 | **L3.3** | State mapping for **filters**. Shop's filter panel alone reports 163 differences, every one read with the filters open, a state the route maps nowhere | FR-47-7 |
 
@@ -638,8 +638,7 @@ PASS: everything Gate 1 requires, plus:
       re-run triage on all 17 surfaces and require the sweep-to-triage identity to hold
       (every surface's triage count equals its sweep count), with every delta against 2,373
       explained row-for-row in the commit;
-      L7.3's text read covers both role content and role text-content, or Bean's answer is recorded
-      and the scope matches it;
+      L7.3's text read covers both role content and role text-content (319 settings: Bean's answer, applied);
       AND the F count is asserted explicitly against the canvas roster, because triage.mjs::runTriage's
       manifest read has NO test: forcing canvas false leaves the suite green while measured F doubles
       from 177 to 338 (QC council, 2026-10-05)
@@ -898,39 +897,22 @@ the agent.
 tests whether the cited block really can hold the value on the live site. A reclassification is a claim, and C2
 is where it is checked.
 
-## The two answers owed by Bean, each with a recommendation
+## The two answers Bean gave, both applied
 
-**Should the text read cover `role` `text-content` (235 rows) as well as `role` `content` (84)?**
+**The text read covers both roles: 319 settings** (`role` `content` 84 + `text-content` 235). Reading `content`
+alone would have left register items S7, N27, N31, 91 and N28 unreachable, because most of this register's words
+live in `text-content`. The cost is calibration time, which is chunked and cached. Spec 47 §3.2 carries it, and §6's
+row is closed. **L7.3 builds to 319.**
 
-**Plain English.** The route is meant to copy the draft's words into the site's settings. Settings that hold words
-are labelled two ways in the framework database. The spec says to read one label; most of Eye Care's words sit
-under the other.
+**The canvas roster is every CPT and every theme page template**, which on Eye Care is **12 of the 17 surfaces**:
+`header`, `footer`, `mobile-menu`, the four mega menus, `size-guide`, `lens`, `contact-form` (posts of `sgs_header`,
+`sgs_footer`, `sgs_drawer`, `sgs_mega_menu`, `sgs_modal`, `sgs_choice_flow`, `sgs_form`), plus the theme templates
+`shop` and `product`. The five ordinary pages (`home`, `about`, `lenses`, `help`, `contact`) are not canvases.
 
-| Option | What it entails | Benefits | Drawbacks |
-|---|---|---|---|
-| **Read both** (recommended) | L7.3 renders a marker string for 319 settings instead of 84 | Reaches the words that actually matter here (`sgs/product-card::noReviewsText`, `::brandName`, `sgs/buybox::stockInStockLabel`, `sgs/whatsapp-cta::cardTitle`). Register items S7, N27, N31, 91 and N28 become reachable; left as specified they stay unreachable | Widens FR-47-2: calibration renders 235 more marker strings, so calibration runs longer |
-| Read `content` only | as specified | smallest change | the read is close to pointless on this site: it would miss five register items and most of the words |
-
-**Recommendation: read both.** The cost is calibration time, which is already chunked and cached; the benefit is
-that the feature does the job it was specified for. **Needed before L7.3 starts, in Wave 2** — so the session opens
-without waiting.
-
-### The second answer owed: which surfaces are canvases?
-
-**FR-47-8 needs a roster, and it is needed earlier: before L1.4, which is in Wave 1.** Proposed, and these four
-post types are confirmed in the code: `sgs_mega_menu`, `sgs_modal`, `sgs_drawer` and `sgs_choice_flow`. Each is
-its own post composed from arbitrary blocks.
-
-**`sgs_header` and `sgs_footer` are deliberately excluded**, although they are also their own posts. On this client
-they are route output: the route writes `header.tree.json` and `footer.tree.json` itself, so a missing setting there
-is a real gap rather than a composition the author would complete. If Bean disagrees, adding them is one manifest
-field each. A page is **not** a
-canvas even though it is also composed from blocks, because its blocks are the route's own output rather than an
-author's composition. Spec 47 §6 carries the question.
-
-**If the answer has not arrived when Wave 1 dispatches,** L1.4 and L1.5 build against the proposed roster and the
-flag stays data in `surfaces.json`, so changing it later is an edit to one manifest field and no code. That is the
-reason the roster is data and not a list in the source.
+**This includes the header and footer.** An earlier draft of this plan excluded them, on the grounds that the route
+writes their trees itself so a missing setting there is a real gap; Bean overrode that, and the shipped result bears
+it out — header F went 15 to 0 and footer 76 to 21 at Gate 1. The flag is one manifest field per surface
+(`surfaces.json`, applied in C0.6), so the roster changes with no code change.
 
 ## The one item not built
 
