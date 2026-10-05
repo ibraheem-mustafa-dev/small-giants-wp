@@ -46,7 +46,10 @@
 
 .sgs-breadcrumbs__item--current {
 	color: var(--sgs-breadcrumbs-current-colour, var(--wp--preset--color--text, #1e1e1e));
-	font-weight: 600;
+	/* `inherit` so the current crumb follows the block's own weight setting, which
+	 * render.php emits on the root selector. A literal here would beat that
+	 * inherited value and no setting could reach the crumb. */
+	font-weight: inherit;
 }
 
 .sgs-breadcrumbs__separator {
