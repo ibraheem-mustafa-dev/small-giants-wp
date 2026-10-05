@@ -65,6 +65,9 @@ const named = {
 	useSettings: jest.fn( () => [ [] ] ),
 	store: { name: 'core/block-editor' },
 };
+// Compound members the plugin's source renders as `<Parent.Member>`; core ships each as a static property.
+named.InnerBlocks.Content = makeComponent( 'InnerBlocks.Content' );
+named.RichText.Content = makeComponent( 'RichText.Content' );
 module.exports = new Proxy( named, {
 	get: ( target, key ) => {
 		// An ES-module shape, so Babel's interop reads names through this proxy instead of copying its own keys.

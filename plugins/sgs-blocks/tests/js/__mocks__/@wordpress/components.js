@@ -4,22 +4,24 @@
 
 const React = require( 'react' );
 
+// Core's components forward refs, so every stand-in does too (a caller holding a ref must not warn).
 /** Render only children in a div with a data-testid. */
 const makeComponent = ( name ) => {
-	const Comp = ( { children } ) =>
-		React.createElement( 'div', { 'data-testid': name }, children );
+	const Comp = React.forwardRef( ( { children }, ref ) =>
+		React.createElement( 'div', { 'data-testid': name, ref }, children ) );
 	Comp.displayName = name;
 	return Comp;
 };
 
 /** Minimal controlled text input — only passes standard HTML attrs. */
 const makeInput = ( name ) => {
-	const Input = ( { value, onChange } ) =>
+	const Input = React.forwardRef( ( { value, onChange }, ref ) =>
 		React.createElement( 'input', {
 			'data-testid': name,
+			ref,
 			value: value !== undefined ? String( value ) : '',
 			onChange: ( e ) => onChange && onChange( e.target.value ),
-		} );
+		} ) );
 	Input.displayName = name;
 	return Input;
 };
@@ -42,8 +44,8 @@ const named = {
 			onChange: ( e ) => onChange && onChange( e.target.checked ),
 		} ),
 	RangeControl: makeInput( 'RangeControl' ),
-	Button: ( { children, onClick } ) =>
-		React.createElement( 'button', { onClick }, children ),
+	Button: React.forwardRef( ( { children, onClick }, ref ) =>
+		React.createElement( 'button', { onClick, ref }, children ) ),
 	ButtonGroup: makeComponent( 'ButtonGroup' ),
 	Placeholder: makeComponent( 'Placeholder' ),
 	Spinner: () => React.createElement( 'span', { 'data-testid': 'Spinner' }, '…' ),
@@ -79,7 +81,13 @@ const named = {
 	InputControl: makeInput( 'InputControl' ),
 	NumberControl: makeInput( 'NumberControl' ),
 	UnitControl: makeInput( 'UnitControl' ),
-	TabPanel: makeComponent( 'TabPanel' ),
+	// Core calls a function child with the selected tab (the first one on mount).
+	TabPanel: ( { tabs, children } ) =>
+		React.createElement(
+			'div',
+			{ 'data-testid': 'TabPanel' },
+			'function' === typeof children ? children( ( tabs && tabs[ 0 ] ) || {} ) : children
+		),
 	Card: makeComponent( 'Card' ),
 	CardBody: makeComponent( 'CardBody' ),
 	CardHeader: makeComponent( 'CardHeader' ),
@@ -97,7 +105,11 @@ const named = {
 	NavigatorProvider: makeComponent( 'NavigatorProvider' ),
 	NavigatorScreen: makeComponent( 'NavigatorScreen' ),
 	NavigatorButton: makeComponent( 'NavigatorButton' ),
+	Composite: makeComponent( 'Composite' ),
 };
+// Compound members the plugin's source renders as `<Parent.Member>`; core ships each as a static property.
+named.BaseControl.VisualLabel = makeComponent( 'BaseControl.VisualLabel' );
+named.Composite.Item = makeComponent( 'Composite.Item' );
 module.exports = new Proxy( named, {
 	get: ( target, key ) => {
 		// An ES-module shape, so Babel's interop reads names through this proxy instead of copying its own keys.

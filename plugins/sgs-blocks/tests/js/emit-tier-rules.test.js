@@ -49,7 +49,12 @@ fixtures.forEach( ( fixture, idx ) => {
 
 // Summary
 console.log( `\n${ passed }/${ fixtures.length } passed` );
-if ( failed > 0 ) {
+if ( 'function' === typeof global.test ) {
+	// Under jest the fixture run above becomes one assertion; under plain node it exits non-zero on a failure.
+	test( `all ${ fixtures.length } fixture cases pass`, () => {
+		global.expect( failed ).toBe( 0 );
+	} );
+} else if ( failed > 0 ) {
 	console.log( `${ failed } failed` );
 	process.exit( 1 );
 }

@@ -517,6 +517,11 @@ export default function DesignTokenPicker( {
 	// `hover-effects.js`'s `sgsClickRippleColour`. Same explicit-prop-list trap
 	// the borderStyle comment above records, second occurrence, six days apart.
 	help,
+	// Marker read by the state-pairing gate (rule 31), never by this component: a
+	// single-state picker inside a parent that owns the Normal/Hover axis. Named
+	// here so it is a known prop rather than a stray one.
+	// eslint-disable-next-line no-unused-vars
+	statesProvidedByParent,
 	// ⛔ CAPTURED FOR THE WARNING BELOW, NEVER FORWARDED. This is deliberately
 	// NOT a `{...rest}` passthrough — see the borderStyle comment above for why
 	// this component forwards an explicit list. It serves TWO different render

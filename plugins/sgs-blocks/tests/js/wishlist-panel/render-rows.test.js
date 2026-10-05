@@ -3,7 +3,12 @@
  *   npx wp-scripts test-unit-js tests/js/wishlist-panel
  * (from `plugins/sgs-blocks`, via PowerShell if Git Bash's node shim fails).
  */
-import { wishlistRowHtml, escapeHtml } from '../../../src/blocks/wishlist-panel/render-rows';
+import { wishlistRowHtml as rowHtml, escapeHtml } from '../../../src/blocks/wishlist-panel/render-rows';
+import { readPanelData } from '../../../src/blocks/wishlist-panel/labels';
+
+// The panel's default labels, as `readPanelData()` builds them from a panel carrying no label overrides.
+const LABELS = readPanelData( { dataset: {} } );
+const wishlistRowHtml = ( product, options ) => rowHtml( product, { labels: LABELS, ...options } );
 
 const baseProduct = {
 	id: 42,

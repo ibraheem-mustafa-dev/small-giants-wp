@@ -80,7 +80,7 @@ jest.mock( '../../src/components/primitives', () => {
 jest.mock( '../../src/components', () => {
 	const R = require( 'react' );
 	const btn = ( props, onClick ) => R.createElement( 'button', { type: 'button', ...props, onClick } );
-	return {
+	const mocked = {
 		__esModule: true,
 		BOX_UNITS: [],
 		normaliseResponsiveBox: ( box ) => box,
@@ -149,6 +149,12 @@ jest.mock( '../../src/components', () => {
 				)
 			),
 	};
+	// The real control is ResponsiveOverride wrapping SgsLengthControl; composed here from the two mocks above.
+	mocked.ResponsiveLengthControl = ( { label, value, onChange } ) =>
+		R.createElement( mocked.ResponsiveOverride, { label, value, onChange }, ( { ownValue, setOwnValue } ) =>
+			R.createElement( mocked.SgsLengthControl, { label, value: ownValue || '', onChange: ( next ) => setOwnValue( next || undefined ) } )
+		);
+	return mocked;
 } );
 
 const CardPanel = require( '../../src/blocks/google-reviews/components/CardPanel' );
