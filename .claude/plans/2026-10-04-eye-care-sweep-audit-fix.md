@@ -290,13 +290,16 @@ Rule: Solve's "Missing setting" starts as **W until proven F**. A walker gap is 
 functionality.
 
 **Measure-gap tag (Bean, 2026-10-05).** Every register item Session A left **not walker-measurable** or **partly
-measured** (78 on the strict A4 pass: 63 and 15) also gets one tag saying why the walker cannot see it: `outside-visual` (content,
-Site Info, product data: the walker compares style, not wording), `FR-47-6` (a walker read Spec 47 has not built yet:
-focus and active states, script-driven entrance or load motion), `FR-47-7` (a functional flow: clicks, filters, add to
-bag, step changes), `pairing` (the element exists on a measured surface but no pair reaches it), or `PA-1` to `PA-5`
-(the parked items). The fix side comes from the register's Type column (framework repair, framework new, tree,
-content). Output: one table in this plan's appendix, so Session C's framework list and Spec 47's remaining work
-separate cleanly; the `pairing` and `FR-47-*` rows go to Spec 47 §5 Residual.
+measured** (78 on the strict A4 pass: 63 and 15) also gets one tag saying why it is not measured, using Spec 47 v0.13's
+split: `content-fixable` (the draft shows it and a block setting can hold it: words in a `content` setting, an element
+shown by a `boolean-visibility` or variant setting, a link; Spec 47 §3.2/§3.3 presence, text and link, not built yet),
+`handover` (content outside the tree: Site Info, product data, WooCommerce text, a page the draft never shows; name its
+owner), `behaviour` (FR-47-7 flows: clicks, filters, add to bag, step changes), `FR-47-6` (a walker read not built:
+focus and active states, script-driven entrance motion, link coverage), `pairing` (the element exists on a measured
+surface but no pair reaches it) or `PA-1` to `PA-5`. A missing link or element that no block setting could produce is
+the framework's (Missing setting), not content. The fix side comes from the register's Type column (framework repair,
+framework new, tree, content). Output: one table in this plan's appendix, so Session C's framework list and Spec 47's
+remaining work separate cleanly; the `content-fixable`, `pairing` and `FR-47-*` rows go to Spec 47 §5 Residual.
 
 | Unit | Does | Files | Depends on | Test |
 |---|---|---|---|---|

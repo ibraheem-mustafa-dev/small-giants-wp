@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.12"
+spec_version: "0.13"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -86,7 +86,9 @@ framework database, the parity walker and the page builder, and no code. Spec 31
 - **Output:** the surface's tree in `sites/<client>/build/`, built through `scripts/wp-build-page.js`, a report, and
   a generated walker config (Fill writes one; Solve walks one made by `pairs.mjs` when the surface sets `walkerFull`).
 - **Not in scope:** content beyond what the draft shows (products, pages, Site Info), functional behaviour, asset
-  upload (existing asset steps handle it), block swaps (Solve writes settings only; a wrong block type is reported).
+  upload (existing asset steps handle it), block swaps (a wrong block type is reported). Content the draft does show is
+  in scope: its words and which elements are present are written through block settings (§3.2, §3.3), and whatever no
+  block setting can hold is handed over with its owner (§3.3 Handover).
 
 ## 3. Requirements
 
@@ -187,6 +189,13 @@ another site is fixed by recalibrating that block there (a lead, not yet seen).
 
 A setting whose marker fails `wp-build-page.js` validation is reported as `marker-rejected` with the builder's message.
 
+**Presence and content settings.** A setting the framework database marks `role` `boolean-visibility` or
+`presence-boolean`, and each value of a variant setting (`blocks.variant_attr`), is also read for presence: the elements
+that appear or disappear when it flips, recorded as `presence: { shows: [paths], hides: [paths] }` (a style change alone
+is not presence). A setting marked `role` `content` is rendered with a marker string and records the element whose text
+it prints (`text: <path>`), and a link or URL setting the element it makes a link (`link: <path>`). Not built
+(2026-10-05): calibration records only computed-style changes, so `showAvatar`-type settings are in no list.
+
 **Where and how it renders:**
 - Each site has one calibration page, created once with `wp-build-page.js --create page --title "CR calibration"
   --slug cr-calibration --status private`. Its post ID goes in `scripts/computed-route/calibration-targets.json`
@@ -243,6 +252,11 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
    - The resolver gives the setting; the draft's value is written at the row's width.
    - A row with no `ref`, or a `path` calibration does not know, is Unresolved (`unmapped-element`).
    - A row on a linked placeholder is never written (gap `linked`): it belongs to the referenced post's surface.
+   - A `presence` row (an element on one side only) resolves through a setting whose calibrated `presence` shows or
+     hides that element, or a variant value that does; a `text` row through a `content` setting whose calibrated `text`
+     path is that element (the draft's words are written; R-47-4 still holds for style values); a link-coverage row
+     (§3.6 item 4) through a setting whose calibrated `link` is that element. One resolver (R-47-3). Not built
+     (2026-10-05): Solve writes style, hover and box rows only.
    - Rows of other kinds are reported, never written.
    - A row a divergence-ledger entry covers targets the entry's decided value, not the draft's, at that width and at
      every width the entry covers (`lib/solve-rows.mjs::draftValues` reads the row's `decided`, §3.5).
@@ -263,6 +277,11 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
 - **Missing setting:** the resolver returned `no-setting`. Framework new control.
 - **Intended:** matched in `divergences.json`.
 - **Unresolved:** anything else, with its reason.
+- **Handover:** a text, presence or link row that no block setting could hold because the content lives outside the
+  tree (a Site Info value, product data, WooCommerce or core text, a page the draft links to but never shows), and
+  behaviour the walker cannot drive (FR-47-7). Each is listed in `solve-report.json` `handover` with its evidence row and
+  owner (`site-info`, `product-data`, `content-page`, `behaviour`), so a follow-up agent can act on it. A row a block
+  could reasonably hold, but has no setting for, is Missing setting (framework), not handover. Not built (2026-10-05).
 
 **Output:** the updated tree, `solve-report.md` (counts per class, every write with its before and after values,
 every token snap) and `solve-report.json`.
@@ -291,8 +310,12 @@ it fails the lint (R-47-10).
 4. Give every node a `cr-ref-<surface>-<n>` class. Generate the walker config from the refs (Solve's existing trees use
    the same kind of generated config: `pairs.mjs`, §5 stage 3), with `refPrefix:
    'cr-ref-'` and the ledger path, so every mapped node is compared on every property.
-5. Output the filled tree, `fill-report.md`, and the UNMAPPED list (property, value, node, reason): the framework work
-   for this surface, known before the first build.
+5. Output the filled tree, `fill-report.md`, the UNMAPPED list (property, value, node, reason: the framework work for
+   this surface, known before the first build) and the handover list (§3.3).
+
+Presence and content: the skeleton carries the draft's words in each block's `content` settings, and Fill sets each
+block's visibility and variant settings from calibration's `presence` so the built block shows the elements its draft
+element shows and no others.
 
 **Values that need care:**
 - **Fluid sizes:** sampled at 375, 768, 1024, 1440 and 1920. Linear within 0.5px means fluid. A fluid value is written
@@ -353,7 +376,8 @@ before it counts (GAP-CHECKLIST §11).
    Hover is built (2026-10-05): ref-traced walks force `:hover` on every pair and its ancestors through the DevTools
    protocol (`devtools.mjs::forcedHover`), and a hover row is a difference in what hovering changes. Focus and active
    on every element are not built.
-4. **Link coverage:** the same text sits inside a link on both sides.
+4. **Link coverage:** the same text sits inside a link on both sides. A text that is a link only in the draft may be a
+   function limitation (the block has no link setting for that element: Missing setting), not a content fix.
 5. **Line counts** sampled during state transitions (header shrink and grow, drawer open).
 6. **Divergence ledger:** a config may name one (`divergences: '<path>'`), and matching rows are accepted.
 7. **Ref tracing:** when a config sets `refPrefix`, every style row carries:
@@ -558,6 +582,11 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - Gap typing (a setting that paints a parent while a rule on a child overrides it comes out Missing setting): the
        hours day weight closed through a dedicated label setting; calibration still records nothing for an overriding
        child.
+     - Presence, text and link (Bean, 2026-10-05): calibration's `presence`, `text` and `link` reads (§3.2), Solve
+       writing presence, text and link rows and its `handover` list (§3.3), and Fill setting visibility and variant
+       settings: not built. The framework database already marks the settings (`role` `boolean-visibility` 94,
+       `presence-boolean` 2, `content` 84). The sweep (`lib/sweep.mjs`) keeps style, hover and box rows only, so
+       text and presence rows reach no register check until it carries them.
      - The functional flows (FR-47-7) and the walker's items 2, 4, 5 and focus and active states (FR-47-6): not started;
        items 1 and 3's hover, plus items 10 to 13, are built and proven (2026-10-05: About measure-only on the local mirror,
        1 open issue, real: S1's button timing; register S1). Contact and its form walk

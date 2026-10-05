@@ -57,12 +57,12 @@ add-to-bag route drops a second product and a 30s cooldown blocks a second pair 
 WooCommerce's product gallery (75/82); the shop filters leave empty groups after clearing (N25); the drawer body
 overflows by its title row (15); a footer row given a width cap collapses to zero width (N46). No blockers.
 
-**Spec 47 (v0.12): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
+**Spec 47 (v0.13): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
 compares a built page with the draft and writes block settings; `--rounds 0` measures only. The walker (the
 draft-vs-live comparison tool, `scripts/parity/`) reads what DevTools shows: forced `:hover` on every pair, declared
 widths, `::before`/`::after`, timings. Every surface is paired (`pairs.mjs`; a panel pairs with its walker state open,
 `--state`). **About is at 100%**; Contact 27 open, its form 58, Lenses 58 (causes in `plans/2026-10-04-spec47-full-coverage.md` Progress).
-Run host tools with `SGS_HEADED=1`, one job at a time (dev-setup.md); local WSL mirrors at localhost:8081/8082 if
+v0.13 adds presence, text and link writes and a handover list for content no block holds (not built). Run host tools with `SGS_HEADED=1`, one job at a time (dev-setup.md); local WSL mirrors at localhost:8081/8082 if
 Hostinger shows a captcha (`scripts/local-wp/README.md`).
 
 **Session A, the whole-site sweep (2026-10-05, complete, measure only, from `1ea514ae8`; tooling through `197ba10c3`).**
