@@ -133,13 +133,12 @@ while `render.php` nulls its value on the array passed to the wrapper. Check for
 
 ## Grid-item defaults — which blocks qualify
 
-`gridItem*` attrs (padding/gap/border/shadow/colour defaults for a grid's children) are consumed
-by exactly one CSS rule: `.sgs-container--grid > .sgs-container` in `src/blocks/container/style.css`.
-That selector paints only a direct child that itself carries `.sgs-container` — `sgs/container` is
-the only qualifying block. A block whose children sit inside its own content wrapper or badge divs
-(`sgs/cta-section`, `sgs/trust-bar`) matches none of it; declaring `gridItem*` attrs there ships
-controls that paint nothing. `block_composition.container_kind` is irrelevant to this
-qualification — check the selector, not the draft-layer model.
+`gridItem*` attrs (padding, ground, radius, border, shadow and text colour defaults for a grid's cells) are set as
+`--sgs-gi-*` variables on a `sgs/container` grid and consumed by one rule in `src/blocks/container/style.css` that
+styles **every direct cell, whatever its block**, directly under the grid or under its `__inner` band (Spec 32
+§6.3 FR-32-12). Only `sgs/container` declares them. Another block qualifies only if its own render puts the
+variables on the element whose direct children are its grid cells; check its markup, never
+`block_composition.container_kind`.
 
 ## Separators — `SgsSeparatorControl` is the one control for lines between items
 

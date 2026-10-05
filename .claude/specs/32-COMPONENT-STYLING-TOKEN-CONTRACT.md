@@ -1,12 +1,12 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.12"
+spec_version: "1.13"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
 authors: Claude + Bean
-last_verified: 2026-09-19
+last_verified: 2026-10-05
 references:
   - .claude/specs/11-SGS-BUTTON-ARCHITECTURE.md
   - .claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md
@@ -401,17 +401,21 @@ This section records the grid-item defaults mechanism so it need not be re-deriv
 
 **FR-32-12** — A grid CONTAINER parent may set `--sgs-gi-padding` / `--sgs-gi-bg` /
 `--sgs-gi-radius` / `--sgs-gi-border` / `--sgs-gi-shadow` / `--sgs-gi-color` as custom-property
-VALUES on the grid element (`SGS_Container_Wrapper`, routed via its `$styles` / `$inner_grid_decls`
-channel; editor UI: `GridItemDefaultsPanel.js`, `src/blocks/container/components/`). The **ONLY**
-CSS consumer is one rule in `src/blocks/container/style.css`, zeroed to specificity (0,0,0) via
-`:where()` so a real per-instance value on the grid item's own class-selector rule always wins, and
-chained over both direct-child depths (current code; target scope below) (`.sgs-container--grid > .sgs-container` and
-`.sgs-container--grid > .sgs-container__inner > .sgs-container`) because the `__inner` band wrapper
-renders only when the grid container has its own band props set:
+VALUES on the grid element (`SGS_Container_Wrapper`, built by `includes/helpers-grid-item.php::sgs_grid_item_vars`;
+editor UI: `GridItemDefaultsPanel.js` in `src/blocks/container/components/`; the canvas sets the same six variables
+on the same element through `src/blocks/container/grid-item-preview.js`). `--sgs-gi-border` resolves its colour
+through `sgs_colour_value()`, so a palette slug and a custom colour both paint.
+
+**Scope (Bean, 2026-10-04):** grid-item defaults are one uniform format for **every cell of the grid,
+whatever block the cell is** (container, card, info-box, text, any InnerBlock). The one stylesheet consumer, in
+`src/blocks/container/style.css`, targets every direct child cell at both depths (directly under the grid, and
+under its `__inner` band when the grid has band props), at specificity (0,0,0) so a cell's own styling wins; the
+band itself, decorative `aria-hidden` layers, the Lottie ground, `style`/`script` and the editor's block appender are
+not cells:
 
 ```css
-:where( .sgs-container--grid > .sgs-container ),
-:where( .sgs-container--grid > .sgs-container__inner > .sgs-container ) {
+:where( .sgs-container--grid > :not( .sgs-container__inner ):not( [aria-hidden="true"] ):not( .sgs-container__lottie-bg ):not( style ):not( script ):not( .block-list-appender ) ),
+:where( .sgs-container--grid > .sgs-container__inner > :not( [aria-hidden="true"] ):not( .sgs-container__lottie-bg ):not( style ):not( script ):not( .block-list-appender ) ) {
 	padding: var( --sgs-gi-padding );
 	background: var( --sgs-gi-bg );
 	border-radius: var( --sgs-gi-radius );
@@ -421,24 +425,21 @@ renders only when the grid container has its own band props set:
 }
 ```
 
-**Scope (Bean, 2026-10-04):** grid-item defaults are one uniform format for **every cell of the grid,
-whatever block the cell is** (container, card, info-box, text, any InnerBlock). The consumer rule
-therefore targets every direct child cell at both depths (`:where( .sgs-container--grid > * )`,
-`:where( .sgs-container--grid > .sgs-container__inner > * )`), still at specificity (0,0,0) so a
-cell's own styling wins. Of the six values only text colour (`--sgs-gi-color`) reaches the cell's
-own children, by normal inheritance; padding, ground, radius, border and shadow style the cell box
-alone. The editor canvas sets all six variables on the same element the front end does, and
-`container/editor.css` must not override them on a cell. *Current code (to repair in Session 0 of
-`.claude/plans/2026-10-04-eye-care-sweep-audit-fix.md`):* the rule is keyed on `> .sgs-container`,
-the editor sets only `--sgs-gi-bg` and `--sgs-gi-shadow`, `editor.css`'s dashed outline beats the
-border, and the PHP hover, gradient and text-colour rules cover the direct-child depth only.
+Of the six values only text colour reaches the cell's own children, by normal inheritance of `color`; the six
+variables are reset to `initial` on each cell's children, so a grid nested inside a cell starts from its own
+defaults. The per-instance hover, gradient and text-colour rules (`includes/helpers-grid-item.php::sgs_grid_item_state_css`)
+cover both depths at specificity (0,1,0) through `.{uid} > :where( cell )`, so a cell's own scoped rule, printed
+later, still wins. `container/editor.css` marks cells with an outline, never a border, so it does not override
+`--sgs-gi-border` in the canvas.
 
 **Eligibility:** a block mounts a grid-item-defaults panel when it renders the variables on the
 element whose direct children are its grid cells. Read the block's own `render.php`/`save.js`
 output to decide it, never `block_composition.container_kind` (that column classifies the
 draft-cloning layer model, Spec 31 §13.6, not a block's own markup).
 
-**No dead mounts:** today only `sgs/container` mounts `GridItemDefaultsPanel`. `sgs/trust-bar` and `sgs/cta-section` declare `gridItem*` attributes but render no grid-item variables, so they mount no panel (a panel there would change nothing); Session 0 decides, from each block's own markup, whether its cells can take the defaults under the scope above. Verify: `git grep -n "GridItemDefaultsPanel" -- 'plugins/sgs-blocks/src/blocks/*/edit.js'`.
+**No dead mounts:** only `sgs/container` declares `gridItem*` attributes and mounts `GridItemDefaultsPanel`.
+Verify: `git grep -n "GridItemDefaultsPanel" -- 'plugins/sgs-blocks/src/blocks/*/edit.js'` and
+`git grep -ln '"gridItem' -- 'plugins/sgs-blocks/src/blocks/*/block.json'`.
 
 ## 7. Data model
 
