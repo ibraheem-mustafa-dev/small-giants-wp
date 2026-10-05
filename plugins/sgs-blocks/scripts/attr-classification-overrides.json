@@ -6590,6 +6590,22 @@
 				"css_element": "child-button",
 				"_why": "Painted on the child buttons through --sgs-mb-btn-radius-default (button/style.css); the same child-button element the manifest gives childBtnBackground."
 			}
+		},
+		{
+			"slug": "sgs/hero",
+			"attr": "transitionEasing",
+			"fields": {
+				"css_property": "transition,transition-timing-function",
+				"_why": "2026-10-06 (Spec 47 C3.1, R1). hero/style.css::.sgs-hero is the SOLE consumer: the block root declares transition-duration: var(--sgs-transition-duration, 300ms); transition-timing-function: var(--sgs-transition-easing, ease-in-out); transition-property: background-color, color, border-color. The variables are emitted by includes/helpers-tokens.php::sgs_transition_vars(), called from hero/render.php. The only other transition declaration in the file is a prefers-reduced-motion override on the same .sgs-hero selector, so no other element consumes either variable and css_element is omitted (the root). Precedent: sgs/brand-strip, sgs/card-grid, sgs/info-box and sgs/testimonial all carry this exact property pair with css_element NULL through the same helper. Routed as a PAIR with transitionDuration: routing easing alone would leave its twin gapping while easing resolved. enum_values is NULL on both rows, so neither is an enum row and the discovery path is untouched."
+			}
+		},
+		{
+			"slug": "sgs/hero",
+			"attr": "transitionDuration",
+			"fields": {
+				"css_property": "transition,transition-duration",
+				"_why": "2026-10-06 (Spec 47 C3.1, R1). The same rule and the same element as sgs/hero::transitionEasing \u2014 hero/style.css::.sgs-hero declares transition-duration: var(--sgs-transition-duration, 300ms), emitted by includes/helpers-tokens.php::sgs_transition_vars() from hero/render.php. css_element omitted (the root). Routed as a PAIR with transitionEasing so neither twin resolves while the other gaps. enum_values is NULL."
+			}
 		}
 	]
 }
