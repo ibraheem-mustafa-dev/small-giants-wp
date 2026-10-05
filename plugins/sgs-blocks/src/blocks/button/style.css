@@ -68,7 +68,11 @@
 	text-decoration: none;
 	cursor: pointer;
 	white-space: normal;
-	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
+	/* Every property a hover state actually paints must be listed. render.php
+	   writes the lift as `translate` and the hover shadow through
+	   sgs_shadow_decls(); a list that omits them leaves those two effects
+	   snapping while the rest ease. */
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, translate var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, box-shadow var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
 	-webkit-appearance: none;
 	appearance: none;
 

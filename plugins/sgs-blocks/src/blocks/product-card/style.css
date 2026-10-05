@@ -243,7 +243,10 @@
 	font-weight: var(--sgs-product-card-btn-font-weight, 600);
 	text-decoration: none;
 	cursor: pointer;
-	transition: all 0.15s;
+	/* Reads the site's button-preset timing, like every other button surface.
+	   `all 0.15s` was a hardcode the site setting could never reach; the
+	   0.15s stays as the fallback, so an unset token is unchanged. */
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, translate var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, box-shadow var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease;
 	box-sizing: border-box;
 	line-height: var(--sgs-product-card-btn-line-height, 1.4);
 }
