@@ -188,3 +188,14 @@ test( 'MUST FAIL: hover is no reason for not walker-measurable, and a clean clai
 	const bare = [ ...ALL_OPEN.slice( 0, 3 ), clean( '126', 'ref-c-9', 'r/contact.json', { element: '' } ), ALL_OPEN[ 4 ] ];
 	assert.match( checkStatuses( items, bare, sweep() ).join( '\n' ), /126, 137: clean needs evidence.element/ );
 } );
+
+// The 2026-10-05 redo merged onto a register that already had a Sweep column and stacked a second one beside it.
+test( 'MUST FAIL: a second merge rewrites the Sweep column instead of adding another', () => {
+	const once = addSweepColumn( REGISTER, items, ALL_OPEN );
+	const redo = [ ALL_OPEN[ 0 ], { id: '1', status: 'not walker-measurable', evidence: { reason: 'Keyboard focus order.' } }, ...ALL_OPEN.slice( 2 ) ];
+	const twice = addSweepColumn( once, registerItems( once ), redo );
+	const header = twice.split( /\n/ ).find( ( l ) => l.startsWith( '| Ref | What is wrong' ) );
+	assert.equal( ( header.match( /Sweep/g ) || [] ).length, 1 );
+	assert.ok( twice.split( /\n/ ).some( ( l ) => l.startsWith( '| 1 | Top bar' ) && l.endsWith( '| proven | not walker-measurable |' ) ) );
+	assert.equal( twice.split( /\n/ ).length, once.split( /\n/ ).length );
+} );

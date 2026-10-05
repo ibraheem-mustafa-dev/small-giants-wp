@@ -223,8 +223,8 @@ export function checkStatuses( items, verdicts, sweep, measured = null, walks = 
 	return problems;
 }
 
-// Adds a Sweep column to every table that holds an item. verdicts must already have passed checkStatuses.
-// Existing cells are never changed: the new cell is appended after each line's final pipe.
+// Adds a Sweep column to every table that holds an item, or rewrites it when the table already has one (a re-run never
+// stacks a second column). verdicts must already have passed checkStatuses. Every other cell stays byte-identical.
 export function addSweepColumn( markdown, items, verdicts ) {
 	const lines = markdown.split( /(\r?\n)/ );
 	const at = ( i ) => i * 2;
@@ -238,10 +238,13 @@ export function addSweepColumn( markdown, items, verdicts ) {
 		return i;
 	};
 	for ( const h of headers ) {
+		const replace = /\|\s*Sweep\s*\|\s*$/.test( lines[ at( h ) ] );
 		for ( let i = h; i <= tableEnd( h ); i++ ) {
 			const text = lines[ at( i ) ];
 			const cell = i === h ? 'Sweep' : ( i === h + 1 ? '---' : ( status.get( i ) ?? '' ) );
-			if ( /\|\s*$/.test( text ) ) {
+			if ( replace ) {
+				lines[ at( i ) ] = text.replace( /\|[^|]*\|\s*$/, `| ${ cell } |` );
+			} else if ( /\|\s*$/.test( text ) ) {
 				lines[ at( i ) ] = `${ text.replace( /\s+$/, '' ) } ${ cell } |`;
 			}
 		}

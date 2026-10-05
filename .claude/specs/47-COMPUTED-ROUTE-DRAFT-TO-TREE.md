@@ -511,7 +511,8 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - About: at 100% with full coverage (F2 below).
      - Lenses (hand config): 6 of 6 handled; 0 regressions; 314 to 80. With full coverage (28 of 29 blocks, 2026-10-04)
        its first Solve closed 25 of 57 distinct issues but regressed 3 rows, so its tree was restored (plan Progress).
-     - Contact: 134 to 19 distinct issues (2026-10-04), 0 labelled gaps; the contact form 94 to 46 (plan Progress).
+     - Contact: 134 to 19 distinct issues (2026-10-04), 27 on the 2026-10-05 sweep (the walker now reads DevTools values);
+       the contact form 94 to 46, 58 on the sweep (plan Progress).
      - Help (old guard) and the footer: as recorded in the register. Home was stopped at walk 5 on 2026-10-04 and rebuilt
        from its committed tree; it re-runs with full coverage.
      - An independent Playwright check (its own finders, 375/768/1440) confirmed Lenses 9 of 9.
@@ -527,7 +528,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        12 ledger entries citing register 104 / S1 / S4, confirmed by an independent check
        (`sites/eye-care-ward-end/build/qa/independent-check.mjs`, 0 differences at 375/768/1440) and a planted-fault
        negative control. Contact pairs 31 of 32 blocks (the map is register items 132 and 141) and its form 6 of 6; its distinct
-       issues went from 134 to 19 on 2026-10-04 (open causes in the plan's Progress).
+       issues went from 134 to 19 on 2026-10-04 and read 27 on the 2026-10-05 sweep (open causes in the plan's Progress).
      - F3 calibration paths: measured, mostly not needed (Help's link rows are a block swap, register 120/121; Contact's
        form rows belong to the contact-form surface); one fixture gap (CR17).
      - F5 whole-page score in the solve report: built.

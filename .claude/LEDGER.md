@@ -18,13 +18,13 @@ equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3
 Claude Design's gap map; the finished site becomes the pipeline's answer key. Every surface is built and live on eye-care-test, was walked against
 the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list, all decisions taken. Spec 47's tool
 (measure the draft, write the layout settings automatically) took the About page to 100% on 2026-10-04 (every
-difference closed or a recorded decision, confirmed by an independent check). Contact is down from 134 differences to 19
-(2026-10-04) and the contact form from 94 to 46. The repair session for everything the route data audit proved (seeder routing, calibration,
+difference closed or a recorded decision, confirmed by an independent check). Contact is down from 134 differences to 27
+and the contact form from 94 to 58 (2026-10-05 sweep, with the stricter comparison tool). The repair session for everything the route data audit proved (seeder routing, calibration,
 framework bugs, editor-canvas gaps) is built, deployed to both test sites and complete (2026-10-05), every block
-recalibrated on local copies of the test sites in WSL. Then: a whole-site sweep, an audit of what stays open, and one framework fix pass (Front F). Running beside that repair (Track P, 2026-10-05, code only, QC'd): the
-comparison tool now reads what the browser's developer tools show, your decided differences can no longer be
-overwritten, and the sweep, triage and register-check tools are ready. Proven on About (local copy of the site): it
-found one real issue, your 0.25s button lift timing never reaching any button (register S1).
+recalibrated on local copies of the test sites in WSL. The whole-site sweep is done
+(2026-10-05): every page and panel measured against the draft without changing anything, 2,373 differences found,
+and every fix-register item now says whether it is still open, fixed, or something the tool cannot measure. Next: sort
+what stays open (Session B), then one framework fix pass (Session C).
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -57,53 +57,32 @@ add-to-bag route drops a second product and a 30s cooldown blocks a second pair 
 WooCommerce's product gallery (75/82); the shop filters leave empty groups after clearing (N25); the drawer body
 overflows by its title row (15); a footer row given a width cap collapses to zero width (N46). No blockers.
 
-**Spec 47 (v0.10): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; "Solve"
-compares a built page with the draft and writes block settings). Every block of a surface is paired with its draft
-element (`pairs.mjs`, switched on per surface by `walkerFull` in `surfaces.json`); a parent block's setting can now
-style its children (a form's field style), extension settings (child sizing, hover, entrance) are seeded in the
-framework DB as `source='sgs-ext'`, and `sites/eye-care-ward-end/build/qa/independent-check.mjs` is the second opinion.
-**About is at 100%.** **Contact: 19 distinct issues open** (from 134; 0 labelled gaps, 0 new rows, 0 wrong writes on
-its last Solve); the three open causes are in the plan's Progress. **Contact form: 46 open**; its last Solve regressed
-and was restored from git and rebuilt. **Lenses: paired (28 of 29 blocks), walks its full config**; its first Solve
-closed 25 but regressed 3 rows, so its tree was restored from git and rebuilt. Hostinger's edge answers headless browsers and curl with a 403 browser
-check after bursts of traffic: run the route's host tools with `SGS_HEADED=1` (dev-setup.md), one job at a time.
+**Spec 47 (v0.12): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
+compares a built page with the draft and writes block settings; `--rounds 0` measures only. The walker (the
+draft-vs-live comparison tool, `scripts/parity/`) reads what DevTools shows: forced `:hover` on every pair, declared
+widths, `::before`/`::after`, timings. Every surface is paired (`pairs.mjs`; a panel pairs with its walker state open,
+`--state`). **About is at 100%**; Contact 27 open, its form 58, Lenses 58 (causes in `plans/2026-10-04-spec47-full-coverage.md` Progress).
+Run host tools with `SGS_HEADED=1`, one job at a time (dev-setup.md); local WSL mirrors at localhost:8081/8082 if
+Hostinger shows a captcha (`scripts/local-wp/README.md`).
 
-**Track P (2026-10-05, closed; pushed through 9fa6bbbe3; code only, no deploy):** the sweep plan's code units, built beside
-Session 0. Walker (GAP-CHECKLIST §19): reads once animations finish (900ms floor), forced `:hover` on every pair, the
-draft's declared widths, `::before`/`::after` paint keyed as calibration keys it, motion timings, a text run's row
-spacing. Solve: `--rounds 0` never writes (test); a ledgered row's target is Bean's decided value at every width it
-covers. Ledger: entries cite register items (`register`), checked by the route lint against the register
-`sites/eye-care-ward-end/build/qa/ledger.config.json` names (the gate's command is unchanged); D-1 removed (Bean: the subtext
-keeps its margin; the 375px name-field drop is open under N45b); the independent check matches entries on `node`. New
-tools: `sweep.mjs` (A3), `register-sweep.mjs` (A4), `triage.mjs` (B1, reads the `includes/` helpers a render
-reaches). /code-review high fixed four defects; /qc passed 15 scenarios on local pages and real data (90/100, report
-in `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/`). Proven 2026-10-05 on Session 0's local mirror: About measure-only finds 1 open
-issue, real: S1's 0.25s button timing never reaches a button (`button/render.php` always writes `transition: all
-{transitionDuration}ms`, default 300; framework repair, register S1).
+**Session A, the whole-site sweep (2026-10-05, complete, measure only, from `1ea514ae8`; tooling through `197ba10c3`).**
+Live = HEAD proven by checksum (blocks at `4726700c1` on eye-care-test). 2,373 distinct open issues over 17 surfaces
+(`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`; table per surface in the Spec 47 plan's Progress).
+Every register item has a Sweep status (71 still open, 63 not walker-measurable, 32 closed earlier, 22 partly
+measured, 13 clean), judged by Opus agents under a merge gate that demands one exact element row and its values per
+verdict (a first, shallow pass was rejected). Two register "closed" items are open again: 101 and N15. Live checks
+(`qa/sweep/2026-10-05/a5/README.md`): framework fixes 37/37 PASS; About independent check 0 differences; Contact's
+independent check finds 106 rows against the walker's 27 (Session B input); S3's no-fade fix holds (footer and contact phone; header phone
+untested at 375/768) but its black hover colour is not yet in the trees;
+S1's 0.25s button timing reaches no button. Parked PA-1 to PA-5 in the sweep plan.
 
-**Session 0 (2026-10-05, complete; block code deployed at `4726700c1` to eye-care-test and `7f770ebb5` to sandybrown;
-tooling through `115081bf4`).** Done (plan `plans/2026-10-04-eye-care-sweep-audit-fix.md`, Session 0 status): seeder
-routing (unrouted core styling 628 to 368), the framework bugs, editor-canvas gaps through shared helpers (wiring gate
-blocking 1,781 to 201), calibration rebuilt, the standardisation wave, text indent and border defaults (Spec 32 v1.14).
-Hostinger's edge now shows automated logins a captcha after bursts, so every block was recalibrated on local WSL copies
-of both test sites (localhost:8081 / 8082, `scripts/local-wp/README.md`; proven to measure the same): settings located
-1,810 to 2,868, dead 711 to 605, noMarker 357 to 117 (audit report section 7). One browser and one login per
-calibration run (`scripts/lib/wp-session.js`). `/sgs-update` every stage at HEAD: 0 drifted rows. Parked P0-1 to
-P0-11 in the plan (pre-existing test failures, seeder remainder, 34 borders without a control, sandybrown page rebuild
-then drop 6 oldshape baseline entries, calibration memory, unclassified calibration outcomes).
-
-**Route data audit and wiring gate (2026-10-04, pushed, not deployed: no runtime code changed).** Four investigations
-(`.claude/reports/2026-10-04-route-data-audit/README.md`): ~628 working settings the seeder never routes, every
-calibration outcome classified, three framework bugs (accordion-item scope hash, team-member root typography,
-container grid items), the DB and block-file inventory. A new fast-tier gate, `check-wiring-fingerprint.py` (`plans/archive/2026-10-04-wiring-fingerprint-gate.md`), proves
-each painting setting is wired end to end (control, editor canvas, front end, CSS reader); a QC council and three
-review rounds took it to 100% precision on the labelled rows; it blocks new gaps only (201 baselined after Session 0, from 1,781).
-Bean's rule (Spec 32 FR-32-12): grid-item defaults style every grid cell whatever its block, text colour the only
-inherited value; built in Session 0.
+**Session 0 (2026-10-05, complete):** the route data audit's repairs (`.claude/reports/2026-10-04-route-data-audit/README.md`),
+every block recalibrated on the WSL mirrors; parked P0-1 to P0-11 in the sweep plan. The wiring gate
+(`check-wiring-fingerprint.py`) blocks new gaps only (201 baselined).
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**
-`plans/2026-10-04-eye-care-sweep-audit-fix.md` Session A (sweep
-every surface, measure only), B (audit what stays open, protect decisions) and C (framework fixes); per-surface Solve work (`plans/2026-10-04-spec47-full-coverage.md`
+`plans/2026-10-04-eye-care-sweep-audit-fix.md` Session B (audit what stays open into its classes, protect Bean's
+decisions, plan the fixes), then C (framework fixes); per-surface Solve work (`plans/2026-10-04-spec47-full-coverage.md`
 "Progress") resumes in its Session D.
 
 **Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared

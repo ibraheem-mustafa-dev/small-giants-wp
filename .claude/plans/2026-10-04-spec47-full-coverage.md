@@ -81,7 +81,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   property or every width (`ledger.mjs accept --rule --every-width --every-property`). Framework: the form's Field style
   group (register N45), label-less fields without the floating-label gap, business-info `labelFontWeight` and the
   address line height, the business-info link's 44px tap area takes one line in the flow.
-- [ ] **Contact to 100% (in progress): 27 distinct issues open on the 2026-10-05 sweep (19 on 2026-10-04, before the walker's DevTools reads), 0 labelled gaps** (last Solve
+- [ ] **Contact to 100% (Session D of `plans/2026-10-04-eye-care-sweep-audit-fix.md`): 27 distinct issues open on the 2026-10-05 sweep (19 on 2026-10-04, before the walker's DevTools reads), 0 labelled gaps** (last Solve
   `qa/solve/contact/2026-10-04T11-15-35/`: 0 new rows, 0 wrong writes). Ledger D-16 (map, register 132 and 141), D-17 to D-30, D-32 and
   D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). Open, all box rows:
   1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. The walker now measures
@@ -95,13 +95,13 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
      the two columns at 1440 (cr-ref-contact-14, 15, 27, 29).
   Then the done line: fresh rebuild of the committed tree, 0 unexplained and 0 labelled gaps, 0 new rows, wrong writes at
   most 10%, `independent-check.mjs --surface contact` 0 differences beyond the ledger, planted-fault control.
-- [ ] **Contact form (surface `contact-form`, post 285): 58 distinct issues open on the 2026-10-05 sweep.** Paired 6 of 6 with every field
+- [ ] **Contact form (Session D; surface `contact-form`, post 285): 58 distinct issues open on the 2026-10-05 sweep.** Paired 6 of 6 with every field
   measured at its control (`liveControl`). The last Solve (`qa/solve/contact-form/2026-10-04T11-24-38/`) closed 27 but
   regressed 4 rows with 7 wrong writes, so the tree was restored from git and rebuilt; two of its causes are now fixed
   (the per-round `conflict` rule, tag matching). Still open before it can run clean: the draft's select is not the
   inputs' 52px height, so `fieldMinHeight` (input and select) moved the textarea 6px; decide the select's own height
   (a `fieldSelectMinHeight`, or the select measured against the inputs) at the framework, then re-run Solve.
-- [ ] **Lenses (58 distinct issues open on the 2026-10-05 sweep): paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
+- [ ] **Lenses (Session D; 58 distinct issues open on the 2026-10-05 sweep): paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
   `walkerFull` set.** First Solve (`qa/solve/lenses/2026-10-04T11-32-37/`): 57 to 33 distinct issues, but 3 rows
   regressed (a `gap: 0` write on cr-ref-lenses-22 shrank its parent cr-ref-lenses-21 at 375; the process-steps padding
   and step gap writes moved the next item 16px at 1440) and only one write round ran; the tree was restored from git
