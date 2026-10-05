@@ -234,3 +234,20 @@ export function configText( handFile, surface, pairs, retarget = new Map() ) {
 		'',
 	].join( '\n' );
 }
+
+// A panel surface (a mega panel, the drawer, a modal) shows its blocks only once a walker state opens it, so pairing
+// runs that state on both sides first. A name the hand config lacks, or a state that does not open both sides, is an
+// error: pairing a closed panel at rest would leave every block out.
+export function pairingState( cfg, name ) {
+	if ( ! name ) {
+		return null;
+	}
+	const st = ( cfg.states || [] ).find( ( s ) => s.name === name );
+	if ( ! st ) {
+		throw new Error( `the hand config has no state "${ name }"` );
+	}
+	if ( 'function' !== typeof st.draft || 'function' !== typeof st.live ) {
+		throw new Error( `state "${ name }" does not open both sides` );
+	}
+	return st;
+}

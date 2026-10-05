@@ -224,7 +224,7 @@ export function handElements( page, finders, side, prefix ) {
 }
 
 // Opens the surface's draft at a width, through its navigation, with every scroll reveal fired.
-export async function openDraft( browser, cfg, width ) {
+export async function openDraft( browser, cfg, width, state = null ) {
 	const page = await browser.newPage( { viewport: { width, height: 900 } } );
 	const RESOLVE = resolveFinder.toString();
 	const h = makeHelpers( page, 'draft', { cb: ( u ) => u.replace( '{cb}', String( Date.now() ) ), RESOLVE, onAction: null } );
@@ -243,5 +243,23 @@ export async function openDraft( browser, cfg, width ) {
 		window.scrollTo( 0, 0 );
 	} );
 	await page.waitForTimeout( 1500 );
+	if ( state ) {
+		await state.draft( h );
+		await page.waitForTimeout( 700 );
+	}
+	return page;
+}
+
+export async function openLive( browser, cfg, width, state = null ) {
+	const page = await browser.newPage( { viewport: { width, height: 900 } } );
+	await page.goto( cfg.live.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
+	await page.waitForTimeout( 2500 );
+	await waitOutHostCheck( page );
+	if ( state ) {
+		const h = makeHelpers( page, 'live', { cb: ( u ) => u.replace( '{cb}', String( Date.now() ) ), RESOLVE: resolveFinder.toString(), onAction: null } );
+		h.log = [];
+		await state.live( h );
+		await page.waitForTimeout( 700 );
+	}
 	return page;
 }

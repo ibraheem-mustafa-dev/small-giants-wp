@@ -8,14 +8,15 @@
 // A repeated draft word takes the occurrence nearest the block's sure words, or its parent block's partner; a block
 // whose draft text has no element of its own is paired as a text run. Doubtful pairings are left out with their reason.
 // A kept draft finder is re-checked at 375 and 768 (it must still hold the block's first and last matched words).
+// A panel surface (a mega panel, the drawer, a modal) is paired with its walker state open on both sides:
+//   node scripts/computed-route/pairs.mjs --client eye-care-ward-end --surface mobile-menu --state drawer-open --width 375 --recheck 768
 // Writes sites/<client>/build/qa/parity/<surface>.full.mjs and sites/<client>/build/qa/pairs/<surface>.json.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
-import { waitOutHostCheck } from '../parity/lib/helpers.mjs';
-import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, chooseGroupPartner, reconcileHandPairs, configText } from './lib/pairs.mjs';
-import { collectTagged, liveBlocks, draftChains, formControls, groupBoxes, handElements, openDraft } from './lib/pairs-page.mjs';
+import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, chooseGroupPartner, reconcileHandPairs, configText, pairingState } from './lib/pairs.mjs';
+import { collectTagged, liveBlocks, draftChains, formControls, groupBoxes, handElements, openDraft, openLive } from './lib/pairs-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -30,15 +31,18 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const handPath = path.join( buildDir, s.walker );
 	const cfg = ( await import( pathToFileURL( handPath ).href ) ).default;
 	const prefix = `${ cfg.refPrefix || 'cr-ref-' }${ surface }-`;
+	// A panel surface: --state names the walker state that opens it on both sides, --width the width it opens at, and
+	// --recheck the widths its finders are re-checked at (the panel opened there too; "none" for a panel that opens at
+	// one width only).
+	const state = pairingState( cfg, flag( '--state' ) );
+	const width = Number( flag( '--width' ) || 1440 );
+	const recheck = 'none' === flag( '--recheck' ) ? [] : ( flag( '--recheck' )?.split( ',' ).map( Number ) || [ 375, 768 ].filter( ( w ) => w !== width ) );
 	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
 	// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load); scrollbars hidden as the walker hides them,
 	// or a headed window lays the page out about 15px narrower than its viewport.
 	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars' ] } );
-	const draft = await openDraft( browser, cfg, 1440 );
-	const live = await browser.newPage( { viewport: { width: 1440, height: 900 } } );
-	await live.goto( cfg.live.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
-	await live.waitForTimeout( 2500 );
-	await waitOutHostCheck( live );
+	const draft = await openDraft( browser, cfg, width, state );
+	const live = await openLive( browser, cfg, width, state );
 	const dWords = await collectTagged( draft, 'draft', cfg );
 	const lWords = await collectTagged( live, 'live', cfg );
 	const { refs: liveRefs, boxes, parents } = await liveBlocks( live, prefix );
@@ -105,15 +109,15 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	for ( let i = kept.length - 1; i >= 0; i-- ) {
 		duplicate.has( kept[ i ].ref ) && kept.splice( i, 1 );
 	}
-	// A kept finder must hold the block's first and last matched words at 375 and 768 too (a control's, just exist).
-	for ( const width of [ 375, 768 ] ) {
-		const page = await openDraft( browser, cfg, width );
+	// A kept finder must hold the block's first and last matched words at the re-check widths too (a control's, just exist).
+	for ( const w of recheck ) {
+		const page = await openDraft( browser, cfg, w, state );
 		const texts = await page.evaluate( ( paths ) => paths.map( ( p ) => document.querySelector( p )?.textContent.toLowerCase() ?? null ), kept.map( ( k ) => k.draft ) );
 		await page.close();
 		for ( let i = kept.length - 1; i >= 0; i-- ) {
 			const t = texts[ i ];
 			if ( null === t || ( null !== kept[ i ].first && ( ! t.includes( kept[ i ].first ) || ! t.includes( kept[ i ].last ) ) ) ) {
-				left.push( { ...kept[ i ], why: `its draft element at ${ width } does not hold the same words` } );
+				left.push( { ...kept[ i ], why: `its draft element at ${ w } does not hold the same words` } );
 				kept.splice( i, 1 );
 			}
 		}
@@ -126,7 +130,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const fullFile = `${ surface }.full.mjs`;
 	fs.writeFileSync( path.join( path.dirname( handPath ), fullFile ), configText( handFile, surface, kept, retarget ) );
 	fs.mkdirSync( path.join( buildDir, 'qa', 'pairs' ), { recursive: true } );
-	const report = { surface, when: new Date().toISOString(), blocks: all.length, kept: kept.length, coveredByHand: [ ...duplicate ], retargeted: Object.fromEntries( retarget ), left: [ ...left, ...unworded ], keptPairs: kept };
+	const report = { surface, when: new Date().toISOString(), ...( state ? { state: state.name } : {} ), width, recheck, blocks: all.length, kept: kept.length, coveredByHand: [ ...duplicate ], retargeted: Object.fromEntries( retarget ), left: [ ...left, ...unworded ], keptPairs: kept };
 	fs.writeFileSync( path.join( buildDir, 'qa', 'pairs', `${ surface }.json` ), JSON.stringify( report, null, 1 ) );
 	console.log( JSON.stringify( { surface, blocks: all.length, kept: kept.length, left: report.left.length, config: path.join( path.dirname( s.walker ), fullFile ) } ) );
 }

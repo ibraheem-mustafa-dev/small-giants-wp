@@ -2,7 +2,7 @@
 // is kept only when it holds its words and nothing that belongs outside it.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, configText } from '../lib/pairs.mjs';
+import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, configText, pairingState } from '../lib/pairs.mjs';
 
 // Live words 0-3: 0-1 in a heading (ref h) inside a section (ref s), 2-3 in a text (ref t) inside the same section.
 const liveRefs = [ [ 'h', 's' ], [ 'h', 's' ], [ 't', 's' ], [ 't', 's' ] ];
@@ -202,4 +202,16 @@ test( 'MUST FAIL: a hand pair on a control block moves to the block\'s control, 
 		const r = reconcileHandPairs( [ { name: 'field-email', draft: kept[ 0 ].draft, liveRef: 'cr-ref-form-2', liveIsRoot } ], kept );
 		assert.match( r.retarget.get( 'field-email' ), /^\.cr-ref-form-2 :is\(input/ );
 	}
+} );
+
+// A panel surface pairs with its walker state open on both sides; a missing or one-sided state is an error, never a
+// silent rest read (which leaves every block of a closed panel out).
+test( 'MUST FAIL: a panel state that is missing or opens one side only is refused; a two-sided state is returned', () => {
+	const open = { name: 'drawer-open', draft: async () => {}, live: async () => {} };
+	const cfg = { states: [ { name: 'closed' }, open, { name: 'draft-only', draft: async () => {} } ] };
+	assert.equal( pairingState( cfg, null ), null );
+	assert.equal( pairingState( cfg, 'drawer-open' ), open );
+	assert.throws( () => pairingState( cfg, 'mega-shop' ), /no state "mega-shop"/ );
+	assert.throws( () => pairingState( cfg, 'draft-only' ), /does not open both sides/ );
+	assert.throws( () => pairingState( cfg, 'closed' ), /does not open both sides/ );
 } );
