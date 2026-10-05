@@ -437,7 +437,7 @@
 /* ── A pill carrying a photo: the draft's colour-option layout ──────
  *
  * The photo is a band of its own and the option name sits in a strip beneath
- * it, which is how the Eye Care draft builds a colour option: a `padding:0`
+ * it, which is how the client draft builds a colour option: a `padding:0`
  * button in a column, a `width:100%` photo at `aspect-ratio:4/3`, then the
  * name centred in its own strip. Laid out as a ROW instead, a full-size photo
  * sits beside a one- or two-character name and a 7px tick, and reads as broken.
