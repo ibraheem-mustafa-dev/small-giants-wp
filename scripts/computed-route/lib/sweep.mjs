@@ -8,9 +8,12 @@ import path from 'path';
 
 const VISUAL = [ 'style', 'hover', 'box' ];
 const CLASSES = [ 'hardcode', 'missing', 'unresolved', 'derived' ];
+// A visual row from a walker state Solve does not map to a setting state (Solve files it under `other`) is still an
+// open issue on the page (wholePage counts it): it is listed under this class unless a Solve class already holds its key.
+const UNMAPPED = 'unmapped-state';
 const issueKey = ( x ) => `${ x.ref || x.pair }|${ x.path ?? '' }|${ x.kind }|${ x.key }`;
 const one = ( list ) => ( 1 === list.length ? list[ 0 ] : list );
-const emptyCounts = () => Object.fromEntries( CLASSES.map( ( c ) => [ c, 0 ] ) );
+const emptyCounts = () => Object.fromEntries( [ ...CLASSES, UNMAPPED ].map( ( c ) => [ c, 0 ] ) );
 
 // The newest solve-report.json of a surface under `<solveDir>/<surface>/<timestamp dir>/`, or null.
 export function latestReport( solveDir, surface ) {
@@ -27,8 +30,8 @@ export function issueRows( report, surface, reportPath ) {
 	const prefix = `cr-ref-${ surface }-`;
 	const mine = ( x ) => ! x.ref || ( x.ref.startsWith( prefix ) && /^\d+$/.test( x.ref.slice( prefix.length ) ) );
 	const found = new Map();
-	for ( const cls of CLASSES ) {
-		for ( const x of report.classes?.[ cls ] || [] ) {
+	for ( const cls of [ ...CLASSES, UNMAPPED ] ) {
+		for ( const x of report.classes?.[ UNMAPPED === cls ? 'other' : cls ] || [] ) {
 			if ( ! VISUAL.includes( x.kind ) || ! mine( x ) ) {
 				continue;
 			}
@@ -58,7 +61,7 @@ export function issueRows( report, surface, reportPath ) {
 			},
 		};
 	} );
-	return { rows, otherRows: ( report.classes?.other || [] ).length };
+	return { rows, otherRows: ( report.classes?.other || [] ).filter( ( x ) => ! VISUAL.includes( x.kind ) ).length };
 }
 
 // entries: [ { surface, reportPath, report, config? } ] in surfaces.json order (config: the surface's hand walker config,

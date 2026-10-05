@@ -64,3 +64,16 @@ test( 'MUST FAIL TO MERGE: block-less rows of the same pair name from two differ
 	assert.equal( aggregate( entries ).total, 2 );
 	assert.equal( aggregate( entries ).rows[ 0 ].path, 'x' );
 } );
+
+// Shop's 2026-10-05 report: 163 distinct issues seen only in interaction states Solve does not map (filters open, sort)
+// were missing from the sweep, which read the four Solve classes only, so its total fell short of wholePage's.
+test( 'MUST FAIL: a visual row from an unmapped walker state is an issue (class unmapped-state) unless a Solve class holds its key', () => {
+	const unmapped = ( over ) => row( { state: 'filters-open', reason: 'unmapped-state filters-open', ...over } );
+	const rows = [ row(), unmapped( { key: 'color' } ), unmapped( {} ), unmapped( { kind: 'motion', key: 'duration' } ) ];
+	const rep = report( { unresolved: [ rows[ 0 ] ], other: rows.slice( 1 ) } );
+	const { rows: out, otherRows } = issueRows( rep, 'a', 'r.json' );
+	assert.deepEqual( out.map( ( x ) => [ x.row.property, x.row.class ] ), [ [ 'padding-top', 'unresolved' ], [ 'color', 'unmapped-state' ] ] );
+	assert.equal( otherRows, 1 );
+	assert.equal( out.length, wholePage( walk( [] ), walk( rows ), rep.classes, 'cr-ref-a-' ).after );
+	assert.equal( aggregate( [ { surface: 'a', reportPath: 'r.json', report: rep } ] ).byClass[ 'unmapped-state' ], 1 );
+} );
