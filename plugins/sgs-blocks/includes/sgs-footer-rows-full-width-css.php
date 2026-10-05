@@ -20,6 +20,15 @@
  * needs only that one rule, not the header's rowsAlign tier machinery: the
  * footer has no rowsAlign setting.
  *
+ * TWO SHAPES, because the rows are not always direct children. The shared
+ * wrapper renders a `.sgs-container__inner` content band only when
+ * $has_band_props holds (a content width, band padding/margin or band
+ * background), and when it does the band is the flex column and the rows are
+ * ITS children — the footer's own outer element then computes `display:block`.
+ * Measured live on the canary: `FOOTER.sgs-site-footer > DIV.sgs-container__inner
+ * > DIV.sgs-site-footer-row`, where a `> *` rule on the root reaches the band
+ * and never the rows. Both levels are therefore covered.
+ *
  * @package SGS\Blocks
  */
 
@@ -37,6 +46,7 @@ if ( ! function_exists( 'sgs_footer_rows_full_width_css' ) ) {
 	 * @return string CSS text, no <style> wrapper.
 	 */
 	function sgs_footer_rows_full_width_css( string $root_sel ): string {
-		return ':where(' . $root_sel . ' > *){width:100%;}';
+		return ':where(' . $root_sel . ' > *,'
+			. $root_sel . ' > .sgs-container__inner > *){width:100%;}';
 	}
 }
