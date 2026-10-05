@@ -402,7 +402,7 @@
 		},
 		"transitionDuration": {
 			"type": "number",
-			"default": 300
+			"default": 0
 		},
 		"transitionEasing": {
 			"type": "string",

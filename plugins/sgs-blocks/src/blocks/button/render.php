@@ -328,7 +328,7 @@ $hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
 // Hover lift (px, 0 = off): `translate: 0 -N px` on the button root, an
 // independent property from the scale's `transform`.
 $hover_lift          = isset( $attributes['liftHover'] ) ? min( 24, max( 0, (int) $attributes['liftHover'] ) ) : 0;
-$transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
+$transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 0;
 // Shared motion easing names (and a validated custom curve), as every other SGS motion control.
 $transition_easing   = sgs_motion_easing_css( (string) ( $attributes['transitionEasing'] ?? 'ease' ), (string) ( $attributes['transitionEasingCustom'] ?? '' ), 'ease' );
 
@@ -431,8 +431,11 @@ if ( $base_decls ) {
 	$scoped_css_parts[] = ".{$uid}.sgs-button{" . implode( ';', $base_decls ) . ';}';
 }
 
-// Transition — applied on the element always (preset AND custom).
-$scoped_css_parts[] = ".{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}";
+// Transition — written only when this instance sets a duration; at 0 the
+// site's button-preset hover-transition custom property applies instead.
+if ( $transition_duration > 0 ) {
+	$scoped_css_parts[] = ".{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}";
+}
 
 // Hover scale (skip if exactly 1.0 — no-op). Touch-safe: guarded via
 // sgs_hover_state_rules() so a tap doesn't stick the scale on touchscreens.

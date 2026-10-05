@@ -135,7 +135,9 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 	if ( ! isUnset( size ) ) {
 		style[ '--sgs-btn-icon-size' ] = `${ Math.abs( parseInt( size, 10 ) ) || 0 }px`;
 	}
-	style.transition = `all ${ transitionDuration ?? 300 }ms ${ motionEasingCss( transitionEasing || 'ease', transitionEasingCustom || '', 'ease' ) }`;
+	if ( transitionDuration > 0 ) {
+		style.transition = `all ${ transitionDuration }ms ${ motionEasingCss( transitionEasing || 'ease', transitionEasingCustom || '', 'ease' ) }`;
+	}
 
 	// A gradient TEXT colour needs background-clip:text on the root, which would
 	// erase the root's own fill, so the front end moves the fill onto a ::after

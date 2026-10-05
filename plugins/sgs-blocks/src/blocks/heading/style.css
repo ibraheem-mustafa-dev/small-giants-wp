@@ -9,6 +9,19 @@
 .wp-block-sgs-heading {
 	margin-top: 0;
 	margin-bottom: 8px;
+	/* Hover timing comes from the site's button-preset token, the same source
+	   sgs/button, sgs/buybox, sgs/option-picker, sgs/cta-section and
+	   sgs/whatsapp-cta read. An instance that sets its own transitionDuration
+	   beats this from its scoped rule; an instance that sets none takes the
+	   site's timing rather than snapping. The reduced-motion block below
+	   zeroes it. Not a theme.json element default, so no silent override. */
+	transition: color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, background-image var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
+}
+
+/* The ::after background layer (emitted by render.php only when a background is
+   set) keeps its own timing in step with the root's, from the same token. */
+.wp-block-sgs-heading::after {
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, background-image var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
 }
 
 /* NO default colour here, deliberately (D343 — same reasoning as the D338
@@ -66,7 +79,8 @@
 
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
-	.wp-block-sgs-heading {
+	.wp-block-sgs-heading,
+	.wp-block-sgs-heading::after {
 		transition: none;
 		animation: none;
 	}

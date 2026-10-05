@@ -164,8 +164,8 @@ $box_shadow_decls = sgs_shadow_decls(
 	$block->name ?? ''
 );
 
-$transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
-$transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
+$transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 0;
+$transition_duration     = $transition_duration_raw;
 $transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease';
 $allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
 $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease';
@@ -398,7 +398,9 @@ if ( $has_scale ) {
 }
 
 if ( $hover_rules || $has_scale ) {
-	$scoped_css[] = "{$root_sel}{transition:all {$transition_duration}ms {$transition_easing};}";
+	if ( $transition_duration > 0 ) {
+		$scoped_css[] = "{$root_sel}{transition:all {$transition_duration}ms {$transition_easing};}";
+	}
 	$scoped_css[] = "@media(prefers-reduced-motion:reduce){{$root_sel}{transition:none !important;transform:none !important;}}";
 	if ( $hover_rules ) {
 		$scoped_css[]         = sgs_hover_state_rules( $root_sel, implode( ';', $hover_rules ), ':focus-within' );
@@ -454,7 +456,7 @@ if ( ! $inherit_style ) {
 		$scoped_css[] = $background_layer_css;
 		// Keep the ::after layer's own background transition in step with the
 		// root's hover transition above (only relevant when a hover state exists).
-		if ( $hover_rules || $has_scale ) {
+		if ( ( $hover_rules || $has_scale ) && $transition_duration > 0 ) {
 			$scoped_css[] = "{$root_sel}::after{transition:background-color {$transition_duration}ms {$transition_easing},background-image {$transition_duration}ms {$transition_easing};}";
 		}
 	}
