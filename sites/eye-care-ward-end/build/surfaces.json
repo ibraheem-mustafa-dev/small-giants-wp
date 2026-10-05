@@ -81,11 +81,15 @@
     "walker": "qa/parity/contact.mjs",
     "walkerFull": "qa/parity/contact.full.mjs",
     "walkStates": [
-      "opening"
+      "opening",
+      "field-focused",
+      "form-submitted-empty"
     ],
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
     "states": {
-      "opening": null
+      "opening": null,
+      "field-focused": null,
+      "form-submitted-empty": null
     }
   },
   "home": {
@@ -100,7 +104,9 @@
     "walkerFull": "qa/parity/home.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
     "states": {
-      "opening": null
+      "opening": null,
+      "hero-scrolled": null,
+      "reviews-next": null
     }
   },
   "header": {
@@ -257,7 +263,9 @@
       "q1-use": null,
       "q2-thickness": null,
       "q3-finish": null,
-      "q4-prescription": null
+      "q4-prescription": null,
+      "q4-upload": null,
+      "q4-type": null
     },
     "provides": [
       "sgs/choice-flow:lens-configurator"
@@ -276,7 +284,17 @@
     "walkerFull": "qa/parity/shop.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
     "states": {
-      "opening": null
+      "opening": null,
+      "filters-open": null,
+      "women": null,
+      "colour-black": null,
+      "brand-ray-ban": null,
+      "panel-after-click": null,
+      "size-open": null,
+      "brand-typed": null,
+      "sort-low": null,
+      "price-moved": null,
+      "scrolled": null
     }
   },
   "product": {
@@ -292,7 +310,16 @@
     "walkerFull": "qa/parity/product.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
     "states": {
-      "opening": null
+      "opening": null,
+      "tab-description": null,
+      "tab-details": null,
+      "tab-sizing": null,
+      "gallery-thumbnail": null,
+      "pick-colour": "current",
+      "pick-size": "current",
+      "accordion-open": "open",
+      "bag-added": null,
+      "size-guide": null
     }
   },
   "contact-form": {
@@ -307,11 +334,15 @@
     "walker": "qa/parity/contact.mjs",
     "walkerFull": "qa/parity/contact-form.full.mjs",
     "walkStates": [
-      "opening"
+      "opening",
+      "field-focused",
+      "form-submitted-empty"
     ],
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
     "states": {
-      "opening": null
+      "opening": null,
+      "field-focused": null,
+      "form-submitted-empty": null
     },
     "provides": [
       "sgs/form:contact"

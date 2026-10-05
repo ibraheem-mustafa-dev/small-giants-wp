@@ -221,6 +221,47 @@ alone moved footer from 201 issues (W 109) to 138 (W 46), then restored.
 counts are unchanged, which is the point: the flag is inert until the rule lands. Verified nothing validates
 `surfaces.json` keys, so the new key is safe; `lint.mjs --surfaces` passes.
 
+#### Wave 1 findings that change the plan's premises (all measured, 2026-10-05)
+
+Lane diagnoses refuted nine plan premises. Each is recorded because a later session would otherwise rebuild to the
+wrong assumption.
+
+| Premise as written | What the evidence says |
+|---|---|
+| **L1.1: the resolver searches only the attributed block** | **Void as a defect.** Joining all 318 F/`no-setting` verdicts back to their `owners` and asking the DB and calibration what `attempt()` asks gives **0 rows diagnosed `owner-should-have-resolved`**: the existing caller hop (`solve.mjs::writeRound` and `lib/triage.mjs::resolveIssue` retrying on `r.owners`) **has no bug**, and `ref-trace.mjs::traceRef` already walks every enclosing ref up to `documentElement` while `addRefs` stamps every tree node, so every ancestor in the canvas tree is already reachable. The real split: **149 `owner-path-uncalibrated`** (an enclosing block declares the property, but the descendant's path is absent from that block's calibration), 120 `no-owner-candidate`, 33 `owner-setting-not-painting-slot`, 16 `no-owners`. **The 149 is a calibration-coverage limit no fixture can fix**, since no fixture holds an arbitrary client's descendant path, and it is an upper bound on *settable* rather than a count of it: `sgs/container::padding` declaring `padding` says nothing about a social-icons item's box. Precisely why R-47-12 explains and cites instead of writing. |
+| **L1.2: 128 rows, or 1,043 namespaced rows** | Both wrong. 1,062 namespaced rows exist over 36 properties, but **only 85 rows across 19 properties are `source IN ('sgs','sgs-ext')`**: the `fx:` mass is **977 rows of `source = 'sgs-fx'`, which `lib/db.mjs::attrsFor` excludes by design** (R-47-10). On this client the payoff is about **2 rows**. The 75 motion rows that actually hurt are `transition-*`, and `anim:duration` does not paint `transition-duration`. |
+| **L1.2: `settingFits`'s blanket strip is an active bug** | **Latent, not active.** `.replace( /:.*$/, '' )` turns `grid-template-columns:count` into `grid-template-columns`, which is *correct* for a modifier, and `anim:duration` into `anim`, which matches nothing, while `nameFits` already returns true for `animation-duration`. Worth making namespace-aware, but it closes no row today. |
+| **L1.3: make `resolveDiscovered` reach the mega-group case** | **Not fixable in the resolver.** `cache/mega-group.json::discovered.sgsChildSizing` is `{}`, and all five of mega-group's discovered entries are empty, so there is no data to reach. The cause is the fixture: `flex: 0 1 auto` changes nothing measurable unless the group sits inside a flex `sgs/mega-panel`, and the fixture renders it loose. What *is* broken in the resolver: `resolveDiscovered` compares slots **exactly** while every other path comparison uses `loose()`; `resolveIssue::attempt`'s `known` set omits `cal.discovered[*][prop].slots`, so 14 rows gap `unmapped-element` before the resolver runs; and `resolveDiscovered` is skipped for any state-qualified row. |
+| **L5.1: four causes clear 203 dead rows** | **About 144 are fixture-only.** Two causes are mislabelled: nav-bar-menu's "READ_CAP_81" is no read cap at all (`classify_dead.py::classify` guesses it from `len(elements) >= 77`, while `calibrate-read.mjs::readInstancesInPage` reads everything and a test already proves elements past the 81st are read; that cache holds 445), and cart's "PORTAL_OR_CLOSED_SURFACE" is a fixture gap (`block.json::displayMode` defaults to `link`, so `render.php::$has_panel` is false). 59 rows need site menu data or a drawer render context, not a fixture. |
+| **L5.5: `site-footer-row` is a one-width hardcode** | **No: a harness misclassification, and it clears 27 rows.** The block passes `container_queries => true` to the shared wrapper, so its tiers follow container width, and at 768 the container is 664px, inside the mobile tier. `calibrate.mjs::calibrateBlock` sets `containerQuery` only by grepping the built `style-index.css` for `@container`, which has 0 occurrences because that CSS is emitted at render time. **27 of the 40 `oneWidth` rows** belong to five such blocks (multi-button 8, site-footer-row 7, site-header-row 7, gallery 4, mega-aside 1). The C2 suspicion is removed. |
+| **L5.6: some states have no trigger** | **None do.** Every `css_state` in the DB (`current` 33, `hover` 541, `open` 3, `scrolled` 5, `shrunk` 1) has a `STATE_TRIGGERS` entry, so `triggerFor` returns undefined for none. The 55 `untestedStates` are **51 hover rows whose target stays hidden even after its toggle opens** (the opener usually sits outside the instance, so `markTargetInPage` finds no toggle inside the root) and **4 site-header rows where `is-header-scrolled` never applied**. |
+| **L3.2: Contact and its form hold unmapped-state rows** | **They hold none.** `walkStates` was `["opening"]`, so the form states were never walked, though `contact.mjs` has always defined `field-focused` and `form-submitted-empty`. The 323 are **shop 163, product 109, home 33, lens 18** and nothing else. L3.2 *adds* rows rather than clearing any. |
+| **L3: register N11(b) is an open bug to fail against** | **Already fixed at HEAD** by `35e8b94d4`, which exempts an item already in the bag from `class-cart-proxy.php`'s cooldown, so the flow must pass on a HEAD build and can only be shown failing against a pre-`35e8b94d4` build or a local mock. Register N38's "skip adds to bag" setting does not exist at all (`choice-flow/block.json` has no such attribute), so that flow fails until N38 lands: a spec item, not one of the two named register bugs. |
+
+#### C0.7: the 323 unmapped-state rows now have a mapped state
+
+`surfaces.json` gained the walker-state maps for the surfaces that carried them, each name checked against that
+walker config's real `states` array first so no phantom state is mapped: **home** 1 to 3, **shop** 1 to 11,
+**product** 1 to 10, **lens** 4 to 6, and **contact** and **contact-form** 1 to 3 with `walkStates` extended to the
+two form states that were defined but never walked. `product` maps `pick-colour` and `pick-size` to the DB's
+`current` state and `accordion-open` to `open`; every other state maps to rest (`null`), the precedent `lens` and
+the mega surfaces already set.
+
+The 323 are **shop 163, product 109, home 33, lens 18**.
+
+⚠️ **This moves no count until Solve re-runs, and that is not a failure.** A triage re-run still reports **2,373
+with 323 unmapped-state rows**, because `lib/triage.mjs::issuesOf` reads `report.classes` as the committed Solve
+report recorded it: the unmapped-state classification is baked in at Solve time, not recomputed by triage. The
+benefit therefore lands in **C3.6's measure-only sweep** and is measured at **C3.7**, where those 323 rows stop
+being unjudgeable and take a real class instead. **Expect F to rise there for that reason**, and expect it to be
+explainable row for row: it is 323 rows becoming judgeable, not 323 new defects.
+
+**7 rows carry a state conflict** the map cannot express (one pair, two states, different draft values):
+`home cr-ref-home-5` hover `transform`; `product cr-ref-product-12` `color` and `border-bottom-color`;
+`product gen-product-12 painted-ground`; `shop cr-ref-shop-4 width`; `shop cr-ref-shop-31 outline-color`;
+`shop cr-ref-shop-28 outline-style`. A group whose mapped states disagree must be refused rather than written with
+the last run's value. That guard belongs to `lib/solve-rows.mjs`, so it is **lane L8's, as new item L8.8**.
+
 #### Wave 1 lane corrections, applied before dispatch
 
 | Correction | Why |
