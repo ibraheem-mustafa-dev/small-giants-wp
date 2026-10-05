@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.13"
+spec_version: "0.14"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -584,9 +584,23 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        child.
      - Presence, text and link (Bean, 2026-10-05): calibration's `presence`, `text` and `link` reads (§3.2), Solve
        writing presence, text and link rows and its `handover` list (§3.3), and Fill setting visibility and variant
-       settings: not built. The framework database already marks the settings (`role` `boolean-visibility` 94,
-       `presence-boolean` 2, `content` 84). The sweep (`lib/sweep.mjs`) keeps style, hover and box rows only, so
+       settings: not built. The framework database already marks the settings (`role` `boolean-visibility` 600,
+       `presence-boolean` 3, `content` 84, `text-content` 235; counted 2026-10-05). §3.2 scopes the text read to
+       `role` `content` alone, which would miss the 235 `text-content` rows that hold most of this register's words
+       (`sgs/product-card::noReviewsText`, `::brandName`, `sgs/buybox::stockInStockLabel`, `sgs/whatsapp-cta::cardTitle`):
+       §6 carries the question. The sweep (`lib/sweep.mjs`) keeps style, hover and box rows only, so
        text and presence rows reach no register check until it carries them.
+     - Residual from the measure-gap tags (Session B, 2026-10-05; the table is Appendix A of
+       `plans/2026-10-04-eye-care-sweep-audit-fix.md`, the data `.claude/reports/2026-10-05-session-b/measure-gap-tags.json`).
+       Of the 78 register items the walker could not fully see: **8 `content-fixable`** (a setting holds the value and only
+       §3.2/§3.3's unbuilt presence, text and link reads block it: S7, 9, N16b, N27, N30, N31, N33B, 159), **17 `pairing`**
+       (the element sits on a measured surface but no pair reaches it), **28 `FR-47-6`** (an unbuilt walker read: focus and
+       active states, script-driven entrance motion, link coverage; 13 of these have no setting at all and carry
+       "no setting exists; framework gap" in their reason, so they are Session C's, not content's), **15 `behaviour`**
+       (FR-47-7 flows), **6 `handover`** (`site-info` 2, `content-page` 2, `product-data` 1, `woocommerce-text` 1), and one
+       each of `PA-1` (N7), `PA-3` (103, measured by the hand pair `choose-a-frame` and refused only by the A4 validator)
+       and `PA-5` (157). 37 of the 78 can be held by no block setting. One item (N24) belongs to the parallel
+       google-reviews session.
      - The functional flows (FR-47-7) and the walker's items 2, 4, 5 and focus and active states (FR-47-6): not started;
        items 1 and 3's hover, plus items 10 to 13, are built and proven (2026-10-05: About measure-only on the local mirror,
        1 open issue, real: S1's button timing; register S1). Contact and its form walk
@@ -601,4 +615,5 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 | Question | Who | When |
 |---|---|---|
 | Does `wp-build-page.js` support building into a dedicated `sgs_header`, `sgs_footer` or `sgs_drawer` calibration post with `--post-id` as it does for pages? | Answered 2026-10-03: yes. `--post-id` opens `post.php?post=<id>&action=edit` for any post type (footer 182 is rebuilt that way). The footer's blocks need no dedicated post: `sgs/site-footer` has no `parent` lock, so it and its rows calibrate on the calibration page. | Closed |
+| Should §3.2's text read cover `role` `text-content` (235 rows) as well as `role` `content` (84)? Found in Session B (2026-10-05): most of the Eye Care register's words live in `text-content` (`sgs/product-card::noReviewsText`, `sgs/buybox::stockInStockLabel`), so the read as specified would leave register items S7, N27, N31, 91 and N28 unreachable. Reading both roles is the obvious answer; it is recorded rather than applied because it widens FR-47-2's scope. | Bean | before FR-47-2's presence and text reads are built |
 | Which noindex mechanism does each site already have for the calibration page? | Answered 2026-10-03: none per page (the plugin noindexes only WooCommerce utility pages). The calibration page is built private instead (§3.2). | Closed |

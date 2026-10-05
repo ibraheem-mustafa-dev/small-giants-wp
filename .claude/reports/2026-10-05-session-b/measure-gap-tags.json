@@ -1,0 +1,1135 @@
+[
+  {
+    "id": "S3",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "framework repair + tree",
+    "typeSource": "register Type column (line 87)",
+    "reason": "The one open half is the Contact phone's taupe hover, which already matches the draft so no row can differ, and the contact-form surface carries no phone or email element for a pair to reach; the hover colour itself is held by sgs/business-info::textColourHover (role color, css_property color on element text).",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/business-info' AND role='link-href'\" -> 0 rows; same block attr_name LIKE '%address%' -> 0 rows; its content family is copyrightPrefix/separators/textAfter/textBefore (role text-content) and its hover family textColourHover (role color, css_property color, css_element text)",
+      "files": [
+        ".claude/plans/2026-10-02-eye-care-fix-register.md line 87"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "S7",
+    "status": "not walker-measurable",
+    "tag": "content-fixable",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "register Type column (line 91)",
+    "reason": "The words live in sgs/product-card::noReviewsText (role text-content) and the product-page panel is a tree node; unmeasured only because Spec 47 section 3.2/3.3's text and presence reads are not built.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/product-card' AND role IN ('content','boolean-visibility','presence-boolean','text-content','link-href','image-object','image-alt','rating','identity')\" -> 36 rows, incl. noReviewsText (text-content), brandName (text-content), showBrandOverlay/showSavingBadge/showPickers (boolean-visibility), ctaUrl/cta2Url (link-href)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "S8",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 92)",
+    "reason": "No setting exists; framework gap: searched every block for a price-format attribute (priceFormat/decimal/pennies/trailingZero), 0 rows, so '.00' is printed by framework code and is unmeasured because the text read is not built.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%priceFormat%' OR attr_name LIKE '%decimal%' OR attr_name LIKE '%pennies%' OR attr_name LIKE '%trailingZero%'\" -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "S9",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 93)",
+    "reason": "No setting exists; framework gap: sgs/product-card::brandName (role text-content) and ::showBrandOverlay (boolean-visibility) hold only the typed name, sgs/cart carries brand typography and colour rows but no image row and sgs/buybox no brand row at all, and the logo-plus-link swap needs the unbuilt text, presence and link reads.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE block_slug IN ('sgs/cart','sgs/buybox','sgs/product-card') AND attr_name LIKE '%brand%'\" -> 16 rows: sgs/cart itemBrandFontSize/LetterSpacing/TextTransform/Colour (typography, color), sgs/product-card brandName (text-content) and showBrandOverlay (boolean-visibility); 0 image or logo rows, and 0 brand rows on sgs/buybox",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "S10",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 94)",
+    "reason": "No setting exists; framework gap: searched attr_name LIKE '%stretch%'/'%wholeCard%'/'%cardLink%'/'%rowLink%' across every block and the only hit is sgs/mega-panel::drawerCardLinkSize, a size enum; which area is clickable needs the FR-47-7 click flows the walker cannot drive.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%stretch%' OR attr_name LIKE '%wholeCard%' OR attr_name LIKE '%cardLink%' OR attr_name LIKE '%rowLink%'\" -> 1 row, sgs/mega-panel::drawerCardLinkSize (select-from-enum), a size enum, unrelated",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "S12",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 95)",
+    "reason": "A focus-state read the walker does not take: the theme's focused-link underline beats each block's own setting (for example sgs/social-icons::textDecoration, role typography, css_property text-decoration), so a setting exists and this is a hardcode, but the walker forces :hover only and never reads :focus-visible.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/social-icons' AND (attr_name LIKE '%fill%' OR attr_name LIKE '%fullWidth%' OR attr_name LIKE '%stretch%' OR attr_name LIKE '%layout%')\" -> 0 rows; the block's content and presence family is icons (content) and showLabels (boolean-visibility), its text-decoration row is textDecoration (typography, text-decoration) || sgs-db.py sql \"SELECT block_slug, attr_name, role, css_property FROM block_attributes WHERE attr_name LIKE '%focus%'\" -> 15 rows: focus-ring colour exists only on sgs/form (formFocusRingColour), sgs/filter-search and sgs/product-search (focusRingColour, outline-color); the rest are sgsFocusRing behaviour toggles; sgs/choice-flow attr_name LIKE '%focus%' -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "3",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework repair + tree",
+    "typeSource": "inherited from item 17 (register line 140), which this row's Fix cell points at with 'See 17'",
+    "reason": "Script-driven load motion: sgs/cart::countPopAnimation (role motion) switches the pop on and off but no row holds its duration, start size or a load trigger, so the on-load shape has no setting and the walker compares settled styles only.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/cart' AND (attr_name LIKE '%ount%' OR attr_name LIKE '%pop%' OR attr_name LIKE '%freeDelivery%')\" -> 21 rows incl. countPopAnimation (motion, css_property NULL), freeDeliveryTrackHeight (layout/height/freeDeliveryBar), freeDeliveryTrackRadius, freeDeliveryFillColour; no duration and no load-trigger row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N2A",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 107)",
+    "reason": "No setting exists; framework gap: sgs/responsive-logo::linkToHome and core/site-logo::isLink (both role boolean-visibility) link the logo image only, the stretched-link search returns no whole-row setting, and link area is behaviour the walker does not read.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE block_slug IN ('sgs/responsive-logo','core/site-logo') AND role IN ('boolean-visibility','link-href')\" -> sgs/responsive-logo::linkToHome (boolean-visibility), core/site-logo::isLink (boolean-visibility), core/site-logo::linkTarget (link-href); every one links the logo image only || sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%stretch%' OR attr_name LIKE '%wholeCard%' OR attr_name LIKE '%cardLink%' OR attr_name LIKE '%rowLink%'\" -> 1 row, sgs/mega-panel::drawerCardLinkSize (select-from-enum), a size enum, unrelated",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N4",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "tree + framework repair",
+    "typeSource": "register Type column (line 110)",
+    "reason": "Marquee behaviour: sgs/trust-bar::autoScroll (role marquee-toggle), ::autoScrollBelow (marquee-below), ::autoScrollDuration (marquee-duration) and ::autoScrollPauseOnHover (boolean-visibility) exist, but no pause-button setting does (0 rows), and drop-versus-scroll needs an overflow flow the walker cannot drive.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property FROM block_attributes WHERE block_slug='sgs/trust-bar' AND (attr_name LIKE '%croll%' OR attr_name LIKE '%drop%' OR attr_name LIKE '%overflow%' OR attr_name LIKE '%pause%')\" -> 8 rows: autoScroll (marquee-toggle), autoScrollBelow (marquee-below), autoScrollDuration (marquee-duration, animation-duration), autoScrollSpeed, autoScrollPauseOnHover (boolean-visibility), overflowMode (select-from-enum), dragToScroll, fxGenBackdrop; no pause-button row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "D7",
+    "status": "not walker-measurable",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "register Type column (line 111)",
+    "reason": "A decided addition with no draft counterpart, so no pair can exist on the measured header surface; the holder is sgs/trust-bar::items (role content), which takes the top-bar items.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/trust-bar' AND role IN ('content','text-content')\" -> items (content), title (text-content)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "9",
+    "status": "not walker-measurable",
+    "tag": "content-fixable",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "register Type column (line 112)",
+    "reason": "The duplicated accessible name is the tile's own title and image alternative inside sgs/brand-strip::logos (role content), so a setting holds it; an accessible name is not a computed style, so no walker row covers it.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/brand-strip' AND (role='link-href' OR attr_name LIKE '%link%' OR role='content')\" -> logos (content), brandLinkToShop (boolean-visibility); role link-href -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N6",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 125)",
+    "reason": "A focus and active-state read: the same theme underline as S12 beats the block's own setting (sgs/social-icons::textDecoration, role typography, css_property text-decoration, and its siblings on every link block), and the walker forces :hover only, so a Lenses card's clicked or focused state is never measured.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role, css_property FROM block_attributes WHERE attr_name LIKE '%focus%'\" -> 15 rows: focus-ring colour exists only on sgs/form (formFocusRingColour), sgs/filter-search and sgs/product-search (focusRingColour, outline-color); the rest are sgsFocusRing behaviour toggles; sgs/choice-flow attr_name LIKE '%focus%' -> 0 rows || sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/social-icons' AND (attr_name LIKE '%fill%' OR attr_name LIKE '%fullWidth%' OR attr_name LIKE '%stretch%' OR attr_name LIKE '%layout%')\" -> 0 rows; the block's content and presence family is icons (content) and showLabels (boolean-visibility), its text-decoration row is textDecoration (typography, text-decoration)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "14",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 132)",
+    "reason": "Script-driven entrance motion: sgs/nav-drawer-menu::submenuItemStagger with ::submenuItemStaggerDistance/Duration/Max/Scope and sgs/nav-drawer::itemStagger* already hold a per-group stagger, so a setting exists, but the walker reads the settled drawer-open state only.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/nav-drawer-menu' AND attr_name LIKE '%Stagger%'\" -> 8 rows: submenuItemStagger, submenuItemStaggerDistance (styling), submenuItemStaggerDuration (motion), submenuItemStaggerMax, submenuItemStaggerScope (enum-mode), sgsAnimationStagger*; sgs/nav-drawer adds itemStagger, itemStaggerDistance/Duration/Max/Axis/Reveal",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N7",
+    "status": "partly measured",
+    "tag": "PA-1",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 134)",
+    "reason": "PA-1: pairs.mjs collects no words inside the open live phone drawer, so only the WhatsApp button pairs (onto its sgs-child-sizing wrapper) and the other two social buttons are unpaired; separately sgs/social-icons has no fill-the-row setting (0 rows for fill/fullWidth/stretch/layout), so that half is a framework gap.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/social-icons' AND (attr_name LIKE '%fill%' OR attr_name LIKE '%fullWidth%' OR attr_name LIKE '%stretch%' OR attr_name LIKE '%layout%')\" -> 0 rows; the block's content and presence family is icons (content) and showLabels (boolean-visibility), its text-decoration row is textDecoration (typography, text-decoration)",
+      "files": [
+        ".claude/plans/2026-10-04-eye-care-sweep-audit-fix.md PA-1"
+      ]
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "17",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework repair + tree",
+    "typeSource": "register Type column (line 140)",
+    "reason": "Script-driven motion: sgs/cart::countPopAnimation (role motion) is only the on/off switch and no row holds duration, start size or a load trigger, so the draft's shape has no setting and the walker compares settled styles.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/cart' AND (attr_name LIKE '%ount%' OR attr_name LIKE '%pop%' OR attr_name LIKE '%freeDelivery%')\" -> 21 rows incl. countPopAnimation (motion, css_property NULL), freeDeliveryTrackHeight (layout/height/freeDeliveryBar), freeDeliveryTrackRadius, freeDeliveryFillColour; no duration and no load-trigger row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "18",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 141)",
+    "reason": "No setting exists; framework gap: searched every block for a toast attribute and sgs/cart for notice/added/announce rows, 0 rows each, and the toast appears only during the add-to-bag flow (FR-47-7), so it cannot pair.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE attr_name LIKE '%toast%'\" -> 0 rows; sgs-db.py sql \"... WHERE block_slug='sgs/cart' AND (attr_name LIKE '%notice%' OR attr_name LIKE '%added%' OR attr_name LIKE '%announce%')\" -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "19",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 142)",
+    "reason": "Script-driven motion: sgs/cart::freeDeliveryTrackHeight, ::freeDeliveryTrackRadius and ::freeDeliveryFillColour exist but there is no fill-duration row across its 21 count and free-delivery rows, so the duration has no setting and the walker reads no animation timing.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/cart' AND (attr_name LIKE '%ount%' OR attr_name LIKE '%pop%' OR attr_name LIKE '%freeDelivery%')\" -> 21 rows incl. countPopAnimation (motion, css_property NULL), freeDeliveryTrackHeight (layout/height/freeDeliveryBar), freeDeliveryTrackRadius, freeDeliveryFillColour; no duration and no load-trigger row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N8",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "register Type column (line 144)",
+    "reason": "A transient state inside the bag-drawer open flow: the walker samples settled states, so a 240ms wrap can never be a row; the fix is held by the wordmark heading's sgs/heading::textWrap (role typography, css_property text-wrap), so a setting exists.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE block_slug IN ('sgs/tabs','sgs/tab','sgs/heading') AND role IN ('content','text-content','boolean-visibility','a11y-text')\" -> sgs/tabs hideEmptyTabs, blockLabel; sgs/tab label (text-content); sgs/heading content (text-content), its wrap row being textWrap (typography, text-wrap)",
+      "files": [
+        ".claude/plans/2026-10-02-eye-care-fix-register.md line 109 (N2B, the item this row points at)"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N9",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "inherited from item S8 (register line 92), which this row's Fix cell points at",
+    "reason": "No setting exists; framework gap: the price-format search returns 0 rows across every block, so the bag line's '.00' is framework-printed text and the unbuilt text read is what hides it.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%priceFormat%' OR attr_name LIKE '%decimal%' OR attr_name LIKE '%pennies%' OR attr_name LIKE '%trailingZero%'\" -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N10",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "inherited from item S9 (register line 93), which this row's Fix cell points at",
+    "reason": "No setting exists; framework gap: sgs/cart::itemBrandFontSize, ::itemBrandColour and the rest of the brand typography family exist but there is no brand image row, so the logo swap has no holder and the text read is not built.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE block_slug IN ('sgs/cart','sgs/buybox','sgs/product-card') AND attr_name LIKE '%brand%'\" -> 16 rows: sgs/cart itemBrandFontSize/LetterSpacing/TextTransform/Colour (typography, color), sgs/product-card brandName (text-content) and showBrandOverlay (boolean-visibility); 0 image or logo rows, and 0 brand rows on sgs/buybox",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N11",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 147)",
+    "reason": "Server and cart logic reached only through the add-to-bag flow (FR-47-7): nothing paints differently, so no row can exist; no setting exists either, searched sgs/cart for a cooldown or add-route attribute (0 rows), the 30-second cooldown being framework code.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE attr_name LIKE '%toast%'\" -> 0 rows; sgs-db.py sql \"... WHERE block_slug='sgs/cart' AND (attr_name LIKE '%notice%' OR attr_name LIKE '%added%' OR attr_name LIKE '%announce%')\" -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "36",
+    "status": "not walker-measurable",
+    "tag": "handover",
+    "owner": "site-info",
+    "registerType": "content",
+    "typeSource": "register Type column (line 161)",
+    "reason": "The address text lives outside the tree in Site Info: sgs/business-info has no address attribute and 0 rows with role content, its content family being copyrightPrefix, separators, textAfter and textBefore only.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/business-info' AND role='link-href'\" -> 0 rows; same block attr_name LIKE '%address%' -> 0 rows; its content family is copyrightPrefix/separators/textAfter/textBefore (role text-content) and its hover family textColourHover (role color, css_property color, css_element text)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "37",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 162)",
+    "reason": "No setting exists; framework gap: sgs/business-info has 0 rows with role link-href, so nothing can make the address a link, and link coverage is a walker read that is not built.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/business-info' AND role='link-href'\" -> 0 rows; same block attr_name LIKE '%address%' -> 0 rows; its content family is copyrightPrefix/separators/textAfter/textBefore (role text-content) and its hover family textColourHover (role color, css_property color, css_element text)",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "45",
+    "status": "not walker-measurable",
+    "tag": "handover",
+    "owner": "content-page",
+    "registerType": "content",
+    "typeSource": "register Type column (line 165)",
+    "reason": "The missing /privacy and /terms pages live outside the page tree: the footer links are measured for style, and no block setting can create a page (searched block_attributes for a content or link-href row that holds a page, 0 rows), so whether a target exists is unmeasurable.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N13",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework repair + tree",
+    "typeSource": "register Type column (line 170)",
+    "reason": "Scroll-driven watcher behaviour: sgs/whatsapp-cta::floatingHideNearInline (role boolean-visibility) is the existing opt-in, so a setting exists, but the footer walk runs with autoScroll off and the floating button is unpaired, so no row shows it stepping aside.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/whatsapp-cta' AND (attr_name LIKE '%icon%' OR attr_name LIKE '%collap%' OR attr_name LIKE '%label%' OR attr_name LIKE '%float%')\" -> 26 rows incl. labelFontWeight (typography/font-weight/label), labelFontSize, iconSize (select-from-enum/width/icon), iconGap, floatingHideNearInline (boolean-visibility), floatingHideLabelBelow, cardTitle/cardSubline (text-content), sgsCollapseVisibility (behaviour); no collapsed-state icon-size row",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "49",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "tree + framework new",
+    "typeSource": "register Type column (line 176)",
+    "reason": "No pair reaches it: the block is listed in pairs/footer.json as left out ('no painted words') and is not among the footer refs, although sgs/whatsapp-cta::labelFontWeight (css_property font-weight on element label) and ::iconSize (css_property width on element icon) exist; the collapsed-circle icon size has no row, so that half is a framework gap.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/whatsapp-cta' AND (attr_name LIKE '%icon%' OR attr_name LIKE '%collap%' OR attr_name LIKE '%label%' OR attr_name LIKE '%float%')\" -> 26 rows incl. labelFontWeight (typography/font-weight/label), labelFontSize, iconSize (select-from-enum/width/icon), iconGap, floatingHideNearInline (boolean-visibility), floatingHideLabelBelow, cardTitle/cardSubline (text-content), sgsCollapseVisibility (behaviour); no collapsed-state icon-size row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "51",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework repair + framework new",
+    "typeSource": "register Type column (line 183)",
+    "reason": "Load motion the walker does not compare: sgs/hero::bgKenBurns (role boolean-visibility, css_property NULL) is the only ken-burns row, with no duration, start size or once-on-load mode, so the draft's shape has no setting.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property FROM block_attributes WHERE block_slug='sgs/hero' AND attr_name LIKE '%enBurns%'\" -> 1 row, bgKenBurns (boolean-visibility, css_property NULL); no duration or start-size row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "58",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "register Type column (line 188)",
+    "reason": "Script-driven entrance motion: sgs/multi-button::fx (role behaviour, fx:effect), ::fxDuration (motion, fx:duration), ::fxStart and ::fxStagger hold the fade-up, so a setting exists, but the walker reads no opacity or translate row for an entrance.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property FROM block_attributes WHERE block_slug='sgs/multi-button' AND attr_name IN ('fx','fxDuration','fxStagger','fxStart','fxTrigger')\" -> 5 rows: fx (behaviour, fx:effect), fxDuration (motion, fx:duration), fxStart, fxTrigger, fxStagger",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "59",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 189)",
+    "reason": "No setting exists; framework gap: sgs/product-card's 22 picker rows are style rows plus ::showPickers and ::pickerShowSelectedTick (role boolean-visibility) only, with no focusable-swatch or photo-swap row, and clicking a dot is an FR-47-7 flow the walker cannot drive.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/product-card' AND (attr_name LIKE '%picker%' OR attr_name LIKE '%swatch%')\" -> 22 rows, all style rows plus showPickers and pickerShowSelectedTick (boolean-visibility); no focusable-swatch and no photo-swap row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N16b",
+    "status": "not walker-measurable",
+    "tag": "content-fixable",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "register Type column (line 193)",
+    "reason": "A query swap a setting holds: sgs/card-grid::items (role content) holds the hand-picked cards and ::productCollection with ::productSource and ::productLimit select a live best-sellers collection; which products a query returns is not a computed style.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/card-grid' AND (attr_name LIKE '%product%' OR attr_name LIKE '%source%' OR role='content')\" -> items (content), source (enum-mode), productSource (enum-mode), productCollection (enum-mode), productLimit/productIds (technical), productFeatured/productOnSale/productInStock (boolean-visibility)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N24",
+    "status": "not walker-measurable",
+    "tag": "owned-elsewhere",
+    "owner": "google-reviews-session",
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 202)",
+    "reason": "Carve-out: the Google logo in each review card is the google-reviews block's Places attribution, owned by the parallel google-reviews session, so no DB work was done on it here.",
+    "evidence": {
+      "db": "none (carve-out: no DB work done on the google-reviews block)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "61",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "inherited from item 59 (register line 189), which this row's Fix cell points at with 'Same as 59'",
+    "reason": "No setting exists; framework gap: the same sgs/product-card picker search returns style rows plus ::showPickers and ::pickerShowSelectedTick (role boolean-visibility) only, and focus and click on a dot are FR-47-7 flows the walker cannot drive.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/product-card' AND (attr_name LIKE '%picker%' OR attr_name LIKE '%swatch%')\" -> 22 rows, all style rows plus showPickers and pickerShowSelectedTick (boolean-visibility); no focusable-swatch and no photo-swap row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "64",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 210)",
+    "reason": "No setting exists; framework gap: searched attr_name LIKE '%sticky%'/'%pinned%'/'%drawerTop%'/'%filterDrawer%' across every block (5 rows, none a filter drawer: sgs/notice-banner::stickyPosition, sgs/site-header::headerSticky, sgs/buybox::stickyEnabled and ::stickyOffset, sgs/choice-flow::stickyFooter) and block_slug LIKE '%filter%' returns only sgs/filter-search, and the walker never scrolls inside the open drawer.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%sticky%' OR attr_name LIKE '%pinned%' OR attr_name LIKE '%drawerTop%' OR attr_name LIKE '%filterDrawer%'\" -> 5 rows: sgs/notice-banner::stickyPosition, sgs/site-header::headerSticky, sgs/buybox::stickyEnabled/stickyOffset, sgs/choice-flow::stickyFooter; none a filter drawer, and block_slug LIKE '%filter%' returns only sgs/filter-search (no shop-filters block)",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "65B",
+    "status": "partly measured",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 212)",
+    "reason": "A width the walker never visits: the sweep walks 375, 768, 1440 and 1920, so the 320px single-column fallback cannot be measured, and no setting exists either, the only narrow/minColumn hits being sgs/container::minColumnWidth and ::minColumnWidthUnit.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%narrow%' OR attr_name LIKE '%minColumn%' OR attr_name LIKE '%columnsMobile%'\" -> 4 rows, of which only sgs/container::minColumnWidth and ::minColumnWidthUnit (layout) are SGS layout rows; no shop narrow-layout single-column row",
+      "files": [
+        ".claude/plans/2026-10-04-eye-care-sweep-audit-fix.md"
+      ]
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "65C",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 213)",
+    "reason": "No pair takes a box or position reading that would show whether price and RRP share a line, although the RRP itself is paired and its line-through read; no setting exists for the wrap order either, the narrow/minColumn search returning only sgs/container::minColumnWidth.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%narrow%' OR attr_name LIKE '%minColumn%' OR attr_name LIKE '%columnsMobile%'\" -> 4 rows, of which only sgs/container::minColumnWidth and ::minColumnWidthUnit (layout) are SGS layout rows; no shop narrow-layout single-column row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N25",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 214)",
+    "reason": "A JavaScript rebuild sequence: the shop walk has a panel-after-click state but none that clears a filter after choosing one, so the duplicate empty group shells never render in a measured state; no setting holds it either, searched sgs/filter-search and the sticky/filter-drawer families (0 rows), because it is framework JavaScript.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%sticky%' OR attr_name LIKE '%pinned%' OR attr_name LIKE '%drawerTop%' OR attr_name LIKE '%filterDrawer%'\" -> 5 rows: sgs/notice-banner::stickyPosition, sgs/site-header::headerSticky, sgs/buybox::stickyEnabled/stickyOffset, sgs/choice-flow::stickyFooter; none a filter drawer, and block_slug LIKE '%filter%' returns only sgs/filter-search (no shop-filters block)",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N26",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 215)",
+    "reason": "No setting exists; framework gap: the same stretched-link search returns only sgs/mega-panel::drawerCardLinkSize, and which area of the card opens the product is an FR-47-7 click flow.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%stretch%' OR attr_name LIKE '%wholeCard%' OR attr_name LIKE '%cardLink%' OR attr_name LIKE '%rowLink%'\" -> 1 row, sgs/mega-panel::drawerCardLinkSize (select-from-enum), a size enum, unrelated",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N27",
+    "status": "not walker-measurable",
+    "tag": "content-fixable",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "inherited from item S7 (register line 91), which this row's Fix cell points at",
+    "reason": "The words live in sgs/product-card::noReviewsText (role text-content), so a setting holds it; unmeasured only because Spec 47 section 3.2/3.3's text read is not built.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/product-card' AND role IN ('content','boolean-visibility','presence-boolean','text-content','link-href','image-object','image-alt','rating','identity')\" -> 36 rows, incl. noReviewsText (text-content), brandName (text-content), showBrandOverlay/showSavingBadge/showPickers (boolean-visibility), ctaUrl/cta2Url (link-href)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "73",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 229)",
+    "reason": "Script-driven entrance motion: sgs/buybox has 0 rows matching '%ntrance%' and its gallery rows are galleryColumnRatio, galleryColumnGap and the saving-badge family, so no entrance setting exists on the gallery photo, and the walker turns the draft's keyframe-against-none into no row.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/buybox' AND attr_name LIKE 'gallery%'\" -> 5 rows: galleryColumnRatio (styling), galleryColumnGap (layout), gallerySavingBadge (boolean-visibility), gallerySavingBadgeFormat (text-content), gallerySavingBadgePosition (select-from-enum); same block attr_name LIKE '%ntrance%' -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "75, 82, 158",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "framework repair + tree",
+    "typeSource": "register Type column (line 231)",
+    "reason": "No pair reaches it: the gallery-thumb pair reports the live thumbnail missing so no row sits on it, and the colour-tile rows carry ground and border readings but no image reading; the switch itself is sgs/buybox::pickerVariationSwatch (role boolean-visibility), so this is a repair, not a missing control.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/buybox' AND attr_name LIKE 'picker%'\" -> pickerVariationSwatch (boolean-visibility), pickerShowSelectedTick, pickerShowSelectedValue (boolean-visibility), pickerLabelLinkAxis/Text/Url, pickerLabelColour",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "81, N29",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "framework repair + framework new + tree",
+    "typeSource": "inherited from register row '117, 123, 69, 81, N29' (register line 301), which this row's Fix cell points at with 'See Help 123'",
+    "reason": "Measured but out of bundle: the close button's rows are attributed to cr-ref-footer-33 (the sgs/modal in the footer template part) and no size-guide ref in this bundle pairs it; sgs/modal's only content and presence rows are ::closeOnOverlay, ::openOnHashLoad, ::sgsHideOnDesktop/Tablet/Mobile and ::triggerText, so it has no close-button ground or shape setting, so that half is a framework gap.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/modal' AND role IN ('content','boolean-visibility','text-content')\" -> 6 rows: closeOnOverlay, openOnHashLoad, sgsHideOnDesktop/Tablet/Mobile (boolean-visibility), triggerText (text-content); no close-button ground or shape row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "88",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 237)",
+    "reason": "No hand pair targets the stock line and the generated buybox pair records only the root's box, so its weight is never compared; sgs/buybox's only font-weight rows are ::addToCartFontWeight and ::priceFontWeight, so a stock-text weight setting does not exist.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND attr_name LIKE '%tock%'\" -> 7 rows: showStockStatus (boolean-visibility), stockInStockLabel (text-content), stockInStock/LowStock/OutOfStockColour (color), stockLinePosition, stockLineHairline; buybox attr_name LIKE '%FontWeight%' -> 2 rows (addToCartFontWeight, priceFontWeight), neither on the stock line",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "91",
+    "status": "not walker-measurable",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 240)",
+    "reason": "No pair reaches the Details panel, so the missing line cannot show as a row; the words are held by sgs/buybox::stockInStockLabel (role text-content) with ::showStockStatus (boolean-visibility), so the fix is making the framework print the setting it already has.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND attr_name LIKE '%tock%'\" -> 7 rows: showStockStatus (boolean-visibility), stockInStockLabel (text-content), stockInStock/LowStock/OutOfStockColour (color), stockLinePosition, stockLineHairline; buybox attr_name LIKE '%FontWeight%' -> 2 rows (addToCartFontWeight, priceFontWeight), neither on the stock line",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "95",
+    "status": "not walker-measurable",
+    "tag": "handover",
+    "owner": "product-data",
+    "registerType": "content",
+    "typeSource": "register Type column (line 243)",
+    "reason": "The empty Style, Frame type, Material, Hinge and Nose pads values are product data outside the page tree, and no block setting holds them: sgs/buybox::stockInStockLabel and its other label rows are the only content rows near them, and none is a spec-row value.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND attr_name LIKE '%tock%'\" -> 7 rows: showStockStatus (boolean-visibility), stockInStockLabel (text-content), stockInStock/LowStock/OutOfStockColour (color), stockLinePosition, stockLineHairline; buybox attr_name LIKE '%FontWeight%' -> 2 rows (addToCartFontWeight, priceFontWeight), neither on the stock line",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N28",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "framework repair + tree + client token",
+    "typeSource": "inherited from item S4 (register line 88), which this row's Fix cell points at with 'S4'",
+    "reason": "Measured but out of bundle: the pop-up's rows are attributed to cr-ref-footer-33 (the footer sgs/modal) where only the WhatsApp icon size differs, and no size-guide ref in this bundle sits on the pop-up's WhatsApp card text; the words are held by sgs/whatsapp-cta::cardTitle and ::cardSubline (role text-content).",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/whatsapp-cta' AND (attr_name LIKE '%icon%' OR attr_name LIKE '%collap%' OR attr_name LIKE '%label%' OR attr_name LIKE '%float%')\" -> 26 rows incl. labelFontWeight (typography/font-weight/label), labelFontSize, iconSize (select-from-enum/width/icon), iconGap, floatingHideNearInline (boolean-visibility), floatingHideLabelBelow, cardTitle/cardSubline (text-content), sgsCollapseVisibility (behaviour); no collapsed-state icon-size row || sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/modal' AND role IN ('content','boolean-visibility','text-content')\" -> 6 rows: closeOnOverlay, openOnHashLoad, sgsHideOnDesktop/Tablet/Mobile (boolean-visibility), triggerText (text-content); no close-button ground or shape row",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N30",
+    "status": "not walker-measurable",
+    "tag": "content-fixable",
+    "owner": null,
+    "registerType": "content + tree",
+    "typeSource": "register Type column (line 245)",
+    "reason": "The words are held by sgs/option-picker::optionItems (role content) for the size buttons and sgs/text::text (role text-content) for the note, so a setting holds it; the walker compares styles of paired text runs, never the characters.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/option-picker' AND role IN ('content','text-content')\" -> optionItems (content), label (text-content); sgs/text::text (text-content)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N31",
+    "status": "not walker-measurable",
+    "tag": "content-fixable",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "inherited from item S7 (register line 91), which this row's Fix cell points at",
+    "reason": "The panel is a tree node and the card half is sgs/product-card::noReviewsText (role text-content), so settings and the tree hold it; unmeasured only because the presence and text reads are not built.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/product-card' AND role IN ('content','boolean-visibility','presence-boolean','text-content','link-href','image-object','image-alt','rating','identity')\" -> 36 rows, incl. noReviewsText (text-content), brandName (text-content), showBrandOverlay/showSavingBadge/showPickers (boolean-visibility), ctaUrl/cta2Url (link-href)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N33A",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 248)",
+    "reason": "No setting exists; framework gap: sgs/buybox has no brand attribute at all and sgs/product-card's brand family is ::brandName (role text-content) plus ::showBrandOverlay (role boolean-visibility) with no image row, and the logo's link to the brand page is link coverage, a walker read that is not built.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE block_slug IN ('sgs/cart','sgs/buybox','sgs/product-card') AND attr_name LIKE '%brand%'\" -> 16 rows: sgs/cart itemBrandFontSize/LetterSpacing/TextTransform/Colour (typography, color), sgs/product-card brandName (text-content) and showBrandOverlay (boolean-visibility); 0 image or logo rows, and 0 brand rows on sgs/buybox",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N33B",
+    "status": "not walker-measurable",
+    "tag": "content-fixable",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "register Type column (line 249)",
+    "reason": "A presence setting holds it: sgs/buybox::gallerySavingBadge (role boolean-visibility) switches the photo's Save tag off; unmeasured only because Spec 47 section 3.2's presence read is not built.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/buybox' AND attr_name LIKE 'gallery%'\" -> 5 rows: galleryColumnRatio (styling), galleryColumnGap (layout), gallerySavingBadge (boolean-visibility), gallerySavingBadgeFormat (text-content), gallerySavingBadgePosition (select-from-enum); same block attr_name LIKE '%ntrance%' -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N34",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "inherited from item S8 (register line 92), which this row's Fix cell points at",
+    "reason": "No setting exists; framework gap: the price-format search returns 0 rows across every block, so the product page's '.00' is framework-printed text hidden by the unbuilt text read.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%priceFormat%' OR attr_name LIKE '%decimal%' OR attr_name LIKE '%pennies%' OR attr_name LIKE '%trailingZero%'\" -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N36A",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 252)",
+    "reason": "The size-chosen pair reads only the size letter (pill-label) and nothing shows the grey sub-label was read, so its colour is compared neither way; sgs/buybox::pickerLabelColour exists but the sub-label has only sgs/buybox::pickerSubLabelMetaKey and sgs/option-picker::subLabelMetaKey (role technical), so no sub-label colour setting exists.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug IN ('sgs/option-picker','sgs/buybox') AND (attr_name LIKE '%subLabel%' OR attr_name LIKE '%picker%Colour%')\" -> 3 rows: pickerLabelColour (color/color/picker-label-text), pickerSubLabelMetaKey (technical), subLabelMetaKey (technical); no sub-label colour row",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N36E, N36F",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "framework repair + tree",
+    "typeSource": "register Type column (line 255)",
+    "reason": "Neither link has a pair or a row: the Sizing panel is never paired and the cr-ref-product-12 rows sit on the tab buttons and the Description panel, so the quiet-link styling is measured only on Help's size-guide link, outside this bundle; the link is held by sgs/buybox::pickerLabelLinkText (text-content), ::pickerLabelLinkUrl (content) and ::pickerLabelLinkAxis (link-href).",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/buybox' AND attr_name LIKE 'pickerLabelLink%'\" -> 3 rows: pickerLabelLinkAxis (link-href), pickerLabelLinkText (text-content), pickerLabelLinkUrl (content)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "N36S",
+    "status": "not walker-measurable",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "tree + content (+ D1)",
+    "typeSource": "register Type column (line 256)",
+    "reason": "The walk pairs only the Sizing tab button, never the panel's table, so nothing inside it is reached; the content is buildable from existing blocks (sgs/tab::label, sgs/text::text) plus product data for lens height, so no control is missing.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE block_slug IN ('sgs/tabs','sgs/tab','sgs/heading') AND role IN ('content','text-content','boolean-visibility','a11y-text')\" -> sgs/tabs hideEmptyTabs, blockLabel; sgs/tab label (text-content); sgs/heading content (text-content), its wrap row being textWrap (typography, text-wrap)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "96",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 262)",
+    "reason": "A focus-state read the walker does not take: no lens row carries an outline reading, and no setting exists on the pop-up either, sgs/choice-flow returning 0 rows for '%focus%' while focus-ring colour exists only on sgs/form, sgs/filter-search and sgs/product-search.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role, css_property FROM block_attributes WHERE attr_name LIKE '%focus%'\" -> 15 rows: focus-ring colour exists only on sgs/form (formFocusRingColour), sgs/filter-search and sgs/product-search (focusRingColour, outline-color); the rest are sgsFocusRing behaviour toggles; sgs/choice-flow attr_name LIKE '%focus%' -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N37",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 263)",
+    "reason": "Step-change behaviour and screen-reader output (FR-47-7): sgs/choice-flow::advanceMode (role select-from-enum) is the nearest holder but has no 'advance on pick, keep Continue' value and there is no announcement row, so the mode is a framework gap.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/choice-flow' AND (attr_name LIKE '%dvance%' OR attr_name LIKE '%skip%' OR attr_name LIKE '%step%')\" -> 4 rows: advanceMode (select-from-enum), stepCountLabel, skipPrompt (text-content), skipLabel (text-content)",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "N38",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "framework new + tree",
+    "typeSource": "register Type column (line 264)",
+    "reason": "An action, not a style: sgs/choice-flow::skipLabel and ::skipPrompt (role text-content) exist but no setting says what skip does, so the add-to-bag behaviour is a framework gap and needs an FR-47-7 flow to observe at all.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/choice-flow' AND (attr_name LIKE '%dvance%' OR attr_name LIKE '%skip%' OR attr_name LIKE '%step%')\" -> 4 rows: advanceMode (select-from-enum), stepCountLabel, skipPrompt (text-content), skipLabel (text-content)",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "103",
+    "status": "partly measured",
+    "tag": "PA-3",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "register Type column (line 274)",
+    "reason": "PA-3: the item is measured by the hand pair choose-a-frame, whose rows show no font-weight difference, but register-sweep.mjs merge counts only auto-paired refs as measured, so the clean claim cannot be recorded; the weight is held by sgs/button::fontWeight (role typography, css_property font-weight).",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        ".claude/plans/2026-10-04-eye-care-sweep-audit-fix.md PA-3"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "150",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "tree",
+    "typeSource": "register Type column (line 335)",
+    "reason": "No pair targets the secure-payment line under the Pay now bar, only place-order and section-payment around it, so the note's absence is not measured; the words go in a per-site checkout part through sgs/text::text (role text-content), so no control is missing.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "151",
+    "status": "not walker-measurable",
+    "tag": "handover",
+    "owner": "woocommerce-text",
+    "registerType": "content",
+    "typeSource": "register Type column (line 336)",
+    "reason": "Shipping method titles and descriptions are WooCommerce settings outside the page tree, held by no block (searched block_attributes for a shipping-method content row, 0 rows); the delivery-ship and delivery-collect pairs record live's option controls as missing at the inferred selectors, never their wording.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "152",
+    "status": "not walker-measurable",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "none",
+    "typeSource": "register Type column (line 337), which reads 'none'",
+    "reason": "An editor and settings capability check: the coupon, order-note and terms elements sit on the measured checkout surface but no pair targets any of them, so nothing about them is read; the switches are a checkout block setting, a WooCommerce setting and an inner block of the shared part, none of them an sgs/* block_attributes row (0 rows for coupon/orderNote/terms).",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "155",
+    "status": "partly measured",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 340)",
+    "reason": "No pair targets WooCommerce's collapsed top summary on phones, since summary-heading, summary-item and the totals pairs each find one element per side, so the second summary is never measured; hiding it is a repair in the shared checkout stylesheet with no setting involved (0 rows for a summary-visibility attribute).",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "157",
+    "status": "partly measured",
+    "tag": "PA-5",
+    "owner": null,
+    "registerType": "framework repair",
+    "typeSource": "register Type column (line 347)",
+    "reason": "PA-5: the confirmation walk ran against cancelled order 652, so order-details, order-meta and confirmation-message read missing on both sides and no pair reaches the address boxes or their grid; the one-column collapse is a shared confirmation-part stylesheet repair with no block setting (0 rows for an address-grid attribute), and a paid test order completes the walk.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        ".claude/plans/2026-10-04-eye-care-sweep-audit-fix.md PA-5"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "159",
+    "status": "not walker-measurable",
+    "tag": "content-fixable",
+    "owner": null,
+    "registerType": "content",
+    "typeSource": "register Type column (line 353)",
+    "reason": "Which photos appear is held by image settings: sgs/hero::splitMediaImageUrl and sgs/media::imageUrlMobile/imageUrlTablet (all role content) with sgs/media::imageUrl (image-object); the walker compares styles of paired elements, not which asset was chosen.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE block_slug IN ('sgs/media','sgs/hero') AND role IN ('content','image-object')\" -> sgs/media imageUrlMobile/imageUrlTablet/videoUrl* (content), imageUrl/thumbnail (image-object); sgs/hero splitMediaImageUrl(+Mobile/Tablet) (content), backgroundImage(+Mobile/Tablet) (image-object, css_property background-image)",
+      "files": []
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "161",
+    "status": "not walker-measurable",
+    "tag": "handover",
+    "owner": "content-page",
+    "registerType": "content + tree",
+    "typeSource": "register Type column (line 355)",
+    "reason": "The brand pages and their intros live outside the page tree and do not yet exist; sgs/brand-strip holds logos (role content) and brandLinkToShop (boolean-visibility) but 0 rows with role link-href, so per-brand link targets are a framework gap once the pages exist.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/brand-strip' AND (role='link-href' OR attr_name LIKE '%link%' OR role='content')\" -> logos (content), brandLinkToShop (boolean-visibility); role link-href -> 0 rows",
+      "files": []
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "CR1",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "A route read that does not work rather than a painted difference: the per-device markers on sgs/site-header-row::gap and sgs/site-footer-row::gap, and their content-width settings, move at 375 and 1440 but not 768, so the settings exist and only the read fails; the bundle carries no surface or sweep row for it.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "scripts/computed-route/lib/calibrate.mjs"
+      ]
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "CR2",
+    "status": "not walker-measurable",
+    "tag": "behaviour",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "Scroll-triggered behaviour: the settings exist (sgs/site-header::headerSticky, role behaviour, alongside the scrolled colour rows) but site-header/render.php switches the is-header-scrolled script on only for transparent, shrink, hide, a scrolled shadow or section ink, so no walker state can show those two colours.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/site-header/render.php"
+      ]
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "CR3",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "A route read awaiting the recalibration queue: sgs/accordion::headerColour, ::headerBackground and ::headerFontWeight read dead in calibration and the bundle has no accordion surface or sweep row, though the settings themselves exist, so the defect is a hardcode plus a calibration gap.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "scripts/computed-route/lib/calibrate.mjs"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "CR4",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "A route read for states the calibration page could not show: the dead sets on sgs/nav-bar-menu (77 settings), sgs/product-card (56), sgs/cart (50), sgs/mega-panel (30), sgs/nav-drawer (28) and sgs/icon-list (28), for example sgs/nav-drawer::itemStaggerOnClose are mostly collapsed menus, closed drawers and empty carts, so the settings exist and only the read is missing; no surface or sweep row in the bundle covers them.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "scripts/computed-route/lib/calibrate-instances.mjs"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "CR6",
+    "status": "not walker-measurable",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "A proven framework helper defect whose painted effect lands on the About surface, which this bundle does not carry, so no pair reaches it: includes/helpers-box.php::sgs_box_object_shorthand prints 0 for every unset side.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "plugins/sgs-blocks/includes/helpers-box.php::sgs_box_object_shorthand"
+      ]
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "CR5",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "Blocks never calibrated, so there is no read to compare against: sgs/brand-strip's calibration page timed out and sgs/heading::fontSize in its shrunk state and sgs/nav-drawer's hover rows need a header or an open drawer; the settings exist, so this is a read gap, and no surface or sweep row sits in the bundle.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "scripts/computed-route/lib/calibrate.mjs"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "CR7",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "A route key-shape read, recorded fixed: calibration and lib/resolve.mjs used top/right/bottom/left where helpers-box.php::sgs_border_radius_tiers reads topLeft and its siblings, so every box-shaped radius setting (for example sgs/card-grid::borderRadius, role visual, css_property border-radius) read dead; sgs/accordion-item is still dead and no surface or sweep row sits in the bundle.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "plugins/sgs-blocks/includes/helpers-box.php::sgs_border_radius_tiers"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "CR9",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "More route reads that skip one width: sgs/gallery::gap, sgs/mega-aside's aside gap, sgs/notice-banner::padding and ::margin and sgs/form-field-tiles' grid columns each reach two tiers of three, the same pattern as CR1 and still to prove with it; no surface or sweep row in the bundle.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "scripts/computed-route/lib/calibrate.mjs"
+      ]
+    },
+    "frameworkGap": true
+  },
+  {
+    "id": "CR10",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "A walker read only partly built: aspect-ratio is now collected and compared, but the 7 blocks' recalibration and the planted-fault proof are open and sgs/media::aspectRatio still has no css_property in block_attributes, so no row exists in the bundle.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "scripts/parity/lib/ratio.mjs::sameRatio",
+        "scripts/computed-route/lib/normalise.mjs"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "CR11",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "A route read fixed but not yet re-run: a border style prints only with a width, so sgs/quote::borderStyle and sgs/info-box::borderStyle now map with a companion width marker while about 50 other blocks' borderStyle rows await the recalibration queue; no surface or sweep row sits in the bundle.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "scripts/computed-route/lib/calibrate.mjs"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "CR12",
+    "status": "not walker-measurable",
+    "tag": "handover",
+    "owner": "site-info",
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "Content outside the tree: theme-toggle/render.php returns early without settings.custom.dark, which lives in sites/<client>/theme-snapshot.json and no client has, and sgs/theme-toggle's 54 attributes (::toggleStyle, ::iconOnly, the colour rows) hold no dark palette, so there is nothing to render or pair.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/theme-toggle'\" -> 54 rows (toggleStyle, label, iconOnly/iconOnlyTablet/iconOnlyMobile, colour rows); no dark-palette row, the palette being settings.custom.dark in sites/<client>/theme-snapshot.json",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/theme-toggle/render.php"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "CR14",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "A walker read only partly built: an icon's size is now a row on the svg's own path, which closed sgs/whatsapp-cta::iconSize on About and Contact, but a pair's other child media are still unmeasured, so no row asks for those settings and the bundle carries no surface for it.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "scripts/parity/lib/collect.mjs"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "CR17",
+    "status": "not walker-measurable",
+    "tag": "FR-47-6",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "A calibration fixture gap: sgs/business-info::textBefore (role text-content) exists and the fixture now sets it, but the recalibration has not run, so .sgs-business-info__before is still not a calibrated element and Help's 12 colour rows on it go unwritten.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/business-info' AND role='link-href'\" -> 0 rows; same block attr_name LIKE '%address%' -> 0 rows; its content family is copyrightPrefix/separators/textAfter/textBefore (role text-content) and its hover family textColourHover (role color, css_property color, css_element text)",
+      "files": [
+        "scripts/computed-route/calibration-fixtures.json"
+      ]
+    },
+    "frameworkGap": false
+  },
+  {
+    "id": "CR18",
+    "status": "not walker-measurable",
+    "tag": "pairing",
+    "owner": null,
+    "registerType": "n/a (the CR table's columns are Ref | Finding | Evidence | Status | Sweep, with no Type column)",
+    "typeSource": "the CR table has no Type column; this is a route-tooling finding, not a register fix item",
+    "reason": "The pairing gap itself: Solve saw only the elements a hand-written walker config named (About 16 of 24 blocks, Lenses 7 of 29, Help 15 of 41, Contact 21 of 33, Home 49 of 79), with the page container behind every page's top offset (sgs/container::padding) in none of them, and only About and Contact are re-paired, so the other surfaces' blocks are still unreached.",
+    "evidence": {
+      "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
+      "files": [
+        "scripts/computed-route/pairs.mjs"
+      ]
+    },
+    "frameworkGap": false
+  }
+]
