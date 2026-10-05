@@ -30,10 +30,10 @@ it. Where a finding matches nothing, it is accepted as-is unless a live test sho
 
 Do not edit the register's content. It is correct.
 
-## Why the old plan's grouping is gone
+## The unit of work is one item, not a group
 
-The first Session C plan grouped the findings as G1 to G8 and treated each group as a unit of work. Bean rejected
-that, and the evidence backs it:
+The findings were once filed as eight mechanism groups, G1 to G8. A group is a filing label for review and never a
+unit of work, and the evidence is in the groups themselves:
 
 - `SGS_Container_Wrapper` must not be applied as a blanket fix: it brings far more than a layout panel, and only
   **5 of G2's 25 rows** actually name it. 6 more want a single alignment member on one inner element; the other
@@ -70,7 +70,8 @@ tab "Tool rows (not reconciled)", section "Matched to the confirmed register"; i
 (confirmed)", is the register itself). It splits Session B's 163 rows three ways. **Correct it against the post-C sweep and show
 what changed**, row by row, with a reason per change.
 
-The starting state, to be corrected rather than trusted:
+The matching below is the starting point. It is one reading of both lists, not a re-test, so correct it rather than
+trust it:
 
 ### A. Already in the register (32 rows). The register's fix stands
 
@@ -191,6 +192,10 @@ gap**, and it is listed against the spec section that should have caught it:
 Session C builds all six of those. A miss that survives Session C is a **new** Spec 47 gap and goes into §5
 Residual with its section, not into this session's fix list.
 
+**One extra read, one minute:** the class list on `.sgs-container__inner`'s parent, for the three spacing rows.
+See "The three spacing rows" below: their causes are proven in the source, and this read is the one thing the
+source cannot answer.
+
 **Measurement discipline** (from `live-probe-measurement-traps` and `compare-draft-vs-live-at-all-three-device-widths`):
 read computed styles with the winning rule's origin, not just the value; let transitions settle; account for Lenis
 and scroll variables; never reason from a screenshot alone, and never from one width.
@@ -201,10 +206,9 @@ and scroll variables; never reason from a screenshot alone, and never from one w
 it sits under (or none), the verdict with its citation, whether it is visibly wrong live, the proposed fix, and the
 effort. **Yes or no per item.** Nothing is built before that.
 
-Then, for approved items only, the framework fixes, which are what the old plan called W1 and W2. Their gates are
-**Gate W1**, **Gate W2** and **Gate TAIL** below; the three assessment gates are **C2-1**, **C2-2** and
-**C2-3**. The old plan called the fix-stage gates C1, C2 and C3; they are renamed because "Gate C2" inside Session
-C2 reads as a gate on the whole session.
+Then, for approved items only, the framework fixes: **W1**, the shared files, and **W2**, one owner per block. Their
+gates are **Gate W1**, **Gate W2** and **Gate TAIL** below; the three assessment gates are **C2-1**, **C2-2** and
+**C2-3**.
 
 ### W1: the shared files, main thread, one at a time
 
@@ -290,14 +294,68 @@ retire some of them outright.
 | `woocommerce/product-template` `max-width` ×2 | medium | Session C's L2.7 guard (dropping rows from unmatched refs) is expected to retire both. Confirm after the post-C sweep |
 | `sgs/site-footer-row` per-device `gap` and `contentWidth` at 768 | unproven | Session C's L5.5 proves or refutes it read-only; if real it arrives here as a finding |
 
-## Two items held for their own session
+## The three spacing rows: two causes, both proven in the source
 
-Neither is dropped. Each names what releases it.
+They are **two separate causes on two separate elements**, both proven in the framework's own code. Neither needs
+a reading on another client.
 
-| Held | Why | Released by |
-|---|---|---|
-| **The three `!important` spacing rows** (`sgs/container::margin-left`/`-right`, `sgs/site-footer::margin-top`) | the proposed fix changes a spacing rule across every `SGS_Container_Wrapper` block and every client. `sgs/container` occurs **5,022 times in Eye Care's trees alone** and is live on other clients. The cause is **not proven**: the winning rule may be core's constrained-layout `margin-left: auto !important`, in which case the fix is to stop that class reaching the SGS band, a far smaller scoped change. An Eye-Care-scoped sweep could not detect the damage | **one live read on a non-Eye-Care client** of `.sgs-container__inner` `margin-left`/`-right` at 768 and 1440, with the winning rule's origin. About 5 minutes, one host job. Run it in step 3 |
-| **`sgs/social-icons`'s `iconBorderColour` with no border width or style** | a colour control that can never paint. Adjacent to the border rows, but it is a defect in its own right, not a finding | fix it in the same pass as whatever border row Bean approves. **Decide the width default deliberately**: `1px` changes every existing outlined icon on every client |
+### Cause 1: core's constrained-layout rule beats the band (2 rows)
+
+`sgs/container::margin-left` and `::margin-right` on `.sgs-container__inner`.
+
+WordPress core's global styles ship
+`.is-layout-constrained > :where(:not(.alignfull)) { margin: auto !important }`. The wrapper writes the band's
+side margins as a plain class rule — `class-sgs-container-wrapper.php` builds
+`.<uid> > .sgs-container__inner { max-width:…; margin-inline:auto; …; margin-left:<v> }` with **no `!important`**,
+and the explicit side is deliberately emitted *after* `margin-inline:auto` so it wins on declaration order inside
+SGS's own rule. Against `!important` from another origin, declaration order is irrelevant.
+
+**The framework already has the fix for this exact rule, and it is not a specificity escalation.**
+`sgs/hero/render.php` adds `alignfull` unconditionally and says why in the source: core's rule "matches the hero
+(its selector EXCLUDES `.alignfull`) and beats our non-important negative-margin full-bleed — producing the
+asymmetric outer margin regression. Adding alignfull removes the hero from that selector's match set." So the fix
+is to take the band out of the match set, which is a class change on one element, not an `!important` war across
+every `SGS_Container_Wrapper` block.
+
+**What is left to confirm is one class-list read on Eye Care's own page**, about a minute: does
+`.sgs-container__inner`'s parent carry `is-layout-constrained`? `sgs/container` declares `supports.layout: null`,
+so SGS never adds that class itself and it can only arrive from an ancestor core container. If the parent does not
+carry it, core's rule never matches and cause 1 is wrong, so the read is the gate on the fix rather than a
+formality. Note also that `sgs/container` declares `supports.align: null`, so it can never take `align: full` from
+the toolbar and therefore never gets `alignfull` the way the hero does: the fix has to add it, or scope the
+ancestor, rather than rely on an operator setting it.
+
+### Cause 2: an inline WP-native base margin beats a class rule (1 row)
+
+`sgs/site-footer::margin-top`. Different element, different mechanism, and nothing to do with core's constrained
+layout.
+
+The block's base (desktop) spacing goes through `wp_style_engine_get_styles()` from
+`$attributes['style']['spacing']` and **lands inline on the wrapper**. The SGS `margin` desktop tier emits a plain
+class rule, and no class rule beats an inline declaration. The wrapper's own comment states the mechanism:
+"the base padding is WP-native (style engine) and lands INLINE on the wrapper — a plain @media class rule can never
+beat it." Its tablet and mobile tiers already solve it by emitting `!important`; the desktop base does not, which is
+the whole defect.
+
+**So the fix is to make the base consistent with the tiers the same block already ships**, or to suppress the
+competing WP-native base spacing for blocks that own `margin`. Either way it is decidable from the source, needs no
+browser, and its blast radius is `SGS_Container_Wrapper`'s desktop margin path alone.
+
+### The blast radius
+
+Neither fix is an `!important` escalation across every `SGS_Container_Wrapper` block: cause 1 is a scoped class
+change on one element and cause 2 is an internal consistency fix on the desktop margin path. **Both go on Bean's
+step-4 list like any other finding**, each carrying its cause and its precedent. The cross-client check at Gate W1
+still applies, because `SGS_Container_Wrapper` reaches other clients: proving a change is safe is a different
+question from knowing its cause.
+
+## One defect that is not a finding
+
+`sgs/social-icons` declares `iconBorderColour` and `iconBorderColourHover` on its item with no item border width or
+border style: a colour control that can never paint. It sits next to the border rows but it is a defect in its own
+right, so it is fixed in the same pass as whatever border row Bean approves. **Decide the width default
+deliberately**: `1px` changes every existing outlined icon on every client, and the framework is pre-production, so
+choose on merit and record the choice in the commit.
 
 ## One cheap win just outside the findings
 
@@ -330,7 +388,8 @@ PASS: every 3a row has a screenshot and computed values at 375, 768, 1440 and 19
       origin recorded;
       every 3b register item has a live verdict: resolved, or open with the Spec 47 section that should have
       caught it;
-      the non-Eye-Care read on .sgs-container__inner is done and the three !important rows are decided
+      the one class-list read on .sgs-container__inner's parent is done, so cause 1 of the three spacing rows
+      is confirmed or refuted before any fix is chosen
 FAIL: a claim rests on one width, or on a screenshot with no computed value
 TYPE: review-gate (Bean sees the before and after)
 ```
@@ -389,9 +448,9 @@ FAIL: revert the failing QUEUE's merge (the revert unit is the queue, not the gr
 TYPE: auto-gate
 ```
 
-**Why "0 new rows" is a cap and not a zero.** The original condition was unreachable and gameable. Unreachable
+**Why new rows are capped rather than forbidden.** A zero would be both unreachable and gameable. Unreachable
 because an empty-tier fall-through can genuinely open one row while closing another: a write to an inherited value
-changes every descendant that inherits it. Gameable three ways — register the new row as a divergence, leave the
+changes every descendant that inherits it. Gameable three ways: register the new row as a divergence, leave the
 fix uncalibrated so the resolver reports `uncalibrated` instead of writing, or narrow the sweep's surface list. The
 cap, plus "every new row classed with proof in the same commit", plus the no-new-ledger-entries rule, plus the
 stated-scope rule, closes all four holes.
@@ -442,7 +501,7 @@ Bean has answered, because the approved list may be a fraction of the findings.
 
 | Unit | Headline | Band |
 |---|---|---|
-| Step 1 matching, corrected against the post-C sweep | 25 min | Block |
+| Step 1 matching, against the post-C sweep | 25 min | Block |
 | Step 2 fact-check, parallel Opus agents under the citation gate | 40 min | Session |
 | Step 2 main-thread re-check of every `real` verdict | 25 min | Block |
 | Step 3a live tests, 4 widths, one host job at a time | 45 min | Session |
@@ -452,8 +511,8 @@ Bean has answered, because the approved list may be a fraction of the findings.
 | W2 per approved item | **unknown until step 4** | — |
 | The serial tail (build, gates, reseed, deploy, recalibrate, sweep) | 60 min | Session |
 
-**Steps 1 to 4 are about 3 hours and produce no code.** That is the point: the old plan would have spent about four
-hours writing controls for findings nobody had checked, including 38 controls on one block.
+**Steps 1 to 4 are about 3 hours and produce no code.** That is the point. Writing controls before the findings are
+checked would spend about four hours, including 38 controls on one block, on rows that may not be gaps.
 
 ## First action (under 5 minutes, no dependencies)
 

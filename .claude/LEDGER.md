@@ -104,11 +104,12 @@ on the post-C sweep, never on the old 163: match each row to a register Ref, fac
 block work the first draft called W1 and W2 lives there, behind that approval, with the queue partition and the
 collision check (`reports/2026-10-05-session-b/check-queue-collisions.mjs`) carried over.
 
-**R1 was mis-scoped and corrected in review**: the resolver never reads `css_element`, routing an enum row would
-delete a working discovery path, and the animation half needs a resolver change — of 188 NULL rows, 28 must be left
-alone, 128 are resolver work, 32 are routable. Three `!important` spacing rows are held for their own session: the
-fix would change a spacing rule on `sgs/container` (5,022 occurrences in Eye Care's trees, live on other clients) on
-an unproven cause; one live read on another client settles it.
+**R1 routes 32 rows, not 188**: the resolver never reads `css_element`, routing an enum row would delete a working
+discovery path, and the animation half is resolver work (28 leave alone, 128 resolver, 32 routable). The three
+`!important` spacing rows are diagnosed from the source as **two** causes, core's
+`.is-layout-constrained > :where(:not(.alignfull)) { margin: auto !important }` beating the band's side margins
+(`sgs/hero` already solves it by leaving that selector's match set) and an inline WP-native base margin beating a
+class rule on the footer (the same block's tablet and mobile tiers already solve it). Both go on the C2 list.
 
 **Session 0 (2026-10-05, complete):** the route data audit's repairs (`.claude/reports/2026-10-04-route-data-audit/README.md`),
 every block recalibrated on the WSL mirrors; parked P0-3 to P0-10 in the sweep plan (P0-1, P0-2 and P0-11 closed). The wiring gate

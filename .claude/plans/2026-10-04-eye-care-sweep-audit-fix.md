@@ -352,7 +352,7 @@ No-go: the F gaps stay in the register (Sweep column) and work goes straight to 
 
 ## Session C: repair the measuring route, then Session C2: assess the findings
 
-**Gate B answered yes, and the work is re-split (Bean, 2026-10-05).** The plan is in two files:
+**The work runs in two sessions.** The plan is in two files:
 `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md` and
 `plans/2026-10-05-eye-care-session-c2-finding-assessment.md`.
 
@@ -362,7 +362,7 @@ build, and a walker row never creates a new fix. Many of those findings ignore h
 menu, a modal and a choice flow are CPT canvases composed from blocks, and a setting can arrive from a parent by
 block context — so "this block declares no setting" is not a defect by itself. Bean: the lens flow looks almost
 perfect, yet it carries 35 F rows. **That is a route defect, so the route is repaired before the findings are
-judged.** The grouping G1 to G8 is rejected as a unit of work: groups are filing labels for review only,
+judged.** A mechanism group is a filing label for review and never a unit of work;
 `SGS_Container_Wrapper` is never a blanket fix, and "the only hover-decoration control" was false
 (`sgs/button::textDecorationHover`, `sgs/nav-drawer-menu` and the underline-slide utilities all exist; S2 and S12
 already decide link behaviour).

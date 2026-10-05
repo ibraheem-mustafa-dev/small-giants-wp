@@ -2,7 +2,7 @@
 title: "Eye Care Session C: repair the measuring route (Spec 47 gaps only)"
 project: small-giants-wp
 created: 2026-10-05
-status: not started; Gate B answered yes (Bean, 2026-10-05)
+status: not started
 governs: Session C of .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md
 references:
   - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
@@ -18,14 +18,12 @@ references:
 that ignore how the framework works, and a fresh measure-only sweep and triage on the repaired route record a new
 framework-gap count. **No block controls and no shared CSS files are touched in this session.**
 
-**Gate B is answered: yes, route fixes first** (Bean, 5 October 2026, recorded under "The question" in the Gate B
-doc, https://claude.ai/code/artifact/d3b24008-a0bc-403f-83ae-a8788dd7501f, with his re-cut in its comment
-threads and its two tabs). Bean also re-cut the work, and this plan is the re-cut.
+**Status: not started.** Bean approved this work and set its order: the route first, the findings afterwards.
+The brief he worked from is the Gate B doc, https://claude.ai/code/artifact/d3b24008-a0bc-403f-83ae-a8788dd7501f.
 
-## Why the scope changed
+## Why the route is repaired before any finding is judged
 
-The first draft of this plan was "close the 157 proven framework gaps". That was wrong, and Bean's review of the
-Gate B doc says why:
+Four reasons, and they set the whole scope.
 
 1. **The fix register is the source of truth.** `.claude/plans/2026-10-02-eye-care-fix-register.md` already holds
    the decided issues and their decided fixes. The 163 walker rows Session B classed **F** are *findings to assess*,
@@ -42,14 +40,13 @@ Gate B doc says why:
 4. **Those bad findings are a route defect.** So the route is repaired *before* the findings are judged.
 
 Judging the findings is **Session C2**, on the post-C sweep, planned in
-`.claude/plans/2026-10-05-eye-care-session-c2-finding-assessment.md`. The block work the old plan called W1 and W2
-has moved there, behind Bean's per-item approval.
+`.claude/plans/2026-10-05-eye-care-session-c2-finding-assessment.md`. The block work (W1 and W2 there) sits behind
+Bean's per-item approval.
 
-## Naming note
+## Two sittings
 
-Bean's brief says to split the work as "C-1, C-2 and so on" if it does not fit one session. **C2 is already the
-name of the assessment session**, so a split called C-2 would collide. This plan therefore splits into two
-**sittings** at Gate 1: **sitting i** is Waves 0 and 1, **sitting ii** is Waves 2 and 3. Both are Session C.
+The session splits at Gate 1: **sitting i** is Waves 0 and 1, **sitting ii** is Waves 2 and 3. Both are Session C.
+Every gate is a clean stop, so a follow-on session resumes from this plan without reading anything else.
 
 ## Scope
 
@@ -378,8 +375,8 @@ Otherwise C3.1, which changes no code, recalibrates nothing and stays inert.
 
 #### R1 in detail (C3.1)
 
-R1 was mis-scoped when this plan was first drafted. The correction was verified against the code and the database
-on 2026-10-05 and is load-bearing:
+Three facts about the route decide R1's scope. Each is verified against the code and the database, and each rules
+out an obvious-looking approach:
 
 1. **`resolve.mjs` never reads `css_element`.** `grep -c css_element scripts/computed-route/lib/resolve.mjs`
    returns **0**; `lib/db.mjs::candidates` filters on `css_property` and `css_state` only. The column is read by
@@ -417,7 +414,7 @@ columns**: `/sgs-update` resets them to NULL and rebuilds them from two layers, 
 (`plugins/sgs-blocks/scripts/attr-classification-overrides.json`, loaded as `ATTR_CLASSIFICATION_OVERRIDES` by
 `sgs-update-v2.py`), plus `extension-roster.json` for `source='sgs-ext'` rows.
 
-⚠️ **The derived file is not the channel, although an earlier note said it was.** Its own `_doc` header reads: “a
+⚠️ **The derived file is not the channel.** Its own `_doc` header reads: “a
 REGENERATED file, not hand-edited”, refreshed by `behavioural-analyser/extract-signatures.py` and applied by
 `sgs-update-v2.py` Stage 1C as the **base** layer, with `attr-classification-overrides.json` applied **after and
 winning on any field conflict**. So an edit to the derived file is wiped by the next `extract-signatures.py` run as
@@ -425,8 +422,9 @@ surely as a bare `UPDATE` is wiped by the next reseed, and both fail
 `db-consistency/check_css_property_reseed.py` invariant B. **Routing means declaring in
 `attr-classification-overrides.json`.**
 
-**Measure the closure on the 32 before extending.** The old "181 rows" figure was premised on `css_element` driving
-resolution, and it does not. Treat 181 as **unproven** and replan from what the 32 actually close.
+**Measure the closure on the 32 before extending.** Any figure for how many rows this unblocks is **unproven** until
+a batch is routed and the affected blocks are recalibrated, because `css_element` does not drive resolution.
+Replan from what the 32 actually close.
 
 ### Gate 3 (end of the session)
 
@@ -596,7 +594,7 @@ become resolvable), then the rest.
 | **L1.1 or L1.4 widens the candidate set, so rows that resolve today become `ambiguous`** | High | High | order both hops strictly after direct and `reaches` ties; record the ambiguous count in C0.4 and treat a rise as a Gate 1 fail | before + gate |
 | **L1.1 writes a parent's inherited value and changes every other descendant** (`sgs/container`'s 13 typography attributes inherit everywhere) | **High** | **High** | the hop may **explain** a row, so it classes as resolved, but must **refuse to write** a parent attribute whose paint reaches more than one measured descendant; the write belongs on the child | during |
 | **L1.3 or C3.1 routes an enum row and deletes a working discovery path** (633 rows depend on `css_property` staying NULL) | **High** | Medium | never route a row with non-NULL `enum_values`; a detector listing `enum_values NOT NULL AND css_property NOT NULL`; diff `calibration.discovered` per block against C0.4 | before + gate |
-| **C3.1 declared in the wrong file.** A bare `UPDATE` is wiped by the next reseed, and the *derived* classifications JSON is wiped by the next `extract-signatures.py` run | High | **High**, because an earlier note named the derived file as the channel | declare only in `plugins/sgs-blocks/scripts/attr-classification-overrides.json`, then reseed, then `db-consistency/run.py --check` invariant B | during + gate |
+| **C3.1 declared in the wrong file.** A bare `UPDATE` is wiped by the next reseed, and the *derived* classifications JSON is wiped by the next `extract-signatures.py` run | High | **High**: the derived file is the one that looks like the channel, and its name says so | declare only in `plugins/sgs-blocks/scripts/attr-classification-overrides.json`, then reseed, then `db-consistency/run.py --check` invariant B | during + gate |
 | `sgsHoverDuration` and `sgsHoverDurationMs` both routed, so invariant C fails with `AmbiguousLayerAttrError` | High | High | route one unit of each pair, never both | during |
 | **A wrong `css_element`** sends calibration's marker to the wrong element, so Solve writes onto the wrong element | **High** | Medium | derive it from a cited `file::selector`; assert after C3.4 that `settings[attr].slots` contains it | gate (3) |
 | **L1's changes invalidate Session B's whole classification** | High | Medium | L1 merges as its own commit; re-run triage on all 17 surfaces at Gate 2 and require the sweep-to-triage identity | gate (2) |

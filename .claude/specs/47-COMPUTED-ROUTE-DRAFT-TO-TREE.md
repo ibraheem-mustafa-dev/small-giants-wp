@@ -594,14 +594,14 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        open, 63 not walker-measurable, 19 closed earlier, 15 partly measured, 27 clean on the walker; each still-open
        verdict cites one exact element row and its values). Session B (2026-10-05) sorted every one of the 2,373 into
        one class with proof (W 1,710, F 163, T 447, U 28, D 17, deferred 8).
-       **Gate B answered yes, and the remaining work is re-split (Bean, 2026-10-05).** The fix register (`plans/2026-10-02-eye-care-fix-register.md`)
+       **The remaining work runs in two sessions.** The fix register (`plans/2026-10-02-eye-care-fix-register.md`)
        is the source of truth: the 163 F rows are findings to assess, not a list of gaps to build, and many of them ignore how the
        framework works (a CPT canvas composes blocks, and a setting can arrive from a parent by context), which is a route defect.
        So **Session C repairs the route first** — every unbuilt and known-broken item in this spec, including the new FR-47-8 —
        and records a new framework-gap count (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`). **Session C2** then matches
        each remaining row to a register item, fact-checks it, tests it live at four widths, and builds only what Bean approves
-       (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). The grouping G1 to G8 is rejected as a unit of work: groups are
-       filing labels for review only, and `SGS_Container_Wrapper` is never a blanket fix.
+       (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). A mechanism group is a filing label for review and never a unit of
+       work, and `SGS_Container_Wrapper` is never a blanket fix.
      - Then (Session D) each surface to 100%, in the order the sweep ranks, Contact and its form first. Every surface has
        its full config (2026-10-05; panel surfaces pair with their walker state open). Done per surface: on a fresh
        rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes
