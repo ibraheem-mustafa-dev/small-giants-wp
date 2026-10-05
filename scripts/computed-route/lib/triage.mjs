@@ -259,7 +259,7 @@ export function resolveIssue( issue, ctx ) {
 			return { ref: o.ref, block: n2.name, path: o.path, tag: o.tag || null, attributes: n2.attributes || {}, calibration: calFor( n2.name ), measured: measured.length ? measured : [ o.path ] };
 		} ).filter( Boolean );
 		const hop = hopFn( { block: node.name, slot: r.path, prop, state, perWidth, fontPx, current: node.attributes || {}, siblings },
-			{ db: ctx.db, snapshot: ctx.snapshot, log: [], canvas: !! ctx.canvas, ancestors } );
+			{ db: ctx.db, snapshot: ctx.snapshot, log: [], canvas: !! ctx.canvas, ancestors, measuredSlots: ancestors.flatMap( ( a ) => a.measured ) } );
 		if ( hop?.writes ) {
 			const held = hop.writes.every( ( w ) => holdsValue( nodeFor( hop.on.ref )?.attributes?.[ w.attr ], w.value, w.merge ) );
 			return { writes: hop.writes, on: hop.on, holds: held, via: hop.via, cite: hop.cite };
@@ -369,7 +369,7 @@ export function canvasSettable( issue, ctx ) {
 
 // One issue's verdict. Order: a box row is a consequence (W) or unexplained (U); an entrance the tree can start on load
 // (lib/entrance.mjs) is T; then artefacts (transient, used value, consequence: W); then the resolver (a new value it
-// would write: T; blocked by the guard or a conflict: W; the setting already holds the draft value, or Solve wrote it
+// would write: T; blocked by the guard, a shared-setting conflict or a state conflict: W; the setting already holds the draft value, or Solve wrote it
 // and paint still differed: F, a hardcode); then a fitting setting (W; one calibration measured not reaching the
 // element never decides); then the resolver's no-setting (F); any other resolver gap is a route gap (W).
 export function triageIssue( issue, ctx ) {
@@ -405,9 +405,10 @@ export function triageIssue( issue, ctx ) {
 	[ transient, used, conseq ].filter( Boolean ).forEach( ( e ) => evidence.push( e ) );
 	const res = resolveIssue( issue, ctx );
 	const groupKey = `${ r.ref }|${ r.path }|${ r.key }|${ settingState( r, ctx.stateMap ) || '' }`;
-	// Solve's own outcome for the group: the guard blocked the write (breaks-layout), or a shared setting could not hold
-	// both elements' values (conflict); or Solve already wrote the value the resolver would write and paint still differed.
-	const blocked = [ 'breaks-layout', 'conflict' ].find( ( x ) => x === ctx.reportGaps?.[ groupKey ]?.gap ) || null;
+	// Solve's own outcome for the group: the guard blocked the write (breaks-layout), a shared setting could not hold
+	// both elements' values (conflict), or the walker states mapped to one setting state read different draft values
+	// (state-conflict); or Solve already wrote the value the resolver would write and paint still differed.
+	const blocked = [ 'breaks-layout', 'conflict', 'state-conflict' ].find( ( x ) => x === ctx.reportGaps?.[ groupKey ]?.gap ) || null;
 	const tried = res.writes ? ( ctx.reportWrites || [] ).find( ( w ) => ! w.reverted && w.ref === res.on.ref && res.writes.some( ( x ) => x.attr === w.attr && holdsValue( w.after, x.value, x.merge ) ) ) : null;
 	evidence.push( res.gap ? { check: 'resolver', gap: res.gap, detail: res.detail } : { check: 'resolver', wouldWrite: res.writes.map( ( w ) => w.attr ), on: res.on, holds: res.holds, ...( blocked ? { blocked } : {} ), ...( tried ? { solveWrote: tried.attr, group: tried.group } : {} ) } );
 	const fits = fittingSettings( issue, ctx );

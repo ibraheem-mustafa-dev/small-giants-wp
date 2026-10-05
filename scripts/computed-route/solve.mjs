@@ -10,12 +10,12 @@ import { spawn, spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { openDb } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
-import { resolve } from './lib/resolve.mjs';
+import { resolve, resolveViaAncestor } from './lib/resolve.mjs';
 import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet } from './lib/tree.mjs';
-import { writableGroups, draftValues, usedValueTarget, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState, cssProp } from './lib/solve-rows.mjs';
+import { writableGroups, draftValues, usedValueTarget, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState, cssProp, knownPaths, resolveContent, handoverOf, HANDOVER_OWNERS } from './lib/solve-rows.mjs';
 import { writeSolveReport } from './lib/solve-report.mjs';
 import { guardRound, closeTrials } from './lib/guard.mjs';
-import { detectReferences, referenceOf } from './lib/references.mjs';
+import { detectReferences, referenceOf, BLOCKS_SRC } from './lib/references.mjs';
 import { entranceStart } from './lib/entrance.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -28,6 +28,35 @@ export const USED_VALUES = [ 'width' ];
 export function calibrationFor( block ) {
 	const f = path.join( HERE, 'cache', `${ block.replace( /^sgs\//, '' ) }.json` );
 	return fs.existsSync( f ) ? JSON.parse( fs.readFileSync( f, 'utf8' ) ) : null;
+}
+
+// A block's render.php source, or null.
+export function blockRenderSource( name ) {
+	const f = path.join( BLOCKS_SRC, name.replace( /^sgs\//, '' ), 'render.php' );
+	return fs.existsSync( f ) ? fs.readFileSync( f, 'utf8' ) : null;
+}
+
+// Who owns the content of a block whose words, elements or links come from outside the layout tree, or null: a block that
+// prints another post (a reference block) holds a page's content (`content-page`); one whose render.php reads Site Info
+// (`site-info`), WooCommerce's own strings or templates (`woocommerce-text`), or product data (`product-data`). Read from
+// the block's source, so a block built later is covered without a list. This is evidence about the block, never a verdict
+// on a row: writeRound hands a row over only when the block also holds no setting for it.
+export function outsideOwner( node, { refs = {}, source = blockRenderSource } = {} ) {
+	const ref = referenceOf( node, refs );
+	if ( ref && [ 'core', 'frame' ].includes( ref.kind ) ) {
+		return 'content-page';
+	}
+	const src = source( node.name );
+	if ( ! src ) {
+		return null;
+	}
+	if ( /Sgs_Site_Info|sgs_site_info/.test( src ) ) {
+		return 'site-info';
+	}
+	if ( /['"]woocommerce['"]\s*\)|wc_get_template|woocommerce_/.test( src ) ) {
+		return 'woocommerce-text';
+	}
+	return /wc_get_product|get_post_meta|WC_Product/.test( src ) ? 'product-data' : null;
 }
 
 function targetArgs( t ) {
@@ -90,10 +119,13 @@ function leafChanges( before, after, at = '' ) {
 
 // One write round: resolves every writable group of the report against the tree. stateMap is the surface's walker
 // state to setting state map; rows from an unmapped state are never written. Returns the writes and gaps.
-export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor = calibrationFor, refs = detectReferences() } ) {
-	const { groups } = writableGroups( report, stateMap );
+export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor = calibrationFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null } ) {
+	const { groups, stateConflict, content } = writableGroups( report, stateMap );
 	const writes = [];
 	const gaps = {};
+	for ( const c of stateConflict ) {
+		gaps[ c.key ] = blocked.get( c.key ) || { gap: 'state-conflict', detail: c.conflict.detail };
+	}
 	const claimed = new Map();
 	for ( const g of groups ) {
 		if ( blocked.has( g.key ) ) {
@@ -131,8 +163,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 		const attempt = ( on, onPath, anyIndex, tag = null ) => {
 			const cal = calFor( on.name );
 			const loose = ( p ) => ( anyIndex ? String( p ).replace( /:nth-of-type\(\d+\)/g, '' ) : p );
-			const known = [ ...Object.keys( cal?.elements || {} ), ...Object.values( cal?.settings || {} ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ) ];
-			if ( cal && ! known.map( loose ).includes( loose( onPath ) ) ) {
+			if ( cal && ! knownPaths( cal ).map( loose ).includes( loose( onPath ) ) ) {
 				return { gap: 'unmapped-element', detail: `${ on.name } path "${ onPath }" is not a calibrated element` };
 			}
 			return ( on === node && entranceStart( g, node, perWidth ) ) || resolve( { block: on.name, slot: onPath, anyIndex, tag, prop: cssProp( g.prop ), state: g.state, perWidth, fontPx, current: on.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
@@ -151,6 +182,32 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 				r = r2;
 				target = { node: on, ref: o.ref, path: o.path };
 				break;
+			}
+		}
+		// FR-47-8 / R-47-12, the ancestor hop, strictly last: only once the row's own block and its enclosing blocks have both
+		// failed. It writes a parent setting only where that setting's paint reaches exactly one measured descendant
+		// (lib/resolve.mjs::resolveViaAncestor); otherwise the gap stays, with the hop's citation added.
+		if ( r.gap ) {
+			const prop = cssProp( g.prop );
+			const sameRow = ( o2 ) => cssProp( o2.prop ) === prop && o2.state === g.state;
+			const ancestors = ( g.owners || [] ).map( ( o ) => {
+				const n2 = nodeByRef( tree, o.ref );
+				if ( ! n2 || 'linked' === referenceOf( n2, refs )?.kind ) {
+					return null;
+				}
+				// The measured descendants of this ancestor: the owner path of every open row of the same property and state
+				// that names it as an owner (measured, never guessed).
+				const measured = [ ...new Set( groups.filter( sameRow ).flatMap( ( o2 ) => o2.rows.flatMap( ( x ) => ( x.owners || [] ).filter( ( oo ) => oo.ref === o.ref ).map( ( oo ) => oo.path ) ) ) ) ];
+				return { ref: o.ref, block: n2.name, path: o.path, tag: o.tag || null, attributes: n2.attributes || {}, calibration: calFor( n2.name ), measured: measured.length ? measured : [ o.path ] };
+			} ).filter( Boolean );
+			const hop = ancestorHop( { block: node.name, slot: g.path, prop, state: g.state, perWidth, fontPx, current: node.attributes || {}, siblings },
+				{ db, snapshot, log, canvas: !! canvas, ancestors, measuredSlots: ancestors.flatMap( ( a ) => a.measured ) } );
+			const hopNode = hop?.writes ? nodeByRef( tree, hop.on.ref ) : null;
+			if ( hopNode ) {
+				r = { writes: hop.writes };
+				target = { node: hopNode, ref: hop.on.ref, path: hop.on.path };
+			} else if ( hop?.cite ) {
+				r = { ...r, cite: hop.cite, canvasSettable: !! hop.gap };
 			}
 		}
 		if ( r.gap ) {
@@ -173,6 +230,38 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			leafChanges( target.node.attributes?.[ w.attr ], setAttr( structuredClone( target.node ), w ).after ).forEach( ( [ k, v ] ) => claimed.set( `${ target.ref }|${ w.attr }|${ k }`, v ) );
 			const { before, after } = setAttr( target.node, w );
 			writes.push( { round, group: g.key, ref: target.ref, block: target.node.name, path: target.path, prop: g.prop, state: g.state, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
+		}
+	}
+	// Content rows: the draft's words, an element's presence, a link. Each resolves through the block's calibrated `text`,
+	// `presence` or `link` entry (lib/solve-rows.mjs::resolveContent); with none, the row is a gap, or a handover where
+	// ownerOf( node ) names the outside-the-tree owner of the block's content. Never a style value (R-47-4).
+	for ( const g of content ) {
+		const node = nodeByRef( tree, g.ref );
+		if ( blocked.has( g.key ) ) {
+			gaps[ g.key ] = blocked.get( g.key );
+			continue;
+		}
+		if ( ! node ) {
+			gaps[ g.key ] = { gap: 'unmapped', detail: `ref ${ g.ref } is not in the tree` };
+			continue;
+		}
+		const ref = referenceOf( node, refs );
+		if ( ref && 'linked' === ref.kind ) {
+			gaps[ g.key ] = { gap: 'linked', detail: `${ node.name } renders ${ ref.key } "${ ref.value }" from its own post: solve that post's surface` };
+			continue;
+		}
+		const res = resolveContent( g, { calibration: calFor( node.name ), report } );
+		if ( res.gap ) {
+			const owner = 'no-setting' === res.gap ? ownerOf( node, g ) : null;
+			gaps[ g.key ] = HANDOVER_OWNERS.includes( owner ) ? { gap: 'handover', owner, detail: `${ node.name } holds no setting for this ${ g.type }; its content is not in the tree` } : res;
+			continue;
+		}
+		for ( const w of res.writes ) {
+			if ( JSON.stringify( setAttr( structuredClone( node ), w ).after ) === JSON.stringify( node.attributes?.[ w.attr ] ) ) {
+				continue;
+			}
+			const { before, after } = setAttr( node, w );
+			writes.push( { round, group: g.key, ref: g.ref, block: node.name, path: g.path, prop: g.rows[ 0 ].key, kind: g.type, state: null, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
 		}
 	}
 	return { writes, gaps };
@@ -283,6 +372,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	fs.mkdirSync( outDir, { recursive: true } );
 	const calibrationTargets = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) );
 	assertWritable( s.target, { calibrationTargets, surfaces } );
+	const refs = detectReferences();
 	const ctx = { db: openDb(), snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ), log: [] };
 	const tree = readTree( treeFile );
 	const added = addRefs( tree, surface );
@@ -298,7 +388,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		},
 		walk: ( round ) => walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates ),
 		guard: ( prev, rep, lastWrites ) => guardRound( prev, rep, tree, lastWrites, blocked, calibrationFor, trials ),
-		write: ( rep, round ) => writeRound( rep, tree, { ...ctx, round, blocked, stateMap: s.states } ),
+		write: ( rep, round ) => writeRound( rep, tree, { ...ctx, round, blocked, stateMap: s.states, canvas: !! s.canvas, refs, ownerOf: ( node ) => outsideOwner( node, { refs } ) } ),
 		save: () => writeTree( treeFile, tree ),
 	} );
 	closeTrials( trials, blocked ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
@@ -306,6 +396,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const classes = classify( report, { writes: allWrites, gaps, stateMap: s.states } );
 	const wrong = wrongWrites( allWrites, report, s.states );
 	const unmappedState = writableGroups( report, s.states ).unmappedState.length;
-	writeSolveReport( outDir, { surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, gaps, classes, snaps: ctx.log, intended: intendedCount( report ), unmappedState, before, after: report } );
-	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }; wrong writes ${ wrong.length }. Report: ${ path.join( outDir, 'solve-report.md' ) }` );
+	const handover = handoverOf( classes );
+	writeSolveReport( outDir, { handover, surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, gaps, classes, snaps: ctx.log, intended: intendedCount( report ), unmappedState, before, after: report } );
+	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }, handover ${ handover.length }; wrong writes ${ wrong.length }. Report: ${ path.join( outDir, 'solve-report.md' ) }` );
 }

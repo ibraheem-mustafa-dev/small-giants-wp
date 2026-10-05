@@ -1,5 +1,10 @@
 // Solve's reading of a walker report (FR-47-3): which open rows it may write, the draft value at every width for each
 // (node, element, property), and the classification of the rows that survive the last round.
+import { isContentRow } from './issue-classes.mjs';
+
+// The property kinds Solve writes through the property-to-setting resolver (box rows are split off and never written).
+// Content rows (text, presence, link coverage) are not here: they resolve through calibration's content entries
+// (resolveContent) and have their own group list.
 export const WRITABLE_KINDS = [ 'style', 'hover', 'box' ];
 
 // The CSS property a row's key stands for: icon size rows (on the svg's path) are its width and height; a painted
@@ -17,6 +22,16 @@ export function settingState( r, stateMap ) {
 		return null === stateMap[ r.state ] ? 'hover' : undefined;
 	}
 	return stateMap[ r.state ];
+}
+
+// Every element path a block's calibration knows: its measured elements, the slots and reaches of its settings, and the
+// slots its DISCOVERED enum settings paint. A row on a path outside this list is `unmapped-element`; a row whose only
+// evidence is a discovered slot must still reach lib/resolve.mjs::resolveDiscovered, so that source is part of the list.
+// lib/triage.mjs::resolveIssue builds the same three-source list inline, so a row triage finds resolvable is a row the
+// write round finds resolvable.
+export function knownPaths( cal ) {
+	return [ ...Object.keys( cal?.elements || {} ), ...Object.values( cal?.settings || {} ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ),
+		...Object.values( cal?.discovered || {} ).flatMap( ( props ) => Object.values( props || {} ).flatMap( ( d ) => d.slots || [] ) ) ];
 }
 
 // One key per written thing: node ref, element path, property, setting state ('' = rest).
@@ -108,18 +123,63 @@ export function usedValueTarget( prop, { perWidth, declared, held = [] } ) {
 	return { perWidth: { ...perWidth, ...Object.fromEntries( free.map( ( w ) => [ w, declared[ w ] ] ) ) } };
 }
 
+// Where the walker states that map to one setting state disagree about a group's draft value: { width, values: { walker
+// state: draft value }, detail } for the first width at which two such states read different values, or null. Every
+// walker state of the surface map that lands in the group's setting state counts, whether or not it carries an open row
+// for the group: the setting holds one value for all of them, so a state that merely reads the pair at another value
+// (the baseline `opening` state, say) still contradicts the value an open row in another state would write.
+export function stateDisagreement( report, g, stateMap ) {
+	const hover = 'hover' === g.state;
+	const peers = Object.keys( stateMap || {} ).filter( ( ws ) => settingState( { kind: hover ? 'hover' : 'style', state: ws }, stateMap ) === g.state );
+	const byWidth = {};
+	for ( const ws of peers ) {
+		for ( const [ w, v ] of Object.entries( draftValues( report, g.pair, g.prop, hover, [ ws ], g.pseudo ).perWidth ) ) {
+			( byWidth[ w ] ||= {} )[ ws ] = String( v );
+		}
+	}
+	const squash = ( v ) => v.replace( /\s+/g, '' );
+	const clashing = Object.entries( byWidth ).filter( ( [ , values ] ) => new Set( Object.values( values ).map( squash ) ).size > 1 );
+	if ( ! clashing.length ) {
+		return null;
+	}
+	const [ width, values ] = clashing[ 0 ];
+	return { width: Number( width ), values, detail: `${ g.prop } is read at ${ Object.entries( values ).map( ( [ ws, v ] ) => `${ v } in ${ ws }` ).join( ' and ' ) } at ${ width }px, and every one of those walker states maps to the setting state "${ g.state || 'rest' }": one setting cannot hold both draft values${ clashing.length > 1 ? ` (${ clashing.length } widths disagree)` : '' }` };
+}
+
 // The candidate groups a round may write: style and hover rows with a ref from a mapped walker state, one group per
 // groupKey. Box rows, rows without a ref and rows from an unmapped state are returned apart (box rows are derived from
-// the spacing that moves them; unreffed rows are unmapped; unmapped-state rows are reported, never written).
+// the spacing that moves them; unreffed rows are unmapped; unmapped-state rows are reported, never written). A group
+// whose mapped walker states read different draft values at one width (stateDisagreement) is returned in stateConflict,
+// not in groups: it is refused, with its conflict attached, rather than written with the last state's value.
+// Content rows (text, presence, link coverage) measured at rest and attributable to a node are grouped apart, in
+// `content`, one group per node, element, kind and key; ones the walker gives no node for are `contentUnattributed`; ones
+// from a state other than rest stay in `other` (no content setting is bound to a state).
 export function writableGroups( report, stateMap ) {
 	const groups = new Map();
+	const contentGroups = new Map();
 	const box = [];
 	const unmapped = [];
 	const unmappedState = [];
 	const other = [];
+	const contentUnattributed = [];
 	for ( const r of openRows( report ) ) {
 		const st = settingState( r, stateMap );
-		if ( ! WRITABLE_KINDS.includes( r.kind ) ) {
+		const type = contentTypeOf( r );
+		if ( type ) {
+			const at = contentTarget( report, r );
+			if ( null !== st ) {
+				other.push( r );
+			} else if ( ! at.ref || null === at.path ) {
+				contentUnattributed.push( r );
+			} else {
+				const k = contentKey( at, r );
+				if ( ! contentGroups.has( k ) ) {
+					contentGroups.set( k, { key: k, type, ref: at.ref, path: at.path, pair: r.pair, walkerStates: [], rows: [] } );
+				}
+				contentGroups.get( k ).rows.push( r );
+				contentGroups.get( k ).walkerStates.includes( r.state ) || contentGroups.get( k ).walkerStates.push( r.state );
+			}
+		} else if ( ! WRITABLE_KINDS.includes( r.kind ) ) {
 			other.push( r );
 		} else if ( undefined === st ) {
 			unmappedState.push( r );
@@ -139,7 +199,121 @@ export function writableGroups( report, stateMap ) {
 			}
 		}
 	}
-	return { groups: [ ...groups.values() ], box, unmapped, unmappedState, other };
+	const writable = [];
+	const stateConflict = [];
+	for ( const g of groups.values() ) {
+		const conflict = stateDisagreement( report, g, stateMap );
+		conflict ? stateConflict.push( { ...g, conflict } ) : writable.push( g );
+	}
+	return { groups: writable, box, unmapped, unmappedState, other, stateConflict, content: [ ...contentGroups.values() ], contentUnattributed };
+}
+
+// ── content rows: text, presence and link coverage ──────────────────────────────────────────────────────────────────
+
+const looseOf = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
+// The walker reads at most this many characters of a text (parity/lib/collect.mjs), so a read this long may be cut short.
+export const TEXT_READ_CAP = 400;
+// Who edits content that lives outside the layout tree (Spec 47 §3.3): Site Info, product data, a page the draft links to
+// but never shows, WooCommerce or core text, and behaviour the walker cannot drive.
+export const HANDOVER_OWNERS = [ 'site-info', 'product-data', 'content-page', 'behaviour', 'woocommerce-text' ];
+
+// Which content kind a row is, or null: text, presence, or link (kind `auto` with a link-missing or link-extra key).
+export const contentTypeOf = ( r ) => ( isContentRow( r ) ? ( 'text' === r.kind ? 'text' : ( 'presence' === r.kind ? 'presence' : 'link' ) ) : null );
+
+// The live element's trace for a row's pair in the row's own run: { ref, path, textPath, ... } or null (the element is
+// absent on the live page, so nothing names a block).
+export function pairTrace( report, r ) {
+	const run = ( report.runs || [] ).find( ( x ) => x.state === r.state && x.width === r.width );
+	return run?.pairs?.[ r.pair ]?.live?.trace || null;
+}
+
+// The node and element a content row is about. The walker stamps no ref or path on these rows, so they come from the
+// pair's live trace: the text carrier's path for words and links, the element's own path for presence. { ref, path }
+// with null where the trace names none.
+export function contentTarget( report, r ) {
+	const t = pairTrace( report, r );
+	const own = 'presence' === r.kind ? t?.path : ( t?.textPath ?? t?.path );
+	return { ref: r.ref || t?.ref || null, path: r.path ?? own ?? null };
+}
+
+export const contentKey = ( at, r ) => `${ at.ref }|${ at.path }|${ r.kind }|${ r.key }|`;
+
+const escapeHtml = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
+const squash = ( s ) => String( s ).replace( /\s+/g, ' ' ).trim();
+const at1920 = ( w ) => ( 1920 === w ? 1440 : w );
+
+// The setting that holds a content group, from the block's calibrated `text`, `presence` or `link` entries: { writes } in
+// the resolver's write shape, or { gap, detail }. ctx: { calibration, report }. Gaps: no-setting (no calibrated entry for
+// that element), ambiguous, unreached (the setting did not reach the element at a measured width), shape (the read cannot
+// be written as it stands), no-target (a link to add whose target the walker did not record).
+export function resolveContent( g, { calibration, report = { runs: [] } } ) {
+	const widths = [ ...new Set( g.rows.map( ( x ) => x.width ) ) ];
+	const one = ( hits, what ) => ( hits.length ? ( hits.length > 1 ? { gap: 'ambiguous', detail: `${ hits.map( ( h ) => h[ 0 ] ).join( ', ' ) } all hold ${ what } at "${ g.path }"` } : null ) : { gap: 'no-setting', detail: `no calibrated ${ g.type } setting for "${ g.path }"` } );
+	const row = g.rows[ 0 ];
+	if ( 'text' === g.type ) {
+		const hits = Object.entries( calibration?.text || {} ).filter( ( [ , e ] ) => looseOf( e.path ) === looseOf( g.path ) );
+		const gap = one( hits, 'the words' );
+		if ( gap ) {
+			return gap;
+		}
+		const [ attr, e ] = hits[ 0 ];
+		const missed = widths.filter( ( w ) => e.reachedAt && ! e.reachedAt.includes( at1920( w ) ) );
+		if ( missed.length ) {
+			return { gap: 'unreached', detail: `${ attr } did not reach "${ g.path }" at ${ missed.join( ', ' ) }px` };
+		}
+		const words = [ ...new Set( g.rows.map( ( x ) => squash( x.draft ) ) ) ];
+		const styles = report.runs.map( ( run ) => run.pairs?.[ g.pair ]?.draft?.styles?.[ 'text-transform' ] ).filter( Boolean );
+		if ( words.length > 1 || ! words[ 0 ] || words[ 0 ].length >= TEXT_READ_CAP || styles.some( ( s ) => 'none' !== s ) ) {
+			return { gap: 'shape', detail: words.length > 1 ? 'the draft reads different words at different widths' : ( ! words[ 0 ] ? 'the draft reads no words' : ( words[ 0 ].length >= TEXT_READ_CAP ? `the walker caps a text read at ${ TEXT_READ_CAP } characters, so this one may be cut short` : 'the draft text is read through a text-transform, so its source case is unknown' ) ) };
+		}
+		return { writes: [ { attr, value: escapeHtml( words[ 0 ] ), merge: 'replace' } ] };
+	}
+	if ( 'link' === g.type ) {
+		const hits = Object.entries( calibration?.link || {} ).filter( ( [ , e ] ) => looseOf( e.path ) === looseOf( g.path ) );
+		const gap = one( hits, 'the link' );
+		if ( gap ) {
+			return gap;
+		}
+		if ( 'href' !== ( hits[ 0 ][ 1 ].attr || 'href' ) ) {
+			return { gap: 'shape', detail: `${ hits[ 0 ][ 0 ] } holds a link ${ hits[ 0 ][ 1 ].attr }, not an href` };
+		}
+		if ( ! row.key.startsWith( 'link-extra' ) ) {
+			return { gap: 'no-target', detail: 'the draft links these words, and the walker records that they are linked, not where to' };
+		}
+		return { writes: [ { attr: hits[ 0 ][ 0 ], value: '', merge: 'replace' } ] };
+	}
+	// presence: the draft's state is the target. A setting is written only where calibration shows it shows or hides that element.
+	const shown = 'present' === row.draft;
+	const hits = Object.entries( calibration?.presence || {} ).filter( ( [ , e ] ) => ( shown ? e.shows : e.hides )?.some( ( p ) => looseOf( p ) === looseOf( g.path ) ) );
+	const gap = one( hits, 'the element' );
+	if ( gap ) {
+		return gap;
+	}
+	const every = report.runs.filter( ( run ) => g.walkerStates.includes( run.state ) && run.pairs?.[ g.pair ] ).map( ( run ) => run.width );
+	if ( every.some( ( w ) => ! widths.includes( w ) ) ) {
+		return { gap: 'shape', detail: 'the element differs at only some widths, and a presence setting applies to every width' };
+	}
+	const [ key ] = hits[ 0 ];
+	const [ attr, variant ] = key.split( '=' );
+	const value = undefined === variant ? true : ( { true: true, false: false }[ variant ] ?? variant );
+	return { writes: [ { attr, value, merge: 'replace' } ] };
+}
+
+// The handover list (Spec 47 §3.3): one entry per distinct issue among classified content rows filed as handover, and
+// every behaviour row the walker could not drive (kind `drive`), each with its evidence row, the widths it was seen at and
+// its owner. classes: the output of classify.
+export function handoverOf( classes ) {
+	const seen = new Map();
+	for ( const x of classes.other || [] ) {
+		const owner = 'drive' === x.kind ? 'behaviour' : ( 'handover' === x.contentClass ? x.owner : null );
+		if ( ! HANDOVER_OWNERS.includes( owner ) ) {
+			continue;
+		}
+		const k = `${ x.pair }|${ x.kind }|${ x.key }|${ owner }`;
+		seen.has( k ) || seen.set( k, { owner, row: { kind: x.kind, key: x.key, draft: x.draft, live: x.live, pair: x.pair, state: x.state, ref: x.ref ?? null, path: x.path ?? null }, widths: [], reason: x.reason ?? null } );
+		seen.get( k ).widths.includes( x.width ) || seen.get( k ).widths.push( x.width );
+	}
+	return [ ...seen.values() ].map( ( h ) => ( { ...h, widths: h.widths.sort( ( a, b ) => a - b ) } ) );
 }
 
 // Distance of a row from the draft: px difference for lengths, 0/1 otherwise (used to spot a write that made it worse).
@@ -159,6 +333,20 @@ export function classify( report, { writes, gaps, elements, stateMap } ) {
 	const written = new Set( writes.filter( ( w ) => ! w.reverted ).map( ( w ) => w.group ) );
 	const out = { hardcode: [], missing: [], unresolved: [], derived: [], other: [] };
 	for ( const r of openRows( report ) ) {
+		// A content row stays in `other` (the sweep and triage count it there) with the fate Solve gave it: written,
+		// missing (the block could hold it and has no setting), handover (the content lives outside the tree) or
+		// unresolved. The node it was resolved on is `target`, kept off the row so its issue key is unchanged.
+		if ( contentTypeOf( r ) && null === settingState( r, stateMap ) ) {
+			const target = contentTarget( report, r );
+			const gap = gaps[ contentKey( target, r ) ];
+			const fate = ! target.ref || null === target.path ? { contentClass: 'unresolved', reason: 'unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)' }
+				: ( written.has( contentKey( target, r ) ) ? { contentClass: 'written', reason: 'the setting holds the draft value; the row still differs' }
+					: ( 'handover' === gap?.gap ? { contentClass: 'handover', owner: gap.owner, reason: `handover to ${ gap.owner }: ${ gap.detail }` }
+						: ( 'no-setting' === gap?.gap ? { contentClass: 'missing', reason: gap.detail }
+							: { contentClass: 'unresolved', reason: gap ? `${ gap.gap }: ${ gap.detail }` : 'not written' } ) ) );
+			out.other.push( { ...r, target, ...fate } );
+			continue;
+		}
 		if ( ! WRITABLE_KINDS.includes( r.kind ) ) {
 			out.other.push( r );
 			continue;

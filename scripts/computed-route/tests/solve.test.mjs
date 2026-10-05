@@ -2,6 +2,9 @@
 // own property) explain a regressed row on its node is reverted and blocked; rows below that node pin nothing more,
 // and a box-size row alone never blames every write on a node already explained. Also proves the walker state mapping.
 import test from 'node:test';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import assert from 'node:assert/strict';
 import { revertRegressions } from '../solve.mjs';
 import { guardRound } from '../lib/guard.mjs';
@@ -169,7 +172,9 @@ test( 'MUST FAIL TO WRITE: a row from an unmapped scrolled state produces no gro
 } );
 
 test( 'positive control: the same row mapped to rest is written (so the case above is not vacuous)', () => {
-	const r = writeRound( stateReport(), headTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null, scrolled: null }, calFor: headCal } );
+	// Both walker states now map to rest, so they must read one draft value (L8.8): the baseline reads the scrolled 15px.
+	const agreed = { runs: [ pairRun( 'opening', '15px', [] ), stateReport().runs[ 1 ] ] };
+	const r = writeRound( agreed, headTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null, scrolled: null }, calFor: headCal } );
 	assert.equal( r.writes.length, 1 );
 	assert.equal( r.writes[ 0 ].attr, 'fontSize' );
 } );
@@ -207,7 +212,7 @@ test( 'MUST FAIL TO DROP: a width whose walk has no runs still keeps the other w
 } );
 
 // F5: the whole page in distinct issues. Widths and states of one issue count once.
-import { wholePage } from '../lib/solve-report.mjs';
+import { wholePage, writeSolveReport } from '../lib/solve-report.mjs';
 
 test( 'one issue at four widths is one issue; a closed, a new, a labelled and an unexplained issue are told apart', () => {
 	const row = ( pair, key, width, ref = `cr-ref-p-${ pair }` ) => ( { kind: 'style', key, draft: '1px', live: '2px', ref, path: '' , width } );
@@ -350,4 +355,301 @@ test( 'MUST FAIL TO OVERWRITE A DECISION: at a width the entry accepts, a group 
 	other.width = 768;
 	assert.ok( held.pairs.head.diffs[ 0 ].decided && 'D-5' === held.pairs.head.diffs[ 0 ].decided.id );
 	assert.deepEqual( draftValues( { runs: [ held, other ] }, 'head', 'font-size', false ).perWidth, { 1440: '16px', 768: '18px' } );
+} );
+
+// L8.7: the write path and the classification read one set of calibrated paths. A row whose only evidence is a
+// DISCOVERED slot (an enum setting with no css_property) must reach lib/resolve.mjs::resolveDiscovered, here as in triage.
+import { resolveIssue } from '../lib/triage.mjs';
+const DISC_PATH = '.sgs-fixture__inner';
+const discCal = () => ( { elements: {}, settings: {}, discovered: { layout: { display: { slots: [ DISC_PATH ], values: { flex: { 375: 'flex', 768: 'flex', 1440: 'flex' } } } } } } );
+const discTree = () => [ { name: 'sgs/fixture-block', attributes: { className: 'cr-ref-d-1' } } ];
+const discRow = { kind: 'style', key: 'display', draft: 'flex', live: 'block', ref: 'cr-ref-d-1', path: DISC_PATH };
+const discReport = () => ( { runs: [ 375, 768, 1440 ].map( ( width ) => ( { state: 'opening', width, pairs: { box: { draft: { styles: { display: 'flex' } }, diffs: [ discRow ] } } } ) ) } );
+
+test( 'MUST FAIL: a row whose only calibrated evidence is a discovered slot is written, never gapped unmapped-element', () => {
+	const t = discTree();
+	const r = writeRound( discReport(), t, { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: discCal } );
+	assert.deepEqual( Object.values( r.gaps ), [] );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.after ] ), [ [ 'layout', 'flex' ] ] );
+	assert.equal( t[ 0 ].attributes.layout, 'flex' );
+} );
+
+test( 'the write path and triage agree on the same discovered-slot row: both find the setting', () => {
+	const res = resolveIssue( { key: 'k', rows: [ { ...discRow, pair: 'box', state: 'opening', width: 1440 } ] }, { db, snapshot, stateMap: { opening: null }, walk: discReport(), nodeFor: () => discTree()[ 0 ], calFor: discCal } );
+	assert.deepEqual( res.writes.map( ( w ) => [ w.attr, w.value ] ), [ [ 'layout', 'flex' ] ] );
+} );
+
+test( 'the negative control: a path no calibrated source names is still gapped unmapped-element', () => {
+	const t = discTree();
+	const rep = discReport();
+	rep.runs.forEach( ( run ) => ( run.pairs.box.diffs = [ { ...discRow, path: '.sgs-fixture__elsewhere' } ] ) );
+	const r = writeRound( rep, t, { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: discCal } );
+	assert.equal( r.writes.length, 0 );
+	assert.equal( Object.values( r.gaps )[ 0 ].gap, 'unmapped-element' );
+} );
+
+// L8.7 second half: the canvas flag, the row's ancestors and the element paths measured under them reach the hop.
+const HOP_PANEL_PATH = '.sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1)';
+const hopTree = () => [ { name: 'sgs/mega-panel', attributes: { className: 'cr-ref-m-0' }, innerBlocks: [ { name: 'sgs/mega-group', attributes: { className: 'cr-ref-m-1' } } ] } ];
+const hopRow = { kind: 'style', key: 'padding-top', draft: '26px', live: '0px', ref: 'cr-ref-m-1', path: '', owners: [ { ref: 'cr-ref-m-0', block: 'sgs-mega-panel', path: HOP_PANEL_PATH, tag: 'a' } ] };
+const hopReport = () => ( { runs: [ { state: 'opening', width: 1440, pairs: { grp: { draft: { styles: { 'padding-top': '26px' } }, diffs: [ hopRow ] } } } ] } );
+const hopCal = ( panelSettings = {} ) => ( name ) => ( 'sgs/mega-group' === name ? { elements: { '': {} }, settings: {} } : { elements: {}, settings: panelSettings } );
+
+test( 'MUST FAIL: a row nothing on its own or its enclosing blocks can write reaches the ancestor hop with the canvas flag, its ancestors and their measured paths, and the hop\'s write is applied', () => {
+	let seen = null;
+	const t = hopTree();
+	const ancestorHop = ( input, ctx ) => {
+		seen = { input, ctx };
+		return { writes: [ { attr: 'panelPadding', value: { desktop: { top: '26px' } }, merge: 'deep' } ], on: { ref: 'cr-ref-m-0', block: 'sgs/mega-panel', path: HOP_PANEL_PATH }, via: 'calibration', cite: { check: 'canvas-settable' } };
+	};
+	const r = writeRound( hopReport(), t, { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: hopCal(), canvas: true, ancestorHop } );
+	assert.equal( seen.ctx.canvas, true );
+	assert.deepEqual( seen.ctx.ancestors.map( ( a ) => [ a.ref, a.block, a.path, a.tag ] ), [ [ 'cr-ref-m-0', 'sgs/mega-panel', HOP_PANEL_PATH, 'a' ] ] );
+	assert.deepEqual( seen.ctx.measuredSlots, [ HOP_PANEL_PATH ] );
+	assert.equal( seen.input.block, 'sgs/mega-group' );
+	assert.equal( seen.input.prop, 'padding-top' );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.ref, w.block, w.attr ] ), [ [ 'cr-ref-m-0', 'sgs/mega-panel', 'panelPadding' ] ] );
+	assert.deepEqual( t[ 0 ].attributes.panelPadding, { desktop: { top: '26px' } } );
+	assert.equal( t[ 0 ].innerBlocks[ 0 ].attributes.panelPadding, undefined );
+} );
+
+test( 'MUST FAIL: the real hop, on a canvas, cites the block that can hold the row and the gap says canvas-settable; off a canvas it does not', () => {
+	const on = writeRound( hopReport(), hopTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: hopCal( { panelPadding: { property: 'padding', slot: '', slots: [ '' ] } } ), canvas: true } );
+	const g = Object.values( on.gaps )[ 0 ];
+	assert.equal( on.writes.length, 0 );
+	assert.equal( g.gap, 'no-setting' );
+	assert.equal( g.canvasSettable, true );
+	assert.equal( g.cite.setting, 'panelPadding' );
+	const off = writeRound( hopReport(), hopTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: hopCal( { panelPadding: { property: 'padding', slot: '', slots: [ '' ] } } ), canvas: false } );
+	assert.notEqual( Object.values( off.gaps )[ 0 ].canvasSettable, true );
+} );
+
+// L8.8: walker states that map to one setting state must agree on the draft value, or the group is refused. Before, the
+// last run's value won and the route wrote it and reported success.
+const conflictRun = ( state, draftPx, rows ) => ( { state, width: 1440, pairs: { head: { draft: { styles: { 'font-size': draftPx } }, diffs: rows } } } );
+const fsRow = { kind: 'style', key: 'font-size', draft: '15px', live: '20px', ref: 'cr-ref-h-1', path: '' };
+
+test( 'MUST FAIL: two walker states mapped to one setting state with different draft values at one width are refused and named, not written', () => {
+	const rep = { runs: [ conflictRun( 'tab-one', '15px', [ { ...fsRow } ] ), conflictRun( 'tab-two', '18px', [ { ...fsRow, draft: '18px' } ] ) ] };
+	const sm = { 'tab-one': null, 'tab-two': null };
+	const t = headTree();
+	const out = writableGroups( rep, sm );
+	assert.equal( out.groups.length, 0 );
+	assert.equal( out.stateConflict.length, 1 );
+	const r = writeRound( rep, t, { db, snapshot, round: 1, log: [], stateMap: sm, calFor: headCal } );
+	assert.equal( r.writes.length, 0 );
+	assert.equal( t[ 0 ].attributes.fontSize, undefined );
+	const gap = Object.values( r.gaps )[ 0 ];
+	assert.equal( gap.gap, 'state-conflict' );
+	assert.match( gap.detail, /tab-one/ );
+	assert.match( gap.detail, /tab-two/ );
+	assert.match( gap.detail, /15px/ );
+	assert.match( gap.detail, /18px/ );
+} );
+
+test( 'MUST FAIL: a single named state colliding with the baseline state that maps to the same setting state is refused', () => {
+	// Only reviews-next carries an open row; opening reads the same pair at another value and maps to rest as well.
+	const rep = { runs: [ conflictRun( 'opening', '18px', [] ), conflictRun( 'reviews-next', '15px', [ { ...fsRow } ] ) ] };
+	const sm = { opening: null, 'reviews-next': null };
+	const r = writeRound( rep, headTree(), { db, snapshot, round: 1, log: [], stateMap: sm, calFor: headCal } );
+	assert.equal( r.writes.length, 0 );
+	assert.equal( Object.values( r.gaps )[ 0 ].gap, 'state-conflict' );
+} );
+
+test( 'the negative control: two walker states mapped to one setting state with the same draft value are still written', () => {
+	const rep = { runs: [ conflictRun( 'tab-one', '15px', [ { ...fsRow } ] ), conflictRun( 'tab-two', '15px', [ { ...fsRow } ] ) ] };
+	const sm = { 'tab-one': null, 'tab-two': null };
+	assert.equal( writableGroups( rep, sm ).stateConflict.length, 0 );
+	const r = writeRound( rep, headTree(), { db, snapshot, round: 1, log: [], stateMap: sm, calFor: headCal } );
+	assert.deepEqual( r.writes.map( ( w ) => w.attr ), [ 'fontSize' ] );
+	assert.deepEqual( r.gaps, {} );
+} );
+
+test( 'the negative control: states mapped to different setting states may differ, and so may different widths of one state', () => {
+	const rep = { runs: [ conflictRun( 'opening', '18px', [] ), conflictRun( 'scrolled', '15px', [ { ...fsRow } ] ), { ...conflictRun( 'opening', '12px', [] ), width: 375 } ] };
+	const out = writableGroups( rep, { opening: null, scrolled: 'scrolled' } );
+	assert.equal( out.stateConflict.length, 0 );
+	assert.equal( out.groups.length, 1 );
+} );
+
+// L8.1 to L8.3: text, presence and link-coverage rows. The walker stamps no ref, path or block on these rows
+// (ref-trace.mjs::stampRefs stamps style, hover, box, tag, active and lines rows only), so the node comes from the
+// pair's live trace, which exists wherever the live element does. A calibrated `text`, `presence` or `link` entry is the
+// only thing that makes one writable; without it the row is a gap, never a silent success. A text row writes the draft's
+// words and never a style value (R-47-4).
+import { classify, handoverOf, HANDOVER_OWNERS } from '../lib/solve-rows.mjs';
+const CTRACE = { ref: 'cr-ref-c-1', path: '', textPath: '.sgs-fixture__title' };
+const cTree = () => [ { name: 'sgs/fixture-text', attributes: { className: 'cr-ref-c-1', title: 'Old', ctaUrl: '/old' } } ];
+const cReport = ( rows, { widths = [ 375, 768, 1440 ], trace = CTRACE, styles = {} } = {} ) => ( { runs: widths.map( ( width ) => ( { state: 'opening', width, pairs: { ttl: { draft: { styles, text: '' }, live: { trace }, diffs: rows.map( ( x ) => ( { ...x } ) ) } } } ) ) } );
+const cCal = ( extra = {} ) => () => ( { elements: { '': {}, '.sgs-fixture__title': {} }, settings: {}, ...extra } );
+const cWrite = ( rep, calFor, over = {} ) => writeRound( rep, over.tree || cTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor, ...over } );
+const TEXT = { kind: 'text', key: 'text', draft: 'Delivery & returns', live: 'Delivery and returns' };
+const TEXT_CAL = { text: { title: { path: '.sgs-fixture__title', reachedAt: [ 375, 768, 1440 ] } } };
+
+test( 'MUST FAIL: a text row with no ref of its own is written through the pair\'s live trace, as the draft\'s words, escaped', () => {
+	const t = cTree();
+	const r = cWrite( cReport( [ TEXT ] ), cCal( TEXT_CAL ), { tree: t } );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.ref, w.attr, w.after ] ), [ [ 'cr-ref-c-1', 'title', 'Delivery &amp; returns' ] ] );
+	assert.equal( t[ 0 ].attributes.title, 'Delivery &amp; returns' );
+	assert.deepEqual( r.gaps, {} );
+} );
+
+test( 'the negative control: a text row with no calibrated text entry is a no-setting gap and writes nothing', () => {
+	const t = cTree();
+	const r = cWrite( cReport( [ TEXT ] ), cCal( { text: {} } ), { tree: t } );
+	assert.equal( r.writes.length, 0 );
+	assert.equal( t[ 0 ].attributes.title, 'Old' );
+	assert.equal( Object.values( r.gaps )[ 0 ].gap, 'no-setting' );
+	assert.equal( cWrite( cReport( [ TEXT ] ), cCal() ).writes.length, 0, 'a block with no text key at all is the same gap' );
+} );
+
+test( 'R-47-4 holds: a text row never writes a style value, even where a style setting is calibrated', () => {
+	const r = cWrite( cReport( [ TEXT ] ), cCal( { settings: { fontSize: { slot: '.sgs-fixture__title', slots: [ '.sgs-fixture__title' ], property: 'font-size' } } } ) );
+	assert.equal( r.writes.length, 0 );
+} );
+
+test( 'a text setting that did not reach the element at a measured width is unreached, and a capped or transformed read is refused', () => {
+	assert.equal( Object.values( cWrite( cReport( [ TEXT ] ), cCal( { text: { title: { path: '.sgs-fixture__title', reachedAt: [ 1440 ] } } } ) ).gaps )[ 0 ].gap, 'unreached' );
+	assert.equal( Object.values( cWrite( cReport( [ { ...TEXT, draft: 'x'.repeat( 400 ) } ] ), cCal( TEXT_CAL ) ).gaps )[ 0 ].gap, 'shape' );
+	assert.equal( Object.values( cWrite( cReport( [ TEXT ], { styles: { 'text-transform': 'uppercase' } } ), cCal( TEXT_CAL ) ).gaps )[ 0 ].gap, 'shape' );
+} );
+
+const PRESENT = { kind: 'presence', key: 'element', draft: 'missing', live: 'present' };
+const PTRACE = { ref: 'cr-ref-c-1', path: '.sgs-fixture__badge' };
+const PRES_CAL = { presence: { hideBadge: { shows: [], hides: [ '.sgs-fixture__badge' ] }, 'layout=plain': { shows: [], hides: [ '.sgs-fixture__other' ] } } };
+
+test( 'MUST FAIL: a presence row for an element live shows and the draft lacks is written through the setting whose calibrated presence hides it', () => {
+	const t = cTree();
+	const r = cWrite( cReport( [ PRESENT ], { trace: PTRACE } ), cCal( PRES_CAL ), { tree: t } );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.after ] ), [ [ 'hideBadge', true ] ] );
+	assert.equal( t[ 0 ].attributes.hideBadge, true );
+} );
+
+test( 'a variant value whose calibrated presence hides the element is written as that value', () => {
+	const cal = cCal( { presence: { 'layout=plain': { shows: [], hides: [ '.sgs-fixture__badge' ] } } } );
+	assert.deepEqual( cWrite( cReport( [ PRESENT ], { trace: PTRACE } ), cal ).writes.map( ( w ) => [ w.attr, w.after ] ), [ [ 'layout', 'plain' ] ] );
+} );
+
+test( 'the negative control: a presence row with no calibrated presence entry for that element is a gap, never a write', () => {
+	const t = cTree();
+	const r = cWrite( cReport( [ PRESENT ], { trace: { ...PTRACE, path: '.sgs-fixture__unknown' } } ), cCal( PRES_CAL ), { tree: t } );
+	assert.equal( r.writes.length, 0 );
+	assert.deepEqual( t, cTree() );
+	assert.equal( Object.values( r.gaps )[ 0 ].gap, 'no-setting' );
+	assert.equal( cWrite( cReport( [ PRESENT ], { trace: PTRACE } ), cCal() ).writes.length, 0 );
+} );
+
+test( 'a presence row for an element the live page lacks has no node to name: it stays unwritten and is unattributed', () => {
+	const rep = cReport( [ { kind: 'presence', key: 'element', draft: 'present', live: 'missing' } ], { trace: null } );
+	assert.equal( cWrite( rep, cCal( PRES_CAL ) ).writes.length, 0 );
+	assert.equal( writableGroups( rep, { opening: null } ).contentUnattributed.length, 3 );
+} );
+
+test( 'a presence row at only some widths is refused: a global toggle would change the other widths', () => {
+	const rep = cReport( [ PRESENT ], { trace: PTRACE } );
+	rep.runs[ 0 ].pairs.ttl.diffs = [];
+	assert.equal( Object.values( cWrite( rep, cCal( PRES_CAL ) ).gaps )[ 0 ].gap, 'shape' );
+} );
+
+const LINK_EXTRA = { kind: 'auto', key: 'link-extra "Read more"', draft: 'plain', live: 'link' };
+const LINK_CAL = { link: { ctaUrl: { path: '.sgs-fixture__title', attr: 'href' } } };
+
+test( 'MUST FAIL: a link-extra row is written through the setting whose calibrated link is that element, clearing the link', () => {
+	const t = cTree();
+	const r = cWrite( cReport( [ LINK_EXTRA ] ), cCal( LINK_CAL ), { tree: t } );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.after ] ), [ [ 'ctaUrl', '' ] ] );
+	assert.equal( t[ 0 ].attributes.ctaUrl, '' );
+} );
+
+test( 'the negative control: a link row with no calibrated link entry is a gap; a link-missing row has no target to write', () => {
+	assert.equal( Object.values( cWrite( cReport( [ LINK_EXTRA ] ), cCal( { link: {} } ) ).gaps )[ 0 ].gap, 'no-setting' );
+	const missing = cWrite( cReport( [ { ...LINK_EXTRA, key: 'link-missing "Read more"', draft: 'link', live: 'plain' } ] ), cCal( LINK_CAL ) );
+	assert.equal( missing.writes.length, 0 );
+	assert.equal( Object.values( missing.gaps )[ 0 ].gap, 'no-target' );
+} );
+
+test( 'an ordinary auto row is not a content row and is never written', () => {
+	const rep = cReport( [ { kind: 'auto', key: 'words', draft: 'a', live: 'b' } ] );
+	assert.equal( cWrite( rep, cCal( LINK_CAL ) ).writes.length, 0 );
+	assert.equal( writableGroups( rep, { opening: null } ).content.length, 0 );
+} );
+
+// L8.4: the handover list. A row no block setting could hold because its content lives outside the tree.
+const siteInfoOwner = ( node ) => ( 'sgs/fixture-text' === node.name ? 'site-info' : null );
+const handed = ( ownerOf ) => {
+	const rep = cReport( [ TEXT ] );
+	const r = cWrite( rep, cCal( { text: {} } ), { ownerOf } );
+	return { rep, r, classes: classify( rep, { writes: r.writes, gaps: r.gaps, stateMap: { opening: null } } ) };
+};
+
+test( 'MUST FAIL: a text row whose block reads its words from outside the tree is a handover with its owner and evidence row', () => {
+	const { r, classes } = handed( siteInfoOwner );
+	assert.equal( Object.values( r.gaps )[ 0 ].gap, 'handover' );
+	const list = handoverOf( classes );
+	assert.equal( list.length, 1 );
+	assert.equal( list[ 0 ].owner, 'site-info' );
+	assert.equal( list[ 0 ].row.kind, 'text' );
+	assert.equal( list[ 0 ].row.draft, 'Delivery & returns' );
+	assert.equal( classes.missing.length, 0 );
+} );
+
+test( 'the boundary: the same row on a block nothing says reads outside the tree is Missing setting, never handover', () => {
+	const { classes } = handed( () => null );
+	assert.deepEqual( handoverOf( classes ), [] );
+	assert.deepEqual( classes.other.map( ( x ) => x.contentClass ), [ 'missing', 'missing', 'missing' ] );
+} );
+
+test( 'handover owners are the five the spec names, and an owner outside them is not trusted', () => {
+	assert.deepEqual( [ ...HANDOVER_OWNERS ].sort(), [ 'behaviour', 'content-page', 'product-data', 'site-info', 'woocommerce-text' ] );
+	assert.deepEqual( handoverOf( handed( () => 'made-up' ).classes ), [] );
+	assert.equal( handoverOf( handed( () => 'woocommerce-text' ).classes )[ 0 ].owner, 'woocommerce-text' );
+} );
+
+test( 'a handover is listed once per distinct issue, whatever the widths, and a behaviour row the walker cannot drive is a handover', () => {
+	const rep = cReport( [ TEXT, { kind: 'drive', key: 'tap .x', draft: 'opened', live: 'nothing' } ] );
+	const r = cWrite( rep, cCal( { text: {} } ), { ownerOf: siteInfoOwner } );
+	const list = handoverOf( classify( rep, { writes: r.writes, gaps: r.gaps, stateMap: { opening: null } } ) );
+	assert.deepEqual( list.map( ( h ) => h.owner ).sort(), [ 'behaviour', 'site-info' ] );
+	assert.deepEqual( list.find( ( h ) => 'site-info' === h.owner ).widths, [ 375, 768, 1440 ] );
+} );
+
+test( 'content rows widen what Solve writes without pulling box rows in: a box row stays derived, an unmapped state stays unmapped', () => {
+	const rep = cReport( [ { kind: 'box', key: 'h', draft: 10, live: 20, ref: 'cr-ref-c-1', path: '' } ] );
+	const out = writableGroups( rep, { opening: null } );
+	assert.equal( out.box.length, 3 );
+	assert.equal( out.content.length + out.groups.length, 0 );
+	assert.equal( classify( rep, { writes: [], gaps: {}, stateMap: { opening: null } } ).derived.length, 3 );
+	assert.equal( writableGroups( cReport( [ TEXT ] ), {} ).content.length, 0 );
+	assert.equal( cWrite( cReport( [ TEXT ] ), cCal( TEXT_CAL ), { stateMap: {} } ).writes.length, 0 );
+} );
+
+import { outsideOwner } from '../solve.mjs';
+test( 'MUST FAIL: a block\'s outside-the-tree owner is read from its render source, and a block with no such evidence has none', () => {
+	const src = { 'sgs/a': 'Sgs_Site_Info::get( x )', 'sgs/b': "wc_get_template( 'x' )", 'sgs/c': 'wc_get_product( $id )', 'sgs/d': '<?php echo esc_html( $attributes["title"] );' };
+	const owner = ( name, refs = {} ) => outsideOwner( { name, attributes: {} }, { refs, source: ( n ) => src[ n ] ?? null } );
+	assert.deepEqual( [ 'sgs/a', 'sgs/b', 'sgs/c', 'sgs/d', 'sgs/none' ].map( ( n ) => owner( n ) ), [ 'site-info', 'woocommerce-text', 'product-data', null, null ] );
+	assert.equal( outsideOwner( { name: 'core/template-part', attributes: { slug: 'x' } }, { source: () => null } ), 'content-page' );
+} );
+
+// L8.5: wholePage counts what lib/issue-classes.mjs::isIssue counts, link coverage included.
+import { isIssue } from '../lib/issue-classes.mjs';
+test( 'MUST FAIL TO COUNT: a link-missing row counts in wholePage exactly as it does under isIssue', () => {
+	const rep = { runs: [ { state: 'opening', width: 375, pairs: { p: { diffs: [ { kind: 'auto', key: 'link-missing "x"', ref: 'r', path: '', draft: 'link', live: 'plain' }, { kind: 'auto', key: 'words', ref: 'r', path: '' } ] } } } ] };
+	const rows = rep.runs[ 0 ].pairs.p.diffs;
+	assert.equal( rows.filter( isIssue ).length, 1 );
+	assert.equal( wholePage( { runs: [] }, rep, {} ).after, 1 );
+	assert.equal( wholePage( rep, rep, {} ).before, 1 );
+} );
+
+test( 'the report writes its whole-page line for any surface, from the final walk against the first', () => {
+	const before = { runs: [ { state: 'opening', width: 375, pairs: { p: { diffs: [ { kind: 'style', key: 'gap', ref: 'cr-ref-s-1', path: '', draft: '1px', live: '2px' } ] } } } ] };
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-solve-report-' ) );
+	try {
+		writeSolveReport( dir, { surface: 's', refsAdded: 0, rounds: 0, writes: [], wrong: [], gaps: {}, classes: { hardcode: [], missing: [], unresolved: [], derived: [], other: [] }, snaps: [], intended: 0, unmappedState: 0, handover: [], before, after: before } );
+		assert.equal( JSON.parse( fs.readFileSync( path.join( dir, 'solve-report.json' ), 'utf8' ) ).wholePage.after, 1 );
+		assert.match( fs.readFileSync( path.join( dir, 'solve-report.md' ), 'utf8' ), /\*\*Whole page/ );
+		assert.deepEqual( JSON.parse( fs.readFileSync( path.join( dir, 'solve-report.json' ), 'utf8' ) ).handover, [] );
+	} finally {
+		fs.rmSync( dir, { recursive: true, force: true } );
+	}
 } );

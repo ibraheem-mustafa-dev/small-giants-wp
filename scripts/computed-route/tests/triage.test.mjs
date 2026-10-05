@@ -296,3 +296,44 @@ test( 'MUST FAIL: a modifier row fits its property, and a pseudo-namespaced row 
 	assert.equal( v.class, 'W' );
 	assert.equal( v.decidedBy, 'attribute' );
 } );
+
+// L8.9: resolveIssue hands the ancestor hop the element paths it measured an open row of the row's property on
+// (ctx.measuredSlots). Without them reachedDescendants counts none, so the hop's write branch can never run.
+import { openDb } from '../lib/db.mjs';
+const hopDb = openDb();
+const HOP_PATHS = [ '.sgs-container__inner > h3', '.sgs-container__inner > p' ];
+const hopRow = ( over = {} ) => row( { key: 'color', draft: 'rgb(138, 130, 120)', live: 'rgb(0, 0, 0)', ref: 'cr-ref-s-1', path: '', pair: 'head',
+	owners: [ { ref: 'cr-ref-s-2', block: 'sgs-container', path: HOP_PATHS[ 0 ], tag: 'h3' } ], ...over } );
+const hopNodes = { 'cr-ref-s-1': { name: 'sgs/heading', attributes: {} }, 'cr-ref-s-3': { name: 'sgs/heading', attributes: {} }, 'cr-ref-s-2': { name: 'sgs/container', attributes: {} } };
+const hopCtx = ( over = {} ) => ctxOf( {
+	db: hopDb,
+	snapshot: { palette: [], spacing: [], fontSizes: [] },
+	canvas: true,
+	nodeFor: ( ref ) => hopNodes[ ref ] || null,
+	calFor: ( block ) => ( 'sgs/container' === block ? { settings: { textColour: { property: 'color', slot: '', slots: [ '' ], reaches: [ '', ...HOP_PATHS ] } } } : null ),
+	...over,
+} );
+
+test( 'MUST FAIL: the ancestor hop is given the element paths measured under its ancestors', () => {
+	let seen = null;
+	const r = hopRow();
+	run( { unresolved: [ r ] }, [ r ], hopCtx( { ancestorHop: ( input, ctx ) => ( seen = ctx, null ) } ) );
+	assert.deepEqual( seen.measuredSlots, [ HOP_PATHS[ 0 ] ] );
+} );
+
+test( 'MUST FAIL: with measuredSlots supplied the real hop writes the one-descendant ancestor setting, so the row is T', () => {
+	const r = hopRow();
+	const v = run( { unresolved: [ r ] }, [ r ], hopCtx(), { head: { styles: { color: 'rgb(138, 130, 120)' } } } ).verdicts[ 0 ];
+	assert.equal( v.class, 'T' );
+	assert.equal( v.decidedBy, 'resolver-writes' );
+	assert.deepEqual( v.evidence.find( ( e ) => 'resolver' === e.check ).wouldWrite, [ 'textColour' ] );
+} );
+
+test( 'the negative control: two measured descendants under that ancestor refuse the write (R-47-5), so the row stays W with no write', () => {
+	const a = hopRow();
+	const b = hopRow( { pair: 'para', ref: 'cr-ref-s-3', owners: [ { ref: 'cr-ref-s-2', block: 'sgs-container', path: HOP_PATHS[ 1 ], tag: 'p' } ] } );
+	const v = run( { unresolved: [ a, b ] }, [ a, b ], hopCtx(), { head: { styles: { color: 'rgb(138, 130, 120)' } }, para: { styles: { color: 'rgb(138, 130, 120)' } } } ).verdicts[ 0 ];
+	assert.equal( v.class, 'W' );
+	assert.equal( v.decidedBy, 'enclosing' );
+	assert.equal( v.evidence.find( ( e ) => 'resolver' === e.check ).wouldWrite, undefined );
+} );
