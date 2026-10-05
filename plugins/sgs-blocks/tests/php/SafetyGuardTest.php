@@ -57,9 +57,7 @@ use SGS\Blocks\Sgs_Safety_Guard;
 
 if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
-	/**
-	 * @covers \SGS\Blocks\Sgs_Safety_Guard
-	 */
+	#[\PHPUnit\Framework\Attributes\CoversClass( \SGS\Blocks\Sgs_Safety_Guard::class )]
 	class SafetyGuardTest extends \PHPUnit\Framework\TestCase {
 
 		protected function setUp(): void {

@@ -266,17 +266,16 @@ class LeanSeedSizeTest extends TestCase {
 			)
 		);
 
-		// Emit baseline for future regression detection.
+		// Print the measured size for regression tracking; plain output, so it never counts as a notice.
 		if ( $size_bytes > 0 ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- debug output in test only.
-			trigger_error(
+			fwrite( // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- test output only.
+				STDERR,
 				sprintf(
 					'Lean-seed size: %d bytes (%.2f KB) [baseline: 22408B, cap: 24576B, headroom: %d bytes]',
 					(int) $size_bytes,
 					(float) $size_kb,
 					(int) ( 24576 - $size_bytes )
-				),
-				E_USER_NOTICE
+				) . PHP_EOL
 			);
 		}
 	}

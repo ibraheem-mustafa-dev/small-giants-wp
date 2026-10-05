@@ -93,9 +93,8 @@ require_once __DIR__ . '/../../includes/class-org-website-schema.php';
 
 /**
  * Class ResponsiveLogoChainTest
- *
- * @covers \SGS\Blocks\Sgs_Site_Info
  */
+#[\PHPUnit\Framework\Attributes\CoversClass( \SGS\Blocks\Sgs_Site_Info::class )]
 class ResponsiveLogoChainTest extends TestCase {
 
 	/** Attachment ID standing in for a logo chosen in Site Info. */
@@ -288,10 +287,9 @@ class ResponsiveLogoChainTest extends TestCase {
 	/**
 	 * Anything that is not a positive integer naming an image is stored as ''.
 	 *
-	 * @dataProvider invalid_logo_values
-	 *
 	 * @param mixed $value Raw submitted value.
 	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'invalid_logo_values' )]
 	public function test_invalid_values_are_stored_empty( $value ): void {
 		$this->set_site_info_logo( self::SITE_INFO_LOGO );
 

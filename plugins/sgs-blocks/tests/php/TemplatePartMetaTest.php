@@ -97,9 +97,8 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
 	/**
 	 * Unit tests for Sgs_Template_Part_Meta slug sanitisation and round-trip integrity.
-	 *
-	 * @covers \SGS\Blocks\Sgs_Template_Part_Meta
 	 */
+	#[\PHPUnit\Framework\Attributes\CoversClass( \SGS\Blocks\Sgs_Template_Part_Meta::class )]
 	class TemplatePartMetaTest extends \PHPUnit\Framework\TestCase {
 
 		protected function setUp(): void {

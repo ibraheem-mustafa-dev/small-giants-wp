@@ -47,9 +47,8 @@ require_once __DIR__ . '/../../includes/class-sgs-site-info-cache-purge.php';
 
 /**
  * Class SiteInfoCachePurgeTest
- *
- * @covers \SGS\Blocks\Sgs_Site_Info_Cache_Purge
  */
+#[\PHPUnit\Framework\Attributes\CoversClass( \SGS\Blocks\Sgs_Site_Info_Cache_Purge::class )]
 class SiteInfoCachePurgeTest extends TestCase {
 
 	protected function setUp(): void {

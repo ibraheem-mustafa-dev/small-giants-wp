@@ -41,9 +41,7 @@ use SGS\Blocks\Sgs_Admin_Menu;
 
 if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
-	/**
-	 * @covers \SGS\Blocks\Sgs_Admin_Menu
-	 */
+	#[\PHPUnit\Framework\Attributes\CoversClass( \SGS\Blocks\Sgs_Admin_Menu::class )]
 	class AdminMenuTest extends \PHPUnit\Framework\TestCase {
 
 		protected function setUp(): void {

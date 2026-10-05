@@ -215,9 +215,7 @@ use SGS\Blocks\Sgs_Header_Rules;
 
 if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
-	/**
-	 * @covers \SGS\Blocks\Sgs_Header_Rules
-	 */
+	#[\PHPUnit\Framework\Attributes\CoversClass( \SGS\Blocks\Sgs_Header_Rules::class )]
 	class HeaderRulesTest extends \PHPUnit\Framework\TestCase {
 
 		protected function setUp(): void {

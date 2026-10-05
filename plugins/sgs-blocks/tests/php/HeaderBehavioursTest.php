@@ -87,9 +87,8 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
 	/**
 	 * Test suite for Sgs_Header_Behaviours body_class injection.
-	 *
-	 * @covers \SGS\Blocks\Sgs_Header_Behaviours
 	 */
+	#[\PHPUnit\Framework\Attributes\CoversClass( \SGS\Blocks\Sgs_Header_Behaviours::class )]
 	class HeaderBehavioursTest extends \PHPUnit\Framework\TestCase {
 
 		/**

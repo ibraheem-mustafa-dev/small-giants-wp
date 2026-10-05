@@ -151,9 +151,7 @@ use SGS\Blocks\Sgs_Site_Info_Admin_Notices;
 
 if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
-	/**
-	 * @covers \SGS\Blocks\Sgs_Site_Info_Admin
-	 */
+	#[\PHPUnit\Framework\Attributes\CoversClass( \SGS\Blocks\Sgs_Site_Info_Admin::class )]
 	class SiteInfoAdminTest extends \PHPUnit\Framework\TestCase {
 
 		protected function setUp(): void {

@@ -159,9 +159,8 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
 	/**
 	 * Seeder coverage.
-	 *
-	 * @covers \SGS\Blocks\Sgs_Template_Part_Seeder
 	 */
+	#[\PHPUnit\Framework\Attributes\CoversClass( \SGS\Blocks\Sgs_Template_Part_Seeder::class )]
 	class TemplatePartSeederTest extends \PHPUnit\Framework\TestCase {
 
 		private string $fixtures_dir;

@@ -291,11 +291,10 @@ final class GoogleReviewsAttrsTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider attributeGroups
-	 *
 	 * @param array<string, mixed> $attrs   Attributes for the group.
 	 * @param array<int, string>   $needles CSS fragments each must be emitted.
 	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'attributeGroups' )]
 	public function test_each_attribute_group_emits_its_scoped_css( array $attrs, array $needles ): void {
 		$css = $this->render( $attrs )['css'];
 		foreach ( $needles as $needle ) {
@@ -307,11 +306,10 @@ final class GoogleReviewsAttrsTest extends TestCase {
 	 * NEGATIVE CONTROL: the same attributes under a broken name emit none of the fragments. A green run of the
 	 * test above therefore proves the mapping from the attribute to the rule, not the mere presence of CSS.
 	 *
-	 * @dataProvider attributeGroups
-	 *
 	 * @param array<string, mixed> $attrs   Attributes for the group.
 	 * @param array<int, string>   $needles CSS fragments each must be emitted.
 	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'attributeGroups' )]
 	public function test_negative_control_a_broken_attribute_name_emits_none_of_the_fragments( array $attrs, array $needles ): void {
 		$broken = array();
 		foreach ( $attrs as $key => $value ) {

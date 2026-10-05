@@ -57,9 +57,8 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
 	/**
 	 * Unit tests for the Sgs_Footer_Rules engine (FR-S3-3, Spec 17 Wave 2).
-	 *
-	 * @covers \SGS\Blocks\Sgs_Footer_Rules
 	 */
+	#[\PHPUnit\Framework\Attributes\CoversClass( \SGS\Blocks\Sgs_Footer_Rules::class )]
 	class FooterRulesTest extends \PHPUnit\Framework\TestCase {
 
 		/**

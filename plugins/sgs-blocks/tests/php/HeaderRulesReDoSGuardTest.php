@@ -33,11 +33,9 @@ use SGS\Blocks\Sgs_Header_Rules;
 
 if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
-	/**
-	 * @covers \SGS\Blocks\Sgs_Header_Rules_ReDoS_Guard::validate_at_storage
-	 * @covers \SGS\Blocks\Sgs_Header_Rules_ReDoS_Guard::run_guarded
-	 * @covers \SGS\Blocks\Sgs_Header_Rules::evaluate
-	 */
+	#[\PHPUnit\Framework\Attributes\CoversMethod( \SGS\Blocks\Sgs_Header_Rules_ReDoS_Guard::class, 'validate_at_storage' )]
+	#[\PHPUnit\Framework\Attributes\CoversMethod( \SGS\Blocks\Sgs_Header_Rules_ReDoS_Guard::class, 'run_guarded' )]
+	#[\PHPUnit\Framework\Attributes\CoversMethod( \SGS\Blocks\Sgs_Header_Rules::class, 'evaluate' )]
 	class HeaderRulesReDoSGuardTest extends \PHPUnit\Framework\TestCase {
 
 		protected function setUp(): void {

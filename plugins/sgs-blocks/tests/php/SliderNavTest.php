@@ -96,10 +96,9 @@ final class SliderNavTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider placements
-	 *
 	 * @param string $placement A placement.
 	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'placements' )]
 	public function test_each_placement_renders_its_class_in_reading_order( string $placement ): void {
 		$html = $this->render( array( 'navPosition' => $placement ) );
 		$this->assertStringContainsString( 'sgs-slider-nav--' . $placement . ' ', $html );
@@ -124,10 +123,9 @@ final class SliderNavTest extends TestCase {
 	 * NEGATIVE CONTROL: the same value under a broken attribute name (or the retired `overlay` value)
 	 * renders the default below-end, never the placement, so the positive test depends on the mapping.
 	 *
-	 * @dataProvider placements
-	 *
 	 * @param string $placement A placement.
 	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'placements' )]
 	public function test_negative_control_a_broken_name_or_retired_value_falls_back_to_below_end( string $placement ): void {
 		$html = $this->render( array( 'xnavPosition' => $placement ) );
 		$this->assertStringContainsString( 'sgs-slider-nav--below-end ', $html );
@@ -263,10 +261,9 @@ final class SliderNavTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider placements
-	 *
 	 * @param string $placement A placement.
 	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'placements' )]
 	public function test_every_placement_has_a_grid_template_in_the_stylesheet( string $placement ): void {
 		$selector = 'below-end' === $placement ? '.sgs-slider-nav' : '.sgs-slider-nav--' . $placement;
 		$body     = '';
