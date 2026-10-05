@@ -569,6 +569,59 @@ surely as a bare `UPDATE` is wiped by the next reseed, and both fail
 `db-consistency/check_css_property_reseed.py` invariant B. **Routing means declaring in
 `attr-classification-overrides.json`.**
 
+#### R1 decided (C3.1): 2 rows routed of the 32, and the other 31 must stay NULL. Decided 2026-10-05.
+
+The 32 are confirmed exactly: `css_property IS NULL AND enum_values IS NULL` on `sgsChildWidth` 10,
+`sgsHoverDurationMs` 9, `sgsHoverZoomDuration` 9, `transitionEasing` 3, `panelSize` 1, with **none**
+blocked by `enum_values`. (For scale: 4,438 rows have a NULL `css_property` and 3,805 of those have
+NULL `enum_values`. The plan's "188" is the audited subset that the route actually meets; most NULL
+rows are behaviour settings such as `sgsCustomCss` and `sgsCondition*` that correctly paint nothing.)
+
+**But the premise that the 32 are "routable" is wrong, and the database is right as it stands.**
+`src/blocks/extensions/extension-roster.json`, which seeds the `source='sgs-ext'` rows, states the
+policy in its own `_meta.css_slots`: attributes that "compose into one declaration" or "paint a slot
+a block can already own (width, hover shadow, image zoom) keep css_property NULL", and "omitted =
+NULL: no single CSS property to route". `sgsHoverOpacity` and `sgsHoverIndent` **do** declare theirs,
+so these NULLs are a design decision, not an oversight. No build-time injector reads any of the five
+families; every reader is a PHP `render_block` filter or a `render.php`.
+
+**Routed: 2 rows, both on `sgs/hero`.**
+
+| Row | `css_property` | `css_element` | Evidence |
+|---|---|---|---|
+| `sgs/hero::transitionEasing` | `transition,transition-timing-function` | NULL (root) | `hero/style.css::.sgs-hero` is the **sole** consumer: `transition-duration: var(--sgs-transition-duration, 300ms); transition-timing-function: var(--sgs-transition-easing, ease-in-out); transition-property: background-color, color, border-color`. Emitted by `includes/helpers-tokens.php::sgs_transition_vars`, called from `hero/render.php` |
+| `sgs/hero::transitionDuration` | `transition,transition-duration` | NULL (root) | The same rule, the same element. Routed **with** easing because they are one pair: routing easing alone would leave a `transition-duration` row gapping while its twin resolved |
+
+The spelling and the NULL `css_element` follow the established precedent exactly: 12 sibling blocks
+using the same helper are already routed this way (`sgs/brand-strip`, `sgs/card-grid`,
+`sgs/info-box`, `sgs/testimonial` all carry `transition,transition-duration` with `css_element` NULL).
+
+**Held, 31 of the 32, each with the reason it must stay NULL.** A wrong `css_element` is worse than
+NULL, and a row routed onto a conditional declaration is worse still: the resolver would write a
+value that paints nothing, closing one row and opening another.
+
+| Family | Rows | Why it stays NULL |
+|---|---|---|
+| `sgsChildWidth` | 10 | It paints `width` on the block root (`includes/child-sizing.php::child_sizing_declarations`, a per-instance scoped rule on `.sgs-child-sizing.<uid>`), **but only when that tier's `sgsChildSizing` is `fixed`**. The resolver cannot express that precondition, so a write without the enum set paints nothing. The roster says to keep it NULL because it composes with `sgsChildSizing`, and the roster is right |
+| `sgsHoverDurationMs` | 9 | **The same setting as `sgsHoverDuration` in different units**, on the same 9 blocks: `includes/hover-effects/vars.php::build_hover_vars` emits one `--sgs-hover-duration` from whichever is set, and the editor labels the number "Overrides the duration above. 0 = use it." Routing both would resolve one lookup to two attributes and fail invariant C with `AmbiguousLayerAttrError`. Routing either is wrong anyway: the only generic reader is the shared `.sgs-has-hover` `transition` shorthand in `assets/css/extensions.css`, which lists six properties and applies only while a hover effect is active, so it paints **no single property** |
+| `sgsHoverZoomDuration` | 9 | Four are **inert** — `container`, `google-reviews`, `pricing-table` and `whatsapp-cta` list `imageZoom` in `supports.sgs.hoverExcludeControls`, so the variable is never emitted and the control is hidden; a marker would have no element to land on. Of the rest, `info-box`, `media` and `product-card` land on `.sgs-media-el` through a **shared** selector, which is not a BEM element of the block; `cta-section` lands on the root's `::before`, which has no element name at all; and `team-member`'s real target is an `img` **inside** `.sgs-team-member__photo`, so a `css_element` of `photo` would send the marker to the wrapper |
+| `transitionEasing` | 2 of 3 | `gallery` consumes the variable on **8** different elements (carousel arrows, dot, item, `__img-wrap::after`, img, overlay, grayscale img, caption) and `post-grid` on **3** (`__card`, `__img`, `__badge`), with the root carrying only the default. No single `css_element` is true |
+| `panelSize` | 1 | `nav-drawer/render.php::$sgs_nd_geometry_for_anchor` uses it as a **`min()` cap** — `width:min(<panelSize>, 100vw)` — and only for 3 of its 7 anchors (`side-start`, `side-end`, `trigger`, `centred`). It is ignored for `full-screen`, `header`, `container` and `header-box`, which set their own width. Conditional on the anchor, so the same objection as `sgsChildWidth` |
+
+**What this means for Wave 3.** C3.1 declares **2 rows** in
+`plugins/sgs-blocks/scripts/attr-classification-overrides.json` and nowhere else, and C3.4 then
+recalibrates **`sgs/hero` only**, since that is the one block whose routing columns changed.
+`css_element` drives no resolution (`grep -c css_element scripts/computed-route/lib/resolve.mjs`
+returns 0), so the measurable gain is whatever a `transition-duration` or
+`transition-timing-function` row on hero's root now resolves — a small number, honestly reported.
+
+**The far larger routing finding is that 31 of the 32 were never routable**, and recording that
+stops a future session re-opening them. The 13 rows lane L5 hands over
+(`DB_STATE_MISSING_HOVER` 11 and `STATE_FOCUS_UNROUTED` 2, where the DB row's `css_state` is NULL
+rather than its `css_property`) are a **different** question — a missing state, not a missing
+property — and they are genuinely routing data. They are listed in L5's commit and belong to a
+later routing pass, not to C3.1's 32.
+
 **Measure the closure on the 32 before extending.** Any figure for how many rows this unblocks is **unproven** until
 a batch is routed and the affected blocks are recalibrated, because `css_element` does not drive resolution.
 Replan from what the 32 actually close.
