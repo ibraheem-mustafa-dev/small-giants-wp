@@ -9,6 +9,7 @@ import { splitProperty, resolve } from './resolve.mjs';
 import { draftValues, plainLength, cssProp, settingState, openRows, writableGroups } from './solve-rows.mjs';
 import { entranceStart } from './entrance.mjs';
 import { referenceOf } from './references.mjs';
+import { sourcePass } from './triage-source.mjs';
 import { USED_VALUES } from '../solve.mjs';
 
 export const TRIAGE_CLASSES = [ 'W', 'F', 'T', 'U' ];
@@ -294,44 +295,6 @@ export function fittingSettings( issue, ctx ) {
 	return out;
 }
 
-const camel = ( s ) => s.replace( /-([a-z])/g, ( m, c ) => c.toUpperCase() );
-// The subject compound of each selector in a list (the last compound, :has() and :not() arguments emptied two levels
-// deep): a class named only inside :has() or on an ancestor is not the element the rule styles.
-const subjects = ( sel ) => sel.replace( /\([^()]*\)/g, '' ).replace( /\([^()]*\)/g, '' ).split( ',' ).map( ( x ) => x.trim().split( /\s*[\s>+~]\s*/ ).pop() );
-
-// Source pass, string search only (no PHP or CSS parsing): for each block involved (the row's own and its enclosing
-// blocks), whether render.php mentions each setting name, and which style.css rules name the element's class (the last
-// .sgs- class of its path, else the block root) and declare the property or its shorthand.
-export function sourcePass( issue, names, ctx ) {
-	const r = issue.rows[ 0 ];
-	const prop = cssProp( r.key );
-	const { short } = splitProperty( prop );
-	const blocks = [ ...new Set( [ r.ref && ctx.nodeFor( r.ref )?.name, ...( r.owners || [] ).map( ( o ) => ctx.nodeFor( o.ref )?.name ) ].filter( Boolean ) ) ];
-	const terms = [ ...new Set( [ ...names, camel( prop ), camel( short ) ] ) ];
-	const out = { render: [], rules: [] };
-	for ( const block of blocks ) {
-		const slug = block.replace( /^[^/]+\//, '' );
-		const php = ctx.readSource( slug, 'render.php' );
-		if ( null !== php ) {
-			out.render.push( { file: `${ slug }/render.php`, mentions: terms.filter( ( t ) => php.includes( t ) ), absent: terms.filter( ( t ) => ! php.includes( t ) ) } );
-		}
-		const css = ctx.readSource( slug, 'style.css' );
-		if ( null === css ) {
-			continue;
-		}
-		const cls = ( String( r.path || '' ).match( /\.sgs-[\w-]+/g ) || [] ).pop() || `.sgs-${ slug }`;
-		const named = new RegExp( `${ cls.replace( /[.-]/g, '\\$&' ) }(?![\\w-])` );
-		const declares = new RegExp( `(?:^|;)\\s*(${ [ prop, short ].map( ( p ) => p.replace( /-/g, '\\-' ) ).join( '|' ) })\\s*:([^;]*)` );
-		for ( const m of css.replace( /\/\*[\s\S]*?\*\//g, '' ).matchAll( /([^{}]+)\{([^{}]*)\}/g ) ) {
-			const d = declares.exec( m[ 2 ] );
-			if ( d && subjects( m[ 1 ] ).some( ( c ) => named.test( c ) && ( !! r.pseudo || ! c.includes( '::' ) ) ) ) {
-				out.rules.push( { file: `${ slug }/style.css`, selector: m[ 1 ].trim().replace( /\s+/g, ' ' ), declaration: `${ d[ 1 ] }:${ d[ 2 ].trim() }` } );
-			}
-		}
-	}
-	return out;
-}
-
 // One issue's verdict. Order: a box row is a consequence (W) or unexplained (U); an entrance the tree can start on load
 // (lib/entrance.mjs) is T; then artefacts (transient, used value, consequence: W); then the resolver (a new value it
 // would write: T; blocked by the guard or a conflict: W; the setting already holds the draft value, or Solve wrote it
@@ -389,7 +352,7 @@ export function triageIssue( issue, ctx ) {
 
 // Every issue of a Solve report: { verdicts, counts }. walk: the final walker report the Solve report classified.
 // ctx: { stateMap, nodeFor(ref), ancestorsOf(ref), attrRows(block), roster, supportsFor(block), calFor(block),
-// readSource(slug, file), refs?, resolver?(input, calibration) or db and snapshot, reportGaps?, reportWrites? }.
+// readSource(slug, file), helpers? and blockPhp?(slug) (lib/triage-source.mjs::sourcePass), refs?, resolver?(input, calibration) or db and snapshot, reportGaps?, reportWrites? }.
 export function triage( report, walk, surface, ctx ) {
 	const full = { ...ctx, walk, open: openRows( walk ).filter( ( x ) => VISUAL.includes( x.kind ) ), groups: writableGroups( walk, ctx.stateMap ).groups, reportGaps: ctx.reportGaps ?? report.gaps, reportWrites: ctx.reportWrites ?? report.writes };
 	const verdicts = issuesOf( report, surface ).map( ( issue ) => triageIssue( issue, full ) );

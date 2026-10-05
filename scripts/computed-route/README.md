@@ -26,7 +26,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
 | `sweep.mjs` | Sweep command: `--surfaces <surfaces.json> [--date YYYY-MM-DD] [--out <file>]`; reads each surface's newest `solve-report.json` and writes `<build>/qa/sweep/<date>/sweep.json`: one row per distinct open issue across the site `{ surface, ref, path, block, property, widths, state, kind, class, reason, report }`, totals per surface and class, and the surfaces with no report. |
 | `register-sweep.mjs` | Register sweep command (A4): `bundle --register <md> --sweep <json> --pairs <qa/pairs dir> --out <folder>` writes one input file per A4 group (items, the sweep rows and measured refs of their surfaces, the status rules; agent prompt `.claude/plans/a4-agent-prompt.md`) and exits 1 on an item in no group; `merge … --verdicts <json> … --out <file>` checks the agents' verdicts and writes a copy of the register with a Sweep column (never in place). |
-| `triage.mjs` | Triage command (B1): `--client <slug> --surface <s> [--report <solve-report.json>] [--out <file>]`; reads the surface's newest (or given) Solve report and its final walk (highest `round-N/report.json`), every surface tree, the DB read-only, calibration, the extension roster and block sources; writes `<build>/qa/triage/<surface>.json` (a candidate class W, F, T or U with evidence per distinct issue) and prints counts by class. |
+| `triage.mjs` | Triage command (B1): `--client <slug> --surface <s> [--report <solve-report.json>] [--out <file>]`; reads the surface's newest (or given) Solve report and its final walk (highest `round-N/report.json`), every surface tree, the DB read-only, calibration, the extension roster, block sources and every PHP file under the plugin's `includes/`; writes `<build>/qa/triage/<surface>.json` (a candidate class W, F, T or U with evidence per distinct issue) and prints counts by class. |
 | `pairs.mjs` | Block pairing command: pairs every block of a surface with its draft element through the walker's word matcher, re-checks each kept finder at 375 and 768, and writes `<surface>.full.mjs` (the hand config plus one pair per block) and `qa/pairs/<surface>.json` (kept pairs and every left-out block with its reason). A surface's `walkerFull` in `surfaces.json` makes Solve walk it. |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`) and `image`, a media object on that site written into background-image markers and overlay preconditions. |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain, optional variants and optional `before` blocks (placed ahead of the instance, for a block that reads the page, such as a table of contents) per calibrated block. |
@@ -50,7 +50,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/pairs-page.mjs` | Block pairing's in-page collectors: tagged words, live block boxes and text runs, draft chains (repeated words placed nearest the sure ones), form controls by identity, hand pair elements, and the draft opened through its navigation. |
 | `lib/sweep.mjs` | Sweep library: the newest report per surface, issue rows per report (`wholePage`'s definition) and the site aggregate with shared rows counted once. |
 | `lib/register-sweep.mjs` | Register sweep library: register tables as items, the eight A4 groups, section to surface mapping, verdict checking against the sweep and the pairings, the Sweep column writer and the per-group bundle. |
-| `lib/triage.mjs` | Triage library: issues by `wholePage`'s key, the mechanical checks (fitting attributes including NULL css_property rows and discovered enums, roster extensions, enclosing calibration, consequence, transient, used value), the read-only resolver pass, the string-level source pass (a block's own `render.php` and `style.css`; `includes/` helpers are not read) and the verdict order. |
+| `lib/triage.mjs` | Triage library: issues by `wholePage`'s key, the mechanical checks (fitting attributes including NULL css_property rows and discovered enums, roster extensions, enclosing calibration, consequence, transient, used value), the read-only resolver pass and the verdict order. |
+| `lib/triage-source.mjs` | Triage's source pass (string search): a block's `render.php` mentions, its `style.css` rules for the element, and the PHP helpers its `render.php` reaches two hops deep (`sgs_*` functions, classes, required `includes/` files) that read the row's setting or emit the property, cited as `file::symbol`. |
 | `lib/guard.mjs` | The regression guard: reverts a write calibration names, else tries one suspect at a time and lets the next walk decide. |
 | `lib/ledger.mjs` | Ledger library: rules, matching, stale entries, accept migration, entries from report rows. |
 | `tests/db.test.mjs` | R-47-2: read-only database. |
@@ -70,6 +71,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/sweep.test.mjs` | The sweep (A3): a surface's issue total equals `wholePage`'s distinct count; a row two surfaces walking one config share counts once (`alsoIn`), while block-less rows of the same pair name from two configs stay two; a surface with no report is unmeasured; another surface's block is not counted. |
 | `tests/register-sweep.test.mjs` | The register sweep (A4): parsing and grouping; a clean verdict on a ref with an open row, or on a ref no pairing measured, is rejected; a site-wide item is clean only when every covered item is clean and measured; a missing or doubled verdict is rejected; the merge leaves every original cell byte-identical. |
 | `tests/triage.test.mjs` | B1: an extension's width setting is never F (MUST FAIL); a box row following its parent's style row by the same amount is W, a consequence (MUST FAIL); no fit plus resolver no-setting is F with its stylesheet rule; a calibrated setting not reaching the element never decides; discovered enums, transient, used value, T and hardcode. |
+| `tests/triage-source.test.mjs` | B1 source pass: a gap a class under `includes/` emits is cited by `file::symbol` with the setting it reads (MUST FAIL); calls traced two hops through functions, classes and required files; a word in prose is not a citation. |
 | `tests/walker-devtools.test.mjs` | A-1 in headless Chromium on local HTML: the walker settles on finished animations, forces `:hover` on every pair, reads declared sizes from the matched rules and a text run's row spacing. |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching); flow position rows and the identity transform (GAP-CHECKLIST section 17). |
 
@@ -300,11 +302,18 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `resolveIssue(issue, ctx)` → the resolver read-only as `writeRound` builds it: `{ gap, detail }` or `{ writes, on, holds }`.
 - `holdsValue(current, value, merge)` → whether an attribute already holds a write.
 - `fittingSettings(issue, ctx)` → attribute, discovered, extension and enclosing evidence (`reaches: false` where calibration shows a setting not reaching the element).
-- `sourcePass(issue, names, ctx)` → `{ render, rules }`: setting names `render.php` mentions and `style.css` rules declaring the property for the element.
 - `triageIssue(issue, ctx)` → `{ key, class, decidedBy, evidence, source? }`.
 - `triage(report, walk, surface, ctx)` → `{ verdicts, counts }`.
 
+### `lib/triage-source.mjs`
+- `phpSymbols(text, file)` → `{ functions, classes }` one PHP file defines (an `sgs_*` function's body; a class's whole file).
+- `helperIndex(files)` → `{ functions, classes, files }` over many files (the first definition wins).
+- `callsIn(text)` → `{ functions, classes, requires }` a PHP text calls, uses or requires.
+- `helperSources(entries, index, depth?)` → `[{ file, symbol, text }]` the helpers PHP texts reach, nearest first (depth 2 by default).
+- `sourcePass(issue, names, ctx)` → `{ render, rules, helpers }`: setting names `render.php` mentions, `style.css` rules declaring the property for the element, and the helpers it reaches that read a setting (quoted key) or emit the property.
+
 ### `triage.mjs`
+- `phpFiles(dir)` → every PHP file under a folder as `{ file, text }` (plugin-relative paths).
 - `finalWalk(reportFile)` → the highest `round-N/report.json` beside a Solve report, or null.
 - `treeIndex(buildDir, manifest)` → `{ nodes, ancestors }` for every ref in every surface tree.
 - `runTriage({ client, surface, report?, out? })` → `{ verdicts, counts, file }`.

@@ -4,7 +4,8 @@
 //   node scripts/computed-route/triage.mjs --client <slug> --surface <s> [--report <solve-report.json>] [--out <file>]
 // Reads sites/<client>/build/surfaces.json, every surface tree it names (refs from an embedding page resolve there),
 // the report (default: the surface's newest) and the final walker report beside it (the highest round-N/report.json),
-// the framework DB read-only, calibration files, the extension roster, and block sources. Writes only the triage file
+// the framework DB read-only, calibration files, the extension roster, block sources and every PHP file under the
+// plugin's includes/ (the helpers a render.php reaches, lib/triage-source.mjs). Writes only the triage file
 // (default <build>/qa/triage/<surface>.json) and prints one summary line.
 import fs from 'fs';
 import path from 'path';
@@ -16,10 +17,26 @@ import { readTree, walk as walkTree, refOf } from './lib/tree.mjs';
 import { detectReferences } from './lib/references.mjs';
 import { latestReport } from './lib/sweep.mjs';
 import { triage } from './lib/triage.mjs';
+import { helperIndex } from './lib/triage-source.mjs';
 import { calibrationFor } from './solve.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ROSTER = path.join( BLOCKS_DIR, 'extensions', 'extension-roster.json' );
+const PLUGIN = path.resolve( BLOCKS_DIR, '..', '..' );
+
+// Every PHP file under a folder, as { file (relative to the plugin, forward slashes), text }.
+export function phpFiles( dir ) {
+	const out = [];
+	for ( const e of fs.existsSync( dir ) ? fs.readdirSync( dir, { withFileTypes: true } ) : [] ) {
+		const f = path.join( dir, e.name );
+		if ( e.isDirectory() ) {
+			out.push( ...phpFiles( f ) );
+		} else if ( e.name.endsWith( '.php' ) ) {
+			out.push( { file: path.relative( PLUGIN, f ).split( path.sep ).join( '/' ), text: fs.readFileSync( f, 'utf8' ) } );
+		}
+	}
+	return out;
+}
 const COLS = 'attr_name, attr_type, css_property, css_element, css_state, css_tier, tier_shape, source, role';
 
 // The final walker report of a Solve run: the highest-numbered round-N/report.json beside the solve report.
@@ -105,6 +122,8 @@ export function runTriage( { client, surface, report: reportArg = null, out = nu
 		supportsFor: ( block ) => supports[ block ] || {},
 		calFor: calibrationFor,
 		refs: detectReferences(),
+		helpers: helperIndex( [ ...phpFiles( path.join( PLUGIN, 'includes' ) ), ...phpFiles( BLOCKS_DIR ).filter( ( f ) => ! f.file.endsWith( '/render.php' ) ) ] ),
+		blockPhp: ( slug ) => phpFiles( path.join( BLOCKS_DIR, slug ) ).filter( ( f ) => ! f.file.endsWith( '/render.php' ) ).map( ( f ) => f.text ),
 		readSource: ( slug, file ) => {
 			const f = path.join( BLOCKS_DIR, slug, file );
 			return fs.existsSync( f ) ? fs.readFileSync( f, 'utf8' ) : null;
