@@ -128,10 +128,19 @@ located 1,810 to 2,868, dead 711 to 605, noMarker 357 to 117, rejected 7 to 0; o
 ### Parked from Session 0
 
 Each item is named so nothing is lost; none blocks Session A.
-- **P0-1 `block-edit.test.js`:** 8 render failures (`TypographyControlsFields` renders an undefined element), pre-existing.
-- **P0-2 PHPUnit:** 26 failures and 3 errors, pre-existing at HEAD `983429193`: AdminMenu, ConfiguratorCompat,
-  ContainerWrapper goldens, HeaderBehaviours, PricingEngine, PricingTable ribbon, RenderOutput, ResponsiveLogo (5),
-  ReviewsEmptyRender, StyleVariationManifest (12), Timeline imageControls, LeanSeedSize.
+- **P0-1 jest — DONE 2026-10-05 (`3f6cc9b74`):** `npx jest` → `Test Suites: 24 passed, 24 total`, `Tests: 294 passed,
+  294 total`. Cause: the WordPress mocks lacked what the editor code renders (`BaseControl.VisualLabel` from the
+  core-typography rebuild `bf2c903ba`, ref forwarding, `TabPanel`'s function child, `useRegistry`); fixed in the mocks.
+  The same run cleared four other red suites (stale google-reviews barrel mock, wishlist labels, schema baseline
+  refreshed for deliberate changes, tier fixture scripts now registered with jest), and fixed one source warning:
+  `DesignTokenPicker.js` now names the `statesProvidedByParent` marker.
+- **P0-2 PHPUnit — DONE 2026-10-05 (`34b92c5e5`, `a930251c1`):** `php vendor/bin/phpunit` → `Tests: 2055,
+  Assertions: 5988, Skipped: 1` (green; the skip is the opt-in real-kses proof). One code bug fixed:
+  `responsive-logo/render.php` printed an empty `data-animation=""` (built, NOT deployed: waits for Session C's
+  deploy). Every other failure was a stale test, each updated to the commit that changed the behaviour on purpose
+  (cited in `34b92c5e5`); `StyleVariationManifestTest` is now `ThemeSnapshotManifestTest` on
+  `sites/<client>/theme-snapshot.json`. The 18 PHPUnit doc-comment deprecations became attributes, and LeanSeedSize
+  prints its size instead of raising a notice.
 - **P0-3 Seeder remainder (368 unrouted):** 81 refused as ambiguous (shape-divider top and bottom element derivation
   drops `--top` and `--bottom`; wrapper fills against overlays), about 30 gradient siblings that need `attrMap`
   `css:color-gradient` or `css:border-color-gradient` in `block.json`, the rest with no evidence. The roster's
