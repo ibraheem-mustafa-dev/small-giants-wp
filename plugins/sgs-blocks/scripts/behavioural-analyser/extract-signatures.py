@@ -1481,7 +1481,7 @@ def _split_balanced_call_args(php_src: str, call_open_paren_end: int) -> "list[s
 
 
 def _attrs_from_helper_calls(
-    php_src: str, attr_names: "set[str]", block_short_slug: str = ""
+    php_src: str, attr_names: "set[str]", block_short_slug: str = "", states_out: "dict | None" = None
 ) -> "tuple[dict[str, set[str]], dict[str, set[str]]]":
     """Shape D: find every call site of a known shared style-emitter helper with a
     LITERAL string prefix, and map each `{prefix}{Suffix}` attribute the helper reads
@@ -1554,6 +1554,8 @@ def _attrs_from_helper_calls(
                 attr = prefix + suffix if prefix else (suffix[0].lower() + suffix[1:])
                 if attr in attr_names:
                     props[attr].update(suffix_props)
+                    if states_out is not None and suffix in contract.suffix_states:
+                        states_out.setdefault(attr, set()).add(contract.suffix_states[suffix])
                     if bem_element:
                         elements[attr].add(bem_element)
     return props, elements
@@ -2876,7 +2878,7 @@ def extract_css_property_and_layer() -> dict:
             attr_bem_elements |= state_colour_elements.get(attr, set())
             # 2026-09-10 extension — hover-argument-position state evidence
             # from the same Cause A call sites, same unanimous-or-unassigned merge.
-            attr_states |= state_colour_states.get(attr, set())
+            attr_states |= state_colour_states.get(attr, set()) | ev["helper_states"].get(attr, set())
             # Shape G (2026-09-10) — config-map selector-arg element evidence
             # and map-key state evidence, same unanimous-or-unassigned merge.
             attr_bem_elements |= config_map_elements.get(attr, set())

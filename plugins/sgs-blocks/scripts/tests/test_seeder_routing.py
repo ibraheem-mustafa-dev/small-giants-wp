@@ -122,6 +122,30 @@ def test_a_derived_contracts_cover_every_former_hand_entry():
     }
 
 
+def test_a_hover_suffixes_take_the_hover_state_from_the_helper_body():
+    """sgs_link_colour_css paints LinkColourHover through sgs_hover_state_rules();
+    sgs_button_element_style_css builds its *Hover declarations for
+    sgs_hover_guarded_rule(). Their resting twins stay stateless."""
+    states: dict = {}
+    php = (
+        "$css = sgs_link_colour_css( $attributes, 'description', '.u .sgs-timeline__description' );\n"
+        "$css .= sgs_button_element_style_css( $attributes, 'cta', '.u .sgs-product-card__cta' );\n"
+    )
+    attrs = {
+        "descriptionLinkColour", "descriptionLinkColourHover",
+        "ctaColourBackground", "ctaColourBackgroundHover", "ctaColourTextHover", "ctaColourBorderHover",
+        "ctaBorderWidth",
+    }
+    props, _elements = es._attrs_from_helper_calls(php, attrs, "timeline", states)
+    assert props["descriptionLinkColourHover"] == {"background-image", "color"}
+    assert states == {
+        "descriptionLinkColourHover": {"hover"},
+        "ctaColourBackgroundHover": {"hover"},
+        "ctaColourTextHover": {"hover"},
+        "ctaColourBorderHover": {"hover"},
+    }
+
+
 # ── D1: value helpers derived from the helper source ──────────────────────────
 
 def test_d1_value_helper_arguments_route():

@@ -178,7 +178,10 @@ def gather_php_evidence(
         )
         raw = {attr: toks & strict.get(attr, set()) for attr, toks in raw.items()}
         raw = {attr: toks for attr, toks in raw.items() if toks}
-    helper_props, helper_elements = es._attrs_from_helper_calls(php_src, attr_names, block_short_slug)
+    helper_states: dict[str, set[str]] = {}
+    helper_props, helper_elements = es._attrs_from_helper_calls(
+        php_src, attr_names, block_short_slug, helper_states
+    )
     for attr, props in helper_props.items():
         raw[attr] = raw.get(attr, set()) | props
     # Cause A (2026-08-27): sgs_emit_state_colour_css() call sites contribute
@@ -222,6 +225,7 @@ def gather_php_evidence(
         "php_attr_state": php_attr_state,
         "php_attr_element": php_attr_element,
         "helper_elements": helper_elements,
+        "helper_states": helper_states,
         "state_colour_elements": state_colour_elements,
         "state_colour_states": state_colour_states,
         "value_composer_props": value_composer_props,

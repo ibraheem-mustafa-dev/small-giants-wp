@@ -932,14 +932,6 @@
     },
     {
       "slug": "sgs/before-after",
-      "attr": "labelTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "label"
-      }
-    },
-    {
-      "slug": "sgs/before-after",
       "attr": "labelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -1228,14 +1220,6 @@
       "attr": "nameTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "name"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
-      "attr": "nameTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "name"
       }
     },
@@ -1530,13 +1514,6 @@
     },
     {
       "slug": "sgs/breadcrumbs",
-      "attr": "textIndent",
-      "fields": {
-        "css_property": "text-indent"
-      }
-    },
-    {
-      "slug": "sgs/breadcrumbs",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform"
@@ -1767,14 +1744,6 @@
       "fields": {
         "css_property": "text-decoration",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/business-info",
-      "attr": "textIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "text"
       }
     },
     {
@@ -2053,13 +2022,6 @@
       "fields": {
         "css_property": "text-decoration",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "textIndent",
-      "fields": {
-        "css_property": "text-indent"
       }
     },
     {
@@ -3728,7 +3690,8 @@
       "attr": "linkColourHover",
       "fields": {
         "css_property": "background-image,color",
-        "css_element": "body"
+        "css_element": "body",
+        "css_state": "hover"
       }
     },
     {
@@ -4423,13 +4386,6 @@
     },
     {
       "slug": "sgs/countdown-timer",
-      "attr": "textIndent",
-      "fields": {
-        "css_property": "text-indent"
-      }
-    },
-    {
-      "slug": "sgs/countdown-timer",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform"
@@ -4561,14 +4517,6 @@
       "attr": "labelTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "label"
-      }
-    },
-    {
-      "slug": "sgs/counter",
-      "attr": "labelTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "label"
       }
     },
@@ -7903,7 +7851,8 @@
       "slug": "sgs/heading",
       "attr": "linkColourHover",
       "fields": {
-        "css_property": "background-image,color"
+        "css_property": "background-image,color",
+        "css_state": "hover"
       }
     },
     {
@@ -7978,13 +7927,6 @@
       "fields": {
         "css_property": "text-decoration",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/heading",
-      "attr": "textIndent",
-      "fields": {
-        "css_property": "text-indent"
       }
     },
     {
@@ -8931,14 +8873,6 @@
     },
     {
       "slug": "sgs/icon-list",
-      "attr": "descriptionTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "description"
-      }
-    },
-    {
-      "slug": "sgs/icon-list",
       "attr": "descriptionTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -9039,14 +8973,6 @@
       "attr": "headingTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "heading"
-      }
-    },
-    {
-      "slug": "sgs/icon-list",
-      "attr": "headingTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "heading"
       }
     },
@@ -9185,14 +9111,6 @@
       "attr": "itemTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "item"
-      }
-    },
-    {
-      "slug": "sgs/icon-list",
-      "attr": "itemTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "item"
       }
     },
@@ -9346,14 +9264,6 @@
       "attr": "textElTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "text"
-      }
-    },
-    {
-      "slug": "sgs/icon-list",
-      "attr": "textElTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "text"
       }
     },
@@ -9750,13 +9660,6 @@
     },
     {
       "slug": "sgs/label",
-      "attr": "textIndent",
-      "fields": {
-        "css_property": "text-indent"
-      }
-    },
-    {
-      "slug": "sgs/label",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
@@ -10104,14 +10007,6 @@
       "attr": "captionTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "caption"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "captionTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "caption"
       }
     },
@@ -10750,14 +10645,6 @@
     },
     {
       "slug": "sgs/multi-button",
-      "attr": "alignContent",
-      "fields": {
-        "css_property": "align-content",
-        "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
       "attr": "alignItems",
       "fields": {
         "css_property": "align-items",
@@ -10927,14 +10814,6 @@
     },
     {
       "slug": "sgs/multi-button",
-      "attr": "columns",
-      "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
@@ -10970,35 +10849,11 @@
     },
     {
       "slug": "sgs/multi-button",
-      "attr": "gridAutoRows",
-      "fields": {
-        "css_property": "grid-auto-rows",
-        "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "gridTemplateRows",
-      "fields": {
-        "css_property": "grid-template-rows",
-        "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
       "attr": "justifyContent",
       "fields": {
         "css_property": "justify-content",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "justifyItems",
-      "fields": {
-        "css_property": "justify-items",
-        "css_layer": "GRID"
       }
     },
     {
@@ -11394,6 +11249,36 @@
         "css_property": "border-style",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "chromeButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "chromeButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "chromeButton",
+        "css_state": "hover"
       }
     },
     {
@@ -12305,14 +12190,6 @@
     },
     {
       "slug": "sgs/option-picker",
-      "attr": "labelTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "label"
-      }
-    },
-    {
-      "slug": "sgs/option-picker",
       "attr": "labelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -12511,14 +12388,6 @@
       "attr": "pillTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "pill"
-      }
-    },
-    {
-      "slug": "sgs/option-picker",
-      "attr": "pillTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "pill"
       }
     },
@@ -13095,14 +12964,6 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "titleTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "title"
-      }
-    },
-    {
-      "slug": "sgs/post-grid",
       "attr": "titleTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -13289,14 +13150,6 @@
     },
     {
       "slug": "sgs/pricing-table",
-      "attr": "ctaTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "cta"
-      }
-    },
-    {
-      "slug": "sgs/pricing-table",
       "attr": "ctaTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -13407,14 +13260,6 @@
       "attr": "featureTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "feature"
-      }
-    },
-    {
-      "slug": "sgs/pricing-table",
-      "attr": "featureTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "feature"
       }
     },
@@ -13643,14 +13488,6 @@
     },
     {
       "slug": "sgs/pricing-table",
-      "attr": "priceTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "price"
-      }
-    },
-    {
-      "slug": "sgs/pricing-table",
       "attr": "priceTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -13761,14 +13598,6 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "name"
-      }
-    },
-    {
-      "slug": "sgs/pricing-table",
-      "attr": "titleTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "name"
       }
     },
@@ -14070,14 +13899,6 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "title"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "titleTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "title"
       }
     },
@@ -14496,7 +14317,8 @@
       "attr": "descLinkColourHover",
       "fields": {
         "css_property": "background-image,color",
-        "css_element": "description"
+        "css_element": "description",
+        "css_state": "hover"
       }
     },
     {
@@ -14864,14 +14686,6 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "tagTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "tag"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
       "attr": "tagTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -14971,14 +14785,6 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "title"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "titleTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "title"
       }
     },
@@ -15362,14 +15168,6 @@
     },
     {
       "slug": "sgs/quote",
-      "attr": "attributionTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "attribution"
-      }
-    },
-    {
-      "slug": "sgs/quote",
       "attr": "attributionTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -15711,14 +15509,6 @@
       "attr": "contentTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "content"
-      }
-    },
-    {
-      "slug": "sgs/separator",
-      "attr": "contentTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "content"
       }
     },
@@ -16919,13 +16709,6 @@
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "textIndent",
-      "fields": {
-        "css_property": "text-indent"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
@@ -17282,13 +17065,6 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration"
-      }
-    },
-    {
-      "slug": "sgs/table-of-contents",
-      "attr": "textIndent",
-      "fields": {
-        "css_property": "text-indent"
       }
     },
     {
@@ -17707,14 +17483,6 @@
     },
     {
       "slug": "sgs/team-member",
-      "attr": "bioTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "bio"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
       "attr": "bioTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -17931,14 +17699,6 @@
     },
     {
       "slug": "sgs/team-member",
-      "attr": "nameTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "name"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
       "attr": "nameTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -18074,14 +17834,6 @@
       "attr": "roleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "role"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
-      "attr": "roleTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "role"
       }
     },
@@ -18311,14 +18063,6 @@
     },
     {
       "slug": "sgs/testimonial",
-      "attr": "nameTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "name"
-      }
-    },
-    {
-      "slug": "sgs/testimonial",
       "attr": "nameTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -18467,14 +18211,6 @@
     },
     {
       "slug": "sgs/testimonial",
-      "attr": "quoteTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "quote"
-      }
-    },
-    {
-      "slug": "sgs/testimonial",
       "attr": "quoteTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -18581,23 +18317,6 @@
     },
     {
       "slug": "sgs/testimonial-slider",
-      "attr": "alignContent",
-      "fields": {
-        "css_property": "align-content",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
-      "attr": "alignItems",
-      "fields": {
-        "css_property": "align-items",
-        "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -18673,37 +18392,10 @@
     },
     {
       "slug": "sgs/testimonial-slider",
-      "attr": "columns",
-      "fields": {
-        "css_property": "grid-template-columns:count",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
-      "attr": "flexDirection",
-      "fields": {
-        "css_property": "flex-direction",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
-      "attr": "flexWrap",
-      "fields": {
-        "css_property": "flex-wrap",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -18745,42 +18437,6 @@
       "attr": "gap",
       "fields": {
         "css_property": "gap",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
-      "attr": "gridAutoRows",
-      "fields": {
-        "css_property": "grid-auto-rows",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
-      "attr": "gridTemplateRows",
-      "fields": {
-        "css_property": "grid-template-rows",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
-      "attr": "justifyContent",
-      "fields": {
-        "css_property": "justify-content",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
-      "attr": "justifyItems",
-      "fields": {
-        "css_property": "justify-items",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -18848,13 +18504,6 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
-      "attr": "textIndent",
-      "fields": {
-        "css_property": "text-indent"
       }
     },
     {
@@ -19322,7 +18971,8 @@
       "attr": "descriptionLinkColourHover",
       "fields": {
         "css_property": "background-image,color",
-        "css_element": "description"
+        "css_element": "description",
+        "css_state": "hover"
       }
     },
     {
@@ -19509,14 +19159,6 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "title"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "titleTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "title"
       }
     },
@@ -20040,14 +19682,6 @@
     },
     {
       "slug": "sgs/trust-bar",
-      "attr": "labelTextIndent",
-      "fields": {
-        "css_property": "text-indent",
-        "css_element": "label"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
       "attr": "labelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -20221,14 +19855,6 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "title"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "titleTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "title"
       }
     },
@@ -20694,14 +20320,6 @@
       "attr": "labelTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "label"
-      }
-    },
-    {
-      "slug": "sgs/whatsapp-cta",
-      "attr": "labelTextIndent",
-      "fields": {
-        "css_property": "text-indent",
         "css_element": "label"
       }
     },
@@ -26064,16 +25682,6 @@
     },
     {
       "slug": "sgs/nav-drawer",
-      "attr": "chromeButtonColourBackgroundHover",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "chromeButton",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
       "attr": "chromeButtonColourBorder",
       "fields": {
         "css_property": "border-color",
@@ -26083,31 +25691,11 @@
     },
     {
       "slug": "sgs/nav-drawer",
-      "attr": "chromeButtonColourBorderHover",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "chromeButton",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
       "attr": "chromeButtonColourText",
       "fields": {
         "css_property": "color",
         "role": "color",
         "css_element": "chromeButton"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "chromeButtonColourTextHover",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "chromeButton",
-        "css_state": "hover"
       }
     },
     {
@@ -29700,15 +29288,6 @@
     },
     {
       "slug": "sgs/testimonial-slider",
-      "attr": "gridTemplateColumns",
-      "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/testimonial-slider",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
@@ -30337,30 +29916,22 @@
     {
       "slug": "sgs/button",
       "attr": "minHeightMobileUnit",
-      "fields": {
-        "inspector_control_type": "UnitControl"
-      }
+      "fields": {}
     },
     {
       "slug": "sgs/button",
       "attr": "minHeightTabletUnit",
-      "fields": {
-        "inspector_control_type": "UnitControl"
-      }
+      "fields": {}
     },
     {
       "slug": "sgs/button",
       "attr": "minHeightUnit",
-      "fields": {
-        "inspector_control_type": "UnitControl"
-      }
+      "fields": {}
     },
     {
       "slug": "sgs/feature-grid",
       "attr": "minItemWidthUnit",
-      "fields": {
-        "inspector_control_type": "UnitControl"
-      }
+      "fields": {}
     },
     {
       "slug": "sgs/hero",

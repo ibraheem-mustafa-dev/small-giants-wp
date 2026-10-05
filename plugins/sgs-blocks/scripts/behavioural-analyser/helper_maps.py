@@ -48,6 +48,8 @@ class PrefixHelper:
     prefix_index: int
     selector_index: "int | None"
     suffix_props: dict[str, set[str]] = field(default_factory=dict)
+    # Suffixes the helper paints only inside a hover rule (hover_states.py).
+    suffix_states: dict[str, str] = field(default_factory=dict)
 
 
 def css_vocabulary(db_props: "frozenset[str]", plugin_root: Path, iter_rule_blocks: Callable) -> frozenset[str]:
@@ -406,4 +408,38 @@ def derive_prefix_helpers(
                 changed = True
         if not changed:
             break
+    _derive_suffix_states(index, es, vocab, helpers, bodies)
     return {n: h for n, h in helpers.items() if h.suffix_props}
+
+
+def _derive_suffix_states(
+    index: dict[str, PhpFunction],
+    es: ModuleType,
+    vocab: "frozenset[str]",
+    helpers: dict[str, PrefixHelper],
+    bodies: dict[str, str],
+) -> None:
+    """Mark each routed suffix the helper paints only in a hover rule as 'hover'."""
+    import hover_states
+
+    files = sorted({fn.file for fn in index.values()})
+    constants = hover_states.hover_constants(
+        [es._strip_php_comments(f.read_text(encoding="utf-8", errors="ignore")) for f in files]
+    )
+    emitters = hover_states.derive_hover_emitters(index, constants)
+    for name, body in bodies.items():
+        hover = hover_states.hover_attrs(body, emitters, constants, es._split_php_statements)
+        # A value also declared in a statement that neither carries a hover marker
+        # nor feeds a variable bound for a hover rule paints at rest too.
+        flow = hover_states.hover_flow_vars(body, emitters, constants, es._split_php_statements)
+        resting = " ".join(
+            st for st in es._split_php_statements(body)
+            if not hover_states.has_marker(st, constants)
+            and not set(re.findall(r"\$(\w+)\s*(?:\[\])?\s*\.?=(?![=>])", st)) & flow
+        )
+        hover -= set(open_declaration_pairs(resting, vocab, unambiguous_var_attr(es, body), es._split_php_statements))
+        helpers[name].suffix_states = {
+            attr[len(PREFIX_SENTINEL):]: "hover"
+            for attr in hover
+            if attr.startswith(PREFIX_SENTINEL) and attr[len(PREFIX_SENTINEL):] in helpers[name].suffix_props
+        }
