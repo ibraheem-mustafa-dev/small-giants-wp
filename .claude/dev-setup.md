@@ -682,8 +682,9 @@ npm run lint:css
 # Auto-format
 npm run format
 
-# PHP lint (WordPress Coding Standards)
-phpcs --standard=WordPress plugins/sgs-blocks/includes/
+# PHP lint (WordPress Coding Standards, through the repo ruleset phpcs.xml that the editor and the
+# post-edit lint hook also use)
+phpcs --standard=phpcs.xml plugins/sgs-blocks/includes/
 
 # Naming conventions
 python scripts/lint-naming-conventions.py
@@ -691,7 +692,7 @@ python scripts/lint-naming-conventions.py
 
 ### PHP IDE stubs
 
-Project uses `php-stubs/wordpress-stubs` v6.9.1 and `php-stubs/wp-cli-stubs` v2.12.0 for Intelephense IDE support. Installed to `vendor/` (gitignored). `composer.json` + `composer.lock` are committed.
+Project uses `php-stubs/wordpress-stubs` v7.1.0 and `php-stubs/woocommerce-stubs` v11.1.2 (versions in `composer.lock`) for Intelephense IDE support. Installed to `vendor/` (gitignored). `composer.json` + `composer.lock` are committed.
 
 ```powershell
 composer install  # installs stubs to vendor/ (dev-only, never deploy vendor/)
