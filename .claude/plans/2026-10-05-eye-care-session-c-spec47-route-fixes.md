@@ -567,11 +567,50 @@ TYPE: auto-gate, then a main-thread read of every diff
 ## Inherited from the parallel repairs track (closed 2026-10-05 at `a62ae6fdb`)
 
 That track finished and pushed before this session's Wave 3. It made **no eye-care-test deploy and no
-reseed**, so this session's baseline is intact. It shares this checkout, so its thirteen commits are
+reseed**, so this session's baseline is intact.
+
+⚠️ **Corrected hashes (the track deployed twice more after its first handover message).** **sandybrown's
+block code is `1b96cf786`**, not `a62ae6fdb` — which matters because `calibrate.mjs` refuses to run on a
+local-vs-deployed hash mismatch, so a cached `a62ae6fdb` would abort C3.4. **The commit to deploy to
+eye-care-test is `75364c71a`** (its full range is `7689ebb70..75364c71a`). The two commits after
+`1b96cf786` are docs-only, so live equals HEAD in block-code terms. eye-care-test remains untouched at
+`7f375f765`.
+
+The extra code commit was a self-caught regression worth knowing about: `c1c660428` stopped `sgs/button`
+emitting a per-instance `transition: all` and let `button/style.css`'s base rule carry the timing, but
+that list named only `background-color, color, border-color, transform, opacity` while `render.php`
+paints the hover lift as `translate: 0 -Npx` and the shadow through `sgs_shadow_decls()` — `all` had
+covered both, the explicit list did not, so a button using `liftHover` or `boxShadowHover` snapped.
+`1b96cf786` adds `translate` and `box-shadow` and drops `product-card/style.css`'s hardcoded
+`transition: all 0.15s` so those buttons read the site token. It shares this checkout, so its thirteen commits are
 already in `main`'s history and interleave with this session's — which is why every commit here uses
 an explicit pathspec.
 
 **Wave 3's deploy order is agreed with it and must not be rearranged:**
+
+
+#### ⚠️ Register CR6 is coupled to this lane's code, and cannot be fixed without it
+
+Found by the other track's `/qc-council` gate and **verified here against the files themselves**:
+`lib/resolve.mjs::seedSides` **deliberately models** the defect CR6 wants removed, and
+`tests/resolve.test.mjs:89` ("MUST FAIL TO ZERO: one side into an empty box keeps the other sides at
+their default paint") asserts the compensation. `seedSides`' own comment cites the helper by name —
+"A box with some sides set prints 0 for the rest (`helpers-box.php::sgs_box_object_shorthand`),
+overriding the block's own stylesheet default" — and a second comment reads "(an unset side there
+prints 0, CR6)".
+
+So the coupling is real and runs both ways. The helper's behaviour **is** a genuine framework defect
+(setting one side of a padding box wipes the block's own defaults on the other three; measured live on
+About, 24px sides to 0px), and the resolver models it **correctly as it stands**. But the moment the
+helper stops zero-filling, `seedSides` becomes wrong in the opposite direction: it would seed sides
+that no longer need seeding.
+
+**Neither file has been touched by either track.** The other track has re-tiered CR6 out of its build
+list and gated it behind this route work. The validated fix shape is a **new sibling function beside
+the old one**, so the 157 call sites that interpolate the value after `padding:` migrate deliberately
+rather than all at once. If the zero-fill assumption is ever to leave this lane, that is the shape,
+and it needs coordinating rather than racing — the helper change and the `seedSides` change must land
+together, or every box write is wrong in one direction or the other.
 
 1. **C3.6 measures eye-care-test at `7f375f765`** — the code live there now. This is the count Session C exists to produce, and it is only attributable to the route while that code is unchanged.
 2. **Then deploy `a62ae6fdb`** to eye-care-test (block and theme code only; no trees, no snapshot, no ledger entries).
