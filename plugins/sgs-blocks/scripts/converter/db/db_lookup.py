@@ -26,6 +26,7 @@ is a re-export shim.
 from __future__ import annotations
 
 import functools
+import os
 import json
 import re
 import sqlite3
@@ -33,7 +34,9 @@ import sys
 from pathlib import Path
 from typing import NamedTuple
 
-SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+# SGS_FRAMEWORK_DB points a run at another copy (sgs-update-v2.py --db exports it), so a proof reseed never touches
+# the shared database through this module's import-time migrations.
+SGS_DB = Path(os.environ["SGS_FRAMEWORK_DB"]) if os.environ.get("SGS_FRAMEWORK_DB") else Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 # Device-tier sibling suffixes — a name ending in one of these is a tier SIBLING,
 # never a tier BASE (see tier_object_base condition 3).
