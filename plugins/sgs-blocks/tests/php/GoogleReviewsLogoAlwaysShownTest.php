@@ -276,5 +276,9 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 			'Only the opt-in primary and success star variants may read the theme palette.'
 		);
 		$this->assertMatchesRegularExpression( '#\.sgs-google-reviews__star--full \{[^}]*fill: var\( --sgs-gr-star \)#', $css );
+		// Buttons are Google's white and blue on any ground: "Write a review" fills white, not transparent.
+		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__write-review \) \{([^}]*)\}#', $css, $w ) );
+		$this->assertStringContainsString( 'background-color: var( --sgs-gr-surface );', $w[1] );
+		$this->assertStringContainsString( 'color: var( --sgs-gr-blue );', $w[1] );
 	}
 }

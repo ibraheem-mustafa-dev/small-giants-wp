@@ -715,16 +715,16 @@ a.sgs-google-reviews__author:hover {
 }
 
 /* "Write a review" is the SECONDARY action beside the filled "See all reviews": an outlined pill
-   (transparent fill, a hairline border, text in the primary colour). A colour, border or padding
-   attribute written by the author or the pipeline still wins (0,3,0 over :where). */
+   (Google's white fill, a hairline border, text in Google blue: white and blue on any section colour). A colour,
+   border or padding attribute written by the author or the pipeline still wins (0,3,0 over :where). */
 :where( .sgs-google-reviews__write-review ) {
-	background-color: transparent;
+	background-color: var( --sgs-gr-surface );
 	color: var( --sgs-gr-blue );
 	border: 1px solid var( --sgs-gr-line );
 }
 
 :where( .sgs-google-reviews__write-review:hover ) {
-	background-color: color-mix( in srgb, var( --sgs-gr-blue ) 6%, transparent );
+	background-color: color-mix( in srgb, var( --sgs-gr-blue ) 6%, var( --sgs-gr-surface ) );
 }
 
 /* Site-wide button hover (buttonPresets.default): the lift and its timing. With no
