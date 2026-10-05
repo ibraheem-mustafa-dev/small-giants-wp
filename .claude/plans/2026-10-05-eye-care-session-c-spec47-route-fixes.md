@@ -511,8 +511,14 @@ without waiting.
 
 ### The second answer owed: which surfaces are canvases?
 
-**FR-47-8 needs a roster, and it is needed earlier: before L1.4, which is in Wave 1.** Proposed: every mega menu,
-modal, drawer and choice flow, because each is its own post composed from arbitrary blocks. A page is **not** a
+**FR-47-8 needs a roster, and it is needed earlier: before L1.4, which is in Wave 1.** Proposed, and these four
+post types are confirmed in the code: `sgs_mega_menu`, `sgs_modal`, `sgs_drawer` and `sgs_choice_flow`. Each is
+its own post composed from arbitrary blocks.
+
+**`sgs_header` and `sgs_footer` are deliberately excluded**, although they are also their own posts. On this client
+they are route output: the route writes `header.tree.json` and `footer.tree.json` itself, so a missing setting there
+is a real gap rather than a composition the author would complete. If Bean disagrees, adding them is one manifest
+field each. A page is **not** a
 canvas even though it is also composed from blocks, because its blocks are the route's own output rather than an
 author's composition. Spec 47 §6 carries the question.
 
