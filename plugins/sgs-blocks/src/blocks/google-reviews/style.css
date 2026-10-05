@@ -203,7 +203,7 @@
 }
 
 /* "View on Google Maps" (the place, and each review): a 44px-high target, underlined so colour is not its only cue. */
-.sgs-google-reviews__maps-link {
+a.sgs-google-reviews__maps-link {
 	display: inline-flex;
 	align-items: center;
 	min-height: 44px;
@@ -714,6 +714,18 @@ a.sgs-google-reviews__author:hover {
    seeAllColourBackgroundHover attrs) at real specificity, so it wins the
    moment a client sets a value. The rule below is the DEFAULT look, kept at
    zero specificity via :where() so it never competes with the emitted rule. */
+/* The pills' text colour is fixed above the theme's link colour. Global styles give every link
+   `a:where(:not(.wp-element-button)){color:var(--wp--preset--color--primary)}`, later in the page than this file, so a
+   zero-specificity default loses to it on any site whose primary is not Google blue (See all printed in the theme's
+   colour). Two classes beat that rule and still lose to a colour an author sets (three classes). */
+.sgs-google-reviews .sgs-google-reviews__see-all {
+	color: var( --sgs-gr-on-blue );
+}
+
+.sgs-google-reviews .sgs-google-reviews__write-review {
+	color: var( --sgs-gr-blue );
+}
+
 :where( .sgs-google-reviews__see-all:hover ) {
 	background-color: var( --sgs-gr-blue-dark );
 }
