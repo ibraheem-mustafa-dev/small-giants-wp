@@ -24,8 +24,9 @@ const makeInput = ( name ) => {
 	return Input;
 };
 
-// Any component the list above does not name renders its children (a PascalCase export), and any other
+// A known component the list above does not name renders its children (a PascalCase export) and any other known
 // helper is a no-op, so a block using a newer core component still mounts.
+const KNOWN = require( './known-exports.json' )[ '@wordpress/components' ];
 const named = {
 	__esModule: true,
 	PanelBody: makeComponent( 'PanelBody' ),
@@ -105,6 +106,11 @@ module.exports = new Proxy( named, {
 		}
 		if ( key in target || 'symbol' === typeof key || 'then' === key ) {
 			return target[ key ];
+		}
+		// Only a name the plugin's source already imports (known-exports.json: each loads in the live editor) is
+		// fabricated, so a misspelt or new import fails the test until it is checked and added to that list.
+		if ( ! KNOWN.includes( key ) ) {
+			return undefined;
 		}
 		return /^(__experimental|__unstable)?[A-Z]/.test( key ) ? ( target[ key ] = makeComponent( key ) ) : ( target[ key ] = () => undefined );
 	},
