@@ -322,9 +322,10 @@ final class Product_Manifest {
 			// gallery (`_sgs_variation_gallery`), the variation's own featured
 			// image, the parent featured image, then the parent's WooCommerce
 			// gallery. Deduped on the attachment id (first occurrence wins; a URL
-			// differs per size). The first three positions are the main-image
-			// chain, so gallery[0] is the main image; the rest is the thumbnail
-			// strip. The meta goes through the sanitiser first because it also
+			// differs per size). gallery[0] is the main image either way: the
+			// operator's gallery keeps position 0 when it is set, and the
+			// variation->parent chain holds it otherwise. The rest is the
+			// thumbnail strip. The meta goes through the sanitiser first because it also
 			// explodes a legacy CSV/JSON value; the merged list goes through it
 			// again as the trust boundary (image attachments only).
 			// 'edit' context, because WC_Product_Variation::get_image_id() substitutes
