@@ -383,7 +383,11 @@
 		width: 100%;
 		text-align: left;
 		padding: 0.875rem 1rem;
-		border: 1px solid var( --sgs-panel-border, #e5e7eb );
+		/* 2px in every state. A state that changes border-width cannot be
+		   balanced with padding: the browser snaps a border to whole device
+		   pixels (a 1px border computes to 0.8px here) while padding keeps its
+		   full value, so the two never cancel and the tab changes height. */
+		border: 2px solid var( --sgs-panel-border, #e5e7eb );
 		border-radius: var( --wp--custom--border-radius--small, 4px );
 		background-color: var( --sgs-panel-bg, transparent );
 		background-image: var( --sgs-panel-bg-gradient, none );
@@ -396,13 +400,11 @@
 		background-color: var( --wp--preset--color--surface-alt, #f5f7f7 );
 		border-color: var( --wp--preset--color--primary, currentColor );
 		color: var( --wp--preset--color--primary, currentColor );
-		/* Rule 43 (WCAG 1.4.1): selected state must not rely on colour alone —
-		 * the resting border is already 1px solid, so bump to 2px as the
-		 * non-colour signal. The padding gives the extra pixel back on every
-		 * side, so the tab's box size is identical selected and unselected and
-		 * selecting one cannot nudge the column. */
-		border-width: 2px;
-		padding: calc(0.875rem - 1px) calc(1rem - 1px);
+		/* Rule 43 (WCAG 1.4.1): the selected state must not rely on colour
+		   alone. The border width is the same in every state, so the weight
+		   carries the non-colour signal; it changes no box geometry because the
+		   tab is a full-width block with its own min-height. */
+		font-weight: 700;
 	}
 
 	/* Hide the underline indicator at mobile — full-button styling carries the active state */
