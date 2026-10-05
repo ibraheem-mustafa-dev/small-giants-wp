@@ -25,6 +25,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
 | `sweep.mjs` | Sweep command: `--surfaces <surfaces.json> [--date YYYY-MM-DD] [--out <file>]`; reads each surface's newest `solve-report.json` and writes `<build>/qa/sweep/<date>/sweep.json`: one row per distinct open issue across the site `{ surface, ref, path, block, property, widths, state, kind, class, reason, report }`, totals per surface and class, and the surfaces with no report. |
+| `register-sweep.mjs` | Register sweep command (A4): `bundle --register <md> --sweep <json> --pairs <qa/pairs dir> --out <folder>` writes one input file per A4 group (items, the sweep rows and measured refs of their surfaces, the status rules; agent prompt `.claude/plans/a4-agent-prompt.md`) and exits 1 on an item in no group; `merge … --verdicts <json> … --out <file>` checks the agents' verdicts and writes a copy of the register with a Sweep column (never in place). |
 | `pairs.mjs` | Block pairing command: pairs every block of a surface with its draft element through the walker's word matcher, re-checks each kept finder at 375 and 768, and writes `<surface>.full.mjs` (the hand config plus one pair per block) and `qa/pairs/<surface>.json` (kept pairs and every left-out block with its reason). A surface's `walkerFull` in `surfaces.json` makes Solve walk it. |
 | `calibration-targets.json` | The calibration page per site (`envFile`, `envKey`, `postId`) and `image`, a media object on that site written into background-image markers and overlay preconditions. |
 | `calibration-fixtures.json` | Minimum content, inner blocks, parent chain, optional variants and optional `before` blocks (placed ahead of the instance, for a block that reads the page, such as a table of contents) per calibrated block. |
@@ -47,6 +48,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/pairs.mjs` | Block pairing: words per block, their draft twins (repeated words planned apart), the partner choice (element, padded wrapper or text run), the keep-or-leave-out judgement (PAIRING_LIMITS) and the generated config's text. |
 | `lib/pairs-page.mjs` | Block pairing's in-page collectors: tagged words, live block boxes and text runs, draft chains (repeated words placed nearest the sure ones), form controls by identity, hand pair elements, and the draft opened through its navigation. |
 | `lib/sweep.mjs` | Sweep library: the newest report per surface, issue rows per report (`wholePage`'s definition) and the site aggregate with shared rows counted once. |
+| `lib/register-sweep.mjs` | Register sweep library: register tables as items, the eight A4 groups, section to surface mapping, verdict checking against the sweep and the pairings, the Sweep column writer and the per-group bundle. |
 | `lib/guard.mjs` | The regression guard: reverts a write calibration names, else tries one suspect at a time and lets the next walk decide. |
 | `lib/ledger.mjs` | Ledger library: rules, matching, stale entries, accept migration, entries from report rows. |
 | `tests/db.test.mjs` | R-47-2: read-only database. |
@@ -64,6 +66,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/entrance.test.mjs` | Entrance start: a hidden-live, shown-draft entrance gets `sgsAnimationStart: 'load'`; no entrance, a part, a hover, a half opacity or a hidden draft gets nothing. |
 | `tests/walker-reads.test.mjs` | A-1 at unit level: motion timings and `::before`/`::after` layers are rows Solve can write on calibration's layer path; a declared width passes Solve's used-value gate; a text run's spacing is a `row-gap` row. |
 | `tests/sweep.test.mjs` | The sweep (A3): a surface's issue total equals `wholePage`'s distinct count; a row two surfaces walking one config share counts once (`alsoIn`), while block-less rows of the same pair name from two configs stay two; a surface with no report is unmeasured; another surface's block is not counted. |
+| `tests/register-sweep.test.mjs` | The register sweep (A4): parsing and grouping; a clean verdict on a ref with an open row, or on a ref no pairing measured, is rejected; a site-wide item is clean only when every covered item is clean and measured; a missing or doubled verdict is rejected; the merge leaves every original cell byte-identical. |
 | `tests/walker-devtools.test.mjs` | A-1 in headless Chromium on local HTML: the walker settles on finished animations, forces `:hover` on every pair, reads declared sizes from the matched rules and a text run's row spacing. |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching); flow position rows and the identity transform (GAP-CHECKLIST section 17). |
 
@@ -261,6 +264,24 @@ file names the rule it proves and has one case marked MUST FAIL.
 
 ### `sweep.mjs`
 - `sweep(surfacesFile, date, out?)` → `{ result, file }`: reads each surface's newest report and writes the sweep file.
+
+### `lib/register-sweep.mjs`
+- `STATUSES`, `STATUS_RULES`: the five A4 statuses and their decided rules (the plan's, plus partly measured).
+- `GROUPS`, `SITE_WIDE`, `SECTION_SURFACES`: the eight A4 groups by register section, the site-wide section's name, and the sweep surfaces each section is measured by (an empty list: none).
+- `registerItems(markdown)` → `[{ ids, section, cells, covers, line, header }]`: every register table row whose first cell holds ids.
+- `itemKey(item)` → the item's ids joined with ", ".
+- `groupItems(items)` → `{ groups: [{ name, items }], ungrouped }`.
+- `itemSurfaces(item, items)` → the sweep surfaces an item is measured by (`null`: a section no surface covers); a site-wide item's are those of the items it covers.
+- `verdictsFor(item, items, verdicts)` → the verdicts that answer one item.
+- `measuredRefs(pairing)` → the refs one surface's pairing report measured (generated pairs and hand-covered blocks).
+- `checkStatuses(items, verdicts, sweep, measured?)` → problems: one valid status per item; a clean claim cites a report the sweep holds and a ref no row touches (and, with `measured`, one its surfaces measured); a site-wide clean needs every covered item clean and measured.
+- `addSweepColumn(markdown, items, verdicts)` → register text with a Sweep column, existing cells unchanged.
+- `bundleGroup(group, items, sweep, measured?)` → one agent's input: items, surfaces (with measured refs), rows and the status rules.
+
+### `register-sweep.mjs`
+- `measuredFrom(pairsDir, sweep)` → `{ surface: [refs] }` from the pairing reports present.
+- `bundle(registerFile, sweepFile, pairsDir, outDir)` → `{ files, ungrouped }`.
+- `merge(registerFile, sweepFile, pairsDir, verdictFiles, out)` → `{ problems, items }`; writes `out` only with no problems.
 
 ### `lint.mjs`
 - `routeFiles(root)` → every route file, relative.
