@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
@@ -10,8 +10,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxShorthand, sgsBorderPreview } from '../../utils';
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -50,46 +49,17 @@ function slugify( text ) {
  * (no-inline contract §A). The frontend NEVER inlines these; this object is
  * only ever applied to the React editor canvas (mirrors sgs/label + sgs/media).
  */
-function boxShorthand( box ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	const { top, right, bottom, left } = box;
-	if ( ! top && ! right && ! bottom && ! left ) return undefined;
-	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
-}
-
-function radiusShorthand( radius ) {
-	if ( ! radius ) return undefined;
-	if ( 'string' === typeof radius ) return radius;
-	const { topLeft, topRight, bottomRight, bottomLeft } = radius;
-	if ( ! topLeft && ! topRight && ! bottomRight && ! bottomLeft ) return undefined;
-	return [ topLeft, topRight, bottomRight, bottomLeft ].map( ( v ) => v || '0' ).join( ' ' );
-}
-
-// `style.color.text` / `style.color.background` — block.json declares
-// `color.background/text/gradients: false` and no block-private
-// backgroundColour/textColour attr exists anywhere on this block to
-// substitute (only the per-element titleColour/linkColour/activeLinkColour
-// custom attrs exist), so those two properties are DEAD with no safe
-// replacement in this file. Deliberately left unset here — flagged as a
-// follow-up decision, not resolved. Border (block.json declares no
-// `__experimentalBorder` support) and typography (no `typography` support —
-// migrated onto the fontSize/lineHeight custom attrs, D971/D972) DO have
-// working block-private replacements and are wired to those instead.
-function buildRootPreviewStyle( attributes, padding, margin ) {
-	const { borderWidth, borderStyle, borderColour, borderRadius, fontSize, fontSizeUnit, lineHeight, lineHeightUnit } = attributes;
-
-	const fontSizeDesktop = fontSize && 'object' === typeof fontSize ? fontSize.desktop : fontSize;
-	const lineHeightDesktop = lineHeight && 'object' === typeof lineHeight ? lineHeight.desktop : lineHeight;
+function buildRootPreviewStyle( attributes, padding, margin, tier, palette ) {
+	const { borderWidth, borderStyle, borderRadius, borderColour, borderColourGradient, tocStyle } = attributes;
+	// The card and minimal variants' stylesheet already paints a border, which a
+	// chosen colour, style or width overrides part by part (render.php emits each alone).
+	const defaultBorder = 'card' === tocStyle || 'minimal' === tocStyle;
 
 	const previewStyle = {
-		padding: boxShorthand( padding?.desktop ),
-		margin: boxShorthand( margin?.desktop ),
-		borderRadius: radiusShorthand( borderRadius?.desktop ),
-		borderWidth: boxShorthand( borderWidth ) || undefined,
-		borderStyle: boxShorthand( borderWidth ) ? resolveBorderStyle( borderStyle ) : undefined,
-		borderColor: borderColour || undefined,
-		fontSize: fontSizeDesktop ? `${ fontSizeDesktop }${ fontSizeUnit || 'px' }` : undefined,
-		lineHeight: lineHeightDesktop ? `${ lineHeightDesktop }${ lineHeightUnit || '' }` : undefined,
+		padding: tierBoxShorthand( padding, tier ),
+		margin: tierBoxShorthand( margin, tier ),
+		...sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier, palette, { defaultBorder } ),
+		...typographyPreviewStyle( attributes, '', tier ),
 	};
 
 	return Object.fromEntries(
@@ -175,9 +145,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// Editor-only preview style (mirrors render.php's scoped output — the
 	// frontend never inlines these; see buildRootPreviewStyle above).
+	const previewTier = usePreviewTier();
+	const [ colourPalette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className,
-		style: buildRootPreviewStyle( attributes, attributes.padding, attributes.margin ),
+		style: buildRootPreviewStyle( attributes, attributes.padding, attributes.margin, previewTier, colourPalette ),
 	} );
 
 	const ListTag = listStyle === 'numbered' ? 'ol' : 'ul';
@@ -443,7 +415,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			 * exposed here. */ }
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

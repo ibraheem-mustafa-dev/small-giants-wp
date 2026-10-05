@@ -8,65 +8,23 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, textRow } from '../../components';
-import { parseSvgGradient, SvgGradientDefs, textPaintPreview, backgroundPaintPreview } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import {
+	parseSvgGradient,
+	SvgGradientDefs,
+	textPaintPreview,
+	backgroundPaintPreview,
+	usePreviewTier,
+	boxPreview,
+} from '../../utils';
 
-// Box-object interface contract §1: a 4-side box is an object with named
-// keys, each an already-unit-bearing CSS length string or absent (unset
-// side). Build an editor-preview shorthand from the object — mirrors
-// render.php's box-shorthand builder so the canvas preview matches the
-// frontend (contract §5, mirrors sgs/heading).
-function boxShorthand( box ) {
-	if ( ! box ) {
-		return '';
-	}
-	const { top, right, bottom, left } = box;
-	if ( ! top && ! right && ! bottom && ! left ) {
-		return '';
-	}
-	const t = top || '0';
-	const r = right || '0';
-	const b = bottom || '0';
-	const l = left || '0';
-	return `${ t } ${ r } ${ b } ${ l }`;
-}
-
-/** Build the wrapper's editor-preview style (mirrors render.php's scoped base declarations). */
-function buildWrapperStyle( attributes, colourPalette ) {
-	const { padding, margin, textColour, textColourGradient, backgroundColour, backgroundColourGradient, borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } = attributes;
-	const wrapperStyle = {};
-
-	const paddingPreview = boxShorthand( padding?.desktop );
-	if ( paddingPreview ) {
-		wrapperStyle.padding = paddingPreview;
-	}
-	const marginPreview = boxShorthand( margin?.desktop );
-	if ( marginPreview ) {
-		wrapperStyle.margin = marginPreview;
-	}
-	Object.assign( wrapperStyle, textPaintPreview( textColour, textColourGradient, colourPalette ) );
-	Object.assign( wrapperStyle, backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ) );
-
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		const borderWidthPreview = boxShorthand( borderWidth );
-		if ( borderWidthPreview ) {
-			wrapperStyle.borderWidth = borderWidthPreview;
-		}
-		wrapperStyle.borderStyle = wrapperStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
-		}
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
-	const radiusBox = borderRadius?.desktop;
-	if ( radiusBox && ( radiusBox.topLeft || radiusBox.topRight || radiusBox.bottomRight || radiusBox.bottomLeft ) ) {
-		wrapperStyle.borderRadius = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
-			.map( ( k ) => radiusBox[ k ] || '0' ).join( ' ' );
-	}
-
-	return wrapperStyle;
+/** Build the wrapper's editor-preview style (mirrors render.php's scoped base declarations) at the previewed device tier. */
+function buildWrapperStyle( attributes, colourPalette, tier ) {
+	const { textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
+	return {
+		...boxPreview( attributes, tier, colourPalette ),
+		...textPaintPreview( textColour, textColourGradient, colourPalette ),
+		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
+	};
 }
 
 const DISPLAY_MODE_OPTIONS = [
@@ -156,10 +114,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// __experimentalSkipSerialization in block.json, so useBlockProps() no
 	// longer auto-applies them — rebuild the base-tier preview manually here
 	// (mirrors sgs/heading's buildWrapperStyle) so the canvas matches the
-	// frontend's scoped <style> output at desktop width.
+	// frontend's scoped <style> output at the previewed device tier.
+	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
 		className: `sgs-star-rating sgs-star-rating--${ displayMode }`,
-		style: buildWrapperStyle( attributes, colourPalette ),
+		style: buildWrapperStyle( attributes, colourPalette, previewTier ),
 	} );
 
 	// Style-variation gating — MIRRORS render.php:46-48 exactly (same split, same

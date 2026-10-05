@@ -516,37 +516,6 @@
 	}
 }
 
-/* ── Editor placeholder ────────────────────────────────────────────────── */
-
-.sgs-buybox--editor-placeholder {
-	align-items: center;
-	text-align: center;
-	padding: 32px 16px;
-	border: 1px dashed var(--sgs-buybox-placeholder-border, #949494);
-	border-radius: 6px;
-	gap: 8px;
-}
-
-.sgs-buybox--editor-placeholder .sgs-buybox__placeholder-title {
-	margin: 0;
-	font-weight: 700;
-}
-
-.sgs-buybox--editor-placeholder .sgs-buybox__placeholder-help {
-	margin: 0;
-	font-size: 0.85rem;
-	opacity: 0.75;
-	max-width: 36em;
-}
-
-/* Optional extras slot, editor view (FR-Wave-B) — full width so the "+"
-   appender and any inserted child blocks aren't squashed by the
-   placeholder's centred flex column. */
-.sgs-buybox--editor-placeholder .sgs-buybox__extras-editor {
-	width: 100%;
-	text-align: left;
-}
-
 /* ── Back-in-stock notify-me form (FR-30-10) ──────────────────────────── */
 /*
  * Scoped to .sgs-buybox so these rules only affect the notify form inside

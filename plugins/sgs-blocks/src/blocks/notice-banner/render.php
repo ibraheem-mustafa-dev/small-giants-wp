@@ -373,7 +373,9 @@ if ( ! empty( $base_style_engine_args ) ) {
 // which also now offers fontWeight. Painted on the ROOT selector so it
 // inherits into the InnerBlocks sgs/text child (HC2's native-typography
 // wrapper-inheritance carve-out) rather than a per-element override.
-$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
+// Text indent follows core's convention: every paragraph that follows another
+// paragraph inside the element.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet

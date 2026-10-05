@@ -16,6 +16,16 @@ const WIDTH_OPTIONS = [
 	{ label: __( 'One third', 'sgs-blocks' ), value: 'third' },
 ];
 
+// labelStyle 'hidden' leaves the label to screen readers only, as field_label() does.
+const SR_ONLY = {
+	position: 'absolute',
+	width: '1px',
+	height: '1px',
+	overflow: 'hidden',
+	clipPath: 'inset(50%)',
+	whiteSpace: 'nowrap',
+};
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		fieldName,
@@ -35,6 +45,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-form-field--${ width }`,
 	].join( ' ' );
 
+	const isPanel = 'panel' === attributes.zoneStyle;
 	const blockProps = useBlockProps( { className } );
 
 	return (
@@ -206,7 +217,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<div { ...blockProps }>
 				{ label && (
-					<label className="sgs-form-field__label">
+					<label
+						className={ 'hidden' === attributes.labelStyle ? 'sgs-form-field__label sgs-sr-only' : 'sgs-form-field__label' }
+						style={ 'hidden' === attributes.labelStyle ? SR_ONLY : undefined }
+					>
 						{ label }
 						{ required && (
 							<span className="sgs-form-field__required">
@@ -216,8 +230,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					</label>
 				) }
 				<div
-					className="sgs-form-field__file-zone"
-					style={ {
+					className={ isPanel ? 'sgs-form-field__file-zone sgs-form-field__file-zone--panel' : 'sgs-form-field__file-zone' }
+					style={ isPanel ? undefined : {
 						border: '2px dashed #ccc',
 						borderRadius: '8px',
 						padding: '40px',
@@ -225,16 +239,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						backgroundColor: '#f9f9f9',
 					} }
 				>
-					<div className="sgs-form-field__file-label">
+					<div className="sgs-form-field__file-label" style={ isPanel ? undefined : { border: 'none', padding: 0 } }>
 						<span>
-							{ __(
+							{ uploadText || __(
 								'Drag a file here or click to browse',
 								'sgs-blocks'
 							) }
 						</span>
 						<span
 							className="sgs-form-field__file-hint"
-							style={ {
+							style={ isPanel ? undefined : {
 								display: 'block',
 								marginTop: '8px',
 								fontSize: '14px',
@@ -244,9 +258,17 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ __( 'Max', 'sgs-blocks' ) } { maxSize }{ ' ' }
 							{ __( 'MB', 'sgs-blocks' ) }
 						</span>
+						{ isPanel && helpText && (
+							<p className="sgs-form-field__help">{ helpText }</p>
+						) }
+						{ isPanel && (
+							<span className="sgs-form-field__file-button" aria-hidden="true">
+								{ attributes.buttonLabel || __( 'Choose file', 'sgs-blocks' ) }
+							</span>
+						) }
 					</div>
 				</div>
-				{ helpText && (
+				{ ! isPanel && helpText && (
 					<p className="sgs-form-field__help">{ helpText }</p>
 				) }
 			</div>

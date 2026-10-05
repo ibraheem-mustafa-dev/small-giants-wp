@@ -461,7 +461,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				   render.php), not a specific child element. showFontFamily
 				   exposes the font-family control. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

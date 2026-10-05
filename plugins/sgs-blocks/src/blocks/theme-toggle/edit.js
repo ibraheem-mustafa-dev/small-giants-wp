@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSetting } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSetting, useSettings } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl, Notice } from '@wordpress/components';
 import {
 	SgsColourPanel,
@@ -15,6 +15,8 @@ import {
 	IconPicker,
 	BooleanResponsiveControl,
 } from '../../components';
+import { usePreviewTier } from '../../utils';
+import { themeTogglePreview } from './preview-style';
 
 const TOGGLE_STYLE_OPTIONS = [
 	{ label: __( 'Switch', 'sgs-blocks' ), value: 'switch' },
@@ -60,6 +62,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className: 'sgs-theme-toggle-preview',
 	} );
+	const [ palette ] = useSettings( 'color.palette' );
+	const preview = themeTogglePreview( attributes, usePreviewTier(), palette );
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
 	// against the block's own background. When the background is a gradient,
@@ -228,16 +232,17 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ 'switch' === toggleStyle ? (
 					<button
 						type="button"
-						className="sgs-theme-toggle sgs-dark-mode-toggle"
+						className={ [ 'sgs-theme-toggle', 'sgs-dark-mode-toggle', ...preview.iconOnlyClasses ].join( ' ' ) }
+						style={ preview.buttonStyle }
 						aria-pressed="false"
 						disabled
 					>
-						<span className="sgs-theme-toggle__icon sgs-icon-sun" aria-hidden="true" />
-						<span className="sgs-theme-toggle__icon sgs-icon-moon" aria-hidden="true" />
-						<span className="sgs-theme-toggle__label">{ label }</span>
+						<span className="sgs-theme-toggle__icon sgs-icon-sun" aria-hidden="true" style={ preview.iconStyle } />
+						<span className="sgs-theme-toggle__icon sgs-icon-moon" aria-hidden="true" style={ preview.iconStyle } />
+						<span className="sgs-theme-toggle__label" style={ preview.labelStyle }>{ label }</span>
 					</button>
 				) : (
-					<div className="sgs-theme-toggle sgs-theme-toggle--segmented" role="radiogroup" aria-label={ __( 'Colour scheme', 'sgs-blocks' ) }>
+					<div className="sgs-theme-toggle sgs-theme-toggle--segmented" style={ preview.buttonStyle } role="radiogroup" aria-label={ __( 'Colour scheme', 'sgs-blocks' ) }>
 						<button type="button" role="radio" aria-checked="false" disabled>
 							{ __( 'Light', 'sgs-blocks' ) }
 						</button>

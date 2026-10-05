@@ -8,7 +8,14 @@ import {
 import { PanelBody, RangeControl, SelectControl, Notice } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, fillRow, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
-import { backgroundPreview, spacingPreview, svgBackgroundPreview, flattenPresetSetting } from '../../utils';
+import {
+	backgroundPreview,
+	spacingPreview,
+	svgBackgroundPreview,
+	flattenPresetSetting,
+	wrapperPreview,
+	sectionPreview,
+} from '../../utils';
 // Reused directly rather than duplicated (Spec 35 Part B / composite wrapper rule,
 // D152): physics-canvas KEEPS SGS_Container_Wrapper (containerKind: 'section'), so
 // its box + width controls must be the SAME shape sgs/container itself exposes —
@@ -142,15 +149,25 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			? backgroundColour
 			: '';
 
+	// Border, radius, max-width and the content band, then the section's own min-height,
+	// shadow, tablet/mobile images and surface tone, as the wrapper paints them.
+	const wrapper = wrapperPreview( attributes, previewTier, colourPalette );
+	const section = sectionPreview( attributes, previewTier, colourPalette, gradientPresets );
+
 	const blockProps = useBlockProps( {
-		className: [ bgPreview.className, ...svgPreview.className ].filter( Boolean ).join( ' ' ),
-		style: { ...bgPreview.style, ...svgPreview.style, ...spacePreview },
+		className: [ bgPreview.className, ...svgPreview.className, section.className ].filter( Boolean ).join( ' ' ),
+		style: { ...wrapper.style, ...bgPreview.style, ...section.style, ...svgPreview.style, ...spacePreview },
 	} );
-	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		allowedBlocks: ALLOWED_BLOCKS,
-		templateLock: false,
-		renderAppender: undefined,
-	} );
+	// With a band the front end nests the content in `.sgs-container__inner`; the band element
+	// then hosts the InnerBlocks and the block's own element stays the full-bleed outer.
+	const innerBlocksProps = useInnerBlocksProps(
+		wrapper.hasBandProps ? { className: 'sgs-container__inner', style: wrapper.bandStyle } : blockProps,
+		{
+			allowedBlocks: ALLOWED_BLOCKS,
+			templateLock: false,
+			renderAppender: undefined,
+		}
+	);
 
 	// Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches
 	// the server; `pointer-events:none` is editor-only insurance so the
@@ -165,6 +182,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			dangerouslySetInnerHTML={ { __html: svgPreview.markup } }
 		/>
 	) : null;
+
+	const editorNotice = (
+		<p className="wp-block-sgs-physics-canvas__editor-notice">
+			{ __(
+				'Decorative content only — images, media and icons. No links, buttons or body text (they would have no keyboard/reduced-motion alternative once thrown).',
+				'sgs-blocks'
+			) }
+		</p>
+	);
 
 	return (
 		<>
@@ -446,16 +472,21 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
-			<div { ...innerBlocksProps }>
-				{ svgLayer }
-				<p className="wp-block-sgs-physics-canvas__editor-notice">
-					{ __(
-						'Decorative content only — images, media and icons. No links, buttons or body text (they would have no keyboard/reduced-motion alternative once thrown).',
-						'sgs-blocks'
-					) }
-				</p>
-				{ innerBlocksProps.children }
-			</div>
+			{ wrapper.hasBandProps ? (
+				<div { ...blockProps }>
+					{ svgLayer }
+					<div { ...innerBlocksProps }>
+						{ editorNotice }
+						{ innerBlocksProps.children }
+					</div>
+				</div>
+			) : (
+				<div { ...innerBlocksProps }>
+					{ svgLayer }
+					{ editorNotice }
+					{ innerBlocksProps.children }
+				</div>
+			) }
 		</>
 	);
 }

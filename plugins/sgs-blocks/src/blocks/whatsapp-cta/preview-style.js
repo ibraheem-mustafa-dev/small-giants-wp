@@ -7,20 +7,7 @@
  *
  * @package SGS\Blocks
  */
-import { resolveBorderStyle } from '../../utils/border-style';
-
-/**
- * Box-object interface contract §1/§5: build an editor-preview shorthand from
- * a box object — mirrors render.php's box-shorthand builders so the canvas
- * preview matches the frontend (contract §5). Only BASE tier previews here —
- * tablet/mobile tiers live in render.php's <style> media queries, which the
- * editor canvas never executes for a dynamic block (matches sgs/heading).
- */
-export function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
+import { isCssGradient, boxShorthand, borderRadiusPreview, sgsBorderPreview } from '../../utils';
 
 /**
  * Root-element preview style (contract §B3: the button element IS the block
@@ -67,8 +54,7 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 		backgroundColor: colourVar( backgroundColour ) || undefined,
 		gap: iconGap || undefined,
 		minHeight: minHeight || undefined,
-		...( backgroundColourGradient &&
-		/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient )
+		...( isCssGradient( backgroundColourGradient )
 			? { backgroundImage: backgroundColourGradient }
 			: {} ),
 	};
@@ -81,25 +67,13 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 	if ( marginPreview ) {
 		rootStyle.margin = marginPreview;
 	}
-	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) {
-		rootStyle.borderRadius = radiusPreview;
-	}
+	Object.assign( rootStyle, borderRadiusPreview( borderRadius ) );
 	// Card variant's border preview — CSS already gives the card a default
 	// 1px solid border; only overridden values need setting here.
 	// cardBorderWidth is BASE ONLY (no desktop tier — Spec 35 §14, no
 	// per-device border width), unlike padding/margin/borderRadius above.
 	if ( 'card' === variant ) {
-		if ( cardBorderColour ) {
-			rootStyle.borderColor = colourVar( cardBorderColour ) || undefined;
-		}
-		const borderWidthPreview = boxShorthand( cardBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-		if ( borderWidthPreview ) {
-			rootStyle.borderWidth = borderWidthPreview;
-		}
-		if ( cardBorderStyle ) {
-			rootStyle.borderStyle = resolveBorderStyle( cardBorderStyle );
-		}
+		Object.assign( rootStyle, sgsBorderPreview( { widthValues: cardBorderWidth, styleValue: cardBorderStyle, colourValue: cardBorderColour }, 'desktop', undefined, { defaultBorder: true } ) );
 	}
 
 	return rootStyle;
@@ -119,4 +93,26 @@ export function buildRootClassName( { variant, showOnMobile, showOnDesktop } ) {
 		! showOnMobile ? 'sgs-whatsapp-cta--hide-mobile' : '',
 		! showOnDesktop ? 'sgs-whatsapp-cta--hide-desktop' : '',
 	].filter( Boolean ).join( ' ' );
+}
+
+/**
+ * Editor twin of variant-render.php::sgs_whatsapp_cta_floating_hide_label_css():
+ * below the configured width the floating pill collapses to the icon-only
+ * circle. The canvas is an iframe whose width follows the device preview, so the
+ * same media query applies there.
+ *
+ * @param {string}  rootSelector      Selector of the preview root (uid class).
+ * @param {number}  hideBelow         floatingHideLabelBelow, 0 = never.
+ * @param {boolean} hasVisibleLabel   True when the floating variant has a typed label.
+ * @return {string} CSS text, or '' when nothing collapses.
+ */
+export function floatingHideLabelPreviewCss( rootSelector, hideBelow, hasVisibleLabel ) {
+	const below = Math.max( 0, parseInt( hideBelow, 10 ) || 0 );
+	if ( below <= 0 || ! hasVisibleLabel ) {
+		return '';
+	}
+	return `@media(max-width:${ below }px){`
+		+ `${ rootSelector } .sgs-whatsapp-cta__label--floating{display:none}`
+		+ `${ rootSelector }.sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn{width:56px;height:56px;border-radius:50%;padding:0;justify-content:center}`
+		+ '}';
 }

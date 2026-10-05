@@ -33,26 +33,7 @@ import {
 import { ResponsiveBoxControl, ResponsiveOverride, SpacingControl, resolveColourToken, SgsColourPanel, SgsLengthControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
-/**
- * Build a CSS box shorthand ("top right bottom left") from a
- * { top, right, bottom, left } box object, or undefined when nothing is
- * set — mirrors sgs/button's own `boxShorthand` editor-preview helper
- * (same house pattern, kept local rather than shared since each block's
- * box shape/keys differ slightly).
- *
- * @param {Object} box  Box object.
- * @param {Array}  keys Ordered side keys to read.
- * @return {string|undefined} CSS shorthand value or undefined.
- */
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) {
-		return undefined;
-	}
-	if ( ! keys.some( ( key ) => box[ key ] ) ) {
-		return undefined;
-	}
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
+import { tierBoxShorthand, usePreviewTier, resolveResponsiveTier, isCssGradient, sgsBorderPreview } from '../../utils';
 
 const JUSTIFY_OPTIONS = [
 	{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
@@ -84,6 +65,7 @@ const TEMPLATE = [
 ];
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
+	const previewTier = usePreviewTier();
 	const {
 		asideFormat,
 		asideBg,
@@ -122,36 +104,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	if ( asideBg ) {
 		previewStyle.backgroundColor = resolveColourToken( asideBg, palette );
 	}
-	if ( asideBgGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBgGradient ) ) {
+	if ( isCssGradient( asideBgGradient ) ) {
 		previewStyle.backgroundImage = asideBgGradient;
 	}
-	if ( asideRadius ) {
-		previewStyle.borderRadius = asideRadius;
+	Object.assign( previewStyle, sgsBorderPreview( { widthValues: asideBorderWidth, styleValue: 'solid', colourValue: asideBorderColour, colourGradientValue: asideBorderColourGradient, radiusValues: asideRadius }, previewTier, palette, { fallbackColour: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))' } ) );
+	// Stack gap + vertical alignment at the previewed tier (render.php's sgs_emit_responsive_css; a bare number is px).
+	const gapAtTier = resolveResponsiveTier( asideGap || {}, previewTier )?.value;
+	if ( gapAtTier ) {
+		previewStyle.gap = /^\d+(\.\d+)?$/.test( String( gapAtTier ) ) ? `${ gapAtTier }px` : gapAtTier;
 	}
-	const borderWidthPreview = boxShorthand( asideBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( borderWidthPreview ) {
-		previewStyle.borderWidth = borderWidthPreview;
-		previewStyle.borderStyle = 'solid';
-		previewStyle.borderColor = asideBorderColour
-			? resolveColourToken( asideBorderColour, palette )
-			: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))';
-		// asideBorderColourGradient canvas mirror — render.php
-		// paints it as a masked ::before ring, winning over
-		// the flat border-color above. A plain inline style can't reproduce the
-		// mask, so this approximates it via border-image, only when the border is
-		// actually painting (borderWidthPreview truthy, matching render.php's gate).
-		if ( asideBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBorderColourGradient ) ) {
-			previewStyle.borderImage = `${ asideBorderColourGradient } 1`;
-		}
+	const justifyAtTier = resolveResponsiveTier( asideJustify || {}, previewTier )?.value;
+	if ( justifyAtTier ) {
+		previewStyle.justifyContent = justifyAtTier;
 	}
-	// Stack gap + vertical alignment — desktop tier mirrors render.php.
-	if ( asideGap?.desktop ) {
-		previewStyle.gap = asideGap.desktop;
-	}
-	if ( asideJustify?.desktop ) {
-		previewStyle.justifyContent = asideJustify.desktop;
-	}
-	const paddingPreview = boxShorthand( asidePadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = tierBoxShorthand( asidePadding, previewTier, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		previewStyle.padding = paddingPreview;
 	}
@@ -176,7 +142,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 */
 	const megaAsidePreviewScope = `sgs-mega-aside-preview-${ clientId }`;
 	const asideBgHoverDecl =
-		asideBgHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBgHoverGradient )
+		isCssGradient( asideBgHoverGradient )
 			? `background-image:${ asideBgHoverGradient } !important;background-color:transparent !important;`
 			: asideBgHover
 				? `background-color:${ resolveColourToken( asideBgHover, palette ) } !important;`
@@ -185,13 +151,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 * asideBorderColourHover(Gradient) canvas mirror. render.php emits both via
 	 * sgs_border_states_css(); the editor canvas needs its own rule to show it.
 	 * Only meaningful when a resting border is actually
-	 * painting (borderWidthPreview truthy, matching render.php's own
+	 * painting (the shared border preview set a width, matching render.php's own
 	 * $aside_border_has_width gate above). Same `border-image` approximation
 	 * as the resting-state gradient preview above (not the real masked
 	 * ::before ring — a `<style>` tag can't reach ::before content).
 	 */
-	const asideBorderHoverDecl = borderWidthPreview
-		? asideBorderColourHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBorderColourHoverGradient )
+	const asideBorderHoverDecl = previewStyle.borderWidth
+		? isCssGradient( asideBorderColourHoverGradient )
 			? `border-image:${ asideBorderColourHoverGradient } 1 !important;`
 			: asideBorderColourHover
 				? `border-color:${ resolveColourToken( asideBorderColourHover, palette ) } !important;`

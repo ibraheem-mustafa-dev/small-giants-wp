@@ -316,10 +316,6 @@
 		"textColumns": {
 			"type": "number"
 		},
-		"textIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"writingMode": {
 			"type": "string",
 			"enum": [
@@ -609,7 +605,6 @@
 						"css:letter-spacing": "letterSpacing",
 						"css:text-align": "textAlign",
 						"css:text-wrap": "textWrap",
-						"css:text-indent": "textIndent",
 						"css:column-count": "textColumns"
 					},
 					"states": {

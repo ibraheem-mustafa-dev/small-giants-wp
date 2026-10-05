@@ -1,9 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
 import { IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
-import { colourVar } from '../../utils';
+import { colourVar, usePreviewTier, tierBoxShorthand } from '../../utils';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
@@ -12,17 +12,8 @@ import buildCartColourRows from './colourPanelRows';
 import buildPanelColourRows from './panelColourRows';
 import PanelContentControls from './PanelContentControls';
 import PanelDesignControls from './PanelDesignControls';
-
-// Box-object interface contract §5: base-tier canvas preview shorthand
-// (mirrors sgs/buybox + sgs/whatsapp-cta). Tablet/mobile tiers live in
-// render.php's own scoped @media rules, which the editor canvas never
-// executes.
-function boxShorthand( box ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	const { top, right, bottom, left } = box;
-	if ( ! top && ! right && ! bottom && ! left ) return undefined;
-	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
-}
+import PanelPreview from './PanelPreview';
+import { triggerStyles } from './panel-preview-style';
 
 /**
  * SGS Cart — block editor component.
@@ -96,19 +87,22 @@ export default function Edit( { attributes, setAttributes } ) {
 	// so we don't show spurious warnings on a fresh install.
 	const wcActive = window?.sgsCartData?.wcActive !== false;
 
+	const previewTier = usePreviewTier();
+	const [ palette ] = useSettings( 'color.palette' );
+	const parts = triggerStyles( attributes, previewTier, palette, hasPill );
 	const style = {
 		'--sgs-cart-icon-size': `${ iconSize }px`,
 		'--sgs-cart-icon-colour': colourVar( iconColour ) || undefined,
 		'--sgs-cart-badge-colour': colourVar( badgeColour ) || undefined,
 		'--sgs-cart-badge-text-colour':
 			colourVar( badgeTextColour ) || undefined,
-		margin: boxShorthand( margin?.desktop ),
+		margin: tierBoxShorthand( margin, previewTier ),
 	};
 
 	const blockProps = useBlockProps( {
 		className: `sgs-cart sgs-cart--editor-preview sgs-cart--trigger-${
 			hasPill ? 'pill' : 'icon'
-		}`,
+		}${ hasPill && 'bubble' === attributes.pillCountStyle ? ' sgs-cart--pill-count-bubble' : '' }`,
 		style,
 	} );
 
@@ -305,13 +299,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				<span
 					className="sgs-cart__trigger sgs-cart__trigger--editor"
 					aria-label={ ariaLabel }
-					style={ {
-						borderRadius: hasPill ? pillBorderRadius || undefined : undefined,
-						borderColor: hasPill ? colourVar( pillBorderColour ) || undefined : undefined,
-					} }
+					style={ parts.trigger }
 				>
 					{ hasPill ? (
-						<span className="sgs-cart__pill-label">
+						<span className="sgs-cart__pill-label" style={ parts.pillLabel }>
 							{ pillLabel || __( 'Cart', 'sgs-blocks' ) }
 						</span>
 					) : (
@@ -328,10 +319,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						className={ `sgs-cart__badge${
 							hasPill ? ' sgs-cart__badge--pill' : ''
 						}${ showZero ? ' sgs-cart__badge--visible' : '' }` }
+						style={ parts.badge }
 					>
 						0
 					</span>
 				</span>
+				{ hasPanel && (
+					<PanelPreview attributes={ attributes } displayMode={ displayMode } tier={ previewTier } palette={ palette } />
+				) }
 			</div>
 		</>
 	);

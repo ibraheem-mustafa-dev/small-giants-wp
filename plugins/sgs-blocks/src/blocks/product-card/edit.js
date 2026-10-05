@@ -42,8 +42,8 @@ import {
 	ToolsPanel,
 	ToolsPanelItem,
 } from '../../components/primitives';
-import { SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import { SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss, textIndentPreviewCss, usePreviewTier, isCssGradient, sgsBorderPreview } from '../../utils';
+import { typedCardPreview, TypedMediaOverlays, TypedRating, TypedSwatches, attributeTagText } from './typed-canvas';
 
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
@@ -833,12 +833,8 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		const v = String( value ).trim();
 		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : `var(--wp--preset--color--${ v })`;
 	};
-	const cardBoxShorthand = ( box, keys ) => {
-		if ( ! box || 'object' !== typeof box ) return undefined;
-		if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-		return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-	};
-	const nativeStyle = attributes.style || {};
+	const cardTier = usePreviewTier();
+	const typedParts = typedCardPreview( attributes, cardTier );
 	const typedPreviewStyle = {};
 	const typedPreviewClasses = [];
 	if ( ! isBound ) {
@@ -847,42 +843,16 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 			resolveTextColourPreviewStyle( textColour, textColourGradient, resolveCardColourPreview )
 		);
 		if (
-			backgroundColourGradient &&
-			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient )
+			isCssGradient( backgroundColourGradient )
 		) {
 			typedPreviewStyle.backgroundImage = backgroundColourGradient;
 		} else if ( backgroundColour ) {
 			typedPreviewStyle.backgroundColor = resolveCardColourPreview( backgroundColour );
 		}
-		if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-			const borderWidthPreview = cardBoxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-			if ( borderWidthPreview ) {
-				typedPreviewStyle.borderWidth = borderWidthPreview;
-				typedPreviewStyle.borderStyle = resolveBorderStyle( borderStyle );
-			}
-			if (
-				borderColourGradient &&
-				/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient )
-			) {
-				// Canvas-only approximation of the frontend's masked ::before
-				// gradient ring — a flat border-image shorthand, not a full
-				// mask reproduction (not worth it for a preview).
-				typedPreviewStyle.borderImage = `${ borderColourGradient } 1`;
-			} else if ( borderColour ) {
-				typedPreviewStyle.borderColor = resolveCardColourPreview( borderColour );
-			}
-		}
-		if ( typeof nativeStyle?.border?.radius === 'string' && nativeStyle.border.radius ) {
-			typedPreviewStyle.borderRadius = nativeStyle.border.radius;
-		} else {
-			const radiusPreview = cardBoxShorthand(
-				nativeStyle?.border?.radius,
-				[ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
-			);
-			if ( radiusPreview ) {
-				typedPreviewStyle.borderRadius = radiusPreview;
-			}
-		}
+		Object.assign( typedPreviewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient }, cardTier ) );
+		// Radius, max width and the card-level custom properties at the previewed tier.
+		Object.assign( typedPreviewStyle, typedParts.root );
+		typedPreviewClasses.push( ...typedParts.rootClasses );
 		// Preset (palette-slug) colours are class-based — mirror render.php's re-add.
 		if ( attributes.textColor ) {
 			typedPreviewClasses.push( 'has-text-color', `has-${ attributes.textColor }-color` );
@@ -924,31 +894,19 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		const v = String( value ).trim();
 		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : `var(--wp--preset--color--${ v })`;
 	};
-	const titlePreviewStyle = { color: resolvePcColour( titleColour ) };
-	const pricePreviewStyle = { color: resolvePcColour( priceColour ) };
-	const descPreviewStyle = { color: resolvePcColour( descColour ) };
-	const priceNotePreviewStyle = { color: resolvePcColour( priceNoteColour ) };
+	const titlePreviewStyle = typedParts.title;
+	const pricePreviewStyle = typedParts.price;
+	const descPreviewStyle = typedParts.desc;
+	const priceNotePreviewStyle = typedParts.priceNote;
 	const ctaPaddingBox = ctaPadding && typeof ctaPadding === 'object' ? ctaPadding : {};
 	const ctaHasPadding =
 		ctaPaddingBox.top || ctaPaddingBox.right || ctaPaddingBox.bottom || ctaPaddingBox.left;
 	// A2 — ctaBorderWidth/ctaBorderRadius are {top,right,bottom,left} /
 	// {topLeft,topRight,bottomLeft,bottomRight} objects (mirrors sgs/button).
-	// boxShorthand mirrors button/edit.js's canvas-preview helper (contract §5)
-	// so the editor preview matches the frontend
-	// (helpers-button-style.php's sgs_box_object_shorthand()).
-	const boxShorthand = ( box, keys ) => {
-		if ( ! box || 'object' !== typeof box ) return undefined;
-		if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-		return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-	};
 	const ctaPreviewStyle = {
 		backgroundColor: resolvePcColour( ctaColourBackground ),
 		color: resolvePcColour( ctaColourText ),
-		borderColor: resolvePcColour( ctaColourBorder ),
-		borderStyle: boxShorthand( ctaBorderWidth, [ 'top', 'right', 'bottom', 'left' ] ) ? resolveBorderStyle( ctaBorderStyle ) : undefined,
-		borderWidth: boxShorthand( ctaBorderWidth, [ 'top', 'right', 'bottom', 'left' ] ),
-		// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
-		borderRadius: boxShorthand( ctaBorderRadius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] ),
+		...sgsBorderPreview( { widthValues: ctaBorderWidth, styleValue: ctaBorderStyle, colourValue: ctaColourBorder, colourGradientValue: attributes.ctaColourBorderGradient, radiusValues: ctaBorderRadius } ),
 		fontWeight: ctaFontWeight || undefined,
 		fontSize:
 			ctaFontSize !== undefined && ctaFontSize !== null && '' !== ctaFontSize
@@ -963,6 +921,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 			  }
 			: {} ),
 		width: 'full' === ctaWidthType ? '100%' : undefined,
+		...typedParts.ctaGradients,
 	};
 
 	/*
@@ -1005,14 +964,18 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		? `${ ctaHoverSelector }:hover,${ ctaHoverSelector }:focus-visible{${ ctaHoverDecls.join( '' ) }}`
 		: '';
 
-	// Two-state link colour preview (Task 3, 2026-09-07) — the description
-	// RichText field permits `core/link`. Reuses the same clientId-derived
-	// preview scope as the CTA hover CSS above.
+	// Description preview: two-state link colour (the RichText permits
+	// `core/link`) and the paragraph-after-paragraph text indent render.php
+	// emits on both description markups, in the same clientId-derived scope
+	// as the CTA hover CSS above.
 	const descLinkPreviewCss = linkColourPreviewCss(
 		`.${ ctaPreviewUid } .sgs-product-card__description, .${ ctaPreviewUid } .product-desc`,
 		descLinkColour,
-		descLinkColourHover
-	);
+		descLinkColourHover,
+		attributes.descLinkColourGradient,
+		attributes.descLinkColourHoverGradient
+	) + textIndentPreviewCss( attributes, 'desc', `.${ ctaPreviewUid } .sgs-product-card__description`, cardTier )
+		+ textIndentPreviewCss( attributes, 'desc', `.${ ctaPreviewUid } .product-desc`, cardTier );
 
 	// Bound mode: render.php (via ServerSideRender) supplies the full
 	// `.product-card` wrapper itself, so the editor wrapper must NOT also add
@@ -1547,6 +1510,19 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				},
 			],
 		}
+	);
+
+	const tagText = attributeTagText( attributes );
+	const titleField = (
+		<RichText
+			tagName={ headingTag }
+			className="sgs-product-card__title"
+			style={ titlePreviewStyle }
+			value={ productName || '' }
+			onChange={ ( v ) => setAttributes( { productName: v } ) }
+			placeholder={ __( 'Product name…', 'sgs-blocks' ) }
+			allowedFormats={ [] }
+		/>
 	);
 
 	return (
@@ -2329,7 +2305,6 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showTextAlign: true,
 									showTextWrap: true,
 									showTextColumns: true,
-									showTextIndent: true,
 									showWritingMode: true,
 								},
 								{
@@ -2365,7 +2340,6 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showTextAlign: true,
 									showTextWrap: true,
 									showTextColumns: true,
-									showTextIndent: true,
 									showWritingMode: true,
 								},
 								{
@@ -3177,18 +3151,19 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					{ descLinkPreviewCss && <style>{ descLinkPreviewCss }</style> }
 					{ /* Image */ }
 					{ image ? (
-						<div style={ { position: 'relative' } }>
+						<div className="sgs-product-card__media-wrap" style={ { position: 'relative', ...typedParts.media } }>
 							<img
 								className="sgs-product-card__image"
 								src={ image }
 								alt={ imageAlt || '' }
 								style={ {
 									width: '100%',
-									height: imageHeight || '220px',
+									height: typedParts.aspectOk ? '100%' : imageHeight || '220px',
 									objectFit: 'cover',
 									display: 'block',
 								} }
 							/>
+							<TypedMediaOverlays attributes={ attributes } styles={ typedParts } />
 							{ /* D787 — a broken/mismatched image (exactly how a freshly
 							     cloned card lands) previously left only a destructive
 							     "Remove image" button here; a client had to DELETE the
@@ -3271,7 +3246,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						</MediaUploadCheck>
 					) }
 
-					<div className="sgs-product-card__body">
+					<div className="sgs-product-card__body" style={ typedParts.body }>
 						{ /* Tag badge preview — tagTextColour/tagBackgroundColour only
 						     style the TRIAL tag in render.php (the scoped rule targets
 						     .sgs-product-card__tag--trial specifically); the featured
@@ -3281,16 +3256,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						{ isTrial && ( attributes.trialTag || '' ) !== '' && (
 							<span
 								className="sgs-product-card__tag sgs-product-card__tag--trial"
-								style={ {
-									backgroundColor: resolvePcColour(
-										attributes.tagBackgroundColour
-									),
-									...resolveTextColourPreviewStyle(
-										attributes.tagTextColour,
-										attributes.tagTextColourGradient,
-										resolvePcColour
-									),
-								} }
+								style={ typedParts.tag }
 							>
 								{ attributes.trialTag }
 							</span>
@@ -3302,21 +3268,18 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								</span>
 							) }
 
-						{ /* Product name — inline RichText */ }
-						<RichText
-							tagName={ headingTag }
-							className="sgs-product-card__title"
-							style={ titlePreviewStyle }
-							value={ productName || '' }
-							onChange={ ( v ) =>
-								setAttributes( { productName: v } )
-							}
-							placeholder={ __(
-								'Product name…',
-								'sgs-blocks'
-							) }
-							allowedFormats={ [] }
-						/>
+						{ /* Product name — inline RichText, with the attribute tag beside it
+						     (sgs-product-card__title-row, as attribute-tag.php wraps it). */ }
+						{ tagText ? (
+							<div className="sgs-product-card__title-row">
+								{ titleField }
+								<span className="sgs-product-card__attribute-tag" style={ typedParts.attributeTag }>
+									{ tagText }
+								</span>
+							</div>
+						) : (
+							titleField
+						) }
 
 						{ /* Description — inline RichText */ }
 						<RichText
@@ -3338,6 +3301,8 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 							] }
 						/>
 
+						<TypedRating attributes={ attributes } styles={ typedParts } />
+
 						{ /*
 						 * Pack pills preview — uses the REAL sgs/option-picker markup +
 						 * classes (.sgs-option-picker / __options / __option / __pill,
@@ -3352,7 +3317,8 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						 */ }
 						{ ( packSizes || [] ).length > 0 && (
 							<div
-								className="sgs-option-picker sgs-option-picker--outlined sgs-option-picker--medium"
+								className={ [ 'sgs-option-picker', 'sgs-option-picker--outlined', 'sgs-option-picker--medium', ...typedParts.pickerClasses ].join( ' ' ) }
+								style={ typedParts.picker }
 								role="radiogroup"
 								aria-label={ __( 'Pack size', 'sgs-blocks' ) }
 							>
@@ -3368,7 +3334,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 												checked={ !! pill.selected }
 												readOnly
 											/>
-											<span className="sgs-option-picker__pill">
+											<span className="sgs-option-picker__pill" style={ { ...typedParts.pill, ...typedParts.pillText } }>
 												{ pill.label }
 											</span>
 										</label>
@@ -3380,23 +3346,26 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						{ /* Price row */ }
 						{ ( ( priceLarge || '' ) !== '' ||
 							( priceNote || '' ) !== '' ) && (
-							<div className="sgs-product-card__price-row">
-								{ ( priceLarge || '' ) !== '' && (
-									<span
-										className="sgs-product-card__price"
-										style={ pricePreviewStyle }
-									>
-										{ priceLarge }
-									</span>
-								) }
-								{ ( priceNote || '' ) !== '' && (
-									<span
-										className="sgs-product-card__price-note"
-										style={ priceNotePreviewStyle }
-									>
-										{ priceNote }
-									</span>
-								) }
+							<div className="sgs-product-card__price-row" style={ typedParts.priceRow }>
+								<div className="sgs-product-card__price-group">
+									{ ( priceLarge || '' ) !== '' && (
+										<span
+											className="sgs-product-card__price"
+											style={ pricePreviewStyle }
+										>
+											{ priceLarge }
+										</span>
+									) }
+									{ ( priceNote || '' ) !== '' && (
+										<span
+											className="sgs-product-card__price-note"
+											style={ priceNotePreviewStyle }
+										>
+											{ priceNote }
+										</span>
+									) }
+								</div>
+								<TypedSwatches attributes={ attributes } styles={ typedParts } />
 							</div>
 						) }
 

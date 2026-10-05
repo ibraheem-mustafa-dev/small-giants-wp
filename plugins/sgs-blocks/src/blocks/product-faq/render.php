@@ -326,7 +326,9 @@ if ( '' !== $text_colour_hover_effective ) {
 // mechanism (D971/D972 full-replacement track). Replaces the old WP-native
 // supports.typography (fontSize + lineHeight only) with the framework's own
 // helper, which also now offers fontWeight/fontStyle.
-$sgs_pf_typography_css = sgs_typography_css_rule( $attributes, '', $root_sel );
+// Text indent follows core's convention: every paragraph that follows another
+// paragraph inside the element.
+$sgs_pf_typography_css = sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 if ( '' !== $sgs_pf_typography_css ) {
 	$scoped_css[] = $sgs_pf_typography_css;
 }

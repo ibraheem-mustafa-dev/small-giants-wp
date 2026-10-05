@@ -22,7 +22,16 @@ import {
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { backgroundPaintPreview, backgroundPreview, spacingPreview, svgBackgroundPreview, textPaintPreview, flattenPresetSetting } from '../../utils';
+import {
+	backgroundPaintPreview,
+	backgroundPreview,
+	spacingPreview,
+	svgBackgroundPreview,
+	textPaintPreview,
+	flattenPresetSetting,
+	wrapperPreview,
+	sectionPreview,
+} from '../../utils';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
@@ -228,27 +237,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		margin: attributes.margin,
 	}, previewTier );
 
-	// Layout preview (`layout` is FIXED to 'flex' — see the Layout PanelBody
-	// below for why this block never exposes a picker, and never previews
-	// `alignContent` — mirrors class-sgs-container-wrapper.php's flex branch
-	// (~1303-1361) exactly, same shape as sgs/container's own edit.js flex
-	// branch (~line 295-315), including the column-axis + wrap invariant:
-	// a wrapped column-axis flex container sizes each line from its items
-	// rather than being handed the parent's own cross size (CSS Flexbox L1
-	// 9.4), so the canvas must show the SAME coercion the live page gets
-	// rather than looking fine here and breaking on publish.
-	const flexDirectionPreview = attributes.flexDirection || 'column';
-	const flexWrapPreview = attributes.flexWrap || 'wrap';
-	const isColumnAxisPreview = 0 === flexDirectionPreview.indexOf( 'column' );
-	const effectiveFlexWrapPreview =
-		isColumnAxisPreview && ( 'wrap' === flexWrapPreview || 'wrap-reverse' === flexWrapPreview )
-			? 'nowrap'
-			: flexWrapPreview;
-	const layoutPreview = {
-		display: 'flex',
-		flexDirection: flexDirectionPreview,
-		flexWrap: effectiveFlexWrapPreview,
-	};
+	// Layout, gap, max-width, border, radius and the content band come from the
+	// shared wrapper mirror (`layout` is fixed to 'flex'; flexDirection defaults
+	// to 'column' and the column-axis + wrap coercion lives in
+	// applyGridLayoutPreview). Min-height, shadow, tablet/mobile background
+	// images and the surface tone come from the section mirror.
+	const wrapper = wrapperPreview( attributes, previewTier, colourPalette );
+	const section = sectionPreview( attributes, previewTier, colourPalette, gradientPresets );
 
 	// Text colour/gradient canvas preview. `textColour` is also read inside the
 	// WCAG contrast-check useEffect further down, but that is a contrast
@@ -258,10 +253,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const textPreview = textPaintPreview( attributes.textColour, attributes.textColourGradient, colourPalette );
 
 	const blockProps = useBlockProps( {
-		className: [ 'sgs-site-footer', bgPreview.className, ...svgPreview.className ]
+		className: [ 'sgs-site-footer', bgPreview.className, section.className, ...svgPreview.className ]
 			.filter( Boolean )
 			.join( ' ' ),
-		style: { ...backgroundPaint, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...layoutPreview, ...textPreview },
+		style: { ...backgroundPaint, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...wrapper.style, ...section.style, ...textPreview },
 	} );
 	const refEl = useRef( null );
 
@@ -327,16 +322,21 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		seedTemplateRef.current = innerBlockCount === 0;
 	}
 
-	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		allowedBlocks: ALLOWED_BLOCKS,
-		template: seedTemplateRef.current ? TEMPLATE : undefined,
-		// Fixed rows: operators can't add, remove, or reorder rows, but can fully
-		// edit the elements inside each row (the rows set their own
-		// templateLock:false). Note: 'insert' only blocks add/remove — it still
-		// permits dragging rows into a different order, so 'all' is required here.
-		templateLock: 'all',
-		orientation: 'vertical',
-	} );
+	const innerBlocksProps = useInnerBlocksProps(
+		wrapper.hasBandProps
+			? { className: 'sgs-container__inner', style: wrapper.bandStyle }
+			: blockProps,
+		{
+			allowedBlocks: ALLOWED_BLOCKS,
+			template: seedTemplateRef.current ? TEMPLATE : undefined,
+			// Fixed rows: operators can't add, remove, or reorder rows, but can fully
+			// edit the elements inside each row (the rows set their own
+			// templateLock:false). Note: 'insert' only blocks add/remove — it still
+			// permits dragging rows into a different order, so 'all' is required here.
+			templateLock: 'all',
+			orientation: 'vertical',
+		}
+	);
 
 	// Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches the
 	// server; `pointer-events:none` is editor-only insurance so the decorative
@@ -636,10 +636,17 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			{ /* Spread first, then state children explicitly: innerBlocksProps
 			     CARRIES a `children` prop, so the SVG layer has to be composed
 			     with it rather than added alongside the spread. */ }
-			<div ref={ refEl } { ...innerBlocksProps }>
-				{ svgLayer }
-				{ innerBlocksProps.children }
-			</div>
+			{ wrapper.hasBandProps ? (
+				<div ref={ refEl } { ...blockProps }>
+					{ svgLayer }
+					<div { ...innerBlocksProps } />
+				</div>
+			) : (
+				<div ref={ refEl } { ...innerBlocksProps }>
+					{ svgLayer }
+					{ innerBlocksProps.children }
+				</div>
+			) }
 		</>
 	);
 }

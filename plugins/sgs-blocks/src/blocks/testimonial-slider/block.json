@@ -129,10 +129,6 @@
 		"typography": ".wp-block-sgs-testimonial-slider"
 	},
 	"attributes": {
-		"alignItems": {
-			"type": "string",
-			"default": ""
-		},
 		"autoplay": {
 			"type": "boolean",
 			"default": true
@@ -212,18 +208,6 @@
 			"type": "string",
 			"default": "ease-in-out"
 		},
-		"columns": {
-			"type": "object",
-			"default": {
-				"desktop": 2,
-				"tablet": 2,
-				"mobile": 1
-			}
-		},
-		"gridTemplateColumns": {
-			"type": "object",
-			"default": {}
-		},
 		"gap": {
 			"type": "object",
 			"default": {}
@@ -232,69 +216,9 @@
 			"type": "object",
 			"default": {}
 		},
-		"gridTemplateRows": {
-			"type": "object",
-			"default": {}
-		},
-		"gridAutoRows": {
-			"type": "string",
-			"default": ""
-		},
-		"justifyItems": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end"
-			]
-		},
-		"alignContent": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end",
-				"space-between",
-				"space-around",
-				"space-evenly"
-			]
-		},
 		"contentWidth": {
 			"type": "object",
 			"default": {}
-		},
-		"flexDirection": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"row",
-				"column"
-			]
-		},
-		"flexWrap": {
-			"type": "string",
-			"default": "wrap",
-			"enum": [
-				"wrap",
-				"nowrap"
-			]
-		},
-		"justifyContent": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"flex-start",
-				"center",
-				"flex-end",
-				"space-between",
-				"space-around"
-			]
 		},
 		"dragToScroll": {
 			"type": "boolean",
@@ -416,10 +340,6 @@
 		},
 		"textColumns": {
 			"type": "number"
-		},
-		"textIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"writingMode": {
 			"type": "string",

@@ -1217,10 +1217,6 @@
 		"titleTextColumns": {
 			"type": "number"
 		},
-		"titleTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"titleWritingMode": {
 			"type": "string",
 			"enum": [
@@ -1392,10 +1388,6 @@
 		},
 		"tagTextColumns": {
 			"type": "number"
-		},
-		"tagTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"tagWritingMode": {
 			"type": "string",

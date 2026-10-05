@@ -481,8 +481,13 @@ $styles = array();
 $styles = array_merge( $styles, sgs_transition_vars( $attributes ) );
 
 // Standard variant: use <img> instead of CSS background-image so the browser can
-// discover the LCP resource early and apply fetchpriority="high".
-$has_standard_bg_image = ! $is_split && ! empty( $bg_image['url'] );
+// discover the LCP resource early and apply fetchpriority="high". The same rule as the
+// shared Background panel's wrapper path (SGS_Container_Wrapper::render): a tablet or mobile
+// image swaps on the wrapper's ::before layer inside @media rules, which a lone <img> cannot
+// follow, so with any tier image set the whole background stays on the wrapper's CSS path.
+$has_standard_bg_image = ! $is_split && ! empty( $bg_image['url'] )
+	&& empty( $attributes['backgroundImageTablet']['url'] )
+	&& empty( $attributes['backgroundImageMobile']['url'] );
 
 // Generate a unique ID for responsive CSS scoping. This is a CLASS (contract
 // §B3-style scoping — matches the container/quote/heading convention): the
@@ -1146,7 +1151,9 @@ if ( ! empty( $hero_style_engine_args ) ) {
 // class hero's own rendered markup never emits (see block.json's
 // `_selectorsNote`), so those 6 controls were silent no-ops. Scoped to
 // $root_sel (the wrapper), matching block.json's corrected `selectors.typography`.
-$responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
+// Text indent follows core's convention: every paragraph that follows another
+// paragraph inside the element.
+$responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color class onto the wrapper — re-add it manually (mirrors sgs/quote)
@@ -1744,15 +1751,12 @@ $sgs_hero_null_attrs = array(
 	// no longer exist as real attribute keys.
 	'minHeight',
 );
-if ( ! $is_split ) {
-	// C3 double-emit guard, STANDARD-ONLY: standard paints its own private
-	// LCP <img> (fetchpriority/loading/decoding) for backgroundImage, so the
-	// wrapper must not ALSO paint one. Split has no private <img>
-	// ($has_standard_bg_image is gated `! $is_split`), so it must NOT be
-	// nulled here — SGS_Container_Wrapper paints background-image
-	// universally on its `.{uid}::before` layer (the old section-kind gate
-	// was removed at D6), so split can rely on the wrapper for its
-	// background instead of going without one.
+if ( $has_standard_bg_image ) {
+	// C3 double-emit guard: the standard variant paints its own private LCP
+	// <img> (fetchpriority/loading/decoding) for backgroundImage, so the
+	// wrapper must not ALSO paint one. Split, and a standard hero with a
+	// tablet or mobile image, have no private <img>, so nothing is nulled and
+	// SGS_Container_Wrapper paints every tier on its `.{uid}::before` layer.
 	$sgs_hero_null_attrs = array_merge(
 		$sgs_hero_null_attrs,
 		array( 'backgroundImage', 'backgroundImageTablet', 'backgroundImageMobile' )

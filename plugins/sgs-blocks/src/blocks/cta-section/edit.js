@@ -15,7 +15,9 @@ import {
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
-import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview, flattenPresetSetting } from '../../utils';
+import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview, flattenPresetSetting, usePreviewTier, textIndentPreviewCss, wrapperToneClass, tierBackgroundImageUrl } from '../../utils';
+import { applyCtaWrapperPreview } from './preview-style';
+import ShapeDividerPreview from '../../components/ShapeDividerPreview';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl } from '../../components';
 // cta-section does not mount the default <ContainerWrapperControls> aggregator
 // wholesale (matches sgs/container's own edit.js). `padding`, `margin` and
@@ -90,7 +92,7 @@ const EASING_OPTIONS = [
 	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
-export default function Edit( { attributes, setAttributes, name } ) {
+export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const {
 		ribbon,
 		layout, // legacy (pre-WS-4) — now the container grid/flex attr; read for old-post fallback only
@@ -216,8 +218,19 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		'sgs-cta-section',
 		`sgs-cta-section--${ ctaLayout }`,
 		gradientPreset ? `sgs-cta-section--gradient-${ gradientPreset }` : '',
+		// The wrapper's marker class: it lifts the content above the shape dividers (container/style.css).
+		attributes.shapeDividerTop || attributes.shapeDividerBottom ? 'sgs-container--has-shape-divider' : '',
 		bgPreview.className,
 		...svgPreview.className,
+		wrapperToneClass( {
+			surfaceTone: attributes.surfaceTone,
+			backgroundOverlayColour: attributes.backgroundOverlayColour,
+			overlayGradient: attributes.overlayGradient,
+			backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+			backgroundImage: attributes.backgroundImage,
+			backgroundColourGradient: attributes.backgroundColourGradient,
+			backgroundColour,
+		}, colourPalette, gradientPresets ),
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -233,8 +246,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// writes those same literal keys (it writes `--sgs-ed-bg-*` custom properties
 	// instead).
 	const wrapperStyle = { ...bgPreview.style, ...svgPreview.style };
+	// A narrower tier paints its own image over the desktop one (the wrapper's @media rules).
+	const previewTier = usePreviewTier();
+	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
 	if ( activeMedia && activeMedia.type === 'image' && activeMedia.url ) {
-		wrapperStyle.backgroundImage = `url(${ activeMedia.url })`;
+		wrapperStyle.backgroundImage = `url(${ tierBackgroundImageUrl( activeMedia, attributes.backgroundImageTablet, attributes.backgroundImageMobile, previewTier ) })`;
 		wrapperStyle.backgroundSize = 'cover';
 		wrapperStyle.backgroundPosition = 'center';
 	}
@@ -261,6 +277,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		flexWrap: attributes.flexWrap,
 		justifyContent: attributes.justifyContent,
 	} );
+	const { bandStyle, hasBandProps } = applyCtaWrapperPreview( attributes, previewTier, colourPalette, wrapperStyle );
 	// Editor-canvas parity for cta-section's OWN scoped shadow (rendered
 	// independent of the shared wrapper — see render.php's C3 guard). Shape
 	// (`shadow`) + colour (`shadowColour`) are separate attrs since D621/D622;
@@ -860,6 +877,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
+				<ShapeDividerPreview attributes={ attributes } position="top" />
+				<ShapeDividerPreview attributes={ attributes } position="bottom" />
 				{ svgLayer }
 				{ activeMedia &&
 					activeMedia.type === 'video' &&
@@ -878,7 +898,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<span
 						className="sgs-cta-section__overlay"
 						style={ {
-							opacity: backgroundImageOpacity / 100,
+							'--sgs-cta-overlay-opacity': backgroundImageOpacity / 100,
 						} }
 						aria-hidden="true"
 					/>
@@ -893,7 +913,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					</span>
 				) }
 
-				<div { ...innerBlocksProps } />
+				{ hasBandProps ? (
+					<div className="sgs-container__inner" style={ bandStyle }>
+						<div { ...innerBlocksProps } />
+					</div>
+				) : (
+					<div { ...innerBlocksProps } />
+				) }
 
 				{ stats.length > 0 && (
 					<div className="sgs-cta-section__stats">

@@ -643,10 +643,6 @@
 		"labelTextColumns": {
 			"type": "number"
 		},
-		"labelTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"labelWritingMode": {
 			"type": "string",
 			"enum": [

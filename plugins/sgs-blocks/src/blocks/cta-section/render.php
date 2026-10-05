@@ -400,7 +400,9 @@ if ( ! empty( $cta_style_engine_args ) ) {
 // (`.sgs-featured-product .sgs-section-heading__intro{font-size:16px}`).
 // Not built here: no defect currently demands it, and adding it would put
 // the container back to out-declaring its children.
-$responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
+// Text indent follows core's convention: every paragraph that follows another
+// paragraph inside the element.
+$responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 
 // Text alignment — bare `textAlign` attribute (Spec 31/converter routing:
 // `block_attributes` maps textAlign → css_property `text-align`, css_element

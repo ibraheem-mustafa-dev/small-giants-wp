@@ -5,7 +5,14 @@ import {
 	TextControl,
 	ToggleControl,
 	CheckboxControl,
+	SelectControl,
 } from '@wordpress/components';
+
+const WIDTH_OPTIONS = [
+	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
+	{ label: __( 'Half width', 'sgs-blocks' ), value: 'half' },
+	{ label: __( 'One third', 'sgs-blocks' ), value: 'third' },
+];
 
 const ADDRESS_FIELDS = [
 	{ label: __( 'Address line 1', 'sgs-blocks' ), value: 'line1' },
@@ -23,12 +30,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		required,
 		enableLookup,
 		fields,
+		width,
 	} = attributes;
 
 	const className = [
 		'sgs-form-field',
 		'sgs-form-field--address',
-		'sgs-form-field--full',
+		`sgs-form-field--${ width }`,
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
@@ -71,6 +79,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { required: val } )
 						}
 						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Width', 'sgs-blocks' ) }
+						value={ width }
+						options={ WIDTH_OPTIONS }
+						onChange={ ( val ) => setAttributes( { width: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Enable postcode lookup', 'sgs-blocks' ) }

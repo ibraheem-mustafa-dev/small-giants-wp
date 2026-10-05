@@ -17,7 +17,10 @@ import { useSeparatorOverlay } from "../../shared/separators/useSeparatorOverlay
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl, SgsSeparatorControl } from "../../components";
 import ScrollSidewaysPanel from "./components/ScrollSidewaysPanel";
 import { resolveOnTiers } from "../../utils/responsive";
-import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar, flattenPresetSetting, separatorsFlowPreview } from "../../utils";
+import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, flattenPresetSetting, separatorsFlowPreview, typographyPreviewStyle, textIndentPreviewCss, sgsBorderPreview } from "../../utils";
+import ShapeDividerPreview from "../../components/ShapeDividerPreview";
+import { gridItemVars, gridItemStateCss } from "./grid-item-preview";
+import { containerColumnsPreview, containerRowsPreview, bandMarginPreview } from "./layout-preview";
 import {
   LayoutPanel,
   WidthPanel,
@@ -27,7 +30,6 @@ import {
   GridItemDefaultsPanel,
   MIN_HEIGHT_OPTIONS,
 } from "./components/ContainerWrapperControls";
-import { resolveBorderStyle } from '../../utils/border-style';
 
 /**
  * Resolve a gap attribute value to a CSS string for editor preview.
@@ -128,12 +130,6 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     borderColourHoverGradient,
     borderWidth,
     borderStyle,
-    gridItemBackground,
-    gridItemBackgroundGradient,
-    gridItemShadow,
-    gridItemShadowColour,
-    gridItemBorderGradient,
-    gridItemTextColourGradient,
   } = attributes;
 
   // D288/D636: colours are stored as theme-token SLUGS or a custom hex, and
@@ -142,7 +138,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // block's editor preview does (resolveColourToken against the live
   // palette), so a preset applied in the inspector actually shows on canvas
   // rather than looking like a no-op.
-  const [ colourPalette ] = useSettings( "color.palette" );
+  const [ colourPalette, customSettings ] = useSettings( "color.palette", "custom" );
   // The theme's gradient presets, normalised by flattenPresetSetting() —
   // useSettings() returns a flat array or an origin-keyed object depending on
   // the feature — so backgroundPreview() can resolve a preset SLUG to its CSS stops.
@@ -189,6 +185,9 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
 
   const bgPreview = backgroundPreview( {
     backgroundImage: attributes.backgroundImage,
+    backgroundImageTablet: attributes.backgroundImageTablet,
+    backgroundImageMobile: attributes.backgroundImageMobile,
+    surfaceTone: attributes.surfaceTone,
     bgVideo: attributes.bgVideo,
     bgLottie: attributes.bgLottie,
     backgroundSize: attributes.backgroundSize,
@@ -211,7 +210,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     backgroundColourGradient: attributes.backgroundColourGradient,
     surfaceBlur: attributes.surfaceBlur,
     surfaceSaturate: attributes.surfaceSaturate,
-  }, colourPalette, gradientPresets );
+  }, colourPalette, gradientPresets, previewTier );
 
   const style = {
     gap: gapCssValue( gap, previewTier ),
@@ -250,12 +249,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // into SgsBorderControl's InspectorControls binding, never applied to the
   // wrapper style), same gap as sgs/hero. borderWidth is a box object
   // (base-only, no tiers, matching the SgsBorderControl pair standard).
-  if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-    const borderWidthPreview = boxShorthand( borderWidth );
-    if ( borderWidthPreview ) style.borderWidth = borderWidthPreview;
-    style.borderStyle = style.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-    Object.assign( style, borderPaintPreview( borderColour, borderColourGradient, colourPalette ) );
-  }
+  Object.assign( style, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette, { wholeTier: true } ) );
 
   // Grid/flex/stack layout preview — shared with every other block routed through
   // SGS_Container_Wrapper::render() via `applyGridLayoutPreview()`
@@ -273,76 +267,16 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     flexWrap,
     justifyContent,
   } );
-
-  // CHECK A finding — grid-item defaults (SB-1), gradient/shadow-colour subset
-  // only. `GridItemDefaultsPanel` writes these onto THIS container (the grid
-  // parent); `SGS_Container_Wrapper::render()` consumes them as `--sgs-gi-*`
-  // CUSTOM PROPERTIES on the parent, inherited by any DIRECT CHILD carrying
-  // `.sgs-container` via the unscoped global rule in style.css
-  // (`.sgs-container--grid > .sgs-container{ background:var(--sgs-gi-bg); …;
-  // box-shadow:var(--sgs-gi-shadow); }`). Setting the SAME two custom
-  // properties here on this wrapper is purely additive and reaches nested
-  // sgs/container children automatically via ordinary CSS inheritance — no
-  // per-child edit needed, matching the multi-button childBtn* mechanism.
-  //
-  // Only `gridItemBackgroundGradient` and `gridItemShadowColour` are wired
-  // here (the two CHECK A findings this custom-property mechanism can
-  // actually express):
-  //  - `--sgs-gi-bg` feeds the `background` SHORTHAND, which accepts either a
-  //    colour or a gradient function — so preferring the gradient over the
-  //    flat colour (mirrors `sgs_background_paint_decl()`'s precedence)
-  //    reaches the exact same custom property the flat `gridItemBackground`
-  //    already targets. No new mechanism required.
-  //  - `--sgs-gi-shadow` already carries a COMPOSED shape+colour value
-  //    server-side (`sgs_shadow_value_composed()`); `resolveShadowPreviewComposed()`
-  //    is its existing JS mirror (`src/utils/tokens.js`), so this needed no new
-  //    resolver either.
-  //
-  // `gridItemBorderGradient` and `gridItemTextColourGradient` cannot be
-  // expressed through the existing `--sgs-gi-border` (a `border` shorthand
-  // var, which cannot hold a gradient) or `--sgs-gi-color` (a `color` var,
-  // which cannot hold a gradient) custom properties — the real frontend
-  // renders those via a masked `::before` ring (border) and
-  // `background-clip:text` (text) on a per-instance SCOPED rule
-  // (class-sgs-container-wrapper.php ~2147-2201), which a plain inline style
-  // cannot reach on a CHILD element either way. Closed 2026-09-05 via a
-  // `clientId`-scoped `<style>` tag (same escape hatch this session's
-  // `sgs/form` fix used for its own child-block colour mirrors) rather than a
-  // fake custom property, which would have silently emitted invalid CSS.
-  //  - Border gradient: approximated via `border-image` (the SAME
-  //    approximation `borderPaintPreview()` already uses for this block's own
-  //    ROOT border gradient — not a pixel-faithful masked ring, but
-  //    consistent with this codebase's established canvas-preview
-  //    convention).
-  //  - Text gradient: the real `background-clip:text` technique directly, no
-  //    `@supports` fallback (this is an editor preview in a real evergreen
-  //    browser, not static CSS for unknown public visitors — same reasoning
-  //    `textPaintPreview()`'s own docblock documents).
-  //  - Selector uses a DESCENDANT combinator (`[data-block="clientId"] .sgs-container`)
-  //    rather than PHP's direct-child selector, because WP's block-list
-  //    wrapper DOM sits between a parent block's element and a child block's
-  //    element in the editor — an approximation, not pixel-faithful, but the
-  //    canvas at least shows a gradient is applied instead of nothing.
-  let gridItemScopedCss = "";
   if ( layout === "grid" ) {
-    const giBg = gridItemBackgroundGradient || colourVar( gridItemBackground );
-    if ( giBg ) {
-      style[ "--sgs-gi-bg" ] = giBg;
-    }
-    const giShadow = resolveShadowPreviewComposed( gridItemShadow, gridItemShadowColour );
-    if ( giShadow ) {
-      style[ "--sgs-gi-shadow" ] = giShadow;
-    }
-    if ( clientId ) {
-      const giSel = `[data-block="${ clientId }"] .sgs-container`;
-      if ( gridItemBorderGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( gridItemBorderGradient ) ) {
-        gridItemScopedCss += `${ giSel }{border-image:${ gridItemBorderGradient } 1;}`;
-      }
-      if ( gridItemTextColourGradient ) {
-        gridItemScopedCss += `${ giSel }{background-image:${ gridItemTextColourGradient };-webkit-background-clip:text;background-clip:text;color:transparent;}`;
-      }
-    }
+    // The column track at the previewed tier: an authored track list, else the
+    // intrinsic track this block opts into (count ceiling, minimum column width).
+    const intrinsicTrack = containerColumnsPreview( attributes, previewTier, gapCssValue( gap, previewTier ) );
+    style.gridTemplateColumns = intrinsicTrack ?? resolveResponsiveTier( gridTemplateColumns, previewTier )?.value ?? style.gridTemplateColumns;
+    style.gridTemplateRows = containerRowsPreview( attributes, previewTier );
   }
+
+  // Corner radius and root typography at the previewed tier.
+  Object.assign( style, typographyPreviewStyle( attributes, "", previewTier ) );
 
   // Editor preview: when a literal maxWidth is set, apply it as inline max-width.
   // Breakout (alignwide / alignfull) is driven by WP-native align attr — no inline style needed.
@@ -376,12 +310,36 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // band exists (grid-on-inner: the frontend moves grid/flex declarations onto the
   // band, so the canvas must too — a grid container would otherwise preview its
   // columns on the full-bleed outer while rendering them on the capped band).
+  // The band also renders for a band margin alone ($has_band_props counts it);
+  // that band carries no width cap, so the cap the helper adds is removed again.
+  const bandMargin = bandMarginPreview( attributes, previewTier );
+  const bandForMarginOnly = Object.keys( bandMargin ).length > 0 && "" === bandMaxWidth;
   const { hasBandProps, bandStyle } = contentBandPreview( {
-    contentWidth: bandMaxWidth,
+    contentWidth: bandForMarginOnly ? "none" : bandMaxWidth,
     bandPadding: bandPad,
     style,
     layout,
   } );
+  if ( bandForMarginOnly ) {
+    delete bandStyle.maxWidth;
+    delete bandStyle.marginInline;
+  }
+  Object.assign( bandStyle, bandMargin );
+  if ( "grid" === layout && hasBandProps && style.gridTemplateRows !== undefined ) {
+    bandStyle.gridTemplateRows = style.gridTemplateRows;
+    delete style.gridTemplateRows;
+  }
+
+  // Grid-item defaults (Spec 32 FR-32-12): the six --sgs-gi-* values on the grid
+  // element itself (the band when one renders), where style.css's consumer
+  // paints every cell; the states a custom property cannot express ride a
+  // <style> scoped to this instance (grid-item-preview.js).
+  let gridItemScopedCss = "";
+  if ( layout === "grid" ) {
+    Object.assign( hasBandProps ? bandStyle : style, gridItemVars( attributes, previewTier, colourPalette ) );
+    gridItemScopedCss = gridItemStateCss( attributes, `#block-${ clientId }`, colourPalette, customSettings?.shadowHover );
+  }
+  gridItemScopedCss += textIndentPreviewCss( attributes, "", `#block-${ clientId }`, previewTier );
 
   // "Scroll sideways" at the previewed device: the items' row (the band when one
   // renders, else the root) previews as the same one-line row the frontend
@@ -438,6 +396,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     bgPreview.className,
     ...svgPreview.className,
     scrollRowPreview && ! hasBandProps && "sgs-container--scroll-row",
+    ( attributes.shapeDividerTop || attributes.shapeDividerBottom ) && "sgs-container--has-shape-divider",
   ]
     .filter( Boolean )
     .join( " " );
@@ -902,8 +861,10 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
       { hasBandProps ? (
         <div { ...blockProps }>
           { svgLayer }
+          <ShapeDividerPreview attributes={ attributes } position="top" prefix="shapeDividerTop" />
           { gridItemScopedCss && <style>{ gridItemScopedCss }</style> }
           <div { ...innerBlocksProps } />
+          <ShapeDividerPreview attributes={ attributes } position="bottom" prefix="shapeDividerBottom" />
         </div>
       ) : (
         // Spread first, then state children explicitly: innerBlocksProps
@@ -912,8 +873,10 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
         // silently discard).
         <div { ...innerBlocksProps }>
           { svgLayer }
+          <ShapeDividerPreview attributes={ attributes } position="top" prefix="shapeDividerTop" />
           { gridItemScopedCss && <style>{ gridItemScopedCss }</style> }
           { innerBlocksProps.children }
+          <ShapeDividerPreview attributes={ attributes } position="bottom" prefix="shapeDividerBottom" />
         </div>
       ) }
     </>

@@ -16,3 +16,92 @@
 	pointer-events: none;
 	user-select: none;
 }
+
+/* ===== Panel preview (static sample of the mini-cart panel) ===== */
+
+.sgs-cart__panel-preview {
+	margin-top: 12px;
+}
+
+.sgs-cart__panel-preview-switch {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 8px;
+}
+
+/* The live panel is a positioned flyout or a fixed dialog; the preview sits in the flow. */
+.sgs-cart__panel.sgs-cart__panel--editor {
+	position: relative;
+	inset: auto;
+	isolation: isolate;
+	height: auto;
+	max-height: none;
+	margin: 0;
+	pointer-events: none;
+}
+
+/* The same fill layer render.php draws, fed by --sgs-cart-editor-panel-fill. */
+.sgs-cart__panel--editor::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	pointer-events: none;
+	background: var( --sgs-cart-editor-panel-fill, transparent );
+}
+
+.sgs-cart--editor-preview .sgs-cart__badge::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	pointer-events: none;
+	background-image: var( --sgs-cart-editor-badge-fill, none );
+}
+
+.sgs-cart--editor-preview .sgs-cart__trigger::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	pointer-events: none;
+	background: var( --sgs-cart-editor-pill-fill, transparent );
+}
+
+/* panelCloseSize sizes the preview glyph, as sgs_cart_panel_css() sizes the live one. */
+.sgs-cart__panel--editor .sgs-cart__panel-close svg {
+	width: var( --sgs-cart-editor-close-size, 24px );
+	height: var( --sgs-cart-editor-close-size, 24px );
+}
+
+/* Drawer mode: the panel sits over the page it dims, drawn by the scrim layer
+   (--sgs-scrim-fill, --sgs-scrim-opacity, --sgs-scrim-blur from the preview). */
+.sgs-cart__panel-preview--drawer {
+	position: relative;
+	padding: 12px;
+	overflow: hidden;
+}
+
+.sgs-cart__panel-preview-scrim {
+	position: absolute;
+	inset: 0;
+	-webkit-backdrop-filter: blur( var( --sgs-scrim-blur, 0px ) );
+	backdrop-filter: blur( var( --sgs-scrim-blur, 0px ) );
+	pointer-events: none;
+}
+
+.sgs-cart__panel-preview-scrim::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: var( --sgs-scrim-fill );
+	opacity: var( --sgs-scrim-opacity, 0 );
+}
+
+.sgs-cart__panel-preview--drawer > .sgs-cart__panel,
+.sgs-cart__panel-preview--drawer > .sgs-cart__panel-preview-switch {
+	position: relative;
+}

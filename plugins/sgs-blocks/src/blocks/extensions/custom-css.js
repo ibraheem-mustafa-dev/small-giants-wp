@@ -99,3 +99,38 @@ addFilter(
 	'sgs/custom-css-save',
 	saveCustomCssAttribute
 );
+
+/**
+ * Canvas mirror of includes/custom-css.php: the block's wrapper carries a scope
+ * class and the CSS renders with `&selector` replaced by that class doubled, so
+ * the rules paint in the editor as they do on the page. The canvas's inline
+ * preview styles still win over a class rule, where the page's scoped rules
+ * would lose to it by source order.
+ */
+const withCustomCssCanvas = createHigherOrderComponent( ( BlockListBlock ) => {
+	return ( props ) => {
+		const { attributes = {} } = props;
+		const { sgsCustomCss } = attributes;
+		const css = String( sgsCustomCss || '' ).replace( /<[^>]*>/g, '' ).trim();
+		if ( ! css ) {
+			return <BlockListBlock { ...props } />;
+		}
+		const scope = `sgs-c-ed-${ props.clientId }`;
+		const wrapperProps = {
+			...( props.wrapperProps || {} ),
+			className: [ props.wrapperProps?.className, scope ].filter( Boolean ).join( ' ' ),
+		};
+		return (
+			<>
+				<style>{ css.split( '&selector' ).join( `.${ scope }.${ scope }` ) }</style>
+				<BlockListBlock { ...props } wrapperProps={ wrapperProps } />
+			</>
+		);
+	};
+}, 'withCustomCssCanvas' );
+
+addFilter(
+	'editor.BlockListBlock',
+	'sgs/custom-css-canvas',
+	withCustomCssCanvas
+);

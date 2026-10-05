@@ -11,8 +11,7 @@ import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import { colourVar, resolveTextColourPreviewStyle, sgsBorderPreview } from '../../utils';
 
 const CHEVRON_SVG = (
 	<svg
@@ -32,15 +31,6 @@ const CHEVRON_SVG = (
 		/>
 	</svg>
 );
-
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object (border-radius corner set) — mirrors render.php's use of
-// wp_style_engine_get_styles so the canvas preview matches the frontend.
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
 
 // NO-INLINE migration (2026-07-10): color + __experimentalBorder now declare
 // __experimentalSkipSerialization, so useBlockProps() no longer auto-applies
@@ -85,28 +75,7 @@ function buildWrapperStyle( attributes ) {
 	// border* are block-private attrs (SgsBorderControl, D876/D881 standard) —
 	// not WP-native style.border.* (undeclared in block.json, silently
 	// discarded by WordPress — check-undeclared-attrs finding).
-	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		if ( borderWidthPreview ) {
-			wrapperStyle.borderWidth = borderWidthPreview;
-		}
-		wrapperStyle.borderStyle = wrapperStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
-				? borderColour
-				: colourVar( borderColour );
-		}
-		// A gradient border renders frontend as a masked ::before ring, which cannot
-		// be reproduced in a plain inline style — approximate it with the gradient as
-		// a border-image so the canvas at least shows that a gradient is applied.
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
-	const radiusPreview = boxShorthand( borderRadius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) {
-		wrapperStyle.borderRadius = radiusPreview;
-	}
+	Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius } ) );
 
 	return wrapperStyle;
 }

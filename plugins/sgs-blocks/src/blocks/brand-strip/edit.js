@@ -15,10 +15,9 @@ import {
 } from '@wordpress/components';
 import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsSeparatorControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, generateItemKey, withStableItemKeys } from '../../utils';
+import { generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { SourcePanel, BrandTextStylePanel } from './source-controls';
-import { resolveBorderStyle } from '../../utils/border-style';
 
 const LOGO_OBJECT_FIT_OPTIONS = [
 	{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
@@ -190,73 +189,6 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				{ __( 'Remove logo', 'sgs-blocks' ) }
 			</Button>
 		</div>
-	);
-}
-
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder so the canvas
-// preview matches the frontend (contract §5). Editor-only convenience; the
-// frontend render.php emits every declaration scoped, never inline
-// (contract §A).
-function boxShorthand( box, keys = [ 'top', 'right', 'bottom', 'left' ] ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
-/**
- * Build the editor-canvas preview style for the root element (background/
- * padding/margin/border). Native `color`/border supports are disabled on
- * this block (block.json `color.background/text/gradients: false`, no
- * `__experimentalBorder` at all) — background/border are the block's own
- * `backgroundColour`/`borderWidth`/`borderStyle`/`borderColour`/
- * `borderRadius` attrs (SgsBorderControl), never WP-native `style.*`.
- */
-function buildWrapperStyle( attributes ) {
-	const {
-		padding,
-		margin,
-		backgroundColour,
-		borderWidth,
-		borderStyle,
-		borderColour,
-		borderRadius,
-	} = attributes;
-	const wrapperStyle = {};
-
-	if ( backgroundColour ) {
-		wrapperStyle.backgroundColor = backgroundColour;
-	}
-
-	const paddingPreview = boxShorthand( padding?.desktop );
-	if ( paddingPreview ) {
-		wrapperStyle.padding = paddingPreview;
-	}
-	const marginPreview = boxShorthand( margin?.desktop );
-	if ( marginPreview ) {
-		wrapperStyle.margin = marginPreview;
-	}
-
-	const borderWidthPreview = boxShorthand( borderWidth );
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		if ( borderWidthPreview ) {
-			wrapperStyle.borderWidth = borderWidthPreview;
-			wrapperStyle.borderStyle = resolveBorderStyle( borderStyle );
-		}
-		if ( borderColour ) {
-			wrapperStyle.borderColor = borderColour;
-		}
-	}
-	const radiusPreview = boxShorthand(
-		borderRadius?.desktop,
-		[ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
-	);
-	if ( radiusPreview ) {
-		wrapperStyle.borderRadius = radiusPreview;
-	}
-
-	return Object.fromEntries(
-		Object.entries( wrapperStyle ).filter( ( [ , v ] ) => v !== undefined )
 	);
 }
 
@@ -1057,7 +989,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ showNames && (
 						<>
-							<TypographyControls fontSizePresets showFontFamily showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+							<TypographyControls fontSizePresets showFontFamily showTextAlign showTextWrap showTextColumns showWritingMode
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="name"

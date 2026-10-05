@@ -23,6 +23,13 @@ import {
 	ResponsiveOverride,
 	SpacingControl,
 } from '../../components';
+import {
+	colourVar,
+	resolveTier,
+	resolveTextColourPreviewStyle,
+	typographyPreviewStyle,
+	usePreviewTier,
+} from '../../utils';
 
 /**
  * The IANA time-zone list, from the runtime when available. Every evergreen
@@ -75,7 +82,22 @@ export default function Edit( { attributes, setAttributes } ) {
 		timeColourHoverGradient,
 	} = attributes;
 
-	const blockProps = useBlockProps( { className: 'sgs-local-time' } );
+	const previewTier = usePreviewTier();
+	// render.php's `gap` tier object: a bare number is pixels, a string is a CSS length.
+	const gapAtTier = resolveTier( gap, previewTier, '' ).value;
+	const hasGap = '' !== gapAtTier && null !== gapAtTier && undefined !== gapAtTier;
+	const blockProps = useBlockProps( {
+		className: 'sgs-local-time',
+		style: hasGap ? { gap: isNaN( Number( gapAtTier ) ) ? gapAtTier : `${ Number( gapAtTier ) }px` } : undefined,
+	} );
+	const labelStyle = {
+		...typographyPreviewStyle( attributes, 'label', previewTier ),
+		...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
+	};
+	const timeStyle = {
+		...typographyPreviewStyle( attributes, 'time', previewTier ),
+		...resolveTextColourPreviewStyle( timeColour, timeColourGradient, colourVar ),
+	};
 
 	const zoneOptions = getTimeZoneOptions().map( ( zone ) => ( {
 		value: zone,
@@ -105,7 +127,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const labelNode = label ? (
-		<span className="sgs-local-time__label">{ label }</span>
+		<span className="sgs-local-time__label" style={ labelStyle }>{ label }</span>
 	) : null;
 	const sepNode =
 		separator && 'above' !== labelPosition ? (
@@ -114,7 +136,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</span>
 		) : null;
 	const timeNode = (
-		<time className="sgs-local-time__time">{ previewText }</time>
+		<time className="sgs-local-time__time" style={ timeStyle }>{ previewText }</time>
 	);
 
 	let orderedChildren;

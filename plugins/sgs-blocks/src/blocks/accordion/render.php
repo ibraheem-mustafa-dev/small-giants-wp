@@ -200,10 +200,9 @@ if ( 'none' !== $border_style ) {
 }
 
 // Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
-// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
-// supports.typography (fontSize + lineHeight only) with the framework's own
-// helper, which also now offers fontWeight/fontStyle.
-$responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
+// mechanism. Text indent follows core's convention: every paragraph that
+// follows another paragraph inside the accordion.
+$responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 
 // ─── Inner HTML = $content (the accordion items) ────────────────────────────
 // The accordion wrapper classes travel via extra_classes; the toggle attrs

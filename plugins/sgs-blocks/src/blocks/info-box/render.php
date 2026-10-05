@@ -326,7 +326,9 @@ if ( ! empty( $base_style_engine_args ) ) {
 // root selector InnerBlocks children inherit from (HC2 — parent owns LAYOUT,
 // child owns TYPOGRAPHY; an unset child inherits this, any child setting its
 // own typography still wins by cascade).
-$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
+// Text indent follows core's convention: every paragraph that follows another
+// paragraph inside the element.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 
 // --- D744: Text colour (flat-or-gradient, base + hover) — block-private
 // replacement for the retired native supports.color.text/gradients. Both

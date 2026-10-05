@@ -14,7 +14,25 @@ import {
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { EditorIconBare, TrustBarIconPanel, TrustBarItemSpacingPanel, TrustBarMarqueeControls } from './edit-panels';
-import { colourVar, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, backgroundPaintPreview, textPaintPreview, spacingPreview, svgBackgroundPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle, boxShorthand, flattenPresetSetting } from '../../utils';
+import {
+	colourVar,
+	resolveShadowPreviewComposed,
+	resolveResponsiveTier,
+	backgroundPreview,
+	backgroundPaintPreview,
+	textPaintPreview,
+	spacingPreview,
+	svgBackgroundPreview,
+	generateItemKey,
+	withStableItemKeys,
+	resolveTextColourPreviewStyle,
+	flattenPresetSetting,
+	typographyPreviewStyle,
+	BandWrap,
+	wrapperPreview,
+	sectionPreview,
+	sgsBorderPreview,
+} from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
 // (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
@@ -121,7 +139,7 @@ const OVERFLOW_MODE_OPTIONS = [
 // ─── Editor sub-components ────────────────────────────────────────────────────
 
 /** Circle wrapper with the actual selected icon for editor preview. */
-function EditorIconCircle( { size, circleBg, iconColour, iconGradient, iconSlug, borderRadius, boxShadow, filled, fillColour } ) {
+function EditorIconCircle( { size, circleBg, iconColour, iconGradient, iconSlug, borderRadius, border, boxShadow, filled, fillColour } ) {
 	// The filled class picks up the fill exemption from style.css (loaded in the
 	// editor iframe), so the preview matches the frontend. fillColour drives the
 	// same custom-fill var render.php sets.
@@ -136,6 +154,7 @@ function EditorIconCircle( { size, circleBg, iconColour, iconGradient, iconSlug,
 		flexShrink: 0,
 		boxShadow: boxShadow || '0 1px 2px rgba(0,0,0,0.06)',
 		color: iconColour || 'currentColor',
+		...border,
 	};
 	if ( filled && fillColour ) {
 		style[ '--sgs-trust-badge-icon-fill' ] = colourVar( fillColour );
@@ -495,12 +514,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		? iconCircleBorderRadius
 		: undefined;
 	const circleShadowValue = resolveShadowPreviewComposed( iconCircleShadow, iconCircleShadowColour );
-	// Icon circle border (2026-09-10) — CHECK A canvas mirror. boxShorthand()
-	// mirrors render.php's sgs_box_object_shorthand() (undefined when no side
-	// is set, so the CSS var is entirely absent and style.css's own framework-
-	// default fallback paints the canvas identically to an unmodified block).
-	const circleBorderWidthValue = boxShorthand( iconCircleBorderWidth );
-	const circleBorderColourValue = iconCircleBorderColour ? colourVar( iconCircleBorderColour ) : undefined;
+	// Icon circle border: the "Icon circle border" panel's own values through its
+	// twin, painted on the circle. The circle's stylesheet already paints a 1px
+	// solid border, which each chosen part overrides on its own (render.php sets
+	// each custom property alone).
+	const circleBorderPreview = sgsBorderPreview( { widthValues: iconCircleBorderWidth, styleValue: iconCircleBorderStyle, colourValue: iconCircleBorderColour }, 'desktop', colourPalette, { defaultBorder: true } );
 
 	// Grid preview (icon-circle only — text-only/image-badge always render
 	// `.sgs-trust-bar--text-only`/`--image-badge`'s own hardcoded flex-wrap,
@@ -515,12 +533,21 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		? gridTemplateColumnsPreview( gridTemplateColumns, columns )
 		: undefined;
 
+	// Border, radius, max-width, flex layout and the content band, as the wrapper emits them;
+	// the badge grid below still wins for the icon variants it already mirrors.
+	const wrapper = wrapperPreview( attributes, previewTier, colourPalette );
+	const section = sectionPreview( attributes, previewTier, colourPalette, gradientPresets );
+	const labelTypography = typographyPreviewStyle( attributes, 'label', previewTier );
+	const titleTypography = typographyPreviewStyle( attributes, 'title', previewTier );
+
 	const blockProps = useBlockProps( {
-		className: blockClassName,
+		className: [ blockClassName, section.className ].filter( Boolean ).join( ' ' ),
 		style: {
+			...wrapper.style,
 			...rootBgPaint,
 			...rootTextPaint,
 			...bgPreview.style,
+			...section.style,
 			...svgPreview.style,
 			...spacePreview,
 			...( shadow && { boxShadow: resolveShadowPreviewComposed( shadow, attributes.shadowColour ) } ),
@@ -533,9 +560,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				'--sgs-trust-badge-text-colour': textColourValue,
 				'--sgs-trust-badge-circle-radius': circleRadiusValue,
 				'--sgs-trust-badge-circle-shadow': circleShadowValue,
-				'--sgs-trust-badge-circle-border-width': circleBorderWidthValue,
-				'--sgs-trust-badge-circle-border-style': iconCircleBorderStyle || undefined,
-				'--sgs-trust-badge-circle-border-color': circleBorderColourValue,
 			} : {} ),
 			...( badgeStyle === 'icon-bare' ? {
 				'--sgs-trust-badge-icon-size': iconBareSize !== 20 ? `${ iconBareSize }px` : undefined,
@@ -1098,7 +1122,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									showTextAlign: true,
 									showTextWrap: true,
 									showTextColumns: true,
-									showTextIndent: true,
 									showWritingMode: true,
 								},
 								{
@@ -1113,7 +1136,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									showTextAlign: true,
 									showTextWrap: true,
 									showTextColumns: true,
-									showTextIndent: true,
 									showWritingMode: true,
 								},
 							] }
@@ -1317,6 +1339,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			{ /* ── Editor canvas ───────────────────────────────────────────── */ }
 			<div { ...blockProps }>
+				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
 				{ svgLayer }
 
 				{ /* Optional title (text-only + image-badge variants) */ }
@@ -1327,7 +1350,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						value={ title }
 						onChange={ ( val ) => setAttributes( { title: val } ) }
 						placeholder={ __( 'Trusted certifications & memberships', 'sgs-blocks' ) }
-						style={ titleStyle }
+						style={ { ...titleTypography, ...titleStyle } }
 					/>
 				) }
 
@@ -1348,7 +1371,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											filled={ item.fillStyle === 'filled' }
 											fillColour={ item.fillColour ? colourVar( item.fillColour ) : undefined }
 										/>
-										<span className="sgs-trust-bar__label" style={ { color: textColourValue } }>
+										<span className="sgs-trust-bar__label" style={ { ...labelTypography, color: textColourValue } }>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
 										</span>
 									</div>
@@ -1369,11 +1392,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											iconGradient={ iconColourGradient }
 											iconSlug={ item.icon || 'check' }
 											borderRadius={ iconCircleBorderRadius !== '50%' ? iconCircleBorderRadius : undefined }
+											border={ circleBorderPreview }
 											boxShadow={ circleShadowValue }
 											filled={ item.fillStyle === 'filled' }
 											fillColour={ item.fillColour }
 										/>
-										<span className="sgs-trust-bar__label" style={ { color: textColourValue } }>
+										<span className="sgs-trust-bar__label" style={ { ...labelTypography, color: textColourValue } }>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
 										</span>
 									</div>
@@ -1385,7 +1409,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									<div key={ item._key || index } className="sgs-trust-bar__badge">
 										<span
 											className="sgs-trust-bar__badge-label"
-											style={ labelStyle }
+											style={ { ...labelTypography, ...labelStyle } }
 										>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
 										</span>
@@ -1415,7 +1439,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									{ item.label && (
 										<span
 											className="sgs-trust-bar__badge-label"
-											style={ labelStyle }
+											style={ { ...labelTypography, ...labelStyle } }
 										>
 											{ item.label }
 										</span>
@@ -1425,6 +1449,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						} )
 					)
 				}
+				</BandWrap>
 			</div>
 		</>
 	);

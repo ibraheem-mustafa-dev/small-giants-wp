@@ -19,13 +19,12 @@
  * @package SGS\Blocks
  */
 
-import { colourVar } from '../../utils';
+import { colourVar, isCssGradient } from '../../utils';
 
-const GRADIENT_RE = /^(repeating-)?(linear|radial|conic)-gradient\(/i;
 const BOX_RE = /^[-\d.\sa-z%]+$/i;
 
 const flat = ( value ) => ( value ? colourVar( value ) || value : '' );
-const gradient = ( value ) => ( value && GRADIENT_RE.test( value ) ? value : '' );
+const gradient = ( value ) => ( isCssGradient( value ) ? value : '' );
 const decl = ( prop, value ) => ( value ? `${ prop }:${ value };` : '' );
 
 /**

@@ -27,7 +27,8 @@ import {
 import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
 import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
-import { backgroundPaintPreview, backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview, flattenPresetSetting } from '../../utils';
+import { backgroundPaintPreview, backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview, flattenPresetSetting, usePreviewTier } from '../../utils';
+import { siteHeaderWrapperPreview, siteHeaderRowsCss } from './preview-style';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 // Floating ("pill") mode — controls, canvas preview and reset live in their own
 // file; this module only mounts them. See FloatControls.js.
@@ -329,6 +330,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			: {};
 	const textPreview = textPaintPreview( attributes.textColour, attributes.textColourGradient, colourPalette );
 
+	// The device tier the canvas previews (core/editor's device type).
+	const previewTier = usePreviewTier();
 	const bgPreview = backgroundPreview( {
 		backgroundImage: attributes.backgroundImage,
 		bgVideo: attributes.bgVideo,
@@ -353,7 +356,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		backgroundColourGradient: attributes.backgroundColourGradient,
 		surfaceBlur: attributes.surfaceBlur,
 		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette, gradientPresets );
+		surfaceTone: attributes.surfaceTone,
+		backgroundImageTablet: attributes.backgroundImageTablet,
+		backgroundImageMobile: attributes.backgroundImageMobile,
+	}, colourPalette, gradientPresets, previewTier );
 
 	// Decorative SVG background layer — editor mirror. Deliberately
 	// NOT folded into backgroundPreview()'s return: that helper paints via
@@ -375,15 +381,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
-	// Active device tier for the padding/margin preview below — this block had
-	// no previewTier mechanism of its own, so this follows sgs/container's
-	// getDeviceType read exactly (same source its own Layout panel writes).
-	const previewTier = useSelect( ( select ) => {
-		const ed = select( 'core/editor' );
-		const device =
-			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
-		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
-	}, [] );
 
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
@@ -393,13 +390,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	}, previewTier );
 
 	const blockProps = useBlockProps( {
-		className: [ 'sgs-site-header', bgPreview.className, ...svgPreview.className ]
+		className: [ 'sgs-site-header', `sgs-site-header-ed-${ clientId }`, bgPreview.className, ...svgPreview.className ]
 			.filter( Boolean )
 			.join( ' ' ),
 		// The pill preview is spread LAST so its width/margin-inline win over the
 		// spacing preview's margin for a floating header — which is what the
 		// frontend does too (the float rules are emitted after the wrapper's).
-		style: { ...backgroundPaint, ...surfaceOpacityPreview, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( { headerFloat: attributes.headerFloat, headerFloatInset: attributes.headerFloatInset, headerFloatCollapse: attributes.headerFloatCollapse, surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate }, previewTier ) },
+		style: { ...siteHeaderWrapperPreview( attributes, previewTier, colourPalette ), ...backgroundPaint, ...surfaceOpacityPreview, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( { headerFloat: attributes.headerFloat, headerFloatInset: attributes.headerFloatInset, headerFloatCollapse: attributes.headerFloatCollapse, surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate }, previewTier ) },
 	} );
 	const refEl = useRef( null );
 
@@ -1411,6 +1408,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 			{ /* Editor canvas renders as <header> to match the frontend banner
 			     landmark (FR-37-13). */ }
+			<style>{ siteHeaderRowsCss( attributes, previewTier, `sgs-site-header-ed-${ clientId }` ) }</style>
 			<header ref={ refEl } { ...innerBlocksProps }>
 				{ svgLayer }
 				{ innerBlocksProps.children }

@@ -18,7 +18,18 @@ import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { resolveTextColourPreviewStyle, backgroundPaintPreview, borderBoxPreview } from '../../utils';
+import {
+	resolveTextColourPreviewStyle,
+	backgroundPaintPreview,
+	borderBoxPreview,
+	spacingPreview,
+	typographyPreviewStyle,
+	textIndentPreviewCss,
+	usePreviewTier,
+	BandWrap,
+	wrapperPreview,
+	isCssGradient,
+} from '../../utils';
 import FormEmbedEdit from './FormEmbedEdit';
 import { FORM_CPT } from './SavedFormPicker';
 import EmailSettingsPanel from './EmailSettingsPanel';
@@ -180,7 +191,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	);
 	const submitButtonStyle = {
 		...submitTextPreviewStyle,
-		backgroundColor: resolveColourToken( submitBackground, palette ) || undefined,
+		...backgroundPaintPreview( submitBackground, attributes.submitBackgroundGradient, palette ),
 		fontWeight: submitFontWeight || undefined,
 		fontSize: submitFontSize ? `${ submitFontSize }px` : undefined,
 		textTransform: submitTextTransform || undefined,
@@ -191,9 +202,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 				: undefined,
 		minHeight: submitMinHeight ? `${ submitMinHeight }px` : undefined,
 	};
-	const progressBarStyle = {
-		backgroundColor: resolveColourToken( progressBarColour, palette ) || undefined,
-	};
+	const progressBarStyle = backgroundPaintPreview( progressBarColour, progressBarColourGradient, palette );
 
 	// prevColourBackground(Gradient) canvas preview (2026-09-05) — CHECK A
 	// finding. render.php's `.sgs-form__button--prev` mechanism
@@ -227,25 +236,24 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	// `border-image` APPROXIMATION `borderPaintPreview()` documents (the real
 	// frontend paints a masked `::before` ring via `sgs_border_gradient_css()`,
 	// which a static `<style>` string can't reproduce faithfully).
-	const FORM_PREVIEW_GRADIENT_RE = /^(repeating-)?(linear|radial|conic)-gradient\(/i;
 	const formPreviewScope = `sgs-form-editor-${ clientId }`;
 
 	const tileBorderPreviewDecl =
-		tileBorderColourGradient && FORM_PREVIEW_GRADIENT_RE.test( tileBorderColourGradient )
+		isCssGradient( tileBorderColourGradient )
 			? `border-image:${ tileBorderColourGradient } 1;`
 			: resolveColourToken( tileBorderColour, palette )
 				? `border-color:${ resolveColourToken( tileBorderColour, palette ) };`
 				: '';
 
 	const fileLabelBorderPreviewDecl =
-		fileLabelBorderColourGradient && FORM_PREVIEW_GRADIENT_RE.test( fileLabelBorderColourGradient )
+		isCssGradient( fileLabelBorderColourGradient )
 			? `border-image:${ fileLabelBorderColourGradient } 1;`
 			: resolveColourToken( fileLabelBorderColour, palette )
 				? `border-color:${ resolveColourToken( fileLabelBorderColour, palette ) };`
 				: '';
 
 	const fileLabelBackgroundPreviewDecl =
-		fileLabelBackgroundColourGradient && FORM_PREVIEW_GRADIENT_RE.test( fileLabelBackgroundColourGradient )
+		isCssGradient( fileLabelBackgroundColourGradient )
 			? `background-image:${ fileLabelBackgroundColourGradient };`
 			: resolveColourToken( fileLabelBackgroundColour, palette )
 				? `background-color:${ resolveColourToken( fileLabelBackgroundColour, palette ) };`
@@ -271,7 +279,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	 * controls read the Hover attrs. Same shape as the tileBorder/fileLabel
 	 * preview above: a formPreviewScope-scoped `<style>` tag with a real
 	 * `:hover,:focus-visible` rule, resolved via the same resolveColourToken +
-	 * FORM_PREVIEW_GRADIENT_RE already used throughout this file.
+	 * isCssGradient() test already used throughout this file.
 	 *
 	 * `!important` is required here (and nowhere else in this file) because
 	 * the RESTING preview above sets the SAME background-color/-image
@@ -283,14 +291,14 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	 * case).
 	 */
 	const submitBgHoverDecl =
-		submitBackgroundHoverGradient && FORM_PREVIEW_GRADIENT_RE.test( submitBackgroundHoverGradient )
+		isCssGradient( submitBackgroundHoverGradient )
 			? `background-image:${ submitBackgroundHoverGradient } !important;background-color:transparent !important;`
 			: resolveColourToken( submitBackgroundHover, palette )
 				? `background-color:${ resolveColourToken( submitBackgroundHover, palette ) } !important;`
 				: '';
 
 	const progressBarHoverDecl =
-		progressBarColourHoverGradient && FORM_PREVIEW_GRADIENT_RE.test( progressBarColourHoverGradient )
+		isCssGradient( progressBarColourHoverGradient )
 			? `background-image:${ progressBarColourHoverGradient } !important;`
 			: resolveColourToken( progressBarColourHover, palette )
 				? `background-color:${ resolveColourToken( progressBarColourHover, palette ) } !important;`
@@ -383,7 +391,17 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		.filter( Boolean )
 		.join( '' );
 
+	// Typography, spacing, border, radius, max-width, layout and the content band the wrapper paints on the form's outer element.
+	const previewTier = usePreviewTier();
+	const indentPreviewCss = textIndentPreviewCss( attributes, '', `.${ formPreviewScope }`, previewTier );
+	const wrapper = wrapperPreview( attributes, previewTier, palette );
+
 	const blockProps = useBlockProps( {
+		style: {
+			...wrapper.style,
+			...typographyPreviewStyle( attributes, '', previewTier ),
+			...spacingPreview( { padding: attributes.padding, margin: attributes.margin }, previewTier ),
+		},
 		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }`,
 	} );
 
@@ -1097,6 +1115,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 				{ formPreviewCss && <style>{ formPreviewCss }</style> }
 				{ formHoverPreviewCss && <style>{ formHoverPreviewCss }</style> }
 				{ fieldPreviewCss && <style>{ fieldPreviewCss }</style> }
+				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
+				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
 				<div { ...innerBlocksProps } />
 				{ /* Editor-canvas-only submit button preview — render.php mirror.
 					There is no real <form> in the editor canvas, so without this
@@ -1135,7 +1155,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					state, frontend only). A REPRESENTATIVE sample swatch — not the
 					full stepped UI — is the honest editor-canvas equivalent, same
 					pattern as this session's table-of-contents active-link preview. */ }
-				{ progressBarColour && (
+				{ ( progressBarColour || progressBarColourGradient ) && (
 					<div
 						className="sgs-form__progress-wrapper"
 						style={ { marginTop: '12px' } }
@@ -1148,6 +1168,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						</div>
 					</div>
 				) }
+				</BandWrap>
 			</div>
 		</>
 	);

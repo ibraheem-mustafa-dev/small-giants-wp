@@ -35,7 +35,11 @@ import {
 	resolveResponsiveTier,
 	resolveTextColourPreviewStyle,
 	resolveShadowPreviewComposed,
+	typographyPreviewStyle,
+	usePreviewTier, isCssGradient,
 } from '../../utils';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
+import { postGridWrapperPreview, cardGradientPreview } from './preview-style';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { MEDIA_SIZING_RATIO_OPTIONS,
 	SgsBorderControl,
@@ -147,7 +151,7 @@ function formatDate( dateString ) {
  * @param {Object} props.post       WP post record from useEntityRecords.
  * @param {Object} props.attributes Block attributes.
  */
-function PreviewCard( { post, attributes, palette } ) {
+function PreviewCard( { post, attributes, palette, tier } ) {
 	const {
 		cardStyle,
 		showImage,
@@ -197,7 +201,7 @@ function PreviewCard( { post, attributes, palette } ) {
 	// at all, so the plain category label must not receive this style.
 	// Editor preview mirrors the render.php logic: emits the gradient if
 	// present (as background-image), otherwise falls back to the flat colour.
-	const badgeBg = categoryBadgeBgColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( categoryBadgeBgColourGradient )
+	const badgeBg = isCssGradient( categoryBadgeBgColourGradient )
 		? { backgroundImage: categoryBadgeBgColourGradient, backgroundColor: 'transparent' }
 		: categoryBadgeBgColour ? { backgroundColor: resolveColourToken( categoryBadgeBgColour, palette ) } : {};
 	const badgeFillStyle = { ...badgeStyle, ...badgeBg };
@@ -207,7 +211,7 @@ function PreviewCard( { post, attributes, palette } ) {
 	return (
 		<article
 			className={ `sgs-post-grid__card sgs-post-grid__card--${ cardStyle }` }
-			style={ cardBg ? { '--sgs-card-bg': cardBg } : {} }
+			style={ { ...( cardBg ? { '--sgs-card-bg': cardBg } : {} ), ...cardGradientPreview( attributes.cardBgColourGradient ) } }
 		>
 			{ showImage && featuredImage && (
 				<div className="sgs-post-grid__image-link">
@@ -252,7 +256,7 @@ function PreviewCard( { post, attributes, palette } ) {
 				) }
 
 				{ showTitle && (
-					<h3 className="sgs-post-grid__title">
+					<h3 className="sgs-post-grid__title" style={ typographyPreviewStyle( attributes, 'title', tier ) }>
 						<a href={ post?.link || '#' } style={ titleStyle }>
 							{ post?.title?.rendered || __( 'Post title', 'sgs-blocks' ) }
 						</a>
@@ -481,7 +485,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 */
 	const postGridPreviewScope = `sgs-post-grid-preview-${ clientId }`;
 	const categoryBadgeBgHoverDecl =
-		categoryBadgeBgColourHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( categoryBadgeBgColourHoverGradient )
+		isCssGradient( categoryBadgeBgColourHoverGradient )
 			? `background-image:${ categoryBadgeBgColourHoverGradient } !important;background-color:transparent !important;`
 			: categoryBadgeBgColourHover
 				? `background-color:${ resolveColourToken( categoryBadgeBgColourHover, colourPalette ) } !important;`
@@ -498,9 +502,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			: ''
 	].filter( Boolean ).join( '' );
 
+	const previewTier = usePreviewTier();
+	const { rootStyle, bandStyle, hasBandProps } = postGridWrapperPreview( attributes, previewTier, colourPalette );
+	const separatorsCanvas = useSeparatorsCanvas( {
+		separators: attributes.separators,
+		device: previewTier,
+		active: 'grid' === layout,
+		deps: [ columnsDesktop, gap, posts?.length ],
+	} );
 	const blockProps = useBlockProps( {
 		className: `sgs-post-grid sgs-post-grid--${ layout } ${ postGridPreviewScope }`,
-		style:     inlineStyles,
+		style:     { ...inlineStyles, ...rootStyle },
 	} );
 
 	// -----------------------------------------------------------------------
@@ -513,6 +525,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			: `repeat( ${ columnsDesktop }, 1fr )`,
 		columnCount:         'masonry' === layout ? columnsDesktop : undefined,
 		gap:                 gap || '30px',
+		...separatorsCanvas.style,
 	};
 
 	return (
@@ -1358,7 +1371,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				    also now expose weight/style, which native typography never offered
 				    here. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="title"
@@ -1410,6 +1423,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				{ ! isResolving && posts && posts.length > 0 && (
 					<div
+						className={ hasBandProps ? 'sgs-container__inner' : undefined }
+						style={ hasBandProps ? bandStyle : undefined }
+					>
+					<div
+						ref={ separatorsCanvas.ref }
 						className="sgs-post-grid__inner"
 						style={ previewGridStyle }
 					>
@@ -1419,8 +1437,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								post={ post }
 								attributes={ attributes }
 								palette={ colourPalette }
+								tier={ previewTier }
 							/>
 						) ) }
+					</div>
 					</div>
 				) }
 			</div>

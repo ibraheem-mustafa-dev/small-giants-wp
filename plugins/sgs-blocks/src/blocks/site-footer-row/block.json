@@ -53,7 +53,8 @@
 				],
 				"borderWidth": [
 					"borderWidth"
-				]
+				],
+				"rowShrinkPadding": [ "rowShrinkPadding" ]
 			},
 			"intrinsicColumns": true,
 			"_intrinsicColumnsComment": "The column count is a CEILING that degrades with available width, instead of a fixed count that only changes at a viewport breakpoint. A @media rule cannot read content size, so a breakpoint-only collapse (3 tracks to 1 at 767px while the content needs far less) can never be organic. Opt-in per block type, read by sgs_block_wants_intrinsic_columns().",

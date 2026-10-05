@@ -447,12 +447,11 @@ $gr_border_style = static function ( string $selector, string $prefix, string $w
 
 // A button-shaped element (write-review, see-all, arrow): padding, border, radius, height and width.
 // `$size` is the element's own size attribute where it has one (only the arrow does), read literally by the caller.
-$gr_button_box = static function ( string $selector, string $prefix, $size = null, $min_height = null ) use ( $attributes, $gr_box_rule, $gr_len_rule, $gr_border_style, $gr_sides, $gr_corners ): string {
+$gr_button_box = static function ( string $selector, string $prefix, $size = null ) use ( $attributes, $gr_box_rule, $gr_len_rule, $gr_border_style, $gr_sides, $gr_corners ): string {
 	$width = $gr_box_rule( $selector, $attributes[ $prefix . 'BorderWidth' ] ?? null, 'border-width', $gr_sides );
 	$css   = $gr_box_rule( $selector, $attributes[ $prefix . 'Padding' ] ?? null, 'padding', $gr_sides );
 	$css  .= $width . $gr_border_style( $selector, $prefix, $width );
 	$css  .= $gr_box_rule( $selector, $attributes[ $prefix . 'BorderRadius' ] ?? null, 'border-radius', $gr_corners );
-	$css  .= $gr_len_rule( $selector, $min_height, array( 'min-height' ) );
 	$css  .= $gr_len_rule( $selector, $size, array( 'width', 'height' ) );
 	return $css;
 };
@@ -556,15 +555,14 @@ if ( 'scrollbar' === $gr_pagination ) {
 	if ( $gr_is_set( 'scrollbarStyle', 'thin' ) ) {
 		$gr_responsive_css .= $gr_list_sel . '{scrollbar-width:' . ( 'thin' === $gr_scrollbar_style ? 'thin' : 'auto' ) . ';}';
 	}
-	$gr_scrollbar_colour = sgs_colour_value( (string) ( $attributes['scrollbarColour'] ?? '' ) );
-	if ( '' !== $gr_scrollbar_colour ) {
-		$gr_responsive_css .= $gr_list_sel . '{scrollbar-color:' . $gr_scrollbar_colour . ' transparent;}';
-	}
+	$gr_responsive_css .= $gr_colour_rule( $gr_list_sel, '--sgs-gr-scrollbar-colour', $attributes['scrollbarColour'] ?? '' );
 }
 
 // ── Buttons and arrows: box, border, radius, height, width. Type and colour come from the families above. ──
-$gr_responsive_css .= $gr_button_box( $gr_root_sel . ' .sgs-google-reviews__write-review', 'writeReview', null, $attributes['writeReviewMinHeight'] ?? null );
-$gr_responsive_css .= $gr_button_box( $gr_root_sel . ' .sgs-google-reviews__see-all', 'seeAll', null, $attributes['seeAllMinHeight'] ?? null );
+$gr_responsive_css .= $gr_button_box( $gr_root_sel . ' .sgs-google-reviews__write-review', 'writeReview' );
+$gr_responsive_css .= $gr_len_rule( $gr_root_sel . ' .sgs-google-reviews__write-review', $attributes['writeReviewMinHeight'] ?? null, array( 'min-height' ) );
+$gr_responsive_css .= $gr_button_box( $gr_root_sel . ' .sgs-google-reviews__see-all', 'seeAll' );
+$gr_responsive_css .= $gr_len_rule( $gr_root_sel . ' .sgs-google-reviews__see-all', $attributes['seeAllMinHeight'] ?? null, array( 'min-height' ) );
 $gr_responsive_css .= $gr_button_box( $gr_root_sel . ' .sgs-google-reviews__arrow', 'arrow', $attributes['arrowSize'] ?? null );
 // The same size feeds the shared navigation's custom property, so the overlay-inset gutter always equals the button.
 $gr_responsive_css .= $gr_len_rule( $gr_root_sel . ' .sgs-google-reviews__slider', $attributes['arrowSize'] ?? null, array( '--sgs-slider-nav-arrow-size' ) );

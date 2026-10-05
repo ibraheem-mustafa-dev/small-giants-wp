@@ -249,7 +249,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 					"{$r} .sgs-google-reviews__list{padding:10px 10px 10px 10px;}",
 					"{$r} .sgs-google-reviews__list{gap:16px;}",
 					"{$r} .sgs-google-reviews__list{scrollbar-width:auto;}",
-					"{$r} .sgs-google-reviews__list{scrollbar-color:#DADCE0 transparent;}",
+					"{$r} .sgs-google-reviews__list{--sgs-gr-scrollbar-colour:#DADCE0;}",
 				),
 			),
 			'buttons' => array(
@@ -354,13 +354,19 @@ final class GoogleReviewsAttrsTest extends TestCase {
 		);
 		$css   = $this->render( $attrs )['css'];
 		$this->assertStringContainsString( 'scrollbar-width:auto', $css );
-		$this->assertStringContainsString( 'scrollbar-color:#123456', $css );
+		$this->assertStringContainsString( '--sgs-gr-scrollbar-colour:#123456', $css );
 		// NEGATIVE CONTROL: with dots (or nothing) the shared layer hides the scrollbar, so its settings emit nothing.
 		foreach ( array( 'dots', 'none' ) as $pagination ) {
 			$css = $this->render( array_merge( $attrs, array( 'pagination' => $pagination ) ) )['css'];
 			$this->assertStringNotContainsString( 'scrollbar-width', $css, $pagination );
-			$this->assertStringNotContainsString( 'scrollbar-color', $css, $pagination );
+			$this->assertStringNotContainsString( 'scrollbar-colour', $css, $pagination );
 		}
+	}
+
+	public function test_the_scrollbar_colour_property_has_a_stylesheet_reader(): void {
+		// The value is only ever written as a custom property, so style.css must read it (the wiring gate's L5/L6 pair).
+		$css = (string) preg_replace( '#/\*.*?\*/#s', '', (string) file_get_contents( self::BLOCK . '/style.css' ) );
+		$this->assertMatchesRegularExpression( '/scrollbar-color:\s*var\(\s*--sgs-gr-scrollbar-colour\s*\)\s+transparent/', $css );
 	}
 
 	// ── Typography: 12 element families + the block's own ───────────────────────────────────────────────────

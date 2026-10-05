@@ -765,10 +765,6 @@
 		"quoteTextColumns": {
 			"type": "number"
 		},
-		"quoteTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"quoteWritingMode": {
 			"type": "string",
 			"enum": [
@@ -854,10 +850,6 @@
 		},
 		"nameTextColumns": {
 			"type": "number"
-		},
-		"nameTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"nameWritingMode": {
 			"type": "string",

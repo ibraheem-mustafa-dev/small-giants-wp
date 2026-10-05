@@ -8,10 +8,11 @@ import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { textPaintPreview } from '../../utils';
+import { usePreviewTier } from '../../utils';
+import { buildTabPreview } from './preview-style';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { label, textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
+	const { label, backgroundColour, backgroundColourGradient } = attributes;
 
 	// Contrast check for border — warn if border fails WCAG 3:1 contrast
 	// against the block's own background. When the block has no background
@@ -93,6 +94,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// belongs on blockProps.style, merged with the existing active/hidden toggle.
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
+	const previewTier = usePreviewTier();
+	const { wrapperStyle, bandStyle } = buildTabPreview( attributes, previewTier, colourPalette );
 	const blockProps = useBlockProps( {
 		className: [
 			'sgs-tab',
@@ -100,12 +103,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		].join( ' ' ),
 		style: {
 			display: isActive ? undefined : 'none',
-			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+			...wrapperStyle,
 		},
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
-		{ className: 'sgs-tab__inner' },
+		{ className: 'sgs-tab__inner', style: bandStyle },
 		{
 			templateLock: false,
 			template: [

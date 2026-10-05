@@ -42,6 +42,7 @@ import { useState, useEffect } from '@wordpress/element';
 import MotionPanel from './MotionPanel';
 import ChromePanel from './ChromePanel';
 import ChromePreview from './ChromePreview';
+import { shellBorderStyle, closeBorderStyle } from './chrome-preview-style';
 import { useSelect } from '@wordpress/data';
 
 /** backgroundSize control options — mirrors sgs/container's BackgroundPanel. */
@@ -82,7 +83,7 @@ import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, resolveCol
 	ShadowControl, SurfaceGroundControls, ScrimControls, scrimColourRow,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting, tierBoxShorthand } from '../../utils';
+import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting, tierBoxShorthand, tierLengthPreview } from '../../utils';
 
 /**
  * Content template: the menu ONLY. templateLock:false. The logo and the one
@@ -110,24 +111,6 @@ const ALIGN_ITEMS = {
 	right: 'flex-end',
 	stretch: 'stretch',
 };
-
-/**
- * Build a CSS padding shorthand from a { top, right, bottom, left } box object,
- * or undefined when nothing is set (editor preview only).
- *
- * @param {Object} box Box object.
- * @return {string|undefined} CSS padding value or undefined.
- */
-function paddingFromBox( box ) {
-	if ( ! box || typeof box !== 'object' ) {
-		return undefined;
-	}
-	const { top, right, bottom, left } = box;
-	if ( ! top && ! right && ! bottom && ! left ) {
-		return undefined;
-	}
-	return `${ top || '0' } ${ right || '0' } ${ bottom || '0' } ${ left || '0' }`;
-}
 
 /**
  * Whether the drawer's `anchor` tier object uses any of the given values at any tier.
@@ -186,7 +169,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// sgs_resolve_tier() performs server-side, kept in sync here so what an
 	// operator sees while editing matches what ships.
 	const anchorDesktop = anchor?.desktop || 'full-screen';
-	const isCompact = [ 'trigger', 'centred', 'container', 'side-start', 'side-end' ].includes( anchorDesktop );
 	const [ palette ] = useSettings( 'color.palette' );
 	// The theme's gradient presets, normalised by flattenPresetSetting() —
 	// useSettings() returns a flat array or an origin-keyed object depending on
@@ -210,6 +192,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{ Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' }[
 			nativeDeviceType
 		] || 'desktop';
+	// The anchor at the previewed tier decides the shell shape and its fallback width.
+	const anchorActive = resolveTier( anchor, activeDeviceTier, 'full-screen' ).value || 'full-screen';
+	const isCompact = [ 'trigger', 'centred', 'container', 'side-start', 'side-end' ].includes( anchorActive );
 
 	/**
 	 * The tier cascade for a `{desktop,tablet,mobile}` object: desktop is
@@ -347,7 +332,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'side-start': '400px',
 		'side-end': '400px',
 		container: '100%',
-	}[ anchorDesktop ] || '360px';
+	}[ anchorActive ] || '360px';
 
 	// Editor-only preview state. Deliberately component state and NOT a block
 	// attribute: it must never serialise into saved content. Deliberately NOT
@@ -373,7 +358,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		boxShadow: shadow
 			? resolveShadowPreviewComposed( shadow, shadowColour )
 			: undefined,
-		maxWidth: isCompact ? panelSize?.desktop || compactWidthFallback : undefined,
+		maxWidth: isCompact ? tierLengthPreview( panelSize, activeDeviceTier ) || compactWidthFallback : undefined,
+		...shellBorderStyle( attributes, activeDeviceTier, palette ),
 		marginInline: isCompact ? 'auto' : undefined,
 		// Editor-only preview of the background image (render.php paints the same
 		// picture onto a `.{uid}::before` layer, never the root itself — see that
@@ -388,8 +374,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	};
 	const bodyStyle = {
 		alignItems: ALIGN_ITEMS[ drawerAlign ] || 'flex-start',
-		gap: drawerGap?.desktop || undefined,
-		padding: paddingFromBox( drawerPadding?.desktop ),
+		gap: tierLengthPreview( drawerGap, activeDeviceTier ),
+		padding: tierBoxShorthand( drawerPadding, activeDeviceTier ),
 		// CHECK A finding: drawerTextColour/drawerTextColourGradient are written
 		// by the "Drawer container" panel's GradientCapableColourControl below
 		// and consumed by render.php on `.sgs-nav-drawer__body` (the SAME
@@ -1395,7 +1381,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<ChromePreview attributes={ attributes } deviceTier={ activeDeviceTier }>
+				<ChromePreview attributes={ attributes } deviceTier={ activeDeviceTier } palette={ palette }>
 					{ /* closeStyle preview -- mirrors render.php's three real, visually
 						distinct close-button markups, so the "Close button style"
 						control has a visible editor-canvas effect. */ }
@@ -1426,6 +1412,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							...( tierBoxShorthand( closePadding, activeDeviceTier ) ? { padding: tierBoxShorthand( closePadding, activeDeviceTier ) } : {} ),
 							// closePlacement/closeOffset editor-canvas mirror (SHOULD 10).
 							...closePlacementPreviewStyle,
+							// closeBorder* and closeIconSize editor-canvas mirrors: the box border and the glyph size.
+							...closeBorderStyle( attributes, palette ),
+							...( tierLengthPreview( attributes.closeIconSize, activeDeviceTier ) ? { '--sgs-nd-editor-close-icon': tierLengthPreview( attributes.closeIconSize, activeDeviceTier ) } : {} ),
 						} }
 					>
 						{ closeStyleRenderActive === 'text-swap' && (

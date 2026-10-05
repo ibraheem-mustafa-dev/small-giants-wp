@@ -39,6 +39,7 @@ import { isValidCubicBezier } from '../../../../components/MotionEasingControl';
  * @param {boolean}  props.sgsHoverImageZoom
  * @param {boolean}  props.sgsHoverGrayscale
  * @param {boolean}  props.sgsHoverBorderAccent
+ * @param {boolean}  props.sgsHoverTilt3D
  * @param {string}   props.sgsHoverDuration
  * @param {number}   props.sgsHoverDurationMs
  * @param {string}   props.sgsHoverEasing
@@ -65,6 +66,7 @@ export default function HoverPanel( {
 	sgsHoverImageZoom,
 	sgsHoverGrayscale,
 	sgsHoverBorderAccent,
+	sgsHoverTilt3D,
 	sgsHoverDuration,
 	sgsHoverDurationMs,
 	sgsHoverEasing,
@@ -217,6 +219,12 @@ export default function HoverPanel( {
 				help={ __( 'Adds a coloured line at the bottom that scales in on hover.', 'sgs-blocks' ) }
 				checked={ sgsHoverBorderAccent }
 				onChange={ ( val ) => setAttributes( { sgsHoverBorderAccent: val } ) }
+			/>
+			<ToggleControl
+				label={ __( '3D tilt on hover', 'sgs-blocks' ) }
+				help={ __( 'Tilts the block towards the pointer as it moves over it. Off for visitors who prefer reduced motion.', 'sgs-blocks' ) }
+				checked={ !! sgsHoverTilt3D }
+				onChange={ ( val ) => setAttributes( { sgsHoverTilt3D: val } ) }
 			/>
 			<SelectControl
 				label={ __( 'Transition duration', 'sgs-blocks' ) }

@@ -737,7 +737,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: false, // never emitted for nav links; attr kept
 								showWritingMode: true,
 								showHover: true,
 							},
@@ -753,7 +752,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: false, // never emitted for nav links; attr kept
 								showWritingMode: true,
 								showHover: true,
 							},

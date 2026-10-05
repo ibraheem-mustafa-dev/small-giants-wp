@@ -268,7 +268,7 @@
 		},
 		"cardBorderStyle": {
 			"type": "string",
-			"default": ""
+			"default": "solid"
 		},
 		"headingColour": {
 			"type": "string",

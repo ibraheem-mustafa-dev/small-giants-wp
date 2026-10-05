@@ -3,6 +3,7 @@ import {
   useBlockProps,
   InspectorControls,
   RichText,
+  useSettings,
 } from "@wordpress/block-editor";
 import {
   PanelBody,
@@ -11,7 +12,7 @@ import {
   ToggleControl,
 } from "@wordpress/components";
 import { IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle } from "../../utils";
+import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, boxPreview } from "../../utils";
 
 
 function formatNumber(num, separator) {
@@ -21,18 +22,8 @@ function formatNumber(num, separator) {
   return String(num);
 }
 
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder so the canvas
-// preview matches the frontend (contract §5).
-function boxShorthand(box, keys) {
-  if (!box || "object" !== typeof box) return undefined;
-  if (!keys.some((key) => box[key])) return undefined;
-  return keys.map((key) => box[key] || "0").join(" ");
-}
-
 export default function Edit({ attributes, setAttributes }) {
-  const { padding, margin,
-    style,
+  const {
     number,
     prefix,
     suffix,
@@ -54,23 +45,17 @@ export default function Edit({ attributes, setAttributes }) {
     .filter(Boolean)
     .join(" ");
 
-  // Base padding/margin/border-radius preview — padding/margin are owned
-  // tier-object attrs { desktop, tablet, mobile } (desktop tier is a box,
-  // top/right/bottom/left); radius stays WP-native style.border.radius
-  // (top-left/top-right/bottom-right/bottom-left).
-  const wrapperPreviewStyle = {};
-  const paddingPreview = boxShorthand(padding?.desktop, ["top", "right", "bottom", "left"]);
-  if (paddingPreview) wrapperPreviewStyle.padding = paddingPreview;
-  const marginPreview = boxShorthand(margin?.desktop, ["top", "right", "bottom", "left"]);
-  if (marginPreview) wrapperPreviewStyle.margin = marginPreview;
-  const radiusPreview = boxShorthand(style?.border?.radius, ["topLeft", "topRight", "bottomRight", "bottomLeft"]);
-  if (radiusPreview) wrapperPreviewStyle.borderRadius = radiusPreview;
-
-  const blockProps = useBlockProps({ className, style: wrapperPreviewStyle });
+  // Padding, margin, border and radius at the previewed device tier.
+  const previewTier = usePreviewTier();
+  const [colourPalette] = useSettings("color.palette");
+  const blockProps = useBlockProps({ className, style: boxPreview(attributes, previewTier, colourPalette) });
 
   const numberStyle = resolveTextColourPreviewStyle(numberColour, numberColourGradient, colourVar);
 
-  const labelStyle = resolveTextColourPreviewStyle(labelColour, labelColourGradient, colourVar);
+  const labelStyle = {
+    ...typographyPreviewStyle(attributes, "label", previewTier),
+    ...resolveTextColourPreviewStyle(labelColour, labelColourGradient, colourVar),
+  };
 
   return (
     <>
@@ -166,7 +151,7 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody title={__("Text Styling", "sgs-blocks")} initialOpen={false}>
-          <TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+          <TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
             attributes={attributes}
             setAttributes={setAttributes}
             prefix="label"

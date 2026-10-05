@@ -97,7 +97,9 @@ $uid      = wp_unique_id( 'sgs-collapsible-text-' );
 $root_sel = '.' . $uid . '.sgs-collapsible-text';
 
 $typography_selector = '.' . esc_attr( $uid ) . ' .sgs-collapsible-text__body';
-$typography_css      = sgs_typography_css_rule( $attributes, '', $typography_selector );
+// Text indent follows core's convention: every paragraph that follows another
+// paragraph inside the element.
+$typography_css      = sgs_typography_css_rule( $attributes, '', $typography_selector, $typography_selector . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 // Two-state link colour (Task 3, 2026-09-07) — the body's RichText permits
 // `core/link`, so a linked selection needs its own colour independent of the
 // surrounding text.

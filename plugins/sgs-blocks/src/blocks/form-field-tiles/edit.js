@@ -14,7 +14,19 @@ import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
 	resolveColourToken,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveResponsiveTier, textPaintPreview } from '../../utils';
+import {
+	resolveResponsiveTier,
+	textPaintPreview,
+	backgroundPaintPreview,
+	sgsBorderPreview,
+	usePreviewTier,
+	BandWrap,
+	wrapperPreview,
+} from '../../utils';
+
+// Wrapper declarations that belong to the field root (the border and radius), not to
+// the tile grid element the shared wrapper lays out.
+const ROOT_BORDER_KEYS = [ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', 'borderRadius' ];
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -60,7 +72,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	// RangeControl value and the inline grid-template-columns preview, or a
 	// raw setAttributes({ columns: val }) would coerce the whole object-typed
 	// attr to its block.json default (D563 bug class).
+	const previewTier = usePreviewTier();
 	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
+	const columnsAtTier = resolveResponsiveTier( columns, previewTier )?.value || 3;
 	const setColumnsDesktop = ( val ) =>
 		setAttributes( { columns: { ...( columns && typeof columns === 'object' ? columns : {} ), desktop: val } } );
 
@@ -68,6 +82,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-form-field',
 		'sgs-form-field--tiles',
 		`sgs-form-field--${ width }`,
+		`sgs-form-field--tiles-style-${ selectedStyle || 'checkmark' }`,
 	].join( ' ' );
 
 	// CHECK A finding: textColour/textColourGradient are written by the
@@ -77,9 +92,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	// naturally-inheriting CSS property, so setting it on this root also
 	// covers the tile labels below, which set no colour of their own.
 	const [ colourPalette ] = useSettings( 'color.palette' );
-	const wrapperTextStyle = textPaintPreview( textColour, textColourGradient, colourPalette );
+	const wrapper = wrapperPreview( attributes, previewTier, colourPalette );
+	const tilesStyle = { ...wrapper.style };
+	ROOT_BORDER_KEYS.forEach( ( key ) => delete tilesStyle[ key ] );
+	if ( ! tilesStyle.gridTemplateColumns && 'flex' !== attributes.layout && 'stack' !== attributes.layout ) {
+		tilesStyle.gridTemplateColumns = `repeat(${ columnsAtTier }, 1fr)`;
+	}
+	const rootStyle = {
+		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
+		...textPaintPreview( textColour, textColourGradient, colourPalette ),
+		...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette ),
+	};
 
-	const blockProps = useBlockProps( { className, style: wrapperTextStyle } );
+	const blockProps = useBlockProps( { className, style: rootStyle } );
 
 	const updateTile = ( index, key, value ) => {
 		const newTiles = [ ...tiles ];
@@ -390,54 +415,37 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</label>
 				) }
-				<div
-					className="sgs-form-tiles"
-					style={ {
-						display: 'grid',
-						gridTemplateColumns: `repeat(${ columnsDesktop }, 1fr)`,
-						gap: '12px',
-					} }
-				>
-					{ tiles.map( ( tile, index ) => (
-						<label
-							key={ index }
-							className="sgs-form-tile"
-							style={ {
-								display: 'flex',
-								flexDirection: 'column',
-								alignItems: 'center',
-								padding: '16px',
-								border: '2px solid #ddd',
-								borderRadius: '8px',
-								cursor: 'pointer',
-							} }
-						>
-							<input
-								type={ multiSelect ? 'checkbox' : 'radio' }
-								name={ `preview-${ fieldName }` }
-								value={ tile.value || '' }
-								style={ { display: 'none' } }
-								disabled
-							/>
-							{ tile.icon && (
-								<span
-									style={ {
-										fontSize: '32px',
-										marginBottom: '8px',
-										lineHeight: 1,
-									} }
-									aria-hidden="true"
-								>
-									<IconPreview
-										source={ tile.iconSource || 'emoji' }
-										name={ tile.icon }
-										size={ 32 }
-									/>
-								</span>
-							) }
-							<span>{ tile.label || '' }</span>
-						</label>
-					) ) }
+				<div className="sgs-form-tiles" style={ tilesStyle }>
+					<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
+						{ tiles.map( ( tile, index ) => (
+							<label
+								key={ index }
+								className={ [
+									'sgs-form-tile',
+									0 === index ? 'sgs-form-tile--selected' : '',
+								].filter( Boolean ).join( ' ' ) }
+							>
+								<input
+									className="sgs-form-tile__input"
+									type={ multiSelect ? 'checkbox' : 'radio' }
+									name={ `preview-${ fieldName }` }
+									value={ tile.value || '' }
+									disabled
+								/>
+								{ tile.icon && (
+									<span className="sgs-form-tile__icon" aria-hidden="true">
+										<IconPreview
+											source={ tile.iconSource || 'emoji' }
+											name={ tile.icon }
+											size={ 32 }
+										/>
+									</span>
+								) }
+								<span className="sgs-form-tile__label">{ tile.label || '' }</span>
+								<span className="sgs-form-tile__check" aria-hidden="true"></span>
+							</label>
+						) ) }
+					</BandWrap>
 				</div>
 				{ helpText && (
 					<p className="sgs-form-field__help">{ helpText }</p>

@@ -79,7 +79,6 @@ $width_explicit   = isset( $attributes['width'] );
 $width            = $width_explicit ? absint( $attributes['width'] ) : 240;
 $link_to_home     = isset( $attributes['linkToHome'] ) ? (bool) $attributes['linkToHome'] : true;
 $alt              = isset( $attributes['alt'] ) ? sanitize_text_field( $attributes['alt'] ) : '';
-$align            = isset( $attributes['align'] ) ? sanitize_key( $attributes['align'] ) : 'left';
 $logo_decorative  = ! empty( $attributes['logoDecorative'] );
 
 // Border (Block Customisation Standard — wrapper-level border control).

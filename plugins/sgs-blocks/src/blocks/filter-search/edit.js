@@ -12,19 +12,8 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, resolveColourToken } from '../../components';
-import { borderPaintPreview, textPaintPreview } from '../../utils';
+import { borderPaintPreview, textPaintPreview, tierBoxShorthand, usePreviewTier, isCssGradient } from '../../utils';
 import FilterSearchSettings from './FilterSearchSettings';
-
-// Box-object interface contract §5: base-tier canvas preview shorthand
-// (mirrors sgs/buybox + sgs/whatsapp-cta). Tablet/mobile tiers live in
-// render.php's own scoped @media rules, which the editor canvas never
-// executes.
-function boxShorthand( box ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	const { top, right, bottom, left } = box;
-	if ( ! top && ! right && ! bottom && ! left ) return undefined;
-	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
-}
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { searchMode, taxonomy, showCounts, attributeId, threshold, placeholder, margin, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, focusRingColour, textColour, textColourHover } = attributes;
@@ -56,7 +45,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 */
 	const filterSearchPreviewScope = `sgs-filter-search-preview-${ clientId }`;
 	const inputBorderHoverDecl =
-		inputBorderColourHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( inputBorderColourHoverGradient )
+		isCssGradient( inputBorderColourHoverGradient )
 			? `border-image:${ inputBorderColourHoverGradient } 1 !important;`
 			: inputBorderColourHover
 				? `border-color:${ resolveColourToken( inputBorderColourHover, colourPalette ) } !important;`
@@ -65,9 +54,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		? `.${ filterSearchPreviewScope } .sgs-filter-search__input:hover,.${ filterSearchPreviewScope } .sgs-filter-search__input:focus-within{${ inputBorderHoverDecl }}`
 		: '';
 
+	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
 		className: `sgs-filter-search sgs-filter-search--editor-preview ${ filterSearchPreviewScope }`,
-		style: { margin: boxShorthand( margin?.desktop ) },
+		style: {
+			margin: tierBoxShorthand( margin, previewTier ),
+			// The custom property style.css reads for the input's focus ring.
+			'--sgs-filter-search-focus': resolveColourToken( focusRingColour, colourPalette ),
+		},
 	} );
 
 	return (

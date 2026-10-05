@@ -63,7 +63,13 @@
 			"boxFamilies": {
 				"margin": [
 					"margin"
-				]
+				],
+				"panelHeadPadding": [ "panelHeadPadding" ],
+				"panelBodyPadding": [ "panelBodyPadding" ],
+				"panelFooterPadding": [ "panelFooterPadding" ],
+				"panelEmptyPadding": [ "panelEmptyPadding" ],
+				"emptyCtaPadding": [ "emptyCtaPadding" ],
+				"freeDeliveryBarMargin": [ "freeDeliveryBarMargin" ]
 			},
 			"elements": {
 				"scrim": {
@@ -757,7 +763,7 @@
 		},
 		"pillBorderStyle": {
 			"type": "string",
-			"default": "",
+			"default": "solid",
 			"enum": [
 				"",
 				"solid",

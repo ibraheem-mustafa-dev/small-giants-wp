@@ -432,7 +432,10 @@
 				],
 				"submenuLinkPadding": [
 					"submenuLinkPadding"
-				]
+				],
+				"margin": [ "margin" ],
+				"burgerPadding": [ "burgerPadding" ],
+				"itemBadgePadding": [ "itemBadgePadding" ]
 			},
 			"_note_sweep_eligibility": "The ONE declarative source for the Sweep-treatment eligibility predicate, read by BOTH surfaces — edit.js decides whether to offer the Sweep segment, render.php decides whether to emit Sweep CSS — with neither re-deriving the rule (Spec 41 FR-41-26). It is NOT an `elements` entry and routes no CSS property; it sits beside colourExemptions / hideExtensions / boxFamilies. Three keys per row: `blockingBackgroundAttrs` (Sweep is withdrawn when ANY named attribute is non-empty, because background-clip:text clips the element's whole background-painting area to the glyph shapes — every state's background counts, not just the resting one), `blockingGradientAttrs` (the row's own text gradient writes background-image on the identical selector, so whichever loses is invisible) and `glyphGuard` (background-clip:text needs glyphs to grip; null means the element always has them). Every attribute named below must exist in `attributes` — a typo reads as permanently empty, so the predicate would always pass and the rule would silently cease to exist.",
 			"sweepEligibility": {
@@ -1060,10 +1063,6 @@
 		"itemTextColumns": {
 			"type": "number"
 		},
-		"itemTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"itemWritingMode": {
 			"type": "string",
 			"enum": [
@@ -1307,7 +1306,7 @@
 		},
 		"submenuBorderStyle": {
 			"type": "string",
-			"default": ""
+			"default": "solid"
 		},
 		"submenuBorderRadius": {
 			"type": "object",
@@ -1386,10 +1385,6 @@
 		},
 		"submenuTextColumns": {
 			"type": "number"
-		},
-		"submenuTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"submenuWritingMode": {
 			"type": "string",

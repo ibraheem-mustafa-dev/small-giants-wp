@@ -48,9 +48,22 @@ is deselected (as WP core's does); a width with '' paints `solid`, an explicit s
 dotted, `none` …) wins, and no width paints nothing. Resolve the style through
 `includes/helpers-border-style.php::sgs_border_style_keyword` / `::sgs_border_box_decls` in PHP and
 `src/utils/border-style.js::resolveBorderStyle` / `::borderBoxPreview` in the canvas — never a
-hand-rolled `in_array(…) ? $raw : 'none'` or `borderStyle && borderStyle !== 'none'`. A border-style
-attribute defaults to '' (or `solid`), never `none`. Gate: `scripts/check-border-width-without-style.py`
-(the inverse of `check-border-style-without-width.py`).
+hand-rolled `in_array(…) ? $raw : 'none'` or `borderStyle && borderStyle !== 'none'`. Gate:
+`scripts/check-border-width-without-style.py` (the inverse of `check-border-style-without-width.py`).
+
+**Border defaults (Bean, 2026-10-05):** a border-style attribute defaults to `solid` (never '' or
+`none`), so the panel shows Solid selected; the one exception is a group-default attribute where ''
+means "no override" (`multi-button::childBtnBorderStyle`). A border-width attribute defaults to 0
+(unset) except on an exceptional type whose border is part of what it is: an outline or ghost button
+(`choice-flow::backBorderWidth`, `product-card::ctaBorderWidth`), a form input, a selectable pill or
+swatch state, a divider drawn as a border. A stylesheet never gives an element that has a border
+control a width the client did not choose.
+
+**The canvas previews the panel through its twin.** Every block that mounts `SgsBorderControl`
+previews that element's border with `src/utils/border-preview.js::sgsBorderPreview`, passing the same
+values the panel receives (`widthValues`, `styleValue`, `colourValue`, `colourGradientValue`,
+`radiusValues`; options `wholeTier`, `defaultBorder`, `fallbackColour`). Gate:
+`scripts/check-border-preview-twin.js`.
 
 A palette slug fed raw to CSS paints nothing: `sgs_border_states_css()` needs `sgs_colour_value()`
 resolution first (it feeds a masked `::before` ring that also sets `border-color:transparent`, so

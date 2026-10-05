@@ -13,6 +13,7 @@ import {
 import { useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import MediaPicker from '../../components/MediaPicker';
+import FrameSummary from './frame-summary';
 import { ResponsiveControl, MEDIA_SIZING_RATIO_OPTIONS } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -27,13 +28,9 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  */
 const MAX_FRAME_COUNT = 200;
 
-// C19 ratio-mode adoption (2026-08-27) — this list used to be a hand-rolled
-// duplicate of the exact six values render.php:54-57 whitelists (same
-// values, different labels). It is now imported from MediaSizingPanel's
-// exported RATIO_OPTIONS — the JS-side single source of truth — leaving
-// only ONE remaining copy of the value set in the codebase: render.php's
-// PHP whitelist (PHP cannot import a JS constant, so it stays a
-// byte-identical array there; see render.php's own comment on that array).
+// The ratio options are MediaSizingPanel's exported RATIO_OPTIONS; their values
+// equal block.json's `aspectRatio` enum, which render.php validates against
+// (tests/js/image-sequence-aspect-enum.test.js).
 const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
 
 // Must stay in sync with `$allowed_ext` in render.php AND the `enum` on the three
@@ -648,14 +645,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</Notice>
 
-				{ ! desktopConfigured && (
-					<p className="sgs-image-sequence-editor__frame-count">
-						{ __(
-							'No frame source configured yet — this block will render as a static thumbnail image until you add one.',
-							'sgs-blocks'
-						) }
-					</p>
-				) }
+				<FrameSummary attributes={ attributes } />
 			</div>
 		</>
 	);

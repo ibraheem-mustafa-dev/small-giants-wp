@@ -477,7 +477,7 @@
 		},
 		"borderStyle": {
 			"type": "string",
-			"default": ""
+			"default": "solid"
 		},
 		"borderColour": {
 			"type": "string",
@@ -692,10 +692,6 @@
 		},
 		"captionTextColumns": {
 			"type": "number"
-		},
-		"captionTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"captionWritingMode": {
 			"type": "string",

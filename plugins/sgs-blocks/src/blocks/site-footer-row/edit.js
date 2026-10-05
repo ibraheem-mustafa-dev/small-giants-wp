@@ -5,6 +5,7 @@ import { useSelect } from '@wordpress/data';
 import {
 	useBlockProps,
 	useInnerBlocksProps,
+	useSettings,
 	InspectorControls,
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
@@ -36,6 +37,7 @@ import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControl
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview, usePreviewTier } from '../../utils';
+import { footerRowPaint } from './preview-style';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 
 // Motion — block-private `fxEffect` selector, NOT the
@@ -378,22 +380,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		: {
 				display: 'flex',
 				flexWrap: 'wrap',
-				// Blank alignItems falls to the CSS-initial `stretch` — mirrors
-				// SGS_Container_Wrapper::render()'s own default, not a
-				// hardcoded editor-only fallback.
+				// Blank alignItems falls to the wrapper's own `stretch` default.
 				alignItems: alignItems || 'stretch',
 				...( flexDirection ? { flexDirection } : {} ),
 				gap: ( gap && gap.desktop ) || 'clamp(0.5rem, 2vw, 1.5rem)',
 				justifyContent: justifyContent || 'flex-start',
 		  };
 
-	// Margin (CHECK A) — a TIER OBJECT (Spec 37 FR-37-16), each tier itself a
-	// {top,right,bottom,left} box (block.json boxFamilies.margin: ['margin']
-	// only), resolved via resolveResponsiveTier() + boxShorthand() on the tier
-	// object. Fixed to the 'desktop' tier — the same convention every other
-	// resolveResponsiveTier() call in this file already uses (columnsDesktop,
-	// gridTemplateColumnsDesktop, gridTemplateRowsDesktop), none of which track
-	// the live device switcher.
+	// Margin — a tier object of {top,right,bottom,left} boxes; desktop tier.
 	const marginPreview = boxShorthand( resolveResponsiveTier( margin, 'desktop' )?.value );
 
 	// Max width (CHECK A) — a TIER OBJECT holding a plain CSS length per tier
@@ -411,7 +405,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		deps: [ attributes.columns, attributes.gap, attributes.layout ],
 	} );
 
-	const style = { ...previewStyle, ...paddingPreview, ...sep.style };
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const style = { ...previewStyle, ...footerRowPaint( attributes, previewTier, colourPalette ), ...paddingPreview, ...sep.style };
 	if ( marginPreview ) style.margin = marginPreview;
 	if ( maxWidthPreview ) style.maxWidth = maxWidthPreview;
 

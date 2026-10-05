@@ -82,8 +82,8 @@
 }
 
 .sgs-nav-drawer__editor .sgs-nav-drawer__close-preview svg {
-	width: 28px;
-	height: 28px;
+	width: var( --sgs-nd-editor-close-icon, 28px );
+	height: var( --sgs-nd-editor-close-icon, 28px );
 }
 
 /* Top row panel: the logo picker's thumbnail beside its buttons. */

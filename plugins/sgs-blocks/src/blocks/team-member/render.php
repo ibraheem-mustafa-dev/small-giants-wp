@@ -203,10 +203,6 @@ if ( isset( $style_border['radius'] ) ) {
 // shared colour-variant helpers at step 12 below (same proven pattern as
 // sgs/product-card + sgs/accordion-item + sgs/quote, commit `2eebbe55`). Capability
 // MOVES rather than disappearing — the client also gains hover states it never had.
-// fontSize/fontWeight/fontStyle/lineHeight are now emitted via the shared
-// sgs_typography_css_rule() helper at step 12 (D971/D972 full-replacement
-// track) — the native style.typography.fontSize read is removed along with
-// the fontSize sub-flag on block.json's supports.typography.
 
 // Text-align — block-private attribute (D971/D972 full-replacement track:
 // no real native supports.typography sub-capability remains). WP core does
@@ -534,15 +530,6 @@ if ( ! empty( $border_args ) ) {
 	$base_style_engine_args['border'] = $border_args;
 }
 
-// $color_args (native style.color.text/background/gradient) is REMOVED here — see
-// the step-4 comment above. Background/text colour are now emitted separately at
-// step 12b below via the shared colour-variant helpers.
-
-// $typography_args (native style.typography.fontSize) is REMOVED here — the
-// fontSize sub-flag was dropped from block.json's supports.typography;
-// fontSize/fontWeight/fontStyle/lineHeight now emit via
-// sgs_typography_css_rule() below instead (D971/D972 full-replacement track).
-
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		$base_style_engine_args,
@@ -553,24 +540,25 @@ if ( ! empty( $base_style_engine_args ) ) {
 	}
 }
 
-// Typography — three independent text surfaces (name / role / bio), each with
-// its own prefix and selector, via shared TypographyControls/sgs_typography_css_rule()
-// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
-// supports.typography fontSize with the framework's own helper, which also
-// now offers fontWeight/fontStyle/lineHeight. textAlign stays native (a
-// separate, unrelated capability — applied via the has-text-align-* class
-// added at step 14).
-$sgs_tm_name_typography_css = sgs_typography_css_rule( $attributes, 'name', $root_sel . ' .sgs-team-member__name' );
-if ( '' !== $sgs_tm_name_typography_css ) {
-	$scoped_css[] = $sgs_tm_name_typography_css;
-}
-$sgs_tm_role_typography_css = sgs_typography_css_rule( $attributes, 'role', $root_sel . ' .sgs-team-member__role' );
-if ( '' !== $sgs_tm_role_typography_css ) {
-	$scoped_css[] = $sgs_tm_role_typography_css;
-}
-$sgs_tm_bio_typography_css = sgs_typography_css_rule( $attributes, 'bio', $root_sel . ' .sgs-team-member__bio' );
-if ( '' !== $sgs_tm_bio_typography_css ) {
-	$scoped_css[] = $sgs_tm_bio_typography_css;
+// Typography — the card root ('' prefix: font size, weight, style, line height
+// inherited by every text surface) and three independent text surfaces (name /
+// role / bio), each with its own prefix and selector, through the shared
+// TypographyControls/sgs_typography_css_rule() mechanism. Each surface is a
+// single text element, so none carries a text indent. textAlign is the
+// has-text-align-* class added at step 14.
+foreach (
+	array(
+		''     => $root_sel,
+		'name' => $root_sel . ' .sgs-team-member__name',
+		'role' => $root_sel . ' .sgs-team-member__role',
+		// The bio shows in the photo overlay too, so its typography reaches both.
+		'bio'  => $root_sel . ' .sgs-team-member__bio,' . $root_sel . ' .sgs-team-member__overlay-bio',
+	) as $sgs_tm_typo_prefix => $sgs_tm_typo_sel
+) {
+	$sgs_tm_typo_css = sgs_typography_css_rule( $attributes, $sgs_tm_typo_prefix, $sgs_tm_typo_sel );
+	if ( '' !== $sgs_tm_typo_css ) {
+		$scoped_css[] = $sgs_tm_typo_css;
+	}
 }
 
 // --- 12b. Background + text colour (block-private, replaces the native

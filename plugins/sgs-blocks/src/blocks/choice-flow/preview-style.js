@@ -7,48 +7,7 @@
  *
  * @package SGS\Blocks
  */
-import { colourVar } from '../../utils';
-
-/** Narrower tiers fall back to the wider one, as the front end's media queries do. */
-const TIER_FALLBACK = {
-	desktop: [ 'desktop' ],
-	tablet: [ 'tablet', 'desktop' ],
-	mobile: [ 'mobile', 'tablet', 'desktop' ],
-};
-
-/**
- * @param {Object|undefined} box  {top,right,bottom,left}.
- * @param {string[]}         keys Side keys, in CSS order.
- * @return {string|undefined} CSS shorthand, or undefined when no side is set.
- */
-export function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) {
-		return undefined;
-	}
-	if ( ! keys.some( ( key ) => box[ key ] ) ) {
-		return undefined;
-	}
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
-/**
- * @param {Object}   tiers {desktop,tablet,mobile}.
- * @param {string}   tier  The previewed device.
- * @param {Function} read  Maps a tier's stored value to a usable value or undefined.
- * @return {*} The first usable value from the previewed tier outwards.
- */
-function valueAtTier( tiers, tier, read ) {
-	if ( ! tiers || 'object' !== typeof tiers ) {
-		return undefined;
-	}
-	for ( const key of TIER_FALLBACK[ tier ] || TIER_FALLBACK.desktop ) {
-		const value = read( tiers[ key ] );
-		if ( undefined !== value ) {
-			return value;
-		}
-	}
-	return undefined;
-}
+import { colourVar, sgsBorderPreview, tierBoxShorthand, tierValueOf } from '../../utils';
 
 /**
  * @param {Object} attributes Block attributes.
@@ -61,9 +20,7 @@ export function buildWrapperStyle( attributes, tier = 'desktop' ) {
 
 	// Showcase fills its full-screen frame, so render.php skips the compact box.
 	if ( 'showcase' !== flowLayout ) {
-		const paddingPreview = valueAtTier( padding, tier, ( box ) =>
-			boxShorthand( box, [ 'top', 'right', 'bottom', 'left' ] )
-		);
+		const paddingPreview = tierBoxShorthand( padding, tier, undefined, true );
 		if ( paddingPreview ) {
 			style.padding = paddingPreview;
 		}
@@ -96,8 +53,8 @@ export function buildWrapperStyle( attributes, tier = 'desktop' ) {
 	}
 
 	// choice-flow-showcase.php: 10 to 300 %, the picture keeps its own proportions.
-	const mediaSize = valueAtTier( optionMediaSize, tier, ( raw ) => {
-		const value = '' === raw || null === raw || undefined === raw ? NaN : Number( raw );
+	const mediaSize = tierValueOf( optionMediaSize, tier, ( raw ) => {
+		const value = Number( raw );
 		return Number.isFinite( value ) && value >= 10 && value <= 300 ? value : undefined;
 	} );
 	if ( undefined !== mediaSize ) {
@@ -109,7 +66,11 @@ export function buildWrapperStyle( attributes, tier = 'desktop' ) {
 }
 
 /**
- * Editor canvas preview of the Back button's colour/border styling.
+ * Editor canvas preview of the Back button's colour/border styling. The border
+ * is the `SgsBorderControl` panel's own values through its twin
+ * `sgsBorderPreview()`; the preview pill's stylesheet already paints a 2px
+ * solid border (as the front-end `<button>` paints its own), so each chosen
+ * part applies on its own.
  *
  * @param {Object} attributes Block attributes.
  * @return {Object} Inline style object for the preview `<span>`.
@@ -127,26 +88,12 @@ export function buildBackButtonPreviewStyle( attributes ) {
 	const style = {
 		backgroundColor: backColourBackground ? colourVar( backColourBackground ) : 'transparent',
 		color: backColourText ? colourVar( backColourText ) : undefined,
-		borderStyle: backBorderStyle || 'solid',
-		borderColor: backColourBorder ? colourVar( backColourBorder ) : undefined,
 	};
 
-	const widthShorthand = boxShorthand( backBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( widthShorthand ) {
-		style.borderWidth = widthShorthand;
-	}
-
-	const radiusShorthand = boxShorthand( backBorderRadius, [
-		'topLeft',
-		'topRight',
-		'bottomRight',
-		'bottomLeft',
-	] );
-	if ( radiusShorthand ) {
-		style.borderRadius = radiusShorthand;
-	}
-
-	return style;
+	return Object.assign(
+		style,
+		sgsBorderPreview( { widthValues: backBorderWidth ?? {}, styleValue: backBorderStyle, colourValue: backColourBorder, radiusValues: { base: backBorderRadius ?? {} } }, 'desktop', undefined, { defaultBorder: true } )
+	);
 }
 
 /**

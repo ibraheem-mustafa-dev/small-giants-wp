@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -30,8 +31,14 @@ const HOVER_EFFECT_OPTIONS = [
 ];
 import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import {
+	backgroundPaintPreview,
+	colourVar,
+	resolveTextColourPreviewStyle,
+	typographyPreviewStyle,
+	usePreviewTier,
+	boxPreview,
+} from '../../utils';
 
 // Spec 35 Part B: 2 options, short labels → ToggleGroupControl (mirrors
 // sgs/icon-list's "List content" source toggle).
@@ -51,15 +58,6 @@ const NUMBER_STYLE_OPTIONS = [
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 ];
-
-// Box-object interface contract §1/§5: build an editor-preview shorthand from
-// a box object — mirrors render.php's box-shorthand builder so the canvas
-// preview matches the frontend (contract §5).
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
 
 function StepEditor( { step, index, onChange, onRemove } ) {
 	const update = ( key, value ) => {
@@ -117,7 +115,7 @@ function StepEditor( { step, index, onChange, onRemove } ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { padding, margin,
+	const {
 		steps,
 		headingLevel,
 		layout,
@@ -127,12 +125,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberColourHover,
 		numberColourHoverGradient,
 		numberBackground,
-		numberFontFamily,
-		numberFontSize,
-		numberFontSizeUnit,
-		numberFontWeight,
-		numberLineHeight,
-		numberLineHeightUnit,
 		numberGap,
 		stepGap,
 		titleColour,
@@ -176,37 +168,15 @@ export default function Edit( { attributes, setAttributes } ) {
 			? backgroundColour
 			: '';
 
-	// Box-object interface contract §5: editor-canvas preview of the base
-	// (desktop) box families, mirroring render.php's scoped output so the
-	// canvas matches the frontend. Tablet/mobile tiers are @media-scoped and
-	// intentionally not previewed on the desktop canvas.
-	const wrapperPreviewStyle = {};
-	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( borderWidthPreview ) {
-		wrapperPreviewStyle.borderWidth = borderWidthPreview;
-		wrapperPreviewStyle.borderStyle = resolveBorderStyle( borderStyle );
-		if ( borderColour ) {
-			wrapperPreviewStyle.borderColor = colourVar( borderColour ) || undefined;
-		}
-		// A gradient border renders frontend as a masked ::before ring, which cannot
-		// be reproduced in a plain inline style — approximate it with the gradient as
-		// a border-image so the canvas at least shows that a gradient is applied.
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			wrapperPreviewStyle.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) {
-		wrapperPreviewStyle.padding = paddingPreview;
-	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( marginPreview ) {
-		wrapperPreviewStyle.margin = marginPreview;
-	}
-	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( borderRadiusPreview ) {
-		wrapperPreviewStyle.borderRadius = borderRadiusPreview;
-	}
+	// Box-object interface contract §5: editor-canvas preview of the box families
+	// and the wrapper fill at the previewed device tier, mirroring render.php's
+	// scoped output so the canvas matches the frontend.
+	const previewTier = usePreviewTier();
+	const [ palette ] = useSettings( 'color.palette' );
+	const wrapperPreviewStyle = {
+		...boxPreview( attributes, previewTier, palette ),
+		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, palette ),
+	};
 
 	// Wrapper text colour/gradient — CHECK A finding: textColour/textColourGradient
 	// are written by the "Text & fill" panel below and consumed by render.php
@@ -233,20 +203,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	const numStyle = {
 		color: colourVar( numberColour ) || undefined,
 		// The list layout draws no badge, so render.php drops the badge fill there.
-		backgroundColor: 'list' === layout ? undefined : colourVar( numberBackground ) || undefined,
-		// numberFontFamily stores the raw CSS font-family STRING verbatim
-		// (TypographyControls' showFontFamily picker, not a preset slug — see
-		// sgs_font_family_sanitise()'s own docblock in helpers-typography.php),
-		// so it can be handed to the canvas style object with no lookup.
-		fontFamily: numberFontFamily || undefined,
-		// Size, weight and line height: the desktop tier only (the canvas has
-		// no responsive preview), as sgs/tabs' tab-button preview does.
-		fontSize: '' !== ( numberFontSize?.desktop ?? '' ) ? `${ numberFontSize.desktop }${ numberFontSizeUnit || 'px' }` : undefined,
-		fontWeight: numberFontWeight || undefined,
-		lineHeight: '' !== ( numberLineHeight?.desktop ?? '' ) ? `${ numberLineHeight.desktop }${ numberLineHeightUnit || '' }` : undefined,
+		...( 'list' === layout ? {} : backgroundPaintPreview( numberBackground, attributes.numberBackgroundGradient, palette ) ),
+		...typographyPreviewStyle( attributes, 'number', previewTier ),
 	};
 
-	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
+	const titleStyle = {
+		...typographyPreviewStyle( attributes, 'title', previewTier ),
+		...resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar ),
+	};
 
 	const descStyle = resolveTextColourPreviewStyle( descriptionColour, descriptionColourGradient, colourVar );
 
@@ -444,7 +408,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					   "title" matches this element's own attrMap prefix — native
 					   typography previously painted the step title via
 					   `selectors.typography: ".sgs-process-steps__title"`, now removed. */ }
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="title"

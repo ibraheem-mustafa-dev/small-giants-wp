@@ -493,10 +493,6 @@
 		"labelTextColumns": {
 			"type": "number"
 		},
-		"labelTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"labelWritingMode": {
 			"type": "string",
 			"enum": [
@@ -582,10 +578,6 @@
 		},
 		"pillTextColumns": {
 			"type": "number"
-		},
-		"pillTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"pillWritingMode": {
 			"type": "string",

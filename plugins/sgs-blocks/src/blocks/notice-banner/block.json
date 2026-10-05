@@ -411,7 +411,7 @@
 				"inset",
 				"outset"
 			],
-			"default": "",
+			"default": "solid",
 			"description": "Unset (default) falls through to style.css's framework-default fallback (solid)."
 		},
 		"iconCircleBorderColour": {

@@ -24,7 +24,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsGradientPicker, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle, usePreviewTier, typographyPreviewStyle, tierBoxShorthand, resolveTier } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
@@ -90,18 +90,6 @@ function parseUnit( raw, currentUnit ) {
 	return { num: undefined, unit: currentUnit || 'px' };
 }
 
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder (contract §5).
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) {
-		return undefined;
-	}
-	if ( ! keys.some( ( key ) => box[ key ] ) ) {
-		return undefined;
-	}
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
 // Alignment → margin preview (mirrors render.php's alignment decl builder).
 function alignmentMargin( alignment ) {
 	if ( 'left' === alignment ) {
@@ -154,12 +142,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	const withContent = 'none' !== contentMode;
 
 	// `width` and `thickness` are TIER OBJECTS (Spec 35 pass 2, 2026-08-11) — ONE
-	// attr each holding {desktop,tablet,mobile}; the old widthTablet/widthMobile/
-	// thicknessTablet/thicknessMobile sibling attrs no longer exist. The editor
-	// canvas preview only ever showed the DESKTOP value (it never rendered a
-	// live @media preview), so it reads the desktop tier here.
-	const widthDesktop = width?.desktop ?? '';
-	const thicknessDesktop = thickness?.desktop ?? '';
+	// attr each holding {desktop,tablet,mobile}. A narrower tier inherits the
+	// wider one, as the front-end media rules do; the previewed device decides.
+	const previewTier = usePreviewTier();
+	const widthDesktop = resolveTier( width, previewTier ).value ?? '';
+	const thicknessDesktop = resolveTier( thickness, previewTier ).value ?? '';
 
 	// ---- Editor-canvas preview (mirrors render.php's scoped output) ----
 	const lineDecls = {};
@@ -176,9 +163,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			lineDecls.borderImage = `${ lineGradient } 1`;
 			lineDecls.borderBottomColor = 'transparent';
 		} else if ( colour ) {
-			lineDecls.borderBottomColor = /^#|^rgb|^hsl|^var\(/.test( colour )
-				? colour
-				: colourVar( colour );
+			lineDecls.borderBottomColor = colourVar( colour );
 		}
 	}
 
@@ -191,22 +176,12 @@ export default function Edit( { attributes, setAttributes } ) {
 				: undefined,
 	};
 
-	const paddingPreview = boxShorthand( padding?.desktop, [
-		'top',
-		'right',
-		'bottom',
-		'left',
-	] );
+	const paddingPreview = tierBoxShorthand( padding, previewTier );
 	if ( paddingPreview ) {
 		rootPreviewStyle.padding = paddingPreview;
 	}
 	const marginProps = alignmentMargin( alignment );
-	const marginPreview = boxShorthand( margin?.desktop, [
-		'top',
-		'right',
-		'bottom',
-		'left',
-	] );
+	const marginPreview = tierBoxShorthand( margin, previewTier );
 	if ( marginPreview ) {
 		// Combine explicit margin (top/bottom) with the alignment-driven
 		// left/right so both are respected in the preview.
@@ -400,7 +375,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 							{ /* Text colour moved to the top-level SgsColourPanel
 							   (D618/D621) — "Content colour" row. */ }
-							<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+							<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="content"
@@ -595,7 +570,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						style={ lineSpanStyle }
 						aria-hidden="true"
 					/>
-					<span className="sgs-separator__content">
+					<span
+						className="sgs-separator__content"
+						style={ typographyPreviewStyle( attributes, 'content', previewTier ) }
+					>
 						{ 'icon' === contentMode && (
 							<span
 								className="sgs-separator__icon"

@@ -189,7 +189,7 @@
 		},
 		"borderStyle": {
 			"type": "string",
-			"default": "",
+			"default": "solid",
 			"enum": [
 				"",
 				"none",

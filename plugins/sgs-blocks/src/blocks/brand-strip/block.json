@@ -725,10 +725,6 @@
 		"nameTextColumns": {
 			"type": "number"
 		},
-		"nameTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"nameWritingMode": {
 			"type": "string",
 			"enum": [

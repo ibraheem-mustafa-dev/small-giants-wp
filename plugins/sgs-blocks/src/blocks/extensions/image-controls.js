@@ -34,6 +34,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { ResponsiveControl, FocalPositionField } from '../../components';
+import { focalPointToObjectPosition } from '../../utils/objectPosition';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
@@ -317,4 +318,72 @@ addFilter(
 	'editor.BlockEdit',
 	'sgs/image-controls/controls',
 	withImageControls
+);
+
+const OBJECT_FITS = [ 'cover', 'contain', 'fill', 'none', 'scale-down' ];
+const HEIGHT_UNITS = [ 'px', 'vh', 'em', '%' ];
+
+/**
+ * The custom properties includes/image-controls.php injects for these attributes,
+ * with the same validation. extensions.css (loaded in the canvas) reads them under
+ * `.sgs-has-image-controls`, its tablet/mobile heights by the canvas width.
+ *
+ * @param {Object} attrs Block attributes.
+ * @return {Object} Custom properties; {} when nothing is set.
+ */
+export function imageControlsCanvasVars( attrs ) {
+	const vars = {};
+	const point = attrs.sgsObjectPosition;
+	if ( point && 'object' === typeof point && undefined !== point.x && undefined !== point.y ) {
+		const position = focalPointToObjectPosition( point );
+		if ( '50% 50%' !== position ) {
+			vars[ '--sgs-object-position' ] = position;
+		}
+	}
+	if ( OBJECT_FITS.includes( attrs.sgsObjectFit ) ) {
+		vars[ '--sgs-object-fit' ] = attrs.sgsObjectFit;
+	}
+	if ( /^\d+(\.\d+)?(px|em|rem|vh|vw|ch|%|svh|svw)$/.test( attrs.sgsMaxWidth || '' ) ) {
+		vars[ '--sgs-max-width' ] = attrs.sgsMaxWidth;
+	}
+	const unit = HEIGHT_UNITS.includes( attrs.sgsHeightUnit ) ? attrs.sgsHeightUnit : 'px';
+	[ [ attrs.sgsHeightDesktop, 'desktop' ], [ attrs.sgsHeightTablet, 'tablet' ], [ attrs.sgsHeightMobile, 'mobile' ] ].forEach( ( [ raw, tier ] ) => {
+		const value = Math.abs( parseInt( raw, 10 ) ) || 0;
+		if ( value > 0 ) {
+			vars[ `--sgs-height-${ tier }` ] = `${ value }${ unit }`;
+		}
+	} );
+	if ( 'white' === attrs.sgsColourTreatment ) {
+		vars[ '--sgs-image-filter' ] = 'brightness(0) invert(1)';
+	}
+	return vars;
+}
+
+/**
+ * Canvas mirror: the same utility class and custom properties the front end
+ * injects, on the block's own wrapper.
+ */
+const withImageControlsCanvas = createHigherOrderComponent( ( BlockListBlock ) => {
+	return ( props ) => {
+		const type = getBlockType( props.name );
+		if ( ! supportsImageControls( props.name ) || type?.supports?.sgs?.imageControlsExplicit ) {
+			return <BlockListBlock { ...props } />;
+		}
+		const vars = imageControlsCanvasVars( props.attributes || {} );
+		if ( ! Object.keys( vars ).length ) {
+			return <BlockListBlock { ...props } />;
+		}
+		const wrapperProps = {
+			...( props.wrapperProps || {} ),
+			className: [ props.wrapperProps?.className, 'sgs-has-image-controls' ].filter( Boolean ).join( ' ' ),
+			style: { ...( props.wrapperProps?.style || {} ), ...vars },
+		};
+		return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
+	};
+}, 'withImageControlsCanvas' );
+
+addFilter(
+	'editor.BlockListBlock',
+	'sgs/image-controls/canvas',
+	withImageControlsCanvas
 );

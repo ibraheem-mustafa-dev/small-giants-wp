@@ -769,9 +769,11 @@ if ( $icon ) {
 		// --check. Route them to the block's own scoped <style> (emitted at
 		// step-4 below), mirroring the hover-icon-colour rule above. When no
 		// explicit size is set, style.css's `.sgs-button__icon svg{width:1em}`
-		// default already applies — so the size path emits nothing.
-		if ( $icon_size ) {
-			$scoped_css_parts[] = ".{$uid}.sgs-button .sgs-button__icon svg{width:{$icon_size}px;height:{$icon_size}px;}";
+		// default already applies — so the size path emits nothing. The svg reads
+		// --sgs-btn-icon-size, which the per-device rule above sets on the root,
+		// so a tablet or mobile size repaints the icon at that width.
+		if ( $icon_size || $icon_size_tab || $icon_size_mob ) {
+			$scoped_css_parts[] = ".{$uid}.sgs-button .sgs-button__icon svg{width:var(--sgs-btn-icon-size,1em);height:var(--sgs-btn-icon-size,1em);}";
 		}
 		if ( $icon_colour ) {
 			$scoped_css_parts[] = ".{$uid}.sgs-button .sgs-button__icon{color:" . sgs_colour_value( $icon_colour ) . ';}';

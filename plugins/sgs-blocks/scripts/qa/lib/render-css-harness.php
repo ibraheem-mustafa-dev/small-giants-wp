@@ -39,6 +39,7 @@
  * -----
  *   php render-css-harness.php --slug sgs/card-grid --attrs '{"titleColourHover":"#f00"}'
  *   php render-css-harness.php --slug sgs/card-grid --attrs-file attrs.json
+ *   php render-css-harness.php --slug sgs/accordion-item --attrs '{}' --context-file context.json
  *   php render-css-harness.php --slug sgs/card-grid --render-file /path/to/render.php --attrs '{...}'
  *       (--render-file overrides the slug->real-path resolution — the
  *       integration point a codemod uses to check ITS OWN proposed edit,
@@ -187,15 +188,45 @@ class SGS_QA_Stub_Block {
 	public array $parsed_block;
 	public array $inner_blocks = array();
 	public array $attributes;
-	public function __construct( array $attributes ) {
+	public array $context;
+	public ?object $block_type;
+	public function __construct( array $attributes, array $context = array(), ?object $block_type = null ) {
 		$this->attributes   = $attributes;
+		$this->context      = $context;
+		$this->block_type   = $block_type;
 		$this->parsed_block = array(
 			'attrs' => array( 'anchor' => '' ),
 		);
 	}
 }
 
-$block   = new SGS_QA_Stub_Block( $attributes );
+// --context / --context-file stand in for the ancestor block context WP_Block
+// hands a child block (only the keys its block.json `usesContext` lists).
+$context = array();
+if ( isset( $args['context-file'] ) ) {
+	if ( ! is_file( $args['context-file'] ) ) {
+		harness_fail( 'context-file not found: ' . $args['context-file'] );
+	}
+	$context = json_decode( (string) file_get_contents( $args['context-file'] ), true );
+} elseif ( isset( $args['context'] ) ) {
+	$context = json_decode( $args['context'], true );
+}
+if ( ! is_array( $context ) ) {
+	harness_fail( 'invalid JSON for context: ' . json_last_error_msg() );
+}
+
+// The registered block type's attribute schema, read from the block.json beside
+// render.php (what WP_Block::$block_type->attributes holds at runtime).
+$block_type = null;
+$block_json = dirname( $render_path ) . '/block.json';
+if ( is_file( $block_json ) ) {
+	$block_meta = json_decode( (string) file_get_contents( $block_json ), true );
+	if ( is_array( $block_meta ) ) {
+		$block_type = (object) array( 'attributes' => is_array( $block_meta['attributes'] ?? null ) ? $block_meta['attributes'] : array() );
+	}
+}
+
+$block   = new SGS_QA_Stub_Block( $attributes, $context, $block_type );
 // --content stands in for rendered InnerBlocks (a composite block with no inner
 // content renders nothing, so its colours are never emitted).
 $content = isset( $args['content'] ) ? (string) $args['content'] : '';

@@ -25,7 +25,8 @@ import { SgsColourPanel,
 	BOX_UNITS,
 	resolveColourToken,
 } from '../../components';
-import { colourVar, textPaintPreview, borderPaintPreview } from '../../utils';
+import { colourVar, textPaintPreview, borderPaintPreview, containerWrapperPreview, usePreviewTier, BandWrap } from '../../utils';
+import { tabsIndicatorGradientCss, tabButtonStyle } from './preview-style';
 
 const TEMPLATE = [
 	[ 'sgs/tab', { label: __( 'Tab 1', 'sgs-blocks' ) } ],
@@ -190,51 +191,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		cssVars[ '--sgs-tab-indicator-thickness' ] = tabIndicatorThickness;
 	}
 
-	// tabPadding/typography canvas mirror (CHECK A, 2026-09-28) — these render
-	// as a literal scoped CSS declaration on `.sgs-tabs__tab` (render.php's
-	// sgs_typography_css_rule() + sgs_box_object_shorthand() calls), not a
-	// custom property style.css already reads, so there is no shared-stylesheet
-	// shortcut here: the tab Button elements below apply the same computed
-	// values directly as an inline style (mirrors the existing `textPreview`
-	// mechanism just below). tabFontSize/tabLetterSpacing may be the tiered
-	// {desktop,tablet,mobile} object TypographyControls writes — the canvas has
-	// no responsive-preview mode, so only the desktop tier is mirrored, same
-	// simplification the rest of this file's colour previews make.
-	const tabFontSizeDesktop =
-		tabFontSize && typeof tabFontSize === 'object'
-			? tabFontSize.desktop
-			: tabFontSize;
-	const tabLetterSpacingDesktop =
-		tabLetterSpacing && typeof tabLetterSpacing === 'object'
-			? tabLetterSpacing.desktop
-			: tabLetterSpacing;
-	const tabPaddingShorthand =
-		tabPadding && Object.values( tabPadding ).some( Boolean )
-			? [ 'top', 'right', 'bottom', 'left' ]
-					.map( ( side ) => tabPadding[ side ] || '0' )
-					.join( ' ' )
-			: undefined;
-	const tabButtonPreviewStyle = {
-		fontSize:
-			tabFontSizeDesktop !== undefined &&
-			tabFontSizeDesktop !== null &&
-			'' !== tabFontSizeDesktop
-				? `${ tabFontSizeDesktop }${ tabFontSizeUnit || 'px' }`
-				: undefined,
-		fontWeight: tabFontWeight || undefined,
-		textTransform: tabTextTransform || undefined,
-		letterSpacing:
-			tabLetterSpacingDesktop !== undefined &&
-			tabLetterSpacingDesktop !== null &&
-			'' !== tabLetterSpacingDesktop
-				? `${ tabLetterSpacingDesktop }${ tabLetterSpacingUnit || 'px' }`
-				: undefined,
-		padding: tabPaddingShorthand,
-	};
+	const previewTier = usePreviewTier();
+	// The tab buttons' typography and padding (render.php's scoped `.sgs-tabs__tab` rule).
+	const tabButtonPreviewStyle = tabButtonStyle( attributes, previewTier );
 
+	// The shared wrapper's paint (kind 'layout') at the previewed tier, and the
+	// indicator gradients render.php scopes to this instance.
+	const wrapperPreview = containerWrapperPreview( attributes, previewTier, colourPalette );
+	const editorScope = `sgs-tabs-ed-${ clientId }`;
+	const indicatorCss = tabsIndicatorGradientCss( attributes, editorScope );
 	const blockProps = useBlockProps( {
-		className: wrapperClassName,
-		style: cssVars,
+		className: [ wrapperClassName, wrapperPreview.className, editorScope ].filter( Boolean ).join( ' ' ),
+		style: { ...wrapperPreview.style, ...cssVars },
 	} );
 
 	// Inner blocks must be children of the wrapper element (not the nav).
@@ -600,7 +568,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ indicatorCss && <style>{ indicatorCss }</style> }
 			<div { ...blockProps }>
+				<BandWrap hasBandProps={ wrapperPreview.hasBandProps } bandStyle={ wrapperPreview.bandStyle }>
 				{ /* Tab navigation bar — editor preview */ }
 				<div
 					className="sgs-tabs__nav"
@@ -650,6 +620,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				{ /* Tab panels — only active tab's InnerBlocks are visible */ }
 				<div { ...innerBlocksProps } />
+				</BandWrap>
 			</div>
 		</>
 	);

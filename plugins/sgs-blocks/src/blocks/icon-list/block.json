@@ -622,10 +622,6 @@
 		"headingTextColumns": {
 			"type": "number"
 		},
-		"headingTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"headingWritingMode": {
 			"type": "string",
 			"enum": [
@@ -694,10 +690,6 @@
 		},
 		"itemTextColumns": {
 			"type": "number"
-		},
-		"itemTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"itemWritingMode": {
 			"type": "string",
@@ -796,10 +788,6 @@
 		},
 		"textElTextColumns": {
 			"type": "number"
-		},
-		"textElTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"textElWritingMode": {
 			"type": "string",
@@ -903,10 +891,6 @@
 		},
 		"descriptionTextColumns": {
 			"type": "number"
-		},
-		"descriptionTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"descriptionWritingMode": {
 			"type": "string",

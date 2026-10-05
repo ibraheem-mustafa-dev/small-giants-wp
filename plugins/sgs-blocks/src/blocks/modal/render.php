@@ -40,7 +40,7 @@ $modal_background_gradient = sgs_css_gradient_value( $attributes['modalBackgroun
 // (style.css's `.sgs-modal__close--glyph` modifier hides the ::after disc).
 // Both keep the same aria-label and 44px touch target (style.css is
 // unchanged for sizing either way).
-$close_style        = in_array( $attributes['closeStyle'] ?? 'icon', array( 'icon', 'glyph' ), true ) ? $attributes['closeStyle'] : 'icon';
+$close_style        = in_array( $attributes['closeStyle'] ?? 'icon', array( 'icon', 'glyph' ), true ) ? ( $attributes['closeStyle'] ?? 'icon' ) : 'icon';
 $close_button_class = 'glyph' === $close_style ? 'sgs-modal__close sgs-modal__close--glyph' : 'sgs-modal__close';
 
 // Dialog custom width — overrides
@@ -51,7 +51,7 @@ $close_button_class = 'glyph' === $close_style ? 'sgs-modal__close sgs-modal__cl
 // instead (mirrors sgs/heading's customWidth/customWidthUnit split-scalar
 // shape).
 $dialog_width_raw  = isset( $attributes['dialogWidth'] ) && is_string( $attributes['dialogWidth'] ) ? trim( $attributes['dialogWidth'] ) : '';
-$dialog_width_unit = in_array( $attributes['dialogWidthUnit'] ?? 'px', array( 'px', '%', 'em', 'rem', 'vw' ), true ) ? $attributes['dialogWidthUnit'] : 'px';
+$dialog_width_unit = in_array( $attributes['dialogWidthUnit'] ?? 'px', array( 'px', '%', 'em', 'rem', 'vw' ), true ) ? ( $attributes['dialogWidthUnit'] ?? 'px' ) : 'px';
 $dialog_width      = ( '' !== $dialog_width_raw && preg_match( '/^\d+(?:\.\d+)?$/', $dialog_width_raw ) ) ? $dialog_width_raw . $dialog_width_unit : '';
 
 // Dialog border — Shape B, block-private (same shape as sgs/accordion):

@@ -8,7 +8,8 @@
  * @package SGS\Blocks
  */
 
-import { resolveTier } from '../../utils';
+import { resolveTier, tierLengthPreview } from '../../utils';
+import { chromeRowStyle, chromeSlotStyle } from './chrome-preview-style';
 
 /**
  * The logo URL the given tier shows (tablet falls back to desktop, mobile to tablet).
@@ -28,50 +29,61 @@ function logoUrlFor( attributes, tier ) {
  * @param {Object}  props            Props.
  * @param {Object}  props.attributes Block attributes.
  * @param {string}  props.deviceTier The active editor device tier.
+ * @param {Array}   props.palette    Theme colour palette.
  * @param {Element} props.children   The × preview.
  * @return {Element} The preview row.
  */
-export default function ChromePreview( { attributes, deviceTier, children } ) {
+export default function ChromePreview( { attributes, deviceTier, palette, children } ) {
 	const tier = deviceTier || 'desktop';
 	const logoUrl = logoUrlFor( attributes, tier );
-	const showLogo = !! logoUrl && false !== resolveTier( attributes.chromeLogoShow, tier, true );
+	const showLogo = !! logoUrl && false !== resolveTier( attributes.chromeLogoShow, tier, true ).value;
 	const type = attributes.chromeSlotType || '';
 	const text = ( attributes.chromeSlotText || '' ).trim();
 	const showSlot =
 		'' !== type &&
 		'' !== text &&
 		( 'button' !== type || !! attributes.chromeSlotUrl ) &&
-		false !== resolveTier( attributes.chromeSlotShow, tier, true );
+		false !== resolveTier( attributes.chromeSlotShow, tier, true ).value;
 	const placement = attributes.chromeSlotPlacement || 'after-logo';
-	const height = resolveTier( attributes.chromeRowHeight, tier, '' );
-	const gap = resolveTier( attributes.chromeRowGap, tier, '' );
-	const logoWidth = resolveTier( attributes.chromeLogoWidth, tier, '' );
+	const logoWidth = tierLengthPreview( attributes.chromeLogoWidth, tier );
+	const linkedLogo = ! Object.prototype.hasOwnProperty.call( attributes, 'chromeLogoLink' ) || !! attributes.chromeLogoLink;
+	const LogoTag = linkedLogo ? 'a' : 'span';
+	// The slot's tag, as nav-drawer-chrome.php picks it: a heading takes its level, a label is a span, text a paragraph, a button a link.
+	const SlotTag = {
+		heading: [ 'h2', 'h3', 'h4', 'p' ].includes( attributes.chromeSlotHeadingLevel ) ? attributes.chromeSlotHeadingLevel : 'h2',
+		label: 'span',
+		text: 'p',
+		button: 'a',
+	}[ type ] || 'span';
+	const slotLinkProps = 'button' === type && attributes.chromeSlotNewTab ? { target: '_blank', rel: 'noopener' } : {};
 
 	return (
 		<div
 			className="sgs-nav-drawer__chrome sgs-nav-drawer__chrome-preview"
-			style={ {
-				...( height ? { minHeight: height } : {} ),
-				...( gap ? { gap } : {} ),
-			} }
+			style={ chromeRowStyle( attributes, tier, palette ) }
 		>
 			{ children }
 			{ showLogo && (
-				<span className="sgs-nav-drawer__chrome-logo">
+				<LogoTag
+					className="sgs-nav-drawer__chrome-logo"
+					{ ...( linkedLogo ? { href: '#', onClick: ( event ) => event.preventDefault() } : {} ) }
+				>
 					<img
 						className="sgs-nav-drawer__chrome-logo-image"
 						src={ logoUrl }
 						alt=""
 						style={ logoWidth ? { width: logoWidth, height: 'auto' } : undefined }
 					/>
-				</span>
+				</LogoTag>
 			) }
 			{ showSlot && (
-				<span
+				<SlotTag
 					className={ `sgs-nav-drawer__chrome-slot sgs-nav-drawer__chrome-slot--${ type } sgs-nav-drawer__chrome-slot--at-${ placement }` }
+					style={ chromeSlotStyle( attributes, tier, palette ) }
+					{ ...( 'button' === type ? { href: '#', onClick: ( event ) => event.preventDefault(), ...slotLinkProps } : {} ) }
 				>
 					{ text }
-				</span>
+				</SlotTag>
 			) }
 		</div>
 	);

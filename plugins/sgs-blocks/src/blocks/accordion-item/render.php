@@ -62,8 +62,11 @@ $icon_col_hover_gradient = $block->context['sgs/accordionIconColourHoverGradient
 $open_icon               = sanitize_key( $block->context['sgs/accordionOpenIcon'] ?? 'chevron-down' );
 $close_icon              = sanitize_key( $block->context['sgs/accordionCloseIcon'] ?? 'chevron-up' );
 
-// Unique scoped-CSS hook (CLASS — container/hero/quote convention).
-$uid      = 'sgs-accordion-item-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+// Unique scoped-CSS hook (CLASS — container/hero/quote convention). The hash
+// covers the parent accordion's context as well as the item's own attributes:
+// the scoped rules below paint that context, so two identical items inside two
+// differently styled accordions must not share one scope.
+$uid      = 'sgs-accordion-item-' . substr( md5( wp_json_encode( $attributes ) . wp_json_encode( $block->context ?? array() ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-accordion-item';
 
 $responsive_css = '';

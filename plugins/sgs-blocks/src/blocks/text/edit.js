@@ -37,8 +37,17 @@ import {
 // TypographyControls' own tier-aware line-height field.
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, DesignTokenPicker, GradientCapableColourControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import {
+	colourVar,
+	resolveTextColourPreviewStyle,
+	linkColourPreviewCss,
+	typographyPreviewStyle,
+	usePreviewTier,
+	spacingPreview,
+	backgroundPaintPreview,
+	sgsBorderPreview,
+} from '../../utils';
+import { composeShadow } from '../../utils/shadow-layers';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -115,33 +124,10 @@ const FIRST_LETTER_SIZE_UNITS = [
 // Style builder — editor preview only (desktop styles; responsive handled PHP)
 // ---------------------------------------------------------------------------
 
-// Box-object interface contract §1: a 4-side/4-corner box is an object with
-// named keys, each an already-unit-bearing CSS length string or absent (unset
-// side/corner). Build an editor-preview shorthand from the object — mirrors
-// render.php's box-shorthand builder so the canvas preview matches the
-// frontend (contract §5). Mirrors sgs/button's edit.js boxShorthand helper.
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
-function buildEditorStyle( attributes ) {
+function buildEditorStyle( attributes, tier ) {
 	const { padding, margin,
 		textColour,
 		textColourGradient,
-		fontSize,
-		fontSizeUnit,
-		fontWeight,
-		lineHeight,
-		lineHeightUnit,
-		letterSpacing,
-		letterSpacingUnit,
-		fontStyle,
-		textDecoration,
-		textTransform,
-		fontFamily,
-		textAlign,
 		maxWidth,
 		maxWidthUnit,
 		customWidth,
@@ -154,19 +140,6 @@ function buildEditorStyle( attributes ) {
 
 	const previewStyle = {};
 
-	// fontSize / lineHeight / letterSpacing are OBJECT-typed {desktop,tablet,
-	// mobile} attrs (Spec 35 tier-object migration) — the canvas preview always
-	// shows the DESKTOP tier (tablet/mobile only apply via the responsive
-	// device-toggle preview, which WP re-renders this same function under).
-	// Resolve before use so `${fontSize}` never string-concatenates the whole
-	// object into the literal text "[object Object]".
-	// An unset tier object arrives as `[]` (see TypographyControls.js::isTieredValue).
-	const resolveDesktop = ( val ) =>
-		val !== null && typeof val === 'object' ? ( Array.isArray( val ) ? undefined : val.desktop ) : val;
-	const fontSizeVal = resolveDesktop( fontSize );
-	const lineHeightVal = resolveDesktop( lineHeight );
-	const letterSpacingVal = resolveDesktop( letterSpacing );
-
 	// colourVar wraps slugs in var(--wp--preset--color--X); raw hex passes
 	// through as-is from ColorPalette. The sibling gradient attribute (D636)
 	// switches to the background-clip:text preview shape when set.
@@ -176,37 +149,13 @@ function buildEditorStyle( attributes ) {
 			/^#|^rgb|^hsl/.test( v ) ? v : colourVar( v )
 		)
 	);
-	if ( fontSizeVal ) {
-		// A string fontSize is a theme preset slug — resolve to the preset
-		// custom property (mirrors sgs_font_size_value() server-side).
-		previewStyle.fontSize =
-			typeof fontSizeVal === 'string'
-				? fontSizeVar( fontSizeVal )
-				: `${ fontSizeVal }${ fontSizeUnit }`;
-	}
-	if ( fontWeight ) {
-		previewStyle.fontWeight = fontWeight;
-	}
-	if ( lineHeightVal ) {
-		previewStyle.lineHeight = `${ lineHeightVal }${ lineHeightUnit }`;
-	}
-	if ( letterSpacingVal != null ) {
-		previewStyle.letterSpacing = `${ letterSpacingVal }${ letterSpacingUnit }`;
-	}
-	if ( fontStyle ) {
-		previewStyle.fontStyle = fontStyle;
-	}
-	if ( textDecoration ) {
-		previewStyle.textDecoration = textDecoration;
-	}
-	if ( textTransform ) {
-		previewStyle.textTransform = textTransform;
-	}
-	if ( fontFamily ) {
-		previewStyle.fontFamily = fontFamily;
-	}
-	if ( textAlign ) {
-		previewStyle.textAlign = textAlign;
+	// Typography (size, line-height, letter-spacing per tier, family, weight,
+	// style, transform, decoration, align, wrap, writing mode, columns).
+	Object.assign( previewStyle, typographyPreviewStyle( attributes, '', tier ) );
+	// text-indent paints only on a block that directly follows another sgs/text
+	// (render.php's adjacent-sibling selector); editor.css reads this property.
+	if ( attributes.textIndent ) {
+		previewStyle[ '--sgs-ed-text-indent' ] = attributes.textIndent;
 	}
 	if ( maxWidth ) {
 		previewStyle.maxWidth = `${ maxWidth }${ maxWidthUnit }`;
@@ -222,31 +171,12 @@ function buildEditorStyle( attributes ) {
 	// tier-object attrs { desktop, tablet, mobile } (desktop tier previewed
 	// here only); border-radius stays WP-native style.border.radius; border
 	// width comes from the SGS custom borderWidth object attr.
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) previewStyle.padding = paddingPreview;
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( marginPreview ) previewStyle.margin = marginPreview;
+	Object.assign( previewStyle, spacingPreview( { padding, margin }, tier ) );
+	Object.assign( previewStyle, backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient ) );
+	const shadowPreview = composeShadow( attributes.boxShadow, attributes.boxShadowColour );
+	if ( shadowPreview ) previewStyle.boxShadow = shadowPreview;
 
-	// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
-	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( borderRadiusPreview ) previewStyle.borderRadius = borderRadiusPreview;
-
-	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( borderWidthPreview ) {
-		previewStyle.borderWidth = borderWidthPreview;
-		previewStyle.borderStyle = resolveBorderStyle( borderStyle );
-		if ( borderColour ) {
-			previewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
-				? borderColour
-				: colourVar( borderColour );
-		}
-		// A gradient border renders frontend as a masked ::before ring, which cannot
-		// be reproduced in a plain inline style — approximate it with the gradient as
-		// a border-image so the canvas at least shows that a gradient is applied.
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			previewStyle.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
+	Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined, { wholeTier: true } ) );
 
 	return previewStyle;
 }
@@ -428,9 +358,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			? attributes.backgroundColour
 			: '';
 
+	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
 		className: editorClassName,
-		style: { ...buildEditorStyle( attributes ), ...dropCapStyle },
+		style: { ...buildEditorStyle( attributes, previewTier ), ...dropCapStyle },
 	} );
 
 	return (

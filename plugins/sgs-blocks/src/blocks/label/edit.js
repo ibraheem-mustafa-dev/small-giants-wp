@@ -17,6 +17,9 @@ import {
 	sgsHasLength,
 	sgsLengthPreview,
 	resolveTextColourPreviewStyle,
+	typographyPreviewStyle,
+	usePreviewTier,
+	tierBoxShorthand, isCssGradient,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -102,40 +105,17 @@ function parseUnit( raw, currentUnit ) {
 }
 
 /**
- * Build the box-family editor-canvas preview shorthand — mirrors render.php's
- * hand-built box shorthand so the canvas matches the frontend (contract §5).
- */
-function boxShorthand( box ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	const { top, right, bottom, left } = box;
-	if ( ! top && ! right && ! bottom && ! left ) return undefined;
-	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
-}
-
-/**
  * Build the editor-canvas preview style object for the label element.
  * This is editor-only convenience (mirrors sgs/heading) — the frontend
  * render.php emits every declaration into a scoped `.{uid}` <style> tag,
  * never inline (contract §A).
  */
-function buildStyle( attributes ) {
+function buildStyle( attributes, tier ) {
 	const {
 		textColour,
 		textColourGradient,
 		backgroundColour,
 		backgroundColourGradient,
-		fontFamily,
-		fontSize,
-		fontSizeUnit,
-		fontWeight,
-		lineHeight,
-		lineHeightUnit,
-		letterSpacing,
-		letterSpacingUnit,
-		textTransform,
-		textDecoration,
-		fontStyle,
-		textAlign,
 		padding,
 		margin,
 		borderRadius,
@@ -143,34 +123,14 @@ function buildStyle( attributes ) {
 		className,
 	} = attributes;
 
-	// margin is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (folded
-	// 2026-09-11 from the wrong 3-sibling shape) — the canvas preview always
-	// shows the desktop tier, same as padding immediately below.
-	const marginPreview = boxShorthand( margin?.desktop );
-	// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
-	// box-tier migration) — the canvas preview always shows the desktop tier.
-	const paddingPreview = boxShorthand( padding?.desktop );
-
-	// fontSize is OBJECT-typed {desktop,tablet,mobile} (Spec 35 tier-object
-	// migration) — the canvas preview always shows the desktop tier.
-	const fontSizeDesktop =
-		fontSize && 'object' === typeof fontSize && ! Array.isArray( fontSize )
-			? fontSize.desktop
-			: fontSize;
+	// margin and padding are TIER-OF-BOXES OBJECTS {desktop,tablet,mobile};
+	// the preview shows the tier the editor is previewing.
+	const marginPreview = tierBoxShorthand( margin, tier );
+	const paddingPreview = tierBoxShorthand( padding, tier );
 
 	const previewStyle = {
 		...resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar ),
-		fontFamily: fontFamily || undefined,
-		fontSize: fontSizeDesktop ? `${ fontSizeDesktop }${ fontSizeUnit }` : undefined,
-		fontWeight: fontWeight || undefined,
-		lineHeight: lineHeight ? `${ lineHeight }${ lineHeightUnit }` : undefined,
-		letterSpacing: ( letterSpacing !== null && letterSpacing !== undefined )
-			? `${ letterSpacing }${ letterSpacingUnit }`
-			: undefined,
-		textTransform: textTransform || undefined,
-		textDecoration: textDecoration || undefined,
-		fontStyle: fontStyle || undefined,
-		textAlign: textAlign || undefined,
+		...typographyPreviewStyle( attributes, '', tier ),
 		margin: marginPreview,
 	};
 
@@ -180,7 +140,7 @@ function buildStyle( attributes ) {
 	previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
 	// Gradient sibling preview (colour-conformance FILL closeout, 2026-09-06) —
 	// mirrors render.php's sgs_background_paint_decl() gradient-wins-when-set.
-	if ( backgroundColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient ) ) {
+	if ( isCssGradient( backgroundColourGradient ) ) {
 		previewStyle.backgroundImage = backgroundColourGradient;
 	}
 	// borderRadius is a CSS-length STRING (2026-08-13). The old check used
@@ -238,8 +198,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		fullWidth,
 	} = attributes;
 
+	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
-		style: buildStyle( attributes ),
+		style: buildStyle( attributes, previewTier ),
 	} );
 
 	return (
@@ -331,7 +292,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 							isShownByDefault
 						>
-							<TypographyControls fontSizePresets showFontFamily showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+							<TypographyControls fontSizePresets showFontFamily showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix=""

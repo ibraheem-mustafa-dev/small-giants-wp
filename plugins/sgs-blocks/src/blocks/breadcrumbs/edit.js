@@ -7,8 +7,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxShorthand, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
 const SEPARATOR_OPTIONS = [
 	{ label: '/', value: '/' },
@@ -28,19 +27,8 @@ const PRODUCT_PAGE_CRUMBS_OPTIONS = [
 	{ label: __( 'Both', 'sgs-blocks' ), value: 'both' },
 ];
 
-// Box-object interface contract §1: a 4-side box is an object with named
-// keys, each an already-unit-bearing CSS length string or absent (unset
-// side). Build an editor-preview shorthand from the object — mirrors
-// render.php's box-shorthand builder so the canvas preview matches the
-// frontend (contract §5).
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
 /** Build the root's inline preview style for the editor canvas (mirrors render.php's scoped root declarations). */
-function buildRootStyle( attributes ) {
+function buildRootStyle( attributes, tier ) {
 	const { padding, margin, linkColour, separatorColour, currentColour, borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } = attributes;
 	const rootStyle = {
 		'--sgs-breadcrumbs-link-colour': colourVar( linkColour ) || undefined,
@@ -51,30 +39,16 @@ function buildRootStyle( attributes ) {
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
 	// order top/right/bottom/left).
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = tierBoxShorthand( padding, tier );
 	if ( paddingPreview ) {
 		rootStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = tierBoxShorthand( margin, tier );
 	if ( marginPreview ) {
 		rootStyle.margin = marginPreview;
 	}
 
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-		if ( borderWidthPreview ) rootStyle.borderWidth = borderWidthPreview;
-		rootStyle.borderStyle = rootStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			rootStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : colourVar( borderColour );
-		}
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			rootStyle.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
-	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) {
-		rootStyle.borderRadius = radiusPreview;
-	}
+	Object.assign( rootStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier, undefined, { wholeTier: true } ) );
 
 	return Object.fromEntries(
 		Object.entries( rootStyle ).filter( ( [ , v ] ) => v !== undefined )
@@ -102,10 +76,27 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Contract §B3: NO wrapper <div> — the <nav> IS the block root (matches
 	// render.php). The editor-canvas preview style carries the same custom
 	// colour properties + base spacing box preview the frontend emits scoped.
+	const tier = usePreviewTier();
 	const blockProps = useBlockProps( {
 		className: 'sgs-breadcrumbs',
-		style: buildRootStyle( attributes ),
+		style: {
+			...buildRootStyle( attributes, tier ),
+			...typographyPreviewStyle( attributes, '', tier ),
+		},
 	} );
+
+	// render.php's itemGap: the space either side of each separator, on the list
+	// and each item; style.css keeps its spacing-10 gap when it is unset.
+	const itemGap = sgsLengthPreview( attributes.itemGap );
+	const gapStyle = itemGap ? { gap: itemGap } : undefined;
+	// Link and separator paint: a flat colour reaches them through the root's
+	// custom properties; a gradient is painted on the element itself, as render.php does.
+	const linkPaint = attributes.linkColourGradient
+		? resolveTextColourPreviewStyle( attributes.linkColour, attributes.linkColourGradient, colourVar )
+		: undefined;
+	const separatorPaint = attributes.separatorColourGradient
+		? resolveTextColourPreviewStyle( attributes.separatorColour, attributes.separatorColourGradient, colourVar )
+		: undefined;
 
 	return (
 		<>
@@ -287,7 +278,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				   single-target block; defaults also expose weight/style/line-
 				   height, which native typography never offered here. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
@@ -296,35 +287,35 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<nav { ...blockProps } aria-label={ __( 'Breadcrumbs', 'sgs-blocks' ) }>
-				<ol className="sgs-breadcrumbs__list">
+				<ol className="sgs-breadcrumbs__list" style={ gapStyle }>
 					{ showHome && (
-						<li className="sgs-breadcrumbs__item">
-							<a href="#">{ homeLabel }</a>
-							<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
+						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
+							<a href="#" style={ linkPaint }>{ homeLabel }</a>
+							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
 						</li>
 					) }
 					{ showArchiveCrumb !== false && (
-						<li className="sgs-breadcrumbs__item">
-							<a href="#">{ __( 'Parent Page', 'sgs-blocks' ) }</a>
-							<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
+						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
+							<a href="#" style={ linkPaint }>{ __( 'Parent Page', 'sgs-blocks' ) }</a>
+							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
 						</li>
 					) }
 					{ ( productPageCrumbs === 'category' || productPageCrumbs === 'both' ) && (
-						<li className="sgs-breadcrumbs__item">
-							<a href="#">{ __( 'Category', 'sgs-blocks' ) }</a>
-							<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
+						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
+							<a href="#" style={ linkPaint }>{ __( 'Category', 'sgs-blocks' ) }</a>
+							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
 						</li>
 					) }
 					{ ( productPageCrumbs === 'brand' || productPageCrumbs === 'both' ) && (
-						<li className="sgs-breadcrumbs__item">
-							<a href="#">{ __( 'Brand', 'sgs-blocks' ) }</a>
-							<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
+						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
+							<a href="#" style={ linkPaint }>{ __( 'Brand', 'sgs-blocks' ) }</a>
+							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
 						</li>
 					) }
 					{ showCurrentCrumb !== false && ( <li
 						className="sgs-breadcrumbs__item sgs-breadcrumbs__item--current"
 						aria-current="page"
-						style={ resolveTextColourPreviewStyle( currentColour, currentColourGradient, colourVar ) }
+						style={ { ...gapStyle, ...resolveTextColourPreviewStyle( currentColour, currentColourGradient, colourVar ) } }
 					>
 						{ __( 'Current Page', 'sgs-blocks' ) }
 					</li> ) }

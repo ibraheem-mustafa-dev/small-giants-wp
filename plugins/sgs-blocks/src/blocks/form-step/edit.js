@@ -12,7 +12,13 @@ import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { textPaintPreview } from '../../utils';
+import {
+	backgroundPaintPreview,
+	textPaintPreview,
+	usePreviewTier,
+	BandWrap,
+	wrapperPreview,
+} from '../../utils';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { label, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
@@ -31,9 +37,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	// belongs on blockProps.style.
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
+	const previewTier = usePreviewTier();
+	const wrapper = wrapperPreview( attributes, previewTier, colourPalette );
+
 	const blockProps = useBlockProps( {
 		className: 'sgs-form-step',
-		style: textPaintPreview( textColour, textColourGradient, colourPalette ),
+		style: {
+			...wrapper.style,
+			...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
+			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+		},
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -123,10 +136,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<div className="sgs-form-step__header">
-					<strong>{ label }</strong>
-				</div>
-				<div { ...innerBlocksProps } />
+				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
+					<div className="sgs-form-step__header">
+						<strong>{ label }</strong>
+					</div>
+					<div { ...innerBlocksProps } />
+				</BandWrap>
 			</div>
 		</>
 	);

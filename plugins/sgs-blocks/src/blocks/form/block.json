@@ -402,7 +402,7 @@
 				"inset",
 				"outset"
 			],
-			"default": "",
+			"default": "solid",
 			"description": "Field control border style. Empty = solid when a width is set."
 		},
 		"fieldBorderRadius": {

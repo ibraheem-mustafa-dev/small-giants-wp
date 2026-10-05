@@ -45,9 +45,20 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, shadowAttrKeys, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, linkColourPreviewCss, isTierBoxEmpty } from '../../utils';
+import {
+	colourVar,
+	resolveTextColourPreviewStyle,
+	linkColourPreviewCss,
+	isTierBoxEmpty,
+	usePreviewTier,
+	typographyPreviewStyle,
+	spacingPreview,
+	backgroundPaintPreview,
+	resolveTier,
+	sgsBorderPreview,
+} from '../../utils';
+import { composeShadow } from '../../utils/shadow-layers';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveBorderStyle } from '../../utils/border-style';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -108,24 +119,13 @@ function parseUnit( raw, currentUnit ) {
 	return { num: undefined, unit: currentUnit || 'px' };
 }
 
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder so the canvas
-// preview matches the frontend (contract §5).
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
 // ---------------------------------------------------------------------------
 // Editor preview style builder — desktop styles only; responsive via PHP
 // ---------------------------------------------------------------------------
 
-function buildWrapperStyle( attributes ) {
+function buildWrapperStyle( attributes, tier ) {
 	const { padding, margin,
 		inheritStyle,
-		backgroundColour,
-		style,
 		borderWidth,
 		borderStyle,
 		borderColour,
@@ -139,44 +139,15 @@ function buildWrapperStyle( attributes ) {
 
 	const wrapperStyle = {};
 
-	if ( backgroundColour ) {
-		wrapperStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
-			? backgroundColour
-			: colourVar( backgroundColour );
+	Object.assign( wrapperStyle, backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient ) );
+	const shadowPreview = composeShadow( attributes.boxShadow, attributes.boxShadowColour );
+	if ( shadowPreview ) {
+		wrapperStyle.boxShadow = shadowPreview;
 	}
 
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) {
-		wrapperStyle.borderRadius = radiusPreview;
-	}
+	Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined, { wholeTier: true } ) );
 
-	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		if ( borderWidthPreview ) {
-			wrapperStyle.borderWidth = borderWidthPreview;
-		}
-		wrapperStyle.borderStyle = wrapperStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
-				? borderColour
-				: colourVar( borderColour );
-		}
-		// A gradient border renders frontend as a masked ::before ring, which cannot
-		// be reproduced in a plain inline style — approximate it with the gradient as
-		// a border-image so the canvas at least shows that a gradient is applied.
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
-
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) {
-		wrapperStyle.padding = paddingPreview;
-	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( marginPreview ) {
-		wrapperStyle.margin = marginPreview;
-	}
+	Object.assign( wrapperStyle, spacingPreview( { padding, margin }, tier ) );
 
 	if ( maxWidth ) {
 		wrapperStyle.maxWidth = maxWidth;
@@ -185,7 +156,7 @@ function buildWrapperStyle( attributes ) {
 	return wrapperStyle;
 }
 
-function buildAttribStyle( attributes ) {
+function buildAttribStyle( attributes, tier ) {
 	const {
 		attributionColour,
 		attributionColourGradient,
@@ -198,14 +169,12 @@ function buildAttribStyle( attributes ) {
 			( val ) => ( /^#|^rgb|^hsl/.test( val ) ? val : colourVar( val ) )
 		),
 	};
-	// attributionMarginTop is a TIER OBJECT — the canvas preview (desktop-only;
-	// responsive tiers render via PHP) reads the desktop tier. Typography
-	// (font-size/weight/family/style/decoration/transform/line-height) no
-	// longer gets a canvas preview here — same as sgs/testimonial's `nameStyle`
-	// (colour-only), which this now mirrors; those properties render correctly
-	// via the block's own scoped <style> on the FRONTEND only.
-	if ( attributionMarginTop?.desktop != null ) {
-		style.marginTop = `${ attributionMarginTop.desktop }${ attributionMarginUnit }`;
+	Object.assign( style, typographyPreviewStyle( attributes, 'attribution', tier ) );
+	// attributionMarginTop is a tier object of bare numbers; a narrower tier
+	// inherits the wider one, as the front-end media rules do.
+	const marginTop = resolveTier( attributionMarginTop, tier ).value;
+	if ( marginTop != null && '' !== marginTop ) {
+		style.marginTop = `${ marginTop }${ attributionMarginUnit }`;
 	}
 	return style;
 }
@@ -283,10 +252,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		attributionLinkColourHoverGradient
 	);
 
+	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
 		as: 'blockquote',
 		className: [ 'wp-block-sgs-quote', linkPreviewUid ].join( ' ' ),
-		style: buildWrapperStyle( attributes ),
+		style: buildWrapperStyle( attributes, previewTier ),
 	} );
 
 	// Body = native InnerBlocks (mirrors core/quote) — the wrapping element
@@ -299,7 +269,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		template: QUOTE_BODY_TEMPLATE,
 	} );
 
-	const attribStyle = buildAttribStyle( attributes );
+	const attribStyle = buildAttribStyle( attributes, previewTier );
 
 	// attributionFontSize / attributionMarginTop are TIER OBJECTS as of Spec 35
 	// pass 3b (2026-08-11) — ONE attr each, holding {desktop,tablet,mobile}. The
@@ -565,7 +535,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								}
 								isShownByDefault
 							>
-								<TypographyControls fontSizePresets showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+								<TypographyControls fontSizePresets showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 									attributes={ attributes }
 									setAttributes={ setAttributes }
 									prefix="attribution"

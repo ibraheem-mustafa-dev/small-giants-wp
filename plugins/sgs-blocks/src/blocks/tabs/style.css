@@ -112,7 +112,7 @@
 .sgs-tabs__tab:hover {
 	color: var( --wp--preset--color--text, #1e1e1e );
 	text-decoration: underline;
-	background-color: transparent;
+	background-color: var( --sgs-tab-hover-bg, transparent );
 }
 
 /* :focus-visible ring using SGS focus-ring tokens */

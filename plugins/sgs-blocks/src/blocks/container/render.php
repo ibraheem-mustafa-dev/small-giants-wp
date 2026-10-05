@@ -319,18 +319,15 @@ if ( '' !== $sgs_container_text_align ) {
 // had zero authorings anywhere and was never wired to any control — pure debt.
 
 // Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
-// mechanism (D971/D972 full-replacement track). Replaces the retired WP-native
-// supports.typography (fontSize/lineHeight/textAlign/letterSpacing/textTransform/
-// fontWeight/fontStyle) with the framework's own helper, which also now offers
-// fontWeight/fontStyle. The old preset-font-size-slug re-add (has-*-font-size)
-// is retired alongside it — fontSize is now an object attr driven by
-// TypographyControls, not a native string preset slug.
+// mechanism; fontSize is a tier-object attr driven by TypographyControls. Text
+// indent follows core's convention: every paragraph that follows another
+// paragraph inside the container.
 if ( empty( $sgs_container_supports_uid ) ) {
 	$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 	$sgs_container_supports_classes[] = $sgs_container_supports_uid;
 }
 $sgs_container_typography_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
-$sgs_container_supports_css  .= sgs_typography_css_rule( $attributes, '', $sgs_container_typography_sel );
+$sgs_container_supports_css  .= sgs_typography_css_rule( $attributes, '', $sgs_container_typography_sel, $sgs_container_typography_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 
 $sgs_container_wrapper_opts = array( 'tag' => $html_tag );
 if ( ! empty( $sgs_container_supports_classes ) ) {

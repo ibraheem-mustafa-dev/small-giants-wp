@@ -1,6 +1,8 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, useInnerBlocksProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl, SelectControl, Icon } from '@wordpress/components';
+import { useBlockProps, useInnerBlocksProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import { PanelBody, TextControl, ToggleControl, SelectControl } from '@wordpress/components';
+import { usePreviewTier } from '../../utils';
+import { BuyboxCanvasMock, buyboxRootStyle, buyboxMockCss } from './canvas-mock';
 import { ResponsiveBoxControl, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
@@ -13,21 +15,14 @@ import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel from './GuidedPanel';
 
-// A second CTA, a WhatsApp prompt, or an assurance list — the kinds of thing
-// worth dropping below the add-to-cart form. Not exhaustive (any block can be
-// force-inserted from the list view), just a sensible curated default set.
+// Curated extras for below the add-to-cart form (any block can still be inserted from the list view).
 const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list' ];
 
 /**
- * Editor view for sgs/buybox.
- *
- * Static placeholder panel — the block is fully server-rendered on the
- * product page (render.php resolves the product from context.postId).
- * A live ServerSideRender preview is deliberately avoided: outside a
- * product template context there is no product to render, so the preview
- * would always show the core-blocks fallback and mislead operators.
+ * Editor view for sgs/buybox: the canvas draws a sample product with the real
+ * markup (canvas-mock.js), since the editor has no product context to render.
  */
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		soldOutLabel,
 		unavailableLabel,
@@ -81,8 +76,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			? backgroundColour
 			: '';
 
+	const [ palette ] = useSettings( 'color.palette' );
+	const previewTier = usePreviewTier();
+	const mockScope = `sgs-buybox-ed-${ clientId }`;
 	const blockProps = useBlockProps( {
-		className: 'sgs-buybox sgs-buybox--editor-placeholder',
+		className: [
+			'sgs-buybox',
+			mockScope,
+			'tablet' === attributes.stackBelow ? 'sgs-buybox--stack-tablet' : '',
+			'guided' === attributes.buyboxLayout ? 'sgs-buybox--guided' : '',
+		].filter( Boolean ).join( ' ' ),
+		style: buyboxRootStyle( attributes, previewTier, palette ),
 	} );
 
 	// Optional extras slot (a second button, a WhatsApp CTA, an assurance
@@ -427,18 +431,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				/>
 			</InspectorControls>
 
+			<style>{ buyboxMockCss( attributes, mockScope, palette ) }</style>
 			<div { ...blockProps }>
-				<Icon icon="cart" size={ 32 } />
-				<p className="sgs-buybox__placeholder-title">
-					{ __( 'Buybox', 'sgs-blocks' ) }
-				</p>
-				<p className="sgs-buybox__placeholder-help">
-					{ __(
-						'Renders the product configurator (option pills, live price, add to cart) on the product page. Simple products fall back to the standard WooCommerce price and add-to-cart blocks.',
-						'sgs-blocks'
-					) }
-				</p>
-				<div { ...extrasInnerBlocksProps } />
+				<BuyboxCanvasMock
+					attributes={ attributes }
+					tier={ previewTier }
+					palette={ palette }
+					extras={ <div { ...extrasInnerBlocksProps } /> }
+				/>
 			</div>
 		</>
 	);

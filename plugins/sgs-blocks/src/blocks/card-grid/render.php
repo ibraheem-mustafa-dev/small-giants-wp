@@ -338,7 +338,22 @@ $card_grid_hover_bg_gradient = sgs_css_gradient_value( $hover_bg_gradient );
 if ( '' !== $card_grid_hover_bg_gradient ) {
 	$card_grid_hover_decls[] = 'background-image:' . $card_grid_hover_bg_gradient;
 }
-if ( $hover_text ) {
+// textColourHoverGradient: a gradient text paint needs `background-clip:text`, which would
+// clip the item's own background to the glyphs, so it paints the title and subtitle on item
+// hover instead of the item. A flat textColourHover keeps painting the item's `color`.
+$card_grid_hover_text_effective = sgs_resolve_text_colour_or_gradient( $hover_text, $hover_text_gradient );
+$card_grid_hover_text_is_gradient = '' !== sgs_css_gradient_value( $card_grid_hover_text_effective );
+if ( $card_grid_hover_text_is_gradient ) {
+	$card_grid_item_sel         = $root_sel . ' .sgs-card-grid__item';
+	$card_grid_hover_text_decl  = sgs_text_colour_decl( $card_grid_hover_text_effective );
+	$card_grid_hover_text_hover = $card_grid_item_sel . ':hover .sgs-card-grid__title,' . $card_grid_item_sel . ':hover .sgs-card-grid__subtitle';
+	$card_grid_hover_text_focus = $card_grid_item_sel . ':focus-within .sgs-card-grid__title,' . $card_grid_item_sel . ':focus-within .sgs-card-grid__subtitle';
+	if ( '' !== $card_grid_hover_text_decl ) {
+		$card_grid_native_css .= sgs_hover_guarded_rule( $card_grid_hover_text_hover, $card_grid_hover_text_decl );
+		$card_grid_native_css .= $card_grid_hover_text_focus . '{' . $card_grid_hover_text_decl . ';}';
+	}
+	$card_grid_native_css .= sgs_text_colour_gradient_fallback_rule( $card_grid_hover_text_hover . ',' . $card_grid_hover_text_focus, $card_grid_hover_text_effective );
+} elseif ( $hover_text ) {
 	$card_grid_hover_decls[] = 'color:' . sgs_colour_value( $hover_text );
 }
 if ( $hover_border ) {

@@ -6,6 +6,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
 import { SeparatorsPanel } from '../container/components/SeparatorsPanel';
@@ -38,7 +39,15 @@ import { ParticleTrailRowControls } from '../../components/ParticleTrailRowContr
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
-import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview, usePreviewTier } from '../../utils';
+import {
+	resolveResponsiveTier,
+	boxShorthand,
+	resolveContentWidthPreview,
+	contentBandPreview,
+	usePreviewTier,
+	textPaintPreview,
+	sgsBorderPreview,
+} from '../../utils';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 
 // TIER 2 (THE PLACEMENT RULE, Spec 35 Part O) — `row` is the block's
@@ -254,6 +263,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
+	const previewTier = usePreviewTier();
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// Motion-effect reachability flags — each names the SINGLE
 	// selected effect so the "not available in editor" Notice below and the
@@ -323,7 +334,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// columns IS the tier object — pass it straight through, and write it
 	// straight back. No per-tier fan-out.
-	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
+	const columnsDesktop = resolveResponsiveTier( columns, previewTier )?.value || 3;
+	// A bare number is px, like the front-end emitter.
+	const gapAtTier = resolveResponsiveTier( gap, previewTier )?.value;
+	const gapPreview = gapAtTier ? ( /^\d+(\.\d+)?$/.test( String( gapAtTier ) ) ? `${ gapAtTier }px` : String( gapAtTier ) ) : '16px';
+	const gridColumnsAtTier = resolveResponsiveTier( gridTemplateColumns, previewTier )?.value;
+	const gridRowsAtTier = resolveResponsiveTier( gridTemplateRows, previewTier )?.value;
 
 	// The attr IS the tier object — pass it straight through, and write it
 	// straight back. No per-tier fan-out.
@@ -343,7 +359,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewStyle = isGrid
 		? {
 				display: 'grid',
-				gridTemplateColumns: `repeat(${ columnsDesktop }, 1fr)`,
+				gridTemplateColumns: String( gridColumnsAtTier ?? '' ).trim() || `repeat(${ columnsDesktop }, 1fr)`,
+				...( gridRowsAtTier ? { gridTemplateRows: gridRowsAtTier } : {} ),
 				...( gridAutoRows ? { gridAutoRows } : {} ),
 				// Blank alignItems/justifyItems/alignContent fall to the
 				// CSS-initial `stretch` — mirrors SGS_Container_Wrapper::render()'s
@@ -351,20 +368,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				alignItems: alignItems || 'stretch',
 				justifyItems: justifyItems || 'stretch',
 				alignContent: alignContent || 'stretch',
-				gap: ( gap && gap.desktop ) || '16px',
+				gap: gapPreview,
 		  }
 		: {
 				display: 'flex',
 				// Mirrors the frontend lock. The row never wraps or
 				// stacks; it yields by shrinking its children instead.
-				flexWrap: 'nowrap',
+				flexWrap: attributes.flexWrap || 'nowrap',
 				// Blank alignItems falls to the CSS-initial `stretch` — mirrors
 				// SGS_Container_Wrapper::render()'s own default, not a
 				// hardcoded editor-only fallback.
 				alignItems: alignItems || 'stretch',
 				...( flexDirection ? { flexDirection } : {} ),
 				// Matches block.json's gap default.
-				gap: ( gap && gap.desktop ) || '16px',
+				gap: gapPreview,
 				justifyContent: justifyContent || 'flex-start',
 		  };
 
@@ -374,16 +391,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// object. Fixed to the 'desktop' tier — the same convention every other
 	// resolveResponsiveTier() call in this file already uses (columnsDesktop,
 	// gridTemplateColumnsValue), none of which track the live device switcher.
-	const marginPreview = boxShorthand( resolveResponsiveTier( margin, 'desktop' )?.value );
+	const marginPreview = boxShorthand( resolveResponsiveTier( margin, previewTier )?.value );
 
 	// Max width (CHECK A) — a TIER OBJECT holding a plain CSS length per tier
 	// (not a box), same shape as `gap`/`columns` above.
-	const maxWidthPreview = resolveResponsiveTier( maxWidth, 'desktop' )?.value;
+	const maxWidthPreview = resolveResponsiveTier( maxWidth, previewTier )?.value;
 
 	// Separators preview: the row's list is the root, or the band when a content
 	// width opens one (contentBandPreview moves the rule keys onto the band with
 	// the grid/flex declarations, and the ref follows below).
-	const previewTier = usePreviewTier();
 	const sep = useSeparatorsCanvas( {
 		separators: attributes.separators,
 		device: previewTier,
@@ -391,7 +407,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		deps: [ attributes.columns, attributes.gap, attributes.layout ],
 	} );
 
-	const style = { ...previewStyle, ...paddingPreview, ...sep.style };
+	const style = {
+		...previewStyle,
+		...paddingPreview,
+		...sep.style,
+		...textPaintPreview( textColour, textColourGradient, colourPalette ),
+		...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette ),
+	};
 	if ( marginPreview ) style.margin = marginPreview;
 	if ( maxWidthPreview ) style.maxWidth = maxWidthPreview;
 
@@ -406,7 +428,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// class-sgs-container-wrapper.php's documented default-full-no-band
 	// behaviour for this block.
 	const bandMaxWidth = resolveContentWidthPreview(
-		resolveResponsiveTier( contentWidth, 'desktop' )?.value
+		resolveResponsiveTier( contentWidth, previewTier )?.value
 	);
 	const { hasBandProps, bandStyle } = contentBandPreview( {
 		contentWidth: bandMaxWidth,

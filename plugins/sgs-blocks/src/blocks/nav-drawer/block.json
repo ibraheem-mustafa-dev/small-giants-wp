@@ -55,7 +55,9 @@
 				],
 				"borderWidth": [
 					"borderWidth"
-				]
+				],
+				"chromeRowPadding": [ "chromeRowPadding" ],
+				"closePadding": [ "closePadding" ]
 			},
 			"hideExtensions": [
 				"clickEffects",

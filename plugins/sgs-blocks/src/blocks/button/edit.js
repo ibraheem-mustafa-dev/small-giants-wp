@@ -20,13 +20,12 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, MotionEasingControl, motionEasingCss } from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, MotionEasingControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
-import { resolveShadowPreviewComposed } from '../../utils/tokens';
-import { backgroundPaintPreview, textPaintPreview } from '../../utils';
+import { usePreviewTier } from '../../utils';
+import { buttonPreviewStyle, labelCollapsedAt, LABEL_CLIP_STYLE } from './preview-style';
 import { parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
-import { resolveBorderStyle } from '../../utils/border-style';
 
 const LINK_SOURCE_OPTIONS = [
 	{ label: __( 'Typed URL', 'sgs-blocks' ), value: 'url' },
@@ -151,7 +150,8 @@ function parseUnit( raw, currentUnit ) {
 // panel below reads/writes the three objects directly via the tier a shared
 // <ResponsiveOverride> exposes.
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, isSelected } ) {
+	const previewTier = usePreviewTier();
 	const { padding, margin,
 		label,
 		url,
@@ -278,123 +278,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// nothing" bug). render.php resolves the same slugs via sgs_colour_value().
 	const [ palette ] = useSettings( 'color.palette' );
 
-	// Box-object interface contract §1: a 4-side/4-corner box is an object with
-	// named keys, each an already-unit-bearing CSS length string or absent
-	// (unset side/corner). Build an editor-preview shorthand from the object —
-	// mirrors render.php's box-shorthand builder so the canvas preview matches
-	// the frontend (contract §5).
-	const boxShorthand = ( box, keys ) => {
-		if ( ! box || 'object' !== typeof box ) return undefined;
-		if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-		return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-	};
-
-	const previewStyle = {};
-
-	// Content alignment + label-to-icon gap (desktop tier) — mirrors render.php's
-	// scoped justify-content / gap on the button root.
-	if ( contentAlign?.desktop ) previewStyle.justifyContent = contentAlign.desktop;
-	if ( iconGap?.desktop ) previewStyle.gap = iconGap.desktop;
-	// The hover transition, as render.php emits it (transitionDuration, transitionEasing/Custom).
-	previewStyle.transition = `all ${ transitionDuration ?? 300 }ms ${ motionEasingCss( transitionEasing || 'ease', transitionEasingCustom || '', 'ease' ) }`;
-
-	// colourTextGradient/colourBackgroundGradient real mechanism (render.php,
-	// D636 + the button-specific "Real text gradient" precondition,
-	// CLAUDE.md): a gradient BACKGROUND is a `--sgs-btn-bg-image` custom-
-	// property value consumed by style.css — the same technique
-	// `backgroundPaintPreview()` already mirrors. A gradient TEXT colour needs
-	// `background-clip:text` (`textPaintPreview()`), but `.sgs-button` paints
-	// its OWN background on the exact same selector a text colour targets —
-	// clipping would erase the button's fill. The frontend solves this by
-	// moving the background onto a `::after` layer ONLY when a text gradient
-	// is actually set; this mirrors that with a real sibling DOM layer (React
-	// has no way to target `::after` via inline style) rather than the
-	// generic backgroundPaintPreview merge.
-	const hasValidTextGradient = !! ( colourTextGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( colourTextGradient ) );
-	const bgPaintPreview = backgroundPaintPreview( colourBackground, colourBackgroundGradient, palette );
-	let backgroundLayerStyle = null;
-
-	if ( hasValidTextGradient ) {
-		// Neutralise the element's own background (moves to a sibling layer)
-		// and establish the stacking context the layer needs — mirrors
-		// render.php's `position:relative;isolation:isolate;background-color:
-		// transparent;background-image:none` on the strengthened selector.
-		previewStyle.position = 'relative';
-		previewStyle.isolation = 'isolate';
-		previewStyle.backgroundColor = 'transparent';
-		previewStyle.backgroundImage = 'none';
-		if ( bgPaintPreview.backgroundColor || bgPaintPreview.backgroundImage ) {
-			backgroundLayerStyle = {
-				position: 'absolute',
-				inset: 0,
-				zIndex: -1,
-				borderRadius: 'inherit',
-				pointerEvents: 'none',
-				...bgPaintPreview,
-			};
-		}
-		Object.assign( previewStyle, textPaintPreview( colourText, colourTextGradient, palette ) );
-	} else {
-		Object.assign( previewStyle, bgPaintPreview );
-		if ( colourText ) previewStyle.color = resolveColourToken( colourText, palette );
-	}
-
-	if ( borderColour ) previewStyle.borderColor = resolveColourToken( borderColour, palette );
-	// A gradient border renders frontend as a masked ::before ring, which cannot
-	// be reproduced in a plain inline style — approximate it with the gradient as
-	// a border-image so the canvas at least shows that a gradient is applied.
-	if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-		previewStyle.borderImage = `${ borderColourGradient } 1`;
-	}
-	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( borderStyle || borderWidthPreview ) previewStyle.borderStyle = resolveBorderStyle( borderStyle );
-	if ( borderWidthPreview ) previewStyle.borderWidth = borderWidthPreview;
-	// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
-	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( borderRadiusPreview ) previewStyle.borderRadius = borderRadiusPreview;
-	if ( fontSize ) previewStyle.fontSize = `${ fontSize }${ fontSizeUnit || 'px' }`;
-	if ( fontWeight ) previewStyle.fontWeight = fontWeight;
-	if ( fontStyle ) previewStyle.fontStyle = fontStyle;
-	if ( textTransform ) previewStyle.textTransform = textTransform;
-	if ( textDecoration ) previewStyle.textDecoration = textDecoration;
-	// lineHeight / letterSpacing are TIER OBJECTS (Spec 35 migration) — the
-	// editor preview always shows the DESKTOP tier, mirroring render.php's
-	// sgs_responsive_css_rule() base-rule output (line-height/letter-spacing on
-	// `.{uid}.sgs-button`). Units: lineHeightUnit ('' = unitless, matching the
-	// PHP helper's 'unitless' sentinel decode), letterSpacingUnit defaults 'px'.
-	if ( lineHeight?.desktop !== undefined && lineHeight?.desktop !== null && lineHeight?.desktop !== '' ) {
-		const lhUnit = attributes.lineHeightUnit !== undefined ? attributes.lineHeightUnit : 'em';
-		previewStyle.lineHeight = `${ lineHeight.desktop }${ 'unitless' === lhUnit ? '' : lhUnit }`;
-	}
-	if ( letterSpacing?.desktop !== undefined && letterSpacing?.desktop !== null && letterSpacing?.desktop !== '' ) {
-		const lsUnit = attributes.letterSpacingUnit !== undefined ? attributes.letterSpacingUnit : 'px';
-		previewStyle.letterSpacing = `${ letterSpacing.desktop }${ lsUnit }`;
-	}
-	// Box shadow — mirrors render.php step 3's base-state shadow declaration
-	// (composed via sgs_shadow_value_composed()). Only the NORMAL state
-	// previews (hover can't be shown on a static canvas element). Colour is a
-	// design-token slug or custom hex (D288), so it must resolve via the live
-	// palette exactly like the other colour previews above — otherwise a
-	// token slug renders as invalid CSS and the shadow silently disappears.
-	const boxShadowPreview = resolveShadowPreviewComposed( boxShadow, resolveColourToken( boxShadowColour, palette ) );
-	if ( boxShadowPreview ) {
-		previewStyle.boxShadow = boxShadowPreview;
-	}
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) previewStyle.padding = paddingPreview;
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( marginPreview ) previewStyle.margin = marginPreview;
-	// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35
-	// migration, 2026-08-11) — the editor preview always shows the DESKTOP tier.
-	if ( widthType?.desktop === 'custom' && customWidth?.desktop ) {
-		previewStyle.width = `${ customWidth.desktop }${ customWidthUnit?.desktop || 'px' }`;
-	} else if ( ( widthType?.desktop || 'fit' ) === 'fit' ) {
-		// As the frontend: a flex-column parent would otherwise stretch the button.
-		previewStyle.width = 'fit-content';
-	}
-	if ( attributes.minHeight?.desktop ) {
-		previewStyle.minHeight = `${ attributes.minHeight.desktop }${ minHeightUnit || 'px' }`;
-	}
+	const { style: previewStyle, backgroundLayerStyle } = buttonPreviewStyle( attributes, palette, previewTier );
 
 	// Editor-frontend parity (D288): the button element IS the block root (no
 	// wrapper div), matching render.php. Full-width is the `sgs-button--full`
@@ -434,7 +318,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const iconPlaceholder = (
 		<span
 			className="sgs-button__icon"
-			style={ { display: 'inline-flex', alignItems: 'center', width: iconSize?.desktop ? iconSize.desktop + 'px' : '1em', height: iconSize?.desktop ? iconSize.desktop + 'px' : '1em', color: iconColour || 'currentColor' } }
+			style={ { display: 'inline-flex', alignItems: 'center', width: 'var(--sgs-btn-icon-size, 1em)', height: 'var(--sgs-btn-icon-size, 1em)', color: iconColour || 'currentColor' } }
 			aria-hidden="true"
 		>
 			<svg viewBox="0 0 24 24" fill="none" stroke={ iconGradient && iconGradientId ? `url(#${ iconGradientId })` : 'currentColor' } strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="100%" height="100%">
@@ -895,7 +779,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						 *           lineHeight/lineHeightUnit
 						 *           fontWeight / fontStyle
 						 */ }
-						<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+						<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix=""
@@ -1200,6 +1084,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<RichText
 						tagName="span"
 						className="sgs-button__label"
+						style={ ! isSelected && labelCollapsedAt( labelCollapse, hasIcon, previewTier ) ? LABEL_CLIP_STYLE : undefined }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						placeholder={ __( 'Click Here', 'sgs-blocks' ) }

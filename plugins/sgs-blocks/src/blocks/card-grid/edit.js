@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import { useEffect, useMemo } from '@wordpress/element';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -33,7 +34,22 @@ import { ShadowControl, shadowAttrKeys, TypographyControls, ResponsiveBoxControl
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
-import { colourVar, spacingVar, resolveResponsiveTier, resolveTextColourPreviewStyle, generateItemKey, withStableItemKeys, focalPointToObjectPosition, patchTier, SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
+import {
+	colourVar,
+	spacingVar,
+	resolveResponsiveTier,
+	resolveTextColourPreviewStyle,
+	generateItemKey,
+	withStableItemKeys,
+	focalPointToObjectPosition,
+	patchTier,
+	SGS_LENGTH_UNITS,
+	sgsNormaliseLength,
+	usePreviewTier,
+	BandWrap,
+	wrapperPreview,
+} from '../../utils';
+import { cardGridPreview } from './preview-style';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -426,8 +442,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		imageFallbackColour,
 		noImageLabel,
 		noImageLabelColour,
-		noImageLabelFontSize,
-		noImageLabelFontSizeUnit,
 		overlayColour,
 		overlayGradient,
 		overlayOpacity,
@@ -481,6 +495,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		overlayColour || overlayGradient ? 'sgs-card-grid--has-image-overlay' : '',
 	].filter( Boolean ).join( ' ' );
 
+	const previewTier = usePreviewTier();
+	const [ palette ] = useSettings( 'color.palette' );
+	const wrapper = wrapperPreview( attributes, previewTier, palette );
+	const cardPreview = cardGridPreview( attributes, previewTier, palette );
 	const blockProps = useBlockProps( { className } );
 
 	// D649 — heading level is an identity control (document-outline placement),
@@ -1553,7 +1571,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					</SsrPreviewGuard>
 				</div>
 			) : (
-				<div { ...blockProps } style={ { ...blockProps.style, ...gridStyle } }>
+				<div { ...blockProps } style={ { ...blockProps.style, ...wrapper.style, ...gridStyle } }>
+				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
 					{ items.length === 0 && (
 						<p className="sgs-card-grid__placeholder">
 							{ __(
@@ -1630,9 +1649,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						const needsWrap = hasMedia || useFallback || !! item.glyphImage?.url || !! item.glyph
 							|| variant === 'overlay' || effectHover === 'overlay-slide';
 						return (
-						<div key={ item._key } className="sgs-card-grid__item">
+						<div key={ item._key } className="sgs-card-grid__item" style={ cardPreview.itemStyle }>
 							{ needsWrap && (
-							<div className={ wrapClassName } style={ wrapStyle }>
+							<div className={ wrapClassName } style={ { ...wrapStyle, ...cardPreview.imageWrapStyle } }>
 								{ item.media?.url ? (
 									item.media.type === 'video' ? (
 										// eslint-disable-next-line jsx-a11y/media-has-caption
@@ -1662,8 +1681,8 @@ export default function Edit( { attributes, setAttributes } ) {
 									<span
 										className="sgs-card-grid__no-image-label"
 										style={ {
+											...cardPreview.noImageLabelTypography,
 											color: colourVar( noImageLabelColour ) || undefined,
-											fontSize: '' !== ( noImageLabelFontSize?.desktop ?? '' ) ? `${ noImageLabelFontSize.desktop }${ noImageLabelFontSizeUnit || 'px' }` : undefined,
 										} }
 									>
 										{ noImageLabel }
@@ -1686,12 +1705,12 @@ export default function Edit( { attributes, setAttributes } ) {
 									)
 								) }
 								{ variant === 'overlay' && (
-									<div className="sgs-card-grid__overlay">
+									<div className="sgs-card-grid__overlay" style={ cardPreview.bodyStyle }>
 										{ glyphInCaption && glyphNode }
 										{ item.title && (
 											<span
 												className="sgs-card-grid__title"
-												style={ titleStyle }
+												style={ { ...cardPreview.titleTypography, ...( item.subtitle ? { marginBottom: cardPreview.titleMarginBottom } : {} ), ...titleStyle } }
 											>
 												{ item.title }
 											</span>
@@ -1699,7 +1718,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										{ item.subtitle && (
 											<span
 												className="sgs-card-grid__subtitle"
-												style={ subtitleStyle }
+												style={ { ...cardPreview.subtitleTypography, ...subtitleStyle } }
 											>
 												{ item.subtitle }
 											</span>
@@ -1709,11 +1728,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							</div>
 							) }
 							{ variant === 'card' && (
-								<div className="sgs-card-grid__body">
+								<div className="sgs-card-grid__body" style={ cardPreview.bodyStyle }>
 									{ item.title && (
 										<HeadingTag
 											className="sgs-card-grid__title"
-											style={ titleStyle }
+											style={ { ...cardPreview.titleTypography, ...( item.subtitle || ( item.badge && item.badgeVariant ) ? { marginBottom: cardPreview.titleMarginBottom } : {} ), ...titleStyle } }
 										>
 											{ item.title }
 										</HeadingTag>
@@ -1721,7 +1740,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									{ item.subtitle && (
 										<p
 											className="sgs-card-grid__subtitle"
-											style={ subtitleStyle }
+											style={ { ...cardPreview.subtitleTypography, ...subtitleStyle } }
 										>
 											{ item.subtitle }
 										</p>
@@ -1738,6 +1757,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						</div>
 					);
 				} ) }
+				</BandWrap>
 				</div>
 			) }
 		</>

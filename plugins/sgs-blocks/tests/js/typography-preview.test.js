@@ -3,7 +3,7 @@
  * emits on its selector, at the device tier the editor is previewing.
  */
 
-import { typographyPreviewStyle } from '../../src/utils/typography-preview';
+import { typographyPreviewStyle, textIndentPreviewCss } from '../../src/utils/typography-preview';
 
 describe( 'typographyPreviewStyle', () => {
 	it( 'mirrors the flat declarations PHP emits, against the same allowlists', () => {
@@ -54,5 +54,25 @@ describe( 'typographyPreviewStyle', () => {
 
 	it( 'omits every unset property', () => {
 		expect( typographyPreviewStyle( {} ) ).toEqual( {} );
+	} );
+} );
+
+describe( 'textIndentPreviewCss', () => {
+	it( 'builds the paragraph-after-paragraph rule PHP emits on its sibling selector', () => {
+		expect( textIndentPreviewCss( { bioTextIndent: '2em' }, 'bio', '#block-1 .sgs-x__bio' ) ).toBe(
+			'#block-1 .sgs-x__bio :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text){text-indent:2em;}'
+		);
+	} );
+
+	it( 'reads the root family for an empty prefix and treats a bare number as px', () => {
+		expect( textIndentPreviewCss( { textIndent: '24' }, '', '.s' ) ).toBe(
+			'.s :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text){text-indent:24px;}'
+		);
+	} );
+
+	it( 'returns nothing when unset, unscoped or carrying a CSS breakout', () => {
+		expect( textIndentPreviewCss( {}, '', '.s' ) ).toBe( '' );
+		expect( textIndentPreviewCss( { textIndent: '2em' }, '', '' ) ).toBe( '' );
+		expect( textIndentPreviewCss( { textIndent: '1em}body{color:red' }, '', '.s' ) ).toBe( '' );
 	} );
 } );

@@ -32,6 +32,9 @@ import {
 	resolveResponsiveTier,
 	patchTier,
 	flattenPresetSetting,
+	usePreviewTier,
+	textIndentPreviewCss,
+	sgsBorderPreview,
 } from '../../utils';
 // No-inline migration: hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
@@ -47,8 +50,8 @@ import {
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { sanitiseSvg, svgBackgroundPreview, backgroundPreview, wrapperToneClass, surfaceBackdropPreview } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import { sanitiseSvg, svgBackgroundPreview, backgroundPreview, wrapperToneClass, surfaceBackdropPreview, OVERLAY_BLEND_MODES } from '../../utils';
+import { heroCanvasPreview, splitMediaAtTier } from './canvas-preview';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 // BORDER_STYLE_OPTIONS (the local 4-option none/solid/dashed/dotted list) was removed
@@ -193,6 +196,8 @@ const CTA_STYLE_OPTIONS = [
 ];
 
 export default function Edit( { attributes, setAttributes, name, clientId } ) {
+	const previewTier = usePreviewTier();
+	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
 	const {
 		variant,
 		// Split-media motion (2026-08-13) — mirrors the section's own
@@ -351,23 +356,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
 	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 
-	// Wave 6 — resolve the split-media SOURCE from the `source` atom's own
-	// Id/Url pair ONLY (the picker in HeroSplitMediaSourceSection writes
-	// there). No legacy `splitImage`/`splitVideo`/`splitSvg` fallback —
-	// Bean-locked (2026-09-02): R-31-14 bans exactly the
-	// `if ( empty($new) && !empty($legacy) )` shape, and this block's own
-	// render.php already carries a 2026-08-13 precedent of deleting an
-	// identically-shaped bridge for the same reason ("no legacy elements as
-	// fallbacks; the framework is pre-production"). An already-published hero
-	// instance that only has the legacy shape shows an empty split-media slot
-	// until re-uploaded through the new picker — a deliberate, accepted
-	// consequence of the strict reading, not an oversight. Desktop tier
-	// only — matches every other preview resolution in this file.
-	const resolvedSplitImage = splitMediaImageUrl
-		? { id: splitMediaImageId || 0, url: splitMediaImageUrl, alt: splitMediaImageAlt || '' }
-		: null;
-	const resolvedSplitVideo = splitMediaVideoUrl ? { id: splitMediaVideoId || 0, url: splitMediaVideoUrl } : null;
-	const resolvedSplitSvg = splitMediaSvgContent || '';
+	// The canvas styles and the split column's media at the previewed device tier.
+	const heroPreview = heroCanvasPreview( attributes, { tier: previewTier, palette: colourPalette, isSplit } );
+	const splitMediaAtPreview = splitMediaAtTier( attributes, previewTier );
+	const resolvedSplitImage = splitMediaAtPreview.image;
+	const resolvedSplitVideo = splitMediaAtPreview.video;
+	const resolvedSplitSvg = splitMediaAtPreview.svg;
 
 	// Root background paint (backgroundColour / backgroundColourGradient).
 	// Spread FIRST so the background-image branch below still wins when a media
@@ -445,9 +439,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		bgHoverZoomDuration: attributes.bgHoverZoomDuration,
 		bgHoverZoomEasing: attributes.bgHoverZoomEasing,
 		bgHoverZoomEasingCustom: attributes.bgHoverZoomEasingCustom,
-	}, [] );
+		backgroundImageTablet: attributes.backgroundImageTablet,
+		backgroundImageMobile: attributes.backgroundImageMobile,
+	}, [], [], previewTier );
 
 	const wrapperStyle = {
+		...heroPreview.root,
 		...svgPreview.style,
 		...surfaceBackdropPreview( { surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate } ),
 		...( isSplit ? bgMediaPreview.style : {} ),
@@ -498,44 +495,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		wrapperStyle.backgroundSize = 'cover';
 		wrapperStyle.backgroundPosition = 'center';
 	}
-	if ( minHeight?.desktop ) {
-		wrapperStyle.minHeight = minHeight.desktop;
-	}
 	if ( shadow ) {
 		wrapperStyle.boxShadow = resolveShadowPreviewComposed( shadow, attributes.shadowColour );
 	}
-	// HC2: desktop text-align preview for the content column.
-	// Also preview contentBackground when set.
-	const contentPreviewStyle = {};
-	if ( textAlign?.desktop ) {
-		contentPreviewStyle.textAlign = textAlign.desktop;
-	}
-	if ( contentBackground ) {
-		contentPreviewStyle.backgroundColor = contentBackground;
-	}
-	// Column/stacking order preview — mirrors render.php's desktop-tier swap
-	// (render.php:497-499) so the canvas doesn't silently disagree with the
-	// frontend. Desktop tier only, matching the media preview above (the
-	// per-tier order is what WP's own device switcher provides — tablet/
-	// mobile order isn't previewed here any more than tablet/mobile column
-	// ratio is). Blank/'content-first' = natural DOM order (content column
-	// renders first in markup), so no override needed; only 'media-first'
-	// swaps the order.
-	const isMediaFirstDesktop = 'media-first' === splitContentOrder?.desktop;
-	if ( isMediaFirstDesktop ) {
-		contentPreviewStyle.order = 2;
-	}
-
-	// Box-object interface contract §1 helper (mirrors the same local
-	// boxShorthand() already used by button/heading/text/quote/etc. edit.js —
-	// see src/blocks/button/edit.js:247) — builds a CSS shorthand string from
-	// a {top,right,bottom,left} object, matching render.php's
-	// sgs_box_shorthand() so the canvas preview agrees with the frontend.
-	const boxShorthand = ( box, keys ) => {
-		if ( ! box || 'object' !== typeof box ) return undefined;
-		if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-		return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-	};
+	const contentPreviewStyle = heroPreview.content;
 
 	// Root border preview — previously entirely absent from the canvas (only
 	// wired into SgsBorderControl's InspectorControls binding, never applied
@@ -543,39 +506,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// DOES preview). Same box-object family, base only, no tiers. Mirrors
 	// splitMedia's raw colour pass-through (no token resolution) rather than
 	// introducing a different mechanism into this file.
-	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		if ( borderWidthPreview ) {
-			wrapperStyle.borderWidth = borderWidthPreview;
-			wrapperStyle.borderStyle = resolveBorderStyle( borderStyle );
-		}
-		if ( borderColour ) {
-			wrapperStyle.borderColor = borderColour;
-		}
-		// A gradient border renders frontend as a masked ::before ring, which cannot
-		// be reproduced in a plain inline style — approximate it with the gradient as
-		// a border-image so the canvas at least shows that a gradient is applied.
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
+	Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient }, previewTier, colourPalette ) );
 
-	// Content-band (Layer 2 __inner) preview — mirrors
-	// class-sgs-container-wrapper.php's `.$uid>.sgs-container__inner` band.
-	// Split forces `wrap_inner=false` at render.php:1258 ("a stray contentWidth
-	// can never inject an __inner div that would sit between the section grid
-	// and its __content/__media grid items") so the band never renders for the
-	// split variant — the standard variant is the only one where the wrapper
-	// actually emits `.sgs-container__inner` around the content, matching
-	// `$has_band_props` (class-sgs-container-wrapper.php:713-719) being driven
-	// by band padding (this desktop-tier preview) or contentWidth (not yet
-	// previewed here — out of scope for this fix). Desktop tier only, matching
-	// every other preview builder in this file.
-	const bandPaddingPreview = boxShorthand(
-		contentBandPadding?.desktop,
-		[ 'top', 'right', 'bottom', 'left' ]
-	);
-	const showContentBand = ! isSplit && !! bandPaddingPreview;
+	// Content band (`.sgs-container__inner`): standard variant only; split passes wrap_inner=false.
+	const { hasBandProps: showContentBand, bandStyle: contentBandStyle } = heroPreview.band;
 
 	// Split-image preview style — mirrors render.php's scoped `.sgs-hero__split-image`
 	// CSS builder (render.php:576-626, 561-573) for the Phase-1 image-display
@@ -602,33 +536,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			blockSlug: 'sgs/hero',
 			atoms: [ 'object-fit', 'focal-point' ],
 		} ),
+		...heroPreview.image,
 	};
-	// width — render.php:597-599, gated behind splitMediaObjectFit==='custom'.
-	// splitMediaWidth itself has no dedicated ticket item here, but splitMediaWidthUnit
-	// is meaningless without it (same CSS declaration), so both are applied
-	// together, desktop tier only. TIER OBJECT (Priority 4, 2026-09-07).
-	if ( 'custom' === splitMediaObjectFit && splitMediaWidth?.desktop ) {
-		imagePreviewStyle.width = `${ splitMediaWidth.desktop }${ splitMediaWidthUnit || '%' }`;
-	}
-	// height — render.php:618-619, deliberately UNGATED (not tied to
-	// splitMediaObjectFit==='custom' — see render.php's "UNGATED reach" comment
-	// at line 609-615).
-	if ( splitMediaHeight?.desktop ) {
-		imagePreviewStyle.height = `${ splitMediaHeight.desktop }${ splitMediaHeightUnit || 'px' }`;
-	}
 	// border style/width/colour — render.php:561-573 (box-object family,
 	// base only, no tiers). Entry condition matches render.php exactly:
 	// emit when style isn't 'none' OR a width is set.
-	const splitMediaBorderWidthPreview = boxShorthand( splitMediaBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( 'none' !== splitMediaBorderStyle || splitMediaBorderWidthPreview ) {
-		if ( splitMediaBorderWidthPreview ) {
-			imagePreviewStyle.borderWidth = splitMediaBorderWidthPreview;
-			imagePreviewStyle.borderStyle = resolveBorderStyle( splitMediaBorderStyle );
-		}
-		if ( splitMediaBorderColour ) {
-			imagePreviewStyle.borderColor = splitMediaBorderColour;
-		}
-	}
+	Object.assign( imagePreviewStyle, sgsBorderPreview( { widthValues: splitMediaBorderWidth, styleValue: splitMediaBorderStyle, colourValue: splitMediaBorderColour, colourGradientValue: attributes.splitMediaBorderColourGradient }, previewTier, colourPalette ) );
 
 	// Media-wrapper (`.sgs-hero__media`) class + style preview — mirrors
 	// render.php's `--ken-burns` modifier class + the ken-burns duration
@@ -670,19 +583,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// extra isSplit gate is needed here.
 		...backgroundPaintPreview( mediaBackground, mediaBackgroundGradient, colourPalette ),
 	};
-	// mediaPadding is a TIER-OBJECT {desktop,tablet,mobile} (Priority 2 fold,
-	// 2026-09-07) — outer padding on `.sgs-hero__media` (render.php:293-300,
-	// sgs_responsive_normalise_object() + sgs_box_object_shorthand()). Desktop
-	// tier only, matching every other box preview in this file
-	// (borderWidthPreview, bandPaddingPreview, splitMediaBorderWidthPreview
-	// above all resolve the desktop/base tier only).
-	const mediaPaddingPreview = boxShorthand( mediaPadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( mediaPaddingPreview ) {
-		mediaWrapperStyle.padding = mediaPaddingPreview;
-	}
-	if ( isMediaFirstDesktop ) {
-		mediaWrapperStyle.order = 1;
-	}
+	Object.assign( mediaWrapperStyle, heroPreview.media );
 	if ( mediaKenBurnsActive ) {
 		mediaWrapperStyle[ '--sgs-hero-media-ken-burns-duration' ] = `${ splitMediaAnimationDuration }s`;
 	}
@@ -763,7 +664,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			backgroundImage: attributes.backgroundImage,
 			backgroundColourGradient,
 			backgroundColour,
+			surfaceTone: attributes.surfaceTone,
 		}, colourPalette, gradientPresets ),
+		heroPreview.layoutClass,
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -1973,6 +1876,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
 				{ svgLayer }
 				{ /* Mirrors hero/render.php's overlay gate + gradient/solid branch
 				   (D5 + the 2026-08-11 gradient-render bug fix) — a colour or
@@ -1998,9 +1902,14 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						<span
 							className="sgs-hero__overlay"
 							style={
-								overlayGradient
-									? { backgroundImage: overlayGradient }
-									: { backgroundColor: resolvedColourRaw || colourVar( 'text' ) }
+								{
+									...( overlayGradient
+										? { backgroundImage: overlayGradient }
+										: { backgroundColor: resolvedColourRaw || colourVar( 'text' ) } ),
+									...( OVERLAY_BLEND_MODES.includes( attributes.backgroundOverlayBlendMode )
+										? { mixBlendMode: attributes.backgroundOverlayBlendMode }
+										: {} ),
+								}
 							}
 							aria-hidden="true"
 						/>
@@ -2012,7 +1921,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				   frontend's `.sgs-container__inner`) whenever Content band padding is set —
 				   see the `showContentBand` derivation above for why split never wraps. */ }
 				{ showContentBand ? (
-					<div className="sgs-container__inner" style={ { padding: bandPaddingPreview } }>
+					<div className="sgs-container__inner" style={ contentBandStyle }>
 						<div { ...innerBlocksProps } />
 					</div>
 				) : (
@@ -2037,7 +1946,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									: undefined
 							}
 						>
-							{ splitMediaType === 'video' && resolvedSplitVideo?.url && (
+							{ 'video' === splitMediaAtPreview.type && (
 								<video
 									src={ resolvedSplitVideo.url }
 									className={ splitImageClassName }
@@ -2048,7 +1957,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									playsInline
 								/>
 							) }
-							{ splitMediaType === 'svg' && resolvedSplitSvg && (
+							{ 'svg' === splitMediaAtPreview.type && (
 								/* Editor-only preview of the operator's own pasted markup,
 								   identical in mechanism and purpose to media/edit.js:1538.
 								   The SERVER is the security boundary: render.php passes every
@@ -2065,9 +1974,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									} }
 								/>
 							) }
-							{ splitMediaType !== 'video' &&
-								splitMediaType !== 'svg' &&
-								resolvedSplitImage?.url && (
+							{ 'image' === splitMediaAtPreview.type && (
 									<img
 										src={ resolvedSplitImage.url }
 										alt={ resolvedSplitImage.alt || '' }

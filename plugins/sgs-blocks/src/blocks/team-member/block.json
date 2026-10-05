@@ -539,10 +539,6 @@
 		"nameTextColumns": {
 			"type": "number"
 		},
-		"nameTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"nameWritingMode": {
 			"type": "string",
 			"enum": [
@@ -641,10 +637,6 @@
 		"roleTextColumns": {
 			"type": "number"
 		},
-		"roleTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"roleWritingMode": {
 			"type": "string",
 			"enum": [
@@ -742,10 +734,6 @@
 		},
 		"bioTextColumns": {
 			"type": "number"
-		},
-		"bioTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"bioWritingMode": {
 			"type": "string",

@@ -118,6 +118,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsStaggerDelay,
 			sgsHoverGrayscale,
 			sgsHoverBorderAccent,
+			sgsHoverTilt3D,
 			sgsFocusRing,
 			sgsHoverOpacity,
 			sgsHoverIndent,
@@ -197,6 +198,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							sgsHoverImageZoom={ sgsHoverImageZoom }
 							sgsHoverGrayscale={ sgsHoverGrayscale }
 							sgsHoverBorderAccent={ sgsHoverBorderAccent }
+							sgsHoverTilt3D={ sgsHoverTilt3D }
 							sgsHoverDuration={ sgsHoverDuration }
 							sgsHoverDurationMs={ sgsHoverDurationMs }
 							sgsHoverEasing={ sgsHoverEasing }

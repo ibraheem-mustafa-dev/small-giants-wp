@@ -61,15 +61,12 @@ if ( $thumbnail_decorative ) {
 	$thumbnail_alt = '';
 }
 
-// Whitelist — this reaches a scoped <style> rule, so it is validated against
-// known-good values rather than trusted as free text. This array is the
-// ORIGINAL/canonical seven-value ratio set (C19, 2026-08-27) — this block's
-// own edit.js now imports the JS-side mirror of this exact list from
-// `src/components/MediaSizingPanel.js`'s exported `RATIO_OPTIONS`, and
-// card-grid/gallery/post-grid's edit.js files do the same. PHP cannot
-// import a JS constant, so this array must be kept BYTE-IDENTICAL to
-// `RATIO_OPTIONS`'s values by hand if the set ever changes.
-$allowed_ratios = array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4', '9 / 16' );
+// Allow-list — this reaches a scoped <style> rule, so it is validated against
+// the block.json `aspectRatio` enum (the one source of the ratio set; the
+// inspector's options, `MediaSizingPanel.js::RATIO_OPTIONS`, are tested
+// against it) rather than trusted as free text.
+$sgs_is_ratio_attr = ( isset( $block->block_type ) && is_object( $block->block_type ) ) ? ( $block->block_type->attributes['aspectRatio'] ?? array() ) : array();
+$allowed_ratios    = isset( $sgs_is_ratio_attr['enum'] ) && is_array( $sgs_is_ratio_attr['enum'] ) ? $sgs_is_ratio_attr['enum'] : array( '16 / 9' );
 if ( ! in_array( $aspect_ratio, $allowed_ratios, true ) ) {
 	$aspect_ratio = '16 / 9';
 }

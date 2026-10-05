@@ -6,7 +6,7 @@
  * and inspector panels covering layout, colours, hover, and carousel options.
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 // Composed named panels, NOT the <ContainerWrapperControls kind="layout"> aggregator.
 // The aggregator renders LayoutPanel's own Layout + Columns controls, which bind to
 // the SAME attributes this block already controls — and with an incompatible option
@@ -50,7 +50,6 @@ import {
 // React error #130 on selecting the block): they must come from the primitives boundary.
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { useRef, useEffect, useMemo } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import SgsColourPanel from '../../components/SgsColourPanel';
 import MediaGalleryPicker from '../../components/MediaGalleryPicker';
@@ -66,7 +65,10 @@ import {
 	resolveContentWidthPreview,
 	contentBandPreview,
 	applyGridLayoutPreview,
+	usePreviewTier,
+	wrapperBorderPreview,
 } from '../../utils';
+import { captionPreviewStyle } from './preview-style';
 
 // -------------------------------------------------------------------------
 // Static option arrays (defined outside component to avoid re-creation)
@@ -401,12 +403,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	// sgs/container's edit.js and ResponsiveControl.js:103. Without this the
 	// preview would always show the desktop tier while the operator edits
 	// tablet/mobile.
-	const previewTier = useSelect( ( select ) => {
-		const ed = select( 'core/editor' );
-		const device =
-			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
-		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
-	}, [] );
+	const previewTier = usePreviewTier();
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// gap is a TIER OBJECT — resolve the desktop tier (what the canvas shows)
 	// before testing/using it. String() on the raw object would yield
@@ -440,12 +438,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( overlayColourHover ) {
 		inlineStyles[ '--sgs-hover-overlay' ] = colourVar( overlayColourHover );
 	}
-	if ( captionColour ) {
-		inlineStyles[ '--sgs-caption-colour' ] = colourVar( captionColour );
-	}
-	if ( captionBgColour ) {
-		inlineStyles[ '--sgs-caption-bg' ] = colourVar( captionBgColour );
-	}
+	Object.assign( inlineStyles, wrapperBorderPreview( attributes, previewTier, colourPalette ) );
+	const captionStyle = captionPreviewStyle( attributes, colourPalette );
 
 	// ── Editor-canvas mirror: padding / margin / maxWidth / contentWidth /
 	// grid layout (CHECK A editor-canvas desync fix, 2026-09-05). All 8 are
@@ -519,6 +513,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: inlineStyles,
 		layout,
 	} );
+	// gridTemplateRows (a plain string, grid layout only) lands where the wrapper
+	// puts the grid: on the band when one exists, else on the outer element.
+	if ( 'grid' === layout && 'string' === typeof attributes.gridTemplateRows && attributes.gridTemplateRows.trim() ) {
+		( hasBandProps ? bandStyle : inlineStyles ).gridTemplateRows = attributes.gridTemplateRows.trim();
+	}
 
 	const blockProps = useBlockProps( {
 		className: `sgs-gallery sgs-gallery--${ layout } sgs-gallery--hover-${ effectHover }`,
@@ -1356,7 +1355,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												) }
 											</div>
 											{ showCaptions && item.caption && (
-												<figcaption className="sgs-gallery__caption">
+												<figcaption className="sgs-gallery__caption" style={ captionStyle }>
 													{ item.caption }
 												</figcaption>
 											) }
@@ -1448,7 +1447,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										) }
 									</div>
 									{ showCaptions && item.caption && (
-										<figcaption className="sgs-gallery__caption">
+										<figcaption className="sgs-gallery__caption" style={ captionStyle }>
 											{ item.caption }
 										</figcaption>
 									) }

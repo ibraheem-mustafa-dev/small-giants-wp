@@ -27,10 +27,17 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveControl, ResponsiveBoxControl, SgsColourPanel, textRow, SgsLengthControl, SgsBorderControl, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, borderPaintPreview } from '../../utils';
+import {
+	colourVar,
+	resolveTextColourPreviewStyle,
+	borderPaintPreview,
+	tierBoxShorthand,
+	typographyPreviewStyle,
+	usePreviewTier,
+	boxPreview,
+} from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import SubLabelPanel from './sub-label-panel';
-import { resolveBorderStyle } from '../../utils/border-style';
 
 /* ── Options ─────────────────────────────────────────────────────────────── */
 
@@ -67,20 +74,8 @@ function hasDuplicateKeys( items ) {
 	return new Set( keys ).size !== keys.length;
 }
 
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder (contract §5).
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
-function buildRootPreviewStyle( attributes ) {
-	const { padding, margin,
-		borderWidth,
-		borderStyle,
-		borderColour,
-		borderColourGradient,
+function buildRootPreviewStyle( attributes, tier, palette ) {
+	const {
 		maxWidth,
 		width,
 		pillBgColour,
@@ -98,40 +93,8 @@ function buildRootPreviewStyle( attributes ) {
 		tileGap,
 	} = attributes;
 
-	const rootStyle = {};
-
-	const radiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) {
-		rootStyle.borderRadius = radiusPreview;
-	}
-
-	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		if ( borderWidthPreview ) {
-			rootStyle.borderWidth = borderWidthPreview;
-		}
-		rootStyle.borderStyle = rootStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			rootStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
-				? borderColour
-				: colourVar( borderColour );
-		}
-		// A gradient border renders frontend as a masked ::before ring, which cannot
-		// be reproduced in a plain inline style — approximate it with the gradient as
-		// a border-image so the canvas at least shows that a gradient is applied.
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			rootStyle.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
-
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) {
-		rootStyle.padding = paddingPreview;
-	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( marginPreview ) {
-		rootStyle.margin = marginPreview;
-	}
+	// Padding, margin, border and radius at the previewed device tier.
+	const rootStyle = boxPreview( attributes, tier, palette );
 
 	if ( maxWidth ) {
 		rootStyle.maxWidth = maxWidth;
@@ -206,6 +169,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Contract §B3: NO wrapper <div> — the <fieldset> IS the block root
 	// (matches render.php). Same DOM shape/classes untouched view.js/editor.css
 	// depend on: .sgs-option-picker, .sgs-option-picker__options.
+	const previewTier = usePreviewTier();
+	const [ optionPickerPalette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		as: 'fieldset',
 		className: [
@@ -217,7 +182,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			showTermDetails ? '' : 'sgs-option-picker--no-term-details',
 			requireChoice ? 'sgs-option-picker--require-choice' : '',
 		].filter( Boolean ).join( ' ' ),
-		style: buildRootPreviewStyle( attributes ),
+		style: buildRootPreviewStyle( attributes, previewTier, optionPickerPalette ),
 	} );
 
 	/* ── Effective default: first option if defaultSelected is missing ── */
@@ -286,7 +251,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// pillPadding is a TIER-OF-BOXES object {desktop,tablet,mobile}; the canvas
 	// preview always shows the desktop tier, same as every other tier-object
 	// preview in this component.
-	const pillPaddingPreview = boxShorthand( pillPadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	const pillPaddingPreview = tierBoxShorthand( pillPadding, previewTier );
 
 	// Pill TEXT colour/gradient preview — flat pillTextColour already renders
 	// in-canvas via the --sgs-op-text custom-property VALUE set on the root
@@ -315,7 +280,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	// session: a real gradient border is a masked ::before ring server-side,
 	// which a plain inline style can't reproduce — border-image is the same
 	// documented approximation.
-	const [ optionPickerPalette ] = useSettings( 'color.palette' );
 	const pillBorderGradientPreview = borderPaintPreview( '', pillBorderColourGradient, optionPickerPalette );
 	const pillSelectedBorderGradientPreview = borderPaintPreview( '', pillSelectedBorderColourGradient, optionPickerPalette );
 
@@ -346,6 +310,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<span
 						className="sgs-option-picker__pill"
 						style={ {
+							...typographyPreviewStyle( attributes, 'pill', previewTier ),
 							...( pillPaddingPreview ? { padding: pillPaddingPreview } : {} ),
 							...pillTextPreviewStyle,
 							...pillBorderGradientPreview,
@@ -736,7 +701,6 @@ export default function Edit( { attributes, setAttributes } ) {
 										showTextAlign: true,
 										showTextWrap: true,
 										showTextColumns: true,
-										showTextIndent: true,
 										showWritingMode: true,
 									},
 									{
@@ -751,7 +715,6 @@ export default function Edit( { attributes, setAttributes } ) {
 										showTextAlign: true,
 										showTextWrap: true,
 										showTextColumns: true,
-										showTextIndent: true,
 										showWritingMode: true,
 									},
 								] }
@@ -1070,6 +1033,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<legend
 						className="sgs-option-picker__label"
 						style={ {
+							...typographyPreviewStyle( attributes, 'label', previewTier ),
 							...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
 							...( labelMarginBottom ? { marginBottom: labelMarginBottom }         : {} ),
 						} }

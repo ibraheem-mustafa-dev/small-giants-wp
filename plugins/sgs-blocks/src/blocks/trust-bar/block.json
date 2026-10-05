@@ -583,7 +583,7 @@
 				"inset",
 				"outset"
 			],
-			"default": "",
+			"default": "solid",
 			"description": "Unset (default) falls through to style.css's framework-default fallback (solid)."
 		},
 		"iconCircleBorderColour": {
@@ -1181,10 +1181,6 @@
 		"labelTextColumns": {
 			"type": "number"
 		},
-		"labelTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"labelWritingMode": {
 			"type": "string",
 			"enum": [
@@ -1253,10 +1249,6 @@
 		},
 		"titleTextColumns": {
 			"type": "number"
-		},
-		"titleTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"titleWritingMode": {
 			"type": "string",

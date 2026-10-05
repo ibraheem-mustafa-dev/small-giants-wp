@@ -319,6 +319,7 @@
 	text-transform: uppercase;
 	letter-spacing: 0.08em;
 	border-width: 2px;
+	border-style: solid;
 }
 
 /* ===== Step progress indicator (gap #2) =====

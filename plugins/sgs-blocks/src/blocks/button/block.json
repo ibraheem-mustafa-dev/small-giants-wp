@@ -77,7 +77,6 @@
 						"css:font-family": "fontFamily",
 						"css:text-align": "textAlign",
 						"css:text-wrap": "textWrap",
-						"css:text-indent": "textIndent",
 						"css:column-count": "textColumns",
 					"css:gap": "iconGap",
 					"css:justify-content": "contentAlign"
@@ -501,10 +500,6 @@
 		},
 		"textColumns": {
 			"type": "number"
-		},
-		"textIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"writingMode": {
 			"type": "string",

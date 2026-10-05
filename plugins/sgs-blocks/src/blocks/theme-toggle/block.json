@@ -209,7 +209,7 @@
 				"dashed",
 				"dotted"
 			],
-			"default": ""
+			"default": "solid"
 		},
 		"borderRadius": {
 			"type": "object",

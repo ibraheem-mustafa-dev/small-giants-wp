@@ -298,10 +298,6 @@
 		"contentTextColumns": {
 			"type": "number"
 		},
-		"contentTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"contentWritingMode": {
 			"type": "string",
 			"enum": [

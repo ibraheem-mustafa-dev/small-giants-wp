@@ -327,10 +327,6 @@
 		"textColumns": {
 			"type": "number"
 		},
-		"textIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"writingMode": {
 			"type": "string",
 			"enum": [

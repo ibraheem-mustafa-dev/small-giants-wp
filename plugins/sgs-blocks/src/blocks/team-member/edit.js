@@ -11,9 +11,9 @@
  * Because color/typography/spacing/__experimentalBorder all declare
  * `__experimentalSkipSerialization` in block.json, WP's automatic style
  * preview in the canvas is suppressed for those supports too — so, exactly
- * like sgs/quote, this file manually rebuilds a desktop-only preview style
- * object (buildWrapperStyle) mirroring render.php's scoped-CSS output and
- * applies it via `style` on the SAME root element. The editor canvas is
+ * like sgs/quote, this block rebuilds a preview style object at the previewed
+ * device tier (preview-style.js::buildWrapperStyle) mirroring render.php's
+ * scoped-CSS output and applies it via `style` on the SAME root element. The editor canvas is
  * allowed to use inline style for live preview — only the SAVED/RENDERED
  * frontend output must be inline-free, and this block is dynamic
  * (render.php), so nothing here is persisted to post_content.
@@ -30,6 +30,7 @@ import {
 	useBlockProps,
 	InspectorControls,
 	RichText,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -41,8 +42,8 @@ import {
 import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, shadowAttrKeys, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { colourVar, resolveShadowPreviewComposed, resolveTextColourPreviewStyle } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import { usePreviewTier } from '../../utils';
+import { buildWrapperStyle, textSurfaceStyle } from './preview-style';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -172,110 +173,9 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 	);
 }
 
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder so the canvas
-// preview matches the frontend (contract §5).
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
-// Editor preview style builder — desktop styles only; responsive tiers +
-// nameColour/roleColour scoped rules render via PHP.
-function buildWrapperStyle( attributes ) {
-	const { padding, margin,
-		maxWidth,
-		cardShadow,
-		cardShadowColour,
-		backgroundColour,
-		backgroundColourGradient,
-		textColour,
-		textColourGradient,
-		borderWidth,
-		borderStyle,
-		borderColour,
-		borderRadius,
-	} = attributes;
-	const wrapperStyle = {};
-
-	// Resting-state card shadow (FR-35-5 Task 4c) — render.php emits this as a
-	// custom-property VALUE (`--sgs-card-shadow`) on the root scoped rule,
-	// consumed by style.css's static shadow rule; never a real `box-shadow`
-	// declaration here (mirrors render.php step 6/12). Shape (`cardShadow`) +
-	// colour (`cardShadowColour`) are separate attrs since D621/D622.
-	if ( cardShadow ) {
-		wrapperStyle[ '--sgs-card-shadow' ] = resolveShadowPreviewComposed( cardShadow, cardShadowColour );
-	}
-
-	// Text + background colour preview (block-private, flat-or-gradient) —
-	// replaces the removed native style.color.text/background/gradient read.
-	// block.json's supports.color sub-flags are now all false, so WordPress no
-	// longer writes textColor/backgroundColor/style.color.gradient at all;
-	// the block-private backgroundColour*/textColour* attrs (set via
-	// SgsColourPanel's fillRow/textRow) are the single source now. Mirrors
-	// sgs/product-card's editor-preview resolver (resting state only — a
-	// static preview style object cannot represent a `:hover` pseudo-state).
-	const resolveTeamMemberColourPreview = ( value ) => {
-		if ( ! value ) {
-			return undefined;
-		}
-		const v = String( value ).trim();
-		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : colourVar( v );
-	};
-	Object.assign(
-		wrapperStyle,
-		resolveTextColourPreviewStyle( textColour, textColourGradient, resolveTeamMemberColourPreview )
-	);
-	if ( backgroundColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient ) ) {
-		wrapperStyle.backgroundImage = backgroundColourGradient;
-	} else if ( backgroundColour ) {
-		wrapperStyle.backgroundColor = resolveTeamMemberColourPreview( backgroundColour );
-	}
-
-	// fontSize preview removed (D971/D972 typography full-replacement) — native
-	// style.typography.fontSize no longer exists (the fontSize sub-flag was
-	// removed from block.json's supports.typography); the new tier-object
-	// `fontSize` attr has no canvas preview yet, matching sgs/accordion's
-	// identical no-preview precedent for this same migration.
-
-	// Border is the block's own borderWidth/borderStyle/borderColour/
-	// borderRadius attrs (SgsBorderControl below) — block.json declares no
-	// `__experimentalBorder` support at all, so WP-native `style.border` is
-	// never populated.
-	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) {
-		wrapperStyle.borderRadius = radiusPreview;
-	}
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-		if ( borderWidthPreview ) {
-			wrapperStyle.borderWidth = borderWidthPreview;
-		}
-		wrapperStyle.borderStyle = wrapperStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			wrapperStyle.borderColor = borderColour;
-		}
-	}
-
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) {
-		wrapperStyle.padding = paddingPreview;
-	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( marginPreview ) {
-		wrapperStyle.margin = marginPreview;
-	}
-
-	if ( maxWidth ) {
-		wrapperStyle.maxWidth = maxWidth;
-		wrapperStyle.marginInline = 'auto';
-	}
-
-	return wrapperStyle;
-}
-
 export default function Edit( { attributes, setAttributes } ) {
+	const previewTier = usePreviewTier();
+	const [ colourPalette ] = useSettings( 'color.palette' );
 	const {
 		photo,
 		// photoTablet / photoMobile are deliberately NOT destructured — the
@@ -386,11 +286,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		.join( ' ' );
 
 	// Contract §B3: NO extra wrapper — this <div> IS the block root (matches
-	// render.php). buildWrapperStyle mirrors the scoped frontend CSS since
-	// the skip-serialised supports suppress WP's automatic canvas preview.
+	// render.php). buildWrapperStyle mirrors the scoped frontend CSS at the
+	// previewed tier since the skip-serialised supports suppress WP's
+	// automatic canvas preview.
 	const blockProps = useBlockProps( {
 		className,
-		style: buildWrapperStyle( attributes ),
+		style: buildWrapperStyle( attributes, previewTier, colourPalette ),
 	} );
 
 	return (
@@ -766,6 +667,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes={ setAttributes }
 						targets={ [
 							{
+								key: 'card',
+								label: __( 'Card', 'sgs-blocks' ),
+								prefix: '',
+							},
+							{
 								key: 'name',
 								label: __( 'Name', 'sgs-blocks' ),
 								prefix: 'name',
@@ -777,7 +683,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: true,
 								showWritingMode: true,
 							},
 							{
@@ -792,7 +697,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: true,
 								showWritingMode: true,
 							},
 							{
@@ -807,7 +711,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: true,
 								showWritingMode: true,
 							},
 						] }
@@ -924,7 +827,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					value={ name }
 					onChange={ ( val ) => setAttributes( { name: val } ) }
 					placeholder={ __( 'Name', 'sgs-blocks' ) }
-					style={ resolveTextColourPreviewStyle( nameColour, nameColourGradient, colourVar ) }
+					style={ textSurfaceStyle( attributes, 'name', previewTier ) }
 				/>
 				<RichText
 					tagName="p"
@@ -932,7 +835,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					value={ role }
 					onChange={ ( val ) => setAttributes( { role: val } ) }
 					placeholder={ __( 'Role / Title', 'sgs-blocks' ) }
-					style={ resolveTextColourPreviewStyle( roleColour, roleColourGradient, colourVar ) }
+					style={ textSurfaceStyle( attributes, 'role', previewTier ) }
 				/>
 				{ ! isCompact && (
 					<RichText
@@ -941,6 +844,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ bio }
 						onChange={ ( val ) => setAttributes( { bio: val } ) }
 						placeholder={ __( 'Short bio…', 'sgs-blocks' ) }
+						style={ textSurfaceStyle( attributes, 'bio', previewTier ) }
 					/>
 				) }
 				{ /* Social links preview in editor — shown only in full mode. */ }

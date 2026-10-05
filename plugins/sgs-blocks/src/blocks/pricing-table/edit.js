@@ -21,7 +21,17 @@ import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolv
 	TypographyControls,
 	fillRow,
 } from '../../components';
-import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle, separatorsLineCss, usePreviewTier } from '../../utils';
+import {
+	colourVar,
+	resolveResponsiveTier,
+	resolveTextColourPreviewStyle,
+	resolveBackgroundPaintPreviewStyle,
+	separatorsLineCss,
+	typographyPreviewStyle,
+	usePreviewTier,
+	BandWrap,
+	wrapperPreview,
+} from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 // ⛔ `templateMode` (the container-family allowed-children preset) was
@@ -181,7 +191,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		`sgs-ed-sep-${ clientId }`,
 	].join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	const wrapper = wrapperPreview( attributes, previewTier, palette );
+	const blockProps = useBlockProps( { className, style: wrapper.style } );
+	const titleTypography = typographyPreviewStyle( attributes, 'title', previewTier );
+	const priceTypography = typographyPreviewStyle( attributes, 'price', previewTier );
+	const featureTypography = typographyPreviewStyle( attributes, 'feature', previewTier );
+	const ctaTypography = typographyPreviewStyle( attributes, 'cta', previewTier );
 
 	// Lines between each plan's features: the canvas mirrors render.php's item-drawn
 	// rules for the previewed device (includes/helpers-separators-line-css.php).
@@ -622,7 +637,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: true,
 								showWritingMode: true,
 							},
 							{
@@ -637,7 +651,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: true,
 								showWritingMode: true,
 							},
 							{
@@ -652,7 +665,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: true,
 								showWritingMode: true,
 							},
 							{
@@ -667,7 +679,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: true,
 								showWritingMode: true,
 							},
 						] }
@@ -700,6 +711,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
 				{ separatorsCss && <style>{ separatorsCss }</style> }
 				{ showToggle && (
 					<div
@@ -784,11 +796,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											'Plan name…',
 											'sgs-blocks'
 										) }
-										style={ resolveTextColourPreviewStyle(
+										style={ { ...titleTypography, ...resolveTextColourPreviewStyle(
 											titleColour,
 											titleColourGradient,
 											colourVar
-										) }
+										) } }
 									/>
 									<div className="sgs-pricing-table__price-wrapper">
 										<RichText
@@ -806,11 +818,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 												'£0 /mo',
 												'sgs-blocks'
 											) }
-											style={ resolveTextColourPreviewStyle(
+											style={ { ...priceTypography, ...resolveTextColourPreviewStyle(
 												priceColour,
 												priceColourGradient,
 												colourVar
-											) }
+											) } }
 										/>
 										{ billingToggle !== 'none' && billingToggle !== 'monthly-only' && (
 											<>
@@ -829,11 +841,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 														'£0 /yr',
 														'sgs-blocks'
 													) }
-													style={ resolveTextColourPreviewStyle(
+													style={ { ...priceTypography, ...resolveTextColourPreviewStyle(
 														priceColour,
 														priceColourGradient,
 														colourVar
-													) }
+													) } }
 												/>
 												<TextControl
 													label={ __( 'Savings badge (yearly)', 'sgs-blocks' ) }
@@ -912,6 +924,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										( feature, featureIndex ) => (
 											<li
 												key={ featureIndex }
+												style={ featureTypography }
 												className={ [
 													'sgs-pricing-table__feature',
 													feature.included
@@ -1068,6 +1081,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								<div
 									className={ `sgs-pricing-table__cta sgs-pricing-table__cta--${ ctaStyle }` }
 									style={ {
+										...ctaTypography,
 										...resolveTextColourPreviewStyle(
 											ctaColour,
 											ctaColourGradient,
@@ -1113,6 +1127,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				>
 					{ __( 'Add plan', 'sgs-blocks' ) }
 				</Button>
+				</BandWrap>
 			</div>
 		</>
 	);

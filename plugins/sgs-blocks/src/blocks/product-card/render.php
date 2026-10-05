@@ -226,7 +226,15 @@ $classes[] = $sgs_card_uid;
 // already gets. No opt-in needed; the helper's normal default is already correct.
 $sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc' );
+// The description can hold several paragraphs; its text indent follows core's
+// convention (every paragraph that follows another paragraph) on both markups.
+$sgs_card_desc_para = ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)';
+$sgs_card_typo_css .= sgs_typography_css_rule(
+	$attributes,
+	'desc',
+	'.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc',
+	'.' . $sgs_card_uid . ' .sgs-product-card__description' . $sgs_card_desc_para . ', .' . $sgs_card_uid . ' .product-desc' . $sgs_card_desc_para
+);
 // 'pill' typography targets the option-picker pill (both typed + bound pack
 // pickers render sgs/option-picker).
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill' );

@@ -13,7 +13,8 @@ import {
 } from "@wordpress/components";
 import { SgsColourPanel, DesignTokenPicker, IconPicker, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SGS_FONT_WEIGHT_OPTIONS } from "../../components";
 import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
-import { resolveBorderStyle } from '../../utils/border-style';
+import { usePreviewTier } from "../../utils";
+import { accordionWrapperPreview } from "./preview-style";
 
 const STYLE_OPTIONS = [
   { label: __("Bordered", "sgs-blocks"), value: "bordered" },
@@ -31,7 +32,7 @@ const TEMPLATE = [
   ["sgs/accordion-item", { title: __("Another question", "sgs-blocks") }],
 ];
 
-export default function Edit({ attributes, setAttributes }) {
+export default function Edit({ attributes, setAttributes, clientId }) {
   const {
     allowMultiple,
     defaultOpen,
@@ -72,46 +73,31 @@ export default function Edit({ attributes, setAttributes }) {
   // block.json — this composite already restricts children to its own
   // structural child block (`sgs/accordion-item`) below; a generic preset
   // would only conflict with that fixed relationship.
-  // Editor-canvas preview for the block-private border legs (Shape B).
-  // Mirrors sgs/button's pattern: colours are stored as theme token SLUGS, which
-  // are invalid CSS, so the preview MUST resolve them against the live palette or
-  // picking a palette colour looks like a no-op. render.php resolves the same
-  // slugs via sgs_colour_value(). Editor-only — the frontend contract (Spec 32,
-  // no inline styling) governs render.php's output, not the canvas.
+  // Editor-canvas preview of the wrapper at the previewed device tier (layout,
+  // spacing, border and corner radius, max width, content band, typography),
+  // through accordionWrapperPreview() (./preview-style.js). Colours are stored
+  // as palette slugs, resolved against the live palette exactly as render.php
+  // resolves them via sgs_colour_value(). The items belong to the band when one
+  // renders, as on the front end; useInnerBlocksProps is called once either way.
   const [ palette ] = useSettings( "color.palette" );
+  const previewTier = usePreviewTier();
+  const preview = accordionWrapperPreview( attributes, previewTier, palette, `#block-${ clientId }` );
 
-  const borderWidthPreview = ( () => {
-    if ( ! borderWidth || "object" !== typeof borderWidth ) return undefined;
-    const sides = [ "top", "right", "bottom", "left" ];
-    if ( ! sides.some( ( side ) => borderWidth[ side ] ) ) return undefined;
-    return sides.map( ( side ) => borderWidth[ side ] || "0" ).join( " " );
-  } )();
-
-  const previewStyle = {};
-  if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-    // G5 (Bean, 2026-08-26): a style with no width means NO border — never fall
-    // through to the browser's initial `medium`. Same gate as render.php.
-    if ( borderWidthPreview ) {
-      previewStyle.borderStyle = resolveBorderStyle( borderStyle );
-      previewStyle.borderWidth = borderWidthPreview;
-    }
-    if ( borderColour ) {
-      previewStyle.borderColor = resolveColourToken( borderColour, palette );
-    }
-    // A gradient border renders frontend as a masked ::before ring, which cannot
-    // be reproduced in a plain inline style — approximate it with the gradient as
-    // a border-image so the canvas at least shows that a gradient is applied.
-    if ( borderColourGradient ) {
-      previewStyle.borderImage = `${ borderColourGradient } 1`;
-    }
-  }
-
-  const blockProps = useBlockProps({ className, style: previewStyle });
-  const innerBlocksProps = useInnerBlocksProps(blockProps, {
-    allowedBlocks: ["sgs/accordion-item"],
-    template: TEMPLATE,
-    renderAppender: false,
+  const blockProps = useBlockProps({
+    className: [ className, preview.className ].filter( Boolean ).join( " " ),
+    style: preview.style,
   });
+  const innerBlocksProps = useInnerBlocksProps(
+    preview.hasBandProps
+      ? { className: "sgs-container__inner", style: preview.bandStyle }
+      : blockProps,
+    {
+      allowedBlocks: ["sgs/accordion-item"],
+      template: TEMPLATE,
+      renderAppender: false,
+    }
+  );
+  const { children: innerBlocksChildren, ...innerBlocksRest } = innerBlocksProps;
 
   return (
     <>
@@ -462,7 +448,17 @@ export default function Edit({ attributes, setAttributes }) {
 
       </InspectorControls>
 
-      <div {...innerBlocksProps} />
+      { preview.hasBandProps ? (
+        <div { ...blockProps }>
+          { preview.css && <style>{ preview.css }</style> }
+          <div { ...innerBlocksProps } />
+        </div>
+      ) : (
+        <div { ...innerBlocksRest }>
+          { preview.css && <style>{ preview.css }</style> }
+          { innerBlocksChildren }
+        </div>
+      ) }
     </>
   );
 }

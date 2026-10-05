@@ -14,6 +14,16 @@ const WIDTH_OPTIONS = [
 	{ label: __( 'One third', 'sgs-blocks' ), value: 'third' },
 ];
 
+// labelStyle 'hidden' leaves the label to screen readers only, as field_label() does.
+const SR_ONLY = {
+	position: 'absolute',
+	width: '1px',
+	height: '1px',
+	overflow: 'hidden',
+	clipPath: 'inset(50%)',
+	whiteSpace: 'nowrap',
+};
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		fieldName,
@@ -207,7 +217,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<div { ...blockProps }>
 				{ label && (
-					<label className="sgs-form-field__label">
+					<label
+						className={ 'hidden' === attributes.labelStyle ? 'sgs-form-field__label sgs-sr-only' : 'sgs-form-field__label' }
+						style={ 'hidden' === attributes.labelStyle ? SR_ONLY : undefined }
+					>
 						{ label }
 						{ required && (
 							<span className="sgs-form-field__required">

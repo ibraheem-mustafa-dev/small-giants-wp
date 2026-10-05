@@ -555,10 +555,6 @@
 		"titleTextColumns": {
 			"type": "number"
 		},
-		"titleTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"titleWritingMode": {
 			"type": "string",
 			"enum": [

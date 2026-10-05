@@ -137,3 +137,17 @@
 .block-editor .sgs-gallery__lightbox--open {
 	display: none;
 }
+
+/* ==========================================================================
+   Caption fill — the same `::after` layer render.php draws, fed by the
+   figcaption's --sgs-gallery-caption-fill (a colour or a gradient).
+   ========================================================================== */
+
+.sgs-gallery__caption::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background: var( --sgs-gallery-caption-fill, transparent );
+}

@@ -404,10 +404,6 @@
 		},
 		"textColumns": {
 			"type": "number"
-		},
-		"textIndent": {
-			"type": "string",
-			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

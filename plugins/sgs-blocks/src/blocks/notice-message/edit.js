@@ -1,12 +1,14 @@
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
+	useSettings,
 	InspectorControls,
 	useInnerBlocksProps,
 	BlockControls,
 } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToolbarGroup } from '@wordpress/components';
 import { SgsColourPanel, fillRow, textRow } from '../../components';
+import { backgroundPaintPreview, textPaintPreview } from '../../utils';
 
 /**
  * Default InnerBlocks template — mirrors sgs/notice-banner's own starter
@@ -24,7 +26,16 @@ const NOTICE_MESSAGE_TEMPLATE = [
 export default function Edit( { attributes, setAttributes } ) {
 	const { backgroundColour, backgroundColourGradient, textColour, textColourGradient, label } = attributes;
 
-	const blockProps = useBlockProps( { className: 'sgs-notice-message' } );
+	// The front end paints this message's colours on the whole banner while it is
+	// the active slide; the canvas shows the message being edited, so it carries them.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const blockProps = useBlockProps( {
+		className: 'sgs-notice-message',
+		style: {
+			...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
+			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+		},
+	} );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		template: NOTICE_MESSAGE_TEMPLATE,
 	} );

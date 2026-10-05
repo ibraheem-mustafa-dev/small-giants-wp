@@ -17,9 +17,8 @@ import {
 	RadioControl,
 } from '@wordpress/components';
 import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
-import { colourVar, linkColourPreviewCss, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, linkColourPreviewCss, resolveTextColourPreviewStyle, tierBoxShorthand, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
 import { sanitiseSvg } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
 
 // ── Select options ──────────────────────────────────────────────────────────
 
@@ -209,15 +208,6 @@ const CONNECTOR_OPTIONS = [
 	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
 ];
 
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder so the canvas
-// preview matches the frontend (contract §5).
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
 /**
  * Build the editor-canvas preview style for the root `<ol>` — mirrors
  * render.php's scoped output (base tier only; responsive tiers are PHP-only,
@@ -227,7 +217,7 @@ function boxShorthand( box, keys ) {
  * own inline-style generation in the editor — so the canvas needs this
  * manual reconstruction for visual parity, exactly like sgs/quote.
  */
-function buildRootPreviewStyle( attributes ) {
+function buildRootPreviewStyle( attributes, previewTier = 'desktop' ) {
 	const { padding, margin, borderWidth, borderStyle, borderColour, borderColourGradient, borderRadius, textColour, textColourGradient, backgroundColour } = attributes;
 	const previewStyle = {};
 
@@ -243,45 +233,16 @@ function buildRootPreviewStyle( attributes ) {
 	// support at all, so WP-native `style.border` is never populated (unlike
 	// `style.color`/`style.shadow` above, which stay live — see this file's
 	// colour panel and the `shadow` support declared in block.json).
-	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) {
-		previewStyle.borderRadius = radiusPreview;
-	}
+	Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, previewTier, undefined, { wholeTier: true } ) );
 
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-		if ( borderWidthPreview ) {
-			previewStyle.borderWidth = borderWidthPreview;
-		}
-		previewStyle.borderStyle = previewStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			previewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
-				? borderColour
-				: colourVar( borderColour );
-		}
-		// A gradient border renders frontend as a masked ::before ring, which cannot
-		// be reproduced in a plain inline style — approximate it with the gradient as
-		// a border-image so the canvas at least shows that a gradient is applied.
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			previewStyle.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
-
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = tierBoxShorthand( padding, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
 	if ( paddingPreview ) {
 		previewStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = tierBoxShorthand( margin, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
 	}
-
-	// Typography (fontSize/lineHeight/fontWeight/fontStyle) is no longer a
-	// skip-serialised WP-native `style.typography` object on this block —
-	// migrated to the shared TypographyControls/sgs_typography_css_rule()
-	// mechanism (D971/D972), which paints `.sgs-timeline__title` directly and
-	// has no root-level canvas preview reconstruction of its own (mirrors
-	// sgs/accordion — this helper only ever reconstructs WRAPPER-level style).
 
 	return previewStyle;
 }
@@ -475,6 +436,9 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 // ── Main Edit component ─────────────────────────────────────────────────────
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
+	const previewTier = usePreviewTier();
+	// Title typography: render.php's sgs_typography_css_rule( $attributes, 'title' ).
+	const titlePreviewStyle = typographyPreviewStyle( attributes, 'title', previewTier );
 	const {
 		orientation,
 		contentLayout,
@@ -667,7 +631,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			// `previewClasses` above.
 			'--sgs-timeline-milestone-min-height': milestoneMinHeight || undefined,
 			'--sgs-timeline-entry-gap': entryGap || undefined,
-			...buildRootPreviewStyle( attributes ),
+			...buildRootPreviewStyle( attributes, previewTier ),
 		},
 	} );
 
@@ -1256,7 +1220,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				    and the selector this paints — `.sgs-timeline__title` — mirroring
 				    the pre-migration `selectors.typography` declaration exactly. */}
 				<PanelBody title={ __( 'Entry title typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="title"
@@ -1470,6 +1434,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<RichText.Content
 								tagName={ HeadingTag }
 								className="sgs-timeline__title"
+								style={ titlePreviewStyle }
 								value={ entry.title || __( 'Entry title', 'sgs-blocks' ) }
 							/>
 							{ entry.description && (

@@ -1,12 +1,16 @@
 /* ===== SGS Container — Editor Only ===== */
 
+/* Editing outline: an outline, never a border, so it never paints over the
+   container's own border or a grid cell's grid-item default border (Spec 32
+   FR-32-12: editor.css must not override the --sgs-gi-* consumer). */
 .sgs-container {
-	border: 1px dashed rgba(0, 0, 0, 0.1);
+	outline: 1px dashed rgba(0, 0, 0, 0.1);
+	outline-offset: -1px;
 	min-height: 50px;
 }
 
 .sgs-container:hover {
-	border-color: var(--wp--preset--color--primary, #0F7E80);
+	outline-color: var(--wp--preset--color--primary, #0F7E80);
 }
 
 /* "Scroll sideways" canvas preview (edit.js marks the row at the previewed

@@ -781,6 +781,14 @@ if ( ! function_exists( 'get_nav_menu_locations' ) ) {
 // google-reviews/render.php calls two static methods on the real
 // SGS\Blocks\Google_Reviews_Settings (includes/google-reviews-settings.php).
 // That file is NOT require_once'd here: its bottom line runs
+// attachment_url_to_postid(): the harness has no media library, so no URL maps to an attachment (core returns 0
+// for an unknown URL). Renders that look up an image by URL (helpers-media.php) then take their URL-only path.
+if ( ! function_exists( 'attachment_url_to_postid' ) ) {
+	function attachment_url_to_postid( $url ) {
+		return 0;
+	}
+}
+
 // Google_Reviews_Settings::init(), which registers admin_menu/admin_init/
 // wp_ajax_* hooks via add_action() and pulls in register_setting(),
 // add_options_page(), add_settings_section() and friends — none of which

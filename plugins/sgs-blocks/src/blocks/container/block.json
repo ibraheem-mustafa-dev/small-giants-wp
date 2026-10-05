@@ -736,7 +736,7 @@
 		},
 		"borderStyle": {
 			"type": "string",
-			"default": "",
+			"default": "solid",
 			"enum": [
 				"",
 				"none",
@@ -924,14 +924,6 @@
 			"type": "string",
 			"default": ""
 		}
-	},
-	"providesContext": {
-		"sgs/gridItemPadding": "gridItemPadding",
-		"sgs/gridItemBackground": "gridItemBackground",
-		"sgs/gridItemBorderRadius": "gridItemBorderRadius",
-		"sgs/gridItemBorder": "gridItemBorder",
-		"sgs/gridItemShadow": "gridItemShadow",
-		"sgs/gridItemTextColour": "gridItemTextColour"
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

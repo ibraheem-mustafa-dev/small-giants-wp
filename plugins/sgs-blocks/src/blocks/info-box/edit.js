@@ -16,8 +16,16 @@ import {
 import { createBlock } from '@wordpress/blocks';
 import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { colourVar } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import {
+	colourVar,
+	usePreviewTier,
+	typographyPreviewStyle,
+	tierBoxShorthand,
+	textPaintPreview,
+	linkColourPreviewCss,
+	textIndentPreviewCss,
+	sgsBorderPreview,
+} from '../../utils';
 
 /**
  * FR-22-6 migration: all card content (icon/media, heading, subtitle,
@@ -66,16 +74,6 @@ const LENGTH_UNITS = [
 	{ value: '%', label: '%', default: 0 },
 ];
 
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder so the canvas
-// preview matches the frontend (contract §5). Desktop-tier only (responsive
-// tiers apply via PHP @media, not previewable in the fixed-width canvas).
-function boxShorthand( box, keys = [ 'top', 'right', 'bottom', 'left' ] ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
 /**
  * Editor-preview style builder — desktop styles only; responsive/border/
  * colour/typography per-instance edge cases are resolved authoritatively by
@@ -85,7 +83,7 @@ function boxShorthand( box, keys = [ 'top', 'right', 'bottom', 'left' ] ) {
  * @param {Object} attributes Block attributes.
  * @returns {Object} React inline-style object.
  */
-function buildPreviewStyle( attributes ) {
+function buildPreviewStyle( attributes, tier ) {
 	const {
 		padding,
 		margin,
@@ -130,11 +128,12 @@ function buildPreviewStyle( attributes ) {
 			? backgroundColour
 			: colourVar( backgroundColour );
 	}
-	if ( textColour ) {
-		preview.color = /^#|^rgb|^hsl/.test( textColour )
-			? textColour
-			: colourVar( textColour );
-	}
+	// A text gradient paints through background-image, so it is skipped when a
+	// background gradient already owns that property on this preview element.
+	Object.assign(
+		preview,
+		textPaintPreview( textColour, backgroundColourGradient ? '' : attributes.textColourGradient )
+	);
 
 	// Border is entirely the block's own borderWidth/borderStyle/borderColour/
 	// borderRadius attrs (SgsBorderControl below) — block.json declares no
@@ -142,24 +141,11 @@ function buildPreviewStyle( attributes ) {
 	// never populated here (the old inline comment above claiming a native
 	// resting-colour control was stale; verified against the current Border
 	// PanelBody, which is fully SgsBorderControl-driven).
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		const borderWidthPreview = boxShorthand( borderWidth );
-		if ( borderWidthPreview ) preview.borderWidth = borderWidthPreview;
-		preview.borderStyle = preview.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) preview.borderColor = borderColour;
-		// A gradient border renders frontend as a masked ::before ring, which cannot
-		// be reproduced in a plain inline style — approximate it with the gradient as
-		// a border-image so the canvas at least shows that a gradient is applied.
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			preview.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
-	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) preview.borderRadius = radiusPreview;
+	Object.assign( preview, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier ) );
 
-	const paddingPreview = boxShorthand( padding?.desktop );
+	const paddingPreview = tierBoxShorthand( padding, tier );
 	if ( paddingPreview ) preview.padding = paddingPreview;
-	const marginPreview = boxShorthand( margin?.desktop );
+	const marginPreview = tierBoxShorthand( margin, tier );
 	if ( marginPreview ) preview.margin = marginPreview;
 
 	if ( maxWidth ) {
@@ -420,7 +406,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			? backgroundColour
 			: '';
 
-	const blockProps = useBlockProps( { className, style: buildPreviewStyle( attributes ) } );
+	const previewTier = usePreviewTier();
+	const linkPreviewUid = `sgs-info-box-link-preview-${ clientId }`;
+	const linkPreviewCss = linkColourPreviewCss(
+		`.${ linkPreviewUid }`,
+		attributes.linkColour,
+		attributes.linkColourHover,
+		attributes.linkColourGradient,
+		attributes.linkColourHoverGradient
+	) + textIndentPreviewCss( attributes, '', `.${ linkPreviewUid }`, previewTier );
+	const blockProps = useBlockProps( {
+		className: `${ className } ${ linkPreviewUid }`,
+		style: {
+			...typographyPreviewStyle( attributes, '', previewTier ),
+			...buildPreviewStyle( attributes, previewTier ),
+		},
+	} );
 
 	// FR-22-6: single InnerBlocks slot covers ALL card content.
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
@@ -771,6 +772,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			{ /* FR-22-6: innerBlocksProps spread onto the wrapper div — the
 			     InnerBlocks slot IS the card content area. */ }
+			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
 			<div { ...innerBlocksProps } />
 		</>
 	);

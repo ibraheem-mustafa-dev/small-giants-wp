@@ -18,7 +18,11 @@ import { PanelBody } from '@wordpress/components';
 import TypographyControls from '../../components/TypographyControls';
 import { SgsBorderControl } from '../../components';
 import textRow from '../../components/colour-variants/textRow';
+import { typographyPreviewStyle, usePreviewTier, textPaintPreview } from '../../utils';
 import WhatsappIcon from './icon';
+
+// Same allow-list as render.php's card-text wrap custom property.
+const cardTextWrapAllowed = [ 'wrap', 'nowrap', 'balance', 'pretty', 'stable' ];
 
 /**
  * Canvas content switcher for the block root's children — card / floating /
@@ -28,6 +32,8 @@ import WhatsappIcon from './icon';
  */
 export function VariantContent( { attributes, setAttributes } ) {
 	const { variant, label } = attributes;
+	const previewTier = usePreviewTier();
+	const labelStyle = typographyPreviewStyle( attributes, 'label', previewTier );
 
 	if ( 'card' === variant ) {
 		return <CardFields attributes={ attributes } setAttributes={ setAttributes } />;
@@ -38,11 +44,11 @@ export function VariantContent( { attributes, setAttributes } ) {
 			<>
 				<WhatsappIcon size={ attributes.iconSize } />
 				{ label ? (
-					<span className="sgs-whatsapp-cta__label sgs-whatsapp-cta__label--floating">
+					<span className="sgs-whatsapp-cta__label sgs-whatsapp-cta__label--floating" style={ labelStyle }>
 						{ label }
 					</span>
 				) : (
-					<span className="sgs-whatsapp-cta__label sgs-sr-only">
+					<span className="sgs-whatsapp-cta__label sgs-sr-only" style={ labelStyle }>
 						{ __( 'Chat on WhatsApp', 'sgs-blocks' ) }
 					</span>
 				) }
@@ -56,6 +62,7 @@ export function VariantContent( { attributes, setAttributes } ) {
 			<RichText
 				tagName="span"
 				className="sgs-whatsapp-cta__label"
+				style={ labelStyle }
 				value={ label }
 				onChange={ ( val ) => setAttributes( { label: val } ) }
 				placeholder={ __( 'Chat on WhatsApp', 'sgs-blocks' ) }
@@ -71,16 +78,31 @@ export function VariantContent( { attributes, setAttributes } ) {
  */
 export function CardFields( { attributes, setAttributes } ) {
 	const { cardTitle, cardSubline } = attributes;
+	const previewTier = usePreviewTier();
+	const titleStyle = {
+		...typographyPreviewStyle( attributes, 'cardTitle', previewTier ),
+		...textPaintPreview( attributes.cardTitleColour, '' ),
+	};
+	const sublineStyle = {
+		...typographyPreviewStyle( attributes, 'cardSubline', previewTier ),
+		...textPaintPreview( attributes.cardSublineColour, '' ),
+	};
 
 	return (
 		<>
 			<span className="sgs-whatsapp-cta__icon-badge">
 				<WhatsappIcon size={ attributes.iconSize } />
 			</span>
-			<span className="sgs-whatsapp-cta__card-text">
+			<span
+				className="sgs-whatsapp-cta__card-text"
+				style={ cardTextWrapAllowed.includes( attributes.labelTextWrap )
+					? { '--sgs-whatsapp-cta-card-text-wrap': attributes.labelTextWrap }
+					: undefined }
+			>
 				<RichText
 					tagName="span"
 					className="sgs-whatsapp-cta__card-title"
+					style={ titleStyle }
 					value={ cardTitle }
 					onChange={ ( val ) => setAttributes( { cardTitle: val } ) }
 					placeholder={ __( 'Questions? Chat to an optician', 'sgs-blocks' ) }
@@ -88,6 +110,7 @@ export function CardFields( { attributes, setAttributes } ) {
 				<RichText
 					tagName="span"
 					className="sgs-whatsapp-cta__card-subline"
+					style={ sublineStyle }
 					value={ cardSubline }
 					onChange={ ( val ) => setAttributes( { cardSubline: val } ) }
 					placeholder={ __( 'We reply within the hour', 'sgs-blocks' ) }

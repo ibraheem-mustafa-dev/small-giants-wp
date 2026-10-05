@@ -651,6 +651,9 @@
 :where( .sgs-google-reviews--slider .sgs-google-reviews__list ) {
 	scrollbar-width: thin;
 	-ms-overflow-style: auto;
+	/* The thumb colour comes from `scrollbarColour` (render.php writes --sgs-gr-scrollbar-colour);
+	   unset, the declaration is invalid at computed-value time and the browser default stands. */
+	scrollbar-color: var( --sgs-gr-scrollbar-colour ) transparent;
 }
 
 .sgs-google-reviews--slider .sgs-google-reviews__review {

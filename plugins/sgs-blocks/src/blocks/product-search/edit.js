@@ -8,11 +8,16 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, ScrimControls, scrimColourRow } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, ScrimControls, scrimColourRow, resolveColourToken } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
 import MediaElementPanel from '../../components/MediaElementPanel';
-import { borderPaintPreview, backgroundPaintPreview } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import {
+	borderPaintPreview,
+	backgroundPaintPreview,
+	usePreviewTier,
+	spacingPreview,
+	sgsBorderPreview,
+} from '../../utils';
 
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
@@ -68,30 +73,23 @@ export default function Edit( { attributes, setAttributes } ) {
 	// selector even though it isn't wrapper-qualified (see this file's own
 	// border-colour rows below); the canvas preview approximates the same
 	// visual on the root element regardless of the exact frontend selector.
-	const borderPreviewStyle = {};
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		const bw = [ 'top', 'right', 'bottom', 'left' ];
-		if ( borderWidth && bw.some( ( k ) => borderWidth[ k ] ) ) {
-			borderPreviewStyle.borderWidth = bw.map( ( k ) => borderWidth[ k ] || '0' ).join( ' ' );
-		}
-		borderPreviewStyle.borderStyle = borderPreviewStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			borderPreviewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
-		}
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			borderPreviewStyle.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
 
+	const previewTier = usePreviewTier();
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	// focusRingColour feeds the same custom property style.css's focus outline reads.
+	const focusRing = resolveColourToken( attributes.focusRingColour, colourPalette );
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-search',
-		style: borderPreviewStyle,
+		style: {
+			...spacingPreview( { padding: attributes.padding, margin: attributes.margin }, previewTier ),
+			...sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette, { wholeTier: true } ),
+			...( focusRing ? { '--sgs-ps-focus-ring': focusRing } : {} ),
+		},
 	} );
 
 	// CHECK A: inputBorderColour/Gradient paints `.sgs-product-search__input`
 	// directly (style.css:37 + render.php's sgs_border_states_css() scoped
 	// rule).
-	const [ colourPalette ] = useSettings( 'color.palette' );
 	const inputPreviewStyle = borderPaintPreview( inputBorderColour, inputBorderColourGradient, colourPalette );
 
 	// CHECK A: listboxBackgroundColour/Gradient paints

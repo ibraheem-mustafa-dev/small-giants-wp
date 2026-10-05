@@ -25,6 +25,7 @@ import {
 	ResponsiveBorderRadiusControl,
 	normaliseResponsiveBox, SgsBoxControl } from '../../../components';
 import { UnitControl } from '../../../components/primitives';
+import { gridBorderParts } from '../grid-item-preview';
 
 const GRID_ITEM_BORDER_STYLES = [
 	{ label: __( '— None —', 'sgs-blocks' ), value: '' },
@@ -33,27 +34,6 @@ const GRID_ITEM_BORDER_STYLES = [
 	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
 	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
 ];
-
-// Every CSS border-style keyword, NOT the subset offered by
-// GRID_ITEM_BORDER_STYLES above — this parses a border shorthand that may
-// already carry any of them (`1px groove red`). Narrowing it to the picker's
-// options would silently mis-parse those values as a colour.
-const _GRID_BORDER_STYLE_WORDS = [ 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset', 'none' ];
-
-function _gridBorderParts( value ) {
-	const out = { width: '', style: '', colour: '' };
-	const tokens = String( value || '' ).trim().split( /\s+/ ).filter( Boolean );
-	for ( const token of tokens ) {
-		if ( ! out.style && _GRID_BORDER_STYLE_WORDS.includes( token.toLowerCase() ) ) {
-			out.style = token.toLowerCase();
-		} else if ( ! out.width && /^[\d.]+(px|rem|em|%)?$/.test( token ) ) {
-			out.width = token;
-		} else if ( ! out.colour ) {
-			out.colour = token;
-		}
-	}
-	return out;
-}
 
 /**
  * Rebuild the shorthand from parts, dropping empties.
@@ -202,19 +182,19 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			<div className="sgs-grid-item-border-builder">
 				<UnitControl
 					label={ __( 'Border width', 'sgs-blocks' ) }
-					value={ _gridBorderParts( gridItemBorder ).width }
+					value={ gridBorderParts( gridItemBorder ).width }
 					units={ GRID_ITEM_BOX_UNITS }
 					onChange={ ( val ) => setAttributes( {
-						gridItemBorder: _gridBorderJoin( { ..._gridBorderParts( gridItemBorder ), width: val || '' } ),
+						gridItemBorder: _gridBorderJoin( { ...gridBorderParts( gridItemBorder ), width: val || '' } ),
 					} ) }
 					__next40pxDefaultSize
 				/>
 				<SelectControl
 					label={ __( 'Border style', 'sgs-blocks' ) }
-					value={ _gridBorderParts( gridItemBorder ).style }
+					value={ gridBorderParts( gridItemBorder ).style }
 					options={ GRID_ITEM_BORDER_STYLES }
 					onChange={ ( val ) => setAttributes( {
-						gridItemBorder: _gridBorderJoin( { ..._gridBorderParts( gridItemBorder ), style: val } ),
+						gridItemBorder: _gridBorderJoin( { ...gridBorderParts( gridItemBorder ), style: val } ),
 					} ) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
@@ -234,9 +214,9 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 						{
 							key: 'normal',
 							label: __( 'Normal', 'sgs-blocks' ),
-							value: _gridBorderParts( gridItemBorder ).colour,
+							value: gridBorderParts( gridItemBorder ).colour,
 							onChange: ( val ) => setAttributes( {
-								gridItemBorder: _gridBorderJoin( { ..._gridBorderParts( gridItemBorder ), colour: val || '' } ),
+								gridItemBorder: _gridBorderJoin( { ...gridBorderParts( gridItemBorder ), colour: val || '' } ),
 							} ),
 							// D636 border-gradient rollout (residual scope, 2026-08-17) —
 							// gridItemBorder stays a plain shorthand string (width/style);

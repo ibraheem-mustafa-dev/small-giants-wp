@@ -27,6 +27,9 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"boxFamilies": {
+				"panelPadding": [ "panelPadding" ]
+			},
 			"elements": {
 				"link": {
 					"label": "Language link",

@@ -12,16 +12,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { SgsColourPanel, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar } from '../../utils';
-
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder so the canvas
-// preview matches the frontend (contract §5). Mirrors sgs/heading's helper.
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
+import { colourVar, tierBoxShorthand, usePreviewTier } from '../../utils';
 
 /**
  * Resolve a shape-padding value to a valid CSS string for editor preview.
@@ -102,6 +93,7 @@ function currentIconName( attrs ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
+	const previewTier = usePreviewTier();
 	const { padding, margin,
 		iconSource,
 		iconSvg,
@@ -181,11 +173,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
 	// order top/right/bottom/left).
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = tierBoxShorthand( padding, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
 	if ( paddingPreview ) {
 		previewStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = tierBoxShorthand( margin, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
 	}

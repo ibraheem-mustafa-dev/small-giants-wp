@@ -15,7 +15,13 @@ import { ResponsiveOverride, SgsColourPanel, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { resolveResponsiveTier, textPaintPreview, usePreviewTier } from '../../utils';
+import {
+	backgroundPaintPreview,
+	resolveResponsiveTier,
+	textPaintPreview,
+	usePreviewTier,
+	wrapperPreview,
+} from '../../utils';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 
 const LAYOUT_MODE_OPTIONS = [
@@ -166,22 +172,36 @@ export default function Edit( { attributes, setAttributes } ) {
 		],
 	} );
 
+	// Border, radius, max-width, row/flex alignment and the content band as the wrapper emits
+	// them; the block's own grid wins and moves onto the band with the rest of the layout.
+	const { style: wrapperStyle, bandStyle, hasBandProps } = wrapperPreview(
+		attributes,
+		previewTier,
+		colourPalette,
+		{ ...buildGridStyle( attributes ), ...sep.style }
+	);
+
 	const blockProps = useBlockProps( {
-		ref: sep.ref,
+		ref: hasBandProps ? undefined : sep.ref,
 		className: `sgs-feature-grid sgs-feature-grid--${ layoutMode }`,
 		style: {
-			...buildGridStyle( attributes ),
-			...sep.style,
+			...wrapperStyle,
+			...backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient, colourPalette ),
 			...textPaintPreview( textColour, textColourGradient, colourPalette ),
 		},
 	} );
 
-	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		allowedBlocks: [ 'sgs/info-box' ],
-		template: TEMPLATE,
-		templateLock: false,
-		orientation: 'horizontal',
-	} );
+	// With a band the front end nests the grid in `.sgs-container__inner`; the block's own
+	// element carries the band so InnerBlocks stay the grid's direct children.
+	const innerBlocksProps = useInnerBlocksProps(
+		hasBandProps ? { ref: sep.ref, className: 'sgs-container__inner', style: bandStyle } : blockProps,
+		{
+			allowedBlocks: [ 'sgs/info-box' ],
+			template: TEMPLATE,
+			templateLock: false,
+			orientation: 'horizontal',
+		}
+	);
 
 	return (
 		<>
@@ -383,7 +403,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			<div { ...innerBlocksProps } />
+			{ hasBandProps ? (
+				<div { ...blockProps }>
+					<div { ...innerBlocksProps } />
+				</div>
+			) : (
+				<div { ...innerBlocksProps } />
+			) }
 		</>
 	);
 }

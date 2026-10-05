@@ -12,30 +12,7 @@ import {
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveBoxControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, BooleanResponsiveControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { boxShorthand } from '../../utils/spacing-preview';
-import { resolveBorderStyle } from '../../utils/border-style';
-
-/** Editor-canvas mirror of render.php's border block — width/style/colour(+gradient)/radius. */
-function buildBorderPreviewStyle( { borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } ) {
-	const preview = {};
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		const borderWidthPreview = boxShorthand( borderWidth );
-		if ( borderWidthPreview ) preview.borderWidth = borderWidthPreview;
-		preview.borderStyle = preview.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			preview.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
-		}
-		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-			preview.borderImage = `${ borderColourGradient } 1`;
-		}
-	}
-	const radiusBox = borderRadius?.desktop;
-	if ( radiusBox && ( radiusBox.topLeft || radiusBox.topRight || radiusBox.bottomRight || radiusBox.bottomLeft ) ) {
-		preview.borderRadius = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
-			.map( ( k ) => radiusBox[ k ] || '0' ).join( ' ' );
-	}
-	return preview;
-}
+import { usePreviewTier, boxPreview } from '../../utils';
 
 // Shared with isReactive below so the two can't drift apart. `toggle` is
 // listed as reactive too — its `bars` icon (the default) reuses the same
@@ -103,6 +80,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// resolveColourToken() (not colourVar(), which is slug-only) is the
 	// correct resolver here.
 	const [ palette ] = useSettings( 'color.palette' );
+	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
 		className: `sgs-audio sgs-audio--${ playerStyle }`,
 		style: {
@@ -121,7 +99,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			// attribute style.css consumes must appear on the DOM style too).
 			...( accentColourHover ? { '--sgs-audio-accent-hover': resolveColourToken( accentColourHover, palette ) } : {} ),
 			...( accentColourHoverGradient ? { '--sgs-audio-accent-hover-gradient': accentColourHoverGradient } : {} ),
-			...buildBorderPreviewStyle( attributes ),
+			...boxPreview( attributes, previewTier, palette ),
 		},
 	} );
 	const hasAudio = audioUrl || audioId;

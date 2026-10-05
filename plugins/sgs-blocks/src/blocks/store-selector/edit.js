@@ -36,6 +36,8 @@ import {
 	SgsBorderControl,
 	LinkPopoverField,
 } from '../../components';
+import { usePreviewTier } from '../../utils';
+import { flagSizeAtTier, storeSelectorPreviewStyles } from './preview-style';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -57,8 +59,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderRadius,
 	} = attributes;
 
+	const previewTier = usePreviewTier();
+	const previewStyles = storeSelectorPreviewStyles( attributes, previewTier );
 	const blockProps = useBlockProps( {
 		className: `sgs-store-selector sgs-store-selector--panel-${ panelAlign }`,
+		style: previewStyles.root,
 	} );
 
 	const updateStore = ( index, field, value ) => {
@@ -87,7 +92,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { stores: updated } );
 	};
 
-	const previewFlag = flagSize?.desktop?.w ? flagSize.desktop : { w: 16, h: 12 };
+	const previewFlag = flagSizeAtTier( flagSize, previewTier );
 
 	return (
 		<>
@@ -219,9 +224,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Flag width / height (px)', 'sgs-blocks' ) }
 					>
 						{ ( tier ) => {
-							const tierValue = flagSize?.[ tier ] && typeof flagSize[ tier ] === 'object' ? flagSize[ tier ] : {};
+							const tierFlagSize = flagSize?.[ tier ] && typeof flagSize[ tier ] === 'object' ? flagSize[ tier ] : {};
 							const setTier = ( field, val ) => {
-								const nextTier = { ...tierValue, [ field ]: val ? Number( val ) : undefined };
+								const nextTier = { ...tierFlagSize, [ field ]: val ? Number( val ) : undefined };
 								setAttributes( { flagSize: { ...flagSize, [ tier ]: nextTier } } );
 							};
 							return (
@@ -231,7 +236,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											label={ __( 'Width', 'sgs-blocks' ) }
 											type="number"
 											min={ 1 }
-											value={ tierValue.w ?? '' }
+											value={ tierFlagSize.w ?? '' }
 											placeholder="16"
 											onChange={ ( val ) => setTier( 'w', val ) }
 											__nextHasNoMarginBottom
@@ -243,7 +248,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											label={ __( 'Height', 'sgs-blocks' ) }
 											type="number"
 											min={ 1 }
-											value={ tierValue.h ?? '' }
+											value={ tierFlagSize.h ?? '' }
 											placeholder="12"
 											onChange={ ( val ) => setTier( 'h', val ) }
 											__nextHasNoMarginBottom
@@ -330,7 +335,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<span className="sgs-store-selector__trigger">
+				<span className="sgs-store-selector__trigger" style={ previewStyles.trigger }>
 					{ triggerPrefix && (
 						<span className="sgs-store-selector__prefix">{ triggerPrefix }</span>
 					) }
@@ -347,9 +352,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ stores[ 0 ]?.label || __( 'Add a store…', 'sgs-blocks' ) }
 					</span>
 				</span>
-				<ul className="sgs-store-selector__list">
+				<ul className="sgs-store-selector__list" style={ previewStyles.list }>
 					{ stores.map( ( store, index ) => (
-						<li key={ index } className="sgs-store-selector__item">
+						<li key={ index } className="sgs-store-selector__item" style={ previewStyles.item }>
 							<span>
 								{ store.flagUrl && (
 									<img

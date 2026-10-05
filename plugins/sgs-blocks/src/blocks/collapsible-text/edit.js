@@ -19,7 +19,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow, textRow, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { textPaintPreview, linkColourPreviewCss } from '../../utils';
+import { textPaintPreview, linkColourPreviewCss, backgroundPaintPreview, typographyPreviewStyle, textIndentPreviewCss, usePreviewTier, spacingPreview } from '../../utils';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover, linkColourGradient, linkColourHoverGradient } = attributes;
@@ -36,19 +36,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkColourHoverGradient
 	);
 
+	// The block's own fill and spacing sit on the root, at the previewed tier;
+	// its typography sits on the body (render.php's `.sgs-collapsible-text__body`).
+	const previewTier = usePreviewTier();
+	const scopedPreviewCss = linkPreviewCss + textIndentPreviewCss( attributes, '', `.${ linkPreviewUid } .sgs-collapsible-text__body`, previewTier );
+	const [ colourPalette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className: [ 'sgs-collapsible-text', linkPreviewUid ].join( ' ' ),
+		style: {
+			...backgroundPaintPreview( backgroundColour, attributes.backgroundColourGradient, colourPalette ),
+			...spacingPreview( { padding: attributes.padding, margin: attributes.margin }, previewTier ),
+		},
 	} );
 
 	// D288/D636 pattern (mirrors sgs/container): render.php scopes textColour/
 	// textColourGradient to `.sgs-collapsible-text__body` (block.json's `body`
 	// element attrMap css:color/css:background-image), not the root wrapper —
 	// so the preview belongs on the RichText element below, not on blockProps.
-	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	return (
 		<>
-			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
+			{ scopedPreviewCss && <style>{ scopedPreviewCss }</style> }
 			<SgsColourPanel
 				rows={ [
 					fillRow( {
@@ -199,6 +207,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'--sgs-collapsible-text-collapsed-lines':
 								collapsedLines,
 						} ),
+						...typographyPreviewStyle( attributes, '', previewTier ),
 						...textPaintPreview( textColour, textColourGradient, colourPalette ),
 					} }
 					multiline="p"

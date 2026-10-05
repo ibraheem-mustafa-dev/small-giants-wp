@@ -808,7 +808,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTextAlign={ true }
 								showTextWrap={ true }
 								showTextColumns={ true }
-								showTextIndent={ true }
 								showWritingMode={ true }
 							/>
 						</>

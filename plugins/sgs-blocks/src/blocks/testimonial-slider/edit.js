@@ -9,6 +9,7 @@
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
+	useSettings,
 	useInnerBlocksProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
@@ -24,7 +25,7 @@ import { SgsColourPanel, fillRow, textRow,
 	TypographyControls,
 	resolveColourToken,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { containerWrapperPreview, backgroundPaintPreview, textPaintPreview, typographyPreviewStyle, usePreviewTier, BandWrap } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -90,9 +91,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		.filter( Boolean )
 		.join( ' ' );
 
+	// The slider root's paint at the previewed tier: the shared wrapper (kind
+	// 'layout'), then render.php's own colour and root typography rules.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const previewTier = usePreviewTier();
+	const wrapperPreview = containerWrapperPreview( attributes, previewTier, colourPalette );
 	const blockProps = useBlockProps( {
-		className,
+		className: [ className, wrapperPreview.className ].filter( Boolean ).join( ' ' ),
 		style: {
+			...wrapperPreview.style,
+			...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
+			...textPaintPreview( attributes.textColour, attributes.textColourGradient, colourPalette ),
+			...typographyPreviewStyle( attributes, '', previewTier ),
 			'--sgs-transition-duration': transitionDuration
 				? `${ transitionDuration }ms`
 				: undefined,
@@ -115,17 +125,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 	);
 
-	// The wrapper's own colours pair a normal state with a hover
-	// state per row (background/text), matching quote/heading. Border stays
-	// hover-only — no border-colour base attr exists on this block.
-	//
-	// The normal state reads/writes flat `backgroundColour`/`textColour`
-	// attrs (the same pattern quote/heading/card-grid/text already use), not
-	// native `style.color.background`/`.text` — the element-manifest
-	// checker's BASE resolution for this element's declared `states.hover`
-	// only resolves an `attrMap` pointing at `native:color.*` when
-	// `supports.color.*` is `true`, so `supports.color.background`/`.text`
-	// stay `false` and the native Text/Background panel does not render.
+	// Wrapper colours: flat backgroundColour/textColour attrs plus Hover siblings
+	// (native supports.color stays off, so no native panel renders).
 	return (
 		<>
 			<SgsColourPanel
@@ -489,22 +490,15 @@ export default function Edit( { attributes, setAttributes } ) {
 			   slider root scopes its own text-colour/typography styling. */ }
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
 					/>
 				</PanelBody>
 			</InspectorControls>
-			{ /* showLayout={false}: this block builds its OWN internal structure
-			     (__stage > __track, slide count driven by --sgs-slides-visible), so a
-			     container layout control would be a SECOND owner of one behaviour.
-			     The block declares no `layout` attr: a `layout` enum would collide
-			     with the container vocabulary the shared control writes
-			     (stack/flex/grid) — writes would be accepted in the editor, stored,
-			     then SILENTLY reverted by WordPress enum coercion. Hiding the
-			     control is a statement about ownership. Same collision family as
-			     sgs/gallery. */ }
+			{ /* showLayout={false}: the block owns its own slide structure (__stage > __track,
+			     --sgs-slides-visible) and declares no container layout attributes. */ }
 			<ContainerWrapperControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }
@@ -521,7 +515,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				 * wraps each inner block in .sgs-testimonial-slider__slide so view.js
 				 * querySelectorAll finds them correctly.
 				 */ }
-				<div { ...innerBlocksProps } />
+				<BandWrap hasBandProps={ wrapperPreview.hasBandProps } bandStyle={ wrapperPreview.bandStyle }>
+					<div { ...innerBlocksProps } />
+				</BandWrap>
 			</div>
 		</>
 	);

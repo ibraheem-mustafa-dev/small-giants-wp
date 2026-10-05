@@ -14,8 +14,7 @@ import {
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, SgsLengthControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, tierBoxShorthand, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusPreview, sgsBorderPreview } from '../../utils';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -191,19 +190,8 @@ function buildTextStyle( attributes ) {
 	);
 }
 
-// Box-object interface contract §1: a 4-side/4-corner box is an object with
-// named keys, each an already-unit-bearing CSS length string or absent
-// (unset side/corner). Build an editor-preview shorthand from the object —
-// mirrors render.php's box-shorthand builder so the canvas preview matches
-// the frontend (contract §5).
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
 /** Build wrapper-level inline style for the editor canvas (mirrors render.php $wrapper_inline). */
-function buildWrapperStyle( attributes ) {
+function buildWrapperStyle( attributes, previewTier = 'desktop' ) {
 	const { padding, margin, textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, inheritStyle, customWidth, customWidthUnit, maxWidth, maxWidthUnit } = attributes;
 	const wrapperStyle = {};
 	// Contract §A (render.php): inheritStyle suppresses block-level wrapper
@@ -213,8 +201,15 @@ function buildWrapperStyle( attributes ) {
 		if ( textAlign ) {
 			wrapperStyle.textAlign = textAlign;
 		}
-		if ( backgroundColour ) {
+		// A gradient wins over the flat colour (sgs_background_paint_decl()).
+		if ( isCssGradient( attributes.backgroundColourGradient ) ) {
+			wrapperStyle.backgroundImage = attributes.backgroundColourGradient;
+		} else if ( backgroundColour ) {
 			wrapperStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
+		}
+		const shadowPreview = resolveShadowPreviewComposed( attributes.boxShadow, attributes.boxShadowColour );
+		if ( shadowPreview ) {
+			wrapperStyle.boxShadow = shadowPreview;
 		}
 		// Custom width — mirrors render.php's sgs_heading_spacing_val() numeric
 		// guard (a non-numeric raw value emits nothing, same as the server).
@@ -225,38 +220,22 @@ function buildWrapperStyle( attributes ) {
 		if ( 'number' === typeof maxWidth && ! Number.isNaN( maxWidth ) ) {
 			wrapperStyle.maxWidth = `${ maxWidth }${ maxWidthUnit || 'px' }`;
 		}
-		// Border-width preview — SGS custom object attr (base only, no tiers).
-		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-		if ( borderWidthPreview ) {
-			wrapperStyle.borderWidth = borderWidthPreview;
-			wrapperStyle.borderStyle = resolveBorderStyle( borderStyle );
-			if ( borderColour ) {
-				wrapperStyle.borderColor = colourVar( borderColour ) || undefined;
-			}
-			// A gradient border renders frontend as a masked ::before ring, which cannot
-			// be reproduced in a plain inline style — approximate it with the gradient as
-			// a border-image so the canvas at least shows that a gradient is applied.
-			if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-				wrapperStyle.borderImage = `${ borderColourGradient } 1`;
-			}
-		}
+		Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient }, previewTier ) );
 	}
 	// Border-radius base preview — Box-object interface contract §1/§5: base
 	// radius is WP-native style.border.radius (CSS shorthand order top-left
 	// top-right bottom-right bottom-left). NOT part of Contract §A — render.php
 	// doesn't gate this on inheritStyle either, so neither does the preview.
-	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( borderRadiusPreview ) {
-		wrapperStyle.borderRadius = borderRadiusPreview;
-	}
+	// render.php writes each narrower tier as a full shorthand, so a tier's box replaces the wider one whole.
+	Object.assign( wrapperStyle, borderRadiusPreview( attributes.borderRadius, previewTier, { wholeTier: true } ) );
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
 	// order top/right/bottom/left).
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = tierBoxShorthand( padding, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = tierBoxShorthand( margin, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
@@ -266,6 +245,7 @@ function buildWrapperStyle( attributes ) {
 // ─── Main edit component ──────────────────────────────────────────────────────
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
+	const previewTier = usePreviewTier();
 	const {
 		headingRole,
 		content,
@@ -348,7 +328,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			isSubheading ? 'wp-block-sgs-heading--subheading' : '',
 			linkPreviewUid,
 		].filter( Boolean ).join( ' ' ),
-		style: { ...buildWrapperStyle( attributes ), ...buildTextStyle( attributes ) },
+		style: { ...buildWrapperStyle( attributes, previewTier ), ...typographyPreviewStyle( attributes, '', previewTier ), ...buildTextStyle( attributes ) },
 	} );
 
 	return (
@@ -508,7 +488,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					 * 2026-09-06 to close the parity gap with sgs/text, which
 					 * already exposes this control.
 					 */ }
-					<TypographyControls showTextColumns showTextIndent
+					<TypographyControls showTextColumns
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

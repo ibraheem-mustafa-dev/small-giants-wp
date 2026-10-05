@@ -11,6 +11,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import ContainerWrapperControls, { BackgroundPanel } from '../container/components/ContainerWrapperControls';
 import { ResponsiveOverride, SpacingControl, SgsColourPanel, fillRow, ResponsiveBoxControl, SGS_FONT_WEIGHT_OPTIONS, textRow, SgsBorderControl, resolveColourToken, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, boxShorthand, resolveBorderStyle, resolveTextColourPreviewStyle, flattenPresetSetting, usePreviewTier } from '../../utils';
+import { multiButtonFlexPreview, multiButtonWrapperPreview } from './preview-style';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -103,12 +104,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		backgroundColourGradient,
 	} = attributes;
 
-	// Only the DESKTOP tier is read here (the editorStyle preview below). The
-	// tier controls read/write the object directly via ResponsiveOverride.
-	const direction = flexDirection?.desktop || 'row';
-	const wrap      = flexWrap?.desktop || 'nowrap';
-	const justify   = justifyContent?.desktop || 'flex-start';
-	const align     = alignItems?.desktop || 'center';
 
 	// "Apply to all buttons" — bulk preset-as-seed for every sgs/button child.
 	const [ groupPreset, setGroupPreset ] = useState( 'primary' );
@@ -158,6 +153,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
+	// The device tier the canvas previews (core/editor's device type).
+	const previewTier = usePreviewTier();
 	const bgPreview = backgroundPreview( {
 		backgroundImage: attributes.backgroundImage,
 		bgVideo: attributes.bgVideo,
@@ -182,21 +179,19 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		backgroundColourGradient: attributes.backgroundColourGradient,
 		surfaceBlur: attributes.surfaceBlur,
 		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette, gradientPresets );
+		surfaceTone: attributes.surfaceTone,
+		backgroundImageTablet: attributes.backgroundImageTablet,
+		backgroundImageMobile: attributes.backgroundImageMobile,
+	}, colourPalette, gradientPresets, previewTier );
 
-	// Active device tier for the padding/margin preview below, read from the
-	// SAME source sgs/container's editor mirror reads (`core/editor`
-	// getDeviceType) — this block had no previewTier mechanism of its own
-	// (its layout preview above only ever shows the desktop tier), so this
-	// follows container's exactly rather than inventing a second convention.
-	const previewTier = usePreviewTier();
 
 	// Lines between the buttons: the block root is the flex list, so the hook's
 	// ref and style land on blockProps.
 	const sep = useSeparatorsCanvas( {
 		separators: attributes.separators,
 		device: previewTier,
-		active: [ 'grid', 'flex', 'stack' ].includes( attributes.layout ),
+		// The buttons are always a flex row; render.php hands the wrapper layout 'flex'.
+		active: true,
 		deps: [ flexDirection, flexWrap, gap, childButtons.length ],
 	} );
 
@@ -218,12 +213,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// Preview the desktop layout in the editor.
 	// Gap comes from the block's own Layout panel Gap control (raw CSS string).
 	const editorStyle = {
-		display: 'flex',
-		flexDirection: direction,
-		flexWrap: wrap,
-		gap: gap?.desktop || undefined,
-		justifyContent: justify,
-		alignItems: align,
+		...multiButtonFlexPreview( attributes, previewTier ),
+		...multiButtonWrapperPreview( attributes, previewTier, colourPalette ),
 		...sep.style,
 		...bgPreview.style,
 		...svgPreview.style,

@@ -28,6 +28,12 @@
 	color: var( --sgs-ed-first-letter-colour, inherit );
 }
 
+/* text-indent paints only on an sgs/text that directly follows another one,
+   the same adjacent-sibling relationship render.php's rule uses. */
+.wp-block-sgs-text + .wp-block-sgs-text {
+	text-indent: var( --sgs-ed-text-indent, inherit );
+}
+
 /* Shared inspector row helper — side-by-side controls (value + unit). */
 .sgs-inspector-row {
 	display: flex;

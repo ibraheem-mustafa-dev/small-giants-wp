@@ -25,8 +25,23 @@ import {
 	BaseControl,
 } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
+import {
+	colourVar,
+	fontSizeVar,
+	resolveTextColourPreviewStyle,
+	linkColourPreviewCss,
+	usePreviewTier,
+	typographyPreviewStyle,
+	spacingPreview,
+	backgroundPaintPreview,
+	textPaintPreview,
+	sgsBorderPreview,
+} from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+
+// Variants whose stylesheet already paints a border: a chosen colour, style or
+// width overrides it part by part, as render.php emits each alone.
+const STYLESHEET_BORDER_VARIANTS = [ 'classic-card', 'minimal-quote', 'rating-led' ];
 
 // No-inline migration contract §B3 (D294): testimonial is a content-KIND
 // composite using only box+width, so it migrates BLOCK-PRIVATE — dropped
@@ -258,15 +273,28 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		quoteLinkColourHover,
 		quoteLinkColourGradient,
 		quoteLinkColourHoverGradient
+	)
+	// Block-wide link colours (every anchor inside the block).
+	const rootLinkPreviewCss = linkColourPreviewCss(
+		`.${ linkPreviewUid }`,
+		attributes.linkColour,
+		attributes.linkColourHover,
+		attributes.linkColourGradient,
+		attributes.linkColourHoverGradient
 	);
 
 	const className = [ 'sgs-testimonial', `sgs-testimonial--${ effectiveVariant }`, linkPreviewUid ]
 		.filter( Boolean )
 		.join( ' ' );
 
+	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
 		className,
 		style: {
+			...spacingPreview( { padding: attributes.padding, margin: attributes.margin }, previewTier ),
+			...backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient ),
+			...textPaintPreview( attributes.textColour, attributes.backgroundColourGradient ? '' : attributes.textColourGradient ),
+			...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, undefined, { defaultBorder: STYLESHEET_BORDER_VARIANTS.includes( effectiveVariant ) } ),
 			'--sgs-transition-duration': transitionDuration
 				? `${ transitionDuration }ms`
 				: undefined,
@@ -282,9 +310,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	// D636 Task 1b — the sibling quoteColourGradient attribute wins when set.
 	const quoteInlineStyle = {
 		...resolveTextColourPreviewStyle( quoteColour, quoteColourGradient ),
-		fontSize: quoteFontSize ? fontSizeVar( quoteFontSize ) : undefined,
-		fontStyle: quoteFontStyle || undefined,
-		lineHeight: quoteLineHeight || undefined,
+		...typographyPreviewStyle( attributes, 'quote', previewTier ),
 		marginBottom: quoteMarginBottom || undefined,
 	};
 	// summary/name/role/org/rating colours (2026-09-03) — the sibling
@@ -294,7 +320,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		...resolveTextColourPreviewStyle( summaryColour, summaryColourGradient ),
 		fontSize: summaryFontSize ? fontSizeVar( summaryFontSize ) : undefined,
 	};
-	const nameStyle = resolveTextColourPreviewStyle( nameColour, nameColourGradient );
+	const nameStyle = {
+		...typographyPreviewStyle( attributes, 'name', previewTier ),
+		...resolveTextColourPreviewStyle( nameColour, nameColourGradient ),
+	};
 	const roleStyle = resolveTextColourPreviewStyle( roleColour, roleColourGradient );
 	const orgStyle = resolveTextColourPreviewStyle( orgColour, orgColourGradient );
 	// ratingSize mirrors render.php:487/499, which sets the same pixel value as
@@ -321,7 +350,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 
 	return (
 		<>
-			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
+			{ ( rootLinkPreviewCss || linkPreviewCss ) && <style>{ rootLinkPreviewCss + linkPreviewCss }</style> }
 			{ /* D618/D619 — ONE grouped, SGS-OWNED colour panel, mounted FIRST
 			   so it sits at the top of the inspector Styles tab. Replaces the
 			   scattered DesignTokenPicker rows that used to sit in "Rating
@@ -1303,7 +1332,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						 *
 						 * Quote target: full control set (fontSizePresets, showFontFamily,
 						 * showDecoration, showTransform, showLetterSpacing, showTextAlign,
-						 * showTextWrap, showTextColumns, showTextIndent, showWritingMode
+						 * showTextWrap, showTextColumns, showWritingMode
 						 * all true).
 						 *
 						 * Name target: preserves the existing showWeight=false/
@@ -1345,7 +1374,6 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 										showTextAlign: true,
 										showTextWrap: true,
 										showTextColumns: true,
-										showTextIndent: true,
 										showWritingMode: true,
 									},
 									{
@@ -1365,7 +1393,6 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 										showTextAlign: true,
 										showTextWrap: true,
 										showTextColumns: true,
-										showTextIndent: true,
 										showWritingMode: true,
 									},
 								] }
@@ -1741,7 +1768,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 										avatarMedia?.url ? (
 											<img
 												src={ avatarMedia.url }
-												alt={ avatarMedia.alt || '' }
+												alt={ avatarDecorative ? '' : avatarMedia.alt || '' }
+												aria-hidden={ avatarDecorative ? 'true' : undefined }
 												onClick={ open }
 											/>
 										) : (

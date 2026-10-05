@@ -11,9 +11,8 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
-import { gapVar, borderPaintPreview } from '../../utils';
+import { gapVar, borderPaintPreview, typographyPreviewStyle, usePreviewTier, tierBoxShorthand, isCssGradient, sgsBorderPreview } from '../../utils';
 import BrandIconGlyph from './brand-icons';
-import { resolveBorderStyle } from '../../utils/border-style';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
 // sgs/business-info 'socials' case reads from Sgs_Site_Info — Appearance >
@@ -27,16 +26,6 @@ const SOURCE_OPTIONS = [
 	{ label: __( 'Manual URLs', 'sgs-blocks' ), value: 'manual' },
 	{ label: __( 'From Site Info settings', 'sgs-blocks' ), value: 'site-info' },
 ];
-
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder so the canvas
-// preview matches the frontend (contract §5).
-function boxShorthand( box ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	const keys = [ 'top', 'right', 'bottom', 'left' ];
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
 
 const PLATFORMS = [
 	'facebook', 'twitter', 'linkedin', 'instagram', 'youtube',
@@ -164,38 +153,23 @@ export default function Edit( { attributes, setAttributes } ) {
 	// NOTE: `style` here is WP's native style-support object attribute (holds
 	// only style.color, not spacing) — distinct from this block's own
 	// `iconStyle` attribute (plain/filled/outlined/pill variant).
-	const basePadding = attributes.padding?.desktop;
-	const baseMargin = attributes.margin?.desktop;
-	const previewStyle = {};
+	const previewTier = usePreviewTier();
+	// The root's typography (render.php prints it on the root selector).
+	const previewStyle = { ...typographyPreviewStyle( attributes, '', previewTier ) };
 	// Mirrors render.php: textAlign is the flex row's justify-content.
 	const justifyPreview = { left: 'flex-start', center: 'center', right: 'flex-end', justify: 'space-between' }[ attributes.textAlign ];
 	if ( justifyPreview ) {
 		previewStyle.justifyContent = justifyPreview;
 	}
-	const paddingPreview = boxShorthand( basePadding );
+	const paddingPreview = tierBoxShorthand( attributes.padding, previewTier );
 	if ( paddingPreview ) {
 		previewStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( baseMargin );
+	const marginPreview = tierBoxShorthand( attributes.margin, previewTier );
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
 	}
-	if ( 'none' !== resolveBorderStyle( wrapperBorderStyle ) ) {
-		const wbw = boxShorthand( wrapperBorderWidth );
-		if ( wbw ) previewStyle.borderWidth = wbw;
-		previewStyle.borderStyle = previewStyle.borderWidth ? resolveBorderStyle( wrapperBorderStyle ) : undefined;
-		if ( wrapperBorderColour ) {
-			previewStyle.borderColor = /^#|^rgb|^hsl/.test( wrapperBorderColour ) ? wrapperBorderColour : resolveColourToken( wrapperBorderColour, palette );
-		}
-		if ( wrapperBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( wrapperBorderColourGradient ) ) {
-			previewStyle.borderImage = `${ wrapperBorderColourGradient } 1`;
-		}
-	}
-	const wrapperRadiusBox = attributes.borderRadius?.desktop;
-	if ( wrapperRadiusBox && ( wrapperRadiusBox.topLeft || wrapperRadiusBox.topRight || wrapperRadiusBox.bottomRight || wrapperRadiusBox.bottomLeft ) ) {
-		previewStyle.borderRadius = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
-			.map( ( k ) => wrapperRadiusBox[ k ] || '0' ).join( ' ' );
-	}
+	Object.assign( previewStyle, sgsBorderPreview( { widthValues: wrapperBorderWidth, styleValue: wrapperBorderStyle, colourValue: wrapperBorderColour, colourGradientValue: wrapperBorderColourGradient, radiusValues: attributes.borderRadius }, previewTier, palette, { wholeTier: true } ) );
 	if ( gap ) {
 		previewStyle.gap = gapVar( gap );
 	}
@@ -221,6 +195,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	// matching render.php + style.css's `:hover` rules) so a real mouse hover
 	// on the editor canvas (a live DOM, not a static screenshot) shows the
 	// same colour the frontend does.
+	// The gradient background rides its own custom property, written in either
+	// colour mode (render.php's sgs_custom_property_gradient_decls()).
+	if ( isCssGradient( iconBackgroundGradient ) ) {
+		previewStyle[ '--sgs-social-bg-gradient' ] = iconBackgroundGradient;
+	}
 	if ( iconBackgroundHover ) {
 		previewStyle[ '--sgs-social-bg-hover' ] = resolveColourToken( iconBackgroundHover, palette );
 	}
@@ -635,7 +614,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				   the block has no rendered text label (aria-label only), so the
 				   root is the only sensible typography target. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

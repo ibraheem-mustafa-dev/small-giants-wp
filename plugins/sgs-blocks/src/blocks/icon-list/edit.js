@@ -1,5 +1,6 @@
 import { __ } from "@wordpress/i18n";
-import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
+import { useBlockProps, InspectorControls, useSettings } from "@wordpress/block-editor";
+import { iconListPreview } from "./preview-style";
 import { useEntityRecords } from "@wordpress/core-data";
 import {
   PanelBody,
@@ -28,9 +29,8 @@ import {
   SpacingControl,
 } from "../../components";
 import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
-import { colourVar, gapVar, separatorsLineCss, usePreviewTier } from "../../utils";
+import { colourVar, gapVar, separatorsLineCss, usePreviewTier, tierBoxShorthand, sgsBorderPreview } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
-import { resolveBorderStyle } from '../../utils/border-style';
 
 const ICON_SIZE_OPTIONS = [
   { label: __("Small", "sgs-blocks"), value: "small" },
@@ -95,18 +95,6 @@ function resolveItemIcon(item, fallback) {
   return fallback;
 }
 
-/**
- * Box-object interface contract §1: build an editor-preview shorthand from a
- * box/corner object — mirrors render.php's hand-built shorthand so the canvas
- * matches the frontend (contract §5). Editor-canvas preview only — the SAVED/
- * RENDERED frontend output is dynamic (render.php) and emits everything
- * scoped, never inline (contract §A).
- */
-function boxShorthand(box, keys) {
-  if (!box || "object" !== typeof box) return undefined;
-  if (!keys.some((key) => box[key])) return undefined;
-  return keys.map((key) => box[key] || "0").join(" ");
-}
 
 function ItemEditor({ item, fallback, onChange, onRemove }) {
   const resolved = resolveItemIcon(item, fallback);
@@ -269,24 +257,11 @@ export default function Edit({ attributes, setAttributes, clientId }) {
     if (numberFontSize) previewStyle["--sgs-ilist-num-size"] = numberFontSize;
     if (numberFontWeight) previewStyle["--sgs-ilist-num-weight"] = numberFontWeight;
   }
-  const paddingPreview = boxShorthand(padding?.desktop, ["top", "right", "bottom", "left"]);
+  const paddingPreview = tierBoxShorthand( padding, previewTier, ["top", "right", "bottom", "left"], true );
   if (paddingPreview) previewStyle.padding = paddingPreview;
-  const marginPreview = boxShorthand(margin?.desktop, ["top", "right", "bottom", "left"]);
+  const marginPreview = tierBoxShorthand( margin, previewTier, ["top", "right", "bottom", "left"], true );
   if (marginPreview) previewStyle.margin = marginPreview;
-  if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-    const borderWidthPreview = boxShorthand(borderWidth, ["top", "right", "bottom", "left"]);
-    if (borderWidthPreview) previewStyle.borderWidth = borderWidthPreview;
-    previewStyle.borderStyle = previewStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-    if (borderColour) {
-      previewStyle.borderColor = /^#|^rgb|^hsl/.test(borderColour) ? borderColour : colourVar(borderColour);
-    }
-    // A gradient border renders frontend as a masked ::before ring, which cannot
-    // be reproduced in a plain inline style — approximate it with the gradient as
-    // a border-image so the canvas at least shows that a gradient is applied.
-    if (borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test(borderColourGradient)) {
-      previewStyle.borderImage = `${borderColourGradient} 1`;
-    }
-  }
+  Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient }, previewTier ) );
 
   const resolvedMarkerType = markerType || "icon";
   // FR-36-26c: `numbered` MUST be a real <ol> in both editor and frontend —
@@ -294,6 +269,8 @@ export default function Edit({ attributes, setAttributes, clientId }) {
   const ListTag = "numbered" === resolvedMarkerType ? "ol" : "ul";
   const HeadingTag = headingLevel || "h3";
 
+  const [colourPalette] = useSettings("color.palette");
+  const elementPreview = iconListPreview(attributes, previewTier, colourPalette);
   const blockProps = useBlockProps({
     className: [
       "sgs-icon-list",
@@ -303,7 +280,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
     ]
       .filter(Boolean)
       .join(" "),
-    style: { ...previewStyle, gap: gapVar(gap || "20") },
+    style: { ...previewStyle, ...elementPreview.root, gap: gapVar(gap || "20") },
   });
 
   const iconStyle = {
@@ -320,11 +297,9 @@ export default function Edit({ attributes, setAttributes, clientId }) {
         }
       : {}),
   };
-  const textStyle = { color: colourVar(textColour) || undefined };
-  const descriptionStyle = {
-    color: colourVar(attributes.descriptionColour) || undefined,
-  };
-  const itemStyle = itemPaddingBlock ? { paddingBlock: itemPaddingBlock } : undefined;
+  const textStyle = { color: colourVar(textColour) || undefined, ...elementPreview.text };
+  const descriptionStyle = { color: colourVar(attributes.descriptionColour) || undefined, ...elementPreview.description };
+  const itemStyle = { ...elementPreview.item, ...(itemPaddingBlock ? { paddingBlock: itemPaddingBlock } : {}) };
 
   const updateItem = (index, updatedItem) => {
     const updated = [...items];
@@ -393,7 +368,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
     canvasPreview = (
       <div {...blockProps}>
         {(heading || selectedMenuName) && (
-          <HeadingTag className="sgs-icon-list__heading">
+          <HeadingTag className="sgs-icon-list__heading" style={elementPreview.heading}>
             {heading || selectedMenuName}
           </HeadingTag>
         )}
@@ -407,7 +382,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
   } else if (heading) {
     canvasPreview = (
       <div>
-        <HeadingTag className="sgs-icon-list__heading">{heading}</HeadingTag>
+        <HeadingTag className="sgs-icon-list__heading" style={elementPreview.heading}>{heading}</HeadingTag>
         <ListTag {...blockProps}>{listItemNodes}</ListTag>
       </div>
     );
@@ -770,7 +745,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
                 showTextAlign: true,
                 showTextWrap: true,
                 showTextColumns: true,
-                showTextIndent: true,
                 showWritingMode: true,
               },
               {
@@ -785,7 +759,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
                 showTextAlign: true,
                 showTextWrap: true,
                 showTextColumns: true,
-                showTextIndent: true,
                 showWritingMode: true,
               },
               {
@@ -800,7 +773,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
                 showTextAlign: true,
                 showTextWrap: true,
                 showTextColumns: true,
-                showTextIndent: true,
                 showWritingMode: true,
               },
               {
@@ -815,7 +787,6 @@ export default function Edit({ attributes, setAttributes, clientId }) {
                 showTextAlign: true,
                 showTextWrap: true,
                 showTextColumns: true,
-                showTextIndent: true,
                 showWritingMode: true,
               },
             ]}

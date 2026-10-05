@@ -21,11 +21,12 @@ import {
 	mediaElementScopeClass,
 	mediaElementCustomProperties,
 	TypographyControls,
+	ResponsiveOverride,
 } from '../../components';
 import { MEDIA_ATOM_IDS } from '../../components/media/atoms/registry.js';
 import { fillsBox } from '../../components/media/canvasStyle.js';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { sanitiseSvg } from '../../utils';
+import { sanitiseSvg, usePreviewTier, typographyPreviewStyle, textPaintPreview, resolveTier } from '../../utils';
 
 /**
  * Allowed CSS length units for the media styling controls. Mirrors the
@@ -84,7 +85,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		thumbnail,
 	} = attributes;
 
-	const blockProps = useBlockProps();
+	const previewTier = usePreviewTier();
+	// Wrapper-level placement the front end emits on the scope selector: the
+	// alignment margins (render.php step 6) and the flex/grid item order.
+	const orderAtTier = resolveTier( attributes.order, previewTier ).value;
+	const placementStyle = {
+		...( 'center' === attributes.alignment ? { marginLeft: 'auto', marginRight: 'auto' } : {} ),
+		...( 'right' === attributes.alignment ? { marginLeft: 'auto' } : {} ),
+		...( '' !== orderAtTier && null != orderAtTier ? { order: parseInt( orderAtTier, 10 ) } : {} ),
+	};
+	const blockProps = useBlockProps( { style: placementStyle } );
+	// The caption element (image and video only), styled like render.php's
+	// scoped caption rules.
+	const captionText = String( attributes.caption || '' );
+	const CaptionTag = 'div' === attributes.captionTag ? 'div' : 'figcaption';
+	const captionStyle = {
+		...typographyPreviewStyle( attributes, 'caption', previewTier ),
+		...textPaintPreview( attributes.captionColour, attributes.captionColourGradient ),
+	};
 
 	// -------------------------------------------------------------------------
 	// Helpers.
@@ -235,7 +253,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						showTextAlign={ true }
 						showTextWrap={ true }
 						showTextColumns={ true }
-						showTextIndent={ true }
 						showWritingMode={ true }
 					/>
 				</PanelBody>
@@ -268,8 +285,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ ( isImage || isVideo ) && (
 				<ToolsPanel
 					label={ __( 'Media Styling', 'sgs-blocks' ) }
-					resetAll={ () => setAttributes( { alignment: 'left' } ) }
+					resetAll={ () => setAttributes( { alignment: 'left', order: {} } ) }
 				>
+					<ToolsPanelItem
+						label={ __( 'Order', 'sgs-blocks' ) }
+						hasValue={ () =>
+							!! attributes.order &&
+							Object.values( attributes.order ).some( ( v ) => '' !== v && null != v )
+						}
+						onDeselect={ () => setAttributes( { order: {} } ) }
+					>
+						<ResponsiveOverride
+							label={ __( 'Order', 'sgs-blocks' ) }
+							value={ attributes.order }
+							onChange={ ( obj ) => setAttributes( { order: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<TextControl
+									label={ __( 'Order in a flex or grid row', 'sgs-blocks' ) }
+									help={ __( 'Lower numbers come first. Empty keeps the source order.', 'sgs-blocks' ) }
+									type="number"
+									value={ ownValue ?? '' }
+									onChange={ ( v ) => setOwnValue( '' === v ? '' : parseInt( v, 10 ) ) }
+									__next40pxDefaultSize
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</ResponsiveOverride>
+					</ToolsPanelItem>
+
 					{ /*
 					  * Sizing (mediaSizing/height/width/maxWidth/maxHeight/
 					  * aspectRatio), Shape and Border (radius/width/style/
@@ -477,11 +521,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ inspectorControls }
 				<img
 					src={ imageUrl }
+					width={ attributes.imageWidth || undefined }
+					height={ attributes.imageHeight || undefined }
 					alt={ imageDecorative ? '' : imageAlt }
 					aria-hidden={ imageDecorative ? 'true' : undefined }
 					className={ mediaElementClassName }
 					style={ mediaElementStyle }
 				/>
+				{ captionText && (
+					<CaptionTag className="sgs-media__caption" style={ captionStyle }>
+						{ captionText }
+					</CaptionTag>
+				) }
 			</figure>
 		);
 	}

@@ -158,6 +158,40 @@ export function resolveResponsiveTier( obj = {}, tier = 'desktop' ) {
 	return resolveTier( normalized, tier, '' );
 }
 
+/** Narrower tiers fall back to the wider ones, as the front end's max-width media queries cascade. */
+const TIER_FALLBACK = { desktop: [ 'desktop' ], tablet: [ 'tablet', 'desktop' ], mobile: [ 'mobile', 'tablet', 'desktop' ] };
+
+/**
+ * The value a `{desktop,tablet,mobile}` attribute paints at a tier: the tier's
+ * own value, else the nearest wider tier's. undefined, null, '' and 'inherit'
+ * are unset at every tier, so a cleared tablet/mobile value inherits. A plain
+ * (non-tier) value passes through.
+ *
+ * @param {*}        value  Tier object, or a plain value.
+ * @param {string}   tier   'desktop' | 'tablet' | 'mobile'.
+ * @param {Function} [read] Maps a stored value to a usable value or undefined (unset);
+ *                          a tier whose value it rejects inherits the wider tier.
+ * @return {*} The effective value, or undefined when no tier is set.
+ */
+export function tierValueOf( value, tier = 'desktop', read ) {
+	const usable = ( v ) => {
+		if ( undefined === v || null === v || '' === v || 'inherit' === v ) {
+			return undefined;
+		}
+		return read ? read( v ) : v;
+	};
+	if ( ! value || 'object' !== typeof value || Array.isArray( value ) ) {
+		return usable( value );
+	}
+	for ( const key of TIER_FALLBACK[ tier ] || TIER_FALLBACK.desktop ) {
+		const resolved = usable( value[ key ] );
+		if ( undefined !== resolved ) {
+			return resolved;
+		}
+	}
+	return undefined;
+}
+
 /**
  * Emit scoped per-tier CSS rules (base + tablet + mobile) for a tri-state
  * ('inherit'|'on'|'off') responsive behaviour attribute, resolved via

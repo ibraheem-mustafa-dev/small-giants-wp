@@ -67,7 +67,7 @@ import { CursorFieldRowControls } from '../../components/CursorFieldRowControls'
 import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
-import { colourVar, resolveShadowPreviewComposed, surfaceToneClass, flattenPresetSetting } from '../../utils';
+import { colourVar, resolveShadowPreviewComposed, surfaceToneClass, flattenPresetSetting, usePreviewTier, resolveTier, resolveBoxTierPreview, isCssGradient, sgsBorderPreview } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
@@ -177,23 +177,17 @@ function paddingFromBox( box ) {
 }
 
 /**
- * Build a CSS border-width shorthand from a { top, right, bottom, left } box
- * object — each side falls back to '1px' independently, mirroring
- * render.php's `$border_width_top = '' !== $border_width_top ? … : '1px';`
- * so a fresh instance (which never wrote this attr) shows
- * the exact same 1px-everywhere hairline in the canvas that it renders on
- * the published page. Always returns a value (never undefined) — matches
- * render.php's `$has_border_width` being unconditionally true by
- * construction.
+ * The panel's border-width box as render.php paints it: each side falls back
+ * to '1px' independently (`$border_width_top = '' !== $border_width_top ? … :
+ * '1px';`), so a fresh instance (which never wrote this attr) shows the same
+ * 1px-everywhere hairline in the canvas that it renders on the published page.
  *
  * @param {Object} box Box object.
- * @return {string} CSS border-width shorthand value.
+ * @return {{top: string, right: string, bottom: string, left: string}} Width box, every side set.
  */
-function borderWidthShorthand( box ) {
+function panelBorderWidthBox( box ) {
 	const b = box && typeof box === 'object' ? box : {};
-	return [ b.top, b.right, b.bottom, b.left ]
-		.map( ( side ) => side || '1px' )
-		.join( ' ' );
+	return { top: b.top || '1px', right: b.right || '1px', bottom: b.bottom || '1px', left: b.left || '1px' };
 }
 
 /**
@@ -220,6 +214,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// paints the drawer copy of this panel.
 	const [ previewTier, setPreviewTier ] = useState( 'desktop' );
 	const isDrawerPreview = 'drawer' === previewTier;
+	// The editor's device toggle (desktop / tablet / mobile) decides which tier of
+	// the per-device settings the canvas shows.
+	const deviceTier = usePreviewTier();
+	const boxAtTier = ( tiers ) => resolveBoxTierPreview( tiers?.desktop, tiers?.tablet, tiers?.mobile, deviceTier );
 
 	const {
 		variant,
@@ -368,8 +366,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// borderImage/groupBorderColourGradient mirrors below (a raw CSS function
 		// string, gated on looking like a real gradient() call).
 		'--sgs-mm-soft-gradient':
-			iconBackgroundGradient &&
-			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( iconBackgroundGradient )
+			isCssGradient( iconBackgroundGradient )
 				? iconBackgroundGradient
 				: undefined,
 		// iconBackgroundHover/iconBackgroundGradientHover canvas mirrors — consumed by style.css's `cards`-style hover rule on
@@ -380,16 +377,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			? colourVar( iconBackgroundHover ) || iconBackgroundHover
 			: undefined,
 		'--sgs-mm-icon-hover-bg-gradient':
-			iconBackgroundGradientHover &&
-			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( iconBackgroundGradientHover )
+			isCssGradient( iconBackgroundGradientHover )
 				? iconBackgroundGradientHover
 				: undefined,
 		// accentBackgroundImageGradient canvas mirror — consumed by
 		// style.css's spotlight `[data-spotlight]::before` rule, bypassing the
 		// derived --sgs-mm-soft-image tint entirely when set.
 		'--sgs-mm-accent-image-gradient':
-			accentBackgroundImageGradient &&
-			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( accentBackgroundImageGradient )
+			isCssGradient( accentBackgroundImageGradient )
 				? accentBackgroundImageGradient
 				: undefined,
 		'--sgs-mm-panel-bg': panelBg
@@ -401,24 +396,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// is consumed by style.css's dark-scheme rule and by this root's own
 		// panelBg background-color.
 		'--sgs-mm-panel-bg-gradient':
-			panelBgGradient &&
-			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( panelBgGradient )
+			isCssGradient( panelBgGradient )
 				? panelBgGradient
 				: undefined,
 		'--sgs-mm-panel-border': borderColour
 			? colourVar( borderColour ) || borderColour
 			: undefined,
-		// A gradient border renders frontend as a masked ::before ring
-		// (sgs_border_gradient_css() in render.php), which cannot be reproduced in
-		// a plain inline style — approximate it with the gradient as a border-image,
-		// same as every other block's canvas preview of a gradient border. Paints
-		// into the real border area set below (borderWidth/borderStyle/
-		// borderColor — this block has its own width/style control via
-		// SgsBorderControl).
-		borderImage:
-			borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient )
-				? `${ borderColourGradient } 1`
-				: undefined,
 		// Resting-state group-tile border override —
 		// only set when the operator has picked a resting colour; unset means
 		// "inherit the cards tile's existing --sgs-mm-panel-border-derived
@@ -434,10 +417,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// approximation, scoped so it is a no-op on the frontend (that custom
 		// property is never set by render.php).
 		'--sgs-mm-group-border-image':
-			groupBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( groupBorderColourGradient )
+			isCssGradient( groupBorderColourGradient )
 				? `${ groupBorderColourGradient } 1`
 				: undefined,
-		'--sgs-mm-group-gap': groupGap?.desktop || undefined,
+		'--sgs-mm-group-gap': resolveTier( groupGap, deviceTier ).value || undefined,
 		'--sgs-mm-aside-w': asideWidth || undefined,
 		'--sgs-mm-aside-sep-width': asideSeparator?.width || undefined,
 		'--sgs-mm-aside-sep-colour': asideSeparator?.colour
@@ -452,11 +435,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// property can get to render.php's "no transform/no shift" branch.
 		'--sgs-mm-card-lift': panelCardLift ? `calc(-1 * ${ panelCardLift })` : '0px',
 		'--sgs-mm-item-padding-shift': itemPaddingShiftHover || '0px',
-		maxWidth: maxWidth?.desktop || undefined,
+		maxWidth: resolveTier( maxWidth, deviceTier ).value || undefined,
 		// Panel padding applies directly to the ROOT (it's the panel shell
 		// itself that render.php pads, not the content row) — a real CSS
 		// property, not a custom-prop indirection.
-		padding: paddingFromBox( panelPadding?.desktop ),
+		padding: paddingFromBox( boxAtTier( panelPadding ) ),
 		borderRadius: borderRadius || undefined,
 		// Drawer preview ground — mirrors render.php's in-drawer root rule
 		// (transparent unless drawerBg / drawerBgGradient is set). Inline so it
@@ -465,20 +448,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			? {
 					backgroundColor: drawerBg ? colourVar( drawerBg ) || drawerBg : 'transparent',
 					backgroundImage:
-						drawerBgGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( drawerBgGradient )
+						isCssGradient( drawerBgGradient )
 							? drawerBgGradient
 							: 'none',
 			  }
 			: {} ),
-		// borderWidth/borderStyle canvas mirror (borderColour arrives via
-		// --sgs-mm-panel-border above). Mirrors render.php exactly: width always
-		// paints (each side falls back to 1px), style/colour ride the same
-		// declaration set, colour reusing the --sgs-mm-panel-border value
-		// already resolved above so an unset borderColour falls back
-		// identically in both places.
-		borderWidth: borderWidthShorthand( borderWidth ),
-		borderStyle: borderStyle || 'solid',
-		borderColor: 'var(--sgs-mm-panel-border)',
+		// The Border panel's values through its twin. Width always paints (each
+		// side falls back to 1px, as render.php does); an unset colour falls back
+		// to the --sgs-mm-panel-border value resolved above, as on the page. A
+		// gradient border (a masked ::before ring on the page) previews as a
+		// border-image.
+		...sgsBorderPreview( { widthValues: panelBorderWidthBox( borderWidth ), styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient }, deviceTier, colourPalette, { fallbackColour: 'var(--sgs-mm-panel-border)' } ),
 		backdropFilter: ( () => {
 			const parts = [];
 			if ( typeof surfaceSaturate === 'number' ) {
@@ -1531,7 +1511,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								? `${ brandsEyebrowLineHeight }${ brandsEyebrowLineHeightUnit || '' }`
 								: undefined,
 							color: brandsEyebrowColour ? colourVar( brandsEyebrowColour ) : undefined,
-							padding: paddingFromBox( brandsEyebrowPadding?.desktop ),
+							padding: paddingFromBox( boxAtTier( brandsEyebrowPadding ) ),
 						} }
 					>
 						{ brandsEyebrow }

@@ -393,10 +393,6 @@
 		"attributionTextColumns": {
 			"type": "number"
 		},
-		"attributionTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"attributionWritingMode": {
 			"type": "string",
 			"enum": [

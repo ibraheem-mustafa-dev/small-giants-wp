@@ -53,7 +53,8 @@
 				],
 				"borderWidth": [
 					"borderWidth"
-				]
+				],
+				"rowShrinkPadding": [ "rowShrinkPadding" ]
 			},
 			"elements": {
 				"row": {

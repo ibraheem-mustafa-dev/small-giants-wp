@@ -11,10 +11,11 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { SgsLengthControl, TypographyControls, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle, borderRadiusPreview } from '../../utils';
 import { VariantContent, cardColourRows, CardTypographyPanel } from './card-fields';
 import { FloatingPanel } from './floating-panel';
-import { buildRootStyle, buildRootClassName } from './preview-style';
+import { buildRootStyle, buildRootClassName, floatingHideLabelPreviewCss } from './preview-style';
+import { usePreviewTier, spacingPreview } from '../../utils';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Inline button', 'sgs-blocks' ), value: 'inline' },
@@ -23,7 +24,7 @@ const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		phoneNumber,
 		message,
@@ -57,9 +58,17 @@ export default function Edit( { attributes, setAttributes } ) {
 	// `attributes` blob to buildRootStyle() — a wholesale pass-through
 	// renders correctly but is invisible to CHECK A's traceability scan
 	// (.claude/rules/block-editor-controls.md "Editor-canvas mirrors" trap 1).
+	const previewTier = usePreviewTier();
+	const hideLabelUid = `sgs-whatsapp-cta-preview-${ clientId }`;
+	const hideLabelCss = floatingHideLabelPreviewCss(
+		`.${ hideLabelUid }`,
+		attributes.floatingHideLabelBelow,
+		'floating' === variant && !! label
+	);
 	const blockProps = useBlockProps( {
-		className: buildRootClassName( { variant, showOnMobile, showOnDesktop } ),
-		style: buildRootStyle( {
+		className: `${ buildRootClassName( { variant, showOnMobile, showOnDesktop } ) } ${ hideLabelUid }`,
+		style: {
+			...buildRootStyle( {
 			padding,
 			margin,
 			borderRadius,
@@ -73,11 +82,16 @@ export default function Edit( { attributes, setAttributes } ) {
 			cardBorderStyle,
 			iconGap: attributes.iconGap,
 			minHeight: attributes.minHeight,
-		}, colourVar, resolveTextColourPreviewStyle ),
+			}, colourVar, resolveTextColourPreviewStyle ),
+			...spacingPreview( { padding, margin }, previewTier ),
+			...borderRadiusPreview( borderRadius, previewTier, { wholeTier: true } ),
+		},
 	} );
+
 
 	return (
 		<>
+			{ hideLabelCss && <style>{ hideLabelCss }</style> }
 			<SgsColourPanel
 				rows={ [
 					textRow( {
@@ -193,7 +207,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Styling', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="label"

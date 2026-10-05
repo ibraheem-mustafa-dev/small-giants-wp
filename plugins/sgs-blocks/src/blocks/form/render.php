@@ -269,7 +269,9 @@ if ( ! empty( $sgs_form_style_engine_input ) ) {
 if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
 	$sgs_form_supports_classes[] = $sgs_form_uid;
 }
-$sgs_form_supports_css .= sgs_typography_css_rule( $attributes, '', $sgs_form_sel );
+// Text indent follows core's convention: every paragraph that follows another
+// paragraph inside the element.
+$sgs_form_supports_css .= sgs_typography_css_rule( $attributes, '', $sgs_form_sel, $sgs_form_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 
 $sgs_form_preset_text = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $sgs_form_preset_bg   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';

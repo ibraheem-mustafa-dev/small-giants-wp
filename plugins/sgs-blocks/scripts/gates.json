@@ -1354,5 +1354,14 @@
     "budget_ms": 25220,
     "order": 149,
     "tier_reason": "Proves every wiring-fingerprint rule can fail: each mutant disables one rule in a throwaway copy and the fixture tests must turn red. Pre-deploy: about 65 pytest runs in parallel."
+  },
+  {
+    "id": "check-border-preview-twin",
+    "cmd": "node scripts/check-border-preview-twin.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 150
   }
 ]

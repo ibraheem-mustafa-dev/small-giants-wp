@@ -82,7 +82,8 @@
         ],
         "cardPadding": [
           "cardPadding"
-        ]
+        ],
+        "imagePadding": [ "imagePadding" ]
       },
       "elements": {
         "grid": {

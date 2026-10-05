@@ -10,7 +10,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
@@ -30,6 +30,8 @@ import {
 	LinkPopoverField,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { usePreviewTier } from '../../utils';
+import { languageSwitchPreview } from './preview-style';
 
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px', default: 8 },
@@ -88,6 +90,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		gap,
 		panelPadding,
 	} = attributes;
+
+	const previewTier = usePreviewTier();
+	const [ palette ] = useSettings( 'color.palette' );
+	const preview = languageSwitchPreview( attributes, previewTier, palette );
 
 	const blockProps = useBlockProps( {
 		className: [ 'sgs-language-switch', `sgs-language-switch--${ display }` ].join( ' ' ),
@@ -148,11 +154,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			.filter( ( item ) => item.code )
 			.map( ( item, index, arr ) => (
 				<span key={ index } className="sgs-language-switch__item-wrap">
-					<span className="sgs-language-switch__link">
+					<span
+						className="sgs-language-switch__link"
+						// The first language stands in for the visitor's current one, so the
+						// current-language colour shows on the canvas.
+						aria-current={ 0 === index ? 'true' : undefined }
+						style={ 0 === index ? preview.currentLinkStyle : preview.linkStyle }
+					>
 						{ previewLabel( item.code, labelStyle, item.customLabel ) }
 					</span>
 					{ 'inline' === display && index < arr.length - 1 && !! separator && (
-						<span className="sgs-language-switch__separator" aria-hidden="true">
+						<span className="sgs-language-switch__separator" aria-hidden="true" style={ preview.separatorStyle }>
 							{ separator }
 						</span>
 					) }
@@ -384,12 +396,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								? previewLabel( languages[ 0 ].code, labelStyle, languages[ 0 ].customLabel )
 								: __( 'Language', 'sgs-blocks' ) }
 						</button>
-						<div className="sgs-language-switch__panel">
-							<span className="sgs-language-switch__list">{ renderPreviewItems() }</span>
+						<div className="sgs-language-switch__panel" style={ preview.panelStyle }>
+							<span className="sgs-language-switch__list" style={ preview.listStyle }>{ renderPreviewItems() }</span>
 						</div>
 					</>
 				) : (
-					<span className="sgs-language-switch__list">{ renderPreviewItems() }</span>
+					<span className="sgs-language-switch__list" style={ preview.listStyle }>{ renderPreviewItems() }</span>
 				) }
 			</div>
 		</>

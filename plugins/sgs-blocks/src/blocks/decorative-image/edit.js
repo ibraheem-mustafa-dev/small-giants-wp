@@ -15,6 +15,7 @@ import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import DecorativeImagePanelLayout from '../../components/media/DecorativeImagePanelLayout';
 import { elementCustomProperties, requiresBox } from '../../components/media/canvasStyle';
+import { resolveTier, usePreviewTier } from '../../utils';
 
 const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
@@ -90,13 +91,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
-	// positionX/positionY/rotation are TIER OBJECTS (Spec 35 pass) — the
-	// editor preview always shows the DESKTOP tier, same as the frontend's
-	// unprefixed CSS rule before any @media override applies.
-	const positionXDesktop = positionX?.desktop ?? 50;
-	const positionYDesktop = positionY?.desktop ?? 50;
-	const rotationDesktop = rotation?.desktop ?? 0;
-	const widthDesktop = width?.desktop ?? 200;
+	// positionX/positionY/rotation/width are TIER OBJECTS (Spec 35 pass); the
+	// preview shows the tier the editor is previewing, a narrower tier inheriting
+	// from the wider one as the frontend's @media overrides do.
+	const previewTier = usePreviewTier();
+	const positionXDesktop = resolveTier( positionX, previewTier, 50 ).value;
+	const positionYDesktop = resolveTier( positionY, previewTier, 50 ).value;
+	const rotationDesktop = resolveTier( rotation, previewTier, 0 ).value;
+	const widthDesktop = resolveTier( width, previewTier, 200 ).value;
 
 	// -------------------------------------------------------------------------
 	// Media-atom canvas mirror (Wave 6, 2026-09-02) — object-fit/focal-point/
@@ -219,7 +221,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									'tablet' === bp ? 'imageIdTablet' : 'imageIdMobile';
 								const urlKey =
 									'tablet' === bp ? 'imageUrlTablet' : 'imageUrlMobile';
-								const tierValue = attributes[ urlKey ]
+								const tierUrlValue = attributes[ urlKey ]
 									? {
 											url: attributes[ urlKey ],
 											type: 'image',
@@ -230,7 +232,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									: null;
 								return (
 									<MediaPicker
-										value={ tierValue }
+										value={ tierUrlValue }
 										allowedTypes={ [ 'image' ] }
 										onChange={ ( media ) =>
 											setAttributes( {

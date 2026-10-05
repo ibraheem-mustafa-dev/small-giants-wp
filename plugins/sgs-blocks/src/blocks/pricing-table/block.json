@@ -829,10 +829,6 @@
 		"titleTextColumns": {
 			"type": "number"
 		},
-		"titleTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"titleWritingMode": {
 			"type": "string",
 			"enum": [
@@ -930,10 +926,6 @@
 		},
 		"priceTextColumns": {
 			"type": "number"
-		},
-		"priceTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"priceWritingMode": {
 			"type": "string",
@@ -1033,10 +1025,6 @@
 		"ctaTextColumns": {
 			"type": "number"
 		},
-		"ctaTextIndent": {
-			"type": "string",
-			"default": ""
-		},
 		"ctaWritingMode": {
 			"type": "string",
 			"enum": [
@@ -1134,10 +1122,6 @@
 		},
 		"featureTextColumns": {
 			"type": "number"
-		},
-		"featureTextIndent": {
-			"type": "string",
-			"default": ""
 		},
 		"featureWritingMode": {
 			"type": "string",

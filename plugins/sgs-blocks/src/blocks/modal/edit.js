@@ -13,9 +13,10 @@ import {
 	ToggleControl,
 	Notice,
 } from '@wordpress/components';
+import { dialogPreviewStyle } from './preview-style';
 import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, SgsColourPanel, ScrimControls, scrimColourRow } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
+import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle, backgroundPaintPreview, isCssGradient } from '../../utils';
 import { ModalAnchorNotice, ModalHashLoadToggle, ModalNoOpenerWarning } from './anchor-open-controls';
 import { DialogSizeBorderControls, DialogShadowControl, CloseStyleControl } from './dialog-style-controls';
 
@@ -138,6 +139,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		maxWidth: isFullscreenSize ? '100%' : MAX_WIDTH_VALUES[ maxWidth ] || undefined,
 		borderRadius: isFullscreenSize ? 0 : undefined,
 		backgroundColor: resolveColourToken( modalBackground, palette ) || undefined,
+		...dialogPreviewStyle( attributes, palette ),
 	};
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -157,7 +159,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// correct resolver.
 	const triggerButtonStyle = {
 		...resolveTextColourPreviewStyle( triggerColour, triggerColourGradient, ( v ) => resolveColourToken( v, palette ) ),
-		backgroundColor: resolveColourToken( triggerBackground, palette ) || undefined,
+		...backgroundPaintPreview( triggerBackground, attributes.triggerBackgroundGradient, palette ),
 	};
 
 	/*
@@ -182,7 +184,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 * whenever a resting colour is also set (the common case).
 	 */
 	const triggerBgHoverDecl =
-		triggerBackgroundHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( triggerBackgroundHoverGradient )
+		isCssGradient( triggerBackgroundHoverGradient )
 			? `background-image:${ triggerBackgroundHoverGradient } !important;background-color:transparent !important;`
 			: triggerBackgroundHover
 				? `background-color:${ resolveColourToken( triggerBackgroundHover, palette ) } !important;`
@@ -553,28 +555,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   modal has no scrim to show, so there is nothing honest to
 				   render here. */ }
 
-				{ /* GROUND-TRUTH: source=file, confirmed against render.php:110-122 +
-				   helpers-button-style.php:79-313 this session. The close button
-				   (`.sgs-modal__close`) only exists inside the real `<dialog>`,
-				   which — like the overlay above — the editor canvas never opens.
-				   render.php calls `sgs_button_element_style_css( $attributes,
-				   'close', …, $bg_layer = true, $bg_layer_positioned = true )`:
-				   closeColourBackground(Gradient) paints a `::after` layer BEHIND
-				   the button (never the base selector), while
-				   closeColourText(Gradient) paints the base selector directly
-				   (safe because $bg_layer moved the fill off it) — the exact
-				   mechanism the icon's `stroke="currentColor"` depends on. A
-				   plain inline `style` prop cannot target a `::after` pseudo
-				   -element, so this preview uses two nested elements instead of
-				   one to keep the two paints from colliding on the same style
-				   object: the outer swatch carries the BACKGROUND paint (mirrors
-				   the ::after layer), the inner icon wrapper carries the TEXT
-				   paint via the same `resolveTextColourPreviewStyle()` helper
-				   `triggerButtonStyle` above already uses — including the
-				   gradient branch's `color:transparent`, which correctly mirrors
-				   the real frontend making the icon invisible when a gradient
-				   text colour is set (this is what render.php actually paints,
-				   not a bug this preview should hide). */ }
+				{ /* The close button lives inside the real <dialog>, which the canvas never opens.
+				   render.php paints closeColourBackground on a ::after layer and closeColourText on
+				   the button; the outer swatch carries the background, the inner span the text
+				   paint (a gradient text colour makes the icon transparent, as on the page). */ }
 				<div
 					className="sgs-modal__close-preview-row"
 					style={ { display: 'flex', alignItems: 'center', gap: '8px' } }
@@ -601,10 +585,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								( v ) => resolveColourToken( v, palette )
 							) }
 						>
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-								<line x1="18" y1="6" x2="6" y2="18"></line>
-								<line x1="6" y1="6" x2="18" y2="18"></line>
-							</svg>
+							{ 'glyph' === attributes.closeStyle ? (
+								<span className="sgs-modal__close-glyph">&times;</span>
+							) : (
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							) }
 						</span>
 					</span>
 					<span

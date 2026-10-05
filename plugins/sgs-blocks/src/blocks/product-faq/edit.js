@@ -21,14 +21,22 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 	RichText,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
 } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
-import { resolveBorderStyle } from '../../utils/border-style';
+import {
+	backgroundPaintPreview,
+	colourVar,
+	resolveTextColourPreviewStyle,
+	typographyPreviewStyle,
+	usePreviewTier,
+	textIndentPreviewCss,
+	boxPreview,
+} from '../../utils';
 
 const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
@@ -54,43 +62,17 @@ const LENGTH_UNITS = [
 	{ value: '%', label: '%', default: 0 },
 ];
 
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder (matches sgs/quote
-// + sgs/brand-strip) so the canvas preview matches the frontend.
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
+// Editor preview of the root element at the previewed device tier: the box
+// (padding, margin, border, radius), the fill, the text colour and typography,
+// plus the SGS kept-scalar width family. Mirrors render.php's scoped output.
+function buildWrapperStyle( attributes, tier, palette ) {
+	const { maxWidth, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
+	const wrapperStyle = {
+		...boxPreview( attributes, tier, palette ),
+		...typographyPreviewStyle( attributes, '', tier ),
+		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, palette ),
+	};
 
-// Desktop-only preview (responsive tiers render via PHP @media, same
-// convention as sgs/quote's buildWrapperStyle). Covers the WP-native border
-// (radius/width/style/colour — all skip-serialised so useBlockProps() no
-// longer auto-applies them) + the SGS kept-scalar width family.
-function buildWrapperStyle( attributes ) {
-	const {
-		padding,
-		margin,
-		maxWidth,
-		backgroundColour,
-		textColour,
-		textColourGradient,
-		borderWidth,
-		borderStyle,
-		borderColour,
-		borderRadius,
-	} = attributes;
-	const wrapperStyle = {};
-
-	// D635-pattern migration: background/text preview now reads the flat
-	// backgroundColour/textColour attrs (SgsColourPanel) instead of
-	// style.color.background/.text (supports.color.background/.text are now
-	// false). Mirrors sgs/quote's buildWrapperStyle.
-	if ( backgroundColour ) {
-		wrapperStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
-			? backgroundColour
-			: colourVar( backgroundColour );
-	}
 	// D636 gap-closure — textColourGradient sibling wins when set+valid,
 	// switching the preview to the background-clip:text shape (matches
 	// render.php's sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl()).
@@ -101,34 +83,6 @@ function buildWrapperStyle( attributes ) {
 		)
 	);
 
-	// Border is the block's own borderWidth/borderStyle/borderColour/
-	// borderRadius attrs (SgsBorderControl below) — block.json declares no
-	// `__experimentalBorder` support at all, so WP-native `style.border` is
-	// never populated.
-	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) {
-		wrapperStyle.borderRadius = radiusPreview;
-	}
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-		if ( borderWidthPreview ) {
-			wrapperStyle.borderWidth = borderWidthPreview;
-		}
-		wrapperStyle.borderStyle = wrapperStyle.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			wrapperStyle.borderColor = borderColour;
-		}
-	}
-
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) {
-		wrapperStyle.padding = paddingPreview;
-	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( marginPreview ) {
-		wrapperStyle.margin = marginPreview;
-	}
-
 	if ( maxWidth ) {
 		wrapperStyle.maxWidth = maxWidth;
 		wrapperStyle.marginInline = 'auto';
@@ -137,7 +91,7 @@ function buildWrapperStyle( attributes ) {
 	return wrapperStyle;
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		heading,
 		headingLevel,
@@ -163,9 +117,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			? backgroundColour
 			: '';
 
+	const previewTier = usePreviewTier();
+	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
+	const [ palette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-faq',
-		style: buildWrapperStyle( attributes ),
+		style: buildWrapperStyle( attributes, previewTier, palette ),
 	} );
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-product-faq__items' },
@@ -341,6 +298,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<section { ...blockProps }>
+				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
 				<RichText
 					tagName={ HeadingTag }
 					className="sgs-product-faq__heading"

@@ -8,9 +8,8 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { colourVar, textPaintPreview, backgroundPaintPreview } from '../../utils';
+import { textPaintPreview, backgroundPaintPreview, tierBoxShorthand, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { resolveBorderStyle } from '../../utils/border-style';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -24,24 +23,13 @@ const DIGIT_STYLES = [
 	{ label: __( 'Flip', 'sgs-blocks' ), value: 'flip' },
 ];
 
-/**
- * Editor-canvas box shorthand preview — mirrors render.php's scoped shorthand
- * output so the canvas matches the frontend (contract §E). Editor-only
- * convenience; the frontend never emits these as inline styles (contract §A).
- */
-function boxShorthand( box, order = [ 'top', 'right', 'bottom', 'left' ] ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	const vals = order.map( ( key ) => box[ key ] );
-	if ( vals.every( ( v ) => ! v ) ) return undefined;
-	return vals.map( ( v ) => v || '0' ).join( ' ' );
-}
 
 /**
  * Build the editor-canvas preview style object (base tier only — tablet/
  * mobile tiers are not simulated on the fixed-width canvas, matching quote/
  * media precedent).
  */
-function buildPreviewStyle( attributes, colourPalette ) {
+function buildPreviewStyle( attributes, colourPalette, previewTier = 'desktop' ) {
 	const {
 		padding,
 		margin,
@@ -64,11 +52,11 @@ function buildPreviewStyle( attributes, colourPalette ) {
 
 	const preview = {};
 
-	const paddingPreview = boxShorthand( padding?.desktop );
+	const paddingPreview = tierBoxShorthand( padding, previewTier );
 	if ( paddingPreview ) {
 		preview.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin?.desktop );
+	const marginPreview = tierBoxShorthand( margin, previewTier );
 	if ( marginPreview ) {
 		preview.margin = marginPreview;
 	}
@@ -77,20 +65,7 @@ function buildPreviewStyle( attributes, colourPalette ) {
 	// borderRadius attrs (SgsBorderControl, below) — NOT WP-native
 	// `style.border`, which no control in this file ever writes to; the
 	// block.json `supports` block declares no `__experimentalBorder` at all.
-	if ( 'none' !== resolveBorderStyle( borderStyle ) ) {
-		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-		if ( borderWidthPreview ) {
-			preview.borderWidth = borderWidthPreview;
-		}
-		preview.borderStyle = preview.borderWidth ? resolveBorderStyle( borderStyle ) : undefined;
-		if ( borderColour ) {
-			preview.borderColor = borderColour;
-		}
-	}
-	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) {
-		preview.borderRadius = radiusPreview;
-	}
+	Object.assign( preview, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: borderRadius }, previewTier, colourPalette ) );
 
 	// Wrapper text/background colour — block-private, gradient-capable attrs
 	// (WP-native `supports.color` is disabled; the old `style.color.*` path
@@ -103,32 +78,14 @@ function buildPreviewStyle( attributes, colourPalette ) {
 	if ( wrapperBgPreview ) {
 		Object.assign( preview, wrapperBgPreview );
 	}
-	// Typography — migrated off WP-native style.typography.fontSize onto the
-	// shared TypographyControls attribute shape (D971/D972). Base/desktop tier
-	// only for the canvas preview, matching sgs/quote + sgs/media precedent
-	// (tablet/mobile tiers are not simulated on the fixed-width canvas).
-	const fontSizeDesktop = fontSize && 'object' === typeof fontSize ? fontSize.desktop : fontSize;
-	if ( fontSizeDesktop ) {
-		preview.fontSize = `${ fontSizeDesktop }${ fontSizeUnit || 'px' }`;
-	}
-	if ( fontWeight ) {
-		preview.fontWeight = fontWeight;
-	}
-	if ( fontStyle ) {
-		preview.fontStyle = fontStyle;
-	}
-	const lineHeightDesktop = lineHeight && 'object' === typeof lineHeight ? lineHeight.desktop : lineHeight;
-	if ( lineHeightDesktop ) {
-		preview.lineHeight = `${ lineHeightDesktop }${ lineHeightUnit || '' }`;
-	}
-	if ( textAlign ) {
-		preview.textAlign = textAlign;
-	}
+	// Typography: the twin of render.php's sgs_typography_css_rule( $attributes, '' ).
+	Object.assign( preview, typographyPreviewStyle( attributes, '', previewTier ) );
 
 	return preview;
 }
 
 export default function Edit( { attributes, setAttributes } ) {
+	const previewTier = usePreviewTier();
 	const {
 		targetDate,
 		evergreenMode,
@@ -152,6 +109,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const className = [
 		'sgs-countdown',
 		`sgs-countdown--${ cardStyle }`,
+		`sgs-countdown--digit-${ 'flip' === digitStyle ? 'flip' : 'simple' }`,
 	].join( ' ' );
 
 	// numberColour/numberColourGradient + labelColour/labelColourGradient real
@@ -165,7 +123,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const blockProps = useBlockProps( {
 		className,
-		style: buildPreviewStyle( attributes, colourPalette ),
+		style: buildPreviewStyle( attributes, colourPalette, previewTier ),
 	} );
 
 	const numberPreview = textPaintPreview( numberColour, numberColourGradient, colourPalette );
@@ -374,7 +332,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				    longest rendered label <=12 chars ("— inherit —", 11 chars)
 				    renders as ToggleGroupControl, not SelectControl. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

@@ -104,8 +104,15 @@ $align_items_mobile = esc_attr( $align_items_obj['mobile'] ?? 'stretch' );
 $uid      = wp_unique_id( 'sgs-mb-' );
 $root_sel = '.' . $uid . '.sgs-multi-button';
 
+// The buttons' flex row sits on whichever element holds them: the root, or the
+// wrapper's content band (`>.sgs-container__inner`, rendered when a content width,
+// band padding or band margin is set). When the band renders the root becomes a
+// plain block so the band keeps its own width and centring.
+$flex_sel = $root_sel . ',' . $root_sel . '>.sgs-container__inner';
+
 // Build scoped responsive CSS using concatenation (WPCS: no variable interpolation in strings).
-$css  = $root_sel . '{';
+$css  = $root_sel . ':has(>.sgs-container__inner){display:block;}';
+$css .= $flex_sel . '{';
 $css .= 'display:flex;';
 $css .= 'flex-direction:' . $direction . ';';
 $css .= 'flex-wrap:' . $wrap . ';';
@@ -117,7 +124,7 @@ $css .= '}';
 // Tablet breakpoint (768px to 1023px — device-tier standard,
 // .claude/rules/cloning-pipeline.md's breakpoint-discipline rule).
 $css .= '@media(max-width:1023px) and (min-width:768px){';
-$css .= $root_sel . '{';
+$css .= $flex_sel . '{';
 $css .= 'flex-direction:' . $direction_tablet . ';';
 $css .= 'flex-wrap:' . $wrap_tablet . ';';
 $css .= 'gap:' . $gap_tab_css . ';';
@@ -127,7 +134,7 @@ $css .= '}}';
 
 // Mobile breakpoint (max 767px — device-tier standard; was 768px, see above).
 $css .= '@media(max-width:767px){';
-$css .= $root_sel . '{';
+$css .= $flex_sel . '{';
 $css .= 'flex-direction:' . $direction_mobile . ';';
 $css .= 'flex-wrap:' . $wrap_mobile . ';';
 $css .= 'gap:' . $gap_mob_css . ';';
@@ -430,9 +437,17 @@ $mb_style = '<style>' . wp_strip_all_tags( $css ) . '</style>';
 // justify-content/align-items/flex-direction responsively above and needs only the
 // width/contentWidth mirror (align/maxWidth/contentWidth + padding/spacing) — the
 // same pattern as sgs/quote, sgs/testimonial and sgs/product-card.
+// The buttons are always a flex row, so the wrapper reads layout 'flex' unless one is
+// stored: that is what turns on its Separators feature
+// (helpers-container-separators.php::sgs_container_separators_active). With kind
+// 'content' the wrapper emits no display/flex declarations of its own.
+$mb_wrapper_attributes = $attributes;
+if ( '' === ( is_string( $attributes['layout'] ?? null ) ? $attributes['layout'] : '' ) ) {
+	$mb_wrapper_attributes['layout'] = 'flex';
+}
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $mb_style CSS is wp_strip_all_tags()'d; SGS_Container_Wrapper::render() escapes its output internally; $content is WP-rendered inner blocks.
 echo $mb_style . SGS_Container_Wrapper::render(
-	$attributes,
+	$mb_wrapper_attributes,
 	$block,
 	$content,
 	'content',

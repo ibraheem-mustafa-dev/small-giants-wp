@@ -148,3 +148,55 @@ export function typographyPreviewStyle( attributes, prefix = '', tier = 'desktop
 
 	return style;
 }
+
+// JS twin of sgs_css_length_value() for an editor <style> rule: a bare number
+// is px; a value carrying CSS-breakout characters or a url()/expression()/
+// @import is rejected (''), every other length passes through trimmed.
+function indentLengthValue( raw ) {
+	const value = String( raw ?? '' ).trim();
+	if ( '' === value ) {
+		return '';
+	}
+	if ( /^\d+$/.test( value ) ) {
+		return `${ value }px`;
+	}
+	if ( /url\s*\(|expression\s*\(|@import/i.test( value ) || /[\{}<>;=]/.test( value ) || value.includes( '/*' ) ) {
+		return '';
+	}
+	return value;
+}
+
+/**
+ * textIndentPreviewCss — the editor twin of the text-indent rule
+ * sgs_typography_css_rule() emits on its adjacent-sibling selector. Core's
+ * convention: indent every paragraph that follows another paragraph inside
+ * the element, so the rule is
+ * `{scope} :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text){text-indent:X;}`,
+ * returned as a string for an editor `<style>` element (an inline style cannot
+ * reach a sibling relationship).
+ *
+ * PHP reads `{prefix}TextIndent` as one flat length; a tier object (never
+ * written by TypographyControls) resolves at the previewed tier.
+ *
+ * @param {Object} attributes    Block attributes.
+ * @param {string} prefix        Attribute prefix, '' for the root family.
+ * @param {string} scopeSelector Editor selector of the element the PHP call targets.
+ * @param {string} [tier='desktop'] 'desktop' | 'tablet' | 'mobile'.
+ * @return {string} The CSS rule, or '' when unset, invalid or unscoped.
+ */
+export function textIndentPreviewCss( attributes, prefix, scopeSelector, tier = 'desktop' ) {
+	if ( ! scopeSelector ) {
+		return '';
+	}
+	const key = prefix ? `${ prefix }TextIndent` : 'textIndent';
+	let raw = ( attributes || {} )[ key ];
+	if ( raw && 'object' === typeof raw && ! Array.isArray( raw ) ) {
+		raw = tierKeys( tier ).map( ( t ) => raw[ t ] ).find( ( v ) => ! isUnset( v ) );
+	}
+	const value = indentLengthValue( raw );
+	if ( '' === value ) {
+		return '';
+	}
+	const para = ':is(p, .wp-block-sgs-text)';
+	return `${ scopeSelector } ${ para } + ${ para }{text-indent:${ value };}`;
+}

@@ -18,6 +18,7 @@ import {
 	fillRow,
 	textRow,
 } from '../../components';
+import { usePreviewTier, resolveTier, backgroundPaintPreview, textPaintPreview } from '../../utils';
 
 /**
  * @param {Object}   props               Block props.
@@ -25,7 +26,7 @@ import {
  * @param {Function} props.setAttributes Attribute setter.
  * @return {JSX.Element} Editor markup.
  */
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		wishlistUrl,
 		iconSource,
@@ -38,7 +39,22 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconSize,
 	} = attributes;
 
-	const blockProps = useBlockProps( { className: 'sgs-wishlist-link' } );
+	const previewTier = usePreviewTier();
+	const previewUid = `sgs-wishlist-link-preview-${ clientId }`;
+	const blockProps = useBlockProps( { className: `sgs-wishlist-link ${ previewUid }` } );
+
+	// The icon colour is painted as a background on the svg, the same
+	// declaration sgs_fill_states_css() emits; an svg cannot take a style prop
+	// through IconPreview, so a scoped editor rule carries it.
+	const iconPaint = backgroundPaintPreview( attributes.iconColour, '' );
+	const iconPaintCss = iconPaint.backgroundColor
+		? `.${ previewUid } .sgs-wishlist-link__icon svg{background-color:${ iconPaint.backgroundColor };}`
+		: '';
+	const iconSizePreview = parseInt( resolveTier( iconSize, previewTier ).value, 10 ) || 24;
+	const badgeStyle = {
+		...backgroundPaintPreview( attributes.badgeBackgroundColour, '' ),
+		...textPaintPreview( attributes.badgeTextColour, '' ),
+	};
 
 	const colourRows = [
 		fillRow( {
@@ -130,12 +146,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
+			{ iconPaintCss && <style>{ iconPaintCss }</style> }
 			<div { ...blockProps }>
 				<span className="sgs-wishlist-link__icon" aria-hidden="true">
 					<IconPreview
 						source={ iconSource || 'lucide' }
 						name={ iconName || 'heart' }
-						size={ parseInt( iconSize?.desktop, 10 ) || 24 }
+						size={ iconSizePreview }
 					/>
 				</span>
 				{ label ? (
@@ -162,7 +179,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</span>
 				) : null }
 				{ showCount ? (
-					<span className="sgs-wishlist-link__badge">0</span>
+					<span className="sgs-wishlist-link__badge" style={ badgeStyle }>0</span>
 				) : null }
 			</div>
 		</>

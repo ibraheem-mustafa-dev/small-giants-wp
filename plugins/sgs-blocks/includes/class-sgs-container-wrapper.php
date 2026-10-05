@@ -46,6 +46,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/render-helpers.php';
 require_once __DIR__ . '/container-scroll-row-css.php';
 require_once __DIR__ . '/shape-dividers.php';
+require_once __DIR__ . '/helpers-grid-item.php';
 require_once __DIR__ . '/helpers-surface-ground.php';
 // sgs_css_length_or_sizing_keyword() — the `$sgs_css_length` closure's sanitiser.
 require_once __DIR__ . '/helpers-css-sizing-keyword.php';
@@ -895,80 +896,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// alignfull class so WP theme styles handle the breakout correctly.
 			$align = $attributes['align'] ?? '';
 
-			// Grid item defaults (SB-1) — section + layout kinds only.
-			// gridItemPadding/gridItemBorderRadius are now box-object attrs
-			// (A1 migration, 2026-07-26): { top,right,bottom,left } /
-			// { topLeft,topRight,bottomLeft,bottomRight }. Serialise to CSS
-			// shorthand here so the rest of this method's string-based
-			// consumers ($grid_item_padding !== '' guards, sgs_sanitize_grid_template)
-			// are unchanged. Empty/absent object → '' (identical neutral
-			// behaviour to the old empty-string default).
-			// $grid_item_padding / $grid_item_border_radius are ALREADY safe against a
-			// tiered {desktop,tablet,mobile} object reaching this legacy scalar path
-			// (Spec 35 Phase 1.4b, STAGE 2 verification): sgs_serialise_box_sides() /
-			// sgs_serialise_box_corners() only read specific side/corner keys
-			// (top/right/bottom/left | topLeft/topRight/bottomLeft/bottomRight) off
-			// the array they're given via `?? ''` allowlist reads — a tiered object
-			// carries none of those keys, so every side/corner sanitises to '' and
-			// the whole shorthand returns '' (no side/corner set). No guard needed.
-			$grid_item_padding       = sgs_serialise_box_sides( $attributes['gridItemPadding'] ?? array() );
-			$grid_item_background    = $attributes['gridItemBackground'] ?? '';
-			$grid_item_border_radius = sgs_serialise_box_corners( $attributes['gridItemBorderRadius'] ?? array() );
-			$grid_item_border        = $attributes['gridItemBorder'] ?? '';
-			// D636 border-gradient rollout (residual scope, 2026-08-17): siblings of
-			// gridItemBorder rather than a replacement — gridItemBorder stays the
-			// authoritative width/style source even when a gradient paints the
-			// colour. sgs_border_gradient_css() is itself a no-op when the resolved
-			// gradient is '', so unset content is byte-identical to before these
-			// existed.
-			$grid_item_border_gradient       = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) ( $attributes['gridItemBorderGradient'] ?? '' ) ) : '';
-			$grid_item_border_gradient_hover = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) ( $attributes['gridItemBorderGradientHover'] ?? '' ) ) : '';
-			$grid_item_shadow                = $attributes['gridItemShadow'] ?? '';
-			$grid_item_text_colour           = $attributes['gridItemTextColour'] ?? '';
-			// is_array guards (Spec 35 Phase 1.4b, STAGE 2): these four ARE being made
-			// tier-capable below. A tiered object reaching these legacy scalar vars
-			// would TypeError-fatal sgs_colour_value()/sgs_shadow_value() (both
-			// `?string` typed — array never coerces) at ~:775 ($grid_item_background),
-			// ~:788 ($grid_item_shadow), ~:792 ($grid_item_text_colour), or fatal
-			// preg_replace()+trim() on an array at ~:781-782 ($grid_item_border —
-			// preg_replace on an array SUBJECT returns an array, and trim() then
-			// TypeErrors on that array). Same shape as the $grid_auto_rows guard
-			// at :448.
-			$grid_item_background = is_array( $grid_item_background ) ? '' : $grid_item_background;
-			$grid_item_border     = is_array( $grid_item_border ) ? '' : $grid_item_border;
-			$grid_item_shadow     = is_array( $grid_item_shadow ) ? '' : $grid_item_shadow;
-			// Grid-item shadow COLOUR — same SHAPE/colour split as the outer shadow
-			// above, same is_array guard rationale.
-			$grid_item_shadow_colour = $attributes['gridItemShadowColour'] ?? '';
-			$grid_item_shadow_colour = is_array( $grid_item_shadow_colour ) ? '' : $grid_item_shadow_colour;
-			$grid_item_text_colour   = is_array( $grid_item_text_colour ) ? '' : $grid_item_text_colour;
-
-			// Grid-item background/text-colour HOVER + gradient siblings (Step 5a,
-			// phase-colour-conformance.md, 2026-08-22 — closes rule 31's
-			// GridItemDefaultsPanel.js findings). Reuses the SAME two helpers
-			// container's own root background/text rows already call
-			// (sgs_background_paint_decl() / sgs_resolve_text_colour_or_gradient()
-			// + sgs_text_colour_decl()) — no new PHP mechanism invented. Emission
-			// is scoped-CSS, not another `--sgs-gi-*` custom property, because
-			// unlike the resting-only case the DECLARATION PROPERTY itself
-			// differs between a solid colour and a gradient
-			// (background-color vs background-image; a single custom property
-			// cannot express that), same reasoning as the border-gradient block
-			// below. Same is_array guard rationale as every other gridItem* var
-			// above.
-			$grid_item_background_hover          = $attributes['gridItemBackgroundHover'] ?? '';
-			$grid_item_background_gradient       = $attributes['gridItemBackgroundGradient'] ?? '';
-			$grid_item_background_hover_gradient = $attributes['gridItemBackgroundHoverGradient'] ?? '';
-			$grid_item_background_hover          = is_array( $grid_item_background_hover ) ? '' : $grid_item_background_hover;
-			$grid_item_background_gradient       = is_array( $grid_item_background_gradient ) ? '' : $grid_item_background_gradient;
-			$grid_item_background_hover_gradient = is_array( $grid_item_background_hover_gradient ) ? '' : $grid_item_background_hover_gradient;
-
-			$grid_item_text_colour_hover          = $attributes['gridItemTextColourHover'] ?? '';
-			$grid_item_text_colour_gradient       = $attributes['gridItemTextColourGradient'] ?? '';
-			$grid_item_text_colour_hover_gradient = $attributes['gridItemTextColourHoverGradient'] ?? '';
-			$grid_item_text_colour_hover          = is_array( $grid_item_text_colour_hover ) ? '' : $grid_item_text_colour_hover;
-			$grid_item_text_colour_gradient       = is_array( $grid_item_text_colour_gradient ) ? '' : $grid_item_text_colour_gradient;
-			$grid_item_text_colour_hover_gradient = is_array( $grid_item_text_colour_hover_gradient ) ? '' : $grid_item_text_colour_hover_gradient;
+			// Grid item defaults (Spec 32 FR-32-12) — section + layout kinds only; see
+			// includes/helpers-grid-item.php. Padding and corner radius are tier-of-box
+			// objects and emit through the responsive tier path further down.
+			$grid_item = sgs_grid_item_settings( $attributes );
 
 			// QB-1 advanced grid attrs (section + layout kinds only).
 			// is_array guard (Spec 35 pass 3b, 2026-08-11) — SAME shape as
@@ -1103,7 +1034,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$bg_svg_speed = 'medium';
 			}
 			$bg_svg_opacity     = isset( $attributes['bgSvgOpacity'] ) ? absint( $attributes['bgSvgOpacity'] ) : 100;
-			$bg_svg_min_height  = $attributes['bgSvgMinHeight'] ?? '';
+			$bg_svg_min_height  = is_string( $attributes['bgSvgMinHeight'] ?? null ) ? sgs_css_length_value( $attributes['bgSvgMinHeight'] ) : '';
 			$bg_svg_text_shadow = ! empty( $attributes['bgSvgTextShadow'] );
 			$has_bg_svg         = ! empty( $bg_svg_content );
 
@@ -1653,7 +1584,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// SVG min-height custom property — section kind only.
-			if ( $has_bg_svg && ! empty( $bg_svg_min_height ) ) { // D6: universal, was section-only.
+			// Read by container/style.css's `.sgs-container--has-svg-min-height` rule
+			// (the modifier is added with the other SVG classes below).
+			if ( $has_bg_svg && ! empty( $bg_svg_min_height ) ) {
 				$styles[] = '--sgs-svg-min-height:' . esc_attr( $bg_svg_min_height );
 			}
 
@@ -1662,34 +1595,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// outer. They are custom properties that inherit to the grid items either
 			// way (L3 per-item layer) — co-locating with the grid keeps L1/L2/L3 clean.
 			if ( ( $is_section || $is_layout ) && 'grid' === $layout ) {
-				$gi = array();
-				if ( '' !== $grid_item_padding ) {
-					$gi[] = '--sgs-gi-padding:' . esc_attr( sgs_sanitize_grid_template( $grid_item_padding ) );
-				}
-				if ( '' !== $grid_item_background ) {
-					$gi[] = '--sgs-gi-bg:' . esc_attr( sgs_colour_value( $grid_item_background ) );
-				}
-				if ( '' !== $grid_item_border_radius ) {
-					$gi[] = '--sgs-gi-radius:' . esc_attr( sgs_sanitize_grid_template( $grid_item_border_radius ) );
-				}
-				if ( '' !== $grid_item_border ) {
-					$safe_border = preg_replace( '/[^A-Za-z0-9\s%(),.\-#]/', '', $grid_item_border );
-					$gi[]        = '--sgs-gi-border:' . esc_attr( trim( $safe_border ) );
-				}
-				if ( '' !== $grid_item_shadow ) {
-					// T2.2b: same preset-or-raw routing as the outer shadow above —
-					// and, since 2026-08-20, the same SHAPE+colour composition, so
-					// GridItemDefaultsPanel's "Shadow colour" picker is a live control
-					// rather than a dead one. See the outer-shadow note above for the
-					// declared currentColor → rgba(0,0,0,0.1) default change.
-					$gi_shadow_value = sgs_shadow_value_composed( $grid_item_shadow, $grid_item_shadow_colour );
-					if ( '' !== $gi_shadow_value ) {
-						$gi[] = '--sgs-gi-shadow:' . $gi_shadow_value;
-					}
-				}
-				if ( '' !== $grid_item_text_colour ) {
-					$gi[] = '--sgs-gi-color:' . esc_attr( sgs_colour_value( $grid_item_text_colour ) );
-				}
+				$gi = sgs_grid_item_vars( $grid_item );
 				if ( $grid_on_inner ) {
 					$inner_grid_decls = array_merge( $inner_grid_decls, $gi );
 				} else {
@@ -1994,6 +1900,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = 'sgs-container--svg-speed-' . esc_attr( $bg_svg_speed );
 				if ( $bg_svg_text_shadow ) {
 					$classes[] = 'sgs-container--svg-text-shadow';
+				}
+				if ( ! empty( $bg_svg_min_height ) ) {
+					$classes[] = 'sgs-container--has-svg-min-height';
 				}
 			}
 
@@ -2509,18 +2418,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// D636 border-gradient rollout (residual scope) — a grid-item gradient
 				// border is masked ::before CSS, which (like the shape-divider rules
 				// above) can only ever be a scoped .$uid rule, never inline.
-				|| '' !== $grid_item_border_gradient
-				// Step 5a (phase-colour-conformance.md, 2026-08-22) — grid-item
-				// background/text-colour hover + gradient. Same reasoning as the
-				// border gradient immediately above: the declaration PROPERTY
-				// differs between solid and gradient, so it can only ever be a
-				// scoped .$uid rule.
-				|| '' !== $grid_item_background_hover
-				|| '' !== $grid_item_background_gradient
-				|| '' !== $grid_item_background_hover_gradient
-				|| '' !== $grid_item_text_colour_hover
-				|| '' !== $grid_item_text_colour_gradient
-				|| '' !== $grid_item_text_colour_hover_gradient
+				|| ( ( $is_section || $is_layout ) && 'grid' === $layout && sgs_grid_item_needs_scoped_css( $grid_item ) )
 				// Hover-spill-scale (see `$hover_spill_scale` above) — its CSS below is
 				// always a `.$uid`-scoped rule, so a block that opts in must always mint
 				// a uid, even when it has no OTHER reason to (a minimal split-media hero
@@ -2621,68 +2519,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 			}
 
-			// D636 border-gradient rollout (residual scope, 2026-08-17) — grid-item
-			// border gradient. gridItemBorder stays a plain shorthand STRING
-			// (width/style authored as free text); the gradient is a sibling that
-			// paints only the colour, via the same masked ::before ring every other
-			// block in this rollout uses. Scoped to THIS instance's grid children
-			// only (.$uid.sgs-container--grid > .sgs-container) — the base rule in
-			// style.css is unscoped/global (border: var(--sgs-gi-border)) and must
-			// stay that way for every OTHER container's grid items to keep working.
-			if ( '' !== $grid_item_border_gradient && $uid ) {
-				$grid_item_border_width = function_exists( 'sgs_grid_border_parts' )
-					? sgs_grid_border_parts( $grid_item_border )['width']
-					: '';
-				$responsive_css        .= sgs_border_gradient_css(
-					'.' . $uid . '.sgs-container--grid > .sgs-container',
-					$grid_item_border_gradient,
-					'' !== $grid_item_border_gradient_hover ? $grid_item_border_gradient_hover : null,
-					'' !== $grid_item_border_width ? $grid_item_border_width : '2px'
+			// Grid-item states a custom property cannot express (background hover,
+			// text-colour gradient and hover, the border-gradient ring, the shadow's
+			// lift on hover), at both cell depths — includes/helpers-grid-item.php.
+			if ( ( $is_section || $is_layout ) && 'grid' === $layout ) {
+				$responsive_css .= sgs_grid_item_state_css(
+					$grid_item,
+					$uid,
+					$attributes,
+					( $block instanceof \WP_Block ) ? (string) $block->name : ''
 				);
-			}
-
-			// Grid-item background hover/gradient (Step 5a, phase-colour-conformance.
-			// md, 2026-08-22). Resting `--sgs-gi-bg` stays the existing GLOBAL
-			// custom-property rule in style.css untouched — this only fires when a
-			// hover or gradient value is genuinely set, reusing
-			// sgs_background_paint_decl(), the SAME helper container's own root
-			// background row already calls.
-			if ( $uid && ( '' !== $grid_item_background_gradient || '' !== $grid_item_background_hover || '' !== $grid_item_background_hover_gradient ) ) {
-				$gi_bg_sel          = '.' . $uid . '.sgs-container--grid > .sgs-container';
-				$gi_bg_resting_decl = sgs_background_paint_decl( $grid_item_background, $grid_item_background_gradient );
-				if ( '' !== $gi_bg_resting_decl ) {
-					$responsive_css .= $gi_bg_sel . '{' . $gi_bg_resting_decl . ';}';
-				}
-				$gi_bg_hover_decl = sgs_background_paint_decl( $grid_item_background_hover, $grid_item_background_hover_gradient );
-				if ( '' !== $gi_bg_hover_decl ) {
-					$responsive_css .= sgs_hover_state_rules( $gi_bg_sel, $gi_bg_hover_decl . ';', ':focus-within' );
-				}
-			}
-
-			// Grid-item text-colour hover/gradient (Step 5a). Text needs
-			// background-clip:text for a gradient — a single custom property
-			// cannot express that — so this reuses sgs_resolve_text_colour_or_
-			// gradient() + sgs_text_colour_decl() + sgs_text_colour_gradient_
-			// fallback_rule(), the SAME three helpers container's own root text
-			// row already calls.
-			if ( $uid && ( '' !== $grid_item_text_colour_gradient || '' !== $grid_item_text_colour_hover || '' !== $grid_item_text_colour_hover_gradient ) ) {
-				$gi_text_sel     = '.' . $uid . '.sgs-container--grid > .sgs-container';
-				$gi_text_resting = sgs_resolve_text_colour_or_gradient( $grid_item_text_colour, $grid_item_text_colour_gradient );
-				if ( '' !== $gi_text_resting ) {
-					$gi_text_resting_decl = sgs_text_colour_decl( $gi_text_resting );
-					if ( '' !== $gi_text_resting_decl ) {
-						$responsive_css .= $gi_text_sel . '{' . $gi_text_resting_decl . ';}';
-						$responsive_css .= sgs_text_colour_gradient_fallback_rule( $gi_text_sel, $gi_text_resting );
-					}
-				}
-				$gi_text_hover = sgs_resolve_text_colour_or_gradient( $grid_item_text_colour_hover, $grid_item_text_colour_hover_gradient );
-				if ( '' !== $gi_text_hover ) {
-					$gi_text_hover_decl = sgs_text_colour_decl( $gi_text_hover );
-					if ( '' !== $gi_text_hover_decl ) {
-						$responsive_css .= sgs_hover_state_rules( $gi_text_sel, $gi_text_hover_decl . ';', ':focus-within' );
-						$responsive_css .= sgs_hover_media_wrap( sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $gi_text_sel . ':hover', $gi_text_hover ) );
-					}
-				}
 			}
 
 			// Grid/flex scoped-CSS selector — the __inner content band when
@@ -3843,11 +3689,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$obj_inner_props[] = array(
 						'value'     => $attributes['gridItemBorder'],
 						'css'       => '--sgs-gi-border',
-						// Same allowlist the legacy path uses at ~:783 (raw CSS border
-						// shorthand, e.g. "1px solid #ccc" — not a colour/shadow token,
-						// so neither sgs_colour_value() nor sgs_shadow_value() apply).
+						// The same resolver the flat path uses: width and style as
+						// written, the colour through sgs_colour_value().
 						'transform' => static function ( $raw ) {
-							return trim( preg_replace( '/[^A-Za-z0-9\s%(),.\-#]/', '', (string) $raw ) );
+							return sgs_grid_item_border_value( is_string( $raw ) ? $raw : '' );
 						},
 					);
 				}

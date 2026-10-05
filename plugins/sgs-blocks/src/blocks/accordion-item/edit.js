@@ -6,38 +6,49 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, ToggleControl } from '@wordpress/components';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { colourVar, textPaintPreview, tierBoxShorthand } from '../../utils';
+import { BandWrap, tierBoxShorthand, usePreviewTier } from '../../utils';
+import { SvgGradientDefs } from '../../utils/svg-gradient-preview';
+import { itemWrapperPreview, headerPreview } from './preview-style';
 import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
 
-const CHEVRON_SVG = (
-	<svg
-		width="20"
-		height="20"
-		viewBox="0 0 24 24"
-		fill="none"
-		xmlns="http://www.w3.org/2000/svg"
-		aria-hidden="true"
-	>
-		<path
-			d="M6 9l6 6 6-6"
-			stroke="currentColor"
-			strokeWidth="2"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-		/>
-	</svg>
-);
+// The chevron glyph; a parsed icon gradient paints its stroke through a
+// <linearGradient>/<radialGradient> def, as sgs_icon_gradient_css() does.
+function Chevron( { gradient, gradientId } ) {
+	return (
+		<svg
+			width="20"
+			height="20"
+			viewBox="0 0 24 24"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+			aria-hidden="true"
+		>
+			{ gradient && (
+				<defs>
+					<SvgGradientDefs id={ gradientId } gradient={ gradient } />
+				</defs>
+			) }
+			<path
+				d="M6 9l6 6 6-6"
+				stroke={ gradient ? `url(#${ gradientId })` : 'currentColor' }
+				strokeWidth="2"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+			/>
+		</svg>
+	);
+}
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
-	const { title, isOpen, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
+	const { title, isOpen } = attributes;
 
 	// D288/D636 pattern (mirrors sgs/container): resolve the wrapper's textColour/
 	// textColourGradient pair to a live canvas preview — render.php applies this
@@ -72,17 +83,13 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 
 	const accordionStyle = context[ 'sgs/accordionStyle' ] || 'bordered';
 	const iconPosition = context[ 'sgs/accordionIconPosition' ] || 'right';
-	const headerColour = context[ 'sgs/accordionHeaderColour' ];
-	const headerBackground = context[ 'sgs/accordionHeaderBackground' ];
-	const iconColour = context[ 'sgs/accordionIconColour' ];
 	const iconRotation = Number( context[ 'sgs/accordionIconRotation' ] ) || 0;
 
 	// Active editor device, so the canvas previews the same tier the inspector edits.
-	const tier = useSelect( ( select ) => {
-		const ed = select( 'core/editor' );
-		const device = ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
-		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
-	}, [] );
+	const tier = usePreviewTier();
+	const wrapper = itemWrapperPreview( attributes, tier, colourPalette );
+	const head = headerPreview( context, colourPalette, editorOpen );
+	const iconGradientId = `${ clientId }-icon-gradient`;
 	const iconSizes = context[ 'sgs/accordionIconSize' ] || {};
 	const iconSizeTier = [ tier, 'tablet', 'desktop' ]
 		.slice( tier === 'mobile' ? 0 : tier === 'tablet' ? 1 : 2 )
@@ -106,7 +113,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	const blockProps = useBlockProps( {
 		className,
 		style: {
-			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+			...wrapper.style,
 			...slotVars,
 		},
 	} );
@@ -131,14 +138,6 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		}
 	);
 
-	const headerStyle = {
-		color: colourVar( headerColour ) || undefined,
-		backgroundColor: colourVar( headerBackground ) || undefined,
-	};
-
-	const iconStyle = {
-		color: colourVar( iconColour ) || undefined,
-	};
 
 	const chevron = (
 		<span className="sgs-accordion-item__icons">
@@ -146,9 +145,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 				className={ `sgs-accordion-item__icon-open ${
 					iconRotation > 0 ? 'sgs-accordion-item__icon-open--rotates' : ''
 				}` }
-				style={ iconStyle }
+				style={ head.icon }
 			>
-				{ CHEVRON_SVG }
+				<Chevron gradient={ head.iconGradient } gradientId={ iconGradientId } />
 			</span>
 		</span>
 	);
@@ -197,6 +196,14 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					setAttributes={ setAttributes }
 					kind="content"
 				/>
+				<PanelBody title={ __( 'Item', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Open when the page loads', 'sgs-blocks' ) }
+						checked={ !! isOpen }
+						onChange={ ( value ) => setAttributes( { isOpen: value } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
@@ -224,10 +231,13 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 				</PanelBody>
 			</InspectorControls>
 			<div { ...blockProps }>
+			{ /* The content band (.sgs-container__inner) wraps the header and panel
+			   when a content width is set, as SGS_Container_Wrapper renders it. */ }
+			<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
 			{ /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */ }
 			<div
 				className="sgs-accordion-item__header"
-				style={ headerStyle }
+				style={ head.header }
 				onClick={ () => setManualOpen( ! editorOpen ) }
 			>
 				{ iconPosition === 'left' && chevron }
@@ -241,10 +251,12 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						'sgs-blocks'
 					) }
 					onClick={ ( e ) => e.stopPropagation() }
+					style={ head.title }
 				/>
 				{ iconPosition === 'right' && chevron }
 			</div>
 			<div { ...innerBlocksProps } />
+			</BandWrap>
 			</div>
 		</>
 	);

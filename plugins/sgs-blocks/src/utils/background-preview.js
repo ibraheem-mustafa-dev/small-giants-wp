@@ -9,15 +9,9 @@ import { motionEasingCss } from '../components/MotionEasingControl';
  * background image / video, overlay (colour or gradient, opacity, blend
  * mode), ken-burns, and parallax.
  *
- * Extracted 2026-08-26 from `sgs/container`'s `edit.js` (the ONLY block that
- * had built this mirror — lines ~171-372 before extraction) into ONE shared
- * module so every other block mounting the shared `BackgroundPanel`
- * (`src/blocks/container/components/ContainerWrapperControls.js`) can show
- * the same live preview instead of a blank canvas for a setting that IS
- * painting on the published page. CHECK A finding group "BackgroundPanel
- * canvas-preview gap" — `reports/2026-08-26-check-a-triage-group-b.md`,
- * root-cause group 1 (85 findings, 17 attrs × 5 blocks before the bgSvg*
- * split below).
+ * Every block mounting the shared `BackgroundPanel`
+ * (`src/blocks/container/components/ContainerWrapperControls.js`) shows the
+ * same live preview the published page paints.
  *
  * Mirrors the PHP single source of truth exactly:
  *  - `sgs_background_paint_decl()` / `sgs_overlay_decls()` (helpers-tokens.php)
@@ -26,11 +20,8 @@ import { motionEasingCss } from '../components/MotionEasingControl';
  *    multi-button, physics-canvas, site-footer, site-header, trust-bar) goes
  *    through, per the composite wrapper rule (CLAUDE.md).
  *
- * ⛔ `bgSvg*` (a separate decorative-SVG background attribute family that
- * `BackgroundPanel` also writes) is DELIBERATELY NOT covered here.
- * `sgs/container` itself never built a preview for `bgSvg*` either, so there
- * was no existing mirror to extract — it is its own, separate gap (out of
- * scope for this extraction; do not fold it in without a fresh design pass).
+ * The `bgSvg*` decorative-SVG layer is mirrored separately by
+ * `svgBackgroundPreview()` below.
  *
  * ⛔ Keep this in step with the PHP path. If they disagree, the editor lies
  * about what the page will look like — which is the failure this mirror
@@ -41,6 +32,24 @@ import { motionEasingCss } from '../components/MotionEasingControl';
 // server-side — mirrored here rather than trusted as "any string is harmless
 // in CSS", so the editor preview and the frontend refuse the identical
 // out-of-enum set, not just a similar one.
+/** A CSS gradient function (what `sgs_css_gradient_value()` accepts). */
+const CSS_GRADIENT = /^(repeating-)?(linear|radial|conic)-gradient\(/i;
+/** The same, as the whole value with no `; { } < >`, for CSS text written into a stylesheet. */
+const CSS_GRADIENT_WHOLE = /^(repeating-)?(linear|radial|conic)-gradient\([^;{}<>]*\)$/i;
+
+/**
+ * Is this value a CSS gradient function?
+ *
+ * @param {*}       value               Stored attribute value.
+ * @param {Object}  [options]
+ * @param {boolean} [options.whole=false] Require the whole value to be one gradient that is
+ *                                        safe to write into a stylesheet.
+ * @return {boolean} True for a linear/radial/conic (or repeating) gradient.
+ */
+export function isCssGradient( value, { whole = false } = {} ) {
+	return 'string' === typeof value && ( whole ? CSS_GRADIENT_WHOLE : CSS_GRADIENT ).test( value.trim() );
+}
+
 export const OVERLAY_BLEND_MODES = [
 	'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge',
 	'color-burn', 'soft-light', 'hard-light', 'difference', 'exclusion',
@@ -69,12 +78,8 @@ export function backgroundPaintPreview( colour, gradient, palette ) {
 }
 
 /**
- * Shared editor-canvas mirror of a TEXT colour/gradient pair — extracted
- * 2026-09-05 from `sgs/container`'s `edit.js` (the ONLY block that had built
- * this mirror, previously local + unexported at lines ~98-109) into ONE
- * shared module so every other block carrying a `*Colour`/`*ColourGradient`
- * text-paint pair can show the same live preview instead of a flat canvas for
- * a setting that IS painting on the published page.
+ * Shared editor-canvas mirror of a TEXT colour/gradient pair, for every block
+ * carrying a `*Colour`/`*ColourGradient` text-paint pair.
  *
  * Mirrors `sgs_text_colour_decl()`: a gradient renders via `background-image`
  * + `background-clip:text` + `color:transparent` (the gradient-text
@@ -105,9 +110,7 @@ export function textPaintPreview( colour, gradient, palette ) {
 }
 
 /**
- * Shared editor-canvas mirror of a BORDER colour/gradient pair — extracted
- * 2026-09-05 from `sgs/container`'s `edit.js` (the ONLY block that had built
- * this mirror, previously inline at lines ~254-264) into ONE shared module.
+ * Shared editor-canvas mirror of a BORDER colour/gradient pair.
  *
  * A flat `borderColour` resolves directly to `border-color`. A gradient
  * border is APPROXIMATED via `border-image` — the real frontend renders a
@@ -128,7 +131,7 @@ export function borderPaintPreview( colour, gradient, palette ) {
 		const resolved = resolveColourToken( colour, palette );
 		if ( resolved ) style.borderColor = resolved;
 	}
-	if ( gradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( gradient ) ) {
+	if ( isCssGradient( gradient ) ) {
 		style.borderImage = `${ gradient } 1`;
 	}
 	return style;
@@ -177,6 +180,28 @@ export function overlayPaintPreview( colour, gradient, opacity, blendMode, palet
 }
 
 /**
+ * The background image the wrapper's media layer shows at a device tier: its
+ * `@media (max-width:1023px)` rule swaps in the tablet image and its
+ * `(max-width:767px)` rule the mobile one, so mobile falls back to tablet, then
+ * desktop ('' when the tier has no image of its own and desktop has none).
+ *
+ * @param {Object} desktop Desktop image object (`{url}`).
+ * @param {Object} tablet  Tablet image object, or empty.
+ * @param {Object} mobile  Mobile image object, or empty.
+ * @param {string} tier    'desktop' | 'tablet' | 'mobile'.
+ * @return {string} The image URL for the tier.
+ */
+export function tierBackgroundImageUrl( desktop, tablet, mobile, tier ) {
+	if ( 'mobile' === tier && mobile?.url ) {
+		return mobile.url;
+	}
+	if ( ( 'mobile' === tier || 'tablet' === tier ) && tablet?.url ) {
+		return tablet.url;
+	}
+	return desktop?.url || '';
+}
+
+/**
  * Build the FULL editor-canvas background/overlay/ken-burns/parallax preview
  * for any block mounting the shared `BackgroundPanel` — a `style` object of
  * CSS custom properties to merge into the block's own `blockProps.style`,
@@ -207,11 +232,17 @@ export function overlayPaintPreview( colour, gradient, opacity, blendMode, palet
  *                                 stops, so `surfaceToneClass()` yields unknown
  *                                 (no class) for that case; a LITERAL gradient
  *                                 function string still resolves regardless.
+ * @param {string} [tier]      Previewed device tier (`usePreviewTier()`). The
+ *                                 tablet/mobile image replaces the desktop one on
+ *                                 the same media layer, as the wrapper's
+ *                                 `@media` overrides do. Defaults to desktop.
  * @return {{style: Object, hasBgMedia: boolean, hasOverlay: boolean, hasParallax: boolean, className: string}}
  */
-export function backgroundPreview( attributes, colourPalette, gradientPresets = [] ) {
+export function backgroundPreview( attributes, colourPalette, gradientPresets = [], tier = 'desktop' ) {
 	const {
 		backgroundImage,
+		backgroundImageTablet,
+		backgroundImageMobile,
 		bgVideo,
 		bgLottie,
 		backgroundSize,
@@ -255,7 +286,7 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 		// painted on the element, MIRRORING the frontend (Phase 1, 2026-08-08).
 		// The editor is the surface clients actually work in, so it has to agree.
 		...( hasBgMedia && {
-			'--sgs-ed-bg-image': `url(${ backgroundImage.url })`,
+			'--sgs-ed-bg-image': `url(${ tierBackgroundImageUrl( backgroundImage, backgroundImageTablet, backgroundImageMobile, tier ) })`,
 			'--sgs-ed-bg-size': backgroundSize || 'cover',
 			'--sgs-ed-bg-position': backgroundPosition || 'center center',
 			'--sgs-ed-bg-repeat': backgroundRepeat || 'no-repeat',
@@ -320,13 +351,8 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 }
 
 /* ==========================================================================
- * SVG background layer — editor-canvas mirror (2026-09-05)
+ * SVG background layer — editor-canvas mirror
  * ==========================================================================
- *
- * The `bgSvg*` family was DELIBERATELY excluded from this module's original
- * 2026-08-26 extraction (see the header) because `sgs/container` had never
- * built a mirror for it either — there was nothing to extract. This is that
- * missing mirror, added after a fresh design pass as the header required.
  *
  * WHY THIS SHAPE (and not the `--sgs-ed-*` custom-property + `::before`
  * approach the image/video half above uses): the frontend's SVG layer is a
@@ -412,6 +438,7 @@ export function svgBackgroundPreview( attributes ) {
 	const style = { '--sgs-svg-opacity': String( opacity / 100 ) };
 	if ( bgSvgMinHeight ) {
 		style[ '--sgs-svg-min-height' ] = bgSvgMinHeight;
+		className.push( 'sgs-container--has-svg-min-height' );
 	}
 
 	return {

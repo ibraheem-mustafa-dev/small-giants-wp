@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	InspectorControls,
 	useInnerBlocksProps,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -13,7 +14,8 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowControl } from '../../components';
-import { colourVar, resolveShadowPreviewComposed } from '../../utils';
+import { colourVar, resolveShadowPreviewComposed, usePreviewTier, textPaintPreview, textIndentPreviewCss, sgsBorderPreview } from '../../utils';
+import { buildWrapperStyle } from './preview-style';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 // U-15 (`.claude/reports/2026-09-26-u15-notice-message-design.md` §3.2).
@@ -123,38 +125,6 @@ const NOTICE_BANNER_TEMPLATE = [
 	],
 ];
 
-// Box-object interface contract §1: build an editor-preview shorthand from a
-// box object — mirrors render.php's box-shorthand builder (base tier only;
-// tablet/mobile preview is via PHP `@media`, matches sgs/quote's pattern).
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
-// Editor canvas preview only (desktop styles; responsive via PHP). No-inline
-// contract note: the SAVED/RENDERED frontend output is dynamic (render.php)
-// and carries zero inline declarations — this inline style exists only for
-// the live editor preview, same exception documented in sgs/quote's edit.js.
-function buildWrapperStyle( attributes ) {
-	const { padding, margin, maxWidth } = attributes;
-	const wrapperStyle = {};
-
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) {
-		wrapperStyle.padding = paddingPreview;
-	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( marginPreview ) {
-		wrapperStyle.margin = marginPreview;
-	}
-	if ( maxWidth ) {
-		wrapperStyle.maxWidth = maxWidth;
-	}
-
-	return wrapperStyle;
-}
-
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		variant,
@@ -228,9 +198,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			? backgroundColour
 			: '';
 
+	const previewTier = usePreviewTier();
+	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	// render.php paints the rotation arrows with arrowColour (base state).
+	const arrowStyle = textPaintPreview( attributes.arrowColour, '', colourPalette );
 	const blockProps = useBlockProps( {
 		className,
-		style: isAnnouncement ? undefined : buildWrapperStyle( attributes ),
+		style: buildWrapperStyle( attributes, previewTier, colourPalette, isAnnouncement ),
 	} );
 	const innerBlocksProps = useInnerBlocksProps( {}, {
 		template: NOTICE_BANNER_TEMPLATE,
@@ -255,9 +230,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				borderRadius: iconCircleBorderRadius || '50%',
 				backgroundColor: colourVar( iconCircleBackground ) || 'var(--wp--preset--color--surface, #FAF9F6)',
 				backgroundImage: iconCircleBackgroundGradient || 'none',
-				borderWidth: boxShorthand( iconCircleBorderWidth, [ 'top', 'right', 'bottom', 'left' ] ) || '1px',
-				borderStyle: iconCircleBorderStyle || 'solid',
-				borderColor: iconCircleBorderColour ? colourVar( iconCircleBorderColour ) : 'rgba(0, 0, 0, 0.08)',
+				// The circle's stylesheet paints a 1px solid border; set parts override it.
+				...sgsBorderPreview( { widthValues: iconCircleBorderWidth, styleValue: iconCircleBorderStyle, colourValue: iconCircleBorderColour }, 'desktop', undefined, { defaultBorder: true } ),
 				boxShadow: resolveShadowPreviewComposed( iconCircleShadow, iconCircleShadowColour ) || 'none',
 		  }
 		: undefined;
@@ -834,6 +808,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			     In announcement mode we use role="banner" (a landmark, one per page);
 			     the editor renders it inline — fixed-position only on the frontend. */ }
 			<div { ...blockProps } role={ isAnnouncement ? 'banner' : 'note' }>
+				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
 				{ showIcon && (
 					<span
 						className={ isIconCircle ? 'sgs-notice-banner__icon sgs-notice-banner__icon--circle' : 'sgs-notice-banner__icon' }
@@ -847,6 +822,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</span>
 				) }
 				<div { ...innerBlocksProps } />
+				{ canRotate && 'rotate' === messageMode && showMessageArrows && (
+					<>
+						<button
+							className="sgs-notice-banner__prev"
+							type="button"
+							aria-label={ __( 'Previous announcement', 'sgs-blocks' ) }
+							style={ arrowStyle }
+						>
+							<span aria-hidden="true">&lsaquo;</span>
+						</button>
+						<button
+							className="sgs-notice-banner__next"
+							type="button"
+							aria-label={ __( 'Next announcement', 'sgs-blocks' ) }
+							style={ arrowStyle }
+						>
+							<span aria-hidden="true">&rsaquo;</span>
+						</button>
+					</>
+				) }
 				{ isAnnouncement && dismissible && (
 					<button
 						className="sgs-notice-banner__close"
