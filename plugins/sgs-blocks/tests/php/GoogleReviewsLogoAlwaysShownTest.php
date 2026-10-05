@@ -242,4 +242,19 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		$this->assertStringContainsString( "'X-Goog-FieldMask'  => self::FIELD_MASK", $src );
 		$this->assertMatchesRegularExpression( '#\$cache_key = self::CACHE_KEY_PREFIX \. md5\( [^;]*FIELD_MASK#', $src );
 	}
+
+	/**
+	 * The logo is a fixed 98x18 box that cannot shrink: at 375px a shrinking flex row squeezed it to 3px high
+	 * (found on the live page), so the rule must pin width, height and flex.
+	 */
+	public function test_the_maps_logo_is_a_fixed_box_that_no_flex_row_can_squeeze(): void {
+		$css = (string) file_get_contents( __DIR__ . '/../../src/blocks/google-reviews/style.css' );
+		$this->assertSame( 1, preg_match( '#\.sgs-google-reviews__maps-logo \{([^}]*)\}#', $css, $m ) );
+		$this->assertMatchesRegularExpression( '#flex:\s*none#', $m[1] );
+		$this->assertMatchesRegularExpression( '#width:\s*98px#', $m[1] );
+		$this->assertMatchesRegularExpression( '#height:\s*18px#', $m[1] );
+		$this->assertMatchesRegularExpression( '#min-height:\s*18px#', $m[1] );
+		$this->assertSame( 1, preg_match( '#\.sgs-google-reviews__attribution \{([^}]*)\}#', $css, $a ) );
+		$this->assertMatchesRegularExpression( '#flex:\s*none#', $a[1] );
+	}
 }

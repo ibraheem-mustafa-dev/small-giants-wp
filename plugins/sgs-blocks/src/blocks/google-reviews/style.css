@@ -127,12 +127,16 @@
 	column-gap: 12px;
 	margin-left: 0;
 	padding: 10px 10px 5px 10px;
+	flex: none;
 }
 
+/* The official logo is 98x18: a fixed box that no flex row, container or global img rule can squeeze below 16px high. */
 .sgs-google-reviews__maps-logo {
 	display: block;
-	width: auto;
+	flex: none;
+	width: 98px;
 	height: 18px;
+	min-height: 18px;
 	max-width: none;
 }
 
@@ -601,6 +605,7 @@ a.sgs-google-reviews__author:hover {
 .sgs-google-reviews--floating-badge .sgs-google-reviews__badge {
 	display: inline-flex;
 	align-items: center;
+	flex-wrap: wrap;
 	gap: 0.75rem;
 	padding: 1rem 1.5rem;
 	background-color: var( --wp--preset--color--surface, #fff );
