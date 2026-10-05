@@ -376,14 +376,25 @@ These belong to the walker, which stays a standalone tool with no route import. 
 before it counts (GAP-CHECKLIST §11).
 1. **Pseudo-element paint:** each painting `::before` and `::after` layer's computed paint (`collect.mjs::PSEUDO_PROPS`),
    compared layer by layer; a layer on one side only is one `content` row (built 2026-10-05, GAP-CHECKLIST §19).
-2. **1920** in every standard run.
+2. **1920** in every standard run (built 2026-10-05, GAP-CHECKLIST §22: `draft-live-walk.mjs`'s width default, with `benchmark/score.mjs`'s own fallback aligned; `solve.mjs` already passed all four widths).
 3. **States:** hover, focus and active on every interactive element of a compared region, not only configured pairs.
    Hover is built (2026-10-05): ref-traced walks force `:hover` on every pair and its ancestors through the DevTools
-   protocol (`devtools.mjs::forcedHover`), and a hover row is a difference in what hovering changes. Focus and active
-   on every element are not built.
+   protocol (`devtools.mjs::forcedHover`), and a hover row is a difference in what hovering changes. **Focus and active on
+   every interactive element: built 2026-10-05** (GAP-CHECKLIST §23): `devtools.mjs::forcedPseudo` generalises
+   `forcedHover` and reads `:active` through the same protocol, `collect.mjs::ACTIVE_PROPS` names what it reads,
+   `state-passes.mjs::activePass` covers configured pairs as `kind: 'active'`, and `auto-compare.mjs::compareInteractive`
+   reads focus and active on every matched control of the automatic check, capped at 60 per state. Phones still skip
+   focus and hover.
 4. **Link coverage:** the same text sits inside a link on both sides. A text that is a link only in the draft may be a
-   function limitation (the block has no link setting for that element: Missing setting), not a content fix.
-5. **Line counts** sampled during state transitions (header shrink and grow, drawer open).
+   function limitation (the block has no link setting for that element: Missing setting), not a content fix. **Built
+   2026-10-05** (GAP-CHECKLIST §24): `auto-collect.mjs` marks each word inside an `a[href]`, and
+   `auto-compare.mjs::compareLinkCoverage` emits `kind: 'auto'` rows keyed `link-missing` or `link-extra`. Until then
+   `links.mjs::compareLinks` filtered draft `#` links out through `realDraftHref`, so one-sided linking was never seen.
+   The rows claim only that one side links the text; which of the two it is belongs to triage.
+5. **Line counts** sampled during state transitions (header shrink and grow, drawer open). **Built 2026-10-05**
+   (GAP-CHECKLIST §25): `paint.mjs::lineRows` counts line boxes, `state-passes.mjs::sampleLines` runs from `onAction`
+   at 30, 120, 250 and 450ms plus the settled value, and `compare.mjs::compareLines` emits `lines@<t>ms` and `lines`.
+   Samples follow a click, tap or hover action, not a scroll, so a purely scroll-driven header shrink is not sampled.
 6. **Divergence ledger:** a config may name one (`divergences: '<path>'`), and matching rows are accepted.
 7. **Ref tracing:** when a config sets `refPrefix`, every style row carries:
    - `ref`: the measured live element's nearest ancestor-or-self class with that prefix;
@@ -651,12 +662,25 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        each of `PA-1` (N7), `PA-3` (103, measured by the hand pair `choose-a-frame` and refused only by the A4 validator)
        and `PA-5` (157). 37 of the 78 can be held by no block setting. One item (N24) belongs to the parallel
        google-reviews session.
-     - The functional flows (FR-47-7, Session C lane L3, which also maps the form-flow and filter
-       states the 323 unmapped-state rows wait on) and the walker's items 2, 4, 5 and focus and active states
-       (FR-47-6, lane L2): not started;
-       items 1 and 3's hover, plus items 10 to 13, are built and proven (2026-10-05: About measure-only on the local mirror,
-       1 open issue, real: S1's button timing; register S1). Contact and its form walk
-       only their rest state until FR-47-7 maps the form-flow states.
+     - **The functional flows (FR-47-7) and the walker's items 2, 4, 5 and the focus and active states of item 3
+       (FR-47-6): built 2026-10-05** by Session C lanes L3 and L2, each with its own GAP-CHECKLIST section (§20 to §26)
+       and a planted fault shown red then green. The flows live in `scripts/parity/flows/` and report apart from parity
+       rows, into `sites/<client>/build/qa/flows/<timestamp>/`; each fails with a named signal against the bug it was
+       written for, proven against a local mock shop (44 local tests). Two corrections the build established: register
+       **N11(b) is already fixed** at HEAD by `35e8b94d4`, so its flow must *pass* on a HEAD build and can only be shown
+       failing against the pre-fix code or the mock; and register **N38's "skip adds to bag" setting does not exist** in
+       `choice-flow/block.json`, so that flow fails on a live site until N38 lands, which the script says when it fails.
+       The walker's benchmark half (`benchmark.mjs --noise`, 5 of 5 with no new noise rows) drives a live site and is
+       owed to a main-thread run. Items 1 and 3's hover, plus items 10 to 13, were already built and proven (2026-10-05:
+       About measure-only on the local mirror, 1 open issue, real: S1's button timing; register S1).
+     - **The walker-state maps are complete** (Session C C0.7): `home`, `shop`, `product`, `lens`, `contact` and
+       `contact-form` now map every state their walker defines, so no row is left in an unmapped state. Contact and its
+       form had always *defined* `field-focused` and `form-submitted-empty`, but their `walkStates` was `["opening"]`, so
+       those states were never walked and they held **none** of the 323 unmapped-state rows (which are shop 163,
+       product 109, home 33, lens 18). Mapping them therefore adds rows rather than clearing any. Seven rows carry a
+       conflict the map cannot express, where one pair is measured in two walker states that now share one setting state
+       with different draft values; they are named in `scripts/parity/flows/state-map-reasons.json`, and the guard that
+       must refuse such a group belongs to `lib/solve-rows.mjs`.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer. All 17 Eye Care surfaces are built, so
    Session C lane L9 proves `fill.mjs` and `lib/draft.mjs` against a built surface with its committed tree
    withheld as the hand-checked answer. The unbuilt-surface demonstration carries forward to the first client
