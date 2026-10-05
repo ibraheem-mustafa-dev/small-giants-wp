@@ -40,7 +40,12 @@ section.sgs-hero {
 /* Standard variant — text over background */
 .sgs-hero--standard {
 	flex-direction: column;
-	justify-content: center;
+	/* No hardcoded justify-content default (F3 drain, D293 — the same drain
+	   align-items had on .sgs-hero above). In a flex column justify-content IS
+	   the vertical axis, so a literal `center` here held the section's vertical
+	   position and verticalAlignment could never move it. render.php always
+	   emits a scoped .uid{justify-content:…} for this variant (default
+	   'center' maps to 'center', so an untouched instance is unchanged). */
 	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
 }
 
@@ -164,8 +169,12 @@ section.sgs-hero {
 	pointer-events: none;
 }
 
-/* Content area — flex column so verticalAlignment (via justify-content inline
-   style from render.php) works correctly on both split and standard variants. */
+/* Content area — a flex column. render.php also writes verticalAlignment here as
+   justify-content, which positions the content WITHIN this column. That only has
+   an effect on the split variant, where the grid stretches this column to the
+   section's full height; on standard the column is only as tall as its own
+   content, so there is no free space to distribute and the section's own
+   justify-content is what positions the text. */
 .sgs-hero__content {
 	position: relative;
 	z-index: 1;

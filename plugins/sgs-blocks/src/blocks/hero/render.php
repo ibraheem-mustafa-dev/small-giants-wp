@@ -631,18 +631,34 @@ if ( $is_split ) {
 	}
 }
 
-// F3 drain (§E2, D228 pattern): the outer section's cross-axis `align-items`
-// was hardcoded to `center` in style.css (.sgs-hero{align-items:center}).
-// Drive it from verticalAlignment instead — same map render.php already uses
-// for the content column's justify-content — so an untouched instance (default
-// verticalAlignment='center') stays byte-identical while the control now
-// actually governs the property it claims to.
-$align_items_map = array(
+// F3 drain (§E2, D228 pattern): the outer section's vertical position is driven
+// from verticalAlignment rather than a hardcoded centre in style.css.
+//
+// WHICH PROPERTY carries the vertical axis depends on the variant, because the
+// two variants lay the section out differently:
+//   - split is `display:grid` (.sgs-hero--split), where `align-items` is the
+//     block axis, so `align-items` is the vertical one.
+//   - standard is a flex COLUMN (.sgs-hero--standard adds
+//     `flex-direction:column`), where the block axis is the MAIN axis, so
+//     `justify-content` is the vertical one and `align-items` would move the
+//     content sideways instead.
+// `.sgs-hero--standard` also hardcodes `justify-content:center`; the scoped
+// `.uid` rule below beats it on source order (this block's CSS prints in an
+// in-body <style> after the stylesheet), which is how every other scoped
+// override in this file wins.
+//
+// The operator's raw `justifyContent` attribute is emitted further down for
+// non-split variants and therefore still overrides this, which is the intended
+// precedence: an explicit axis value beats the friendly position control.
+$vertical_align_map = array(
 	'top'    => 'flex-start',
 	'center' => 'center',
 	'bottom' => 'flex-end',
 );
-$responsive_css .= '.' . $uid . '{align-items:' . ( $align_items_map[ $vertical_alignment ] ?? 'center' ) . '}';
+$vertical_align_value = $vertical_align_map[ $vertical_alignment ] ?? 'center';
+$responsive_css      .= '.' . $uid . '{'
+	. ( $is_split ? 'align-items:' : 'justify-content:' )
+	. $vertical_align_value . '}';
 
 if ( ! empty( $min_height ) ) {
 	$responsive_css .= '.' . $uid . '{min-height:' . esc_attr( $min_height ) . '}';
