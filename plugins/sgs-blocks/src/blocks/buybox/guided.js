@@ -24,10 +24,9 @@
  * @since 1.19.0 (Spec 43 FR-43-23)
  */
 
+import { prefersReducedMotion as reducedMotion } from '../../shared/effects/motion-utils.js';
+
 const ROOT_SELECTOR = '.sgs-buybox--guided';
-const reducedMotion = () =>
-	typeof window.matchMedia === 'function' &&
-	window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
 function initGuidedBuyboxes() {
 	document.querySelectorAll( ROOT_SELECTOR ).forEach( initGuidedBuybox );

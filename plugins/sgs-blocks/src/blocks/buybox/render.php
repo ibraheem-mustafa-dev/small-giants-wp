@@ -1078,7 +1078,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	$buybox_band_scale       = '' !== $buybox_band_axis ? sgs_buybox_parse_band_scale( (string) ( $attributes['pickerBandScale'] ?? '' ) ) : array();
 
 	// Variation-photo swatch toggle (picker-variation-swatch.php).
-	$buybox_variation_swatch_on = (bool) ( $attributes['pickerVariationSwatch'] ?? false );
+	$buybox_variation_swatch_on = (bool) ( $attributes['pickerVariationSwatch'] ?? true );
 
 	// Picker-label typography — forwarded to sgs/option-picker's
 	// OWN labelFontSize/labelLetterSpacing/labelTextTransform/labelColour
@@ -1150,7 +1150,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 			// Variation-photo swatch map for this axis only when it
 			// carries a colour/image swatch AND the toggle is on.
 			$buybox_axis_variation_images = ( $buybox_variation_swatch_on && $buybox_axis_has_swatch )
-				? sgs_buybox_variation_image_map( $manifest, $buybox_axis_taxonomy, $buybox_img_src )
+				? sgs_buybox_variation_image_map( $manifest, $buybox_axis_taxonomy )
 				: array();
 
 			$buybox_picker_attrs = array(

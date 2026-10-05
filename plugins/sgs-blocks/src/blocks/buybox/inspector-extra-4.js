@@ -146,7 +146,7 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 						setAttributes( { pickerVariationSwatch: val } )
 					}
 					help={ __(
-						'Only when that variation’s photo genuinely differs from the product’s main image — otherwise today’s colour/image tile.',
+						'Shows the variation’s own photo when it has one — otherwise the colour/image tile.',
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom

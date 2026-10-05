@@ -224,6 +224,13 @@ section.sgs-hero {
 	align-items: center;
 }
 
+.sgs-hero--align-right .sgs-hero__content {
+	text-align: right;
+	/* `stretch` for the same reason as --align-left below: block children fill
+	   the full content-column width rather than shrinking to their content. */
+	align-items: stretch;
+}
+
 .sgs-hero--align-left .sgs-hero__content {
 	text-align: left;
 	/* D288 point D: `stretch` (not flex-start) so block children — headings, text,

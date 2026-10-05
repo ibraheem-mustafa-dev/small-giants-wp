@@ -571,8 +571,8 @@
 		},
 		"pickerVariationSwatch": {
 			"type": "boolean",
-			"default": false,
-			"description": "A colour/swatch axis tile shows the matching variation's OWN photo when it genuinely differs from the product's main image; otherwise today's term-meta swatch tile (colour chip or the term's own shared image). Off (default) — every tile stays as it is today, byte-identical."
+			"default": true,
+			"description": "A colour/swatch axis tile shows the matching variation's OWN photo when that variation has its own featured image; otherwise the term-meta swatch tile (colour chip or the term's own shared image). On by default; off keeps every tile as the term-meta swatch."
 		},
 		"rrpShowPrice": {
 			"type": "boolean",

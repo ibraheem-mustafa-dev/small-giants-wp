@@ -125,6 +125,27 @@ final class Product_Bindings {
 	// ── WooCommerce branch ────────────────────────────────────────────────────
 
 	/**
+	 * Availability text for a product, never empty.
+	 *
+	 * WooCommerce leaves get_availability()['availability'] as an empty string
+	 * when stock is not managed, so fall back to the plain in/out-of-stock state.
+	 *
+	 * @param \WC_Product $product WC product.
+	 * @return string Unescaped availability text.
+	 */
+	private static function availability_text( \WC_Product $product ): string {
+		$availability = $product->get_availability();
+		$text         = isset( $availability['availability'] ) ? (string) $availability['availability'] : '';
+		if ( '' !== $text ) {
+			return $text;
+		}
+
+		return $product->is_in_stock()
+			? \__( 'In stock', 'sgs-blocks' )
+			: \__( 'Out of stock', 'sgs-blocks' );
+	}
+
+	/**
 	 * Resolve a field value from a WooCommerce product.
 	 *
 	 * @param int    $product_id WC product ID.
@@ -163,10 +184,7 @@ final class Product_Bindings {
 				return $alt ? \esc_attr( $alt ) : \esc_attr( $product->get_name() );
 
 			case 'stock_status':
-				$availability = $product->get_availability();
-				return isset( $availability['availability'] )
-					? \esc_html( $availability['availability'] )
-					: '';
+				return \esc_html( self::availability_text( $product ) );
 
 			case 'short_description':
 				return \wp_kses_post( $product->get_short_description() );
@@ -337,8 +355,6 @@ final class Product_Bindings {
 				$raw_alt   = $image_id ? \get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '';
 				$image_alt = ( $image_id && $raw_alt ) ? $raw_alt : $product->get_name();
 
-				$availability = $product->get_availability();
-
 				// "From <min>" for variable products — a single inviting price reads
 				// better than a bare range (£9.99–£59.99) before a variation is
 				// chosen. Tax-correct via wc_get_price_to_display() (never own
@@ -366,9 +382,7 @@ final class Product_Bindings {
 					'image_url'       => \esc_url( (string) $image_url ),
 					'image_alt'       => \sanitize_text_field( (string) $image_alt ),
 					'short_desc'      => \wp_kses_post( $product->get_short_description() ),
-					'stock_status'    => isset( $availability['availability'] )
-						? \esc_html( $availability['availability'] )
-						: '',
+					'stock_status'    => \esc_html( self::availability_text( $product ) ),
 					'wc_id'           => $wc_id,
 					'variation_sets'  => self::read_variation_sets( $product_id ),
 				);

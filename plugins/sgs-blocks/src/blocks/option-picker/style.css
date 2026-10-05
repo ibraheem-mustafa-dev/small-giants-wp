@@ -640,7 +640,10 @@
 	background-color: var(--sgs-op-bg, var(--wp--preset--color--surface, #ffffff));
 	background-image: var(--sgs-op-bg-gradient, none);
 	color: var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
-	border: 1px solid var(--sgs-op-border, var(--wp--preset--color--border, #d1d5db));
+	/* The width is the same in every state so selecting a tile cannot change
+	   its box size; only the colour changes on :checked below. The non-colour
+	   selection signal is the shared ::before tick (WCAG 1.4.1). */
+	border: 2px solid var(--sgs-op-border, var(--wp--preset--color--border, #d1d5db));
 }
 
 /* Tile size — reuses the EXISTING pillSize control (small/medium/large)
@@ -677,11 +680,6 @@
 	background-color: var(--sgs-op-sel-bg, var(--wp--preset--color--surface, #ffffff));
 	color: var(--sgs-op-sel-text, var(--wp--preset--color--text, currentColor));
 	border-color: var(--sgs-op-sel-border, var(--wp--preset--color--primary, #1F7A7A));
-	border-width: 2px;
-	/* Compensate the +1px border on the bottom only. Writing the padding
-	   shorthand here would reset a caption-only tile's top padding to 0 and
-	   shrink the tile on selection. */
-	padding-bottom: 5px;
 	border-radius: var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
 }
 

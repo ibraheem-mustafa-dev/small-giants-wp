@@ -17,9 +17,13 @@
  */
 
 import { initSeparators } from '../../shared/separators';
+import { prefersReducedMotion } from '../../shared/effects/motion-utils.js';
 
 // Lines between brands on a static strip, in a browser without CSS gap decorations.
 initSeparators();
+
+// How long to wait for logo images before measuring anyway, in milliseconds.
+const IMAGE_WAIT_MS = 1500;
 
 const strips = document.querySelectorAll( '.sgs-brand-strip--scrolling' );
 
@@ -32,12 +36,17 @@ strips.forEach( ( strip ) => {
 	}
 
 	// Respect prefers-reduced-motion — bail before any work.
-	if ( window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) {
+	if ( prefersReducedMotion() ) {
 		return;
 	}
 
+	// Per-strip state. Each strip in the page gets its own pair because this
+	// callback body runs once per strip.
+	let measured = false;
+	let widthObserver = null;
+
 	/**
-	 * Wait for all images in the set to load before measuring.
+	 * Wait for the images in the set to load, up to IMAGE_WAIT_MS, before measuring.
 	 * Images without dimensions at parse time would give wrong widths.
 	 */
 	function init() {
@@ -55,23 +64,57 @@ strips.forEach( ( strip ) => {
 			}
 		} );
 
-		if ( pending.length > 0 ) {
-			Promise.all( pending ).then( measure );
-		} else {
+		if ( pending.length === 0 ) {
 			measure();
+			return;
 		}
+
+		// The wait is capped because some logos never fetch at all. One set is
+		// wider than the strip, which is overflow:hidden, so the logos past its
+		// right edge are outside the viewport horizontally and a lazy image
+		// there is never fetched by the browser — no scroll can reveal it, so
+		// its `load` event never fires. An uncapped wait on every image would
+		// leave the strip measured never and the animation never started.
+		// Measuring on the already-loaded logos gives the correct set width.
+		Promise.race( [
+			Promise.all( pending ),
+			new Promise( ( resolve ) => {
+				setTimeout( resolve, IMAGE_WAIT_MS );
+			} ),
+		] ).then( measure );
 	}
 
 	/**
 	 * Measure one set, clone to fill, set the scroll distance, start animation.
 	 */
 	function measure() {
+		// Clones are inserted once per strip, however many times a width
+		// reading or a late image arrival calls back in here.
+		if ( measured ) {
+			return;
+		}
+
 		const containerWidth = strip.offsetWidth;
 		const gap = parseFloat( getComputedStyle( track ).gap ) || 0;
 		const setWidth = originalSet.getBoundingClientRect().width;
 
 		if ( setWidth === 0 ) {
+			// A zero width is a reading taken too early, not a permanent state:
+			// a collapsed or hidden ancestor measures zero until it is laid out.
+			// Watch the set and measure again once it has a real width.
+			if ( ! widthObserver && 'undefined' !== typeof ResizeObserver ) {
+				widthObserver = new ResizeObserver( () => {
+					measure();
+				} );
+				widthObserver.observe( originalSet );
+			}
 			return;
+		}
+
+		measured = true;
+		if ( widthObserver ) {
+			widthObserver.disconnect();
+			widthObserver = null;
 		}
 
 		// The distance the animation must travel for one seamless cycle:

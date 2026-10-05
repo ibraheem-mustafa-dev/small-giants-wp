@@ -398,8 +398,11 @@
 		color: var( --wp--preset--color--primary, currentColor );
 		/* Rule 43 (WCAG 1.4.1): selected state must not rely on colour alone —
 		 * the resting border is already 1px solid, so bump to 2px as the
-		 * non-colour signal. */
+		 * non-colour signal. The padding gives the extra pixel back on every
+		 * side, so the tab's box size is identical selected and unselected and
+		 * selecting one cannot nudge the column. */
 		border-width: 2px;
+		padding: calc(0.875rem - 1px) calc(1rem - 1px);
 	}
 
 	/* Hide the underline indicator at mobile — full-button styling carries the active state */

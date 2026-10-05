@@ -65,6 +65,31 @@ final class Product_Manifest {
 	}
 
 	/**
+	 * One gallery item for an attachment id.
+	 *
+	 * wp_get_attachment_image_src() returns [ url, w, h, is_intermediate ] in one
+	 * call, so dimensions need no second lookup.
+	 *
+	 * @param int $attachment_id Attachment id.
+	 * @return array{url:string,w:int,h:int,alt:string}|null Null when the attachment does not resolve.
+	 */
+	private static function gallery_item( int $attachment_id ): ?array {
+		$src = \wp_get_attachment_image_src( $attachment_id, 'woocommerce_thumbnail' );
+		if ( ! $src ) {
+			return null;
+		}
+
+		return array(
+			'url' => \esc_url_raw( (string) $src[0] ),
+			'w'   => (int) $src[1],
+			'h'   => (int) $src[2],
+			'alt' => \sanitize_text_field(
+				(string) \get_post_meta( $attachment_id, '_wp_attachment_image_alt', true )
+			),
+		);
+	}
+
+	/**
 	 * Build the sparse live-variations manifest for a WooCommerce variable product.
 	 *
 	 * Returns null when: product is not variable, WC is not active, or the product
@@ -129,7 +154,9 @@ final class Product_Manifest {
 		// v6 adds sku/gtin/incMinor/saleEndDate per combo + variesBy per axis
 		// (E1 ProductGroup JSON-LD: the schema emitter reads these from the
 		// manifest, never re-reading WC — SEC-1 single source of truth).
-		$cache_key = 'sgs_manifest_v6_' . $product_id . '_' . self::tax_fingerprint();
+		// v7: gallery merges operator gallery, variation image, parent image and
+		// the parent's WooCommerce gallery; adds hasOwnImage per combo.
+		$cache_key = 'sgs_manifest_v7_' . $product_id . '_' . self::tax_fingerprint();
 		$cached    = \get_transient( $cache_key );
 
 		global $wpdb;
@@ -215,6 +242,13 @@ final class Product_Manifest {
 		$combos   = array();
 		$children = $product->get_children();
 
+		// Loop-invariant gallery sources: the parent's featured image and the
+		// parent's own WooCommerce product gallery (featured image excluded).
+		$parent_image_id    = (int) $product->get_image_id();
+		$parent_gallery_ids = \method_exists( $product, 'get_gallery_image_ids' )
+			? \array_map( 'intval', (array) $product->get_gallery_image_ids() )
+			: array();
+
 		foreach ( $children as $child_id ) {
 			$variation = \wc_get_product( $child_id );
 			if ( ! $variation || ! $variation->exists() ) {
@@ -282,79 +316,36 @@ final class Product_Manifest {
 			// inStock: MUST use is_in_stock() — is_purchasable() lies for OOS (fixture 546).
 			$in_stock = (bool) $variation->is_in_stock();
 
-			// M-C7 image fallback chain: variation image → parent image → ''.
-			$vid       = $variation->get_image_id();
-			$image_url = $vid
-				? \wp_get_attachment_image_url( $vid, 'woocommerce_thumbnail' )
-				: '';
-			if ( '' === (string) $image_url ) {
-				$parent_image_id = $product->get_image_id();
-				$image_url       = $parent_image_id
-					? (string) \wp_get_attachment_image_url( $parent_image_id, 'woocommerce_thumbnail' )
-					: '';
-			}
-			$image_url = $image_url ? \esc_url_raw( (string) $image_url ) : '';
-
-			// A4: per-variation image gallery.
-			// Read the registered int[] meta `_sgs_variation_gallery`; build an
-			// ordered array of { url, w, h, alt } items for the thumbnail strip.
-			// wp_get_attachment_image_src() returns [ url, w, h, is_intermediate ]
-			// in one call — avoids a second DB round-trip for dimensions.
-			// Fallback chain (A4 spec): if the gallery meta is empty, fall back to a
-			// single-item gallery built from the variation image (used for imageUrl
-			// above), then the parent image, then []. This guarantees `gallery` is
-			// always the authoritative ordered image set; imageUrl is kept for
-			// back-compat and equals gallery[0].url when present.
+			// Image set, highest authority first: the operator's per-variation
+			// gallery (`_sgs_variation_gallery`), the variation's own featured
+			// image, the parent featured image, then the parent's WooCommerce
+			// gallery. Deduped on the attachment id (first occurrence wins; a URL
+			// differs per size). The first three positions are the main-image
+			// chain, so gallery[0] is the main image; the rest is the thumbnail
+			// strip. The meta goes through the sanitiser first because it also
+			// explodes a legacy CSV/JSON value; the merged list goes through it
+			// again as the trust boundary (image attachments only).
+			$vid         = (int) $variation->get_image_id();
 			$gallery_ids = Configurator_Meta::sanitize_id_array(
-				\get_post_meta( $child_id, '_sgs_variation_gallery', true )
+				\array_merge(
+					Configurator_Meta::sanitize_id_array(
+						\get_post_meta( $child_id, '_sgs_variation_gallery', true )
+					),
+					array( $vid, $parent_image_id ),
+					$parent_gallery_ids
+				)
 			);
 			$gallery     = array();
 			foreach ( $gallery_ids as $gid ) {
-				$src = \wp_get_attachment_image_src( $gid, 'woocommerce_thumbnail' );
-				if ( ! $src ) {
-					continue; // Skip if attachment doesn't resolve.
+				$item = self::gallery_item( $gid );
+				if ( null !== $item ) {
+					$gallery[] = $item;
 				}
-				$gallery[] = array(
-					'url' => \esc_url_raw( (string) $src[0] ),
-					'w'   => (int) $src[1],
-					'h'   => (int) $src[2],
-					'alt' => \sanitize_text_field(
-						(string) \get_post_meta( $gid, '_wp_attachment_image_alt', true )
-					),
-				);
 			}
 
-			// Fallback: build single-item gallery from variation image → parent image.
-			if ( empty( $gallery ) ) {
-				$fallback_url = '' !== $image_url ? $image_url : '';
-				if ( '' !== $fallback_url ) {
-					// Resolve dimensions from the source image ID.
-					$fallback_id  = $vid ? $vid : ( isset( $parent_image_id ) ? $parent_image_id : 0 );
-					$fallback_src = $fallback_id
-						? \wp_get_attachment_image_src( $fallback_id, 'woocommerce_thumbnail' )
-						: false;
-					$fallback_alt = \sanitize_text_field(
-						(string) \get_post_meta( $fallback_id ? $fallback_id : 0, '_wp_attachment_image_alt', true )
-					);
-					$gallery[]    = array(
-						'url' => $fallback_url,
-						'w'   => $fallback_src ? (int) $fallback_src[1] : 0,
-						'h'   => $fallback_src ? (int) $fallback_src[2] : 0,
-						'alt' => $fallback_alt,
-					);
-				}
-				// If there's truly no image at all, gallery stays [].
-			}
-
-			// A4: imageUrl is authoritative = gallery[0] when a gallery exists.
-			// A variation can carry a _sgs_variation_gallery but no FEATURED image
-			// (get_image_id() === 0); without this, imageUrl stays the placeholder
-			// and the card renders the no-image state while its thumbnails show
-			// real gallery images. gallery[0] is the canonical main image; the SSR
-			// main <img>, the no-image gate, and the view.js swap all read it.
-			if ( ! empty( $gallery ) && ! empty( $gallery[0]['url'] ) ) {
-				$image_url = $gallery[0]['url'];
-			}
+			// imageUrl is gallery[0].url ('' when no image resolves); the SSR main
+			// <img>, the no-image gate and the view.js swap all read it.
+			$image_url = '' !== ( $gallery[0]['url'] ?? '' ) ? $gallery[0]['url'] : '';
 
 			// Translated "% off" label seeded per combo so view.js shows the SAME
 			// (localised) string on swap that the SSR literal shows (i18n parity).
@@ -406,6 +397,8 @@ final class Product_Manifest {
 				'pctDisplay'     => $pct_display,
 				'inStock'        => $in_stock,
 				'imageUrl'       => $image_url,
+				// True when the variation has its own featured image (not the parent's).
+				'hasOwnImage'    => $vid > 0,
 				// Tax components for the per-card taxDisplayMode (TAX-UI / FR-27-H3).
 				'exMinor'        => $ex_minor,
 				'taxMinor'       => $tax_minor,
@@ -419,9 +412,8 @@ final class Product_Manifest {
 				'sku'            => $sku,
 				'gtin'           => $gtin,
 				'saleEndDate'    => $sale_end_date,
-				// A4: per-variation image gallery (ordered { url, w, h, alt } items).
-				// Always the authoritative image set; imageUrl == gallery[0].url when
-				// present (kept for back-compat). Empty array when no image resolves.
+				// Ordered { url, w, h, alt } items; imageUrl == gallery[0].url.
+				// Empty array when no image resolves.
 				'gallery'        => $gallery,
 			);
 		}

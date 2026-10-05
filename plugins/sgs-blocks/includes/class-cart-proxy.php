@@ -693,6 +693,21 @@ final class Cart_Proxy {
 			\wc_load_cart();
 		}
 
+		// Load the saved bag before anything reads or writes cart contents.
+		// wc_load_cart() only CONSTRUCTS WC_Cart and the session; the saved items
+		// load lazily, and WC_Cart::get_cart() is what triggers
+		// WC_Cart_Session::get_cart_from_session(). WC_Cart::add_to_cart() reads
+		// $this->cart_contents directly and never triggers it, so without this an
+		// added line is written into an unloaded cart and then discarded:
+		// woocommerce_add_to_cart fires, calculate_totals() (priority 20) calls
+		// is_empty() -> get_cart(), that first call loads the session and replaces
+		// the in-memory contents, and set_session at priority 1000 saves the
+		// old-only bag. This mirrors WooCommerce's own CartController::load_cart(),
+		// which is why the Store API route has never shown the fault.
+		if ( isset( \WC()->cart ) && \WC()->cart ) {
+			\WC()->cart->get_cart();
+		}
+
 		$cart_token = '';
 		$ct_header  = $request->get_header( 'Cart-Token' );
 		if ( $ct_header ) {
