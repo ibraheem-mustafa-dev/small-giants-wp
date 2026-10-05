@@ -1,0 +1,177 @@
+---
+title: "Eye Care: the functionality and feature backlog pulled out of the fix register"
+project: small-giants-wp
+created: 2026-10-05
+status: not started
+governs: what to build next, after the register-proven repairs track closed
+references:
+  - .claude/plans/2026-10-02-eye-care-fix-register.md
+  - .claude/plans/2026-10-05-eye-care-register-proven-repairs.md
+---
+
+# Eye Care: the functionality and feature backlog
+
+**Written for:** Bean, and whoever picks this up next session.
+
+**What this is.** The fix register holds every Eye Care fix, about 200 rows, and most of them are
+*values* — a spacing, a colour, a font weight — which belong to the page trees and to Solve. This
+document pulls out only the rows that change what the site can **do**: a feature that does not exist, a
+control that exists but paints nothing, or a behaviour that is broken. Nothing here is a new decision;
+every item is already decided in the register, and the register stays the source of truth. If an item
+below disagrees with its register row, the register wins.
+
+**What was deliberately excluded:** page-tree values (sizes, spacing, colours, weights), content
+(product data, copy, missing pages), pure styling, the Spec 47 measuring route and its calibration
+findings (another session owns those), and `sgs/google-reviews` (its own track). Also excluded:
+everything already built — S1, S5, S11, S12, 15, 38, 68, 76, 87, N3/17B, N11(b), N17b, N25, N46, and
+the framework half of N45.
+
+**How to read the tiers.** Tier 1 stops a shopper finishing a task. Tier 2 is a feature that does not
+exist. Tier 3 is a control that exists and does nothing — these are cheap and they remove the
+"why doesn't this setting work" questions. Tier 4 is small setting additions. Within a tier, the order
+is the order I would build in.
+
+---
+
+## Tier 1 — a shopper cannot finish the job (build these first)
+
+| Ref | What a user hits | What to build | Prove first? |
+|---|---|---|---|
+| **N11(a)** | **A second, different product never reaches the bag.** Says "added", then the line is dropped when the bag already holds something. This is the single worst item in the register | The register's leading theory: the shop's add-to-bag route builds the bag without loading the saved one. Load the saved bag before adding | **Yes.** Symptom is proven live, the mechanism is not. Test on the canary: add A, add B, read the bag |
+| **75, 82, 158** | **Product gallery thumbnails and colour-swatch photos do not show, although the photos are set up.** Your data is right and the framework ignores it | Three parts: (1) the gallery reads the variation's photo **plus** WooCommerce's own product gallery, without duplicates — today it reads an SGS-only field and never WooCommerce's; (2) turn on swatch photos; (3) any variation with its own photo shows it. Today a photo equal to the main image is skipped, which is why Ivory stays flat | No — proven live |
+| **91** | A product with stock tracking off shows no availability at all in the Details tab | Fall back to "In stock" / "Out of stock" when stock is not tracked | No |
+| **52** | The brand logo strip never starts scrolling | Thought to be waiting on off-screen images before starting | **Yes.** Read the live page first |
+| **CR6** | **Setting one side of a padding or margin box silently zeroes the other three**, wiping the block's own default. The About WhatsApp button lost its 24px sides when only the top was set | `includes/helpers-box.php::sgs_box_object_shorthand` prints `0` for every unset side. It reaches **every block that uses the helper**, so this is the widest-blast-radius bug in the register | No — proven live. Note the route worked *around* it (Solve now writes the other sides), so the framework bug itself is still there |
+
+**Why CR6 is in Tier 1 despite looking like a styling bug:** it is not a value being wrong, it is a
+control destroying three values the operator never touched. Every client hits it, on any block, the
+first time they set one side of a box.
+
+---
+
+## Tier 2 — features that do not exist yet
+
+Each is already decided in the register. Grouped so one sitting can close a theme.
+
+### The shop and bag journey
+
+| Ref | The feature | Notes |
+|---|---|---|
+| **18** | **"Added to bag" toast.** One shared toast: polite screen-reader announcement, a "View bag" action, closes after 5s, pauses on hover or focus, respects reduced motion. Errors use the same toast in error colours and stay until closed. Replaces the red inline notice and the "Added to your basket." strip | Check first whether `sgs/notice-banner` can be the shell. Also closes **93** |
+| **20 + 23** | **One server-built bag line summary**, used by the bag, cart, checkout and emails alike. Frame only: "Frame only · Size: M · Colour: Gold". With lenses: two lines. Drops "Your prescription", "What they're for", "Options:", the lens thickness number and the lens width shown as the size | The framework builds it from labels; the **wording lives in Eye Care's lens pop-up layout file**, so no optician words end up in framework code. Also: "Add my prescription" hides once that frame has lenses |
+| **59, 61** | **Card colour swatches become real buttons.** Today they cannot be focused or clicked. A swatch changes only its own card's photo, and clicking the card then opens the product with that colour already chosen | Baymard-standard behaviour, and an accessibility fix as much as a feature |
+| **S10** (N26, N2A) | **One shared "stretched link" piece.** The main link covers the whole card or logo row, while buttons inside it (wishlist, swatches) sit above and keep working | Used by product cards and the header logo. This is the piece 59/61 needs to not fight the card link |
+| **S9** (N10, N27-brand, N33A) | **Brand logos instead of typed brand names.** One shared lookup prints the brand logo with the brand name as its text alternative, on product cards, the product page top and bag lines, falling back to the name when a brand has no logo | All 40 brands already have a logo saved. Pairs with **D8**: the logo above the product name, linking to the brand page |
+| **S8** (N9, N34) | **One switch hides ".00"** on whole-pound prices across the product page, cards, bag, lens pop-up and the shop's price text. Emails and admin keep pennies | Checkout total lines keep pennies per D4 |
+| **17** | The bag count pop becomes **off / on change / on load and change** (today just on/off), and takes the draft's shape | Check it plays at 0 |
+| **65B** | **The shop goes to a single column below 400px.** Today its "narrow layout: grid" floors each column at 50%, so it can never reach one column | Also fixes 65A and 65C as a side effect |
+| **64** | **Pin the filter drawer's top bar**, like the bottom one already is | |
+
+### The lens pop-up
+
+| Ref | The feature |
+|---|---|
+| **N37** | **"Advance on pick, keep Continue" mode.** Picking an option moves to the next step (except the last); Back then Continue returns without re-picking; each step change is announced to screen readers |
+| **N38** | **"Skip adds to bag".** "Skip the lenses" adds the frame straight to the bag using the existing add-to-bag function, instead of opening an extra step |
+
+### Menus, header and drawer
+
+| Ref | The feature |
+|---|---|
+| **N5.5** | **Mega menu items you can click through to their page.** The ordinary dropdown already renders a link plus a separate open button; mega items render a button only. Give mega items with a page the same link-plus-button pattern, the button discreet and still 44px. Then add the page links to Sunglasses, Lenses and Help (Brands stays button-only) |
+| **N5** | **New mega panel setting: "width limit applies to panel / content".** Content mode paints the ground edge to edge and centres the content at 1440. Today the panel stops at 1440 and sits left-aligned at wide screens |
+| **N4** | **Top bar becomes a moving strip when its items no longer fit.** Below 768 the bar scrolls on a 30s loop; at 768 and above, items that do not fit are dropped. The scroll settings already exist; the repair is that turning scrolling on currently switches dropping off at every width. **Needs a visible pause button** — moving content over 5 seconds requires one (WCAG 2.2.2) — and pauses on hover and keyboard focus |
+| **14** | **New drawer setting: "stagger items inside groups".** CSS only, replays on every open. Draft movement: rise 18px, 0.5s ease |
+| **N7** | Swap the drawer's three hand-styled social buttons for the same `sgs/social-icons` block the footer uses, with a **new "fill the row" option** to keep the full-width buttons |
+
+### Motion on Home
+
+| Ref | The feature |
+|---|---|
+| **53** | **Hero "drift" mode.** The photo moves at a set share of the scroll speed (draft 0.18), replacing the current fixed-background parallax where the photo stands still. **Off under reduced motion** |
+| **51** | **Hero "zoom out once on load" mode**, with duration and start size — a one-off 3s zoom from 108% to 100%. Two parts: the existing ken-burns effect **paints nothing at all** on the standard hero (a repair), and it is a 20s loop where the draft wants a single pass (the new mode) |
+
+### Footer and site furniture
+
+| Ref | The feature |
+|---|---|
+| **39-43** | **Social icons: a brand-colour variant that colours only the glyph** — Google in its four colours, Instagram in its gradient (needs a new glyph), WhatsApp green — with the box staying white with a light border. Hover gives a border and a 1px ring in the network's colour, no scale-up. Plus a **new "networks" setting** for order. Boxes stay 44px, not the draft's 40px, to keep the touch-target rule |
+| **37** | **New `sgs/business-info` setting: address link — none / Google Business profile / directions.** The Google Business link is already in Site Info |
+| **N13** | **The floating WhatsApp button steps aside** while the footer's bottom strip is on screen, so it stops covering the bottom-right links. Extend its existing "hide near another WhatsApp button" watcher with a generic opt-in on the footer row |
+| **135** | The contact form's narrow-width stretch becomes **switchable**, so the Send button can be full width on a phone |
+| **S2** | **One text-link underline mechanism.** An underline sweeps in left to right on hover and retracts right to left, in the link's own colour. The repair: the theme's existing underline-slide utility currently retracts the wrong way and breaks on links that wrap, and the plugin carries an unused duplicate to delete. Then the header menu's existing "sweep" setting is switched on, and mega links get a "link" button style using the same sweep | Covers 2, 6, 7, 32, 33, 44, 131 |
+
+### Checkout and confirmation
+
+This is the least-started area and the one with a real unknown in it.
+
+| Ref | The feature | Notes |
+|---|---|---|
+| **149, 150** | **A per-site checkout template part**, so Eye Care can say "Pay now" with the price on the right and carry its own secure-payment note | **Open question to answer first: can `wp-build-page.js` build template parts?** If it cannot, this needs another route. WordPress does save a Site Editor edit of a part per site |
+| **154** | **Checkout restyled to the draft, through tokens** — numbered small uppercase step headings, white fields, a flat summary card, a 1200px column, delivery cards. The shared checkout stylesheet reads tokens, so every client benefits and Eye Care's look lives in its own token file | The **prescription step and the express-pay row need the planned plugin work** — scope those separately before committing to them |
+| **156** | **Build the confirmation screen**: tick icon, "Thank you", short message, "Back to the shop", centred. The order table is deliberately left out; the email carries the details | Wording per client |
+| **157** | The confirmation grid **collapses to one column when the shipping box is empty**, instead of leaving the billing box alone in the right half | Small |
+| **155** | **Hide WooCommerce's collapsed top summary on phones**, so the order summary appears once, below the form | Needs the selector proving first |
+| **148** | Checkout sections fade up on scroll, from tokens | Small |
+
+### A new block
+
+| Ref | The feature |
+|---|---|
+| **D1** | **A general "measured diagram" block**: a drawing uploaded as media, labels bound to product measurements, a table and a note, following the size picker. Decided on 2026-10-03. The interim table and note go in first with existing blocks (**N36S**), so this block is not blocking anything — build it when the rest is calmer |
+
+---
+
+## Tier 3 — controls that exist and paint nothing
+
+These are the cheap wins. Each one is a setting a client can already see and change, which does
+nothing — so each is a support question waiting to happen.
+
+| Ref | The dead control | Where |
+|---|---|---|
+| **CR12** | **The dark-mode toggle renders nothing for any current client.** `theme-toggle/render.php` returns early with no derived dark palette, and no `sites/*/theme-snapshot.json` has one. So the whole feature is inert | Decide whether to derive a dark palette per client or hide the toggle until one exists |
+| **CR2** | **A header's scrolled background and text colours show no change.** `site-header/render.php` only switches the scroll script on for transparent, shrink, hide, a scrolled shadow or section ink — never for these two colours. Calibration also saw no change with shrink on, so a second cause remains | Prove the second cause |
+| **CR1, CR9** | **Per-device settings that skip one width.** Header-row and footer-row per-device gap and content width reach 375 and 1440 but not 768 — identically on both blocks, so likely shared code. Same pattern: `gallery` gap and content width, `mega-aside` aside gap (768 missed), `notice-banner` padding and margin (1440 missed), `form-field-tiles` grid columns (375 missed) | One likely shared cause; worth one investigation covering all of them |
+| **71** | The product block does not pass text styling through to the colour and size options, so swatch names cannot be sized or weighted | A control-plumbing job |
+| **CR10** | `sgs/media`'s `aspectRatio` has no `css_property` in the framework DB, so it can never be resolved or written | Small, DB-side |
+
+---
+
+## Tier 4 — small setting additions
+
+Worth doing in one sitting together, since each is a single control plus a reader.
+
+| Ref | The setting |
+|---|---|
+| **67** | Tabs gain a panel padding setting (Eye Care sets 0) |
+| **73** | A new entrance setting for the gallery photo on the product block (fade in on load) |
+| **94** | The gallery photo joins the shared hover zoom |
+| **77** | A selected-tile border width setting (Eye Care wants 2px against 1px) |
+| **49** | A "collapsed icon size" setting on the floating WhatsApp button, so the icon stays 28px or larger once it collapses to a circle |
+| **19** | A bar fill duration setting on the free-delivery bar |
+| **117, 123, 69, 81, N29** | The size pop-up: a **padding setting**, a header bar built as a container in the pop-up's own layout file (title, divider, sticky), a **screen-edge gap token** (32px above phone, 16px on a phone), and a square transparent close button |
+| **9** | The Ferrari brand tile reads its name twice to screen readers — clear either its title or its image's text alternative |
+| **152** | Confirm coupon, order note and terms can each be switched off without code (order notes is a checkout block setting, coupons a WooCommerce setting, terms an inner block in the shared part). A verification task, not a build |
+
+---
+
+## What I would do first, and why
+
+If you want one sitting: **Tier 1 in order.** N11(a) and 75/82/158 are the two items where a shopper
+is actually blocked or misled, and CR6 is the one bug every future client will hit on every block. All
+three are independent, so they can run in parallel.
+
+If you want the biggest felt improvement for Eye Care specifically: **18, 20+23, 59/61, S10 and S9 as
+one "shop journey" sitting.** Those five together are what makes the shop feel finished rather than
+functional, and S10 is a dependency of 59/61, so they belong in the same pass.
+
+Three items need an answer before they can be built, and none of them needs you: N11(a)'s mechanism
+(test on the canary), 52's cause (read the live page), and 149's template-part question (check whether
+`wp-build-page.js` can build parts).
+
+## Effort
+
+Tier 1 is about 2 hours in total if the three investigations land where expected. Tier 2 is the real
+body of work: the shop-journey group is a session on its own, checkout another, and the rest splits
+into half-sessions by theme. Tier 3 is about an hour once CR1/CR9's shared cause is found. Tier 4 is
+one sitting of roughly an hour for the lot.
