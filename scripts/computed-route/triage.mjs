@@ -112,6 +112,10 @@ export function runTriage( { client, surface, report: reportArg = null, out = nu
 		db,
 		snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ),
 		stateMap: s.states || {},
+		// FR-47-8: the surface is an author-composed canvas (a CPT post or a theme template), so a row the
+		// attributed block alone cannot hold may still be settable by a sibling or ancestor in that tree.
+		// Read from the manifest, never a hardcoded list, so a new canvas kind needs no code change (R-47-12).
+		canvas: !! s.canvas,
 		nodeFor: ( ref ) => nodes.get( ref ) || null,
 		ancestorsOf: ( ref ) => ancestors.get( ref ) || [],
 		// Every SGS-owned row of the block, css_property NULL rows included (lib/db.mjs::attrsFor leaves those out).

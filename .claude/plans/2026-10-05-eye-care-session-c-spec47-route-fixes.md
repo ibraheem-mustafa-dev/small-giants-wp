@@ -201,6 +201,36 @@ automates** — so much of the canvas rule's benefit is already inside the audit
 against that, and says plainly that an audited-equivalent figure needs Session C2's judgement and is not
 something this session can produce.
 
+**C0.5 — one definition of a distinct open issue (new item, structural).** `lib/sweep.mjs` and `lib/triage.mjs`
+each held their own copy of the four values that make a surface's triage count equal its sweep count: the visual row
+kinds, the four Solve classes and their order, the unmapped-state class, and `wholePage`'s issue key (the two arrow
+functions were byte-identical). The identity held **by copy**. That is both a latent fault and a lane collision:
+**L6** adds row kinds to `lib/sweep.mjs` while `lib/triage.mjs` belongs to **L1**, so a kind added on one side only
+would break the identity silently, and L6 would have had to edit another lane's file. Now
+`lib/issue-classes.mjs` exports `VISUAL`, `SOLVE_CLASSES`, `UNMAPPED` and `issueKey`, imported by both under local
+aliases so **no usage site changed** (11 insertions, 14 deletions), listed in `README.md` per R-47-1. Proven no
+behaviour change: tests 237/237; lint green; **triage re-run on all 17 surfaces — counts and issue key sets
+identical** (W 1562 / F 338 / T 445 / U 28). Negative control: removing `box` from `VISUAL` in the shared module
+alone moved footer from 201 issues (W 109) to 138 (W 46), then restored.
+
+**C0.6 — the canvas roster is live as manifest data.** `canvas: true` on **12 of 17** surfaces in
+`surfaces.json`: `header`, `footer`, `mobile-menu`, `mega-sunglasses`, `mega-brands`, `mega-lenses`, `mega-help`,
+`size-guide`, `lens`, `contact-form` (CPT posts) and `shop`, `product` (theme templates). Not canvases: `home`,
+`about`, `lenses`, `help`, `contact`. Plumbed as `canvas: !! s.canvas` into triage's ctx in
+`triage.mjs::runTriage`, where the manifest entry was already in scope. Nothing reads it until L1.5, and triage
+counts are unchanged, which is the point: the flag is inert until the rule lands. Verified nothing validates
+`surfaces.json` keys, so the new key is safe; `lint.mjs --surfaces` passes.
+
+#### Wave 1 lane corrections, applied before dispatch
+
+| Correction | Why |
+|---|---|
+| **L2's file list was wrong and is widened** to `parity/lib/`'s `collect.mjs`, `devtools.mjs`, `compare.mjs`, `compare-state.mjs`, `auto-collect.mjs`, **`auto-compare.mjs`**, **`auto-align.mjs`**, `focus.mjs`, `state-passes.mjs`, `links.mjs`, `entrances.mjs`, **`paint.mjs`**, **`ref-trace.mjs`**, plus **`parity/draft-live-walk.mjs`**, `parity/benchmark.mjs` and `GAP-CHECKLIST.md` | Five of L2's seven jobs live in files the original list omitted: the 1920 default is `draft-live-walk.mjs` (`cfg.widths \|\| [1440, 768, 375]`, and `lib/` holds no width default); "every interactive element" is the automatic check in `auto-compare.mjs`/`auto-collect.mjs`; `:active` needs a list beside `collect.mjs::FOCUS_PROPS`/`HOVER_PROPS`; **no line-count code exists anywhere**, its home being `paint.mjs`'s row and line-box logic plus `compare.mjs`; and dropping unmatched-ref rows is `ref-trace.mjs::stampRefs`, called from `compare-state.mjs`. A lane stops when it needs a file outside its list, so this had to be right. `parity/` is edited by no other lane; **L4 reads `paint.mjs` and must not edit it**. New GAP-CHECKLIST sections start at **20** (1–19 exist) |
+| **L1.1 is a diff-and-extend, not a build** | An ancestor hop **already exists** at the caller level: `solve.mjs::writeRound` and `lib/triage.mjs::resolveIssue` both retry on `g.owners`/`r.owners` with `anyIndex: true`, and only when the first result is `no-setting` or `unmapped-element`, so it already runs strictly after a direct match. L1.1's phase 1 must report what that hop does and does not reach **before writing anything**: a second overlapping hop is what `prove-the-cause-before-fix.md` forbids, since two overlapping fixes are unfalsifiable and neither can ever be removed |
+| **L1.2 covers every namespace, and must stay namespace-aware** | The database holds **1,043 rows across 36 namespaced `css_property` values**, not the 128 assumed: `fx:*` 29 properties (~1,000 rows), `anim:*` 6 (46 rows), plus `grid-template-columns:count` (10). ⚠️ **`grid-template-columns:count` is a real property with a modifier, not a pseudo-property**, so a blanket strip of everything after `:` would make it wrongly match `grid-template-columns`. `lib/triage.mjs::settingFits` already strips with `.replace( /:.*$/, '' )` and carries the same trap. The `sgsAnimationDuration` split is confirmed: 73 rows total, 64 `css_property` NULL, 9 routed |
+| **L1.4's write half moves to Wave 2 as L8.7** | The hop must reach `triage.mjs::resolveIssue` (L1's file) **and** `solve.mjs::writeRound` (L8's file) identically, or the write path and the classification disagree. L1.4 delivers the hop **inside `resolve.mjs`** with its unit test; L8.7 does the `writeRound` call-site plumbing in Wave 2, which is where Solve's writes live anyway. `resolve( input, ctx )` receives no surface field today, so the plumbing is real work, not a rename |
+| **L1.5 puts `canvas-settable` in `decidedBy`** | Verified: triage verdicts have **no `reason` field**. Existing W verdicts carry `decidedBy` values such as `consequence` and `resolver-blocked`, so the reason belongs there (or in `evidence`), and the flag arrives as `ctx.canvas` from C0.6 |
+
 #### W0a (C0.3): 12 entries written, 3 held back with evidence. Done 2026-10-05.
 
 Of the 17 **D** rows, 14 are `sgs/business-info`'s link padding and margin on the **footer** (`cr-ref-footer-24`,

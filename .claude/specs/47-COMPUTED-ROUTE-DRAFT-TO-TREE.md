@@ -70,7 +70,7 @@ framework database, the parity walker and the page builder, and no code. Spec 31
 - **Input:** one surface (a page, the header, the footer, a drawer, a modal) of a draft that renders in a browser,
   that site's `theme-snapshot.json` (Spec 33), and the framework database.
 - **Surface manifest:** `sites/<client>/build/surfaces.json`, one entry per surface:
-  `{ "<surface>": { "tree": "footer.tree.json", "envFile": ".claude/secrets/<site>.env", "envKey": "<KEY>", "target": { "postId": 182 } | { "templatePart": "<slug>" }, "walker": "qa/parity/footer.mjs", "draftUrl": "<url>" } }`.
+  `{ "<surface>": { "tree": "footer.tree.json", "envFile": ".claude/secrets/<site>.env", "envKey": "<KEY>", "target": { "postId": 182 } | { "templatePart": "<slug>" } | { "template": "<slug>" }, "walker": "qa/parity/footer.mjs", "draftUrl": "<url>" } }`.
   Solve and Fill take `--client <slug> --surface <name>` and read only this. An entry also names its walker states'
   setting states (`states`), optionally the states to walk (`walkStates`), whether the surface is an author-composed
   canvas (`canvas: true`, §3.8), and the linked blocks and template parts
@@ -194,8 +194,11 @@ A setting whose marker fails `wp-build-page.js` validation is reported as `marke
 **Presence and content settings.** A setting the framework database marks `role` `boolean-visibility` or
 `presence-boolean`, and each value of a variant setting (`blocks.variant_attr`), is also read for presence: the elements
 that appear or disappear when it flips, recorded as `presence: { shows: [paths], hides: [paths] }` (a style change alone
-is not presence). A setting marked `role` `content` is rendered with a marker string and records the element whose text
-it prints (`text: <path>`), and a link or URL setting the element it makes a link (`link: <path>`). Not built
+is not presence). A setting whose `role` is `content` (84) **or `text-content` (235)** is rendered with a marker string and
+records the element whose text it prints (`text: <path>`), and a link or URL setting the element it makes a link
+(`link: <path>`). **Both roles, 319 settings** (Bean, 2026-10-05): most of a register's words live in
+`text-content` (`sgs/product-card::noReviewsText`, `::brandName`, `sgs/buybox::stockInStockLabel`,
+`sgs/whatsapp-cta::cardTitle`), so reading `content` alone would leave them unreachable. Not built
 (2026-10-05): calibration records only computed-style changes, so `showDate`-type settings are in no list.
 
 **Where and how it renders:**
@@ -619,6 +622,13 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        hours day weight closed through a dedicated label setting; calibration still records nothing for an overriding
        child. 38 rows came out Missing setting where the evidence says Hardcode. Session C lane L7 records the
        overriding child.
+     - **The divergence ledger cannot scope a decision to one element path** (found 2026-10-05, Session C C0.3).
+       `lib/ledger.mjs::match` matches on node, state, pseudo, property and width, with **no path discriminator**, so
+       a node holding several rows of the same property and state cannot have one of them accepted on its own. It
+       blocked the one `sgs/buybox` transform entry of Session C's W0a: `cr-ref-product-4` carries three F-class
+       hover `transform` rows on different paths and a single entry would have closed two genuine findings as well
+       as the decided one. Not fixed there: it changes the ledger schema, `lint.mjs` and every existing entry, and
+       the row it would close is already decided by register S1, so C2 closes that one by citation.
      - Presence, text and link (Bean, 2026-10-05): calibration's `presence`, `text` and `link` reads (§3.2), Solve
        writing presence, text and link rows and its `handover` list (§3.3), and Fill setting visibility and variant
        settings: not built. The framework database already marks the settings (`role` `boolean-visibility` 600,
@@ -661,6 +671,6 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 | Question | Who | When |
 |---|---|---|
 | Does `wp-build-page.js` support building into a dedicated `sgs_header`, `sgs_footer` or `sgs_drawer` calibration post with `--post-id` as it does for pages? | Answered 2026-10-03: yes. `--post-id` opens `post.php?post=<id>&action=edit` for any post type (footer 182 is rebuilt that way). The footer's blocks need no dedicated post: `sgs/site-footer` has no `parent` lock, so it and its rows calibrate on the calibration page. | Closed |
-| Should §3.2's text read cover `role` `text-content` (235 rows) as well as `role` `content` (84)? Found in Session B (2026-10-05): most of the Eye Care register's words live in `text-content` (`sgs/product-card::noReviewsText`, `sgs/buybox::stockInStockLabel`), so the read as specified would leave register items S7, N27, N31, 91 and N28 unreachable. **Recommendation: read both** (319 settings instead of 84). The cost is calibration time, which is already chunked and cached; the benefit is that the feature does the job it was specified for. Recorded rather than applied because it widens FR-47-2's scope. | Bean | before Session C lane L7 builds the text read; Session C Waves 0 and 1 do not depend on it |
-| Which surfaces are canvases, for FR-47-8's `canvas: true` flag? Proposed: the post types `sgs_mega_menu`, `sgs_modal`, `sgs_drawer` and `sgs_choice_flow` (all four confirmed in the code), because each is its own post composed from arbitrary blocks. `sgs_header` and `sgs_footer` are excluded: on a cloned client they are the route's own output, so a missing setting there is a real gap. A page is not a canvas even though it is also composed from blocks, because its blocks are the route's own output rather than an author's composition. | Bean | with the FR-47-8 answer, before Session C lane L1.4 |
+| Should §3.2's text read cover `role` `text-content` (235 rows) as well as `role` `content` (84)? **Answered 2026-10-05: read both, 319 settings.** Most of the Eye Care register's words live in `text-content`, so the read as specified would have left register items S7, N27, N31, 91 and N28 unreachable. The cost is calibration time, which is chunked and cached. §3.2 carries it. | Closed |
+| Which surfaces are canvases, for FR-47-8's `canvas: true` flag? **Answered 2026-10-05 (Bean): every CPT and every theme page template.** On Eye Care that is **12 of the 17 surfaces** — `header`, `footer`, `mobile-menu`, the four mega menus, `size-guide`, `lens`, `contact-form` (posts of `sgs_header`, `sgs_footer`, `sgs_drawer`, `sgs_mega_menu`, `sgs_modal`, `sgs_choice_flow`, `sgs_form`; all registered in `plugins/sgs-blocks/includes/class-sgs-block-cpts.php` and `class-sgs-mega-menu-cpt.php`), plus the theme templates `shop` and `product`. The five ordinary pages (`home`, `about`, `lenses`, `help`, `contact`) are not canvases. **This includes the header and footer**, which an earlier draft of the roster excluded on the grounds that the route writes their trees itself; Bean overrode that. The flag is one manifest field per surface, so the roster changes with no code change. | Closed |
 | Which noindex mechanism does each site already have for the calibration page? | Answered 2026-10-03: none per page (the plugin noindexes only WooCommerce utility pages). The calibration page is built private instead (§3.2). | Closed |

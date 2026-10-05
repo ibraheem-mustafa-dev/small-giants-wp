@@ -7,6 +7,7 @@
     "target": {
       "postId": 182
     },
+    "canvas": true,
     "walker": "qa/parity/footer.mjs",
     "walkerFull": "qa/parity/footer.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -110,6 +111,7 @@
     "target": {
       "postId": 199
     },
+    "canvas": true,
     "walker": "qa/parity/header.mjs",
     "walkerFull": "qa/parity/header.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -133,6 +135,7 @@
     "target": {
       "postId": 203
     },
+    "canvas": true,
     "walker": "qa/parity/header.mjs",
     "walkerFull": "qa/parity/mobile-menu.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -151,6 +154,7 @@
     "target": {
       "postId": 165
     },
+    "canvas": true,
     "walker": "qa/parity/header.mjs",
     "walkerFull": "qa/parity/mega-sunglasses.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -169,6 +173,7 @@
     "target": {
       "postId": 176
     },
+    "canvas": true,
     "walker": "qa/parity/header.mjs",
     "walkerFull": "qa/parity/mega-brands.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -187,6 +192,7 @@
     "target": {
       "postId": 183
     },
+    "canvas": true,
     "walker": "qa/parity/header.mjs",
     "walkerFull": "qa/parity/mega-lenses.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -205,6 +211,7 @@
     "target": {
       "postId": 186
     },
+    "canvas": true,
     "walker": "qa/parity/header.mjs",
     "walkerFull": "qa/parity/mega-help.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -223,6 +230,7 @@
     "target": {
       "postId": 461
     },
+    "canvas": true,
     "walker": "qa/parity/help.mjs",
     "walkerFull": "qa/parity/size-guide.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -241,6 +249,7 @@
     "target": {
       "postId": 463
     },
+    "canvas": true,
     "walker": "qa/parity/lens.mjs",
     "walkerFull": "qa/parity/lens.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -262,6 +271,7 @@
     "target": {
       "template": "archive-product"
     },
+    "canvas": true,
     "walker": "qa/parity/shop.mjs",
     "walkerFull": "qa/parity/shop.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -277,6 +287,7 @@
     "target": {
       "template": "single-product"
     },
+    "canvas": true,
     "walker": "qa/parity/product.mjs",
     "walkerFull": "qa/parity/product.full.mjs",
     "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
@@ -292,6 +303,7 @@
     "target": {
       "postId": 285
     },
+    "canvas": true,
     "walker": "qa/parity/contact.mjs",
     "walkerFull": "qa/parity/contact-form.full.mjs",
     "walkStates": [
