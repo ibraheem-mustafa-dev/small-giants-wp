@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.8"
+spec_version: "0.9"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
-last_verified: 2026-10-04
+last_verified: 2026-10-05
 status: draft
 references:
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
@@ -226,11 +226,18 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
    - A row with no `ref`, or a `path` calibration does not know, is Unresolved (`unmapped-element`).
    - A row on a linked placeholder is never written (gap `linked`): it belongs to the referenced post's surface.
    - Rows of other kinds are reported, never written.
-   - `width` rows are reported, never written: a computed width is the box's used size (an auto or grid-sized box
-     reads as pixels), so writing it would freeze a fluid layout (`solve.mjs::USED_VALUES`).
+   - A row a divergence-ledger entry covers targets the entry's decided value, not the draft's, at that width and at
+     every width the entry covers (`lib/solve-rows.mjs::draftValues` reads the row's `decided`, §3.5).
+   - `width` rows are written only as the draft declares the width (a plain length or percentage at every width no
+     ledger entry holds, read from the draft's matched CSS rules by the walker, §3.6 item 11); otherwise they are
+     reported as a `used-value` gap: a computed width is the box's used size, and writing it would freeze a fluid
+     layout (`solve.mjs::USED_VALUES`, `lib/solve-rows.mjs::usedValueTarget`).
+   - A row on a `::before` or `::after` layer (`pseudo`) resolves on its element's path plus the layer, the key
+     calibration gives the layer.
    - Box rows (`w`, `h`) name no CSS property, so no setting can hold them: they are never written, listed as derived,
      and close when the spacing that moves them closes. A scored item closes only when its box rows close too.
-4. Stop when no row changes or after round 3 (R-47-9).
+4. Stop when no row changes or after round 3 (R-47-9). `--rounds 0` is measure-only: one build and one walk, never a
+   write (`solve.mjs::solveLoop`, test `tests/solve.test.mjs`).
 
 **Classification of surviving rows:**
 - **Hardcode:** the setting holds the draft value, or its logged snap, and the paint still differs beyond the walker's
@@ -287,11 +294,16 @@ UNMAPPED list or in `divergences.json`.
 `sites/<client>/build/qa/divergences.json` is an array of entries:
 
 `{ "id": "D-<n>", "scope": "<surface>|site", "node": "cr-ref-<surface>-<n>|<block slug>|*", "state": "<state>|*",
-"property": "<css property>", "widths": [375, 768, 1440, 1920], "expected": { "value": "<css value>" } | { "rule":
-"<rule name>" }, "reason": "...", "decided": "YYYY-MM-DD <source>" }`
+"property": "<css property>", "pseudo": "::before|::after" (optional), "widths": [375, 768, 1440, 1920], "expected":
+{ "value": "<css value>" } | { "rule": "<rule name>" }, "reason": "...", "register": ["<register item id>", ...],
+"decided": "YYYY-MM-DD <source>" }`
 
-- **A value expectation:** the walker compares live with it instead of the draft. Fill writes it through the resolver
-  instead of the draft's value.
+An entry matches a row on node, state, property, width and layer: an element's entry never covers its `::before` or
+`::after` rows, a layer's entry (`pseudo`) only those.
+
+- **A value expectation:** the walker compares live with it instead of the draft: a drifted row's draft side is the
+  plain decided value and every covered row carries `decided: { id, value }` (`parity/lib/divergences.mjs::judgeDivergence`;
+  a rule entry's `decided.value` is what live shows). Solve and Fill write the decided value, never the draft's (§3.3).
 - **A rule expectation:** the walker accepts the row. Fill writes nothing for that property and lists it in the
   report. Rule names are listed in `lib/ledger.mjs::RULES` with a one-line meaning each; an unknown rule name fails
   the run.
@@ -302,17 +314,26 @@ UNMAPPED list or in `divergences.json`.
 - **Accepting a row:** `node scripts/computed-route/ledger.mjs accept <report.json> <row id> --reason "..."` writes
   the entry with today's date; `report.md` prints each open row's id for this.
 
-**Done when:** `node --test scripts/computed-route/tests/ledger.test.mjs` passes, including a stale entry that must
-fail the run.
+- **Register decisions:** every entry cites the fix-register items it implements (`register`); `lint.mjs --surfaces
+  <surfaces.json> --register <register.md>` fails an entry citing no item or an item the register lacks, and a ledger
+  with entries checked against no register. House-rule entries (`touch-target`, `accessibility`) cite none.
+- **Independent check:** a site's `qa/independent-check.mjs` judges its differences through
+  `lib/ledger.mjs::judgeIndependent` (matched on `node`); a value entry live has drifted from stays open, named by its id.
+
+**Done when:** `node --test scripts/computed-route/tests/ledger.test.mjs` and `lint.test.mjs` pass, including a stale
+entry that must fail the run, an entry citing an item the register lacks, and a drifted value entry that stays open.
 
 ### 3.6 Walker upgrades: `scripts/parity/` (FR-47-6)
 
 These belong to the walker, which stays a standalone tool with no route import. Each is proven with a planted fault
 before it counts (GAP-CHECKLIST §11).
-1. **Pseudo-element paint:** overlays and tints drawn as `::before` and `::after`, sampled as painted brightness at
-   fixed points.
+1. **Pseudo-element paint:** each painting `::before` and `::after` layer's computed paint (`collect.mjs::PSEUDO_PROPS`),
+   compared layer by layer; a layer on one side only is one `content` row (built 2026-10-05, GAP-CHECKLIST §19).
 2. **1920** in every standard run.
 3. **States:** hover, focus and active on every interactive element of a compared region, not only configured pairs.
+   Hover is built (2026-10-05): ref-traced walks force `:hover` on every pair and its ancestors through the DevTools
+   protocol (`devtools.mjs::forcedHover`), and a hover row is a difference in what hovering changes. Focus and active
+   on every element are not built.
 4. **Link coverage:** the same text sits inside a link on both sides.
 5. **Line counts** sampled during state transitions (header shrink and grow, drawer open).
 6. **Divergence ledger:** a config may name one (`divergences: '<path>'`), and matching rows are accepted.
@@ -326,6 +347,15 @@ before it counts (GAP-CHECKLIST §11).
    equals `none` (`compare.mjs::sameValue`). GAP-CHECKLIST section 17.
 9. **Solve modes:** `--lean` (only what a settings writer reads) and `--draft-cache` (the draft read once per run);
    `auto-collect.mjs` can tag each word with its element (`tagEls`) for block pairing.
+10. **Settled reads:** a state is read once its finite animations finish (`devtools.mjs::settleAnimations`: a 900ms
+    floor for what starts late without an animation, then `document.getAnimations()`, a 6s cap).
+11. **Declared values:** the matched CSS rules' declared sizes (`devtools.mjs::declaredValues`, `DECLARED_PROPS`) beside
+    the computed ones, so a draft's declared width can be written (§3.3).
+12. **Motion timings:** transition and animation duration, delay and easing as ordinary rows, compared as their sets of
+    distinct values and skipped where nothing runs.
+13. **Text-run rows:** a text run's rows are compared by the space between their line boxes (a `row-gap` row).
+Items 10 to 13 and the built parts of 1 and 3: GAP-CHECKLIST §19, proven in headless Chromium on local pages
+(`tests/walker-devtools.test.mjs`); their live proof is the About measure-only run.
 
 **Done when:** each item has a GAP-CHECKLIST section with its planted fault turning red. `node
 scripts/parity/benchmark.mjs --noise` still catches 5 of 5 with no new noise rows.
@@ -359,6 +389,9 @@ All in `scripts/computed-route/`. The README lists every exported function (R-47
 | `lib/draft.mjs` | Serves a local draft folder on 127.0.0.1 at an ephemeral port, shut down at exit (not built; Fill needs it) |
 | `solve.mjs`, `fill.mjs` | The two commands (`fill.mjs` not built) |
 | `lib/solve-rows.mjs`, `lib/solve-report.mjs` | Solve's reading of a walker report (open rows, writable groups, draft values, regressions, classification) and its report |
+| `sweep.mjs`, `lib/sweep.mjs` | Every surface's newest Solve report as one row per distinct open issue (`qa/sweep/<date>/sweep.json`) |
+| `triage.mjs`, `lib/triage.mjs`, `lib/triage-source.mjs` | A candidate class (W, F, T, U) with evidence per open issue, including the `includes/` helpers a block's render reaches |
+| `register-sweep.mjs`, `lib/register-sweep.mjs` | The fix register bundled for the sweep's status agents, and their verdicts checked before a Sweep column is written |
 | `calibration-targets.json`, `calibration-fixtures.json` | Calibration posts per site; fixture content per block |
 | `cache/` | Calibration cache (gitignored) |
 | `tests/` | `node --test "scripts/computed-route/tests/*.test.mjs"` (Node 24 runs a glob, not a bare folder); each file names the rule it proves and has one case that must fail |
@@ -499,7 +532,8 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - Gap typing (a setting that paints a parent while a rule on a child overrides it comes out Missing setting): the
        hours day weight closed through a dedicated label setting; calibration still records nothing for an overriding
        child.
-     - The functional flows (FR-47-7) and the walker's items 1 to 5 (FR-47-6): not started. Contact and its form walk
+     - The functional flows (FR-47-7) and the walker's items 2, 4, 5 and focus and active states (FR-47-6): not started;
+       items 1 and 3's hover, plus items 10 to 13, are built (2026-10-05) with their live proof pending. Contact and its form walk
        only their rest state until FR-47-7 maps the form-flow states.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer.
 5. **A second draft** from a different designer, to test generality.

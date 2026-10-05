@@ -106,6 +106,21 @@ the About measure-only run (`solve.mjs --rounds 0`, `SGS_HEADED=1`, on the seria
 is 0 open distinct issues, else each new row explained (new rows are expected where the forced hover, pseudo layers,
 timings or declared widths now measure what was unread).
 
+**Checked (2026-10-05).** /code-review high on the range found four Track P defects, fixed in `92bd82de0` (forced hover
+no longer repeats a rest difference as a hover row; ledger entries and accepts keep `::before`/`::after` rows apart;
+a declared width never replaces a ledger-held width; the settle floor is 900ms again, proven by a local late-reveal
+page that reads opacity 0 under 300ms). Then triage reads `includes/` helpers (`8b153abb3`), the flex alignment noise
+row is gone (`8f032be03`), and /qc passed 15 scenarios on local pages and real data, fixing triage's missing-report
+error on the way (`2035bb6ce`; report `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/stage-6-report.md`).
+Review findings in other sessions' code, for Session 0 (not changed by Track P):
+- `scripts/computed-route/lib/deploy-hash.mjs::normaliseBundle` renumbers only `NNN(){` webpack modules; a module with
+  parameters (`NNN(e,t,r){`) keeps its build-folder id, so calibrate can refuse a deploy that matches.
+- `scripts/computed-route/lib/calibrate-read.mjs::readInstancesInPage` lost the 81-element cap: large blocks
+  (google-reviews) may time out on the host during recalibration.
+- `wishlist-panel/colour-preview.js` and `choice-flow/preview-style.js` copy the tier fallback instead of
+  `utils/responsive.js::resolveTier`.
+- `plugins/sgs-blocks/tests/js/__mocks__/@wordpress/components.js`'s pass-through fallback hides a misspelt import.
+
 ## Session A: whole-site sweep (measure, never write)
 
 **Done when:** every surface has a walker report taken from one commit with live = HEAD; every register item carries

@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-10-04
+last_updated: 2026-10-05
 ---
 
 # small-giants-wp — LEDGER (the one living status)
@@ -21,7 +21,9 @@ the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list,
 difference closed or a recorded decision, confirmed by an independent check). Contact is down from 134 differences to 19
 (2026-10-04) and the contact form from 94 to 46. Next (Bean, 2026-10-04): a repair session for everything the route data audit proved
 (seeder routing, calibration, framework bugs, editor-canvas gaps), then a whole-site sweep, an audit of what stays
-open, and one framework fix pass (Front F).
+open, and one framework fix pass (Front F). Running beside that repair (Track P, 2026-10-05, code only, QC'd): the
+comparison tool now reads what the browser's developer tools show, your decided differences can no longer be
+overwritten, and the sweep, triage and register-check tools are ready; their live proof is one About run after the repair.
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -55,7 +57,7 @@ add-to-bag route drops a second product and a 30s cooldown blocks a second pair 
 WooCommerce's product gallery (75/82); the shop filters leave empty groups after clearing (N25); the drawer body
 overflows by its title row (15); a footer row given a width cap collapses to zero width (N46). No blockers.
 
-**Spec 47 (v0.8): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; "Solve"
+**Spec 47 (v0.9): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; "Solve"
 compares a built page with the draft and writes block settings). Every block of a surface is paired with its draft
 element (`pairs.mjs`, switched on per surface by `walkerFull` in `surfaces.json`); a parent block's setting can now
 style its children (a form's field style), extension settings (child sizing, hover, entrance) are seeded in the
@@ -67,9 +69,18 @@ closed 25 but regressed 3 rows, so its tree was restored from git and rebuilt. R
 today's calibration changes: 6 done, the rest listed in the plan. Hostinger's edge answers headless browsers and curl with a 403 browser
 check after bursts of traffic: run the route's host tools with `SGS_HEADED=1` (dev-setup.md), one job at a time.
 
-Two route bugs proven by code reading (2026-10-04), fixed in the sweep plan's A5 and B4: when live drifts from a
-ledger decision, Solve's next write uses the draft value (`solve-rows.mjs::draftValues` ignores the ledger), and
-`qa/independent-check.mjs::accepted` never matches a ledger entry (it reads `ref`; entries store `node`).
+**Track P (2026-10-05, pushed through 2035bb6ce; code only, no deploy):** the sweep plan's code units, built beside
+Session 0. Walker (GAP-CHECKLIST §19): reads once animations finish (900ms floor), forced `:hover` on every pair, the
+draft's declared widths, `::before`/`::after` paint keyed as calibration keys it, motion timings, a text run's row
+spacing. Solve: `--rounds 0` never writes (test); a ledgered row's target is Bean's decided value at every width it
+covers. Ledger: entries cite register items (`register`), checked by `lint.mjs --register` (the route gate's
+command now carries `--register .claude/plans/2026-10-02-eye-care-fix-register.md`); D-1 removed (Bean: the subtext
+keeps its margin; the 375px name-field drop is open under N45b); the independent check matches entries on `node`. New
+tools: `sweep.mjs` (A3), `register-sweep.mjs` (A4), `triage.mjs` (B1, reads the `includes/` helpers a render
+reaches). /code-review high fixed four defects; /qc passed 15 scenarios on local pages and real data (90/100, report
+in `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/`). Left: the About measure-only run with the new walker on
+the host queue after Session 0's tail. Review findings for Session 0's own code (deploy-hash module ids, calibration's
+removed element cap, copied tier helpers, jest mock fallback) are in the sweep plan's Track P section.
 
 **Route data audit and wiring gate (2026-10-04, pushed, not deployed: no runtime code changed).** Four investigations
 (`.claude/reports/2026-10-04-route-data-audit/README.md`): ~628 working settings the seeder never routes, every
