@@ -66,8 +66,7 @@ with walker rows since.
 gate (`plans/archive/2026-10-04-wiring-fingerprint-gate.md`, built 2026-10-04). **Done when:** every group below is fixed with a
 test that fails without it (or recorded with a proven reason it cannot be), the framework DB is reseeded from clean
 HEAD, both test sites are deployed, every block is recalibrated, and a rerun of the four audit scripts and the
-fingerprint gate shows the counts fall by the predicted amounts with no new gap. **Estimate:** ~2 to 3 h, the
-recalibration tail unattended.
+fingerprint gate shows the counts fall by the predicted amounts with no new gap. **Complete 2026-10-05** (status below).
 
 | Group | Scope | Owner files | Who |
 |---|---|---|---|
@@ -101,7 +100,7 @@ probes are green. The wiring gate's blocking gaps fell from 1,781 to 201 (`3fee8
 | QC council standardisation wave (D1 to D10) | done | `6f3601a32`: radius tablet and mobile bug on 7 blocks, 17 tier copies, 45 gradient regex copies and 13 `boxShorthand` copies collapsed onto the shared helpers; `resolveColourToken` keeps named and oklch values; editor `<style>` CSS-injection guard; multi-button separators and content band; grid-item lift; gate `check-border-preview-twin.js`. Jest mocks: `4fa51e61d`, `7c714f86b` (every WP package the editor imports; `components/block-editor` mocks fabricate only names in `known-exports.json`, so a misspelt import fails). |
 | Text indent, hero, team-member overlay | done | `6f3601a32`: paragraph containers use a sibling selector and 32 single-element `TextIndent` attributes are removed; the hero standard variant with tablet and mobile images paints through the shared Background panel path; team-member overlay bio typography. |
 | Border defaults | done | `6f3601a32`: border style defaults to `solid` (13 attributes; multi-button `childBtnBorderStyle` keeps `''`). `1685d8d14`: border width 0 except exceptional types; border-named styles keep their border inside `:where()`; Google-branded google-reviews buttons are exceptional; gate `check-border-width-defaults.py`; editor marks use outline. |
-| S0-6 Serial tail | partly done | Done: merge, build, full gates, reseed from HEAD, deploy of both sites. Remaining list below. |
+| S0-6 Serial tail | done | Merge, build, full gates, reseed from HEAD, deploy of both sites; every block recalibrated on the local WSL mirrors (2026-10-05, 94 cache files; `2f28f14fd`, `659040b1e`, `585a2ffa0`, `115081bf4`); `/sgs-update` every stage at HEAD (0 drifted rows); audit counts in the audit report's section 7. |
 
 **Incident (resolved).** An editor-route save on sandybrown, which runs the older schema, stripped newer attributes from
 pages 2742, 3405 and 3448; all three were restored byte-identical from revisions. Lesson: memory
@@ -120,15 +119,11 @@ testimonial-slider `columns` and `gridTemplateColumns` on those pages (`46deb5ae
 5. Standardisation rule: always reuse the shared helper, injector, atom or extension (memory
    `match-helper-precedent-by-contract`); a second copy of a helper is a defect.
 
-**Remaining in Session 0 (the tail).**
-1. Recalibration queue: the google-reviews probe (`SGS_HEADED=1`) is running; then every cached block on its cache site
-   through the queue (scratchpad `recal-queue.sh`; stop with the `recal.STOP` file; log `recal.log`). One job at a time.
-2. Rerun the four audit scripts in `.claude/reports/2026-10-04-route-data-audit/` (seeder chain,
-   `calibration/classify_dead.py`, inventory, `fingerprint/run.sh`) and the wiring gate; record the new counts beside
-   the 2026-10-04 counts in that report's README.
-3. Message Track P (`small-giants-wp-9f`): Session 0's code tail is done and deployed at `4726700c1` (sandybrown
-   `7f770ebb5`).
-4. `/handoff`; the next prompt is Session A.
+**Session 0 tail results (2026-10-05).** Hostinger's edge put a captcha on every automated login, so every block was
+recalibrated on local WSL mirrors of both test sites (`scripts/local-wp/README.md`; proven equal to the hosted sites on
+google-reviews, accordion and accordion-item). Summed over the 94 cache files, 2026-10-04 to 2026-10-05: settings
+located 1,810 to 2,868, dead 711 to 605, noMarker 357 to 117, rejected 7 to 0; oneWidth 22 to 40 and untestedStates
+28 to 55 rose with the ~1,060 settings reached for the first time. Detail: `.claude/reports/2026-10-04-route-data-audit/README.md` section 7.
 
 ### Parked from Session 0
 
@@ -152,6 +147,12 @@ Each item is named so nothing is lost; none blocks Session A.
 - **P0-8 Live check:** the container may not load the svg-bg and shape-divider CSS on a page with a hero but no
   container.
 - **P0-9 multi-button layout:** render passes `flex`; there is no layout control, by design.
+- **P0-10 Calibration memory (Session C, before its serial tail's recalibration):** one `calibrate.mjs` run over 46
+  blocks ran out of Node's default 4 GB heap after 43 minutes (on site-header); site-header itself needs
+  `--max-old-space-size=8192` and `SGS_CAL_CHUNK=50`. Find what the run holds between blocks.
+- **P0-11 Unclassified calibration outcomes (Session B, with B2's classification):** the 605 dead, 40 oneWidth and 55 untestedStates of 2026-10-05 are not
+  split by cause (`calibration/classify_dead.py` defines classifiers only). The largest: cart 83, nav-bar-menu 58 (a
+  menu paints only inside a real site header, which the calibration page lacks), product-card 51, nav-drawer-menu 39.
 
 ## Track P: route prep, in a second session beside Session 0
 
@@ -282,7 +283,7 @@ then each surface to 100% with Solve under the existing done line (Spec 47 plan 
 
 | Risk | Effect | Mitigation |
 |---|---|---|
-| Host 403s under a long serial run | Sweep stalls | `SGS_HEADED=1`, one job at a time, `waitOutHostCheck`; a surface that fails twice is recorded and skipped |
+| Host 403s or a captcha under a long serial run | Sweep stalls | `SGS_HEADED=1`, one job at a time, `waitOutHostCheck`; on a captcha, the local mirror method in A0; a surface that fails twice is recorded and skipped |
 | Stale live pages (deploy or tree drift) | Sweep measures old code | A0 deploys HEAD and rebuilds every tree before any walk |
 | Measure-only mode writes a setting | Trees drift | A1's test; `git diff --ignore-cr-at-eol sites/eye-care-ward-end/build/*.tree.json` after A3 shows only added `cr-ref-` classes |
 | Shared hand configs | The same header row counted 6 times; panels pair nothing | A2's per-panel configs; A3 dedupes by ref and property |

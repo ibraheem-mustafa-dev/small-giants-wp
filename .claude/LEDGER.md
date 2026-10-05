@@ -20,8 +20,8 @@ the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list,
 (measure the draft, write the layout settings automatically) took the About page to 100% on 2026-10-04 (every
 difference closed or a recorded decision, confirmed by an independent check). Contact is down from 134 differences to 19
 (2026-10-04) and the contact form from 94 to 46. The repair session for everything the route data audit proved (seeder routing, calibration,
-framework bugs, editor-canvas gaps) is built, pushed and deployed to both test sites (2026-10-05); its tail (recalibration, audit rerun)
-remains. Then: a whole-site sweep, an audit of what stays open, and one framework fix pass (Front F). Running beside that repair (Track P, 2026-10-05, code only, QC'd): the
+framework bugs, editor-canvas gaps) is built, deployed to both test sites and complete (2026-10-05), every block
+recalibrated on local copies of the test sites in WSL. Then: a whole-site sweep, an audit of what stays open, and one framework fix pass (Front F). Running beside that repair (Track P, 2026-10-05, code only, QC'd): the
 comparison tool now reads what the browser's developer tools show, your decided differences can no longer be
 overwritten, and the sweep, triage and register-check tools are ready. Proven on About (local copy of the site): it
 found one real issue, your 0.25s button lift timing never reaching any button (register S1).
@@ -81,16 +81,16 @@ in `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/`). Proven 2026-10-05 on
 issue, real: S1's 0.25s button timing never reaches a button (`button/render.php` always writes `transition: all
 {transitionDuration}ms`, default 300; framework repair, register S1).
 
-**Session 0 (2026-10-05, pushed through `4726700c1`; deployed to eye-care-test, sandybrown at `7f770ebb5`).** Done (plan
-`plans/2026-10-04-eye-care-sweep-audit-fix.md`, Session 0 status): seeder routing (unrouted core styling 628 to 368,
-`74771c855`), the framework bugs (accordion-item scope hash, team-member typography, grid items as Spec 32 FR-32-12,
-image-sequence enum), editor-canvas gaps through shared helpers (wiring gate blocking 1,781 to 201, `3fee871a2`), dead
-context keys, calibration rebuilt (`c0d6c1d0d`: no element cap, pseudo layers, state triggers, preconditions, markers),
-the QC standardisation wave, text indent and border defaults (style solid, width 0 except exceptional types: Spec 32 v1.14).
-Fast gates 139/139, full tier 6/6, checksums verified, motion-qa green on both sites. Left in Session 0: the recalibration
-queue (`SGS_HEADED=1`, one job at a time), the audit rerun with counts in the audit report, a message to Track P, `/handoff`.
-Parked items P0-1 to P0-9 are in the plan (pre-existing test failures, seeder remainder 368, 34 borders without a control,
-rebuild sandybrown pages 2742/3405/3448 then drop 6 oldshape baseline entries). Next session: finish Session 0's tail, then Session A.
+**Session 0 (2026-10-05, complete; block code deployed at `4726700c1` to eye-care-test and `7f770ebb5` to sandybrown;
+tooling through `115081bf4`).** Done (plan `plans/2026-10-04-eye-care-sweep-audit-fix.md`, Session 0 status): seeder
+routing (unrouted core styling 628 to 368), the framework bugs, editor-canvas gaps through shared helpers (wiring gate
+blocking 1,781 to 201), calibration rebuilt, the standardisation wave, text indent and border defaults (Spec 32 v1.14).
+Hostinger's edge now shows automated logins a captcha after bursts, so every block was recalibrated on local WSL copies
+of both test sites (localhost:8081 / 8082, `scripts/local-wp/README.md`; proven to measure the same): settings located
+1,810 to 2,868, dead 711 to 605, noMarker 357 to 117 (audit report section 7). One browser and one login per
+calibration run (`scripts/lib/wp-session.js`). `/sgs-update` every stage at HEAD: 0 drifted rows. Parked P0-1 to
+P0-11 in the plan (pre-existing test failures, seeder remainder, 34 borders without a control, sandybrown page rebuild
+then drop 6 oldshape baseline entries, calibration memory, unclassified calibration outcomes).
 
 **Route data audit and wiring gate (2026-10-04, pushed, not deployed: no runtime code changed).** Four investigations
 (`.claude/reports/2026-10-04-route-data-audit/README.md`): ~628 working settings the seeder never routes, every
@@ -102,7 +102,7 @@ Bean's rule (Spec 32 FR-32-12): grid-item defaults style every grid cell whateve
 inherited value; built in Session 0.
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**
-`plans/2026-10-04-eye-care-sweep-audit-fix.md` Session 0's tail, then Session A (sweep
+`plans/2026-10-04-eye-care-sweep-audit-fix.md` Session A (sweep
 every surface, measure only), B (audit what stays open, protect decisions) and C (framework fixes); per-surface Solve work (`plans/2026-10-04-spec47-full-coverage.md`
 "Progress") resumes in its Session D.
 

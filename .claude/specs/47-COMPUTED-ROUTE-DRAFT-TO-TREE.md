@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.10"
+spec_version: "0.11"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -192,6 +192,13 @@ A setting whose marker fails `wp-build-page.js` validation is reported as `marke
   --slug cr-calibration --status private`. Its post ID goes in `scripts/computed-route/calibration-targets.json`
   (`{ "<site>": { "envFile", "envKey", "postId" } }`; eye-care-test: 668, sandybrown: 4750). Later runs replace that page with
   `--post-id`. Private, it is never public, indexed or linked; calibration reads it in a logged-in browser.
+- The local WSL mirrors of both test sites (`local-eye-care`, `local-sandybrown`; `scripts/local-wp/README.md`) are
+  targets too, with the same post IDs and a `pluginDir` the deploy check hashes directly instead of over SSH. They
+  measure the same as the hosted sites for the same build and snapshot (google-reviews, accordion and accordion-item
+  identical, 2026-10-05) and are where whole-library recalibration runs: Hostinger's edge challenges bursts of
+  automated logins.
+- One run opens one browser and logs in once (`scripts/lib/wp-session.js`): every `wp-build-page.js` step opens a tab
+  in it through `SGS_CDP_URL`. With `SGS_CDP_URL` already set, the run attaches to that browser instead.
 - One build holds a block: one default instance per variant plus one instance per (setting, marker), each wrapped in an
   `sgs/container` with class `cr-cal-<block>-<setting>`. A block with more than `CHUNK` (150, or `SGS_CAL_CHUNK` for a run) instances is built and read
   in several pages, each carrying every variant's default instance (google-reviews has about 400; a 400-instance save
@@ -228,7 +235,8 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
    (every block paired, `pairs.mjs`) when it has one, else its hand config. Measured on About, 2026-10-04: lean 45s and
    cached 21s against 123s full; four widths at once 49s against 126s, with no host bot check (eye-care-test's IP
    allowlist on). With `SGS_HEADED=1` the walks run headed (`solve.mjs::WALK_FLAGS` drops `--headless`): Hostinger's edge answers
-   headless browsers with a 403 browser check after bursts of traffic (`.claude/dev-setup.md`).
+   headless browsers with a 403 browser check after bursts of traffic (`.claude/dev-setup.md`); when it shows a captcha even
+   to headed logins, run against the local WSL mirrors (§3.2).
 3. Write. Consider each row in `report.json` whose kind is `style`, `hover` or `box`, which is not accepted and not
    matched in `divergences.json`:
    - The row's `ref` names the node; its `path` matches a calibration element exactly, giving the slot.
@@ -529,7 +537,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved: ~628 working settings the seeder never
        routes (so Solve calls them Missing), calibration's dead and no-marker classes (fixture preconditions, an
        81-element read cap, closed surfaces, hover on the root, `::after` paint, 641 settings `longhands()` drops; the
-       calibration code for all of these is built (Session 0, `c0d6c1d0d`), recalibration is the tail), and
+       calibration code for all of these is built (Session 0, `c0d6c1d0d`) and every block was recalibrated with it on 2026-10-05), and
        the framework bugs and editor-canvas gaps the new wiring gate (`check-wiring-fingerprint.py`) reports; then a
        measure-only sweep of every surface, an audit of what stays open, and the framework fixes it needs.
      - Then Contact and its form post to 100%, then Lenses, then every other surface with its full config: Help, Home,

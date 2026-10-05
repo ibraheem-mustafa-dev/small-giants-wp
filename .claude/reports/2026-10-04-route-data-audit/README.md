@@ -202,5 +202,36 @@ eye-care-test (checksums verified) and, as the identical block build `7f770ebb5`
   preconditions from variants, toggles, border partners, the overlay image and layout modes; markers for every
   previously markerless class; `longhands()` maps colour and border gradients and shadow colour; container-query tiers
   are `containerTier`. Each class has a test (`calibrate-classes`, `calibrate-read`).
-- **Calibration rerun counts:** recorded here after the recalibration queue finishes and `calibration/classify_dead.py`
-  is rerun, beside the 2026-10-04 counts in section 3.
+- **Calibration rerun counts (2026-10-05, every block):** all 94 cache files were recalibrated on the local WSL mirrors
+  (`local-eye-care` 47, `local-sandybrown` 47; `scripts/local-wp/README.md`) after Hostinger's edge put a captcha on
+  every automated login. The mirrors measure the same as the hosted sites: google-reviews 228 settings, 5 dead, 2
+  one-width, 1 no-marker on both; accordion 42 and 9, accordion-item 13 and 1 on both. Summed over the cache files
+  (section 3's categories), 2026-10-04 to 2026-10-05:
+
+  | Outcome | 2026-10-04 | 2026-10-05 |
+  |---|---|---|
+  | Settings located | 1,810 | 2,868 |
+  | dead | 711 | 605 |
+  | noMarker | 357 | 117 |
+  | rejected | 7 | 0 |
+  | oneWidth | 22 | 40 |
+  | untestedStates | 28 | 55 |
+  | discovered | 442 | 623 |
+
+  oneWidth and untestedStates rose with the ~1,060 settings reached for the first time; they are not yet classified.
+  The most dead: cart 83, nav-bar-menu 58 (77 on 2026-10-04; a menu paints only inside a real site header, which the
+  calibration page lacks), product-card 51, nav-drawer-menu 39, hero 35, mega-panel 29. `calibration/classify_dead.py`
+  only defines its classifiers (it writes no file), so the per-class split of the 605 is not rerun.
+- **Calibration tooling fixed during the rerun:** one browser and one login per run, attachable to an everyday Chrome
+  (`2f28f14fd`, `scripts/lib/wp-session.js`); a panel toggle hidden at the read width is clicked in the page
+  (`659040b1e`); the shared browser's dialog listener stops two connections racing to dismiss one dialog and leaves a
+  page on beforeunload (`585a2ffa0`, `115081bf4`). site-header needs `--max-old-space-size=8192` and `SGS_CAL_CHUNK=50`:
+  a 46-block run ran out of the default 4 GB heap after 43 minutes.
+- **Seeder (`/sgs-update`, every stage, 2026-10-05 at HEAD):** "95 blocks scanned, 0 new or drifted rows"; the CSS
+  property classifier resolves 2,428 and leaves 419 unresolved (its own count; section 2's 628 to 368 is the census
+  figure from `74771c855`). The `seeder/` chain does not rerun as committed: `final.py` needs `why.py`'s output,
+  `runcls.py` and `runpatched.py` open a database without `property_suffixes`, and `cmp.py` needs the agent's
+  `regen-classifications.json`. Inventory (section 4) is not rerun: no DB table changed.
+- **Fingerprints:** the prototype scan (`fingerprint/run.sh`) reads 5,683 attributes and 2,823 calibrated; it does not
+  credit the shared helpers the gate learned, so the production gate is the count: 201 blocking gaps baselined, `--check`
+  passes, findings L3 186, L5 12, L2 1, L3-tier 1, L6 1 (advisory L3-state 624, L3-runtime 25, L6-token 19).

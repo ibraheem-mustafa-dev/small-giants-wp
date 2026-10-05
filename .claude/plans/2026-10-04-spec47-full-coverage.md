@@ -112,13 +112,9 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   set its `walkerFull`, then Solve it. Surfaces whose states open a panel (Help's FAQ, the megas, size-guide, lens) are
   paired at rest only today: blocks inside a closed panel paint no words and are listed as left out. CR10's live
   planted-fault proof runs on the first image-heavy surface (Home).
-- [ ] **Recalibration of every block with today's calibration changes** (`reaches`, `_tag`, min-height, aspect ratio,
-  flex-grow, extension settings): done with all of them for form, accordion-item, accordion, account, audio and
-  before-after. Every other block in `scripts/computed-route/cache/` remains, business-info, container, whatsapp-cta,
-  card-grid, hero, product-card, gallery, post-grid, image-sequence, brand-strip and breadcrumbs included (their runs
-  predate `_tag`): each `node scripts/computed-route/calibrate.mjs --site <its cache file's "site"> --client
-  <eye-care-ward-end for eye-care-test, mamas-munches for sandybrown> --blocks sgs/<slug> --recalibrate`,
-  `SGS_HEADED=1`. sgs/modal's fixture now carries inner blocks (it failed "changedOnReload"); confirm it calibrates.
+- [x] **Recalibration of every block with today's calibration changes:** done 2026-10-05 for all 94 cache files on the
+  local WSL mirrors (Session 0 of `plans/2026-10-04-eye-care-sweep-audit-fix.md`; counts in
+  `.claude/reports/2026-10-04-route-data-audit/README.md` section 7). sgs/modal calibrates (22 settings).
 
 ## Universal tool log
 
