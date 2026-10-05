@@ -607,8 +607,13 @@ a.sgs-google-reviews__author:hover {
 	flex: 0 0 100%;
 	margin-top: -2px;
 	font-size: 13.5px;
-	color: var( --sgs-gr-blue );
 	text-decoration: none;
+}
+
+/* "Read the full review" is Google blue; two classes beat the theme's global link colour (see the pills above) and
+   lose to `reviewLinkColour`. */
+.sgs-google-reviews .sgs-google-reviews__review-link {
+	color: var( --sgs-gr-blue );
 }
 
 /* A link on its own line, told apart by its colour and position: the underline returns on hover and focus. */

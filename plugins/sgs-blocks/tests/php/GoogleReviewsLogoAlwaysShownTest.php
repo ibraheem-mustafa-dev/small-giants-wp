@@ -287,6 +287,7 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		// The pills' text colours sit at two classes so the theme's global link colour (zero specificity, later in the page) cannot override them.
 		$this->assertMatchesRegularExpression( '#\n\.sgs-google-reviews \.sgs-google-reviews__see-all \{\s*color: var\( --sgs-gr-on-blue \);#', $css );
 		$this->assertMatchesRegularExpression( '#\n\.sgs-google-reviews \.sgs-google-reviews__write-review \{\s*color: var\( --sgs-gr-blue \);#', $css );
+		$this->assertMatchesRegularExpression( '#\n\.sgs-google-reviews \.sgs-google-reviews__review-link \{\s*color: var\( --sgs-gr-blue \);#', $css );
 		// With no colour set, the stylesheet carries Google's hover defaults (render.php emits nothing then).
 		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__arrow:hover, \.sgs-google-reviews__arrow:focus-visible \) \{([^}]*)\}#', $css, $h ) );
 		$this->assertStringContainsString( 'border-color: var( --sgs-gr-blue );', $h[1] );
