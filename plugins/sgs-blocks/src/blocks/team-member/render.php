@@ -546,19 +546,16 @@ if ( ! empty( $base_style_engine_args ) ) {
 // TypographyControls/sgs_typography_css_rule() mechanism. Each surface is a
 // single text element, so none carries a text indent. textAlign is the
 // has-text-align-* class added at step 14.
-foreach (
-	array(
-		''     => $root_sel,
-		'name' => $root_sel . ' .sgs-team-member__name',
-		'role' => $root_sel . ' .sgs-team-member__role',
-		// The bio shows in the photo overlay too, so its typography reaches both.
-		'bio'  => $root_sel . ' .sgs-team-member__bio,' . $root_sel . ' .sgs-team-member__overlay-bio',
-	) as $sgs_tm_typo_prefix => $sgs_tm_typo_sel
-) {
-	$sgs_tm_typo_css = sgs_typography_css_rule( $attributes, $sgs_tm_typo_prefix, $sgs_tm_typo_sel );
-	if ( '' !== $sgs_tm_typo_css ) {
-		$scoped_css[] = $sgs_tm_typo_css;
-	}
+// One literal-prefix call per surface (never a loop), so every static gate and the DB seeder see each prefix.
+// The bio shows in the photo overlay too, so its typography reaches both.
+$sgs_tm_typo_css = array(
+	sgs_typography_css_rule( $attributes, '', $root_sel ),
+	sgs_typography_css_rule( $attributes, 'name', $root_sel . ' .sgs-team-member__name' ),
+	sgs_typography_css_rule( $attributes, 'role', $root_sel . ' .sgs-team-member__role' ),
+	sgs_typography_css_rule( $attributes, 'bio', $root_sel . ' .sgs-team-member__bio,' . $root_sel . ' .sgs-team-member__overlay-bio' ),
+);
+foreach ( array_filter( $sgs_tm_typo_css ) as $sgs_tm_typo_rule ) {
+	$scoped_css[] = $sgs_tm_typo_rule;
 }
 
 // --- 12b. Background + text colour (block-private, replaces the native
