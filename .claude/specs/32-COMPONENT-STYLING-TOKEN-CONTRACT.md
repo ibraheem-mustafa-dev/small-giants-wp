@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.13"
+spec_version: "1.14"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
@@ -351,6 +351,16 @@ Note: `sgs/button`/`sgs/heading`/`sgs/quote`/`sgs/text`/`sgs/container` route bo
 ### (e) Per-instance override channel
 Consistent with FR-32-4: a per-instance override on a box-object property is a CSS custom-property **VALUE**, never an inline property declaration. The **only** non-attr styling output permitted anywhere in this contract is a genuinely non-device-tier breakpoint rule (Spec 31 FR-31-5.2's `ResidualBand`), which is the sole legitimate use of the block's `sgsCustomCss` (Additional-CSS) field — every other override flows through the object attr + scoped `<style>`, never a bespoke inline escape hatch.
 
+### (f) Border defaults (Bean, 2026-10-05)
+
+A border setting's default is a border style of `solid` and a border width of 0, so a block paints no border until the client sets a width. A block's own default never draws a border the client did not ask for.
+
+Exceptional types keep a stylesheet border by design: outline and ghost buttons, inputs, selectable pills and swatches, dividers, glyphs drawn with borders, transparent borders that reserve space, forced-colours rules, and Google-branded buttons (the google-reviews buttons). A style variant whose name says border (a bordered card, an outlined button) keeps its border, written inside `:where()` so a client's width setting still wins at zero specificity. The one place the style default stays empty is multi-button's `childBtnBorderStyle`, which is `''` so a button without a border setting inherits its own variant.
+
+The editor shows a border preview through one function, `src/utils/border-preview.js::sgsBorderPreview`, the twin of `SgsBorderControl`'s output; the editor marks a selected block with an outline, never a border.
+
+Gates: `scripts/check-border-width-defaults.py` (a border width default above 0, or a stylesheet border outside the exceptional types and outside `:where()`, fails) and `scripts/check-border-preview-twin.js` (a canvas preview that rebuilds border CSS instead of calling `sgsBorderPreview` fails), both under `plugins/sgs-blocks/`.
+
 ## 6.2 CSS output consolidation (FR-32-11)
 
 **Status: BUILT.** Encodes the collector + file-default output. Implementation detail: `.claude/plans/archive/2026-07-12-style-tag-consolidation-design.md`.
@@ -401,7 +411,7 @@ This section records the grid-item defaults mechanism so it need not be re-deriv
 
 **FR-32-12** — A grid CONTAINER parent may set `--sgs-gi-padding` / `--sgs-gi-bg` /
 `--sgs-gi-radius` / `--sgs-gi-border` / `--sgs-gi-shadow` / `--sgs-gi-color` as custom-property
-VALUES on the grid element (`SGS_Container_Wrapper`, built by `includes/helpers-grid-item.php::sgs_grid_item_vars`;
+VALUES on the grid element (`SGS_Container_Wrapper`, built by `plugins/sgs-blocks/includes/helpers-grid-item.php::sgs_grid_item_vars`;
 editor UI: `GridItemDefaultsPanel.js` in `src/blocks/container/components/`; the canvas sets the same six variables
 on the same element through `src/blocks/container/grid-item-preview.js`). `--sgs-gi-border` resolves its colour
 through `sgs_colour_value()`, so a palette slug and a custom colour both paint.
@@ -427,7 +437,7 @@ not cells:
 
 Of the six values only text colour reaches the cell's own children, by normal inheritance of `color`; the six
 variables are reset to `initial` on each cell's children, so a grid nested inside a cell starts from its own
-defaults. The per-instance hover, gradient and text-colour rules (`includes/helpers-grid-item.php::sgs_grid_item_state_css`)
+defaults. The per-instance hover, gradient and text-colour rules (`plugins/sgs-blocks/includes/helpers-grid-item.php::sgs_grid_item_state_css`)
 cover both depths at specificity (0,1,0) through `.{uid} > :where( cell )`, so a cell's own scoped rule, printed
 later, still wins. `container/editor.css` marks cells with an outline, never a border, so it does not override
 `--sgs-gi-border` in the canvas.
@@ -495,6 +505,8 @@ enforce Spec 32 (each names Spec 32 in its own docstring):
 | **`scripts/check-id-scoped-emits.js`** | yes | Every per-instance scoped rule is emitted at CLASS level (`.{uid}.{block}` = 0,2,0), never at `#{uid}` — without which the `sgsCustomCss` residual cannot override by source order | **§6.1(b)** |
 | **`scripts/no-inline/check-stranded-guards.py`** | yes | Catches `:not([style*="…"])` fallback guards STRANDED by the no-inline contract. Under this contract no block emits an inline `style`, so such a guard always matches, becomes unconditional, and blocks inheritance | §6.1(b) consequence |
 | **`scripts/check-style-blob-sanitisation.py`** | yes | `wp_strip_all_tags()` around every literal `<style>` emit site | §5 Security |
+| **`scripts/check-border-width-defaults.py`** | yes | Border width defaults are 0 outside the exceptional types; border-named styles keep their border inside `:where()` | §6.1(f) |
+| **`scripts/check-border-preview-twin.js`** | yes | Canvas border previews go through `sgsBorderPreview`, never a rebuilt copy | §6.1(f) |
 | `scripts/check-shared-css-state-rules.js` | yes | State-only shared-CSS size literal with no resting-value base rule | Adjacent to FR-32-3 / §6.2 — flagged, not asserted |
 
 Related mappings:

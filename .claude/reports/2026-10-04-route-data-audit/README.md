@@ -182,3 +182,25 @@ On Rater A's labelled rows it has 100% precision on every link and 100% recall e
 1,737, advisory-only 636. Links: L3 1,591 (72 blocks), L3-state 640 (advisory), L3-tier 99, L2 26, L6-token 21
 (advisory), L5 18, C1 15, B3 11, L6 10, B2 4, L7 3, S1 2, B1 1, L4 1. Blocking gaps are baselined (1,781); `--check`
 fails only on a new one. Rerun: `python plugins/sgs-blocks/scripts/check-wiring-fingerprint.py --json <file>`.
+
+## 7. Session 0 results (2026-10-05)
+
+Plan: `.claude/plans/2026-10-04-eye-care-sweep-audit-fix.md` (Session 0 status). Block code at `4726700c1` is deployed to
+eye-care-test (checksums verified) and, as the identical block build `7f770ebb5`, to sandybrown.
+
+- **Wiring gate (section 6):** blocking gaps 1,781 to 201 (`3fee871a2`; the baseline keeps one accepted entry,
+  `google-reviews::scrollbarStyle::L5`, a tracer blind spot where a value passes through a normalising variable and
+  then a ternary). Link counts are not recorded here: rerun `python plugins/sgs-blocks/scripts/check-wiring-fingerprint.py --json <file>` for the current split.
+  Fast gates 139 of 139 and full tier 6 of 6 pass; the framework DB is reseeded from HEAD with F6 at 0 violations.
+- **Seeder routing (section 2):** unrouted core styling 628 to 368 (`74771c855`); agreement with the 2026-10-04
+  classification stays 1,405 of 1,418 and `css_state` or tier wrong is 0. The 368 remaining: 81 refused as ambiguous
+  (shape-divider top and bottom element derivation drops `--top` and `--bottom`; wrapper fills against overlays), about
+  30 gradient siblings that need `attrMap` `css:color-gradient` or `css:border-color-gradient` in `block.json`, and the
+  rest with no evidence. The roster's `sgsHover*` and `sgsChildWidth` rows stay NULL (one-slot collisions).
+- **Calibration (section 3), code changes (`c0d6c1d0d`, `0b0630d6e`):** no element cap; pseudo-element layers; closed
+  panels read through `aria-controls`; hover and focus on the styled element; shrunk and scroll triggers;
+  preconditions from variants, toggles, border partners, the overlay image and layout modes; markers for every
+  previously markerless class; `longhands()` maps colour and border gradients and shadow colour; container-query tiers
+  are `containerTier`. Each class has a test (`calibrate-classes`, `calibrate-read`).
+- **Calibration rerun counts:** recorded here after the recalibration queue finishes and `calibration/classify_dead.py`
+  is rerun, beside the 2026-10-04 counts in section 3.

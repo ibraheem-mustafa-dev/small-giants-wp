@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.9"
+spec_version: "0.10"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -101,7 +101,7 @@ each width. Output: one attribute write in the block's storage shape, or a gap w
   more of that element's other draft properties, and a remaining tie is `ambiguous`.
 - **Lookup.** Candidates come from `block_attributes` where `source = 'sgs'`, matched by `block_slug`,
   `css_property` and `css_state`. States are `hover`, `open`, `scrolled`, `current` and `shrunk`; NULL means rest.
-  Focus has no setting, so a focus row is always a gap. Only candidates that calibration ties to the same slot
+  A setting for focus exists only where the database holds a `css_state` of focus; a focus row with no such setting is a gap. Only candidates that calibration ties to the same slot
   element are kept.
 - **Storage shape:**
   - `tier_object`: `{desktop, tablet, mobile}`.
@@ -127,6 +127,8 @@ fail if written.
 
 ### 3.2 Block calibration: `lib/calibrate.mjs` and `calibrate.mjs` (FR-47-2)
 
+The modules that implement it (`lib/calibrate-props.mjs`, `lib/calibrate-markers.mjs`, `lib/calibrate-instances.mjs`, `lib/calibrate-read.mjs`, `lib/deploy-hash.mjs`) are indexed in `scripts/computed-route/README.md`.
+
 Calibration has two outputs with different scopes:
 - **Slot map:** which rendered element and property each setting paints, and how its value transforms. It does not
   depend on the site. It is measured once on the canary and cached per block, keyed by the md5 of the block's deployed
@@ -140,9 +142,9 @@ front-end stylesheets and view scripts) and leaves out the editor bundles (`inde
 `index.asset.php`): the same commit built in another folder gives a different `index.js` (proven 2026-10-03: commit
 4ba8be0f1 deployed from the deploy's temporary worktree and built locally gave different editor bundles and identical
 front-end files), so a whole-folder key could never match. View bundles and asset files are hashed after blanking
-webpack's module numbers and the asset version (`calibrate.mjs::normaliseBundle`): the same commit numbers its modules by
+webpack's module numbers and the asset version (`lib/deploy-hash.mjs::normaliseBundle`, which renumbers parameterised webpack modules as well as bare ones): the same commit numbers its modules by
 build folder (proven 2026-10-03: trust-bar's `view.js` differed only in module 2310 against 6469), while any code change
-still changes the key. Local text files are read with LF endings (`calibrate.mjs::lfText`): the deploy builds from a
+still changes the key. Local text files are read with LF endings (`lib/deploy-hash.mjs::lfText`): the deploy builds from a
 clean LF checkout, while a working copy may carry CRLF (proven 2026-10-03: language-switch's and wishlist-link's
 `render.php` differed by exactly their line counts). Inherited properties are not recorded as default paint (R-47-5 uses the parent's live value).
 The cache is `scripts/computed-route/cache/`, gitignored: one library-wide file per block, whichever site measured
@@ -152,8 +154,14 @@ The default paint therefore carries the measuring site's tokens; a Solve run tha
 another site is fixed by recalibrating that block there (a lead, not yet seen).
 
 **Steps:**
-1. Render one default instance and record every rendered element's computed style.
+1. Render one default instance and record every rendered element's computed style, with no element cap, and the
+   `::before`, `::after`, `::placeholder` and `::first-letter` layers (keyed `<path>::before` and so on, the key the
+   walker's pseudo rows use). A panel an element controls through `aria-controls` is read as `@controls > <path>`.
 2. Render one marked instance per (setting, marker) and record which element's computed style changes, and to what.
+   An instance carries the preconditions its setting needs (`lib/calibrate-instances.mjs::preconditionsFor`): its
+   variant (`blocks.variant_attr` and `variant_slots`), the show or enable toggle that gates it, the partner border
+   setting, an overlay image (`calibration-targets.json` holds an image per site) and the layout mode (grid or flex) that
+   makes it paint.
    - A setting that changes nothing is reported as dead: a framework defect.
    - A setting whose marker reaches its element at fewer than all three tier widths is reported as a one-width
      hardcode.
@@ -165,15 +173,17 @@ another site is fixed by recalibrating that block there (a lead, not yet seen).
 
 | Shape | Marker |
 |---|---|
-| Colour | A hex the site's palette lacks (`#13579b`), and separately one palette slug, so both render paths are proven |
-| Length, single value | 37px |
+| Colour | A hex the site's palette lacks (`#13579b`), and separately one palette slug, so both render paths are proven; a setting whose database `role` is colour gets this marker even when `block.json` has no colour type |
+| Length, single value | 37px; a wider set of lengths (rem, em, percentages, viewport units) gets a length marker too |
 | Box object | top 11px, right 13px, bottom 17px, left 19px |
 | `tier_object` | desktop 37, tablet 23, mobile 7 (in the setting's unit), read at 1440, 768 and 375 |
-| `flat_sibling` | the same three values in `attr`, `attrTablet`, `attrMobile` |
-| Enum | every value in turn |
+| `flat_sibling` | the same three values in `attr`, `attrTablet`, `attrMobile`; a corner setting reads each corner |
+| Enum | every value in turn; keyword and enum values come from the database row when `block.json` has none (extension settings) |
+| Gradient, keyword string, media object, transform | a gradient, one keyword from the row, a media object with an image, a transform string; read through `longhands()` so colour and border-colour gradients and shadow colour map |
 | Boolean | the opposite of the default |
-| Number (unitless line height, weight, opacity) | 1.37; 700 or 300, whichever differs from the default; 0.37 |
-| Has a `css_state` | the marker is set and the element is put in that state before reading (`lib/calibrate.mjs::STATE_TRIGGERS`): hover under a real mouse; scrolled by scrolling the window, compared with the variant's default read scrolled; open and current rendered by the fixture (an accordion item saved open, the first tab, the last breadcrumb). A state with no trigger (shrunk today), a hidden element that cannot be hovered, or a header that never takes its scrolled class is listed in `untestedStates`, never calibrated as rest |
+| Number (unitless line height, weight, opacity) | 1.37; 700 or 300, whichever differs from the default; 0.37; a block with two weight settings gets a distinct weight each |
+| Per-device non-length or unit-object value | the three tier values in the setting's own shape (a unit object keeps its unit); a container-query tier is reported as `containerTier`, never as a one-width hardcode |
+| Has a `css_state` | the marker is set and the element is put in that state before reading (`lib/calibrate-instances.mjs::STATE_TRIGGERS`): hover under a real mouse and focus by keyboard, both on the styled BEM element with a closed panel opened first; shrunk by adding its ancestor class; a scroll retry when the first scroll does not apply the class; scrolled by scrolling the window, compared with the variant's default read scrolled; open and current rendered by the fixture (an accordion item saved open, the first tab, the last breadcrumb). A state with no trigger, a hidden element that cannot be hovered, or a header that never takes its scrolled class is listed in `untestedStates`, never calibrated as rest |
 
 A setting whose marker fails `wp-build-page.js` validation is reported as `marker-rejected` with the builder's message.
 
@@ -183,7 +193,7 @@ A setting whose marker fails `wp-build-page.js` validation is reported as `marke
   (`{ "<site>": { "envFile", "envKey", "postId" } }`; eye-care-test: 668, sandybrown: 4750). Later runs replace that page with
   `--post-id`. Private, it is never public, indexed or linked; calibration reads it in a logged-in browser.
 - One build holds a block: one default instance per variant plus one instance per (setting, marker), each wrapped in an
-  `sgs/container` with class `cr-cal-<block>-<setting>`. A block with more than `CHUNK` (150) instances is built and read
+  `sgs/container` with class `cr-cal-<block>-<setting>`. A block with more than `CHUNK` (150, or `SGS_CAL_CHUNK` for a run) instances is built and read
   in several pages, each carrying every variant's default instance (google-reviews has about 400; a 400-instance save
   failed with an invalid JSON response). One block's failure is that block's error; the run continues.
 - Each block has a fixture in `scripts/computed-route/calibration-fixtures.json`: the minimum content and parent chain
@@ -516,7 +526,8 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - First (plan `plans/2026-10-04-eye-care-sweep-audit-fix.md`): Session 0 repairs what the 2026-10-04 route data
        audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved: ~628 working settings the seeder never
        routes (so Solve calls them Missing), calibration's dead and no-marker classes (fixture preconditions, an
-       81-element read cap, closed surfaces, hover on the root, `::after` paint, 641 settings `longhands()` drops), and
+       81-element read cap, closed surfaces, hover on the root, `::after` paint, 641 settings `longhands()` drops; the
+       calibration code for all of these is built (Session 0, `c0d6c1d0d`), recalibration is the tail), and
        the framework bugs and editor-canvas gaps the new wiring gate (`check-wiring-fingerprint.py`) reports; then a
        measure-only sweep of every surface, an audit of what stays open, and the framework fixes it needs.
      - Then Contact and its form post to 100%, then Lenses, then every other surface with its full config: Help, Home,

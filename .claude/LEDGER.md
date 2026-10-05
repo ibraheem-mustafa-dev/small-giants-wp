@@ -19,9 +19,9 @@ Claude Design's gap map; the finished site becomes the pipeline's answer key. Ev
 the draft, and Bean reviewed it: the fix register (2026-10-03) is the work list, all decisions taken. Spec 47's tool
 (measure the draft, write the layout settings automatically) took the About page to 100% on 2026-10-04 (every
 difference closed or a recorded decision, confirmed by an independent check). Contact is down from 134 differences to 19
-(2026-10-04) and the contact form from 94 to 46. Next (Bean, 2026-10-04): a repair session for everything the route data audit proved
-(seeder routing, calibration, framework bugs, editor-canvas gaps), then a whole-site sweep, an audit of what stays
-open, and one framework fix pass (Front F). Running beside that repair (Track P, 2026-10-05, code only, QC'd): the
+(2026-10-04) and the contact form from 94 to 46. The repair session for everything the route data audit proved (seeder routing, calibration,
+framework bugs, editor-canvas gaps) is built, pushed and deployed to both test sites (2026-10-05); its tail (recalibration, audit rerun)
+remains. Then: a whole-site sweep, an audit of what stays open, and one framework fix pass (Front F). Running beside that repair (Track P, 2026-10-05, code only, QC'd): the
 comparison tool now reads what the browser's developer tools show, your decided differences can no longer be
 overwritten, and the sweep, triage and register-check tools are ready; their live proof is one About run after the repair.
 
@@ -48,16 +48,15 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-04).** eye-care-test and sandybrown run the framework at bac2fb2cf (the form's Field style group, the
-business-info hours label weight and layout-neutral 44px tap area, label-less form fields without the floating-label
-gap); 508217f03 (the modal template's heading level) is on `main`, not yet deployed. Step 0 is done (all 17 trees
+**Now (2026-10-05).** eye-care-test runs the block code at `4726700c1` and sandybrown the identical block build at `7f770ebb5`.
+Step 0 is done (all 17 trees
 rebuilt, zero invalid blocks). The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list:
 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9 taken, three build rules. Proven bugs in it: the
 add-to-bag route drops a second product and a 30s cooldown blocks a second pair (N11); the gallery ignores
 WooCommerce's product gallery (75/82); the shop filters leave empty groups after clearing (N25); the drawer body
 overflows by its title row (15); a footer row given a width cap collapses to zero width (N46). No blockers.
 
-**Spec 47 (v0.9): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; "Solve"
+**Spec 47 (v0.10): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; "Solve"
 compares a built page with the draft and writes block settings). Every block of a surface is paired with its draft
 element (`pairs.mjs`, switched on per surface by `walkerFull` in `surfaces.json`); a parent block's setting can now
 style its children (a form's field style), extension settings (child sizing, hover, entrance) are seeded in the
@@ -65,8 +64,7 @@ framework DB as `source='sgs-ext'`, and `sites/eye-care-ward-end/build/qa/indepe
 **About is at 100%.** **Contact: 19 distinct issues open** (from 134; 0 labelled gaps, 0 new rows, 0 wrong writes on
 its last Solve); the three open causes are in the plan's Progress. **Contact form: 46 open**; its last Solve regressed
 and was restored from git and rebuilt. **Lenses: paired (28 of 29 blocks), walks its full config**; its first Solve
-closed 25 but regressed 3 rows, so its tree was restored from git and rebuilt. Recalibration of every block with
-today's calibration changes: 6 done, the rest listed in the plan. Hostinger's edge answers headless browsers and curl with a 403 browser
+closed 25 but regressed 3 rows, so its tree was restored from git and rebuilt. Hostinger's edge answers headless browsers and curl with a 403 browser
 check after bursts of traffic: run the route's host tools with `SGS_HEADED=1` (dev-setup.md), one job at a time.
 
 **Track P (2026-10-05, pushed through 2035bb6ce; code only, no deploy):** the sweep plan's code units, built beside
@@ -79,20 +77,29 @@ keeps its margin; the 375px name-field drop is open under N45b); the independent
 tools: `sweep.mjs` (A3), `register-sweep.mjs` (A4), `triage.mjs` (B1, reads the `includes/` helpers a render
 reaches). /code-review high fixed four defects; /qc passed 15 scenarios on local pages and real data (90/100, report
 in `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/`). Left: the About measure-only run with the new walker on
-the host queue after Session 0's tail. Review findings for Session 0's own code (deploy-hash module ids, calibration's
-removed element cap, copied tier helpers, jest mock fallback) are in the sweep plan's Track P section.
+the host queue after Session 0's tail. 
+**Session 0 (2026-10-05, pushed through `4726700c1`; deployed to eye-care-test, sandybrown at `7f770ebb5`).** Done (plan
+`plans/2026-10-04-eye-care-sweep-audit-fix.md`, Session 0 status): seeder routing (unrouted core styling 628 to 368,
+`74771c855`), the framework bugs (accordion-item scope hash, team-member typography, grid items as Spec 32 FR-32-12,
+image-sequence enum), editor-canvas gaps through shared helpers (wiring gate blocking 1,781 to 201, `3fee871a2`), dead
+context keys, calibration rebuilt (`c0d6c1d0d`: no element cap, pseudo layers, state triggers, preconditions, markers),
+the QC standardisation wave, text indent and border defaults (style solid, width 0 except exceptional types: Spec 32 v1.14).
+Fast gates 139/139, full tier 6/6, checksums verified, motion-qa green on both sites. Left in Session 0: the recalibration
+queue (`SGS_HEADED=1`, one job at a time), the audit rerun with counts in the audit report, a message to Track P, `/handoff`.
+Parked items P0-1 to P0-9 are in the plan (pre-existing test failures, seeder remainder 368, 34 borders without a control,
+rebuild sandybrown pages 2742/3405/3448 then drop 6 oldshape baseline entries). Next session: finish Session 0's tail, then Session A.
 
 **Route data audit and wiring gate (2026-10-04, pushed, not deployed: no runtime code changed).** Four investigations
 (`.claude/reports/2026-10-04-route-data-audit/README.md`): ~628 working settings the seeder never routes, every
 calibration outcome classified, three framework bugs (accordion-item scope hash, team-member root typography,
 container grid items), the DB and block-file inventory. A new fast-tier gate, `check-wiring-fingerprint.py` (`plans/archive/2026-10-04-wiring-fingerprint-gate.md`), proves
 each painting setting is wired end to end (control, editor canvas, front end, CSS reader); a QC council and three
-review rounds took it to 100% precision on the labelled rows; it blocks new gaps only (1,781 baselined, mostly 1,591
-editor-canvas gaps over 72 blocks). Bean's rule (Spec 32 v1.11 FR-32-12): grid-item defaults style every grid cell
-whatever its block, text colour the only inherited value; the code still keys on container cells (Session 0).
+review rounds took it to 100% precision on the labelled rows; it blocks new gaps only (201 baselined after Session 0, from 1,781).
+Bean's rule (Spec 32 FR-32-12): grid-item defaults style every grid cell whatever its block, text colour the only
+inherited value; built in Session 0.
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**
-`plans/2026-10-04-eye-care-sweep-audit-fix.md` Session 0 (repair everything the audit proved), then Session A (sweep
+`plans/2026-10-04-eye-care-sweep-audit-fix.md` Session 0's tail, then Session A (sweep
 every surface, measure only), B (audit what stays open, protect decisions) and C (framework fixes); per-surface Solve work (`plans/2026-10-04-spec47-full-coverage.md`
 "Progress") resumes in its Session D.
 

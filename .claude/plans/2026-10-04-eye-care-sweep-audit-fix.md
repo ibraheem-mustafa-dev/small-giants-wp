@@ -82,7 +82,80 @@ recalibration tail unattended.
 **Parallel shape:** S0-1, S0-2 and S0-5 touch disjoint files and run at once (S0-5's groups in separate worktrees);
 S0-3/S0-4 run in the main thread alongside; the tail is serial. Pause the host queue before any build or reseed.
 
+### Session 0 status (2026-10-05)
+
+Every code group is built, on `main` and pushed. Fast gates 139/139, full tier 6/6. The framework DB is reseeded from HEAD
+(stage 1 and stage 9: 58 removed attributes pruned; F6 0 violations). Block code at `4726700c1` is deployed to
+eye-care-test and, identical block build, `7f770ebb5` to sandybrown; checksums verified on both and both motion-qa
+probes are green. The wiring gate's blocking gaps fell from 1,781 to 201 (`3fee871a2`; the one accepted entry is
+`google-reviews::scrollbarStyle::L5`, an L5 tracer blind spot).
+
+| Group | State | Commits and result |
+|---|---|---|
+| S0-1 Seeder routing | done | `74771c855`: new modules `helper_maps`, `php_include_graph`, `php_preprocess`, `php_source_index`, `seeder_shapes`; unrouted core styling 628 to 368; agreement 1,405 of 1,418 unchanged; css_state and tier wrong 0; 3 intended `css_property` changes (testimonial `ratingSize` to height,width; `nav-bar-menu::collapsePoint` and `nav-drawer::modality` unrouted); 46 stale overrides removed; `sgs-update-v2.py` takes `--db` and `--classifications-out`; `db_lookup` honours `SGS_FRAMEWORK_DB`. `27ea22888`: a helper suffix painted only in a hover rule gets `css_state` hover. |
+| S0-2 Framework bugs | done | `6f3601a32`: accordion-item scope hash includes context; team-member root typography (and `4726700c1`: typography by literal-prefix calls, because a loop hid the attributes from static gates); grid items to FR-32-12 as built (`includes/helpers-grid-item.php`, shadow lift); image-sequence aspect enum; `bgSvgMinHeight` consumer; shared `ShapeDividerPreview` and `utils/shape-dividers.js`. Spec 32 1.13 and the grid-item section of `.claude/rules/block-editor-controls.md`: `da8e38f84`. |
+| S0-3 Calibration: dead classes | done in code | `c0d6c1d0d`: `calibrate.mjs` split into `lib/calibrate-props`, `-markers`, `-instances`, `-read` and `deploy-hash`; no 81-element cap; `::before`, `::after`, `::placeholder`, `::first-letter` layers (key `<path>::before`, as Track P's walker rows); `aria-controls` panels read as `@controls > <path>`; hover and focus on the styled BEM element with the closed panel opened; shrunk via ancestor class; scroll retry; preconditions from `blocks.variant_attr` and `variant_slots`, show/enable toggles, border partners, the overlay image (`calibration-targets.json` image per site) and layout-mode values; fixtures render elements 45 blocks lacked. Tests: `calibrate-classes` (17 of 18 red before), `calibrate-read` (headless Chromium; the old reader misses all 4 reads). `0b0630d6e`: `deploy-hash` normalises parameterised webpack modules; `SGS_CAL_CHUNK`. `5f783f373`: `lib/calibrate.mjs` imports `CAL_PREFIX`. |
+| S0-4 Calibration: markers | done in code | `c0d6c1d0d`: markers for extension rows (DB type), gradients, keyword strings, media objects, transforms, wider lengths, non-length tiers, colour by role (`db.mjs` reads `role`), per-tier boxes, `flat_sibling` corners, two weights and per-device unit shape; `longhands()` maps colour and border gradients and shadow colour; container-query tiers are `containerTier`, not oneWidth. |
+| S0-5 Paint gaps | done | `6f3601a32` (235 files): S0-5a to d canvas previews through shared utils (`container-wrapper-preview`, `section-preview`, `box-preview`, `wrapper-border-preview`, `radius-preview`, `border-preview::sgsBorderPreview`, `tierValueOf`, `tierLengthPreview`, `isCssGradient`). `c7e218b36`: `typographyPreviewStyle` mirrors every `sgs_typography_css_rule` declaration at the previewed tier. `4fabb61e7`: editor-render-parity CHECK A signal 6; 100 to 8 net-new, 8 buybox product-data rows accepted. `3fee871a2`: baseline 1,780 to 201. |
+| S0-7 Found while building the gate | done | `ab840cae0`: dead context keys `sgs/formId` (16 blocks plus form), `sgs/tabsOrientation`, `sgs/tabsStyle` removed by codemod; `ListLayoutPanel` margin; choice-flow `backColourBorderHover`; choice-flow, choice-flow-question and wishlist-panel canvases. `317228625`: one context-key rule, `scripts/lib/context-keys.js`, used by dead-controls, editor-render-parity and the wiring gate. `762b0a103` and `b899a6f9a`: the wiring gate credits object-built `setAttributes`, name builders with leading arguments or a tier suffix and extension-imported controls, and gains advisory link L3-runtime. `4e8424f82`: `check-editor-render-parity.js` split into `scripts/editor-render-parity/`, byte-identical output. `f7d0f8452`: filter-search colours through `sgs_colour_value`; `check-custom-colour-survives` rule (c) raw-colour-declaration. |
+| QC council standardisation wave (D1 to D10) | done | `6f3601a32`: radius tablet and mobile bug on 7 blocks, 17 tier copies, 45 gradient regex copies and 13 `boxShorthand` copies collapsed onto the shared helpers; `resolveColourToken` keeps named and oklch values; editor `<style>` CSS-injection guard; multi-button separators and content band; grid-item lift; gate `check-border-preview-twin.js`. Jest mocks: `4fa51e61d`, `7c714f86b` (every WP package the editor imports; `components/block-editor` mocks fabricate only names in `known-exports.json`, so a misspelt import fails). |
+| Text indent, hero, team-member overlay | done | `6f3601a32`: paragraph containers use a sibling selector and 32 single-element `TextIndent` attributes are removed; the hero standard variant with tablet and mobile images paints through the shared Background panel path; team-member overlay bio typography. |
+| Border defaults | done | `6f3601a32`: border style defaults to `solid` (13 attributes; multi-button `childBtnBorderStyle` keeps `''`). `1685d8d14`: border width 0 except exceptional types; border-named styles keep their border inside `:where()`; Google-branded google-reviews buttons are exceptional; gate `check-border-width-defaults.py`; editor marks use outline. |
+| S0-6 Serial tail | partly done | Done: merge, build, full gates, reseed from HEAD, deploy of both sites. Remaining list below. |
+
+**Incident (resolved).** An editor-route save on sandybrown, which runs the older schema, stripped newer attributes from
+pages 2742, 3405 and 3448; all three were restored byte-identical from revisions. Lesson: memory
+`editor-save-on-an-older-schema-strips-newer-attributes`. Interim guard: 6 oldshape baseline entries for
+testimonial-slider `columns` and `gridTemplateColumns` on those pages (`46deb5ae1`, `7f770ebb5`, `04e0f31c6`);
+`wp-update-block-attrs.js` now removes an attribute given as `null` in `--attrs`.
+
+**Decisions (Bean, 2026-10-05).**
+1. Grid items: Spec 32 FR-32-12 as built.
+2. Text indent is paragraph-after-paragraph through a sibling selector; the single-element `TextIndent` attribute is removed.
+3. Border style defaults to `solid`.
+4. Border width defaults to 0 except exceptional types: outline and ghost buttons, inputs, selectable pills and swatches,
+   dividers, border-drawn glyphs, transparent space reservers, forced-colours rules, border-named style variants (kept
+   inside `:where()`) and Google-branded buttons. Spec 32 §Borders carries the rule; `check-border-width-defaults.py`
+   enforces it.
+5. Standardisation rule: always reuse the shared helper, injector, atom or extension (memory
+   `match-helper-precedent-by-contract`); a second copy of a helper is a defect.
+
+**Remaining in Session 0 (the tail).**
+1. Recalibration queue: the google-reviews probe (`SGS_HEADED=1`) is running; then every cached block on its cache site
+   through the queue (scratchpad `recal-queue.sh`; stop with the `recal.STOP` file; log `recal.log`). One job at a time.
+2. Rerun the four audit scripts in `.claude/reports/2026-10-04-route-data-audit/` (seeder chain,
+   `calibration/classify_dead.py`, inventory, `fingerprint/run.sh`) and the wiring gate; record the new counts beside
+   the 2026-10-04 counts in that report's README.
+3. Message Track P (`small-giants-wp-9f`): Session 0's code tail is done and deployed at `4726700c1` (sandybrown
+   `7f770ebb5`).
+4. `/handoff`; the next prompt is Session A.
+
+### Parked from Session 0
+
+Each item is named so nothing is lost; none blocks Session A.
+- **P0-1 `block-edit.test.js`:** 8 render failures (`TypographyControlsFields` renders an undefined element), pre-existing.
+- **P0-2 PHPUnit:** 26 failures and 3 errors, pre-existing at HEAD `983429193`: AdminMenu, ConfiguratorCompat,
+  ContainerWrapper goldens, HeaderBehaviours, PricingEngine, PricingTable ribbon, RenderOutput, ResponsiveLogo (5),
+  ReviewsEmptyRender, StyleVariationManifest (12), Timeline imageControls, LeanSeedSize.
+- **P0-3 Seeder remainder (368 unrouted):** 81 refused as ambiguous (shape-divider top and bottom element derivation
+  drops `--top` and `--bottom`; wrapper fills against overlays), about 30 gradient siblings that need `attrMap`
+  `css:color-gradient` or `css:border-color-gradient` in `block.json`, the rest with no evidence. The roster's
+  `sgsHover*` and `sgsChildWidth` rows stay NULL (one-slot collisions).
+- **P0-4 Wiring gate L5 tracer:** a value passing through a normalising variable and then a ternary
+  (`google-reviews::scrollbarStyle`) is not traced.
+- **P0-5 Structural borders with no control (34, class S):** give controls to card and panel borders (post-grid card,
+  pricing plan, trustpilot card, wishlist row, product-search panel, choice-flow showcase panels); the rest stays design.
+- **P0-6 Sandybrown rebuild:** rebuild pages 2742, 3405 and 3448 from their trees, then delete the 6 oldshape baseline
+  entries.
+- **P0-7 Gradient regex:** `utils/tokens.js` and `surface-tone.js` keep their own copy (circular import with
+  background-preview).
+- **P0-8 Live check:** the container may not load the svg-bg and shape-divider CSS on a page with a hero but no
+  container.
+- **P0-9 multi-button layout:** render passes `flex`; there is no layout control, by design.
+
 ## Track P: route prep, in a second session beside Session 0
+
+Session 0's tail (recalibration, audit rerun, Track P message, handoff) is pending; Track P's host proof queues behind it.
 
 Code-only units from Sessions A and B that need neither Session 0's repairs nor the host, pulled forward so the sweep
 can start the moment Session 0's tail ends. **File ownership (no overlap with Session 0):** Track P owns
