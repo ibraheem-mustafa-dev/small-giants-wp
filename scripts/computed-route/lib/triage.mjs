@@ -1,0 +1,398 @@
+// Triage (Spec 47, Session B1): one candidate class per distinct open issue of a Solve report, with the evidence that
+// decided it. Classes: W (walker or route gap: a measuring artefact, a consequence of another row, or a setting exists
+// that the route cannot find, calibrate or write), F (framework gap: nothing on the block, its enclosing blocks or its
+// extensions fits and the resolver finds no setting; or the setting already holds the draft value and paint still
+// differs, a hardcode), T (the tree can hold it: the resolver would write a new value), U (a box row nothing explains).
+// Missing settings start as W until proven F. Every lookup (database rows, calibration, roster, block supports, source
+// files, tree nodes, the resolver) is passed in, so the logic runs on in-memory fixtures.
+import { splitProperty, resolve } from './resolve.mjs';
+import { draftValues, plainLength, cssProp, settingState, openRows, writableGroups } from './solve-rows.mjs';
+import { entranceStart } from './entrance.mjs';
+import { referenceOf } from './references.mjs';
+import { USED_VALUES } from '../solve.mjs';
+
+export const TRIAGE_CLASSES = [ 'W', 'F', 'T', 'U' ];
+const VISUAL = [ 'style', 'hover', 'box' ];
+const SOLVE_CLASSES = [ 'hardcode', 'missing', 'unresolved', 'derived' ];
+// solve-report.mjs::wholePage's issue key: one element and property, whatever the width or state.
+const keyOf = ( x ) => `${ x.ref || x.pair }|${ x.path ?? '' }|${ x.kind }|${ x.key }`;
+const loose = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
+const PX_TOL = 1;
+
+// Distinct issues of a report's hardcode, missing, unresolved and derived rows (the surface's own blocks and rows with
+// no block), each with every row it covers and the Solve class of its first row.
+export function issuesOf( report, surface ) {
+	const prefix = `cr-ref-${ surface }-`;
+	const mine = ( x ) => ! x.ref || ( x.ref.startsWith( prefix ) && /^\d+$/.test( x.ref.slice( prefix.length ) ) );
+	const found = new Map();
+	for ( const cls of SOLVE_CLASSES ) {
+		for ( const x of report.classes?.[ cls ] || [] ) {
+			if ( ! VISUAL.includes( x.kind ) || ! mine( x ) ) {
+				continue;
+			}
+			const k = keyOf( x );
+			found.has( k ) || found.set( k, { key: k, solveClass: cls, rows: [] } );
+			found.get( k ).rows.push( x );
+		}
+	}
+	return [ ...found.values() ];
+}
+
+// A name as lower-case words, sgs prefix dropped and colour spelt as the CSS property spells it.
+const words = ( s ) => String( s ).replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).toLowerCase().split( /[\s_-]+/ ).map( ( t ) => ( 'colour' === t ? 'color' : t ) ).filter( ( t ) => t && 'sgs' !== t );
+const NOT_A_SIZE = [ 'border', 'stroke', 'outline', 'focus', 'ring', 'line' ];
+// Longer CSS properties that end in a shorter one's words: textTransform names text-transform, never transform.
+const COMPOUND = [ 'text-transform', 'text-decoration', 'text-align', 'text-shadow', 'border-color', 'border-style', 'outline-color', 'box-shadow', 'line-height', 'letter-spacing', 'word-spacing' ];
+// The walker's hover-effects row (lifts, grows, fades: chrome-compare.mjs::compareHover) fits a hover setting naming one.
+const HOVER_EFFECTS = [ 'lift', 'scale', 'zoom', 'shadow', 'tilt', 'opacity', 'grayscale', 'transform' ];
+
+// Whether a setting's name fits a CSS property: a box size (width, min-, max-) fits any setting naming that size
+// (maxWidth, contentWidth, width) that is not a border, outline or line size; a hover-effects row fits a hover effect
+// setting; a background colour fits a setting naming the background; otherwise every word of the property's shorthand
+// is in the name (padding-top → fieldPadding) and the name does not spell a longer property ending in it.
+export function nameFits( prop, attr ) {
+	const { short } = splitProperty( prop );
+	const p = words( short );
+	const a = words( attr );
+	if ( 'hover-effects' === short ) {
+		return a.includes( 'hover' ) && a.some( ( t ) => HOVER_EFFECTS.includes( t ) );
+	}
+	const size = /^(?:(?:min|max)-)?(width|height)$/.exec( short );
+	if ( size ) {
+		return a.includes( size[ 1 ] ) && ! a.some( ( t ) => NOT_A_SIZE.includes( t ) );
+	}
+	if ( 'background-color' === short ) {
+		return a.includes( 'background' ) || a.includes( 'bg' );
+	}
+	return p.every( ( t ) => a.includes( t ) ) && ! COMPOUND.some( ( c ) => c !== short && c.endsWith( `-${ short }` ) && a.join( '-' ).includes( c ) );
+}
+
+// Whether a setting (a database row or a roster attribute: { css_property, role }) fits a row: its css_property lists
+// the property or its shorthand, or its name fits. A visibility toggle only fits a row whose draft or live hides; a
+// unit companion (lineHeightUnit) never fits on its own.
+export function settingFits( name, s, prop, values = [] ) {
+	if ( ( 'boolean-visibility' === s.role && ! values.includes( 'none' ) ) || /Unit$/.test( name ) ) {
+		return false;
+	}
+	const { short } = splitProperty( prop );
+	const listed = String( s.css_property || '' ).split( ',' ).map( ( x ) => x.trim().replace( /:.*$/, '' ) ).filter( Boolean );
+	return listed.includes( prop ) || listed.includes( short ) || nameFits( prop, name );
+}
+
+// Whether an extension of the roster (extension-roster.json) reaches a block, by its rule mode and block.json supports.
+export function rosterApplies( ext, block, supports = {} ) {
+	const r = ext.rule || {};
+	const sgs = supports.sgs || {};
+	const noClass = r.requiresClassName && false === supports.className;
+	const hidden = ( sgs.hideExtensions || [] ).includes( r.hideSlug );
+	const modes = {
+		allowlist: () => ( sgs.enabledExtensions || [] ).includes( r.enabledSlug ) && ! noClass,
+		universal: () => ! noClass && ! hidden,
+		denylist: () => block.startsWith( 'sgs/' ) && ! hidden,
+		flag: () => !! sgs[ r.flag ],
+		named: () => ( r.blocks || [] ).includes( block ),
+	};
+	return !! modes[ r.mode ]?.();
+}
+
+// px difference live minus draft, or null when either side is not a plain number or px length.
+export function delta( r ) {
+	const num = ( v ) => ( 'number' === typeof v ? v : ( /^-?[\d.]+px$/.test( String( v ) ) ? parseFloat( v ) : null ) );
+	const a = num( r.draft );
+	const b = num( r.live );
+	return null === a || null === b ? null : b - a;
+}
+
+// The ref of the pair a distance row is measured from or placed after (y-from-, y-after-, x-, right-), or null.
+export function anchorOf( walk, r ) {
+	const m = /^(?:y|x|right)-(?:from|after)-(.+)$/.exec( r.key || '' );
+	if ( ! m ) {
+		return null;
+	}
+	return ( walk?.runs || [] ).map( ( run ) => run.pairs?.[ m[ 1 ] ]?.live?.trace?.ref ).find( Boolean ) || null;
+}
+
+const LAYOUT_KEY = /^(margin|padding|gap|row-gap|column-gap|width|min-|max-|height|font-size|line-height|display|border-.*width|top|bottom|left|right|flex|grid|align|justify)/;
+const axisOf = ( key ) => ( /^(y|h)\b/.test( key ) ? key[ 0 ] : ( /^(x|w|right)\b/.test( key ) ? key[ 0 ] : null ) );
+
+// (d) One row's explanation by another open row at the same width and walker state, or null. A style or hover row
+// follows the same property moved by the same amount on an ancestor block or the anchor pair's block (inherited or
+// carried over). A box row follows a style row moved by the same amount (as a magnitude) on its own block, an
+// ancestor, the anchor, or for a size row (h, w) a descendant; or a box row on the same axis moved by the same amount
+// on an ancestor or the anchor; failing those, any open layout style row on its block, an ancestor or the anchor.
+export function explainRow( r, open, { ancestorsOf = () => [], walk = null } = {} ) {
+	const ups = [ ...( r.owners || [] ).map( ( o ) => o.ref ), ...( r.ref ? ancestorsOf( r.ref ) : [] ) ];
+	const anchor = anchorOf( walk, r );
+	const d = delta( r );
+	const near = ( a, b ) => null !== a && null !== b && Math.abs( a - b ) <= PX_TOL;
+	const peers = open.filter( ( c ) => c !== r && c.width === r.width && c.state === r.state && keyOf( c ) !== keyOf( r ) && c.ref );
+	const relation = ( c ) => ( c.ref === anchor && 'anchor' ) || ( ups.includes( c.ref ) && 'ancestor' ) || ( c.ref === r.ref && 'self' ) ||
+		( r.ref && ancestorsOf( c.ref ).includes( r.ref ) ? 'descendant' : null );
+	const hit = ( c, match ) => ( { parent: keyOf( c ), ref: c.ref, key: c.key, relation: relation( c ), match, width: r.width, delta: d } );
+	if ( 'box' !== r.kind ) {
+		const same = ( c ) => ( null !== d ? near( delta( c ), d ) : String( c.draft ) === String( r.draft ) && String( c.live ) === String( r.live ) );
+		const c = peers.find( ( x ) => x.kind === r.kind && x.key === r.key && [ 'ancestor', 'anchor' ].includes( relation( x ) ) && same( x ) );
+		return c ? hit( c, 'same-delta' ) : null;
+	}
+	const sized = /^(h|w)$/.test( r.key );
+	const reach = ( c ) => [ 'ancestor', 'anchor', 'self' ].includes( relation( c ) ) || ( sized && 'descendant' === relation( c ) );
+	const style = peers.find( ( c ) => 'style' === c.kind && reach( c ) && null !== d && near( Math.abs( delta( c ) ?? NaN ), Math.abs( d ) ) );
+	if ( style ) {
+		return hit( style, 'same-delta' );
+	}
+	// A size follows a descendant's size (a parent grows with its child); a position follows an ancestor's or the anchor's.
+	const box = peers.find( ( c ) => 'box' === c.kind && axisOf( c.key ) === axisOf( r.key ) && ( sized ? 'descendant' === relation( c ) : [ 'ancestor', 'anchor' ].includes( relation( c ) ) ) && near( delta( c ), d ) );
+	if ( box ) {
+		return hit( box, 'same-delta' );
+	}
+	const layout = peers.find( ( c ) => 'style' === c.kind && LAYOUT_KEY.test( c.key ) && reach( c ) && 'descendant' !== relation( c ) );
+	return layout ? hit( layout, 'layout-row' ) : null;
+}
+
+// (e) Transient: a motion property whose draft or live sits at an entrance's start value (opacity below 1, a
+// translate), so the row likely caught an animation mid-way.
+const MOTION = /^(transform|translate|scale|rotate|opacity|transition|animation)/;
+const atStart = ( key, v ) => {
+	const m = /^matrix\(([^)]+)\)$/.exec( String( v ) );
+	if ( undefined === v || null === v || 'opacity' === key || m ) {
+		return 'opacity' === key ? null !== v && Number( v ) < 1 : !! m && m[ 1 ].split( ',' ).slice( 4 ).some( ( n ) => 0 !== Number( n ) );
+	}
+	return /translate|matrix3d/.test( String( v ) ) || ( 'translate' === key && 'none' !== v && ! /^0px( 0px)?$/.test( String( v ) ) );
+};
+export function transientOf( rows ) {
+	const hits = rows.filter( ( r ) => 'style' === r.kind && MOTION.test( r.key ) && ( atStart( r.key, r.draft ) || atStart( r.key, r.live ) ) );
+	return hits.length ? { check: 'transient', widths: hits.map( ( r ) => r.width ), values: hits.map( ( r ) => `${ r.draft }→${ r.live }` ).slice( 0, 4 ) } : null;
+}
+
+// (f) Used value: a width or height row whose draft declares no plain length at any measured width (the computed value
+// is the box's used size).
+export function usedValueOf( issue, walk ) {
+	const r = issue.rows[ 0 ];
+	const prop = cssProp( r.key );
+	if ( 'style' !== r.kind || ! /^(width|height)$/.test( prop ) || ! r.pair ) {
+		return null;
+	}
+	const { declared } = draftValues( walk, r.pair, prop, false, null, r.pseudo || null );
+	const plain = Object.values( declared ).filter( plainLength );
+	return plain.length ? null : { check: 'used-value', property: prop, declared };
+}
+
+// The resolver, read-only, on the issue's group as solve.mjs::writeRound builds it: the row's own block first (entrance
+// start, then the property-to-setting engine), then its enclosing blocks (anyIndex) when the own block has none. Never
+// writes the tree: a write is compared with the node's current value instead. Returns { gap, detail } or
+// { writes, on, holds } (holds: the node already holds every written value).
+export function resolveIssue( issue, ctx ) {
+	const { walk, stateMap, nodeFor, calFor, refs = {}, groups = [] } = ctx;
+	const resolver = ctx.resolver || ( ( input, cal ) => resolve( input, { db: ctx.db, snapshot: ctx.snapshot, calibration: cal, log: [] } ) );
+	const r = issue.rows[ 0 ];
+	const state = settingState( r, stateMap );
+	const node = r.ref ? nodeFor( r.ref ) : null;
+	if ( ! node || undefined === state ) {
+		return undefined === state ? { gap: 'unmapped-state', detail: `walker state ${ r.state } is not mapped` } : { gap: 'unmapped', detail: r.ref ? `ref ${ r.ref } is not in any surface tree` : 'the row has no ref' };
+	}
+	if ( 'linked' === referenceOf( node, refs )?.kind ) {
+		return { gap: 'linked', detail: `${ node.name } renders another post's block` };
+	}
+	const prop = cssProp( r.key );
+	const walkerStates = [ ...new Set( issue.rows.map( ( x ) => x.state ) ) ];
+	const g = { ref: r.ref, path: r.path, prop: r.key, state, pair: r.pair, pseudo: r.pseudo || null, rows: issue.rows, walkerStates };
+	const { perWidth, fontPx, declared } = draftValues( walk, r.pair, r.key, 'hover' === state, walkerStates, g.pseudo );
+	if ( USED_VALUES.includes( r.key ) ) {
+		const ws = Object.keys( perWidth );
+		if ( ! ws.length || ! ws.every( ( w ) => plainLength( declared[ w ] ) ) ) {
+			return { gap: 'used-value', detail: `${ r.key } is the box's used size, not a declared value` };
+		}
+		ws.forEach( ( w ) => ( perWidth[ w ] = declared[ w ] ) );
+	}
+	const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === r.ref && o.path === r.path && ! o.state && o.prop !== r.key ).map( ( o ) => [ o.prop, draftValues( walk, o.pair, o.prop, false, o.walkerStates, o.pseudo ).perWidth ] ) );
+	const attempt = ( on, onPath, anyIndex, tag = null ) => {
+		const cal = calFor( on.name );
+		const known = [ ...Object.keys( cal?.elements || {} ), ...Object.values( cal?.settings || {} ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ) ];
+		const lp = ( p ) => ( anyIndex ? loose( p ) : p );
+		if ( cal && ! known.map( lp ).includes( lp( onPath ) ) ) {
+			return { gap: 'unmapped-element', detail: `${ on.name } path "${ onPath }" is not a calibrated element` };
+		}
+		return ( on === node && entranceStart( g, node, perWidth ) ) || resolver( { block: on.name, slot: onPath, anyIndex, tag, prop, state, perWidth, fontPx, current: on.attributes || {}, siblings }, cal );
+	};
+	let out = attempt( node, r.path, false );
+	let on = { ref: r.ref, block: node.name, path: r.path, node };
+	for ( const o of [ 'no-setting', 'unmapped-element' ].includes( out.gap ) ? r.owners || [] : [] ) {
+		const n2 = nodeFor( o.ref );
+		if ( ! n2 || 'linked' === referenceOf( n2, refs )?.kind ) {
+			continue;
+		}
+		const r2 = attempt( n2, o.path, true, o.tag || null );
+		if ( ! r2.gap ) {
+			out = r2;
+			on = { ref: o.ref, block: n2.name, path: o.path, node: n2 };
+			break;
+		}
+	}
+	if ( out.gap ) {
+		return { gap: out.gap, detail: out.detail };
+	}
+	const holds = out.writes.every( ( w ) => holdsValue( on.node.attributes?.[ w.attr ], w.value, w.merge ) );
+	return { writes: out.writes.map( ( w ) => ( { attr: w.attr, value: w.value, merge: w.merge } ) ), on: { ref: on.ref, block: on.block, path: on.path }, holds };
+}
+
+// Whether a current attribute value already holds a write: 'replace' compares whole values, 'deep' every leaf written.
+export function holdsValue( current, value, merge = 'replace' ) {
+	const isObj = ( v ) => v && 'object' === typeof v && ! Array.isArray( v );
+	if ( 'deep' === merge && isObj( value ) ) {
+		return isObj( current ) && Object.entries( value ).every( ( [ k, v ] ) => holdsValue( current[ k ], v, 'deep' ) );
+	}
+	return JSON.stringify( current ) === JSON.stringify( value );
+}
+
+// (a) (b) (c) Settings that fit the issue's property: the block's database rows (css_property NULL rows included, by
+// name) and the enum settings its calibration discovered painting the property on the element, the roster extensions that reach the block, and enclosing blocks whose calibration slots or reaches cover the
+// element.
+export function fittingSettings( issue, ctx ) {
+	const r = issue.rows[ 0 ];
+	const prop = cssProp( r.key );
+	const { short } = splitProperty( prop );
+	const values = issue.rows.flatMap( ( x ) => [ String( x.draft ), String( x.live ) ] );
+	const block = r.ref ? ctx.nodeFor( r.ref )?.name : null;
+	const state = settingState( r, ctx.stateMap );
+	const out = [];
+	if ( block ) {
+		// A setting the block's calibration measured carries whether its slots or reaches cover the element; one that
+		// does not (reaches: false) is listed but never decides.
+		const cal = ctx.calFor( block );
+		const covers = ( c ) => [ ...( c.slots || [ c.slot ] ), ...( c.reaches || [] ) ].map( loose ).includes( loose( r.path ) );
+		for ( const row of ctx.attrRows( block ).filter( ( x ) => settingFits( x.attr_name, x, prop, values ) ) ) {
+			const c = cal?.settings?.[ row.attr_name ];
+			out.push( { check: 'attribute', block, setting: row.attr_name, css_property: row.css_property, css_element: row.css_element, css_state: row.css_state || null, source: row.source, ...( c ? { reaches: covers( c ) } : {} ) } );
+		}
+		// An enum setting with no css_property that calibration saw change the property on this element (a layout mode).
+		for ( const [ attr, props ] of Object.entries( cal?.discovered || {} ) ) {
+			if ( ( props[ prop ]?.slots || [] ).map( loose ).includes( loose( r.path ) ) ) {
+				out.push( { check: 'discovered', block, setting: attr, values: Object.keys( props[ prop ].values || {} ) } );
+			}
+		}
+		for ( const ext of ctx.roster || [] ) {
+			if ( ! rosterApplies( ext, block, ctx.supportsFor( block ) ) ) {
+				continue;
+			}
+			for ( const [ name, a ] of Object.entries( ext.attributes || {} ) ) {
+				if ( settingFits( name, a, prop, values ) ) {
+					out.push( { check: 'extension', extension: ext.id, setting: name, css_property: a.css_property || null, css_element: a.css_element || null } );
+				}
+			}
+		}
+	}
+	for ( const o of r.owners || [] ) {
+		const on = ctx.nodeFor( o.ref );
+		const cal = on ? ctx.calFor( on.name ) : null;
+		for ( const [ attr, s ] of Object.entries( cal?.settings || {} ) ) {
+			const via = ( s.slots || [ s.slot ] ).map( loose ).includes( loose( o.path ) ) ? 'slot' : ( ( s.reaches || [] ).map( loose ).includes( loose( o.path ) ) ? 'reaches' : null );
+			if ( via && ( s.property === prop || s.property === short || ( ! s.property && nameFits( prop, attr ) ) ) && ( s.state || null ) === ( state || null ) ) {
+				out.push( { check: 'enclosing', ref: o.ref, block: on.name, setting: attr, via, path: o.path } );
+			}
+		}
+	}
+	return out;
+}
+
+const camel = ( s ) => s.replace( /-([a-z])/g, ( m, c ) => c.toUpperCase() );
+// The subject compound of each selector in a list (the last compound, :has() and :not() arguments emptied two levels
+// deep): a class named only inside :has() or on an ancestor is not the element the rule styles.
+const subjects = ( sel ) => sel.replace( /\([^()]*\)/g, '' ).replace( /\([^()]*\)/g, '' ).split( ',' ).map( ( x ) => x.trim().split( /\s*[\s>+~]\s*/ ).pop() );
+
+// Source pass, string search only (no PHP or CSS parsing): for each block involved (the row's own and its enclosing
+// blocks), whether render.php mentions each setting name, and which style.css rules name the element's class (the last
+// .sgs- class of its path, else the block root) and declare the property or its shorthand.
+export function sourcePass( issue, names, ctx ) {
+	const r = issue.rows[ 0 ];
+	const prop = cssProp( r.key );
+	const { short } = splitProperty( prop );
+	const blocks = [ ...new Set( [ r.ref && ctx.nodeFor( r.ref )?.name, ...( r.owners || [] ).map( ( o ) => ctx.nodeFor( o.ref )?.name ) ].filter( Boolean ) ) ];
+	const terms = [ ...new Set( [ ...names, camel( prop ), camel( short ) ] ) ];
+	const out = { render: [], rules: [] };
+	for ( const block of blocks ) {
+		const slug = block.replace( /^[^/]+\//, '' );
+		const php = ctx.readSource( slug, 'render.php' );
+		if ( null !== php ) {
+			out.render.push( { file: `${ slug }/render.php`, mentions: terms.filter( ( t ) => php.includes( t ) ), absent: terms.filter( ( t ) => ! php.includes( t ) ) } );
+		}
+		const css = ctx.readSource( slug, 'style.css' );
+		if ( null === css ) {
+			continue;
+		}
+		const cls = ( String( r.path || '' ).match( /\.sgs-[\w-]+/g ) || [] ).pop() || `.sgs-${ slug }`;
+		const named = new RegExp( `${ cls.replace( /[.-]/g, '\\$&' ) }(?![\\w-])` );
+		const declares = new RegExp( `(?:^|;)\\s*(${ [ prop, short ].map( ( p ) => p.replace( /-/g, '\\-' ) ).join( '|' ) })\\s*:([^;]*)` );
+		for ( const m of css.replace( /\/\*[\s\S]*?\*\//g, '' ).matchAll( /([^{}]+)\{([^{}]*)\}/g ) ) {
+			const d = declares.exec( m[ 2 ] );
+			if ( d && subjects( m[ 1 ] ).some( ( c ) => named.test( c ) && ( !! r.pseudo || ! c.includes( '::' ) ) ) ) {
+				out.rules.push( { file: `${ slug }/style.css`, selector: m[ 1 ].trim().replace( /\s+/g, ' ' ), declaration: `${ d[ 1 ] }:${ d[ 2 ].trim() }` } );
+			}
+		}
+	}
+	return out;
+}
+
+// One issue's verdict. Order: a box row is a consequence (W) or unexplained (U); an entrance the tree can start on load
+// (lib/entrance.mjs) is T; then artefacts (transient, used value, consequence: W); then the resolver (a new value it
+// would write: T; blocked by the guard or a conflict: W; the setting already holds the draft value, or Solve wrote it
+// and paint still differed: F, a hardcode); then a fitting setting (W; one calibration measured not reaching the
+// element never decides); then the resolver's no-setting (F); any other resolver gap is a route gap (W).
+export function triageIssue( issue, ctx ) {
+	const r = issue.rows[ 0 ];
+	const evidence = [];
+	const verdict = ( cls, decidedBy, extra = {} ) => ( { key: issue.key, ref: r.ref ?? null, pair: r.pair ?? null, path: r.path ?? null, block: ( r.ref && ctx.nodeFor( r.ref )?.name ) || null, kind: r.kind, property: r.key,
+		widths: [ ...new Set( issue.rows.map( ( x ) => x.width ) ) ].sort( ( a, b ) => a - b ), solveClass: issue.solveClass, solveReason: issue.rows.find( ( x ) => x.reason )?.reason ?? null, class: cls, decidedBy, evidence, ...extra } );
+	const explained = issue.rows.map( ( x ) => explainRow( x, ctx.open, ctx ) );
+	const conseq = explained.every( Boolean ) ? { check: 'consequence', ...explained[ 0 ], widths: explained.map( ( e ) => e.width ) } : null;
+	if ( ! conseq && explained.some( Boolean ) ) {
+		evidence.push( { check: 'consequence', partial: true, widths: explained.filter( Boolean ).map( ( e ) => e.width ), parent: explained.find( Boolean ).parent } );
+	}
+	if ( 'box' === r.kind ) {
+		return conseq ? ( evidence.unshift( conseq ), verdict( 'W', 'consequence' ) ) : verdict( 'U', 'box-unexplained' );
+	}
+	const transient = transientOf( issue.rows );
+	const used = usedValueOf( issue, ctx.walk );
+	[ transient, used, conseq ].filter( Boolean ).forEach( ( e ) => evidence.push( e ) );
+	const res = resolveIssue( issue, ctx );
+	const groupKey = `${ r.ref }|${ r.path }|${ r.key }|${ settingState( r, ctx.stateMap ) || '' }`;
+	// Solve's own outcome for the group: the guard blocked the write (breaks-layout), or a shared setting could not hold
+	// both elements' values (conflict); or Solve already wrote the value the resolver would write and paint still differed.
+	const blocked = [ 'breaks-layout', 'conflict' ].find( ( x ) => x === ctx.reportGaps?.[ groupKey ]?.gap ) || null;
+	const tried = res.writes ? ( ctx.reportWrites || [] ).find( ( w ) => ! w.reverted && w.ref === res.on.ref && res.writes.some( ( x ) => x.attr === w.attr && holdsValue( w.after, x.value, x.merge ) ) ) : null;
+	evidence.push( res.gap ? { check: 'resolver', gap: res.gap, detail: res.detail } : { check: 'resolver', wouldWrite: res.writes.map( ( w ) => w.attr ), on: res.on, holds: res.holds, ...( blocked ? { blocked } : {} ), ...( tried ? { solveWrote: tried.attr, group: tried.group } : {} ) } );
+	const fits = fittingSettings( issue, ctx );
+	evidence.push( ...fits );
+	const entrance = res.writes && ! res.holds && res.writes.some( ( w ) => 'sgsAnimationStart' === w.attr );
+	const withSource = () => ( { source: sourcePass( issue, [ ...( res.writes || [] ).map( ( w ) => w.attr ), ...fits.map( ( f ) => f.setting ) ], ctx ) } );
+	if ( entrance ) {
+		return verdict( 'T', 'entrance-start' );
+	}
+	const artefact = transient || used || conseq;
+	if ( artefact ) {
+		return verdict( 'W', artefact.check, 'hardcode' === issue.solveClass ? withSource() : {} );
+	}
+	if ( res.writes ) {
+		if ( blocked ) {
+			return verdict( 'W', 'resolver-blocked', withSource() );
+		}
+		return res.holds || tried ? verdict( 'F', 'hardcode', withSource() ) : verdict( 'T', 'resolver-writes' );
+	}
+	const deciding = fits.filter( ( f ) => false !== f.reaches );
+	if ( deciding.length ) {
+		return verdict( 'W', deciding[ 0 ].check, 'hardcode' === issue.solveClass ? withSource() : {} );
+	}
+	if ( 'no-setting' === res.gap ) {
+		return verdict( 'F', 'no-setting', withSource() );
+	}
+	return verdict( 'W', `resolver-${ res.gap }`, 'hardcode' === issue.solveClass ? withSource() : {} );
+}
+
+// Every issue of a Solve report: { verdicts, counts }. walk: the final walker report the Solve report classified.
+// ctx: { stateMap, nodeFor(ref), ancestorsOf(ref), attrRows(block), roster, supportsFor(block), calFor(block),
+// readSource(slug, file), refs?, resolver?(input, calibration) or db and snapshot, reportGaps?, reportWrites? }.
+export function triage( report, walk, surface, ctx ) {
+	const full = { ...ctx, walk, open: openRows( walk ).filter( ( x ) => VISUAL.includes( x.kind ) ), groups: writableGroups( walk, ctx.stateMap ).groups, reportGaps: ctx.reportGaps ?? report.gaps, reportWrites: ctx.reportWrites ?? report.writes };
+	const verdicts = issuesOf( report, surface ).map( ( issue ) => triageIssue( issue, full ) );
+	const counts = Object.fromEntries( TRIAGE_CLASSES.map( ( c ) => [ c, verdicts.filter( ( v ) => v.class === c ).length ] ) );
+	return { verdicts, counts };
+}

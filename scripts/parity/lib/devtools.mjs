@@ -1,5 +1,5 @@
-// What DevTools reads, through the Chrome DevTools Protocol, for draft-live-walk.mjs (A-1, plan
-// .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md): the page read once its animations finish, every pair's hover
+// What DevTools reads, through the Chrome DevTools Protocol, for draft-live-walk.mjs (Spec 47 A-1,
+// GAP-CHECKLIST.md section 19): the page read once its animations finish, every pair's hover
 // end state by forcing :hover (no pointer, no hand-picked pairs), and the values the matched CSS rules declare beside
 // the computed ones (a declared 168px or 50% width where computed style gives only the used pixels).
 
