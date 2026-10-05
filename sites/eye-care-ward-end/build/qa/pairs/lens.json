@@ -1,0 +1,45 @@
+{
+ "surface": "lens",
+ "when": "2026-10-05T10:10:25.484Z",
+ "width": 1440,
+ "recheck": [
+  375,
+  768
+ ],
+ "lifted": [],
+ "blocks": 3,
+ "kept": 1,
+ "coveredByHand": [],
+ "retargeted": {},
+ "left": [
+  {
+   "ref": "cr-ref-lens-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(3) > div:nth-child(2) > div:nth-child(1)",
+   "why": "the draft element also holds 4 word(s) that belong outside this block",
+   "words": 44,
+   "matched": 42,
+   "first": "what",
+   "last": "?"
+  },
+  {
+   "ref": "cr-ref-lens-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(3) > div:nth-child(2) > div:nth-child(1)",
+   "why": "the draft element also holds 4 word(s) that belong outside this block",
+   "words": 44,
+   "matched": 42,
+   "first": "what",
+   "last": "?"
+  }
+ ],
+ "keptPairs": [
+  {
+   "ref": "cr-ref-lens-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3)",
+   "why": null,
+   "words": 75,
+   "matched": 67,
+   "first": "what",
+   "last": "lenses"
+  }
+ ]
+}

@@ -1,0 +1,229 @@
+{
+ "surface": "mega-help",
+ "when": "2026-10-05T10:01:59.170Z",
+ "state": "mega-help",
+ "width": 1440,
+ "recheck": [],
+ "blocks": 22,
+ "kept": 20,
+ "coveredByHand": [
+  "cr-ref-mega-help-3",
+  "cr-ref-mega-help-17"
+ ],
+ "retargeted": {},
+ "left": [],
+ "keptPairs": [
+  {
+   "ref": "cr-ref-mega-help-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 10,
+   "matched": 10,
+   "first": "buying",
+   "last": "questions"
+  },
+  {
+   "ref": "cr-ref-mega-help-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 10,
+   "matched": 10,
+   "first": "buying",
+   "last": "questions"
+  },
+  {
+   "ref": "cr-ref-mega-help-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 32,
+   "matched": 32,
+   "first": "buying",
+   "last": "me"
+  },
+  {
+   "ref": "cr-ref-mega-help-5",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(delivery|&|returns)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "delivery",
+   "last": "returns"
+  },
+  {
+   "ref": "cr-ref-mega-help-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "delivery",
+   "last": "questions"
+  },
+  {
+   "ref": "cr-ref-mega-help-6",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(size|guide)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "size",
+   "last": "guide"
+  },
+  {
+   "ref": "cr-ref-mega-help-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(3)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(frequently|asked|questions)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "frequently",
+   "last": "questions"
+  },
+  {
+   "ref": "cr-ref-mega-help-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "prescriptions",
+   "last": "prescriptions"
+  },
+  {
+   "ref": "cr-ref-mega-help-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
+   "why": null,
+   "words": 10,
+   "matched": 10,
+   "first": "prescriptions",
+   "last": "pd"
+  },
+  {
+   "ref": "cr-ref-mega-help-8",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
+   "why": null,
+   "words": 10,
+   "matched": 10,
+   "first": "prescriptions",
+   "last": "pd"
+  },
+  {
+   "ref": "cr-ref-mega-help-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(how|lenses|work)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "how",
+   "last": "work"
+  },
+  {
+   "ref": "cr-ref-mega-help-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2)",
+   "why": null,
+   "words": 9,
+   "matched": 9,
+   "first": "how",
+   "last": "pd"
+  },
+  {
+   "ref": "cr-ref-mega-help-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(reading|your|prescription)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "reading",
+   "last": "prescription"
+  },
+  {
+   "ref": "cr-ref-mega-help-14",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(3)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(measuring|your|pd)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "measuring",
+   "last": "pd"
+  },
+  {
+   "ref": "cr-ref-mega-help-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3)",
+   "why": null,
+   "words": 12,
+   "matched": 12,
+   "first": "talk",
+   "last": "me"
+  },
+  {
+   "ref": "cr-ref-mega-help-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3)",
+   "why": null,
+   "words": 12,
+   "matched": 12,
+   "first": "talk",
+   "last": "me"
+  },
+  {
+   "ref": "cr-ref-mega-help-19",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > a:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(contact|&|visit|us)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "contact",
+   "last": "us"
+  },
+  {
+   "ref": "cr-ref-mega-help-18",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 9,
+   "matched": 9,
+   "first": "contact",
+   "last": "me"
+  },
+  {
+   "ref": "cr-ref-mega-help-20",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > a:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "0121",
+   "last": "8233"
+  },
+  {
+   "ref": "cr-ref-mega-help-21",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > a:nth-child(3)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(whatsapp|me)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "whatsapp",
+   "last": "me"
+  }
+ ]
+}

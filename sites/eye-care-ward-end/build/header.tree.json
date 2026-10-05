@@ -39,7 +39,8 @@
           "icon": "rotate-ccw",
           "label": "30 days to return, free adjustments for life"
         }
-      ]
+      ],
+      "className": "cr-ref-header-0"
     }
   },
   {
@@ -57,13 +58,15 @@
       },
       "borderStyle": "solid",
       "borderColour": "border",
-      "scrolledOffset": 40
+      "scrolledOffset": 40,
+      "className": "cr-ref-header-1"
     },
     "innerBlocks": [
       {
         "name": "sgs/site-header-row",
         "attributes": {
-          "rowSlot": "top"
+          "rowSlot": "top",
+          "className": "cr-ref-header-2"
         }
       },
       {
@@ -116,7 +119,8 @@
           },
           "rowShrinkDuration": 350,
           "rowShrinkEasing": "custom",
-          "rowShrinkEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+          "rowShrinkEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+          "className": "cr-ref-header-3"
         },
         "innerBlocks": [
           {
@@ -233,7 +237,8 @@
               },
               "burgerTextGap": {
                 "desktop": "10px"
-              }
+              },
+              "className": "cr-ref-header-4"
             }
           },
           {
@@ -249,7 +254,8 @@
               "contentWidth": {
                 "desktop": "full"
               },
-              "flexWrap": "nowrap"
+              "flexWrap": "nowrap",
+              "className": "cr-ref-header-5"
             },
             "innerBlocks": [
               {
@@ -260,7 +266,8 @@
                   "linkToHome": true,
                   "shrinkWidth": 40,
                   "shrinkWidthUnit": "px",
-                  "opacityHover": 1
+                  "opacityHover": 1,
+                  "className": "cr-ref-header-6"
                 }
               },
               {
@@ -274,7 +281,8 @@
                   "tagName": "div",
                   "contentWidth": {
                     "desktop": "full"
-                  }
+                  },
+                  "className": "cr-ref-header-7"
                 },
                 "innerBlocks": [
                   {
@@ -300,7 +308,8 @@
                           "bottom": "0px"
                         }
                       },
-                      "shrunkFontSize": "15px"
+                      "shrunkFontSize": "15px",
+                      "className": "cr-ref-header-8"
                     }
                   },
                   {
@@ -318,7 +327,8 @@
                       "textColour": "text-subtle",
                       "lineHeight": {
                         "desktop": 1
-                      }
+                      },
+                      "className": "cr-ref-header-9"
                     }
                   }
                 ]
@@ -338,7 +348,8 @@
               "tagName": "div",
               "contentWidth": {
                 "desktop": "full"
-              }
+              },
+              "className": "cr-ref-header-10"
             },
             "innerBlocks": [
               {
@@ -370,7 +381,8 @@
                   },
                   "linkMinHeight": {
                     "desktop": "0px"
-                  }
+                  },
+                  "className": "cr-ref-header-11"
                 }
               },
               {
@@ -419,7 +431,8 @@
                   "submenuAnimationDuration": 200,
                   "itemMinHeight": {
                     "desktop": "0px"
-                  }
+                  },
+                  "className": "cr-ref-header-12"
                 }
               },
               {
@@ -661,7 +674,8 @@
                   "scrimColour": "primary",
                   "scrimOpacity": {
                     "desktop": 0.45
-                  }
+                  },
+                  "className": "cr-ref-header-13"
                 }
               }
             ]
@@ -671,7 +685,8 @@
       {
         "name": "sgs/site-header-row",
         "attributes": {
-          "rowSlot": "bottom"
+          "rowSlot": "bottom",
+          "className": "cr-ref-header-14"
         }
       }
     ]

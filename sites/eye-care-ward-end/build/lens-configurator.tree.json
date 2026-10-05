@@ -53,13 +53,15 @@
         "topRight": "0px",
         "bottomRight": "0px",
         "bottomLeft": "0px"
-      }
+      },
+      "className": "cr-ref-lens-0"
     },
     "innerBlocks": [
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "What they're for"
+          "label": "What they're for",
+          "className": "cr-ref-lens-1"
         },
         "innerBlocks": [
           {
@@ -124,7 +126,8 @@
                   "description": "Keep the lenses they come with.",
                   "addToBagNow": true
                 }
-              ]
+              ],
+              "className": "cr-ref-lens-2"
             }
           }
         ]
@@ -132,7 +135,8 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "How thin"
+          "label": "How thin",
+          "className": "cr-ref-lens-3"
         },
         "innerBlocks": [
           {
@@ -195,7 +199,8 @@
                   "helpText": "The thinnest lens material available. If your prescription is strong, this is the difference between glasses you want to wear and glasses you tolerate.",
                   "description": "The thinnest made. For ±6.00 and above."
                 }
-              ]
+              ],
+              "className": "cr-ref-lens-4"
             }
           }
         ]
@@ -203,7 +208,8 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "Finish"
+          "label": "Finish",
+          "className": "cr-ref-lens-5"
         },
         "innerBlocks": [
           {
@@ -267,7 +273,8 @@
                   "description": "Turn them into everyday glasses.",
                   "stageEffect": "brighten"
                 }
-              ]
+              ],
+              "className": "cr-ref-lens-6"
             }
           }
         ]
@@ -275,7 +282,8 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "Your prescription"
+          "label": "Your prescription",
+          "className": "cr-ref-lens-7"
         },
         "innerBlocks": [
           {
@@ -313,7 +321,8 @@
                   "description": "If you've got the numbers in front of you.",
                   "summaryText": "Entered online"
                 }
-              ]
+              ],
+              "className": "cr-ref-lens-8"
             }
           }
         ]
@@ -321,7 +330,8 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "Your prescription"
+          "label": "Your prescription",
+          "className": "cr-ref-lens-9"
         },
         "innerBlocks": [
           {
@@ -332,7 +342,8 @@
               "body": "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut them I refund the lenses in full.",
               "showBuyNow": false,
               "addToBasketLabel": "Add to bag",
-              "buttonShowsTotal": true
+              "buttonShowsTotal": true,
+              "className": "cr-ref-lens-10"
             }
           }
         ]
@@ -340,7 +351,8 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "Your prescription"
+          "label": "Your prescription",
+          "className": "cr-ref-lens-11"
         },
         "innerBlocks": [
           {
@@ -358,7 +370,8 @@
               ],
               "maxSize": 10,
               "uploadText": "Drop a photo or screenshot here",
-              "helpText": "A phone photo of the paper copy is fine, as long as every number is readable."
+              "helpText": "A phone photo of the paper copy is fine, as long as every number is readable.",
+              "className": "cr-ref-lens-12"
             }
           },
           {
@@ -369,7 +382,8 @@
               "body": "",
               "showBuyNow": false,
               "addToBasketLabel": "Add to bag",
-              "buttonShowsTotal": true
+              "buttonShowsTotal": true,
+              "className": "cr-ref-lens-13"
             }
           }
         ]
@@ -377,7 +391,8 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "Your prescription"
+          "label": "Your prescription",
+          "className": "cr-ref-lens-14"
         },
         "innerBlocks": [
           {
@@ -393,7 +408,8 @@
               "required": true,
               "labelStyle": "hidden",
               "columnHeading": "SPH",
-              "rowHeading": "R"
+              "rowHeading": "R",
+              "className": "cr-ref-lens-15"
             }
           },
           {
@@ -409,7 +425,8 @@
               "required": false,
               "labelStyle": "hidden",
               "columnHeading": "CYL",
-              "rowHeading": ""
+              "rowHeading": "",
+              "className": "cr-ref-lens-16"
             }
           },
           {
@@ -425,7 +442,8 @@
               "required": false,
               "labelStyle": "hidden",
               "columnHeading": "AXIS",
-              "rowHeading": ""
+              "rowHeading": "",
+              "className": "cr-ref-lens-17"
             }
           },
           {
@@ -441,7 +459,8 @@
               "required": true,
               "labelStyle": "hidden",
               "columnHeading": "",
-              "rowHeading": "L"
+              "rowHeading": "L",
+              "className": "cr-ref-lens-18"
             }
           },
           {
@@ -457,7 +476,8 @@
               "required": false,
               "labelStyle": "hidden",
               "columnHeading": "",
-              "rowHeading": ""
+              "rowHeading": "",
+              "className": "cr-ref-lens-19"
             }
           },
           {
@@ -473,7 +493,8 @@
               "required": false,
               "labelStyle": "hidden",
               "columnHeading": "",
-              "rowHeading": ""
+              "rowHeading": "",
+              "className": "cr-ref-lens-20"
             }
           },
           {
@@ -484,7 +505,8 @@
               "body": "Copy the numbers exactly, including the + or −. If a box is empty or says “DS”, leave it blank. I read every prescription myself before anything is cut.",
               "showBuyNow": false,
               "addToBasketLabel": "Add to bag",
-              "buttonShowsTotal": true
+              "buttonShowsTotal": true,
+              "className": "cr-ref-lens-21"
             }
           }
         ]
@@ -492,7 +514,8 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "Frame only"
+          "label": "Frame only",
+          "className": "cr-ref-lens-22"
         },
         "innerBlocks": [
           {
@@ -503,7 +526,8 @@
               "body": "It goes in your bag with its original tinted lenses. You can add prescription lenses later.",
               "showBuyNow": false,
               "addToBasketLabel": "Add to bag",
-              "buttonShowsTotal": true
+              "buttonShowsTotal": true,
+              "className": "cr-ref-lens-23"
             }
           }
         ]

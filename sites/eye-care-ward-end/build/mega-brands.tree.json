@@ -27,18 +27,22 @@
       },
       "borderColour": "border",
       "shadow": "0 24px 48px 0",
-      "shadowColour": "#141414 12%"
+      "shadowColour": "#141414 12%",
+      "className": "cr-ref-mega-brands-0"
     },
     "innerBlocks": [
       {
         "name": "sgs/mega-group",
-        "attributes": {},
+        "attributes": {
+          "className": "cr-ref-mega-brands-1"
+        },
         "innerBlocks": [
           {
             "name": "sgs/container",
             "attributes": {
               "tagName": "div",
-              "layout": "stack"
+              "layout": "stack",
+              "className": "cr-ref-mega-brands-2"
             },
             "innerBlocks": [
               {
@@ -63,7 +67,8 @@
                       "top": "0",
                       "bottom": "18px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-brands-3"
                 }
               },
               {
@@ -84,7 +89,8 @@
                     "desktop": {
                       "bottom": "30px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-brands-4"
                 },
                 "innerBlocks": [
                   {
@@ -300,7 +306,8 @@
                           "left": "14px"
                         }
                       },
-                      "titleMarginBottom": "6px"
+                      "titleMarginBottom": "6px",
+                      "className": "cr-ref-mega-brands-5"
                     },
                     "innerBlocks": []
                   }
@@ -328,7 +335,8 @@
                       "top": "0",
                       "bottom": "14px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-brands-6"
                 }
               },
               {
@@ -343,7 +351,8 @@
                   },
                   "gap": {
                     "desktop": "2px 20px"
-                  }
+                  },
+                  "className": "cr-ref-mega-brands-7"
                 },
                 "innerBlocks": [
                   {
@@ -370,7 +379,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-8"
                     }
                   },
                   {
@@ -397,7 +407,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-9"
                     }
                   },
                   {
@@ -424,7 +435,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-10"
                     }
                   },
                   {
@@ -451,7 +463,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-11"
                     }
                   },
                   {
@@ -478,7 +491,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-12"
                     }
                   },
                   {
@@ -505,7 +519,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-13"
                     }
                   },
                   {
@@ -532,7 +547,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-14"
                     }
                   },
                   {
@@ -559,7 +575,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-15"
                     }
                   },
                   {
@@ -586,7 +603,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-16"
                     }
                   },
                   {
@@ -613,7 +631,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-17"
                     }
                   },
                   {
@@ -640,7 +659,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-18"
                     }
                   },
                   {
@@ -667,7 +687,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-19"
                     }
                   },
                   {
@@ -694,7 +715,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-20"
                     }
                   },
                   {
@@ -721,7 +743,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-21"
                     }
                   },
                   {
@@ -748,7 +771,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-22"
                     }
                   },
                   {
@@ -775,7 +799,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-23"
                     }
                   },
                   {
@@ -802,7 +827,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-24"
                     }
                   },
                   {
@@ -829,7 +855,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-25"
                     }
                   },
                   {
@@ -856,7 +883,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-26"
                     }
                   },
                   {
@@ -883,7 +911,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-27"
                     }
                   },
                   {
@@ -910,7 +939,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-28"
                     }
                   },
                   {
@@ -937,7 +967,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-29"
                     }
                   },
                   {
@@ -964,7 +995,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-30"
                     }
                   },
                   {
@@ -991,7 +1023,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-31"
                     }
                   },
                   {
@@ -1018,7 +1051,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-32"
                     }
                   },
                   {
@@ -1045,7 +1079,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-33"
                     }
                   },
                   {
@@ -1072,7 +1107,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-34"
                     }
                   },
                   {
@@ -1099,7 +1135,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-35"
                     }
                   },
                   {
@@ -1126,7 +1163,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-36"
                     }
                   },
                   {
@@ -1153,7 +1191,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-37"
                     }
                   },
                   {
@@ -1180,7 +1219,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-38"
                     }
                   },
                   {
@@ -1207,7 +1247,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-39"
                     }
                   },
                   {
@@ -1234,7 +1275,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-40"
                     }
                   },
                   {
@@ -1261,7 +1303,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-41"
                     }
                   },
                   {
@@ -1288,7 +1331,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-42"
                     }
                   },
                   {
@@ -1315,7 +1359,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-43"
                     }
                   },
                   {
@@ -1342,7 +1387,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-44"
                     }
                   },
                   {
@@ -1369,7 +1415,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-45"
                     }
                   },
                   {
@@ -1396,7 +1443,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-46"
                     }
                   },
                   {
@@ -1423,7 +1471,8 @@
                           "bottom": "5px",
                           "left": "0"
                         }
-                      }
+                      },
+                      "className": "cr-ref-mega-brands-47"
                     }
                   }
                 ]

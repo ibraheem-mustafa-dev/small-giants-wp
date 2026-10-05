@@ -1,0 +1,267 @@
+{
+ "surface": "help",
+ "when": "2026-10-05T09:37:04.047Z",
+ "blocks": 41,
+ "kept": 14,
+ "coveredByHand": [
+  "cr-ref-help-1",
+  "cr-ref-help-2",
+  "cr-ref-help-5",
+  "cr-ref-help-6",
+  "cr-ref-help-8",
+  "cr-ref-help-9",
+  "cr-ref-help-11",
+  "cr-ref-help-12",
+  "cr-ref-help-14",
+  "cr-ref-help-35",
+  "cr-ref-help-37"
+ ],
+ "retargeted": {
+  "phone-text": ".cr-ref-help-37"
+ },
+ "left": [
+  {
+   "ref": "cr-ref-help-19",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(2) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": "its width is 319px on the draft against 996px live",
+   "words": 8,
+   "matched": 8,
+   "first": "how",
+   "last": "street?"
+  },
+  {
+   "ref": "cr-ref-help-21",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(3) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": "its width is 319px on the draft against 996px live",
+   "words": 7,
+   "matched": 7,
+   "first": "can",
+   "last": "sunglasses?"
+  },
+  {
+   "ref": "cr-ref-help-23",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(4) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": "its width is 302px on the draft against 996px live",
+   "words": 8,
+   "matched": 8,
+   "first": "what",
+   "last": "order?"
+  },
+  {
+   "ref": "cr-ref-help-25",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(5) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": "its width is 282px on the draft against 996px live",
+   "words": 6,
+   "matched": 6,
+   "first": "how",
+   "last": "take?"
+  },
+  {
+   "ref": "cr-ref-help-27",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(6) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": "its width is 271px on the draft against 996px live",
+   "words": 8,
+   "matched": 8,
+   "first": "how",
+   "last": "choose?"
+  },
+  {
+   "ref": "cr-ref-help-29",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(7) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": "its width is 275px on the draft against 996px live",
+   "words": 5,
+   "matched": 5,
+   "first": "can",
+   "last": "sunglasses?"
+  },
+  {
+   "ref": "cr-ref-help-31",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(8) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": "its width is 258px on the draft against 996px live",
+   "words": 7,
+   "matched": 7,
+   "first": "can",
+   "last": "fitted?"
+  },
+  {
+   "ref": "cr-ref-help-39",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 2,
+   "matched": 2,
+   "first": "contact",
+   "last": "me"
+  },
+  {
+   "ref": "cr-ref-help-40",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 1,
+   "matched": 1,
+   "first": "call",
+   "last": "call"
+  },
+  {
+   "ref": "cr-ref-help-20",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-help-22",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-help-24",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-help-26",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-help-28",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-help-30",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-help-32",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  }
+ ],
+ "keptPairs": [
+  {
+   "ref": "cr-ref-help-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 202,
+   "matched": 202,
+   "first": "help",
+   "last": "call"
+  },
+  {
+   "ref": "cr-ref-help-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "uk",
+   "last": "make."
+  },
+  {
+   "ref": "cr-ref-help-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 77,
+   "matched": 77,
+   "first": "uk",
+   "last": "wrong."
+  },
+  {
+   "ref": "cr-ref-help-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "collect",
+   "last": "wait."
+  },
+  {
+   "ref": "cr-ref-help-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 30,
+   "matched": 30,
+   "first": "returns",
+   "last": "wrong."
+  },
+  {
+   "ref": "cr-ref-help-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "questions",
+   "last": "me"
+  },
+  {
+   "ref": "cr-ref-help-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4) > div:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "size",
+   "last": "me"
+  },
+  {
+   "ref": "cr-ref-help-17",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(1)",
+   "why": null,
+   "words": 39,
+   "matched": 39,
+   "first": "are",
+   "last": "careful."
+  },
+  {
+   "ref": "cr-ref-help-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5)",
+   "why": null,
+   "words": 88,
+   "matched": 88,
+   "first": "are",
+   "last": "fitted?"
+  },
+  {
+   "ref": "cr-ref-help-18",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(1) > p:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 35,
+   "matched": 35,
+   "first": "yes.",
+   "last": "careful."
+  },
+  {
+   "ref": "cr-ref-help-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "still",
+   "last": "you."
+  },
+  {
+   "ref": "cr-ref-help-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "still",
+   "last": "call"
+  },
+  {
+   "ref": "cr-ref-help-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1) > p:nth-child(2)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "call",
+   "last": "you."
+  },
+  {
+   "ref": "cr-ref-help-38",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > button:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > a:nth-child(2)"
+    ]
+   }
+  }
+ ]
+}

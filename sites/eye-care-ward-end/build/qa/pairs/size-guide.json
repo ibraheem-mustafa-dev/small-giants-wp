@@ -1,0 +1,305 @@
+{
+ "surface": "size-guide",
+ "when": "2026-10-05T10:03:23.122Z",
+ "state": "size-guide",
+ "width": 1440,
+ "recheck": [
+  375,
+  768
+ ],
+ "blocks": 32,
+ "kept": 21,
+ "coveredByHand": [],
+ "retargeted": {},
+ "left": [
+  {
+   "ref": "cr-ref-size-guide-8",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 2,
+   "matched": 2,
+   "first": "lens",
+   "last": "width"
+  },
+  {
+   "ref": "cr-ref-size-guide-9",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 1,
+   "matched": 1,
+   "first": "bridge",
+   "last": "bridge"
+  },
+  {
+   "ref": "cr-ref-size-guide-10",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 1,
+   "matched": 1,
+   "first": "temple",
+   "last": "temple"
+  },
+  {
+   "ref": "cr-ref-size-guide-21",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) > div:nth-child(1)",
+   "why": "only 43% of its words matched the draft",
+   "words": 14,
+   "matched": 6,
+   "first": "small",
+   "last": "52mm"
+  },
+  {
+   "ref": "cr-ref-size-guide-26",
+   "draft": null,
+   "why": "no matched words",
+   "words": 1,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-size-guide-25",
+   "draft": null,
+   "why": "no matched words",
+   "words": 4,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-size-guide-27",
+   "draft": null,
+   "why": "no matched words",
+   "words": 3,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-size-guide-29",
+   "draft": null,
+   "why": "no matched words",
+   "words": 1,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-size-guide-28",
+   "draft": null,
+   "why": "no matched words",
+   "words": 4,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-size-guide-30",
+   "draft": null,
+   "why": "no matched words",
+   "words": 3,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-size-guide-31",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  }
+ ],
+ "keptPairs": [
+  {
+   "ref": "cr-ref-size-guide-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(which|size|am|i\\?)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "which",
+   "last": "i?"
+  },
+  {
+   "ref": "cr-ref-size-guide-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > p:nth-child(1)",
+   "why": null,
+   "words": 30,
+   "matched": 30,
+   "first": "the",
+   "last": "there."
+  },
+  {
+   "ref": "cr-ref-size-guide-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "55",
+   "last": "55"
+  },
+  {
+   "ref": "cr-ref-size-guide-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "55",
+   "last": "137"
+  },
+  {
+   "ref": "cr-ref-size-guide-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2)",
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "55",
+   "last": "temple"
+  },
+  {
+   "ref": "cr-ref-size-guide-5",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(2)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "▫",
+   "last": "18"
+  },
+  {
+   "ref": "cr-ref-size-guide-6",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(3)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "137",
+   "last": "137"
+  },
+  {
+   "ref": "cr-ref-size-guide-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "lens",
+   "last": "temple"
+  },
+  {
+   "ref": "cr-ref-size-guide-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 6,
+   "matched": 6,
+   "first": "lens",
+   "last": "62mm"
+  },
+  {
+   "ref": "cr-ref-size-guide-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 31,
+   "matched": 31,
+   "first": "lens",
+   "last": "you."
+  },
+  {
+   "ref": "cr-ref-size-guide-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3)",
+   "why": null,
+   "words": 84,
+   "matched": 84,
+   "first": "lens",
+   "last": "three."
+  },
+  {
+   "ref": "cr-ref-size-guide-14",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > p:nth-child(2)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "the",
+   "last": "you."
+  },
+  {
+   "ref": "cr-ref-size-guide-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "bridge",
+   "last": "24mm"
+  },
+  {
+   "ref": "cr-ref-size-guide-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 26,
+   "matched": 26,
+   "first": "bridge",
+   "last": "down."
+  },
+  {
+   "ref": "cr-ref-size-guide-17",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > p:nth-child(2)",
+   "why": null,
+   "words": 21,
+   "matched": 21,
+   "first": "the",
+   "last": "down."
+  },
+  {
+   "ref": "cr-ref-size-guide-19",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "temple",
+   "last": "150mm"
+  },
+  {
+   "ref": "cr-ref-size-guide-18",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 27,
+   "matched": 27,
+   "first": "temple",
+   "last": "three."
+  },
+  {
+   "ref": "cr-ref-size-guide-20",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div:nth-child(3) > p:nth-child(2)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "the",
+   "last": "three."
+  },
+  {
+   "ref": "cr-ref-size-guide-23",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "small",
+   "last": "small"
+  },
+  {
+   "ref": "cr-ref-size-guide-22",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) > div:nth-child(1)",
+   "why": null,
+   "words": 6,
+   "matched": 6,
+   "first": "small",
+   "last": "52mm"
+  },
+  {
+   "ref": "cr-ref-size-guide-24",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) > div:nth-child(1) > span:nth-child(2)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "lens",
+   "last": "52mm"
+  }
+ ]
+}

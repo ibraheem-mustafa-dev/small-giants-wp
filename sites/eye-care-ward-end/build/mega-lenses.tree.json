@@ -30,14 +30,16 @@
       "shadowColour": "#141414 12%",
       "groupGap": {
         "desktop": "0"
-      }
+      },
+      "className": "cr-ref-mega-lenses-0"
     },
     "innerBlocks": [
       {
         "name": "sgs/mega-group",
         "attributes": {
           "url": "/prescription-lenses/",
-          "opensInNewTab": false
+          "opensInNewTab": false,
+          "className": "cr-ref-mega-lenses-1"
         },
         "innerBlocks": [
           {
@@ -68,7 +70,8 @@
                 "bottom": "1px",
                 "left": "1px"
               },
-              "borderColour": "border"
+              "borderColour": "border",
+              "className": "cr-ref-mega-lenses-2"
             },
             "innerBlocks": [
               {
@@ -83,7 +86,8 @@
                   "fontWeight": "400",
                   "letterSpacing": 0.18,
                   "letterSpacingUnit": "em",
-                  "textTransform": "uppercase"
+                  "textTransform": "uppercase",
+                  "className": "cr-ref-mega-lenses-3"
                 }
               },
               {
@@ -107,7 +111,8 @@
                       "top": "0",
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-lenses-4"
                 }
               },
               {
@@ -124,7 +129,8 @@
                       "top": "0",
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-lenses-5"
                 }
               }
             ]
@@ -135,7 +141,8 @@
         "name": "sgs/mega-group",
         "attributes": {
           "url": "/prescription-lenses/",
-          "opensInNewTab": false
+          "opensInNewTab": false,
+          "className": "cr-ref-mega-lenses-6"
         },
         "innerBlocks": [
           {
@@ -166,7 +173,8 @@
                 "bottom": "1px",
                 "left": "1px"
               },
-              "borderColour": "border"
+              "borderColour": "border",
+              "className": "cr-ref-mega-lenses-7"
             },
             "innerBlocks": [
               {
@@ -181,7 +189,8 @@
                   "fontWeight": "400",
                   "letterSpacing": 0.18,
                   "letterSpacingUnit": "em",
-                  "textTransform": "uppercase"
+                  "textTransform": "uppercase",
+                  "className": "cr-ref-mega-lenses-8"
                 }
               },
               {
@@ -205,7 +214,8 @@
                       "top": "0",
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-lenses-9"
                 }
               },
               {
@@ -222,7 +232,8 @@
                       "top": "0",
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-lenses-10"
                 }
               }
             ]
@@ -233,7 +244,8 @@
         "name": "sgs/mega-group",
         "attributes": {
           "url": "/prescription-lenses/",
-          "opensInNewTab": false
+          "opensInNewTab": false,
+          "className": "cr-ref-mega-lenses-11"
         },
         "innerBlocks": [
           {
@@ -264,7 +276,8 @@
                 "bottom": "1px",
                 "left": "1px"
               },
-              "borderColour": "border"
+              "borderColour": "border",
+              "className": "cr-ref-mega-lenses-12"
             },
             "innerBlocks": [
               {
@@ -279,7 +292,8 @@
                   "fontWeight": "400",
                   "letterSpacing": 0.18,
                   "letterSpacingUnit": "em",
-                  "textTransform": "uppercase"
+                  "textTransform": "uppercase",
+                  "className": "cr-ref-mega-lenses-13"
                 }
               },
               {
@@ -303,7 +317,8 @@
                       "top": "0",
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-lenses-14"
                 }
               },
               {
@@ -320,7 +335,8 @@
                       "top": "0",
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-lenses-15"
                 }
               }
             ]
@@ -331,7 +347,8 @@
         "name": "sgs/mega-group",
         "attributes": {
           "url": "/prescription-lenses/",
-          "opensInNewTab": false
+          "opensInNewTab": false,
+          "className": "cr-ref-mega-lenses-16"
         },
         "innerBlocks": [
           {
@@ -362,7 +379,8 @@
                 "bottom": "1px",
                 "left": "1px"
               },
-              "borderColour": "border"
+              "borderColour": "border",
+              "className": "cr-ref-mega-lenses-17"
             },
             "innerBlocks": [
               {
@@ -377,7 +395,8 @@
                   "fontWeight": "400",
                   "letterSpacing": 0.18,
                   "letterSpacingUnit": "em",
-                  "textTransform": "uppercase"
+                  "textTransform": "uppercase",
+                  "className": "cr-ref-mega-lenses-18"
                 }
               },
               {
@@ -401,7 +420,8 @@
                       "top": "0",
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-lenses-19"
                 }
               },
               {
@@ -418,7 +438,8 @@
                       "top": "0",
                       "bottom": "0"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-lenses-20"
                 }
               }
             ]

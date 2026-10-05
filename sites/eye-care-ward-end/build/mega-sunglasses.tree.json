@@ -30,7 +30,8 @@
       },
       "borderColour": "border",
       "shadow": "0px 24px 48px",
-      "shadowColour": "text 12%"
+      "shadowColour": "text 12%",
+      "className": "cr-ref-mega-sunglasses-0"
     },
     "innerBlocks": [
       {
@@ -41,7 +42,8 @@
           },
           "sgsChildWidth": {
             "desktop": "31.1%"
-          }
+          },
+          "className": "cr-ref-mega-sunglasses-1"
         },
         "innerBlocks": [
           {
@@ -52,7 +54,8 @@
               "flexDirection": "column",
               "gap": {
                 "desktop": "0px"
-              }
+              },
+              "className": "cr-ref-mega-sunglasses-2"
             },
             "innerBlocks": [
               {
@@ -81,7 +84,8 @@
                       "top": "0px",
                       "bottom": "16px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-sunglasses-3"
                 }
               },
               {
@@ -97,7 +101,8 @@
                   },
                   "gap": {
                     "desktop": "4px 20px"
-                  }
+                  },
+                  "className": "cr-ref-mega-sunglasses-4"
                 },
                 "innerBlocks": [
                   {
@@ -134,7 +139,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-5"
                     }
                   },
                   {
@@ -171,7 +177,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-6"
                     }
                   },
                   {
@@ -208,7 +215,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-7"
                     }
                   },
                   {
@@ -245,7 +253,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-8"
                     }
                   },
                   {
@@ -282,7 +291,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-9"
                     }
                   },
                   {
@@ -319,7 +329,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-10"
                     }
                   },
                   {
@@ -356,7 +367,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-11"
                     }
                   },
                   {
@@ -393,7 +405,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-12"
                     }
                   },
                   {
@@ -430,7 +443,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-13"
                     }
                   },
                   {
@@ -467,7 +481,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-14"
                     }
                   },
                   {
@@ -504,7 +519,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-15"
                     }
                   },
                   {
@@ -541,7 +557,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-16"
                     }
                   }
                 ]
@@ -555,7 +572,8 @@
         "attributes": {
           "sgsChildSizing": {
             "desktop": "fill"
-          }
+          },
+          "className": "cr-ref-mega-sunglasses-17"
         },
         "innerBlocks": [
           {
@@ -566,7 +584,8 @@
               "flexDirection": "column",
               "gap": {
                 "desktop": "0px"
-              }
+              },
+              "className": "cr-ref-mega-sunglasses-18"
             },
             "innerBlocks": [
               {
@@ -595,7 +614,8 @@
                       "top": "0px",
                       "bottom": "16px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-sunglasses-19"
                 }
               },
               {
@@ -606,7 +626,8 @@
                   "flexDirection": "column",
                   "gap": {
                     "desktop": "4px"
-                  }
+                  },
+                  "className": "cr-ref-mega-sunglasses-20"
                 },
                 "innerBlocks": [
                   {
@@ -643,7 +664,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-21"
                     }
                   },
                   {
@@ -680,7 +702,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-22"
                     }
                   },
                   {
@@ -717,7 +740,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-23"
                     }
                   },
                   {
@@ -754,7 +778,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-24"
                     }
                   },
                   {
@@ -791,7 +816,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-25"
                     }
                   },
                   {
@@ -828,7 +854,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-sunglasses-26"
                     }
                   }
                 ]
@@ -846,7 +873,8 @@
           },
           "sgsChildWidth": {
             "desktop": "34%"
-          }
+          },
+          "className": "cr-ref-mega-sunglasses-27"
         },
         "innerBlocks": [
           {
@@ -887,7 +915,8 @@
               },
               "gap": {
                 "desktop": "0px"
-              }
+              },
+              "className": "cr-ref-mega-sunglasses-28"
             },
             "innerBlocks": [
               {
@@ -911,7 +940,8 @@
                       "top": "0px",
                       "bottom": "0px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-sunglasses-29"
                 }
               },
               {
@@ -932,7 +962,8 @@
                       "top": "4px",
                       "bottom": "0px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-sunglasses-30"
                 }
               }
             ]

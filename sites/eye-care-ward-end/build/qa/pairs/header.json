@@ -1,0 +1,111 @@
+{
+ "surface": "header",
+ "when": "2026-10-05T10:08:22.051Z",
+ "width": 1440,
+ "recheck": [
+  375,
+  768
+ ],
+ "lifted": [
+  "header",
+  ".sgs-site-header"
+ ],
+ "blocks": 13,
+ "kept": 3,
+ "coveredByHand": [
+  "cr-ref-header-3",
+  "cr-ref-header-8",
+  "cr-ref-header-13"
+ ],
+ "retargeted": {
+  "header-bag": ".cr-ref-header-13"
+ },
+ "left": [
+  {
+   "ref": "cr-ref-header-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
+   "why": "the draft element also holds 5 word(s) that belong outside this block",
+   "words": 4,
+   "matched": 4,
+   "first": "about",
+   "last": "help"
+  },
+  {
+   "ref": "cr-ref-header-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
+   "why": "its draft element at 375 does not hold the same words",
+   "words": 9,
+   "matched": 9,
+   "first": "0121",
+   "last": "0"
+  },
+  {
+   "ref": "cr-ref-header-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3) > a:nth-child(1) > span:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(0121|729|8233)($|[^\\p{L}\\p{N}])"
+   },
+   "why": "its draft element at 375 does not hold the same words",
+   "words": 3,
+   "matched": 3,
+   "first": "0121",
+   "last": "8233"
+  },
+  {
+   "ref": "cr-ref-header-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words",
+   "words": 17,
+   "matched": 17,
+   "first": "sunglasses",
+   "last": "0"
+  },
+  {
+   "ref": "cr-ref-header-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > nav:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words",
+   "words": 5,
+   "matched": 5,
+   "first": "sunglasses",
+   "last": "soon"
+  },
+  {
+   "ref": "cr-ref-header-0",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-header-6",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  }
+ ],
+ "keptPairs": [
+  {
+   "ref": "cr-ref-header-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "eye",
+   "last": "birmingham"
+  },
+  {
+   "ref": "cr-ref-header-5",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "eye",
+   "last": "birmingham"
+  },
+  {
+   "ref": "cr-ref-header-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2) > span:nth-child(2)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "birmingham",
+   "last": "birmingham"
+  }
+ ]
+}

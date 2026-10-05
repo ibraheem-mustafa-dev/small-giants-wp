@@ -3,7 +3,8 @@
     "name": "core/template-part",
     "attributes": {
       "slug": "header",
-      "tagName": "header"
+      "tagName": "header",
+      "className": "cr-ref-shop-0"
     }
   },
   {
@@ -13,7 +14,8 @@
       "anchor": "main",
       "contentWidth": {
         "desktop": "full"
-      }
+      },
+      "className": "cr-ref-shop-1"
     },
     "innerBlocks": [
       {
@@ -35,14 +37,15 @@
               "bottom": "60px",
               "left": "20px"
             }
-          }
+          },
+          "className": "cr-ref-shop-2"
         },
         "innerBlocks": [
           {
             "name": "sgs/container",
             "attributes": {
               "tagName": "div",
-              "className": "sgs-shop-toolbar",
+              "className": "sgs-shop-toolbar cr-ref-shop-3",
               "layout": "flex",
               "justifyContent": "space-between",
               "alignItems": "flex-end",
@@ -74,7 +77,8 @@
                   "tagName": "div",
                   "contentWidth": {
                     "desktop": "full"
-                  }
+                  },
+                  "className": "cr-ref-shop-4"
                 },
                 "innerBlocks": [
                   {
@@ -95,7 +99,8 @@
                         "desktop": {
                           "bottom": "10px"
                         }
-                      }
+                      },
+                      "className": "cr-ref-shop-5"
                     }
                   },
                   {
@@ -111,7 +116,8 @@
                           "lineHeight": "1"
                         }
                       },
-                      "fontFamily": "heading"
+                      "fontFamily": "heading",
+                      "className": "cr-ref-shop-6"
                     }
                   }
                 ]
@@ -127,7 +133,8 @@
                   },
                   "contentWidth": {
                     "desktop": "full"
-                  }
+                  },
+                  "className": "cr-ref-shop-7"
                 },
                 "innerBlocks": [
                   {
@@ -138,12 +145,15 @@
                         "typography": {
                           "fontSize": "13.5px"
                         }
-                      }
+                      },
+                      "className": "cr-ref-shop-8"
                     }
                   },
                   {
                     "name": "woocommerce/catalog-sorting",
-                    "attributes": {}
+                    "attributes": {
+                      "className": "cr-ref-shop-9"
+                    }
                   }
                 ]
               }
@@ -153,7 +163,7 @@
             "name": "sgs/container",
             "attributes": {
               "tagName": "div",
-              "className": "sgs-shop-layout",
+              "className": "sgs-shop-layout cr-ref-shop-10",
               "contentWidth": {
                 "desktop": "full"
               },
@@ -169,7 +179,7 @@
                 "attributes": {
                   "tagName": "aside",
                   "anchor": "sgs-shop-filters",
-                  "className": "sgs-shop-filters"
+                  "className": "sgs-shop-filters cr-ref-shop-11"
                 },
                 "innerBlocks": [
                   {
@@ -182,26 +192,33 @@
                             "bottom": "0"
                           }
                         }
-                      }
+                      },
+                      "className": "cr-ref-shop-12"
                     },
                     "innerBlocks": [
                       {
                         "name": "woocommerce/product-filter-active",
-                        "attributes": {},
+                        "attributes": {
+                          "className": "cr-ref-shop-13"
+                        },
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-removable-chips",
-                            "attributes": {}
+                            "attributes": {
+                              "className": "cr-ref-shop-14"
+                            }
                           },
                           {
                             "name": "woocommerce/product-filter-clear-button",
-                            "attributes": {},
+                            "attributes": {
+                              "className": "cr-ref-shop-15"
+                            },
                             "innerBlocks": [
                               {
                                 "name": "sgs/button",
                                 "attributes": {
                                   "label": "Clear all",
-                                  "className": "wp-block-button__link"
+                                  "className": "wp-block-button__link cr-ref-shop-16"
                                 }
                               }
                             ]
@@ -213,7 +230,7 @@
                         "attributes": {
                           "content": "Gender",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-segmented",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-segmented cr-ref-shop-17",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -233,12 +250,15 @@
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-chips",
                           "showCounts": true,
-                          "sortOrder": "menu_order-asc"
+                          "sortOrder": "menu_order-asc",
+                          "className": "cr-ref-shop-18"
                         },
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-chips",
-                            "attributes": {}
+                            "attributes": {
+                              "className": "cr-ref-shop-19"
+                            }
                           }
                         ]
                       },
@@ -247,7 +267,7 @@
                         "attributes": {
                           "content": "Size",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading",
+                          "className": "sgs-shop-filters__group-heading cr-ref-shop-20",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -267,12 +287,15 @@
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-chips",
                           "showCounts": true,
-                          "sortOrder": "menu_order-asc"
+                          "sortOrder": "menu_order-asc",
+                          "className": "cr-ref-shop-21"
                         },
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-chips",
-                            "attributes": {}
+                            "attributes": {
+                              "className": "cr-ref-shop-22"
+                            }
                           }
                         ]
                       },
@@ -281,7 +304,7 @@
                         "attributes": {
                           "content": "Colour",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-swatches",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-swatches cr-ref-shop-23",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -302,12 +325,15 @@
                           "displayStyle": "woocommerce/product-filter-chips",
                           "showCounts": true,
                           "sortOrder": "menu_order-asc",
-                          "hideEmpty": false
+                          "hideEmpty": false,
+                          "className": "cr-ref-shop-24"
                         },
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-chips",
-                            "attributes": {}
+                            "attributes": {
+                              "className": "cr-ref-shop-25"
+                            }
                           }
                         ]
                       },
@@ -316,7 +342,7 @@
                         "attributes": {
                           "content": "Price",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading sgs-filter-open",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open cr-ref-shop-26",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -331,12 +357,15 @@
                       },
                       {
                         "name": "woocommerce/product-filter-price",
-                        "attributes": {},
+                        "attributes": {
+                          "className": "cr-ref-shop-27"
+                        },
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-price-slider",
                             "attributes": {
-                              "showInputFields": false
+                              "showInputFields": false,
+                              "className": "cr-ref-shop-28"
                             }
                           }
                         ]
@@ -346,7 +375,7 @@
                         "attributes": {
                           "content": "Brand",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-count",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-count cr-ref-shop-29",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -364,7 +393,8 @@
                         "attributes": {
                           "taxonomy": "product_brand",
                           "displayStyle": "woocommerce/product-filter-checkbox-list",
-                          "showCounts": true
+                          "showCounts": true,
+                          "className": "cr-ref-shop-30"
                         },
                         "innerBlocks": [
                           {
@@ -372,12 +402,15 @@
                             "attributes": {
                               "taxonomy": "product_brand",
                               "placeholder": "Search brands",
-                              "threshold": 2
+                              "threshold": 2,
+                              "className": "cr-ref-shop-31"
                             }
                           },
                           {
                             "name": "woocommerce/product-filter-checkbox-list",
-                            "attributes": {}
+                            "attributes": {
+                              "className": "cr-ref-shop-32"
+                            }
                           }
                         ]
                       },
@@ -386,7 +419,7 @@
                         "attributes": {
                           "content": "Style",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-count",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-count cr-ref-shop-33",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -406,12 +439,15 @@
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-chips",
                           "showCounts": false,
-                          "sortOrder": "menu_order-asc"
+                          "sortOrder": "menu_order-asc",
+                          "className": "cr-ref-shop-34"
                         },
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-chips",
-                            "attributes": {}
+                            "attributes": {
+                              "className": "cr-ref-shop-35"
+                            }
                           }
                         ]
                       },
@@ -420,7 +456,7 @@
                         "attributes": {
                           "content": "Material",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading",
+                          "className": "sgs-shop-filters__group-heading cr-ref-shop-36",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -439,12 +475,15 @@
                           "attributeId": 4,
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-checkbox-list",
-                          "showCounts": true
+                          "showCounts": true,
+                          "className": "cr-ref-shop-37"
                         },
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-checkbox-list",
-                            "attributes": {}
+                            "attributes": {
+                              "className": "cr-ref-shop-38"
+                            }
                           }
                         ]
                       },
@@ -453,7 +492,7 @@
                         "attributes": {
                           "content": "Frame type",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading",
+                          "className": "sgs-shop-filters__group-heading cr-ref-shop-39",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -472,12 +511,15 @@
                           "attributeId": 5,
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-checkbox-list",
-                          "showCounts": true
+                          "showCounts": true,
+                          "className": "cr-ref-shop-40"
                         },
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-checkbox-list",
-                            "attributes": {}
+                            "attributes": {
+                              "className": "cr-ref-shop-41"
+                            }
                           }
                         ]
                       },
@@ -486,7 +528,7 @@
                         "attributes": {
                           "content": "Hinge",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading",
+                          "className": "sgs-shop-filters__group-heading cr-ref-shop-42",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -505,12 +547,15 @@
                           "attributeId": 6,
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-checkbox-list",
-                          "showCounts": true
+                          "showCounts": true,
+                          "className": "cr-ref-shop-43"
                         },
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-checkbox-list",
-                            "attributes": {}
+                            "attributes": {
+                              "className": "cr-ref-shop-44"
+                            }
                           }
                         ]
                       },
@@ -519,7 +564,7 @@
                         "attributes": {
                           "content": "Nose pads",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading",
+                          "className": "sgs-shop-filters__group-heading cr-ref-shop-45",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -538,12 +583,15 @@
                           "attributeId": 7,
                           "queryType": "or",
                           "displayStyle": "woocommerce/product-filter-checkbox-list",
-                          "showCounts": true
+                          "showCounts": true,
+                          "className": "cr-ref-shop-46"
                         },
                         "innerBlocks": [
                           {
                             "name": "woocommerce/product-filter-checkbox-list",
-                            "attributes": {}
+                            "attributes": {
+                              "className": "cr-ref-shop-47"
+                            }
                           }
                         ]
                       }
@@ -568,12 +616,15 @@
                   },
                   "queryContextIncludes": [
                     "collection"
-                  ]
+                  ],
+                  "className": "cr-ref-shop-48"
                 },
                 "innerBlocks": [
                   {
                     "name": "woocommerce/product-template",
-                    "attributes": {},
+                    "attributes": {
+                      "className": "cr-ref-shop-49"
+                    },
                     "innerBlocks": [
                       {
                         "name": "sgs/product-card",
@@ -674,7 +725,8 @@
                             "right": "14px",
                             "bottom": "12px",
                             "left": "14px"
-                          }
+                          },
+                          "className": "cr-ref-shop-50"
                         }
                       }
                     ]
@@ -685,32 +737,42 @@
                       "layout": {
                         "type": "flex",
                         "justifyContent": "center"
-                      }
+                      },
+                      "className": "cr-ref-shop-51"
                     },
                     "innerBlocks": [
                       {
                         "name": "core/query-pagination-previous",
-                        "attributes": {}
+                        "attributes": {
+                          "className": "cr-ref-shop-52"
+                        }
                       },
                       {
                         "name": "core/query-pagination-numbers",
-                        "attributes": {}
+                        "attributes": {
+                          "className": "cr-ref-shop-53"
+                        }
                       },
                       {
                         "name": "core/query-pagination-next",
-                        "attributes": {}
+                        "attributes": {
+                          "className": "cr-ref-shop-54"
+                        }
                       }
                     ]
                   },
                   {
                     "name": "woocommerce/product-collection-no-results",
-                    "attributes": {},
+                    "attributes": {
+                      "className": "cr-ref-shop-55"
+                    },
                     "innerBlocks": [
                       {
                         "name": "sgs/text",
                         "attributes": {
                           "text": "Nothing matches all of that. Loosen a filter, or message me and I'll see what I can find.",
-                          "textAlign": "center"
+                          "textAlign": "center",
+                          "className": "cr-ref-shop-56"
                         }
                       }
                     ]
@@ -728,7 +790,8 @@
                         "desktop": {
                           "top": "28px"
                         }
-                      }
+                      },
+                      "className": "cr-ref-shop-57"
                     }
                   }
                 ]
@@ -743,7 +806,8 @@
     "name": "core/template-part",
     "attributes": {
       "slug": "footer",
-      "tagName": "footer"
+      "tagName": "footer",
+      "className": "cr-ref-shop-58"
     }
   }
 ]

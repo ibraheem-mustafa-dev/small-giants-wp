@@ -1,0 +1,81 @@
+{
+ "surface": "mobile-menu",
+ "when": "2026-10-05T10:07:56.248Z",
+ "state": "drawer-open",
+ "width": 375,
+ "recheck": [
+  768
+ ],
+ "lifted": [],
+ "blocks": 16,
+ "kept": 0,
+ "coveredByHand": [],
+ "retargeted": {},
+ "left": [
+  {
+   "ref": "cr-ref-mobile-menu-0",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-1",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-2",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-3",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-4",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-5",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-6",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-7",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-8",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-9",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-10",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-11",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-12",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-13",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-14",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-15",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  }
+ ],
+ "keptPairs": []
+}

@@ -1,0 +1,220 @@
+{
+ "surface": "mega-lenses",
+ "when": "2026-10-05T10:00:28.502Z",
+ "state": "mega-lenses",
+ "width": 1440,
+ "recheck": [],
+ "blocks": 21,
+ "kept": 19,
+ "coveredByHand": [
+  "cr-ref-mega-lenses-1",
+  "cr-ref-mega-lenses-16"
+ ],
+ "retargeted": {},
+ "left": [],
+ "keptPairs": [
+  {
+   "ref": "cr-ref-mega-lenses-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(single|vision)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "single",
+   "last": "vision"
+  },
+  {
+   "ref": "cr-ref-mega-lenses-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(1)",
+   "why": null,
+   "words": 12,
+   "matched": 12,
+   "first": "single",
+   "last": "frame."
+  },
+  {
+   "ref": "cr-ref-mega-lenses-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 43,
+   "matched": 43,
+   "first": "single",
+   "last": "minute."
+  },
+  {
+   "ref": "cr-ref-mega-lenses-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(1) > span:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(from|£59)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "from",
+   "last": "£59"
+  },
+  {
+   "ref": "cr-ref-mega-lenses-5",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(1) > span:nth-child(3) > span:nth-child(1)",
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "distance",
+   "last": "frame."
+  },
+  {
+   "ref": "cr-ref-mega-lenses-8",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(2) > span:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(varifocal)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "varifocal",
+   "last": "varifocal"
+  },
+  {
+   "ref": "cr-ref-mega-lenses-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(2)",
+   "why": null,
+   "words": 12,
+   "matched": 12,
+   "first": "varifocal",
+   "last": "line."
+  },
+  {
+   "ref": "cr-ref-mega-lenses-6",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(2)",
+   "why": null,
+   "words": 12,
+   "matched": 12,
+   "first": "varifocal",
+   "last": "line."
+  },
+  {
+   "ref": "cr-ref-mega-lenses-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(from|£129)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "from",
+   "last": "£129"
+  },
+  {
+   "ref": "cr-ref-mega-lenses-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(2) > span:nth-child(3) > span:nth-child(1)",
+   "why": null,
+   "words": 9,
+   "matched": 9,
+   "first": "near",
+   "last": "line."
+  },
+  {
+   "ref": "cr-ref-mega-lenses-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3) > span:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(polarised)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "polarised",
+   "last": "polarised"
+  },
+  {
+   "ref": "cr-ref-mega-lenses-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3)",
+   "why": null,
+   "words": 9,
+   "matched": 9,
+   "first": "polarised",
+   "last": "windscreens."
+  },
+  {
+   "ref": "cr-ref-mega-lenses-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3)",
+   "why": null,
+   "words": 9,
+   "matched": 9,
+   "first": "polarised",
+   "last": "windscreens."
+  },
+  {
+   "ref": "cr-ref-mega-lenses-14",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3) > span:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(\\+£40)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "+£40",
+   "last": "+£40"
+  },
+  {
+   "ref": "cr-ref-mega-lenses-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3) > span:nth-child(3) > span:nth-child(1)",
+   "why": null,
+   "words": 7,
+   "matched": 7,
+   "first": "kills",
+   "last": "windscreens."
+  },
+  {
+   "ref": "cr-ref-mega-lenses-18",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(4) > span:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(light-reactive)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "light-reactive",
+   "last": "light-reactive"
+  },
+  {
+   "ref": "cr-ref-mega-lenses-17",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(4)",
+   "why": null,
+   "words": 10,
+   "matched": 10,
+   "first": "light-reactive",
+   "last": "minute."
+  },
+  {
+   "ref": "cr-ref-mega-lenses-19",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(4) > span:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(\\+£70)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "+£70",
+   "last": "+£70"
+  },
+  {
+   "ref": "cr-ref-mega-lenses-20",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(4) > span:nth-child(3) > span:nth-child(1)",
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "clear",
+   "last": "minute."
+  }
+ ]
+}

@@ -1,0 +1,494 @@
+{
+ "surface": "home",
+ "when": "2026-10-05T09:43:23.879Z",
+ "width": 1440,
+ "recheck": [
+  375,
+  768
+ ],
+ "blocks": 79,
+ "kept": 35,
+ "coveredByHand": [
+  "cr-ref-home-1",
+  "cr-ref-home-2",
+  "cr-ref-home-3",
+  "cr-ref-home-5",
+  "cr-ref-home-6",
+  "cr-ref-home-12",
+  "cr-ref-home-13",
+  "cr-ref-home-14",
+  "cr-ref-home-27",
+  "cr-ref-home-28",
+  "cr-ref-home-29",
+  "cr-ref-home-50",
+  "cr-ref-home-51",
+  "cr-ref-home-52",
+  "cr-ref-home-56",
+  "cr-ref-home-57",
+  "cr-ref-home-25",
+  "cr-ref-home-55",
+  "cr-ref-home-61",
+  "cr-ref-home-71",
+  "cr-ref-home-62",
+  "cr-ref-home-63",
+  "cr-ref-home-64",
+  "cr-ref-home-69",
+  "cr-ref-home-72",
+  "cr-ref-home-73",
+  "cr-ref-home-74",
+  "cr-ref-home-75",
+  "cr-ref-home-77",
+  "cr-ref-home-78"
+ ],
+ "retargeted": {},
+ "left": [
+  {
+   "ref": "cr-ref-home-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3)",
+   "why": "only 76% of its words matched the draft",
+   "words": 101,
+   "matched": 77,
+   "first": "moving",
+   "last": "£75"
+  },
+  {
+   "ref": "cr-ref-home-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": "only 77% of its words matched the draft",
+   "words": 13,
+   "matched": 10,
+   "first": "photo",
+   "last": "£171"
+  },
+  {
+   "ref": "cr-ref-home-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2)",
+   "why": "only 74% of its words matched the draft",
+   "words": 93,
+   "matched": 69,
+   "first": "photo",
+   "last": "£75"
+  },
+  {
+   "ref": "cr-ref-home-17",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)",
+   "why": "only 70% of its words matched the draft",
+   "words": 10,
+   "matched": 7,
+   "first": "gucci",
+   "last": "£340"
+  },
+  {
+   "ref": "cr-ref-home-18",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div:nth-child(1)",
+   "why": "only 70% of its words matched the draft",
+   "words": 10,
+   "matched": 7,
+   "first": "oakley",
+   "last": "£146"
+  },
+  {
+   "ref": "cr-ref-home-19",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(4) > div:nth-child(1) > div:nth-child(1)",
+   "why": "only 75% of its words matched the draft",
+   "words": 12,
+   "matched": 9,
+   "first": "photo",
+   "last": "£296"
+  },
+  {
+   "ref": "cr-ref-home-20",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(5) > div:nth-child(1) > div:nth-child(1)",
+   "why": "only 73% of its words matched the draft",
+   "words": 11,
+   "matched": 8,
+   "first": "ray-ban",
+   "last": "+2"
+  },
+  {
+   "ref": "cr-ref-home-21",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(6) > div:nth-child(1) > div:nth-child(1)",
+   "why": "only 70% of its words matched the draft",
+   "words": 10,
+   "matched": 7,
+   "first": "ray-ban",
+   "last": "£164"
+  },
+  {
+   "ref": "cr-ref-home-22",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(7) > div:nth-child(1) > div:nth-child(1)",
+   "why": "only 77% of its words matched the draft",
+   "words": 13,
+   "matched": 10,
+   "first": "photo",
+   "last": "£246"
+  },
+  {
+   "ref": "cr-ref-home-23",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(8) > div:nth-child(1) > div:nth-child(1)",
+   "why": "only 79% of its words matched the draft",
+   "words": 14,
+   "matched": 11,
+   "first": "photo",
+   "last": "£75"
+  },
+  {
+   "ref": "cr-ref-home-66",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(7) > div:nth-child(1) > div:nth-child(2)",
+   "why": "the draft element also holds 65 word(s) that belong outside this block",
+   "words": 4,
+   "matched": 4,
+   "first": "how",
+   "last": "here"
+  },
+  {
+   "ref": "cr-ref-home-7",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-home-8",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-home-60",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
+  }
+ ],
+ "keptPairs": [
+  {
+   "ref": "cr-ref-home-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(1) > div:nth-child(4)",
+   "why": null,
+   "words": 51,
+   "matched": 51,
+   "first": "40",
+   "last": "prescription"
+  },
+  {
+   "ref": "cr-ref-home-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(1) > div:nth-child(4) > div:nth-child(4)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "shop",
+   "last": "prescription"
+  },
+  {
+   "ref": "cr-ref-home-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 6,
+   "matched": 6,
+   "first": "moving",
+   "last": "sellers"
+  },
+  {
+   "ref": "cr-ref-home-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "moving",
+   "last": "everything"
+  },
+  {
+   "ref": "cr-ref-home-26",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 15,
+   "matched": 15,
+   "first": "why",
+   "last": "code."
+  },
+  {
+   "ref": "cr-ref-home-24",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4)",
+   "why": null,
+   "words": 195,
+   "matched": 195,
+   "first": "why",
+   "last": "£75."
+  },
+  {
+   "ref": "cr-ref-home-32",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(01)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "01",
+   "last": "01"
+  },
+  {
+   "ref": "cr-ref-home-31",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 35,
+   "matched": 35,
+   "first": "01",
+   "last": "sale."
+  },
+  {
+   "ref": "cr-ref-home-30",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2)",
+   "why": null,
+   "words": 126,
+   "matched": 126,
+   "first": "01",
+   "last": "£75."
+  },
+  {
+   "ref": "cr-ref-home-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > h3:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 9,
+   "matched": 9,
+   "first": "below",
+   "last": "much"
+  },
+  {
+   "ref": "cr-ref-home-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > p:nth-child(3) > span:nth-child(1)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "the",
+   "last": "sale."
+  },
+  {
+   "ref": "cr-ref-home-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(02)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "02",
+   "last": "02"
+  },
+  {
+   "ref": "cr-ref-home-35",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2)",
+   "why": null,
+   "words": 41,
+   "matched": 41,
+   "first": "02",
+   "last": "made."
+  },
+  {
+   "ref": "cr-ref-home-37",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > h3:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "i",
+   "last": "myself"
+  },
+  {
+   "ref": "cr-ref-home-38",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > p:nth-child(3) > span:nth-child(1)",
+   "why": null,
+   "words": 35,
+   "matched": 35,
+   "first": "your",
+   "last": "made."
+  },
+  {
+   "ref": "cr-ref-home-40",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(03)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "03",
+   "last": "03"
+  },
+  {
+   "ref": "cr-ref-home-39",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "03",
+   "last": "penny."
+  },
+  {
+   "ref": "cr-ref-home-41",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > h3:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "you",
+   "last": "me"
+  },
+  {
+   "ref": "cr-ref-home-42",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > p:nth-child(3) > span:nth-child(1)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "one",
+   "last": "penny."
+  },
+  {
+   "ref": "cr-ref-home-44",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(4) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(04)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "04",
+   "last": "04"
+  },
+  {
+   "ref": "cr-ref-home-43",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(4)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "04",
+   "last": "£75."
+  },
+  {
+   "ref": "cr-ref-home-45",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(4) > h3:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 6,
+   "matched": 6,
+   "first": "collect",
+   "last": "tracked"
+  },
+  {
+   "ref": "cr-ref-home-46",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(4) > p:nth-child(3) > span:nth-child(1)",
+   "why": null,
+   "words": 18,
+   "matched": 18,
+   "first": "come",
+   "last": "£75."
+  },
+  {
+   "ref": "cr-ref-home-49",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 9,
+   "matched": 9,
+   "first": "not",
+   "last": "shape"
+  },
+  {
+   "ref": "cr-ref-home-48",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(1)",
+   "why": null,
+   "words": 12,
+   "matched": 12,
+   "first": "not",
+   "last": "styles"
+  },
+  {
+   "ref": "cr-ref-home-47",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5)",
+   "why": null,
+   "words": 24,
+   "matched": 24,
+   "first": "not",
+   "last": "oversized"
+  },
+  {
+   "ref": "cr-ref-home-53",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2)",
+   "why": null,
+   "words": 12,
+   "matched": 12,
+   "first": "photo",
+   "last": "oversized"
+  },
+  {
+   "ref": "cr-ref-home-54",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(6)",
+   "why": null,
+   "words": 252,
+   "matched": 252,
+   "first": "from",
+   "last": "comment."
+  },
+  {
+   "ref": "cr-ref-home-58",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(6) > div:nth-child(1) > div:nth-child(2)",
+   "why": null,
+   "words": 246,
+   "matched": 246,
+   "first": "google",
+   "last": "comment."
+  },
+  {
+   "ref": "cr-ref-home-59",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(7) > div:nth-child(1) > div:nth-child(2)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(prescription|sunglasses|any|pair|here,|made|to|your|prescription\\.|three|questions|with|pictures,|a|price|that|updates|as|you|go,|and|can|send|whenever|suits|—|including|after|you've|ordered\\.|single|vision|from|£59\\.|1|pick|frame,|then|\"add|my|prescription\"|2|tell|me|what|they're|for,|how|thin,|finish|3|now,|or|later|no|rush|lenses|work|here)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 69,
+   "matched": 69,
+   "first": "prescription",
+   "last": "here"
+  },
+  {
+   "ref": "cr-ref-home-65",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(7) > div:nth-child(1) > div:nth-child(2) > ol:nth-child(4)",
+   "why": null,
+   "words": 28,
+   "matched": 28,
+   "first": "1",
+   "last": "rush"
+  },
+  {
+   "ref": "cr-ref-home-68",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(8) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 18,
+   "matched": 18,
+   "first": "photo",
+   "last": "needed."
+  },
+  {
+   "ref": "cr-ref-home-67",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(8)",
+   "why": null,
+   "words": 106,
+   "matched": 106,
+   "first": "photo",
+   "last": "qualifications"
+  },
+  {
+   "ref": "cr-ref-home-70",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(8) > div:nth-child(1) > div:nth-child(1) > span:nth-child(2)",
+   "why": null,
+   "words": 14,
+   "matched": 14,
+   "first": "the",
+   "last": "needed."
+  },
+  {
+   "ref": "cr-ref-home-76",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(8) > div:nth-child(1) > div:nth-child(2) > div:nth-child(5)",
+   "why": null,
+   "words": 6,
+   "matched": 6,
+   "first": "message",
+   "last": "qualifications"
+  }
+ ]
+}

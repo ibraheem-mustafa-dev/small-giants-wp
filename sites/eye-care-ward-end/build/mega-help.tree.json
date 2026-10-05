@@ -30,12 +30,15 @@
       },
       "borderColour": "border",
       "shadow": "0px 24px 48px",
-      "shadowColour": "text 12%"
+      "shadowColour": "text 12%",
+      "className": "cr-ref-mega-help-0"
     },
     "innerBlocks": [
       {
         "name": "sgs/mega-group",
-        "attributes": {},
+        "attributes": {
+          "className": "cr-ref-mega-help-1"
+        },
         "innerBlocks": [
           {
             "name": "sgs/container",
@@ -45,7 +48,8 @@
               "flexDirection": "column",
               "gap": {
                 "desktop": "0px"
-              }
+              },
+              "className": "cr-ref-mega-help-2"
             },
             "innerBlocks": [
               {
@@ -74,7 +78,8 @@
                       "top": "0px",
                       "bottom": "14px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-help-3"
                 }
               },
               {
@@ -85,7 +90,8 @@
                   "flexDirection": "column",
                   "gap": {
                     "desktop": "4px"
-                  }
+                  },
+                  "className": "cr-ref-mega-help-4"
                 },
                 "innerBlocks": [
                   {
@@ -122,7 +128,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-help-5"
                     }
                   },
                   {
@@ -159,7 +166,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-help-6"
                     }
                   },
                   {
@@ -196,7 +204,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-help-7"
                     }
                   }
                 ]
@@ -207,7 +216,9 @@
       },
       {
         "name": "sgs/mega-group",
-        "attributes": {},
+        "attributes": {
+          "className": "cr-ref-mega-help-8"
+        },
         "innerBlocks": [
           {
             "name": "sgs/container",
@@ -217,7 +228,8 @@
               "flexDirection": "column",
               "gap": {
                 "desktop": "0px"
-              }
+              },
+              "className": "cr-ref-mega-help-9"
             },
             "innerBlocks": [
               {
@@ -246,7 +258,8 @@
                       "top": "0px",
                       "bottom": "14px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-help-10"
                 }
               },
               {
@@ -257,7 +270,8 @@
                   "flexDirection": "column",
                   "gap": {
                     "desktop": "4px"
-                  }
+                  },
+                  "className": "cr-ref-mega-help-11"
                 },
                 "innerBlocks": [
                   {
@@ -294,7 +308,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-help-12"
                     }
                   },
                   {
@@ -331,7 +346,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-help-13"
                     }
                   },
                   {
@@ -368,7 +384,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-help-14"
                     }
                   }
                 ]
@@ -379,7 +396,9 @@
       },
       {
         "name": "sgs/mega-group",
-        "attributes": {},
+        "attributes": {
+          "className": "cr-ref-mega-help-15"
+        },
         "innerBlocks": [
           {
             "name": "sgs/container",
@@ -389,7 +408,8 @@
               "flexDirection": "column",
               "gap": {
                 "desktop": "0px"
-              }
+              },
+              "className": "cr-ref-mega-help-16"
             },
             "innerBlocks": [
               {
@@ -418,7 +438,8 @@
                       "top": "0px",
                       "bottom": "14px"
                     }
-                  }
+                  },
+                  "className": "cr-ref-mega-help-17"
                 }
               },
               {
@@ -429,7 +450,8 @@
                   "flexDirection": "column",
                   "gap": {
                     "desktop": "4px"
-                  }
+                  },
+                  "className": "cr-ref-mega-help-18"
                 },
                 "innerBlocks": [
                   {
@@ -466,7 +488,8 @@
                       },
                       "contentAlign": {
                         "desktop": "flex-start"
-                      }
+                      },
+                      "className": "cr-ref-mega-help-19"
                     }
                   },
                   {
@@ -504,7 +527,8 @@
                       "contentAlign": {
                         "desktop": "flex-start"
                       },
-                      "linkSource": "phone"
+                      "linkSource": "phone",
+                      "className": "cr-ref-mega-help-20"
                     }
                   },
                   {
@@ -543,7 +567,8 @@
                         "desktop": "flex-start"
                       },
                       "linkTarget": "_blank",
-                      "rel": "noopener"
+                      "rel": "noopener",
+                      "className": "cr-ref-mega-help-21"
                     }
                   }
                 ]
