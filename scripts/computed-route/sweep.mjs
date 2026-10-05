@@ -40,7 +40,14 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		process.exit( 2 );
 	}
 	const date = flag( '--date' ) || new Date().toISOString().slice( 0, 10 );
-	const { result, file } = sweep( surfacesFile, date, flag( '--out' ) );
+	let out;
+	try {
+		out = sweep( surfacesFile, date, flag( '--out' ) );
+	} catch ( e ) {
+		console.error( `[FAIL] sweep: ${ e.message }` );
+		process.exit( 1 );
+	}
+	const { result, file } = out;
 	const c = result.byClass;
 	console.log( `sweep ${ date }: ${ result.total } open issues (hardcode ${ c.hardcode }, missing ${ c.missing }, unresolved ${ c.unresolved }, derived ${ c.derived }) across ${ Object.keys( result.surfaces ).length } surfaces; unmeasured: ${ result.unmeasured.join( ', ' ) || 'none' }; ${ file }` );
 }

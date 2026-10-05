@@ -58,13 +58,18 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		console.error( 'usage: register-sweep.mjs bundle|merge --register <md> --sweep <json> --pairs <dir> --out <folder|file> [--verdicts <json> ...]' );
 		process.exit( 2 );
 	}
-	if ( 'bundle' === mode ) {
-		const { files, ungrouped } = bundle( one( '--register' ), one( '--sweep' ), one( '--pairs' ), one( '--out' ) );
-		files.forEach( ( f ) => console.log( `${ String( f.count ).padStart( 4 ) } items  ${ f.name }  ${ f.file }` ) );
-		console.log( ungrouped.length ? `ungrouped: ${ ungrouped.join( '; ' ) }` : 'ungrouped: none' );
-		process.exit( ungrouped.length ? 1 : 0 );
+	try {
+		if ( 'bundle' === mode ) {
+			const { files, ungrouped } = bundle( one( '--register' ), one( '--sweep' ), one( '--pairs' ), one( '--out' ) );
+			files.forEach( ( f ) => console.log( `${ String( f.count ).padStart( 4 ) } items  ${ f.name }  ${ f.file }` ) );
+			console.log( ungrouped.length ? `ungrouped: ${ ungrouped.join( '; ' ) }` : 'ungrouped: none' );
+			process.exit( ungrouped.length ? 1 : 0 );
+		}
+		const { problems, items } = merge( one( '--register' ), one( '--sweep' ), one( '--pairs' ), all( '--verdicts' ), one( '--out' ) );
+		console.log( problems.length ? `register-sweep merge failed:\n- ${ problems.join( '\n- ' ) }` : `register-sweep merge: ${ items } items, Sweep column written to ${ one( '--out' ) }` );
+		process.exit( problems.length ? 1 : 0 );
+	} catch ( e ) {
+		console.error( `[FAIL] register-sweep ${ mode }: ${ e.message }` );
+		process.exit( 1 );
 	}
-	const { problems, items } = merge( one( '--register' ), one( '--sweep' ), one( '--pairs' ), all( '--verdicts' ), one( '--out' ) );
-	console.log( problems.length ? `register-sweep merge failed:\n- ${ problems.join( '\n- ' ) }` : `register-sweep merge: ${ items } items, Sweep column written to ${ one( '--out' ) }` );
-	process.exit( problems.length ? 1 : 0 );
 }

@@ -93,10 +93,11 @@ export function runTriage( { client, surface, report: reportArg = null, out = nu
 	if ( ! s ) {
 		throw new Error( `no surface "${ surface }" in surfaces.json` );
 	}
-	const reportFile = path.resolve( reportArg || latestReport( path.join( buildDir, 'qa', 'solve' ), surface ) || '' );
-	if ( ! fs.existsSync( reportFile ) ) {
-		throw new Error( `no solve report for "${ surface }"` );
+	const found = reportArg || latestReport( path.join( buildDir, 'qa', 'solve' ), surface );
+	if ( ! found || ! fs.existsSync( found ) ) {
+		throw new Error( `no solve report for "${ surface }"${ reportArg ? ` at ${ reportArg }` : ' (run solve.mjs on it first)' }` );
 	}
+	const reportFile = path.resolve( found );
 	const walkFile = finalWalk( reportFile );
 	if ( ! walkFile ) {
 		throw new Error( `no round-N/report.json beside ${ reportFile }` );
@@ -150,6 +151,13 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		console.error( 'usage: node triage.mjs --client <slug> --surface <s> [--report <solve-report.json>] [--out <file>]' );
 		process.exit( 2 );
 	}
-	const { verdicts, counts, file } = runTriage( { client, surface, report: flag( '--report' ), out: flag( '--out' ) } );
+	let result;
+	try {
+		result = runTriage( { client, surface, report: flag( '--report' ), out: flag( '--out' ) } );
+	} catch ( e ) {
+		console.error( `[FAIL] triage ${ surface }: ${ e.message }` );
+		process.exit( 1 );
+	}
+	const { verdicts, counts, file } = result;
 	console.log( `triage ${ surface }: ${ verdicts.length } issues: W ${ counts.W }, F ${ counts.F }, T ${ counts.T }, U ${ counts.U } (box rows nothing explains); ${ file }` );
 }
