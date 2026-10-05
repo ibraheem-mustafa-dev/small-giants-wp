@@ -170,15 +170,12 @@ rounds-0 test, A3's `sweep.mjs` aggregator and tests (built against the existing
 `independent-check.mjs::accepted` ledger fix, and B4 divergence protection. Done when each has its MUST FAIL test,
 tests and lint pass, and it is pushed; the About measure-only proof of A-1 runs on the queue after Session 0 deploys.
 
-**Status (2026-10-05): every code unit built and pushed; only the host proof is left.** A1 `4f70dda13`; A-1 part 1
+**Status (2026-10-05): every code unit built, pushed and proven.** A1 `4f70dda13`; A-1 part 1
 (timings and `::before`/`::after` in `collect.mjs`, on main for Session 0's recalibration) `4f70dda13`, part 2 (DevTools
 reads) `f7d9003f5`; A5 `fde61f00d`; B4 `5c20163c2`; A3 `65935f7d7`. Each unit's MUST FAIL test was shown red against the
 old code. The route gate's command is unchanged (`node scripts/computed-route/lint.mjs --surfaces
 sites/eye-care-ward-end/build/surfaces.json`): it checks the ledger against the register named in
-`sites/eye-care-ward-end/build/qa/ledger.config.json` (`--register` overrides; a ledger with entries and no register fails). Left:
-the About measure-only run (`solve.mjs --rounds 0`, `SGS_HEADED=1`, on the serial queue after Session 0's tail): pass
-is 0 open distinct issues, else each new row explained (new rows are expected where the forced hover, pseudo layers,
-timings or declared widths now measure what was unread).
+`sites/eye-care-ward-end/build/qa/ledger.config.json` (`--register` overrides; a ledger with entries and no register fails). Proof: the About proof ran on 2026-10-05 against Session 0's local mirror (localhost:8081, About rebuilt from its tree, 0 invalid blocks) and the draft served from its source folder (identical to the hosted draft: 24 pairs, 1,393 values): 1 distinct open issue, real (below); the 12 About ledger decisions held; forced hover, pseudo layers, declared widths, row spacing and the settle change added no rows. It also found 8 false rows (the draft's CSS entrance timings against live's script-driven SGS entrances of the same durations), fixed in the walker (animation timings compare only where both sides use CSS keyframes). The open issue: S1's button hover timing does not reach any sgs/button (About's "Shop the range" transitions over 0.3s, S1 decided 0.25s): `button/render.php` always emits `.{uid}.sgs-button{transition:all {transitionDuration}ms}` and `block.json::attributes.transitionDuration` defaults to 300, so the block default beats `buttonPresets.default.hover-transition` (found with the new DevTools read: the per-instance rule wins). Framework repair for Session 0 or C: emit the per-instance transition only when the attribute is set (register S1).
 
 **Checked (2026-10-05).** /code-review high on the range found four Track P defects, fixed in `92bd82de0` (forced hover
 no longer repeats a rest difference as a hover row; ledger entries and accepts keep `::before`/`::after` rows apart;

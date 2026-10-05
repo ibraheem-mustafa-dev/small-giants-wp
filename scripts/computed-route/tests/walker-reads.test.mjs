@@ -143,3 +143,12 @@ test( 'MUST FAIL TO REPORT NOISE: flex alignment keywords that lay out the same 
 	assert.deepEqual( keys( comparePair( { text: false }, flex( 'normal', 'normal' ), flex( 'center', 'center' ), tol ) ), [ 'align-items', 'justify-content' ] );
 	assert.deepEqual( keys( comparePair( { text: false }, flex( 'normal', 'normal', 'grid' ), flex( 'start', 'stretch', 'grid' ), tol ) ), [ 'align-items', 'justify-content' ] );
 } );
+
+// About on the local mirror (2026-10-05): the draft's entrances are CSS keyframes (0.5s to 1s), live runs the same
+// durations from script (SGS entrance), which leaves animation-duration 0s; eight false rows.
+test( 'MUST FAIL TO COMPARE TECHNIQUES: animation timings compare only where both sides animate with CSS keyframes', () => {
+	const kf = '0%{opacity:0}100%{opacity:1}';
+	const side = ( dur, keyframes ) => snap( { 'animation-duration': dur }, { keyframes } );
+	assert.deepEqual( comparePair( { text: false, motion: false }, side( '0.5s', kf ), side( '0s', 'none' ), tol ), [] );
+	assert.deepEqual( keys( comparePair( { text: false, motion: false }, side( '0.5s', kf ), side( '0.8s', kf ), tol ) ), [ 'animation-duration' ], 'both keyframed: a different duration is a row' );
+} );

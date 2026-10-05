@@ -141,8 +141,11 @@ function partIrrelevant( p, d, l ) {
 // Motion timings that run nothing: an animation's while neither side animates (no keyframes), a transition's delay and
 // easing while neither side's transition takes any time.
 function timingIrrelevant( p, d, l ) {
+	// Animation timings compare only where both sides animate with CSS keyframes: a side animating from script (the
+	// Web Animations API, an SGS entrance) leaves no CSS timing, and the keyframes motion row already reports the
+	// difference in technique.
 	if ( /^animation-/.test( p ) ) {
-		return 'none' === ( d.keyframes ?? 'none' ) && 'none' === ( l.keyframes ?? 'none' );
+		return 'none' === ( d.keyframes ?? 'none' ) || 'none' === ( l.keyframes ?? 'none' );
 	}
 	const still = ( x ) => timingSet( x.styles[ 'transition-duration' ] ?? '0s' ) === '0s';
 	return /^transition-(delay|timing-function)$/.test( p ) && still( d ) && still( l );

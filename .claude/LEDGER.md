@@ -76,8 +76,9 @@ covers. Ledger: entries cite register items (`register`), checked by the route l
 keeps its margin; the 375px name-field drop is open under N45b); the independent check matches entries on `node`. New
 tools: `sweep.mjs` (A3), `register-sweep.mjs` (A4), `triage.mjs` (B1, reads the `includes/` helpers a render
 reaches). /code-review high fixed four defects; /qc passed 15 scenarios on local pages and real data (90/100, report
-in `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/`). Left: the About measure-only run with the new walker on
-the host queue after Session 0's tail. 
+in `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/`). Proven 2026-10-05 on Session 0's local mirror: About measure-only finds 1 open
+issue, real: S1's 0.25s button timing never reaches a button (`button/render.php` always writes `transition: all
+{transitionDuration}ms`, default 300; framework repair, register S1). 
 **Session 0 (2026-10-05, pushed through `4726700c1`; deployed to eye-care-test, sandybrown at `7f770ebb5`).** Done (plan
 `plans/2026-10-04-eye-care-sweep-audit-fix.md`, Session 0 status): seeder routing (unrouted core styling 628 to 368,
 `74771c855`), the framework bugs (accordion-item scope hash, team-member typography, grid items as Spec 32 FR-32-12,

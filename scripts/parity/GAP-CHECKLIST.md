@@ -409,7 +409,8 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   `declaredValues` reads `DECLARED_PROPS` from `CSS.getMatchedStylesForNode` (`cascadeWinner`: author rules then inline,
   last wins, `!important` first, user-agent ignored) into `snap.declared`. `collect.mjs`: `DEFAULT_PROPS` reads
   transition and animation duration, delay and easing; `PSEUDO_PROPS` are read on each painting layer (`snap.pseudo`).
-  `compare.mjs`: timings compare as sets of distinct values and are skipped where nothing runs (`timingIrrelevant`);
+  `compare.mjs`: timings compare as sets of distinct values and are skipped where nothing runs; animation timings only
+  where both sides animate with CSS keyframes (a script-driven entrance leaves no CSS timing) (`timingIrrelevant`);
   layer rows carry `pseudo` and stamp on `<path>::before` (`ref-trace.mjs`), calibration's key for the layer; a layer on
   one side only is one `content` row; `chrome-walk.mjs::compareChrome` keeps a layer's background row.
   `paint.mjs::textRun` groups its text boxes into rows by top; `rows.space` is the median space between rows less the
@@ -417,8 +418,9 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
 - **Proof (2026-10-05):** `scripts/computed-route/tests/walker-devtools.test.mjs` runs headless Chromium on local HTML
   (a 1.4s entrance read at opacity 1, an infinite loop ignored; a `.card:hover .title` colour and a finished 3px lift;
   `50%`/`20rem`/`168px`/`!important` declared values; a 14px list gap) and `walker-reads.test.mjs` the comparisons, each
-  red against the previous code. A local walk of two `file://` pages read every one as a row in 6s. Host proof: an About
-  measure-only run after Session 0's deploy (plan `2026-10-04-eye-care-sweep-audit-fix.md`, Track P).
+  red against the previous code. A local walk of two `file://` pages read every one as a row in 6s. About measure-only on
+  the local mirror (2026-10-05): 1 open issue, real (a button transition beating the site timing, found by the declared
+  read); 8 false entrance-timing rows (CSS keyframes against a script-driven entrance) led to the keyframes rule.
 - **Falsified by:** a row read while an entrance still runs, a hover row missing on a pair whose CSS hover differs, a
   declared width written where the draft declares none, a layer row on an element whose layers do not paint, or a
   `row-gap` row between lists with the same line-box spacing.
