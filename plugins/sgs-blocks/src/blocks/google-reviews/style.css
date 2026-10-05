@@ -30,6 +30,36 @@
 	--sgs-reviews-error: #d00;
 }
 
+/* Google's own colours are this block's defaults (the star yellow, the Material greys, the Google blue), so a
+   review widget looks like a Google Business Profile review whatever the site theme defines. Every one is a
+   default only: a colour set in the inspector (star, card, text, buttons...) is emitted at higher specificity and
+   wins. The "primary" and "success" star variants stay theme-driven because a client picks them on purpose. */
+.sgs-google-reviews {
+	--sgs-gr-star: #fbbc04;
+	--sgs-gr-ink: #202124;
+	--sgs-gr-ink-muted: #5f6368;
+	--sgs-gr-line: #dadce0;
+	--sgs-gr-line-light: #e8eaed;
+	--sgs-gr-surface: #fff;
+	--sgs-gr-surface-alt: #f1f3f4;
+	--sgs-gr-blue: #1a73e8;
+	--sgs-gr-blue-dark: #1765cc;
+	--sgs-gr-on-blue: #fff;
+}
+
+/* Google's dark-mode counterparts. */
+.sgs-google-reviews--theme-dark {
+	--sgs-gr-ink: #e8eaed;
+	--sgs-gr-ink-muted: #9aa0a6;
+	--sgs-gr-line: #5f6368;
+	--sgs-gr-line-light: #3c4043;
+	--sgs-gr-surface: #202124;
+	--sgs-gr-surface-alt: #303134;
+	--sgs-gr-blue: #8ab4f8;
+	--sgs-gr-blue-dark: #aecbfa;
+	--sgs-gr-on-blue: #202124;
+}
+
 .sgs-google-reviews {
 	width: 100%;
 }
@@ -59,7 +89,7 @@
 	margin-bottom: 22px;
 	padding: 0 0 22px;
 	/* Width 0: headerDividerWidth is the only width; solid and the colour stand ready for it. */
-	border-bottom: 0 solid var( --wp--preset--color--border-light, #e8eaed );
+	border-bottom: 0 solid var( --sgs-gr-line-light );
 }
 
 /* The logo and the rating text form one group at their natural width (the draft's own structure), so the
@@ -97,14 +127,14 @@
 :where( .sgs-google-reviews__source-label ) {
 	font-size: 13px;
 	letter-spacing: 0.01em;
-	color: var( --wp--preset--color--text-muted, #5f6368 );
+	color: var( --sgs-gr-ink-muted );
 }
 
 :where( .sgs-google-reviews__score ) {
 	font-size: 32px;
 	font-weight: 500;
 	line-height: 1;
-	color: var( --wp--preset--color--text, #202124 );
+	color: var( --sgs-gr-ink );
 }
 
 /* Default sizes sit at zero specificity: `countFontSize` / `metaFontSize` / `dateFontSize` own them. */
@@ -113,7 +143,7 @@
 }
 
 .sgs-google-reviews__count {
-	color: var( --wp--preset--color--text-muted, #5f6368 );
+	color: var( --sgs-gr-ink-muted );
 }
 
 /* The Google attribution (Places API policy): the official Maps logo at a fixed 18px (policy range 16-19px) and
@@ -174,14 +204,14 @@
 	align-items: center;
 	min-height: 44px;
 	font-size: 13.5px;
-	color: var( --wp--preset--color--primary, #1a73e8 );
+	color: var( --sgs-gr-blue );
 	text-decoration: underline;
 	text-underline-offset: 2px;
 }
 
 .sgs-google-reviews__maps-link:focus-visible,
 a.sgs-google-reviews__author:focus-visible {
-	outline: 2px solid var( --wp--preset--color--primary, #1a73e8 );
+	outline: 2px solid var( --sgs-gr-blue );
 	outline-offset: 2px;
 }
 
@@ -200,7 +230,7 @@ a.sgs-google-reviews__author:focus-visible {
 	align-items: center;
 	gap: 0.75rem;
 	font-size: 0.875rem;
-	color: var( --wp--preset--color--text, #1e1e1e );
+	color: var( --sgs-gr-ink );
 }
 
 .sgs-google-reviews__breakdown-label {
@@ -212,7 +242,7 @@ a.sgs-google-reviews__author:focus-visible {
 	flex: 1 1 auto;
 	height: 0.625rem;
 	border-radius: 999px;
-	background-color: var( --wp--preset--color--border, #e0e0e0 );
+	background-color: var( --sgs-gr-line );
 	overflow: hidden;
 }
 
@@ -221,7 +251,7 @@ a.sgs-google-reviews__author:focus-visible {
 	height: 100%;
 	border-radius: 999px;
 	/* Reuses the star colour variable set on the wrapper by render.php. */
-	background-color: var( --sgs-gr-star-colour, var( --wp--preset--color--accent, #fbbc04 ) );
+	background-color: var( --sgs-gr-star-colour, var( --sgs-gr-star ) );
 	/* Per-row percentage — a CSS custom-property VALUE, not an inline declaration
 	   (no-inline contract §A). Set by render.php as --sgs-gr-pct:N% in a scoped rule. */
 	width: var( --sgs-gr-pct, 0% );
@@ -230,7 +260,7 @@ a.sgs-google-reviews__author:focus-visible {
 .sgs-google-reviews__breakdown-count {
 	flex: 0 0 auto;
 	white-space: nowrap;
-	color: var( --wp--preset--color--text-muted, #555 );
+	color: var( --sgs-gr-ink-muted );
 }
 
 @media ( max-width: 599px ) {
@@ -262,22 +292,22 @@ a.sgs-google-reviews__author:focus-visible {
 
 /* Full star — solid filled */
 .sgs-google-reviews__star--full {
-	fill: var( --wp--preset--color--accent, #fbbc04 );
-	color: var( --wp--preset--color--accent, #fbbc04 );
+	fill: var( --sgs-gr-star );
+	color: var( --sgs-gr-star );
 }
 
 /* Half star — outline layer + clipped fill layer */
 .sgs-google-reviews__star--half .sgs-google-reviews__star-outline {
-	fill: var( --wp--preset--color--border, #dadce0 );
+	fill: var( --sgs-gr-line );
 }
 
 .sgs-google-reviews__star--half .sgs-google-reviews__star-fill {
-	fill: var( --wp--preset--color--accent, #fbbc04 );
+	fill: var( --sgs-gr-star );
 }
 
 /* Empty star — outline only */
 .sgs-google-reviews__star--empty {
-	fill: var( --wp--preset--color--border, #dadce0 );
+	fill: var( --sgs-gr-line );
 }
 
 /* Colour variant overrides */
@@ -372,9 +402,9 @@ a.sgs-google-reviews__author:focus-visible {
 	gap: 12px;
 	padding: 20px;
 	/* Width 0: cardBorderWidth is the only width the baseline card paints. */
-	border: 0 solid var( --wp--preset--color--border-light, #e8eaed );
+	border: 0 solid var( --sgs-gr-line-light );
 	border-radius: 8px;
-	background-color: var( --wp--preset--color--surface, #fff );
+	background-color: var( --sgs-gr-surface );
 	box-shadow: none;
 }
 
@@ -385,7 +415,7 @@ a.sgs-google-reviews__author:focus-visible {
 
 /* The bordered look is its line: zero specificity, so the card border control wins. */
 :where( .sgs-google-reviews--card-bordered .sgs-google-reviews__review ) {
-	border: 1px solid var( --wp--preset--color--border, #dadce0 );
+	border: 1px solid var( --sgs-gr-line );
 }
 
 /* Flat: no line and no shadow. Named here so the look exists as a class (the seeder derives its values from
@@ -393,7 +423,7 @@ a.sgs-google-reviews__author:focus-visible {
 .sgs-google-reviews--card-flat .sgs-google-reviews__review {
 	border: none;
 	box-shadow: none;
-	background-color: var( --wp--preset--color--surface-alt, #f1f3f4 );
+	background-color: var( --sgs-gr-surface-alt );
 }
 
 .sgs-google-reviews--card-flat .sgs-google-reviews__review:hover {
@@ -417,7 +447,7 @@ a.sgs-google-reviews__author:focus-visible {
 .sgs-google-reviews--theme-dark .sgs-google-reviews__review {
 	background-color: rgba( 255, 255, 255, 0.05 );
 	border-color: rgba( 255, 255, 255, 0.1 );
-	color: var( --wp--preset--color--text-inverse, #fff );
+	color: var( --sgs-gr-ink );
 }
 
 .sgs-google-reviews--theme-transparent .sgs-google-reviews__review {
@@ -446,7 +476,7 @@ a.sgs-google-reviews__author:focus-visible {
 	margin-right: 12px;
 	border-radius: 50%;
 	overflow: hidden;
-	background-color: var( --wp--preset--color--surface-alt, #f1f3f4 );
+	background-color: var( --sgs-gr-surface-alt );
 }
 
 /* object-fit is deliberately NOT declared here (rule 37-media-no-handroll
@@ -468,8 +498,8 @@ a.sgs-google-reviews__author:focus-visible {
 	height: 100%;
 	font-size: 17px;
 	font-weight: 500;
-	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff ));
-	background-color: var( --wp--preset--color--primary, #1a73e8 );
+	color: var( --sgs-gr-on-blue );
+	background-color: var( --sgs-gr-blue );
 	border-radius: inherit;
 }
 
@@ -484,7 +514,7 @@ a.sgs-google-reviews__author:focus-visible {
 	font-size: 14px;
 	font-weight: 500;
 	line-height: normal;
-	color: var( --wp--preset--color--text, #202124 );
+	color: var( --sgs-gr-ink );
 }
 
 /* Written reviews: the reviewer detail line ("Local Guide · 11 reviews") under the author. */
@@ -494,7 +524,7 @@ a.sgs-google-reviews__author:focus-visible {
 	align-self: start;
 	display: block;
 	min-width: 0;
-	color: var( --wp--preset--color--text-muted, #70757a );
+	color: var( --sgs-gr-ink-muted );
 }
 
 :where( .sgs-google-reviews__meta ) {
@@ -545,7 +575,7 @@ a.sgs-google-reviews__author:hover {
 }
 
 .sgs-google-reviews__date {
-	color: var( --wp--preset--color--text-muted, #70757a );
+	color: var( --sgs-gr-ink-muted );
 	flex-shrink: 0;
 }
 
@@ -555,7 +585,7 @@ a.sgs-google-reviews__author:hover {
 	margin: 0;
 	font-size: 14.5px;
 	line-height: 1.6;
-	color: var( --wp--preset--color--text, #3c4043 );
+	color: var( --sgs-gr-ink );
 	text-wrap: pretty;
 	display: -webkit-box;
 	-webkit-line-clamp: 8;
@@ -573,7 +603,7 @@ a.sgs-google-reviews__author:hover {
 	flex: 0 0 100%;
 	margin-top: -2px;
 	font-size: 13.5px;
-	color: var( --wp--preset--color--primary, #1a73e8 );
+	color: var( --sgs-gr-blue );
 	text-decoration: none;
 }
 
@@ -590,7 +620,7 @@ a.sgs-google-reviews__author:hover {
 	gap: 0.375rem;
 	margin-top: 0.75rem;
 	font-size: 0.75rem;
-	color: var( --wp--preset--color--text-muted, #999 );
+	color: var( --sgs-gr-ink-muted );
 }
 
 .sgs-google-reviews__powered-by img {
@@ -608,8 +638,8 @@ a.sgs-google-reviews__author:hover {
 	flex-wrap: wrap;
 	gap: 0.75rem;
 	padding: 1rem 1.5rem;
-	background-color: var( --wp--preset--color--surface, #fff );
-	border: 1px solid var( --wp--preset--color--border-light, #e8eaed );
+	background-color: var( --sgs-gr-surface );
+	border: 1px solid var( --sgs-gr-line-light );
 	border-radius: 8px;
 	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.08 );
 }
@@ -631,12 +661,12 @@ a.sgs-google-reviews__author:hover {
 	font-size: 1.5rem;
 	font-weight: 500;
 	line-height: 1;
-	color: var( --wp--preset--color--text, #202124 );
+	color: var( --sgs-gr-ink );
 }
 
 .sgs-google-reviews__badge-text span {
 	font-size: 0.8125rem;
-	color: var( --wp--preset--color--text-muted, #70757a );
+	color: var( --sgs-gr-ink-muted );
 }
 
 /* ─── Header buttons + footnote ──────────────────────────────────────────── */
@@ -665,8 +695,8 @@ a.sgs-google-reviews__author:hover {
 	padding: 0 22px;
 	border: 1px solid transparent;
 	border-radius: 20px;
-	background-color: var( --wp--preset--color--primary, #1a73e8 );
-	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff ));
+	background-color: var( --sgs-gr-blue );
+	color: var( --sgs-gr-on-blue );
 	text-decoration: none;
 	font-size: 14px;
 	font-weight: 500;
@@ -681,7 +711,7 @@ a.sgs-google-reviews__author:hover {
    moment a client sets a value. The rule below is the DEFAULT look, kept at
    zero specificity via :where() so it never competes with the emitted rule. */
 :where( .sgs-google-reviews__see-all:hover ) {
-	background-color: var( --wp--preset--color--primary-dark, #1765cc );
+	background-color: var( --sgs-gr-blue-dark );
 }
 
 /* "Write a review" is the SECONDARY action beside the filled "See all reviews": an outlined pill
@@ -689,12 +719,12 @@ a.sgs-google-reviews__author:hover {
    attribute written by the author or the pipeline still wins (0,3,0 over :where). */
 :where( .sgs-google-reviews__write-review ) {
 	background-color: transparent;
-	color: var( --wp--preset--color--primary, #1a73e8 );
-	border: 1px solid var( --wp--preset--color--border, #dadce0 );
+	color: var( --sgs-gr-blue );
+	border: 1px solid var( --sgs-gr-line );
 }
 
 :where( .sgs-google-reviews__write-review:hover ) {
-	background-color: color-mix( in srgb, var( --wp--preset--color--primary, #1a73e8 ) 6%, transparent );
+	background-color: color-mix( in srgb, var( --sgs-gr-blue ) 6%, transparent );
 }
 
 /* Site-wide button hover (buttonPresets.default): the lift and its timing. With no
@@ -713,7 +743,7 @@ a.sgs-google-reviews__author:hover {
 :where( .sgs-google-reviews__footnote ) {
 	margin: 0;
 	font-size: 13px;
-	color: var( --wp--preset--color--text-muted, #5f6368 );
+	color: var( --sgs-gr-ink-muted );
 }
 
 /* ─── Slider Variant ─────────────────────────────────────────────────────── */
@@ -779,10 +809,10 @@ a.sgs-google-reviews__author:hover {
 :where( .sgs-google-reviews__arrow ) {
 	width: var( --sgs-slider-nav-arrow-size, 40px );
 	height: var( --sgs-slider-nav-arrow-size, 40px );
-	border: 1px solid var( --wp--preset--color--border, #dadce0 );
+	border: 1px solid var( --sgs-gr-line );
 	border-radius: 50%;
-	background-color: var( --wp--preset--color--surface, #fff );
-	color: var( --wp--preset--color--primary, #1a73e8 );
+	background-color: var( --sgs-gr-surface );
+	color: var( --sgs-gr-blue );
 }
 
 @media ( prefers-reduced-motion: no-preference ) {
@@ -795,7 +825,7 @@ a.sgs-google-reviews__author:hover {
    sgs_button_element_style_css() at real specificity. The rule below is the DEFAULT look, kept at
    zero specificity via :where(). The focus ring itself is slider-nav.css's. */
 :where( .sgs-google-reviews__arrow:hover, .sgs-google-reviews__arrow:focus-visible ) {
-	background-color: color-mix( in srgb, var( --wp--preset--color--primary, #1a73e8 ) 6%, var( --wp--preset--color--surface, #fff ) );
+	background-color: color-mix( in srgb, var( --sgs-gr-blue ) 6%, var( --sgs-gr-surface ) );
 }
 
 /* 44px min touch target (project standard, beats WCAG 2.2's 24px) via
@@ -823,7 +853,7 @@ a.sgs-google-reviews__author:hover {
 	/* Idle dot uses text-muted, not border-subtle — border-subtle measured
 	   ~1.2:1 against surface in a prior audit and failed the 3:1 UI-component
 	   contrast requirement; text-muted clears it. */
-	background-color: var( --wp--preset--color--text-muted, #767676 );
+	background-color: var( --sgs-gr-ink-muted );
 }
 
 @media ( prefers-reduced-motion: no-preference ) {
@@ -837,18 +867,18 @@ a.sgs-google-reviews__author:hover {
    so it wins once a client sets a value. The rule below is the DEFAULT
    look, kept at zero specificity via :where(). */
 :where( .sgs-google-reviews__dot:hover::before ) {
-	background-color: var( --wp--preset--color--text, #1e1e1e );
+	background-color: var( --sgs-gr-ink );
 }
 
 /* Active state is conveyed by BOTH colour and size — never colour alone —
    and by aria-current on the element itself (set in render.php + view.js). */
 .sgs-google-reviews__dot.is-active::before {
-	background-color: var( --sgs-gr-star-colour, var( --wp--preset--color--accent, #fbbc04 ) );
+	background-color: var( --sgs-gr-star-colour, var( --sgs-gr-star ) );
 	transform: translate( -50%, -50% ) scale( 1.35 );
 }
 
 .sgs-google-reviews__dot:focus-visible {
-	outline: 2px solid var( --wp--preset--color--primary, #1a73e8 );
+	outline: 2px solid var( --sgs-gr-blue );
 	outline-offset: 2px;
 }
 
@@ -873,12 +903,12 @@ a.sgs-google-reviews__author:hover {
 	box-sizing: border-box;
 	padding: 28px 26px;
 	border-radius: 12px;
-	background-color: var( --wp--preset--color--surface, #fff );
+	background-color: var( --sgs-gr-surface );
 }
 
 /* The Google panel's frame: zero specificity, so the block's border control wins. */
 :where( .sgs-google-reviews.sgs-google-reviews--card-google-card ) {
-	border: 1px solid var( --wp--preset--color--border, #dadce0 );
+	border: 1px solid var( --sgs-gr-line );
 }
 
 @media ( max-width: 767px ) {
@@ -921,7 +951,7 @@ a.sgs-google-reviews__author:hover {
 	padding: 28px;
 	border: none;
 	border-radius: 4px;
-	background-color: var( --wp--preset--color--surface-alt, #f5f7f7 );
+	background-color: var( --sgs-gr-surface-alt );
 	box-shadow: none;
 }
 
@@ -995,7 +1025,7 @@ a.sgs-google-reviews__author:hover {
 
 /* The tile's hairline: zero specificity, so the card border control wins. */
 :where( .sgs-google-reviews--card-wall-tile .sgs-google-reviews__review ) {
-	border: 1px solid var( --wp--preset--color--border, #e0e0e0 );
+	border: 1px solid var( --sgs-gr-line );
 }
 
 .sgs-google-reviews--card-wall-tile .sgs-google-reviews__review:hover {

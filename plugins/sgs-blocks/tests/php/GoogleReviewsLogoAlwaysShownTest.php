@@ -257,4 +257,24 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		$this->assertSame( 1, preg_match( '#\.sgs-google-reviews__attribution \{([^}]*)\}#', $css, $a ) );
 		$this->assertMatchesRegularExpression( '#flex:\s*none#', $a[1] );
 	}
+
+	/**
+	 * The block's defaults are Google's own colours, not the site theme's presets: a theme that defines `accent`,
+	 * `text` or `primary` must not recolour the stars, text, borders or buttons of a Google review.
+	 */
+	public function test_default_colours_are_googles_not_the_themes(): void {
+		$css = (string) file_get_contents( __DIR__ . '/../../src/blocks/google-reviews/style.css' );
+		$this->assertSame( 1, preg_match( '~
+\.sgs-google-reviews \{\s*--sgs-gr-star: #fbbc04;([^}]*)\}~i', $css, $m ) );
+		$this->assertStringContainsString( '--sgs-gr-ink: #202124;', $m[1] );
+		$this->assertStringContainsString( '--sgs-gr-blue: #1a73e8;', $m[1] );
+		$this->assertStringContainsString( '--sgs-gr-line: #dadce0;', $m[1] );
+		preg_match_all( '#--wp--preset--color--([a-z-]+)#', $css, $presets );
+		$this->assertEqualsCanonicalizing(
+			array( 'primary', 'success' ),
+			array_values( array_unique( $presets[1] ) ),
+			'Only the opt-in primary and success star variants may read the theme palette.'
+		);
+		$this->assertMatchesRegularExpression( '#\.sgs-google-reviews__star--full \{[^}]*fill: var\( --sgs-gr-star \)#', $css );
+	}
 }

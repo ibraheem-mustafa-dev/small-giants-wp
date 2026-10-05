@@ -773,6 +773,7 @@ Output as `<script type="application/ld+json">` in render.php — enables Google
 - Star rating: `aria-label="{rating} out of 5 stars"` — stars are `aria-hidden="true"`
 - Slider: same carousel accessibility as testimonial-slider (arrow key navigation, aria-live)
 - Google attribution (Places API policy): the official Google Maps logo, `alt="Google Maps"`, 18px high with 10px clear space left, right and top and 5px below, prints on every render of every variant (the white-text logo replaces the dark-text one on a dark ground). It has no setting.
+- Default colours are Google's, not the site theme's: `style.css::.sgs-google-reviews` defines `--sgs-gr-star` (#fbbc04), the Material greys, the Google blue and the surface, `.sgs-google-reviews--theme-dark` redefines them for dark mode, and every inspector colour overrides them. Only the opt-in `star-primary` and `star-success` variants read the theme palette.
 - Every review shows the author's avatar (initial letter when Google sends no photo) and name; the name links to the author's Google profile, each review links to its Google Maps page ("View on Google Maps"), and the block links to the place; all open in a new tab (`rel="noopener noreferrer"`, visually-hidden "(opens in a new tab)"). A link whose Google field is missing is not drawn.
 
 **Performance:**
