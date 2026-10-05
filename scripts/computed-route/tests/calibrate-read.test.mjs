@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { readInstancesInPage, openToggle } from '../lib/calibrate-read.mjs';
+import { readInstancesInPage, openToggle, markTargetInPage } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from '../lib/calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 
@@ -51,6 +51,25 @@ test( 'MUST FAIL (nav-bar-menu "Element is not visible"): a panel toggle hidden 
 		await assert.rejects( page.locator( '[data-cr-toggle]' ).first().click( { force: true, timeout: 2000 } ) );
 		await openToggle( page );
 		assert.equal( await page.locator( '#p' ).isVisible(), true );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'MUST FAIL (51 untested hover states): an opener outside the instance that controls it (aria-controls) is found and opens the hidden target', async () => {
+	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		await page.setContent( `<button id="opener" aria-controls="drawer-0" aria-expanded="false" onclick="document.getElementById('drawer-0').hidden=false;this.setAttribute('aria-expanded','true')">Menu</button>
+			<nav class="cr-ref-cal-0" id="drawer-0" hidden><a class="sgs-x__item" href="#">Home</a></nav>
+			<button id="other" aria-controls="drawer-9" aria-expanded="false">Another block's opener</button>` );
+		const before = await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 0, '.sgs-x__item' ] );
+		assert.deepEqual( before, { visible: false, toggle: true }, 'the outside opener of this instance is the toggle' );
+		assert.equal( await page.evaluate( () => document.querySelector( '[data-cr-toggle]' )?.id ), 'opener', 'never another instance\'s opener' );
+		await openToggle( page );
+		const after = await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 0, '.sgs-x__item' ] );
+		assert.equal( after.visible, true );
 	} finally {
 		await browser.close();
 	}

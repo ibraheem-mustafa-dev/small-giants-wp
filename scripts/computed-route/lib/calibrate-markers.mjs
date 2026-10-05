@@ -2,7 +2,7 @@
 // { label, attrs, expect: { width: value } | null, form?, base?, box? }. expect is the value the slot should compute at
 // each width when the setting works; null means "any change". base: attributes the marker's own baseline instance
 // carries too (a partner setting the marker needs before it can paint), so only the marker's own effect is measured.
-import { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT } from './calibrate-props.mjs';
+import { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT } from './calibrate-props.mjs';
 import { CORNERS } from './resolve.mjs';
 
 const TIER_PX = { desktop: 37, tablet: 23, mobile: 7 };
@@ -86,9 +86,12 @@ export function companionWidth( styleAttr, schema ) {
 }
 
 // The partners a border colour or width needs to paint: a width (3px) and a solid style for a colour, a solid style
-// for a width. Named from the setting's own stem (cardBorderColour → cardBorderWidth, cardBorderStyle).
+// for a width. Named from the setting's own stem (cardBorderColour → cardBorderWidth, cardBorderStyle; a bare
+// borderColour → borderWidth, borderStyle). A hover border gradient also needs the resting border gradient: the masked
+// ring is emitted only when a resting paint exists (helpers-tokens.php::sgs_border_gradient_css returns nothing for an
+// empty resting paint), and the hover paint must differ from it.
 export function borderPartners( attr, prop, schema ) {
-	const m = attr.match( /^(.*Border)(Colour|Color|Width)(Hover)?$/ );
+	const m = attr.match( /^(.*[bB]order)(Colou?r|Width)(Hover)?(Gradient)?$/ );
 	if ( ! m || ! [ 'border-color', 'border-width' ].some( ( p ) => prop.startsWith( p.split( '-' )[ 0 ] ) && prop.includes( p.split( '-' )[ 1 ] ) ) ) {
 		return {};
 	}
@@ -100,7 +103,25 @@ export function borderPartners( attr, prop, schema ) {
 	if ( 'Width' !== m[ 2 ] ) {
 		Object.assign( out, companionWidth( style, schema )?.attrs || {} );
 	}
+	const resting = `${ m[ 1 ] }${ m[ 2 ] }Gradient`;
+	if ( m[ 3 ] && m[ 4 ] && schema[ resting ] ) {
+		out[ resting ] = MARKER_REST_GRADIENT;
+	}
 	return out;
+}
+
+// A shadow shape the hover colour is composed against: x, y, blur, spread.
+export const SHADOW_SHAPE = '0px 4px 12px 0px';
+
+// The partner a shadow colour needs to paint: the shape it colours. A colour alone composes no shadow
+// (helpers-colour-variants.php::sgs_shadow_decls), so boxShadowColourHover is dead without boxShadow or boxShadowHover.
+// Named from the setting's own stem (boxShadowColourHover → boxShadow, cardShadowColourHover → cardShadow).
+export function shadowPartners( attr, prop, schema ) {
+	if ( 'box-shadow-color' !== prop ) {
+		return {};
+	}
+	const shape = attr.replace( /Colou?r(Hover)?$/, '' );
+	return shape !== attr && schema[ shape ] && types( schema[ shape ] ).includes( 'string' ) ? { [ shape ]: SHADOW_SHAPE } : {};
 }
 
 // One value per device tier for a non-length per-device setting (columns, alignment), each differing from the

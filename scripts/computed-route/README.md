@@ -41,6 +41,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/calibrate-markers.mjs` | Marker values per setting shape (Spec 47 §3.2 marker table). |
 | `lib/calibrate-instances.mjs` | Which instances a block's calibration page holds: markers, their preconditions (variant, gating toggle, border partners, overlay image, layout mode) and state targets. |
 | `lib/calibrate-read.mjs` | The in-page reader and the per-width read under each state trigger. |
+| `lib/calibrate-chunk.mjs` | How calibration builds a block's page in pieces: the child process's heap, the fixture's own chunk size, and halving a chunk whose build timed out. |
+| `lib/calibrate-container.mjs` | What a block's source says before any browser opens: whether its tiers follow its container's width (an `@container` rule in the built CSS, or a render passing `container_queries`/`container` true), and whether its render returns early on this site. |
 | `lib/deploy-hash.mjs` | The deploy key: md5 of a block's front-end build files, locally and on the site. |
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, classification. |
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json`. |
@@ -68,6 +70,12 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written); `--rounds 0` never calls the write round (A1) |
 | `tests/pairs.test.mjs` | Block pairing: a partner is kept only when it holds the block's words and none from outside it, at a similar size, with its padding where the block's is; hand pairs measuring a paired block's draft element move to the block root; a panel state that is missing or opens one side only is refused; a landmark exclusion holding the surface is lifted. |
 | `tests/entrance.test.mjs` | Entrance start: a hidden-live, shown-draft entrance gets `sgsAnimationStart: 'load'`; no entrance, a part, a hover, a half opacity or a hidden draft gets nothing. |
+| `tests/calibrate-chunk.test.mjs` | FR-47-2: the build child gets the bigger heap, a fixture names its own chunk size, and a timed-out chunk is halved with every default kept. |
+| `tests/calibrate-container.test.mjs` | FR-47-2: a block that emits `@container` rules at render time is not read as a one-width hardcode; a comment naming the flag, a false flag or a variable does not count. |
+| `tests/calibrate-fixtures.test.mjs` | FR-47-2: each planned fixture variant, parent chain and `<p>` text variant traces to the render source that needs it. |
+| `tests/calibrate-partners.test.mjs` | FR-47-2: the background-image, hover shadow-shape and hover border-gradient partners a marker needs to paint; a marker no read equals is reached wherever its element changed. |
+| `tests/calibrate-reason.test.mjs` | FR-47-2: a block whose render returns early on this site is named, not waited out; no committed snapshot enables the dark palette `theme-toggle` needs. |
+| `tests/independent-check.test.mjs` | PA-4: screen-reader-only and off-page text is not counted as painted by a site's `qa/independent-check.mjs`. |
 | `tests/walker-reads.test.mjs` | A-1 at unit level: motion timings and `::before`/`::after` layers are rows Solve can write on calibration's layer path; a declared width passes Solve's used-value gate; a text run's spacing is a `row-gap` row. |
 | `tests/sweep.test.mjs` | The sweep (A3): a surface's issue total equals `wholePage`'s distinct count, unmapped walker states included (class `unmapped-state`); a row two surfaces walking one config share counts once (`alsoIn`), while block-less rows of the same pair name from two configs stay two; a surface with no report is unmeasured; another surface's block is not counted. |
 | `tests/register-sweep.test.mjs` | The register sweep (A4): parsing and grouping; a still-open verdict must cite one exact sweep row (or an open walk diff) and quote its values with an element sentence; hover is no reason for not walker-measurable; a clean verdict without its element sentence, on a ref with an open row, or on a ref no pairing measured, is rejected; a site-wide item is clean only when every covered item is clean and measured; a missing or doubled verdict is rejected; the merge leaves every original cell byte-identical and a second merge rewrites the Sweep column rather than adding one. |
@@ -155,12 +163,14 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `READ_PROPS`: the properties read per element: the walker's plus `CAL_EXTRA_PROPS` (height, stroke, fill, grid rows, writing-mode and others a setting can paint before the walker compares them). `INHERITED`: never recorded as default paint.
 - `PSEUDO_PROPS` (the walker's list) read on painting `::before`/`::after` layers; `TEXT_PSEUDO_PROPS` on `::placeholder` and `::first-letter`.
 - `longhands(cssProperty)` → the read properties a setting covers; a gradient text or border, a shadow colour and `flex`/`inset` map onto the properties the browser computes them under.
+- `MARKER_REST_GRADIENT`: the resting gradient a hover border-gradient marker needs before it paints (`helpers-tokens.php::sgs_border_gradient_css` returns nothing for an empty resting paint).
 
 ### `lib/calibrate-markers.mjs`
 - `markersFor(row, schema, snapshot, current, ctx)` → `[{ label, attrs, expect, form?, base?, box? }]` (§3.2 table): colours by property or DB `role`, gradients, media objects (`ctx.image`), keywords for free-text settings (`KEYWORDS`), enums, booleans, boxes and corners (per device, `flat_sibling`), per-device lengths and non-length values (counts, keywords), two font weights in the setting's type, opacity, the transform family, letter-spacing, lengths, counts. A unit companion is written in its own shape.
 - `defOf(row, schema)` → the setting's schema: block.json's, else the DB row's type, enum and default (extension settings). `types(def)`.
 - `companionWidth(styleAttr, schema)` → `{ attr, attrs }`: the width a border-style marker needs (`<x>Style` → `<x>Width`, 3px in the attribute's own shape), or null.
 - `borderPartners(attr, prop, schema)` → the style (and width) a border colour or width needs to paint.
+- `SHADOW_SHAPE`, `shadowPartners(attr, prop, schema)` → the shadow shape a hover shadow-colour marker needs before it composes anything (`helpers-shadow-layers.php::sgs_shadow_layers` returns nothing for an empty shape).
 
 ### `lib/calibrate-instances.mjs`
 - `STATE_TRIGGERS`: how each setting state is reached (`hover` real mouse, `focus` keyboard-visible focus, `scrolled` window scroll, `shrunk` its ancestor class from `STATE_CLASSES`, `open` and `current` rendered by the fixture). `triggerFor(state)` → the trigger, `null` for rest, undefined when the state has none (reported, never calibrated).
@@ -181,6 +191,20 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `slotFor(row, marker, defReads, markReads, { containerQuery })` → `{ slot, slots, property, transform, reachedAt, oneWidth, containerTier?, effects }` or `{ dead }`; with `containerQuery` (the block's CSS has an `@container` rule) a tier reached at fewer page widths is `containerTier`, not `oneWidth`.
 - `discoverEffects(defReads, markReads)` → what one enum value changes: `{ prop: { slots, value } }`.
 - `defaultPaint(defReads)` → per element and width, non-inherited properties.
+
+### `lib/calibrate-chunk.mjs`
+- `NODE_HEAP_FLAG`, `MIN_CHUNK`: the heap flag the build child is spawned with, and the smallest chunk halving will go to.
+- `buildSpawnArgs(script, args)` → the child's argv with the heap flag, so a large block's build is not killed for memory.
+- `chunkSizeFor(block, fixture, env)` → the fixture's own `chunk`, else `SGS_CAL_CHUNK`, else `CHUNK` (150).
+- `halveChunk(size)` → the next size down, floored at `MIN_CHUNK`.
+- `planChunks(instances, size)` → the instance groups one page each holds, every chunk carrying each variant's default.
+- `splitOnTimeout(chunk, size)` → the two chunks a timed-out build is retried as.
+
+### `lib/calibrate-container.mjs` (reads `render.php`)
+- `stripPhpComments(src)` → the source without its comments, so a comment naming a flag cannot be read as setting it.
+- `hasRuntimeContainerQueries(renderSource)` → whether the render passes `container_queries` or `container` as true to the shared wrapper: the `@container` CSS is emitted at render time, so the built stylesheet carries none.
+- `isContainerQueryBlock(builtCss, renderSource)` → either source of truth, so a tier reached at fewer page widths is reported as `containerTier` rather than a one-width hardcode.
+- `renderedNothingReason(block, snapshot)` → why a block's render returns early on this site (its gating global custom setting is absent), so the run names it instead of waiting out a selector that will never appear.
 
 ### `lib/deploy-hash.mjs` (ssh)
 - `REMOTE_PLUGIN`: the plugin folder on the host per site. `md5(s)`.

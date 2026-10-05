@@ -1,7 +1,7 @@
 // Which instances one block's calibration page holds (FR-47-2): a default per fixture variant, then one marked
 // instance per setting and marker, each carrying the preconditions its element needs to render, plus one instance
 // per enum value of a setting with no css_property (discovery). Pure: no browser, no site.
-import { markersFor, borderPartners, defOf, types } from './calibrate-markers.mjs';
+import { markersFor, borderPartners, shadowPartners, defOf, types } from './calibrate-markers.mjs';
 
 // How each setting state is reached before a marker is read (§3.2): 'hover' under a real mouse on the styled element;
 // 'focus' by keyboard-visible focus on it; 'scroll' by scrolling the window past the header offset (the header script
@@ -54,11 +54,17 @@ export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 	}
 	Object.assign( out, gatingToggle( row.attr_name, schema, current ) );
 	Object.assign( out, borderPartners( row.attr_name, row.css_property.split( ',' )[ 0 ].trim(), schema ) );
-	if ( /overlay|scrim/i.test( row.attr_name ) && ctx.image && schema.backgroundImage && ! current.backgroundImage ) {
+	Object.assign( out, shadowPartners( row.attr_name, row.css_property.split( ',' )[ 0 ].trim(), schema ) );
+	// A background image under an overlay or scrim, and under a setting that only shapes an image (its size, position,
+	// attachment, repeat, origin, clip or blend): none of them paints on a block with no image.
+	if ( ( /overlay|scrim/i.test( row.attr_name ) || IMAGE_SHAPING.test( row.attr_name ) || row.css_property.split( ',' ).some( ( p ) => IMAGE_SHAPING_PROPS.test( p.trim() ) ) ) && ctx.image && schema.backgroundImage && ! current.backgroundImage ) {
 		out.backgroundImage = { ...ctx.image };
 	}
 	return out;
 }
+
+const IMAGE_SHAPING = /^background(Size|Position|Attachment|Repeat|Origin|Clip|Blend)/;
+const IMAGE_SHAPING_PROPS = /^background-(size|position|attachment|repeat|origin|clip|blend-mode)$/;
 
 const LAYOUT_PROPS = /^(flex-direction|flex-wrap|justify-content|align-items|align-content|grid-template-columns|grid-template-rows|gap|row-gap|column-gap)$/;
 const LAYOUT_VALUES = [ 'flex', 'grid', 'row', 'stack', 'columns', 'inline', 'horizontal', 'carousel' ];

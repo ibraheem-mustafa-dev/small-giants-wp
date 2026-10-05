@@ -6,6 +6,8 @@ export const WIDTHS = [ 375, 768, 1440 ];
 export const MARKER_HEX = '#13579b';
 export const MARKER_RGB = 'rgb(19, 87, 155)';
 export const MARKER_GRADIENT = 'linear-gradient(90deg, #13579b 0%, #9b1357 100%)';
+// A resting gradient that differs from MARKER_GRADIENT, for a hover gradient to be compared with.
+export const MARKER_REST_GRADIENT = 'linear-gradient(90deg, #9b1357 0%, #13579b 100%)';
 export const CAL_PREFIX = 'cr-ref-cal-';
 
 // Properties calibration reads beyond the walker's own: a setting painting one of them is still located (its slot

@@ -17,6 +17,8 @@ import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { skipReason } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
+import { buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
+import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
 import { WIDTHS, buildTree, slotFor, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, readAll } from './lib/calibrate.mjs';
 
 export { REMOTE_PLUGIN, EDITOR_ONLY, BUNDLE_TEXT, normaliseBundle, TEXT_FILE, lfText, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
@@ -33,15 +35,20 @@ export const CHUNK = Number( process.env.SGS_CAL_CHUNK ) > 0 ? Number( process.e
 // shared browser (Chrome holds a new tab paused until every attached client lets it run; a blocked event loop never does).
 async function build( target, treeFile, extra = [] ) {
 	const r = await new Promise( ( resolve ) => {
-		const child = spawn( 'node', [ path.join( REPO, 'scripts', 'wp-build-page.js' ), '--env-file', target.envFile, '--env-key', target.envKey, '--tree', treeFile, ...extra ], { cwd: REPO } );
+		// NODE_HEAP_FLAG: a calibration tree of several hundred instances outgrew the default heap before the limit.
+		const child = spawn( 'node', buildSpawnArgs( path.join( REPO, 'scripts', 'wp-build-page.js' ), target, treeFile, extra ), { cwd: REPO } );
 		let stdout = '';
 		let stderr = '';
+		let timedOut = false;
 		child.stdout.on( 'data', ( d ) => ( stdout += d ) );
 		child.stderr.on( 'data', ( d ) => ( stderr += d ) );
-		const timer = setTimeout( () => child.kill(), 300000 );
+		const timer = setTimeout( () => {
+			timedOut = true;
+			child.kill();
+		}, 300000 );
 		child.on( 'close', ( status ) => {
 			clearTimeout( timer );
-			resolve( { status, stdout, stderr } );
+			resolve( { status, stdout, stderr, timedOut } );
 		} );
 	} );
 	const last = ( r.stdout || '' ).trim().split( '\n' ).pop();
@@ -49,7 +56,7 @@ async function build( target, treeFile, extra = [] ) {
 	try {
 		json = JSON.parse( last );
 	} catch {}
-	return { code: r.status, json, err: ( r.stderr || '' ) + ( r.stdout || '' ) };
+	return { code: r.status, json, timedOut: r.timedOut, err: ( r.stderr || '' ) + ( r.stdout || '' ) };
 }
 
 // One browser for the whole run (scripts/lib/wp-session.js): every block's reads and every wp-build-page.js child use
@@ -90,11 +97,17 @@ function readEnv( file, key ) {
 	return { url: o[ `WP_URL_${ key }` ].replace( /\/+$/, '' ), user: o[ `WP_USER_${ key }` ], pwd: o[ `WP_PWD_${ key }` ] };
 }
 
-async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, db, slotKey, paintKey, rejectedOut, image } ) {
+async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, rawSnapshot, db, slotKey, paintKey, rejectedOut, image } ) {
 	const short = block.replace( /^sgs\//, '' );
 	const fixture = fixtures[ block ];
 	if ( ! fixture ) {
 		return { block, error: 'no fixture in calibration-fixtures.json (not guessed)' };
+	}
+	// A block whose render returns before any output on this site is named here, before a page is built or waited on.
+	const renderPhp = path.join( REPO, 'plugins/sgs-blocks/src/blocks', short, 'render.php' );
+	const why = renderedNothingReason( block, { renderSource: fs.existsSync( renderPhp ) ? fs.readFileSync( renderPhp, 'utf8' ) : '', rawSnapshot } );
+	if ( why ) {
+		return { block, error: why };
 	}
 	const schema = blockSchema( block ) || {};
 	const rows = attrsFor( db, block ).filter( ( r ) => longhands( r.css_property ).length );
@@ -107,23 +120,36 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	instances = instances.filter( ( i ) => ! i.row || undefined !== i.trigger );
 	const treeFile = path.join( CACHE, `${ short }.tree.json` );
 	const rejected = [];
-	// A block with more instances than one page saves reliably is built in chunks; every chunk carries each variant's
-	// default instance, so a marker is always compared with a default read on the same page load.
+	// A block with more instances than one page saves reliably is built in chunks (the fixture's own `chunk`, else CHUNK);
+	// every chunk carries each variant's default instance, so a marker is always compared with a default read on the same
+	// page load. A chunk whose build times out is halved and rebuilt (lib/calibrate-chunk.mjs::splitOnTimeout).
 	const defaults = instances.filter( ( i ) => i.isDefault || i.isBase );
 	const others = instances.filter( ( i ) => ! i.isDefault && ! i.isBase );
-	const chunks = [];
-	for ( let i = 0; i < others.length; i += CHUNK ) {
-		chunks.push( [ ...defaults, ...others.slice( i, i + CHUNK ) ] );
-	}
-	if ( ! chunks.length ) {
-		chunks.push( defaults );
-	}
+	let size = chunkSizeFor( fixture, CHUNK );
+	const queue = planChunks( defaults, others, size );
 	const kept = [];
-	for ( let c = 0; c < chunks.length; c++ ) {
-		let list = chunks[ c ];
-		for ( let attempt = 0; attempt < 3; attempt++ ) {
+	let done = 0;
+	while ( queue.length ) {
+		let list = queue.shift();
+		const where = () => ( done + queue.length ? ` (chunk ${ done + 1 } of ${ done + queue.length + 1 })` : '' );
+		// Halves the chunk in hand and puts its pieces first in the queue; false when it cannot be split further.
+		const halve = () => {
+			const split = splitOnTimeout( list, size );
+			if ( ! split ) {
+				return false;
+			}
+			size = split.size;
+			queue.unshift( ...split.chunks );
+			return true;
+		};
+		let timedOut = false;
+		for ( let attempt = 0; attempt < 3 && ! timedOut; attempt++ ) {
 			writeTree( treeFile, buildTree( block, fixture, list ) );
 			const dry = await build( target, treeFile, [ '--post-id', String( target.postId ), '--dry-run' ] );
+			if ( dry.timedOut ) {
+				timedOut = true;
+				break;
+			}
 			if ( 0 === dry.code ) {
 				break;
 			}
@@ -133,13 +159,23 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 				return Number( m[ 1 ] );
 			} ) );
 			if ( ! bad.size ) {
-				return { block, error: `calibration tree rejected${ chunks.length > 1 ? ` (chunk ${ c + 1 } of ${ chunks.length })` : '' }: ${ dry.err.slice( -600 ) }` };
+				return { block, error: `calibration tree rejected${ where() }: ${ dry.err.slice( -600 ) }` };
 			}
 			list = list.filter( ( _, i ) => ! bad.has( i ) );
 		}
-		const built = await build( target, treeFile, [ '--post-id', String( target.postId ) ] );
+		let built = null;
+		if ( ! timedOut ) {
+			built = await build( target, treeFile, [ '--post-id', String( target.postId ) ] );
+			timedOut = built.timedOut;
+		}
+		if ( timedOut ) {
+			if ( halve() ) {
+				continue;
+			}
+			return { block, error: `calibration build timed out on a chunk of ${ list.length } instance(s) that cannot be split further${ where() }` };
+		}
 		if ( ! built.json?.ok ) {
-			return { block, error: `calibration build failed${ chunks.length > 1 ? ` (chunk ${ c + 1 } of ${ chunks.length })` : '' }: ${ built.err.slice( -600 ) }` };
+			return { block, error: `calibration build failed${ where() }: ${ built.err.slice( -600 ) }` };
 		}
 		await closeStrayTabs( shared );
 		const reads = await readAll( shared.page, built.json.link || `${ env.url }/?page_id=${ target.postId }`, list );
@@ -153,7 +189,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		const at = ( n, src ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, src[ w ]?.[ n ] ] ) );
 		list.forEach( ( inst, n ) => {
 			// Baselines are only ever compared against; defaults are kept once.
-			if ( inst.isBase || ( inst.isDefault && c > 0 ) ) {
+			if ( inst.isBase || ( inst.isDefault && done > 0 ) ) {
 				return;
 			}
 			if ( inst.baseKey && undefined === chunkBase[ inst.baseKey ] ) {
@@ -163,6 +199,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 			const d = inst.baseKey ? chunkBase[ inst.baseKey ] : chunkDefault[ inst.variant ];
 			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), scrollMissed: reads.scrollMissed.includes( n ) } );
 		} );
+		done++;
 	}
 	rejectedOut.push( ...rejected.map( ( r ) => ( { block, ...r } ) ) );
 	instances = kept;
@@ -171,8 +208,9 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const elements = {};
 	instances.filter( ( i ) => i.isDefault ).forEach( ( i ) => Object.entries( defaultPaint( i.read ) ).forEach( ( [ p, v ] ) => ( elements[ p ] ??= v ) ) );
 	// A block whose tiers follow its container's width (an @container rule) reaches a tier at fewer page widths by design.
-	const builtCss = path.join( REPO, 'plugins/sgs-blocks/build/blocks', short, 'style-index.css' );
-	const containerQuery = fs.existsSync( builtCss ) && fs.readFileSync( builtCss, 'utf8' ).includes( '@container' );
+	// Either the built stylesheet holds an @container rule, or the render emits them at run time (site-footer-row's
+	// built style-index.css has none, because the wrapper writes its tier rules when it renders).
+	const containerQuery = isContainerQueryBlock( short, path.join( REPO, 'plugins/sgs-blocks/build/blocks' ), path.join( REPO, 'plugins/sgs-blocks/src/blocks' ) );
 	const settings = {};
 	const dead = [];
 	const oneWidth = [];
@@ -270,7 +308,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	fs.mkdirSync( CACHE, { recursive: true } );
 	const env = readEnv( target.envFile, target.envKey );
 	const shared = await openBrowser( site, env );
-	const ctx = { site, target, env, shared, fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ), snapshot: loadSnapshot( snapFile ), db: openDb(), rejectedOut: [], image: target.image || null };
+	const ctx = { site, target, env, shared, fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ), snapshot: loadSnapshot( snapFile ), rawSnapshot: JSON.parse( fs.readFileSync( snapFile, 'utf8' ) ), db: openDb(), rejectedOut: [], image: target.image || null };
 	const results = [];
 	try {
 		for ( const b of blocks ) {

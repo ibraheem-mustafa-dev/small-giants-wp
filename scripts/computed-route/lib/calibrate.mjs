@@ -5,8 +5,8 @@
 import { WIDTHS, INHERITED, CAL_PREFIX, longhands } from './calibrate-props.mjs';
 import { splitProperty } from './resolve.mjs';
 
-export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, CAL_PREFIX, READ_PROPS, INHERITED, longhands } from './calibrate-props.mjs';
-export { markersFor, companionWidth, borderPartners, KEYWORDS } from './calibrate-markers.mjs';
+export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT, CAL_PREFIX, READ_PROPS, INHERITED, longhands } from './calibrate-props.mjs';
+export { markersFor, companionWidth, borderPartners, shadowPartners, SHADOW_SHAPE, KEYWORDS } from './calibrate-markers.mjs';
 export { STATE_TRIGGERS, triggerFor, planInstances, preconditionsFor, layoutModes, stateTarget } from './calibrate-instances.mjs';
 export { readInstancesInPage, readAll, SCROLL_Y } from './calibrate-read.mjs';
 export { elementPath } from '../../parity/lib/ref-trace.mjs';
@@ -64,9 +64,11 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	const best = pool.reduce( ( a, c ) => ( depth( c.path ) < depth( a.path ) ? c : a ) );
 	const inherited = props.every( ( p ) => INHERITED.includes( p ) );
 	const slots = inherited ? [ best.path ] : [ ...new Set( pool.map( ( c ) => c.path ) ) ].sort( ( a, b ) => depth( a ) - depth( b ) );
-	const at = changes.filter( ( c ) => c.path === best.path && ( ! marker.expect || c.hit ) );
+	// A marker that no read equals (the block turns the value into a formula of it) is reached wherever its element changed.
+	const transforming = !! marker.expect && ! best.hit;
+	const at = changes.filter( ( c ) => c.path === best.path && ( ! marker.expect || c.hit || transforming ) );
 	const reachedAt = [ ...new Set( at.map( ( c ) => c.w ) ) ].sort( ( a, b ) => a - b );
-	const transform = marker.expect && ! best.hit ? Object.fromEntries( changes.filter( ( c ) => c.path === best.path ).map( ( c ) => [ c.w, c.value ] ) ) : null;
+	const transform = transforming ? Object.fromEntries( changes.filter( ( c ) => c.path === best.path ).map( ( c ) => [ c.w, c.value ] ) ) : null;
 	const effects = [ ...side ].filter( ( e ) => slots.includes( e.split( '|' )[ 0 ] ) );
 	// An inherited property also records every element the marker reached (a link's label inheriting the root's
 	// colour); a descendant whose own rule overrides the value never changes, so it is never among them.

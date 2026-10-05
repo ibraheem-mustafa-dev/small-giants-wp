@@ -71,7 +71,13 @@ export function markTargetInPage( [ prefix, n, selector ] ) {
 	el.setAttribute( 'data-cr-target', '1' );
 	const r = el.getBoundingClientRect();
 	const visible = r.width > 0 && r.height > 0 && 'hidden' !== getComputedStyle( el ).visibility;
-	const toggle = root.querySelector( '[aria-controls][aria-expanded="false"]' ) || ( root.matches( '[aria-controls][aria-expanded="false"]' ) ? root : null );
+	let toggle = root.querySelector( '[aria-controls][aria-expanded="false"]' ) || ( root.matches( '[aria-controls][aria-expanded="false"]' ) ? root : null );
+	if ( ! toggle ) {
+		// The opener often sits outside the instance (a burger in the header opening a drawer instance): any closed
+		// toggle on the page that controls the instance or an element inside it, never another instance's opener.
+		const ids = new Set( [ root, ...root.querySelectorAll( '[id]' ), ...panels ].map( ( e ) => e.id ).filter( Boolean ) );
+		toggle = [ ...document.querySelectorAll( '[aria-controls][aria-expanded="false"]' ) ].find( ( b ) => ! root.contains( b ) && b.getAttribute( 'aria-controls' ).split( /\s+/ ).some( ( id ) => ids.has( id ) ) ) || null;
+	}
 	toggle && toggle.setAttribute( 'data-cr-toggle', '1' );
 	return { visible, toggle: !! toggle };
 }
@@ -159,7 +165,13 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 	await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
 	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
 	// are still read.
-	await page.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: 60000 } );
+	try {
+		await page.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: 60000 } );
+	} catch {
+		// The page loaded and the instance never appeared: the block rendered nothing (an early return in its render.php).
+		const wrappers = await page.locator( '[class*="cr-cal-"]' ).count();
+		throw new Error( wrappers ? `the block rendered nothing inside its ${ wrappers } calibration wrapper(s) at ${ w }px (no .${ CAL_PREFIX }0 on the page)` : `the calibration page at ${ w }px holds none of the calibration wrappers (the build did not save, or the page is cached)` );
+	}
 	await page.waitForTimeout( 800 );
 	out[ w ] = await page.evaluate( readInstancesInPage, args( instances.length ) );
 	for ( const [ n, inst ] of instances.entries() ) {

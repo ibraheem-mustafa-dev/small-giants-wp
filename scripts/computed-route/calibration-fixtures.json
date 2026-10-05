@@ -62,6 +62,12 @@
           }
         ]
       }
+    ],
+    "variants": [
+      {},
+      {
+        "layout": "grid"
+      }
     ]
   },
   "sgs/site-footer-row": {
@@ -88,7 +94,13 @@
       "source": "site-info",
       "iconStyle": "boxed",
       "iconSize": 18
-    }
+    },
+    "variants": [
+      {},
+      {
+        "iconStyle": "filled"
+      }
+    ]
   },
   "sgs/business-info": {
     "attributes": {
@@ -100,8 +112,7 @@
       },
       {
         "displayType": "address",
-        "showIcon": false,
-        "textBefore": "Call"
+        "showIcon": false
       },
       {
         "displayType": "hours",
@@ -110,8 +121,15 @@
       },
       {
         "displayType": "copyright"
+      },
+      {
+        "displayType": "phone",
+        "showIcon": false,
+        "textBefore": "Call us",
+        "textAfter": "any time"
       }
-    ]
+    ],
+    "chunk": 100
   },
   "sgs/accordion": {
     "attributes": {
@@ -209,6 +227,9 @@
       },
       {
         "brandDisplay": "text"
+      },
+      {
+        "fadeEdges": true
       }
     ]
   },
@@ -446,13 +467,20 @@
       "freeDeliverySuccessMessage": "Free UK delivery unlocked",
       "panelInstalmentsNote": "Or 3 payments of %s with Klarna",
       "panelInstalmentsCount": 3,
-      "panelSlideEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+      "panelSlideEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+      "displayMode": "flyout"
     },
     "variants": [
       {},
       {
         "triggerStyle": "pill",
         "pillCountStyle": "bubble"
+      },
+      {
+        "displayMode": "drawer"
+      },
+      {
+        "displayMode": "link"
       }
     ]
   },
@@ -1456,7 +1484,8 @@
         "name": "sgs/mega-panel",
         "attributes": {
           "variant": "general",
-          "colourScheme": "light"
+          "colourScheme": "light",
+          "style": "columns"
         }
       }
     ]
@@ -1619,6 +1648,22 @@
           "rowShrinkEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
         }
       }
+    ],
+    "variants": [
+      {},
+      {
+        "disabledItemIds": [],
+        "featuredItemIds": [
+          "id:195"
+        ]
+      },
+      {
+        "triggerDetach": {
+          "desktop": "on",
+          "tablet": "on",
+          "mobile": "on"
+        }
+      }
     ]
   },
   "sgs/nav-drawer": {
@@ -1770,7 +1815,8 @@
       "overrideElements": [
         "description"
       ],
-      "description": "A short description with a <a href=\"https://example.com/\">link</a>."
+      "description": "A short description with a <a href=\"https://example.com/\">link</a>.",
+      "attributeTagTaxonomy": "pa_lens-type"
     },
     "variants": [
       {},
@@ -1782,6 +1828,31 @@
         "showDescription": true,
         "showCta": true,
         "ctaUrl": "/shop/"
+      },
+      {
+        "sourceMode": "typed",
+        "productId": 0,
+        "productName": "Typed sample frame",
+        "priceLarge": "£49",
+        "showDescription": true,
+        "showCta": true,
+        "ctaUrl": "/shop/",
+        "variantStyle": "trial",
+        "trialTag": "Free trial"
+      },
+      {
+        "sourceMode": "typed",
+        "productId": 0,
+        "productName": "Typed sample frame",
+        "priceLarge": "£49",
+        "showDescription": true,
+        "showCta": true,
+        "ctaUrl": "/shop/",
+        "variantStyle": "featured",
+        "featuredTag": "Most popular"
+      },
+      {
+        "showPickers": true
       }
     ]
   },
@@ -2427,6 +2498,9 @@
       {
         "messageMode": "rotate",
         "showMessageArrows": true
+      },
+      {
+        "iconStyle": "circle"
       }
     ]
   },
