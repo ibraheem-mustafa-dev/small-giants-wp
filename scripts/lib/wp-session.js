@@ -16,10 +16,10 @@
 
 const net = require( 'net' );
 
-// Every connection to the shared browser sees each page dialog; with no listener each one auto-dismisses it, and the
-// one that loses the race throws "No dialog is showing" and crashes its process. A listener replaces the auto-dismiss:
-// still dismissed (the old behaviour), the loser's error ignored.
-const dismissDialogs = ( context ) => context.on( 'dialog', ( dialog ) => dialog.dismiss().catch( () => {} ) );
+// Every connection to the shared browser sees each page dialog; with no listener each one auto-handles it, and the
+// one that loses the race throws "No dialog is showing" and crashes its process. A listener replaces Playwright's
+// default with the same choice (leave the page on beforeunload, dismiss anything else) and ignores the loser's error.
+const dismissDialogs = ( context ) => context.on( 'dialog', ( dialog ) => ( 'beforeunload' === dialog.type() ? dialog.accept() : dialog.dismiss() ).catch( () => {} ) );
 
 /**
  * A free local TCP port.

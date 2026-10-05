@@ -13,7 +13,7 @@ const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..
 const require = createRequire( import.meta.url );
 const wpSession = require( path.join( REPO, 'scripts/lib/wp-session.js' ) );
 
-test( 'MUST FAIL (trust-bar dialog race): both connections to the shared browser survive a dialog, which is dismissed', async () => {
+test( 'MUST FAIL (trust-bar dialog race, then ERR_ABORTED): both connections survive a dialog; a confirm is dismissed, a beforeunload left', async () => {
 	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
 	const profileDir = fs.mkdtempSync( path.join( os.tmpdir(), 'wp-session-test-' ) );
 	const shared = await wpSession.launchShared( chromium, { profileDir, headless: true } );
@@ -27,6 +27,14 @@ test( 'MUST FAIL (trust-bar dialog race): both connections to the shared browser
 		await child.page.waitForTimeout( 300 );
 		assert.equal( answer, false );
 		assert.deepEqual( errors, [] );
+		// A page asking to keep unsaved changes is left, as Playwright's default does (dismissing aborts the navigation).
+		await child.page.evaluate( () => window.addEventListener( 'beforeunload', ( e ) => {
+			e.preventDefault();
+			e.returnValue = '';
+		} ) );
+		await child.page.click( 'p' );
+		await child.page.goto( 'data:text/html,<p>next</p>' );
+		assert.equal( await child.page.textContent( 'p' ), 'next' );
 		await child.close();
 		assert.equal( await shared.page.evaluate( () => 1 + 1 ), 2 );
 	} finally {
