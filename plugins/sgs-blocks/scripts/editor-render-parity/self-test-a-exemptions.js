@@ -181,6 +181,52 @@ function runCheckAExemptions( ctx ) {
 			"doesn't over-exempt), but it was suppressed",
 		failuresA
 	);
+
+	// SIGNAL 6 (2026-10-05) — the canvas hands the whole attributes object to a helper that reads the attribute
+	// by name or by the passed prefix plus a quoted suffix; an attribute the helper never reads stays flagged.
+	const helperDir = writeBlock( 'check-a-helper-read', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-helper-read',
+			attributes: { cardGap: { type: 'string' }, titleFontSize: { type: 'string' }, cardLayoutMode: { type: 'string' } },
+		} ),
+		'preview.js': [
+			'export function cardPreview( attributes, prefix ) {',
+			"\treturn { gap: attributes.cardGap, fontSize: attributes[ prefix + 'FontSize' ] };",
+			'}',
+		].join( '\n' ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, TextControl } from '@wordpress/components';",
+			"import { cardPreview } from './preview';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { cardGap, titleFontSize, cardLayoutMode } = attributes;',
+			'\treturn (',
+			"\t\t<div { ...useBlockProps( { style: cardPreview( attributes, 'title' ) } ) }>",
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<TextControl value={ cardGap } onChange={ ( v ) => setAttributes( { cardGap: v } ) } />',
+			'\t\t\t\t\t<TextControl value={ titleFontSize } onChange={ ( v ) => setAttributes( { titleFontSize: v } ) } />',
+			'\t\t\t\t\t<TextControl value={ cardLayoutMode } onChange={ ( v ) => setAttributes( { cardLayoutMode: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const helperMeta = readDeclaredAttrs( helperDir );
+	const helperFindings = checkEditorCanvasDesync( helperMeta.name, helperDir, helperMeta.attrs ).map( ( f ) => f.attr );
+	assertTrue(
+		! helperFindings.includes( 'cardGap' ) && ! helperFindings.includes( 'titleFontSize' ),
+		'signal 6 fixture: cardGap (read by name) and titleFontSize (prefix + quoted suffix) are read by the helper ' +
+			'the canvas passes attributes to, so neither may be flagged; got ' + JSON.stringify( helperFindings ),
+		failuresA
+	);
+	assertTrue(
+		helperFindings.includes( 'cardLayoutMode' ),
+		'signal 6 over-match fixture: cardLayoutMode is never read by the helper, so it must still be flagged',
+		failuresA
+	);
 }
 
 module.exports = {

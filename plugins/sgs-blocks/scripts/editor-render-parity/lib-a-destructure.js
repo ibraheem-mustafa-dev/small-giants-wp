@@ -281,4 +281,5 @@ module.exports = {
 	collectExcludedRanges,
 	collectSetAttributesWrites,
 	collectUsedIdentifiersOutsideExcluded,
+	isInsideExcludedRanges,
 };

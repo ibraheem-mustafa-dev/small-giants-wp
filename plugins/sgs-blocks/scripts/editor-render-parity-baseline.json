@@ -303,6 +303,62 @@
       "attr": "gridItemTextColour",
       "disposition": "accepted-debt",
       "reason": "Session 0 grid-item repair: container provides the sgs/gridItem* context keys but no block lists them in usesContext, so the block-context exemption no longer applies; the grid-item defaults need a real editor preview and consumer, which the Session 0 repair delivers."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/buybox",
+      "attr": "soldOutLabel",
+      "disposition": "by-design",
+      "reason": "Product-data and stock-state content (2026-10-05): the buybox canvas is a static mock with no product, so a sold-out or unavailable label, the notify-me form, the per-unit price, the price ladder and the framing/decoy price modes only exist once a real product in that state renders. The editor showed none of them before either: the previous placeholder carried a no-preview notice (CHECK A signal 3) that the mock replaced. Pre-existing, unpreviewable without product data, not a new desync."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/buybox",
+      "attr": "unavailableLabel",
+      "disposition": "by-design",
+      "reason": "Product-data and stock-state content (2026-10-05): the buybox canvas is a static mock with no product, so a sold-out or unavailable label, the notify-me form, the per-unit price, the price ladder and the framing/decoy price modes only exist once a real product in that state renders. The editor showed none of them before either: the previous placeholder carried a no-preview notice (CHECK A signal 3) that the mock replaced. Pre-existing, unpreviewable without product data, not a new desync."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/buybox",
+      "attr": "notifyEnabled",
+      "disposition": "by-design",
+      "reason": "Product-data and stock-state content (2026-10-05): the buybox canvas is a static mock with no product, so a sold-out or unavailable label, the notify-me form, the per-unit price, the price ladder and the framing/decoy price modes only exist once a real product in that state renders. The editor showed none of them before either: the previous placeholder carried a no-preview notice (CHECK A signal 3) that the mock replaced. Pre-existing, unpreviewable without product data, not a new desync."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/buybox",
+      "attr": "notifyMeLabel",
+      "disposition": "by-design",
+      "reason": "Product-data and stock-state content (2026-10-05): the buybox canvas is a static mock with no product, so a sold-out or unavailable label, the notify-me form, the per-unit price, the price ladder and the framing/decoy price modes only exist once a real product in that state renders. The editor showed none of them before either: the previous placeholder carried a no-preview notice (CHECK A signal 3) that the mock replaced. Pre-existing, unpreviewable without product data, not a new desync."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/buybox",
+      "attr": "perUnitDenomination",
+      "disposition": "by-design",
+      "reason": "Product-data and stock-state content (2026-10-05): the buybox canvas is a static mock with no product, so a sold-out or unavailable label, the notify-me form, the per-unit price, the price ladder and the framing/decoy price modes only exist once a real product in that state renders. The editor showed none of them before either: the previous placeholder carried a no-preview notice (CHECK A signal 3) that the mock replaced. Pre-existing, unpreviewable without product data, not a new desync."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/buybox",
+      "attr": "showLadder",
+      "disposition": "by-design",
+      "reason": "Product-data and stock-state content (2026-10-05): the buybox canvas is a static mock with no product, so a sold-out or unavailable label, the notify-me form, the per-unit price, the price ladder and the framing/decoy price modes only exist once a real product in that state renders. The editor showed none of them before either: the previous placeholder carried a no-preview notice (CHECK A signal 3) that the mock replaced. Pre-existing, unpreviewable without product data, not a new desync."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/buybox",
+      "attr": "framingMode",
+      "disposition": "by-design",
+      "reason": "Product-data and stock-state content (2026-10-05): the buybox canvas is a static mock with no product, so a sold-out or unavailable label, the notify-me form, the per-unit price, the price ladder and the framing/decoy price modes only exist once a real product in that state renders. The editor showed none of them before either: the previous placeholder carried a no-preview notice (CHECK A signal 3) that the mock replaced. Pre-existing, unpreviewable without product data, not a new desync."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/buybox",
+      "attr": "decoyEnabled",
+      "disposition": "by-design",
+      "reason": "Product-data and stock-state content (2026-10-05): the buybox canvas is a static mock with no product, so a sold-out or unavailable label, the notify-me form, the per-unit price, the price ladder and the framing/decoy price modes only exist once a real product in that state renders. The editor showed none of them before either: the previous placeholder carried a no-preview notice (CHECK A signal 3) that the mock replaced. Pre-existing, unpreviewable without product data, not a new desync."
     }
   ]
 }

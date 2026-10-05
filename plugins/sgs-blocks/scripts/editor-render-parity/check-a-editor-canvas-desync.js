@@ -69,6 +69,7 @@ const { SCRIM_ATTRS, checkLiveDataPlaceholderExemption, declaresScrimSupport } =
 const { NATIVE_SUPPORTS_ATTR_NAMES, readIfExists, safeParse } = require( './lib-blocks' );
 const { COMPONENT_FILE_MAP, JSX_TAG_RE } = require( './lib-config' );
 const { EDITOR_INVISIBLE_BY_DESIGN } = require( './lib-editor-invisible' );
+const { collectHelperCalls, helperReadsAttr } = require( './lib-a-helper-reads' );
 const { collectDerivedVarMapAll } = require( './lib-php-attrvars' );
 const { buildCommentMask, buildStringMask } = require( './lib-php-mask' );
 const { attributeIsNonPaintSinkOnly, collectAttrVarMapBroad } = require( './lib-php-usage' );
@@ -187,6 +188,7 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	const noticeExemptSet = checkNoPreviewNoticeExemption( ast, src, declaredAttrs );
 	const liveDataPlaceholderExempt = checkLiveDataPlaceholderExemption( phpSrc, src );
 	const scrimExempt = declaresScrimSupport( dir );
+	const helperCalls = collectHelperCalls( ast, editJsPath, excludedRanges );
 
 	const findings = [];
 	for ( const attr of destructured ) {
@@ -223,6 +225,9 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 		}
 		if ( scrimExempt && SCRIM_ATTRS.has( attr ) ) {
 			continue; // SIGNAL 5 — declared supports.sgs.scrim; the scrim paints only while open
+		}
+		if ( helperReadsAttr( attr, helperCalls ) ) {
+			continue; // SIGNAL 6 — the whole attributes object goes to a helper that reads it (lib-a-helper-reads.js)
 		}
 		findings.push( {
 			check: 'editor-canvas-desync',
