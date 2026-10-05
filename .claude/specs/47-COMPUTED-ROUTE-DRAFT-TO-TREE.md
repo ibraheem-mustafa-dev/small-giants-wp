@@ -315,8 +315,9 @@ An entry matches a row on node, state, property, width and layer: an element's e
   the entry with today's date; `report.md` prints each open row's id for this.
 
 - **Register decisions:** every entry cites the fix-register items it implements (`register`); `lint.mjs --surfaces
-  <surfaces.json> --register <register.md>` fails an entry citing no item or an item the register lacks, and a ledger
-  with entries checked against no register. House-rule entries (`touch-target`, `accessibility`) cite none.
+  <surfaces.json>` checks the ledger against the register its `qa/ledger.config.json` names (`{ "register": "<path from
+  the repo root>" }`, kept in the client's folder; `--register <file>` overrides) and fails an entry citing no item or
+  an item the register lacks, a ledger with entries and no register, and a named register that does not exist. House-rule entries (`touch-target`, `accessibility`) cite none.
 - **Independent check:** a site's `qa/independent-check.mjs` judges its differences through
   `lib/ledger.mjs::judgeIndependent` (matched on `node`); a value entry live has drifted from stays open, named by its id.
 

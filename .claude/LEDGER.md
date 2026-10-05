@@ -73,8 +73,8 @@ check after bursts of traffic: run the route's host tools with `SGS_HEADED=1` (d
 Session 0. Walker (GAP-CHECKLIST §19): reads once animations finish (900ms floor), forced `:hover` on every pair, the
 draft's declared widths, `::before`/`::after` paint keyed as calibration keys it, motion timings, a text run's row
 spacing. Solve: `--rounds 0` never writes (test); a ledgered row's target is Bean's decided value at every width it
-covers. Ledger: entries cite register items (`register`), checked by `lint.mjs --register` (the route gate's
-command now carries `--register .claude/plans/2026-10-02-eye-care-fix-register.md`); D-1 removed (Bean: the subtext
+covers. Ledger: entries cite register items (`register`), checked by the route lint against the register
+`sites/eye-care-ward-end/build/qa/ledger.config.json` names (the gate's command is unchanged); D-1 removed (Bean: the subtext
 keeps its margin; the 375px name-field drop is open under N45b); the independent check matches entries on `node`. New
 tools: `sweep.mjs` (A3), `register-sweep.mjs` (A4), `triage.mjs` (B1, reads the `includes/` helpers a render
 reaches). /code-review high fixed four defects; /qc passed 15 scenarios on local pages and real data (90/100, report

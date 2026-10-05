@@ -9,8 +9,9 @@
 //   - a --skeleton carries any attribute whose css_property is not null (Fill skeletons hold no style values);
 //   - a --surfaces manifest has a tree printing another post (a linked block, a modal or drawer reference, a template
 //     part) that no surface owns (lib/references.mjs::lintSurfaces);
-//   - the divergence ledger beside a --surfaces manifest has an entry citing no register item, or an item --register
-//     does not hold (house-rule entries exempt), or has entries and no --register is given (B4);
+//   - the divergence ledger beside a --surfaces manifest has an entry citing no register item, or an item its register
+//     does not hold (house-rule entries exempt), or has entries and no register: --register, else the "register" of
+//     qa/ledger.config.json beside it (B4);
 //   - check-no-client-names.py reports a hit inside the route folder (--no-names skips it: tests on temp copies).
 import fs from 'fs';
 import path from 'path';
@@ -153,18 +154,27 @@ export function lintLedger( entries, ids, label = 'ledger' ) {
 	return problems;
 }
 
-// The ledger beside a surfaces manifest (<build>/qa/divergences.json) checked against the register file; a ledger
-// with entries and no register to check them against is itself a problem.
-export function lintSurfaceLedger( surfacesFile, registerFile ) {
-	const file = path.join( path.dirname( path.resolve( surfacesFile ) ), 'qa', 'divergences.json' );
+// The ledger beside a surfaces manifest (<build>/qa/divergences.json) checked against its fix register: --register
+// when given, else the register its ledger.config.json names ({ "register": "<path from the repo root>" }, beside the
+// ledger, so the client's register path stays in the client's folder). A ledger with entries and no register to check
+// them against, or a named register that does not exist, is itself a problem.
+export function lintSurfaceLedger( surfacesFile, registerFile = null, repo = REPO ) {
+	const qa = path.join( path.dirname( path.resolve( surfacesFile ) ), 'qa' );
+	const file = path.join( qa, 'divergences.json' );
 	const entries = load( file );
 	if ( ! entries.length ) {
 		return [];
 	}
-	if ( ! registerFile ) {
-		return [ `${ file } has ${ entries.length } entries and no --register to check their decisions against` ];
+	const config = path.join( qa, 'ledger.config.json' );
+	const named = registerFile || ( fs.existsSync( config ) ? JSON.parse( fs.readFileSync( config, 'utf8' ) ).register : null );
+	if ( ! named ) {
+		return [ `${ file } has ${ entries.length } entries and no register to check their decisions against (--register, or "register" in ${ config })` ];
 	}
-	return lintLedger( entries, registerIds( fs.readFileSync( registerFile, 'utf8' ) ), file );
+	const register = registerFile ? path.resolve( named ) : path.resolve( repo, named );
+	if ( ! fs.existsSync( register ) ) {
+		return [ `${ file }: register ${ register } does not exist` ];
+	}
+	return lintLedger( entries, registerIds( fs.readFileSync( register, 'utf8' ) ), file );
 }
 
 function clientNameHits() {

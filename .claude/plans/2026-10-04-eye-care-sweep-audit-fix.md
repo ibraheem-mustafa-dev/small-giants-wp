@@ -100,8 +100,9 @@ tests and lint pass, and it is pushed; the About measure-only proof of A-1 runs 
 **Status (2026-10-05): every code unit built and pushed; only the host proof is left.** A1 `4f70dda13`; A-1 part 1
 (timings and `::before`/`::after` in `collect.mjs`, on main for Session 0's recalibration) `4f70dda13`, part 2 (DevTools
 reads) `f7d9003f5`; A5 `fde61f00d`; B4 `5c20163c2`; A3 `65935f7d7`. Each unit's MUST FAIL test was shown red against the
-old code. The route gate is now `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json
---register .claude/plans/2026-10-02-eye-care-fix-register.md` (a ledger with entries and no `--register` fails). Left:
+old code. The route gate's command is unchanged (`node scripts/computed-route/lint.mjs --surfaces
+sites/eye-care-ward-end/build/surfaces.json`): it checks the ledger against the register named in
+`sites/eye-care-ward-end/build/qa/ledger.config.json` (`--register` overrides; a ledger with entries and no register fails). Left:
 the About measure-only run (`solve.mjs --rounds 0`, `SGS_HEADED=1`, on the serial queue after Session 0's tail): pass
 is 0 open distinct issues, else each new row explained (new rows are expected where the forced hover, pseudo layers,
 timings or declared widths now measure what was unread).

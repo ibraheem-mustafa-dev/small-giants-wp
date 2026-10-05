@@ -74,8 +74,22 @@ test( 'MUST FAIL TO SKIP: a ledger with entries and no register to check against
 	fs.writeFileSync( path.join( d, 'surfaces.json' ), '{}' );
 	fs.writeFileSync( path.join( d, 'register.md' ), REGISTER );
 	fs.writeFileSync( path.join( d, 'qa', 'divergences.json' ), JSON.stringify( [ lentry() ] ) );
-	assert.match( lintSurfaceLedger( path.join( d, 'surfaces.json' ) ).join(), /no --register/ );
+	assert.match( lintSurfaceLedger( path.join( d, 'surfaces.json' ), null, d ).join(), /no register to check/ );
 	assert.deepEqual( lintSurfaceLedger( path.join( d, 'surfaces.json' ), path.join( d, 'register.md' ) ), [] );
 	fs.writeFileSync( path.join( d, 'qa', 'divergences.json' ), '[]' );
 	assert.deepEqual( lintSurfaceLedger( path.join( d, 'surfaces.json' ) ), [] );
+} );
+
+test( 'MUST FAIL TO SKIP: without --register the ledger is checked against the register its ledger.config.json names', () => {
+	const d = tmp();
+	fs.mkdirSync( path.join( d, 'qa' ) );
+	fs.writeFileSync( path.join( d, 'surfaces.json' ), '{}' );
+	fs.writeFileSync( path.join( d, 'register.md' ), REGISTER );
+	fs.writeFileSync( path.join( d, 'qa', 'ledger.config.json' ), JSON.stringify( { register: 'register.md' } ) );
+	fs.writeFileSync( path.join( d, 'qa', 'divergences.json' ), JSON.stringify( [ lentry( { register: [ '999' ] } ) ] ) );
+	assert.match( lintSurfaceLedger( path.join( d, 'surfaces.json' ), null, d ).join(), /cites register item 999/ );
+	fs.writeFileSync( path.join( d, 'qa', 'divergences.json' ), JSON.stringify( [ lentry() ] ) );
+	assert.deepEqual( lintSurfaceLedger( path.join( d, 'surfaces.json' ), null, d ), [] );
+	fs.writeFileSync( path.join( d, 'qa', 'ledger.config.json' ), JSON.stringify( { register: 'gone.md' } ) );
+	assert.match( lintSurfaceLedger( path.join( d, 'surfaces.json' ), null, d ).join(), /gone.md does not exist/ );
 } );
