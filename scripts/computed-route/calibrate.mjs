@@ -25,7 +25,8 @@ const REPO = path.resolve( HERE, '../..' );
 const CACHE = path.join( HERE, 'cache' );
 // Most instances one calibration page holds: larger blocks are built in chunks (google-reviews has about 400, and a
 // save of that page failed with an invalid JSON response on 2026-10-03; 157 saved).
-export const CHUNK = 150;
+// SGS_CAL_CHUNK overrides it for a run (a block whose page times out on the host is read in smaller chunks).
+export const CHUNK = Number( process.env.SGS_CAL_CHUNK ) > 0 ? Number( process.env.SGS_CAL_CHUNK ) : 150;
 
 function build( target, treeFile, extra = [] ) {
 	const r = spawnSync( 'node', [ path.join( REPO, 'scripts', 'wp-build-page.js' ), '--env-file', target.envFile, '--env-key', target.envKey, '--tree', treeFile, ...extra ], { cwd: REPO, encoding: 'utf8', timeout: 300000 } );

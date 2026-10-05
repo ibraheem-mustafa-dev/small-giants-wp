@@ -29,7 +29,8 @@ export function normaliseBundle( rel, text ) {
 	if ( /\.asset\.php$/.test( rel ) ) {
 		return text.replace( /'version'\s*=>\s*'[^']*'/g, "'version' => ''" );
 	}
-	const ids = [ ...text.matchAll( /[{,](\d+)\(\)\{/g ) ].map( ( m ) => m[ 1 ] );
+	// A module is `NNN(){` or, when it uses exports or require, `NNN(e,t,r){`.
+	const ids = [ ...text.matchAll( /[{,](\d+)\([\w$,\s]*\)\{/g ) ].map( ( m ) => m[ 1 ] );
 	return ids.reduce( ( t, id, i ) => t.replace( new RegExp( `([{,(])${ id }(?=[(){},])`, 'g' ), `$1M${ i }` ), text );
 }
 

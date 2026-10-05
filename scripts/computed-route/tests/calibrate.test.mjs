@@ -30,6 +30,11 @@ test( 'two builds of one commit (module 2310 and 6469) normalise to the same tex
 	assert.equal( normaliseBundle( './view.asset.php', "<?php return array('dependencies' => array(), 'version' => 'abc');" ), normaliseBundle( './view.asset.php', "<?php return array('dependencies' => array(), 'version' => 'def');" ) );
 } );
 
+test( 'MUST FAIL: a module taking parameters (webpack 5 with exports or require) normalises alike across builds', () => {
+	const param = ( a, b ) => `var e={${ a }(e,t,r){r(${ b })},${ b }(){}};`;
+	assert.equal( normaliseBundle( './view.js', param( 2310, 4410 ) ), normaliseBundle( './view.js', param( 6469, 912 ) ) );
+} );
+
 test( 'MUST FAIL TO MATCH: a real code change still differs after normalising', () => {
 	assert.notEqual( normaliseBundle( './view.js', bundle( 2310, 'data-a' ) ), normaliseBundle( './view.js', bundle( 6469, 'data-b' ) ) );
 	assert.notEqual( normaliseBundle( './view.asset.php', "array('dependencies' => array('a'), 'version' => 'x')" ), normaliseBundle( './view.asset.php', "array('dependencies' => array('b'), 'version' => 'x')" ) );

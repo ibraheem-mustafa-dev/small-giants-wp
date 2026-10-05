@@ -186,7 +186,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `localBlockHash(dir)`, `remoteBlockHash(site, short)`: md5 of a block's front-end build files (bundles normalised), same listing both sides.
 
 ### `calibrate.mjs` (runs `wp-build-page.js`, ssh, Playwright)
-- `CHUNK`: the most instances one calibration page holds (150); a larger block is built and read in chunks, each carrying every variant's default instance.
+- `CHUNK`: the most instances one calibration page holds (150, or `SGS_CAL_CHUNK` for a run); a larger block is built and read in chunks, each carrying every variant's default instance.
 - Re-exports `lib/deploy-hash.mjs`'s key functions.
 
 ### `lib/solve-rows.mjs`
