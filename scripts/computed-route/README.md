@@ -43,6 +43,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/calibrate-read.mjs` | The in-page reader and the per-width read under each state trigger. |
 | `lib/calibrate-chunk.mjs` | How calibration builds a block's page in pieces: the child process's heap, the fixture's own chunk size, and halving a chunk whose build timed out. |
 | `lib/calibrate-container.mjs` | What a block's source says before any browser opens: whether its tiers follow its container's width (an `@container` rule in the built CSS, or a render passing `container_queries`/`container` true), and whether its render returns early on this site. |
+| `lib/calibrate-content.mjs` | The content side of calibration: which elements a setting makes appear or disappear, whose text it prints and which it makes a link — the settings that paint no CSS property, queried by framework-database `role` because `attrsFor` never returns them. |
 | `lib/deploy-hash.mjs` | The deploy key: md5 of a block's front-end build files, locally and on the site. |
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, classification. |
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json`. |
@@ -75,6 +76,11 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/calibrate-fixtures.test.mjs` | FR-47-2: each planned fixture variant, parent chain and `<p>` text variant traces to the render source that needs it. |
 | `tests/calibrate-partners.test.mjs` | FR-47-2: the background-image, hover shadow-shape and hover border-gradient partners a marker needs to paint; a marker no read equals is reached wherever its element changed. |
 | `tests/calibrate-reason.test.mjs` | FR-47-2: a block whose render returns early on this site is named, not waited out; no committed snapshot enables the dark palette `theme-toggle` needs. |
+| `tests/calibrate-overridden.test.mjs` | FR-47-2 (L7.1 gap typing): an inherited setting records the descendant whose own rule overrides it, topmost of each blocked subtree only; a descendant already at the marker value, a pseudo layer and a non-inherited property record nothing. |
+| `tests/calibrate-presence.test.mjs` | FR-47-2 (L7.2): a boolean that shows and hides elements records both; an element rendered but not displayed counts as absent; a boolean that only recolours yields no presence entry. |
+| `tests/calibrate-text.test.mjs` | FR-47-2 (L7.3): the deepest element carrying the marker string is the text path, not its wrapper; both `content` and `text-content` roles get a marker; a setting holding a list or an object takes none. |
+| `tests/calibrate-link.test.mjs` | FR-47-2 (L7.4): a URL setting landing on a nested `<a href>` records that path and attribute; a target setting records `target`, not `href`; every link needle survives percent-encoding whole. |
+| `tests/calibrate-content-rows.test.mjs` | FR-47-2: the role query reads both halves of each role pair and only SGS-owned rows (R-47-10); content instances carry their own preconditions, so a variant-gated setting is not credited with everything its variant renders. |
 | `tests/independent-check.test.mjs` | PA-4: screen-reader-only and off-page text is not counted as painted by a site's `qa/independent-check.mjs`. |
 | `tests/walker-reads.test.mjs` | A-1 at unit level: motion timings and `::before`/`::after` layers are rows Solve can write on calibration's layer path; a declared width passes Solve's used-value gate; a text run's spacing is a `row-gap` row. |
 | `tests/sweep.test.mjs` | The sweep (A3): a surface's issue total equals `wholePage`'s distinct count, unmapped walker states included (class `unmapped-state`); a row two surfaces walking one config share counts once (`alsoIn`), while block-less rows of the same pair name from two configs stay two; a surface with no report is unmeasured; another surface's block is not counted. |
@@ -201,6 +207,25 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `slotFor(row, marker, defReads, markReads, { containerQuery })` → `{ slot, slots, property, transform, reachedAt, oneWidth, containerTier?, effects }` or `{ dead }`; with `containerQuery` (the block's CSS has an `@container` rule) a tier reached at fewer page widths is `containerTier`, not `oneWidth`.
 - `discoverEffects(defReads, markReads)` → what one enum value changes: `{ prop: { slots, value } }`.
 - `defaultPaint(defReads)` → per element and width, non-inherited properties.
+- `overridingChildren(props, marker, defReads, slot, reaches)` → the descendants of an inherited setting's slot whose own rule overrides its value, topmost of each blocked subtree only.
+- `mergeSetting(prev, s, { state, form, variant })` → one setting's cache entry, folding a fresh reading into the entry its earlier markers built; array fields are the union across markers.
+
+### `lib/calibrate-content.mjs` (Playwright pages)
+- `MARKER_TEXT`, `MARKER_NUMBER` → the marker a text setting prints: letters and digits only, so every WordPress escape leaves it byte-identical and no word-trim can split it.
+- `MARKER_SLUG`, `MARKER_URL`, `MARKER_PHONE` → the link markers; the needle is unreserved characters only, so composing it into a query string leaves it whole, and the URL sits on the RFC 2606 reserved `.invalid` domain.
+- `LINK_ATTRS` → the DOM attributes a link setting can write, in the order a reading prefers them.
+- `PRESENCE_ROLES`, `TEXT_ROLES`, `LINK_ROLES` → the framework-database roles each content read covers, both halves of each pair (Bean, 2026-10-05).
+- `contentRowsFor(db, block)` → one block's content settings by role, SGS-owned only: `{ presence, text, link }`.
+- `contentMarkerFor(row, kind, schema)` → the marker for one content setting (`{ label, attrs, needle }`), or null when its shape can hold none.
+- `variantPresenceValues(schema, variant, current)` → the values of a block's variant setting that get their own presence reading.
+- `planContentInstances(block, { contentRows, variant, schema, fixture, ctx })` → `{ instances, noMarker }`: one instance per content setting plus the baseline instances their preconditions need.
+- `needlesOf(instances)` → every needle the page must be searched for, once each.
+- `readContentInPage(args)` → in-page: per element, whether it is present and which needles its text and link attributes carry.
+- `readContentAll(page, url, instances, needles)` → the content read of every instance at each width, `{ width: [ reads ] }`.
+- `presenceFrom(defRead, markRead)` → `{ shows, hides }`: the elements a flip makes appear and disappear, from existence and display only, so a recolour yields nothing.
+- `textFrom(needle, markRead)` → `{ path, reachedAt }` for the deepest element carrying the marker, or null.
+- `linkFrom(needle, markRead)` → `{ path, attr }` for the element carrying the marker in its most preferred link attribute, or null.
+- `collectContent(instances)` → the cache file's `text`, `presence` and `link` keys, each omitted when the block has nothing of that kind.
 
 ### `lib/calibrate-chunk.mjs`
 - `NODE_HEAP_FLAG`, `MIN_CHUNK`: the heap flag the build child is spawned with, and the smallest chunk halving will go to.

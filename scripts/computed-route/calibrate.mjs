@@ -19,7 +19,8 @@ import { skipReason } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
-import { WIDTHS, buildTree, slotFor, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, readAll } from './lib/calibrate.mjs';
+import { WIDTHS, buildTree, slotFor, mergeSetting, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, readAll } from './lib/calibrate.mjs';
+import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 
 export { REMOTE_PLUGIN, EDITOR_ONLY, BUNDLE_TEXT, normaliseBundle, TEXT_FILE, lfText, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 
@@ -112,9 +113,14 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const schema = blockSchema( block ) || {};
 	const rows = attrsFor( db, block ).filter( ( r ) => longhands( r.css_property ).length );
 	// Preconditions come from the framework's own data: the block's variant slots and a media object on the site.
-	const plan = planInstances( block, { rows, enumRows: enumSettings( db, block ), schema, snapshot, fixture, ctx: { ...variantInfo( db, block ), image } } );
-	let instances = plan.instances;
-	const noMarker = plan.noMarker;
+	const variant = variantInfo( db, block );
+	const plan = planInstances( block, { rows, enumRows: enumSettings( db, block ), schema, snapshot, fixture, ctx: { ...variant, image } } );
+	// Text, presence and link settings paint no CSS property, so attrsFor never returns them: they are queried by role
+	// and planned apart (lib/calibrate-content.mjs), then read for existence, text and link attributes.
+	const contentPlan = planContentInstances( block, { contentRows: contentRowsFor( db, block ), variant, schema, fixture, ctx: { ...variant, image } } );
+	const needles = needlesOf( contentPlan.instances );
+	let instances = [ ...plan.instances, ...contentPlan.instances ];
+	const noMarker = new Set( [ ...plan.noMarker, ...contentPlan.noMarker ] );
 	// A state with no trigger (lib/calibrate.mjs::STATE_TRIGGERS) is reported, never calibrated.
 	const states = rows.filter( ( r ) => r.css_state && undefined === triggerFor( r.css_state ) ).map( ( r ) => `${ r.attr_name }:${ r.css_state }` );
 	instances = instances.filter( ( i ) => ! i.row || undefined !== i.trigger );
@@ -178,7 +184,11 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 			return { block, error: `calibration build failed${ where() }: ${ built.err.slice( -600 ) }` };
 		}
 		await closeStrayTabs( shared );
-		const reads = await readAll( shared.page, built.json.link || `${ env.url }/?page_id=${ target.postId }`, list );
+		const pageUrl = built.json.link || `${ env.url }/?page_id=${ target.postId }`;
+		const reads = await readAll( shared.page, pageUrl, list );
+		// A second pass only when this chunk holds a content instance: the content read records node existence, text and
+		// link attributes, which no computed-style read carries.
+		const contentReads = list.some( ( i ) => i.content ) ? await readContentAll( shared.page, pageUrl, list, needles ) : {};
 		// Each instance keeps its own reads and its chunk's default reads (rest and scrolled) for its variant.
 		const chunkDefault = {};
 		const chunkBase = {};
@@ -197,7 +207,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 				return;
 			}
 			const d = inst.baseKey ? chunkBase[ inst.baseKey ] : chunkDefault[ inst.variant ];
-			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), scrollMissed: reads.scrollMissed.includes( n ) } );
+			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
 		} );
 		done++;
 	}
@@ -226,7 +236,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 			}
 			return;
 		}
-		if ( ! inst.row ) {
+		if ( inst.content || ! inst.row ) {
 			return;
 		}
 		const name = inst.row.attr_name;
@@ -247,16 +257,16 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 			dead.push( name );
 			return;
 		}
-		const prev = settings[ name ];
-		const union = ( a, b ) => [ ...new Set( [ ...( a || [] ), ...( b || [] ) ] ) ];
-		settings[ name ] = { slot: prev?.slot ?? s.slot, slots: union( prev?.slots, s.slots ), ...( s.reaches || prev?.reaches ? { reaches: union( prev?.reaches, s.reaches ) } : {} ), property: s.property, state: inst.row.css_state || null, forms: union( prev?.forms, inst.marker.form ? [ inst.marker.form ] : [] ), transform: s.transform || prev?.transform || null, reachedAt: s.reachedAt, effects: union( prev?.effects, s.effects ), variants: union( prev?.variants, [ inst.variant ?? 0 ] ) };
+		settings[ name ] = mergeSetting( settings[ name ], s, { state: inst.row.css_state, form: inst.marker.form, variant: inst.variant } );
 		if ( s.oneWidth ) {
 			oneWidth.push( { key: inst.key, reachedAt: s.reachedAt } );
 		}
 	} );
 	// Dead: no marker of the setting changed anything (a setting with one live marker is not dead).
 	const deadNames = [ ...new Set( dead ) ].filter( ( n ) => ! settings[ n ] );
-	const file = { block, site, slotKey, paintKey, measured: new Date().toISOString(), settings, discovered, elements, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
+	// text, presence and link are omitted entirely when the block has nothing of that kind.
+	const content = collectContent( instances.filter( ( i ) => i.content && i.contentRead ) );
+	const file = { block, site, slotKey, paintKey, measured: new Date().toISOString(), settings, discovered, elements, ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
 	fs.writeFileSync( path.join( CACHE, `${ short }.json` ), JSON.stringify( file, null, 1 ) );
 	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }

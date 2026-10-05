@@ -9,6 +9,7 @@ export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT, 
 export { markersFor, companionWidth, borderPartners, shadowPartners, SHADOW_SHAPE, KEYWORDS } from './calibrate-markers.mjs';
 export { STATE_TRIGGERS, triggerFor, planInstances, preconditionsFor, layoutModes, stateTarget } from './calibrate-instances.mjs';
 export { readInstancesInPage, readAll, SCROLL_Y } from './calibrate-read.mjs';
+export { MARKER_TEXT, MARKER_NUMBER, MARKER_SLUG, MARKER_URL, MARKER_PHONE, LINK_ATTRS, PRESENCE_ROLES, TEXT_ROLES, LINK_ROLES, contentRowsFor, contentMarkerFor, variantPresenceValues, planContentInstances, needlesOf, readContentInPage, readContentAll, presenceFrom, textFrom, linkFrom, collectContent } from './calibrate-content.mjs';
 export { elementPath } from '../../parity/lib/ref-trace.mjs';
 
 // One calibration tree for a block: every instance wrapped in an sgs/container (class cr-cal-<block>-<key>), the
@@ -73,7 +74,55 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	// An inherited property also records every element the marker reached (a link's label inheriting the root's
 	// colour); a descendant whose own rule overrides the value never changes, so it is never among them.
 	const reaches = inherited ? [ ...new Set( pool.map( ( c ) => c.path ) ) ].sort( ( a, b ) => depth( a ) - depth( b ) ) : null;
-	return { slot: best.path, slots, ...( reaches ? { reaches } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
+	const overriddenBy = reaches ? overridingChildren( props, marker, defReads, best.path, reaches ) : [];
+	return { slot: best.path, slots, ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
+}
+
+const pathDepth = ( p ) => ( '' === p ? 0 : p.split( ' > ' ).length );
+
+// The descendants of `slot` whose own rule overrides an inherited setting's value: they were rendered and read for
+// the setting's property, the slot's value should have inherited down to them, and yet the marker never changed them
+// (`reaches` holds every element it did change). Only the topmost element of each blocked subtree is named: everything
+// below it inherits that element's rule, so it carries no rule of its own that this reading can prove.
+// A descendant that already computed the marker's own value by default could not change either, so it is not one.
+// Pseudo-element layers are excluded: they are read for a different property list, so their absence proves nothing.
+// `props` are the setting's longhands, all inherited (the caller only asks for an inherited property).
+export function overridingChildren( props, marker, defReads, slot, reaches ) {
+	const under = '' === slot ? '' : `${ slot } > `;
+	const paths = [ ...new Set( WIDTHS.flatMap( ( w ) => Object.keys( defReads[ w ] || {} ) ) ) ];
+	const blocked = paths.filter( ( p ) => {
+		if ( p === slot || p.includes( '::' ) || ! p.startsWith( under ) || reaches.includes( p ) ) {
+			return false;
+		}
+		// Read for the property at some width, and not already sitting at the value the marker expects there.
+		return WIDTHS.some( ( w ) => props.some( ( prop ) => {
+			const v = defReads[ w ]?.[ p ]?.[ prop ];
+			return undefined !== v && ! ( marker.expect && sameVal( v, marker.expect[ w ] ) );
+		} ) );
+	} );
+	return blocked.filter( ( p ) => ! blocked.some( ( q ) => q !== p && p.startsWith( `${ q } > ` ) ) ).sort( ( a, b ) => pathDepth( a ) - pathDepth( b ) );
+}
+
+// One setting's entry in the cache file, folding a fresh reading into the entry its earlier markers built. prev:
+// the entry so far (undefined for the first marker); s: a slotFor reading; ctx: { state, form, variant } from the
+// instance. Array fields are the union across every marker; the slot is the first marker's.
+export function mergeSetting( prev, s, { state = null, form = null, variant = 0 } = {} ) {
+	const union = ( a, b ) => [ ...new Set( [ ...( a || [] ), ...( b || [] ) ] ) ];
+	const reaches = s.reaches || prev?.reaches ? union( prev?.reaches, s.reaches ) : null;
+	const overriddenBy = union( prev?.overriddenBy, s.overriddenBy );
+	return {
+		slot: prev?.slot ?? s.slot,
+		slots: union( prev?.slots, s.slots ),
+		...( reaches ? { reaches } : {} ),
+		...( overriddenBy.length ? { overriddenBy } : {} ),
+		property: s.property,
+		state: state || null,
+		forms: union( prev?.forms, form ? [ form ] : [] ),
+		transform: s.transform || prev?.transform || null,
+		reachedAt: s.reachedAt,
+		effects: union( prev?.effects, s.effects ),
+		variants: union( prev?.variants, [ variant ?? 0 ] ),
+	};
 }
 
 // What one enum value of a setting with no css_property changes: every read property that differs from the default

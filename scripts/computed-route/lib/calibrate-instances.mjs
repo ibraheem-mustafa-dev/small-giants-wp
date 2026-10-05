@@ -48,16 +48,19 @@ function gatingToggle( attr, schema, current ) {
 // overlay. ctx: { variantAttr, variantSlots: [ { variant_value, unique_slot } ], image }.
 export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 	const out = {};
+	// A text, presence or link setting paints no CSS property at all, so every property test reads an empty list.
+	const properties = String( row.css_property ?? '' ).split( ',' ).map( ( p ) => p.trim() ).filter( Boolean );
+	const first = properties[ 0 ] || '';
 	const slot = ( ctx.variantSlots || [] ).find( ( s ) => s.unique_slot === row.attr_name );
 	if ( slot && ctx.variantAttr && current[ ctx.variantAttr ] !== slot.variant_value ) {
 		out[ ctx.variantAttr ] = slot.variant_value;
 	}
 	Object.assign( out, gatingToggle( row.attr_name, schema, current ) );
-	Object.assign( out, borderPartners( row.attr_name, row.css_property.split( ',' )[ 0 ].trim(), schema ) );
-	Object.assign( out, shadowPartners( row.attr_name, row.css_property.split( ',' )[ 0 ].trim(), schema ) );
+	Object.assign( out, borderPartners( row.attr_name, first, schema ) );
+	Object.assign( out, shadowPartners( row.attr_name, first, schema ) );
 	// A background image under an overlay or scrim, and under a setting that only shapes an image (its size, position,
 	// attachment, repeat, origin, clip or blend): none of them paints on a block with no image.
-	if ( ( /overlay|scrim/i.test( row.attr_name ) || IMAGE_SHAPING.test( row.attr_name ) || row.css_property.split( ',' ).some( ( p ) => IMAGE_SHAPING_PROPS.test( p.trim() ) ) ) && ctx.image && schema.backgroundImage && ! current.backgroundImage ) {
+	if ( ( /overlay|scrim/i.test( row.attr_name ) || IMAGE_SHAPING.test( row.attr_name ) || properties.some( ( p ) => IMAGE_SHAPING_PROPS.test( p ) ) ) && ctx.image && schema.backgroundImage && ! current.backgroundImage ) {
 		out.backgroundImage = { ...ctx.image };
 	}
 	return out;
