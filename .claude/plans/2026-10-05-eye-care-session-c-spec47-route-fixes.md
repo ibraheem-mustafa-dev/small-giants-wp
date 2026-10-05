@@ -2,7 +2,7 @@
 title: "Eye Care Session C: repair the measuring route (Spec 47 gaps only)"
 project: small-giants-wp
 created: 2026-10-05
-status: not started
+status: in progress (sitting i, Wave 0 done)
 governs: Session C of .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md
 references:
   - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
@@ -18,7 +18,7 @@ references:
 that ignore how the framework works, and a fresh measure-only sweep and triage on the repaired route record a new
 framework-gap count. **No block controls and no shared CSS files are touched in this session.**
 
-**Status: not started.** Bean approved this work and set its order: the route first, the findings afterwards.
+**Status: in progress.** Wave 0 is done (results below). Bean approved this work and set its order: the route first, the findings afterwards.
 The brief he worked from is the Gate B doc, https://claude.ai/code/artifact/d3b24008-a0bc-403f-83ae-a8788dd7501f.
 
 ## Why the route is repaired before any finding is judged
@@ -147,27 +147,102 @@ Two or more sessions share this worktree, so the commit discipline is part of th
 rows that resolve today can become `ambiguous`. A rise in that count is a **fail**, and it cannot be detected
 without the baseline.
 
-#### W0a in detail (C0.3): 15 entries, 15 of the 17 D rows, no code
+#### Wave 0 results, measured 2026-10-05
 
-Of the 17 **D** rows, 14 are `sgs/business-info`'s link padding and margin on the **footer**
-(`cr-ref-footer-24`, all eight properties) and the **header** (`cr-ref-header-11`, six of them).
-`divergences.json::D-17`–`D-24` already decide those exact properties on that exact element with
-`expected: { rule: 'touch-target' }`, but they are pinned to `cr-ref-contact-9` alone, so the same decided
-mechanism re-reports as 14 fresh candidates on the other two surfaces. Add the entries for those two nodes. It is
-a house rule, so they cite no register item (`lint.mjs::HOUSE_RULES` exempts `touch-target` and `accessibility`).
-The measured negative margin equals the padding, so the text paints where the draft's does.
+**C0.1 — live = HEAD, proven by the deploy marker and a code diff.** The recorded block code `4726700c1` was
+stale, as suspected. `~/.sgs-deploy-marker-<target>.json` in the SSH home (written by
+`build-deploy.py::write_deploy_marker`) records **eye-care-test and sandybrown both at `7f375f765`**, deployed
+2026-10-05 19:38 and 19:30 — the Google reviews track finished its deploy to both sites. `7f375f765` is an
+ancestor of HEAD `c683e942b`, and
+`git diff --name-only 7f375f765..HEAD -- plugins/sgs-blocks/src plugins/sgs-blocks/includes plugins/sgs-blocks/*.php theme/`
+is **empty**: the four commits since are docs-only. **So the live block code is identical to HEAD's, and C3.6's
+sweep is recorded at block code `7f375f765`.** The peer repairs track confirms it has deployed nothing to
+eye-care-test and has run no reseed.
 
-**Give each new entry its own `scope`.** `D-17` to `D-24` all carry `scope: "contact"` (verified in `divergences.json`),
-and `parity/lib/divergences.mjs` matches on scope, so a copy left at `contact` would match nothing on the footer or
-the header. The new entries take `scope: "footer"` and `scope: "header"`, and the product one `scope: "product"`.
+**C0.2 — no work needed; the blocker was already gone.** Calibration page 4750 holds **1 byte and zero
+`sgs/cta-section` blocks**: calibration replaced it with an empty tree at the end of its last run. Because
+`--dry-run` *skips* the oldshape step, the gate was replicated read-only — target post types enumerated with the
+same `NON_BLOCK_POST_TYPES` exclusions, one bulk `wp post list --format=json` fetch, then
+`plugins/sgs-blocks/scripts/audit-post-content-blocks.py <dir> --check --baseline
+plugins/sgs-blocks/scripts/oldshape-audit-baseline.json`: **483 posts scanned, exit 0, PASS**, findings
+`[INFO] empty-innerblocks` only plus 6 already baselined. The peer track was told sandybrown is clear to deploy.
 
-One more entry: `cr-ref-product-4`'s option `transform` (draft a 2px lift, live 3px, which is S1's decision that
-every button lifts 3px), citing `S1`.
+**C0.4 — the four baselines. Every later gate compares against these.**
 
-**The count: 15 new entries closing 15 of the 17 D rows.** Eight on `cr-ref-footer-24`, six on `cr-ref-header-11`,
-one on `cr-ref-product-4`. The remaining two D rows are `sgs/google-reviews` timing, which belong to the parallel
-track. These 15 sit **outside** the F count, so F does not change: what they remove is 15 rows that would
-otherwise re-report as fresh candidates every time those surfaces are measured.
+| Baseline | Value |
+|---|---|
+| Route tests | **237 of 237 pass**, host quiet (`node --test "scripts/computed-route/tests/*.test.mjs"`) |
+| Ambiguous rows | **43** (triage verdicts carrying a resolver `gap: 'ambiguous'`, across all 17 surfaces). A rise is a Gate 1 **fail** |
+| `calibration.discovered` | **623 entries across 94 blocks**. Cache dir holds 190 files = 94 `<block>.json` caches + 96 `<block>.tree.json` trees. **`theme-toggle` is the only real block with no cache**, confirming CR12 (L5.3); `empty` is the empty-tree fixture, not a block |
+| `enumSettings` pool | **633 rows** exactly (`css_property IS NULL AND enum_values IS NOT NULL`) |
+
+⚠️ **The F count has two values, and confusing them would wreck C3.8.** The committed triage files hold the
+**raw** machine classification; this plan's headline figures are Session B's **audited** classification.
+
+| Class | Raw triage (`qa/triage/*.json`) | Session B's audit of the raw F | Audited (this plan's figures) |
+|---|---|---|---|
+| W | 1,562 | +148 | **1,710** |
+| F | **338** | 163 stay F | **163** |
+| T | 445 | +2 | **447** |
+| U | 28 | — | **28** |
+| D | — | 17 | **17** |
+| deferred | — | 8 | **8** |
+| **Total** | **2,373** | 338 audited | **2,373** |
+
+Session B audited all **338** raw-F rows (grouped as 271 combos in
+`.claude/reports/2026-10-05-session-b/b2/*-verdicts.json`, every one with `candidate: 'F'`) and split them
+163 F / 148 W / 17 D / 8 deferred / 2 T. Both columns total 2,373 and reconcile exactly.
+
+**Consequence for C3.7 and C3.8.** A re-run of triage produces a **raw** number, comparable to **338** and
+**never to 163**: comparing it against 163 would report a false catastrophic regression. Worse, **148 of those
+338 rows were already hand-moved from F to W by Session B for substantially the reasons FR-47-8's canvas rule
+automates** — so much of the canvas rule's benefit is already inside the audited 163 but absent from the raw 338.
+**C3.8 therefore reports raw-against-raw (338 → new raw F) as the headline**, states the per-lane movement
+against that, and says plainly that an audited-equivalent figure needs Session C2's judgement and is not
+something this session can produce.
+
+#### W0a (C0.3): 12 entries written, 3 held back with evidence. Done 2026-10-05.
+
+Of the 17 **D** rows, 14 are `sgs/business-info`'s link padding and margin on the **footer** (`cr-ref-footer-24`,
+all eight properties) and the **header** (`cr-ref-header-11`, six). `divergences.json::D-17`–`D-24` already decide
+those exact properties on that exact element with `expected: { rule: 'touch-target' }`, but they are pinned to
+`cr-ref-contact-9`, so the same decided mechanism re-reported as fresh candidates on the other two surfaces. The
+remaining 3 are `sgs/google-reviews` (2, the parallel track's) and one `sgs/buybox` transform.
+
+**Written: 12 entries, `D-40` to `D-51`** (the ledger held 36 entries, highest id `D-39`). Eight on
+`cr-ref-footer-24` (state `opening`, all four widths) and four on `cr-ref-header-11` (state `closed`, **widths
+`[1440, 1920]` only** — its rows exist at no other width). Each carries its own `scope` (`footer`, `header`),
+because `parity/lib/divergences.mjs` matches on scope and a copy left at `contact` would match nothing. House
+rules cite no register item (`lint.mjs::HOUSE_RULES` skips `touch-target` and `accessibility`).
+
+**Proven, not assumed.** `lib/ledger.mjs::match` run against the committed footer and header walk reports:
+`D-40`–`D-47` match **4 row-instances each**, `D-48`–`D-51` match **2 each** — **40 row-instances matched, 0
+matched by any other entry** (no over-reach), and the only unmatched rows are the 3 held back.
+
+**Three rows deliberately NOT closed, each with its measured reason.** None is dropped; each is named for
+Session C2.
+
+| Row | Why it was not closed |
+|---|---|
+| `cr-ref-header-11` **`padding-left`** and **`padding-right`** (2 rows, 1440/1920) | The `touch-target` rule does not explain them. Measured: **draft declares 10px, live paints 7.5px** — live pads *less* than the draft, so this is a real declared-padding difference, not a tap-area expansion cancelled by a negative margin. Marking it `touch-target` would freeze a 2.5px difference as intended. **Session C2 judges it**; the 4 margin rows on the same node *are* the touch-target mechanism (draft 0px, live pulls -7.5px side and -12.625px vertical) and are closed |
+| `cr-ref-product-4` **`transform`** (1 row, hover, 768/1440/1920) | ⚠️ **The ledger cannot express it safely.** `lib/ledger.mjs::match` has **no path discriminator** — it matches on node, state, pseudo, property and width only. `cr-ref-product-4` carries **three** F-class hover `transform` rows on different paths (an option pill, the add-to-bag button at `.sgs-buybox__config-col > form > button`, and a gallery `.sgs-media-el`). Session B decided **only** the add-to-bag button (register S1: draft `matrix(1,0,0,1,0,-2)` = 2px lift, live `-3` = the site-wide 3px lift). One entry would silently close the other two genuine findings, which is exactly what the "never add a ledger entry to close a row" guardrail forbids. **S1 already decides it, so C2 closes it by citation with no entry needed** |
+
+**A newly found route gap, recorded for Spec 47 §5 Residual.** The divergence ledger has no way to scope a
+decision to one element path when a node holds several rows of the same property and state. It is why the product
+row cannot be written. Not fixed here: it is not a listed item in "The work", it would change the shared ledger
+schema, `lint.mjs` and all 48 existing entries, and the row it would close is already decided by S1. Session C2 or
+a later session owns it.
+
+**These 12 sit outside the F count**, so F does not change. What they remove is 12 rows that would otherwise
+re-report as fresh candidates every time the footer and header are measured.
+
+**Verification.** `node scripts/computed-route/lint.mjs --register .claude/plans/2026-10-02-eye-care-fix-register.md
+--surfaces sites/eye-care-ward-end/build/surfaces.json` passes. ⚠️ **The negative control the plan originally named
+is vacuous**: a planted bogus register id on a new `touch-target` entry leaves the lint **green**, because
+`lint.mjs::lintLedger` `continue`s on `HOUSE_RULES` before it ever reads `register`. The valid control plants the
+bogus id on a **value** entry — done on `D-39` (which cites `113`/`S1`): lint failed with
+`entry D-39 cites register item NOT-A-REAL-ITEM-999, which the register does not hold`, exit 1, then green again
+once restored.
 
 ### Wave 1, six lanes in parallel (file sets are disjoint)
 
