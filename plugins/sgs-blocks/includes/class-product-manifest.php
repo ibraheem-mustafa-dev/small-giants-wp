@@ -156,7 +156,9 @@ final class Product_Manifest {
 		// manifest, never re-reading WC — SEC-1 single source of truth).
 		// v7: gallery merges operator gallery, variation image, parent image and
 		// the parent's WooCommerce gallery; adds hasOwnImage per combo.
-		$cache_key = 'sgs_manifest_v7_' . $product_id . '_' . self::tax_fingerprint();
+		// v8: hasOwnImage reads the variation image in 'edit' context, so it is
+		// false when WC would have substituted the parent's image.
+		$cache_key = 'sgs_manifest_v8_' . $product_id . '_' . self::tax_fingerprint();
 		$cached    = \get_transient( $cache_key );
 
 		global $wpdb;
@@ -325,7 +327,14 @@ final class Product_Manifest {
 			// strip. The meta goes through the sanitiser first because it also
 			// explodes a legacy CSV/JSON value; the merged list goes through it
 			// again as the trust boundary (image attachments only).
-			$vid         = (int) $variation->get_image_id();
+			// 'edit' context, because WC_Product_Variation::get_image_id() substitutes
+			// the PARENT's image in the default 'view' context when the variation has
+			// none of its own. hasOwnImage below must mean the variation's own photo,
+			// so a view-context read would mark every variation of a product as having
+			// one and show the same parent photo on every swatch instead of the colour.
+			// The merged gallery is unaffected: the parent featured image is the next
+			// entry in the list anyway, so the deduped result is identical either way.
+			$vid         = (int) $variation->get_image_id( 'edit' );
 			$gallery_ids = Configurator_Meta::sanitize_id_array(
 				\array_merge(
 					Configurator_Meta::sanitize_id_array(
