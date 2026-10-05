@@ -2,7 +2,7 @@
 // marked instance per setting and marker), and works out from the readings which element and property each setting
 // paints (the slot map) and each element's default paint. Markers: lib/calibrate-markers.mjs; instance planning and
 // preconditions: lib/calibrate-instances.mjs; the browser reader: lib/calibrate-read.mjs.
-import { WIDTHS, INHERITED, longhands } from './calibrate-props.mjs';
+import { WIDTHS, INHERITED, CAL_PREFIX, longhands } from './calibrate-props.mjs';
 import { splitProperty } from './resolve.mjs';
 
 export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, CAL_PREFIX, READ_PROPS, INHERITED, longhands } from './calibrate-props.mjs';
