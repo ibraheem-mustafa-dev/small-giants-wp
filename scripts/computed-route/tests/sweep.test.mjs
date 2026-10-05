@@ -12,7 +12,7 @@ const walk = ( rows ) => ( { runs: [ { state: 'rest', width: 375, pairs: Object.
 
 test( 'three widths on one ref and property are one issue, matching wholePage', () => {
 	const rows = [ ...widths(), row( { key: 'margin-top' } ), row( { kind: 'hover', key: 'color', state: 'hover' } ) ];
-	const rep = report( { missing: rows, other: [ row( { kind: 'text', key: 'content' } ) ] } );
+	const rep = report( { missing: rows, other: [ row( { kind: 'motion', key: 'duration' } ) ] } );
 	const { rows: out, otherRows } = issueRows( rep, 'a', 'r.json' );
 	assert.equal( out.length, 3 );
 	assert.equal( otherRows, 1 );
@@ -76,4 +76,35 @@ test( 'MUST FAIL: a visual row from an unmapped walker state is an issue (class 
 	assert.equal( otherRows, 1 );
 	assert.equal( out.length, wholePage( walk( [] ), walk( rows ), rep.classes, 'cr-ref-a-' ).after );
 	assert.equal( aggregate( [ { surface: 'a', reportPath: 'r.json', report: rep } ] ).byClass[ 'unmapped-state' ], 1 );
+} );
+
+// Content rows (Spec 47 §3.3): text and presence rows are open issues on the page, filed under their own class because
+// "the surface maps no setting state" is false for them. Link coverage is kind auto, key prefix link-missing/link-extra.
+test( 'MUST FAIL: text and presence rows are issues of class content; a Solve class holding the key keeps it', async () => {
+	const { CONTENT_KINDS, VISUAL } = await import( '../lib/issue-classes.mjs' );
+	assert.deepEqual( CONTENT_KINDS, [ 'text', 'presence' ] );
+	assert.ok( CONTENT_KINDS.every( ( k ) => VISUAL.includes( k ) ) );
+	const text = row( { kind: 'text', key: 'content', reason: 'no setting' } );
+	const presence = row( { kind: 'presence', key: 'exists', ref: 'cr-ref-a-2' } );
+	const held = row( { kind: 'text', key: 'content', ref: 'cr-ref-a-3' } );
+	const rows = [ text, presence, held, row( { kind: 'motion', key: 'duration' } ) ];
+	const rep = report( { missing: [ held ], other: [ text, presence, held, rows[ 3 ] ] } );
+	const { rows: out, otherRows } = issueRows( rep, 'a', 'r.json' );
+	assert.deepEqual( out.map( ( x ) => [ x.row.kind, x.row.class ] ), [ [ 'text', 'missing' ], [ 'text', 'content' ], [ 'presence', 'content' ] ] );
+	assert.equal( otherRows, 1 );
+	assert.equal( out.length, wholePage( walk( [] ), walk( rows ), rep.classes, 'cr-ref-a-' ).after );
+	const agg = aggregate( [ { surface: 'a', reportPath: 'r.json', report: rep } ] );
+	assert.equal( agg.surfaces.a.byClass.content, 2 );
+	assert.equal( agg.byClass.content, 2 );
+} );
+
+test( 'MUST FAIL: link coverage rows are carried by key prefix within kind auto, and no other auto row is', async () => {
+	const { isIssue } = await import( '../lib/issue-classes.mjs' );
+	const auto = ( key, ref ) => row( { kind: 'auto', key, ref } );
+	const rep = report( { other: [ auto( 'link-missing:/shop', 'cr-ref-a-1' ), auto( 'link-extra:/old', 'cr-ref-a-2' ), auto( 'focus:outline', 'cr-ref-a-3' ), auto( 'active:color', 'cr-ref-a-4' ), auto( 'word-count', 'cr-ref-a-5' ), row( { kind: 'tag' } ), row( { kind: 'entrance' } ), row( { kind: 'lines' } ) ] } );
+	const { rows: out, otherRows } = issueRows( rep, 'a', 'r.json' );
+	assert.deepEqual( out.map( ( x ) => [ x.row.property, x.row.class ] ), [ [ 'link-missing:/shop', 'content' ], [ 'link-extra:/old', 'content' ] ] );
+	assert.equal( otherRows, 6 );
+	assert.equal( isIssue( auto( 'link-missing:/x', 'x' ) ), true );
+	assert.equal( isIssue( { kind: 'entrance', key: 'link-missing' } ), false );
 } );

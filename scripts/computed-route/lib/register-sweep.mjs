@@ -114,8 +114,9 @@ export function verdictsFor( item, items, verdicts ) {
 	return verdicts.filter( ( v ) => key === norm( v.id ) || ( item.ids.includes( norm( v.id ) ) && 1 === items.filter( ( x ) => x.ids.includes( norm( v.id ) ) ).length && ! items.some( ( x ) => itemKey( x ) === norm( v.id ) ) ) );
 }
 
-// The refs one surface's pairing measured (qa/pairs/<surface>.json: its generated pairs and the blocks a hand pair covers).
-export const measuredRefs = ( pairing ) => [ ...new Set( [ ...( pairing?.keptPairs || [] ).map( ( p ) => p.ref ), ...( pairing?.coveredByHand || [] ) ] ) ];
+// The refs one surface's pairing measured (qa/pairs/<surface>.json: its generated pairs, the blocks a hand pair covers,
+// and `handMeasured`, the refs measured only by a hand pair).
+export const measuredRefs = ( pairing ) => [ ...new Set( [ ...( pairing?.keptPairs || [] ).map( ( p ) => p.ref ), ...( pairing?.coveredByHand || [] ), ...( pairing?.handMeasured || [] ) ] ) ];
 
 const sweepReports = ( sweep ) => new Set( Object.values( sweep.surfaces || {} ).map( ( s ) => s.report ) );
 const same = ( a, b ) => JSON.stringify( a ?? null ) === JSON.stringify( b ?? null );

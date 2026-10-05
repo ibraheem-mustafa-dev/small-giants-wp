@@ -49,5 +49,5 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	}
 	const { result, file } = out;
 	const c = result.byClass;
-	console.log( `sweep ${ date }: ${ result.total } open issues (hardcode ${ c.hardcode }, missing ${ c.missing }, unresolved ${ c.unresolved }, derived ${ c.derived }, unmapped-state ${ c[ 'unmapped-state' ] }) across ${ Object.keys( result.surfaces ).length } surfaces; unmeasured: ${ result.unmeasured.join( ', ' ) || 'none' }; ${ file }` );
+	console.log( `sweep ${ date }: ${ result.total } open issues (hardcode ${ c.hardcode }, missing ${ c.missing }, unresolved ${ c.unresolved }, derived ${ c.derived }, unmapped-state ${ c[ 'unmapped-state' ] }, content ${ c.content }) across ${ Object.keys( result.surfaces ).length } surfaces; unmeasured: ${ result.unmeasured.join( ', ' ) || 'none' }; ${ file }` );
 }

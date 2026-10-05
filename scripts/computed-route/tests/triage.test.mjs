@@ -6,7 +6,7 @@
 // Solve class already holds.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { triage, nameFits, rosterApplies } from '../lib/triage.mjs';
+import { triage, nameFits, rosterApplies, settingFits, canvasSettable } from '../lib/triage.mjs';
 
 const row = ( over = {} ) => ( { kind: 'style', key: 'margin-top', draft: '10px', live: '0px', ref: 'cr-ref-s-1', path: '.sgs-field__input', owners: [], pair: 'field', state: 'rest', width: 375, accepted: null, ...over } );
 // A walker report: one run per width, each pair with its draft snapshot and its open rows.
@@ -180,7 +180,119 @@ test( 'an unmapped-state row never steals a key a Solve class already holds', ()
 } );
 
 test( 'a non-visual row in `other` is not an issue', () => {
-	const r = row( { kind: 'text', key: 'text', state: 'filters-open', reason: 'unmapped-state filters-open' } );
+	// `motion`, not `text`: a text row is page content and is counted by design (lib/issue-classes.mjs::CONTENT_KINDS).
+	const r = row( { kind: 'motion', key: 'transition-duration', state: 'filters-open', reason: 'unmapped-state filters-open' } );
 	const { verdicts } = run( { other: [ r ] }, [ r ], ctxOf() );
 	assert.equal( verdicts.length, 0 );
+} );
+
+// L6 handoff 1. A content row (text, presence, or a link the other side does not carry) is an open issue on the page,
+// but no walker state is unmapped for it: filing it under `unmapped-state` published the evidence "the surface maps no
+// setting state to this walker state", which is simply false of a row whose state IS mapped.
+test( 'MUST FAIL: a content row is its own class, never unmapped-state, and its evidence is true of it', () => {
+	const text = row( { kind: 'text', key: 'text', draft: 'Book an eye test', live: 'Book a test', path: '' } );
+	const presence = row( { kind: 'presence', key: 'presence', draft: 'present', live: 'absent', path: '', pair: 'badge' } );
+	const { verdicts, counts } = run( { other: [ text, presence ] }, [ text, presence ], ctxOf() );
+	assert.equal( verdicts.length, 2 );
+	for ( const v of verdicts ) {
+		assert.equal( v.class, 'W' );
+		assert.equal( v.decidedBy, 'content' );
+		assert.equal( v.solveClass, 'content' );
+		assert.equal( v.evidence[ 0 ].check, 'content' );
+		assert.ok( ! v.evidence.some( ( e ) => 'unmapped-state' === e.check ), 'no content row carries unmapped-state evidence' );
+	}
+	assert.equal( counts.W, 2 );
+	assert.equal( counts.F + counts.T + counts.U, 0 );
+} );
+
+test( 'a link-coverage row counts as content, and an ordinary `auto` word row does not count at all', () => {
+	const missing = row( { kind: 'auto', key: 'link-missing:/eye-tests', path: '' } );
+	const word = row( { kind: 'auto', key: 'word-3', path: '' } );
+	assert.equal( run( { other: [ missing ] }, [ missing ], ctxOf() ).verdicts.length, 1 );
+	assert.equal( run( { other: [ missing ] }, [ missing ], ctxOf() ).verdicts[ 0 ].decidedBy, 'content' );
+	assert.equal( run( { other: [ word ] }, [ word ], ctxOf() ).verdicts.length, 0 );
+} );
+
+test( 'a content row never steals a key a Solve class already holds', () => {
+	const held = row( { kind: 'text', key: 'text', path: '' } );
+	const { verdicts } = run( { unresolved: [ held ], other: [ held ] }, [ held ], ctxOf() );
+	assert.equal( verdicts.length, 1 );
+	assert.equal( verdicts[ 0 ].solveClass, 'unresolved' );
+} );
+
+// ── FR-47-8 / R-47-12, canvas awareness, the triage half (L1.5) ──────────────────────────────────────────────────────
+// The real mega-lenses mega-group padding row (sites/eye-care-ward-end/build/qa/solve/mega-lenses, 2026-10-05): row
+// cr-ref-mega-lenses-1 on sgs/mega-group, path "", padding-top 26px against 0px, owner cr-ref-mega-lenses-0 =
+// sgs/mega-panel. mega-lenses is `canvas: true` with states { "mega-lenses": null }. sgs/mega-group declares no
+// padding setting; sgs/mega-panel declares panelPadding (css_property "padding", box family panelPadding).
+const megaRow = ( over = {} ) => ( { kind: 'style', key: 'padding-top', draft: '26px', live: '0px', ref: 'cr-ref-mega-lenses-1', path: '', pair: 'lenses-card-single',
+	owners: [ { ref: 'cr-ref-mega-lenses-0', block: 'sgs-mega-panel', path: '.sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1)', tag: 'a' } ],
+	state: 'mega-lenses', width: 1440, accepted: null, ...over } );
+const runMega = ( classes, rows, ctx ) => triage( reportOf( classes ), walkOf( rows ), 'mega-lenses', ctx );
+const megaCtx = ( canvas ) => ctxOf( {
+	stateMap: { 'mega-lenses': null },
+	canvas,
+	nodeFor: ( ref ) => ( { 'cr-ref-mega-lenses-1': { name: 'sgs/mega-group', attributes: {} }, 'cr-ref-mega-lenses-0': { name: 'sgs/mega-panel', attributes: {} } }[ ref ] || null ),
+	attrRows: ( block ) => ( 'sgs/mega-panel' === block
+		? [ { attr_name: 'panelPadding', css_property: 'padding', css_element: 'wrapper', css_state: null, source: 'sgs' } ]
+		: [] ),
+	canvasBlocks: () => [ { ref: 'cr-ref-mega-lenses-0', name: 'sgs/mega-panel' }, { ref: 'cr-ref-mega-lenses-1', name: 'sgs/mega-group' } ],
+	// The resolver and the ancestor hop both exhaust: the panel's calibration paints the panel root, not the group.
+	resolver: () => ( { gap: 'no-setting', detail: 'sgs/mega-group has no setting for padding-top' } ),
+	ancestorHop: () => null,
+} );
+
+test( 'MUST FAIL: on a canvas, a row a block already in that tree declares is W / canvas-settable, citing it', () => {
+	const r = megaRow();
+	const { verdicts, counts } = runMega( { unresolved: [ r ] }, [ r ], megaCtx( true ) );
+	assert.equal( verdicts.length, 1 );
+	assert.notEqual( verdicts[ 0 ].class, 'F' );
+	assert.equal( verdicts[ 0 ].class, 'W' );
+	assert.equal( verdicts[ 0 ].decidedBy, 'canvas-settable' );
+	const cite = verdicts[ 0 ].evidence.find( ( e ) => 'canvas-settable' === e.check );
+	assert.equal( cite.block, 'sgs/mega-panel' );
+	assert.equal( cite.setting, 'panelPadding' );
+	assert.equal( cite.where, 'ancestor' );
+	assert.equal( counts.F, 0 );
+} );
+
+test( 'the negative control: with the canvas flag off, the same row classes F / no-setting', () => {
+	const r = megaRow();
+	const { verdicts, counts } = runMega( { unresolved: [ r ] }, [ r ], megaCtx( false ) );
+	assert.equal( verdicts[ 0 ].class, 'F' );
+	assert.equal( verdicts[ 0 ].decidedBy, 'no-setting' );
+	assert.equal( counts.F, 1 );
+	assert.ok( ! verdicts[ 0 ].evidence.some( ( e ) => 'canvas-settable' === e.check ), 'off a canvas, canvasSettable is never consulted' );
+} );
+
+test( 'a canvas sibling that declares the property is cited even when it is no ancestor of the row', () => {
+	const r = megaRow( { owners: [] } );
+	const v = runMega( { unresolved: [ r ] }, [ r ], megaCtx( true ) ).verdicts[ 0 ];
+	assert.equal( v.decidedBy, 'canvas-settable' );
+	assert.equal( v.evidence.find( ( e ) => 'canvas-settable' === e.check ).where, 'sibling' );
+} );
+
+test( 'MUST REFUSE THE CITATION: a block declaring the property in another state is never cited', () => {
+	// A hover-state row against a resting declaration: citing it would claim a setting can hold a value it cannot.
+	const r = megaRow( { kind: 'hover' } );
+	const v = runMega( { unresolved: [ r ] }, [ r ], megaCtx( true ) ).verdicts[ 0 ];
+	assert.ok( ! v.evidence.some( ( e ) => 'canvas-settable' === e.check ) );
+	assert.equal( v.class, 'F' );
+} );
+
+// L1.2's half of settingFits: sgs/container::columns carries css_property "grid-template-columns:count", a modifier of
+// a real property. Both product.json fits depend on it (2026-10-05 triage: two sgs/container grid-template-columns
+// verdicts cite it), and a blanket strip of everything after the colon would also make "anim:duration" an unmatchable
+// "anim".
+test( 'MUST FAIL: a modifier row fits its property, and a pseudo-namespaced row fits what its leaf names', () => {
+	assert.equal( settingFits( 'columns', { css_property: 'grid-template-columns:count' }, 'grid-template-columns' ), true );
+	assert.equal( settingFits( 'sgsAnimationDuration', { css_property: 'anim:duration' }, 'animation-duration' ), true );
+	assert.equal( settingFits( 'sgsAnimationEasing', { css_property: 'anim:easing' }, 'animation-timing-function' ), true );
+	// And neither reading invents a fit: no stored value fits a property nothing names.
+	assert.equal( settingFits( 'sgsAnimationDuration', { css_property: 'anim:duration' }, 'mask-composite' ), false );
+	assert.equal( settingFits( 'sgsScrollPin', { css_property: 'fx:pin' }, 'position' ), false );
+	const r = row( { key: 'grid-template-columns', draft: '1fr 1fr', live: 'none', path: '' } );
+	const v = run( { missing: [ r ] }, [ r ], ctxOf( { attrRows: () => [ { attr_name: 'columns', css_property: 'grid-template-columns:count', source: 'sgs' } ] } ) ).verdicts[ 0 ];
+	assert.equal( v.class, 'W' );
+	assert.equal( v.decidedBy, 'attribute' );
 } );

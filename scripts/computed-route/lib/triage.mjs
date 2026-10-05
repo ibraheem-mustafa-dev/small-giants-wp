@@ -5,29 +5,33 @@
 // differs, a hardcode), T (the tree can hold it: the resolver would write a new value), U (a box row nothing explains).
 // Missing settings start as W until proven F. Every lookup (database rows, calibration, roster, block supports, source
 // files, tree nodes, the resolver) is passed in, so the logic runs on in-memory fixtures.
-import { splitProperty, resolve } from './resolve.mjs';
+import { splitProperty, resolve, resolveViaAncestor } from './resolve.mjs';
+import { listedProperties, modifierOf } from './db.mjs';
 import { draftValues, plainLength, cssProp, settingState, openRows, writableGroups } from './solve-rows.mjs';
 import { entranceStart } from './entrance.mjs';
 import { referenceOf } from './references.mjs';
 import { sourcePass } from './triage-source.mjs';
 import { USED_VALUES } from '../solve.mjs';
 // The kinds, classes, order and issue key are shared with lib/sweep.mjs so the two counts agree by construction.
-import { VISUAL, SOLVE_CLASSES, UNMAPPED, issueKey as keyOf } from './issue-classes.mjs';
+import { SOLVE_CLASSES, UNMAPPED, CONTENT, isContentRow, isIssue, issueKey as keyOf } from './issue-classes.mjs';
 
 export const TRIAGE_CLASSES = [ 'W', 'F', 'T', 'U' ];
 const loose = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
 const PX_TOL = 1;
 
-// Distinct issues of a report's hardcode, missing, unresolved and derived rows, then its unmapped-state rows (the
-// surface's own blocks and rows with no block), each with every row it covers and the Solve class of its first row. The
-// class order is the sweep's, so a key a Solve class already holds stays under that class.
+// Distinct issues of a report's hardcode, missing, unresolved and derived rows, then its unmapped-state rows, then its
+// content rows (both filed by Solve under `other`), each with every row it covers and the Solve class of its first row.
+// The class order and the test of what counts are the sweep's (lib/issue-classes.mjs), so a key a Solve class already
+// holds stays under that class and a surface's triage count equals its sweep count. UNMAPPED never takes a content row
+// and CONTENT takes only content rows, so the two classes cannot share one: a text or presence row has no unmapped
+// walker state, and filing it under UNMAPPED would publish evidence that is simply untrue of it.
 export function issuesOf( report, surface ) {
 	const prefix = `cr-ref-${ surface }-`;
 	const mine = ( x ) => ! x.ref || ( x.ref.startsWith( prefix ) && /^\d+$/.test( x.ref.slice( prefix.length ) ) );
 	const found = new Map();
-	for ( const cls of [ ...SOLVE_CLASSES, UNMAPPED ] ) {
-		for ( const x of report.classes?.[ UNMAPPED === cls ? 'other' : cls ] || [] ) {
-			if ( ! VISUAL.includes( x.kind ) || ! mine( x ) ) {
+	for ( const cls of [ ...SOLVE_CLASSES, UNMAPPED, CONTENT ] ) {
+		for ( const x of report.classes?.[ [ UNMAPPED, CONTENT ].includes( cls ) ? 'other' : cls ] || [] ) {
+			if ( ! isIssue( x ) || ! mine( x ) || ( UNMAPPED === cls && isContentRow( x ) ) || ( CONTENT === cls && ! isContentRow( x ) ) ) {
 				continue;
 			}
 			const k = keyOf( x );
@@ -68,15 +72,20 @@ export function nameFits( prop, attr ) {
 }
 
 // Whether a setting (a database row or a roster attribute: { css_property, role }) fits a row: its css_property lists
-// the property or its shorthand, or its name fits. A visibility toggle only fits a row whose draft or live hides; a
-// unit companion (lineHeightUnit) never fits on its own.
+// the property or its shorthand, or it is a MODIFIER of that property (sgs/container::columns carries
+// `grid-template-columns:count`, a track count rather than the property's value, which a human can still reach for),
+// or its name fits. A visibility toggle only fits a row whose draft or live hides; a unit companion (lineHeightUnit)
+// never fits on its own. The namespace reading is `lib/db.mjs::listedProperties`, the same helper `candidates` uses, so
+// `anim:duration` fits an animation-duration row here exactly where the resolver finds it, and neither side strips a
+// colon blindly: a blanket strip turned `anim:duration` into an unmatchable `anim`.
 export function settingFits( name, s, prop, values = [] ) {
 	if ( ( 'boolean-visibility' === s.role && ! values.includes( 'none' ) ) || /Unit$/.test( name ) ) {
 		return false;
 	}
 	const { short } = splitProperty( prop );
-	const listed = String( s.css_property || '' ).split( ',' ).map( ( x ) => x.trim().replace( /:.*$/, '' ) ).filter( Boolean );
-	return listed.includes( prop ) || listed.includes( short ) || nameFits( prop, name );
+	const listed = listedProperties( s.css_property );
+	const modifies = String( s.css_property || '' ).split( ',' ).map( ( x ) => modifierOf( x ) ).filter( Boolean );
+	return listed.includes( prop ) || listed.includes( short ) || modifies.includes( prop ) || modifies.includes( short ) || nameFits( prop, name );
 }
 
 // Whether an extension of the roster (extension-roster.json) reaches a block, by its rule mode and block.json supports.
@@ -207,7 +216,11 @@ export function resolveIssue( issue, ctx ) {
 	const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === r.ref && o.path === r.path && ! o.state && o.prop !== r.key ).map( ( o ) => [ o.prop, draftValues( walk, o.pair, o.prop, false, o.walkerStates, o.pseudo ).perWidth ] ) );
 	const attempt = ( on, onPath, anyIndex, tag = null ) => {
 		const cal = calFor( on.name );
-		const known = [ ...Object.keys( cal?.elements || {} ), ...Object.values( cal?.settings || {} ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ) ];
+		// Every path this block's calibration knows: its measured elements, its settings' slots and reaches, and the
+		// slots its DISCOVERED enum settings paint. Without that last source a row whose only evidence is a discovered
+		// slot gaps `unmapped-element` here and never reaches lib/resolve.mjs::resolveDiscovered at all.
+		const known = [ ...Object.keys( cal?.elements || {} ), ...Object.values( cal?.settings || {} ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ),
+			...Object.values( cal?.discovered || {} ).flatMap( ( props ) => Object.values( props || {} ).flatMap( ( d ) => d.slots || [] ) ) ];
 		const lp = ( p ) => ( anyIndex ? loose( p ) : p );
 		if ( cal && ! known.map( lp ).includes( lp( onPath ) ) ) {
 			return { gap: 'unmapped-element', detail: `${ on.name } path "${ onPath }" is not a calibrated element` };
@@ -228,8 +241,33 @@ export function resolveIssue( issue, ctx ) {
 			break;
 		}
 	}
+	// FR-47-8 / R-47-12, the canvas hop, strictly last: it runs only once the direct attempt AND the owners retry have
+	// both exhausted, so a row that resolves today cannot change and deleting this one call restores the old behaviour.
+	// Its ancestors are the row's own owners, so there is no tree walk and no new lookup.
 	if ( out.gap ) {
-		return { gap: out.gap, detail: out.detail };
+		const hopFn = ctx.ancestorHop || resolveViaAncestor;
+		const sameRow = ( x ) => cssProp( x.key ) === prop && settingState( x, stateMap ) === state;
+		const ancestors = ( r.owners || [] ).map( ( o ) => {
+			const n2 = nodeFor( o.ref );
+			if ( ! n2 || 'linked' === referenceOf( n2, refs )?.kind ) {
+				return null;
+			}
+			// The measured descendants of THIS ancestor: the owner path of every open row of the same property and state
+			// that names this ancestor as an owner. Measured, never guessed, so an ancestor merely declaring the property
+			// can never prove a write (R-47-5).
+			const measured = [ ...new Set( ( ctx.open || [] ).filter( sameRow ).flatMap( ( x ) => ( x.owners || [] ).filter( ( o2 ) => o2.ref === o.ref ).map( ( o2 ) => o2.path ) ) ) ];
+			return { ref: o.ref, block: n2.name, path: o.path, tag: o.tag || null, attributes: n2.attributes || {}, calibration: calFor( n2.name ), measured: measured.length ? measured : [ o.path ] };
+		} ).filter( Boolean );
+		const hop = hopFn( { block: node.name, slot: r.path, prop, state, perWidth, fontPx, current: node.attributes || {}, siblings },
+			{ db: ctx.db, snapshot: ctx.snapshot, log: [], canvas: !! ctx.canvas, ancestors } );
+		if ( hop?.writes ) {
+			const held = hop.writes.every( ( w ) => holdsValue( nodeFor( hop.on.ref )?.attributes?.[ w.attr ], w.value, w.merge ) );
+			return { writes: hop.writes, on: hop.on, holds: held, via: hop.via, cite: hop.cite };
+		}
+		// The citation is ADDED, never substituted: the resolver's own gap (ambiguous, no-setting, unmapped-element) is
+		// what the route actually found and stays in the evidence, so a later recount of ambiguous rows still sees them.
+		// Whether a citation reclassifies the row is the caller's decision, and it turns on the canvas flag alone.
+		return { gap: out.gap, detail: out.detail, ...( hop?.cite ? { cite: hop.cite, canvasSettable: !! hop.gap } : {} ) };
 	}
 	const holds = out.writes.every( ( w ) => holdsValue( on.node.attributes?.[ w.attr ], w.value, w.merge ) );
 	return { writes: out.writes.map( ( w ) => ( { attr: w.attr, value: w.value, merge: w.merge } ) ), on: { ref: on.ref, block: on.block, path: on.path }, holds };
@@ -294,6 +332,41 @@ export function fittingSettings( issue, ctx ) {
 	return out;
 }
 
+// FR-47-8 (c). On a canvas surface the block that can hold a row's property need not be the attributed block or even
+// an ancestor: the author composes the canvas from whatever blocks suit, so any block ALREADY IN that tree which
+// declares the property can hold it. Returns the citation for the nearest such block (the row's enclosing blocks
+// first, nearest first, then the surface's other blocks from ctx.canvasBlocks()), or null.
+// A declaration means the block's own database row lists that CSS property, or modifies it, IN THE ROW'S STATE. A name
+// that merely reads like the property is not a declaration: that is the false-positive citation this rule must avoid,
+// because an ancestor declaring the same property NAME proves nothing about paint. It is a classification only — the
+// route cannot decide which sibling should own the value, so it refuses F and hands the row to a human with the
+// citation, which Session C2 then tests on the live site.
+export function canvasSettable( issue, ctx ) {
+	if ( ! ctx.canvas ) {
+		return null;
+	}
+	const r = issue.rows[ 0 ];
+	const prop = cssProp( r.key );
+	const { short } = splitProperty( prop );
+	const state = settingState( r, ctx.stateMap );
+	const enclosing = ( r.owners || [] ).map( ( o ) => ( { ref: o.ref, name: ctx.nodeFor( o.ref )?.name, where: 'ancestor' } ) );
+	const inCanvas = ( ctx.canvasBlocks?.() || [] ).map( ( b ) => ( { ref: b.ref, name: b.name, where: 'sibling' } ) );
+	// The row's own block never cites itself: `fittingSettings` already reports what it declares.
+	const seen = new Set( [ r.ref ? ctx.nodeFor( r.ref )?.name : null ] );
+	for ( const b of [ ...enclosing, ...inCanvas ] ) {
+		if ( ! b.name || seen.has( b.name ) ) {
+			continue;
+		}
+		seen.add( b.name );
+		const fit = ( ctx.attrRows( b.name ) || [] ).find( ( x ) => null !== x.css_property && ( x.css_state || null ) === ( state || null ) &&
+			( listedProperties( x.css_property ).some( ( p ) => p === prop || p === short ) || [ prop, short ].includes( modifierOf( x.css_property ) ) ) );
+		if ( fit ) {
+			return { check: 'canvas-settable', ref: b.ref ?? null, block: b.name, setting: fit.attr_name, property: fit.css_property, via: 'declared', where: b.where };
+		}
+	}
+	return null;
+}
+
 // One issue's verdict. Order: a box row is a consequence (W) or unexplained (U); an entrance the tree can start on load
 // (lib/entrance.mjs) is T; then artefacts (transient, used value, consequence: W); then the resolver (a new value it
 // would write: T; blocked by the guard or a conflict: W; the setting already holds the draft value, or Solve wrote it
@@ -315,6 +388,14 @@ export function triageIssue( issue, ctx ) {
 		evidence.unshift( { check: 'unmapped-state', states: [ ...new Set( issue.rows.map( ( x ) => x.state ) ) ],
 			mappedStates: Object.keys( ctx.stateMap || {} ), detail: 'the surface maps no setting state to this walker state (FR-47-7 not built)' } );
 		return verdict( 'W', 'unmapped-state' );
+	}
+	// A content row carries the page's words, an element present on one side only, or a link the other side does not
+	// carry. No walker state is unmapped for it and the property-to-setting engine holds no words, so a framework gap
+	// cannot be assessed through it either: it is a route gap until the text channel is built (FR-47-2).
+	if ( CONTENT === issue.solveClass ) {
+		evidence.unshift( { check: 'content', kinds: [ ...new Set( issue.rows.map( ( x ) => x.kind ) ) ], keys: [ ...new Set( issue.rows.map( ( x ) => x.key ) ) ],
+			detail: 'the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it' } );
+		return verdict( 'W', 'content' );
 	}
 	if ( 'box' === r.kind ) {
 		return conseq ? ( evidence.unshift( conseq ), verdict( 'W', 'consequence' ) ) : verdict( 'U', 'box-unexplained' );
@@ -350,6 +431,18 @@ export function triageIssue( issue, ctx ) {
 	if ( deciding.length ) {
 		return verdict( 'W', deciding[ 0 ].check, 'hardcode' === issue.solveClass ? withSource() : {} );
 	}
+	// FR-47-8 (c) / R-47-12. The resolver hop's citation (an enclosing block or the block-context channel) and the
+	// canvas roster citation (any block already in that tree) are the same claim reached from two directions; the first
+	// that holds wins. On a canvas the row is a route gap, `canvas-settable`, never a framework gap. Off a canvas the
+	// citation is evidence only and the class is untouched: the five ordinary pages are the route's own output, so a
+	// missing setting there is a real gap, and reclassifying it would mask one and corrupt Session C2's worklist.
+	const settable = res.cite || canvasSettable( issue, ctx );
+	if ( settable ) {
+		evidence.push( settable );
+	}
+	if ( settable && ctx.canvas ) {
+		return verdict( 'W', 'canvas-settable', withSource() );
+	}
 	if ( 'no-setting' === res.gap ) {
 		return verdict( 'F', 'no-setting', withSource() );
 	}
@@ -358,9 +451,11 @@ export function triageIssue( issue, ctx ) {
 
 // Every issue of a Solve report: { verdicts, counts }. walk: the final walker report the Solve report classified.
 // ctx: { stateMap, nodeFor(ref), ancestorsOf(ref), attrRows(block), roster, supportsFor(block), calFor(block),
-// readSource(slug, file), helpers? and blockPhp?(slug) (lib/triage-source.mjs::sourcePass), refs?, resolver?(input, calibration) or db and snapshot, reportGaps?, reportWrites? }.
+// readSource(slug, file), helpers? and blockPhp?(slug) (lib/triage-source.mjs::sourcePass), refs?, resolver?(input, calibration) or db and snapshot, reportGaps?, reportWrites?,
+// canvas (FR-47-8: the surface's manifest flag) and canvasBlocks() (every block already in that canvas tree, as
+// [ { ref, name } ]), ancestorHop? (lib/resolve.mjs::resolveViaAncestor, replaceable in tests) }.
 export function triage( report, walk, surface, ctx ) {
-	const full = { ...ctx, walk, open: openRows( walk ).filter( ( x ) => VISUAL.includes( x.kind ) ), groups: writableGroups( walk, ctx.stateMap ).groups, reportGaps: ctx.reportGaps ?? report.gaps, reportWrites: ctx.reportWrites ?? report.writes };
+	const full = { ...ctx, walk, open: openRows( walk ).filter( isIssue ), groups: writableGroups( walk, ctx.stateMap ).groups, reportGaps: ctx.reportGaps ?? report.gaps, reportWrites: ctx.reportWrites ?? report.writes };
 	const verdicts = issuesOf( report, surface ).map( ( issue ) => triageIssue( issue, full ) );
 	const counts = Object.fromEntries( TRIAGE_CLASSES.map( ( c ) => [ c, verdicts.filter( ( v ) => v.class === c ).length ] ) );
 	return { verdicts, counts };

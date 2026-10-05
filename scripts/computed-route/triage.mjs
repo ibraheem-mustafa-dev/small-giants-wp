@@ -73,6 +73,25 @@ export function treeIndex( buildDir, manifest ) {
 	return { nodes, ancestors };
 }
 
+// Every block in ONE surface's own tree, as [ { ref, name } ] (FR-47-8 (c)): on a canvas the block that can hold a row
+// is any block the author already placed there, ancestor or not, so R-47-12's third step needs the surface's whole
+// roster and not only the row's enclosing blocks.
+export function surfaceBlocks( buildDir, entry ) {
+	const f = entry?.tree && path.join( buildDir, entry.tree );
+	if ( ! f || ! fs.existsSync( f ) ) {
+		return [];
+	}
+	const out = [];
+	const seen = new Set();
+	walkTree( readTree( f ), ( n ) => {
+		if ( n.name && ! seen.has( n.name ) ) {
+			seen.add( n.name );
+			out.push( { ref: refOf( n ) || null, name: n.name } );
+		}
+	} );
+	return out;
+}
+
 // block.json supports per block name.
 function supportsIndex() {
 	const out = {};
@@ -105,6 +124,7 @@ export function runTriage( { client, surface, report: reportArg = null, out = nu
 	const report = JSON.parse( fs.readFileSync( reportFile, 'utf8' ) );
 	const walkReport = JSON.parse( fs.readFileSync( walkFile, 'utf8' ) );
 	const { nodes, ancestors } = treeIndex( buildDir, manifest );
+	const canvasRoster = surfaceBlocks( buildDir, s );
 	const db = openDb();
 	const rowsOf = new Map();
 	const supports = supportsIndex();
@@ -116,6 +136,8 @@ export function runTriage( { client, surface, report: reportArg = null, out = nu
 		// attributed block alone cannot hold may still be settable by a sibling or ancestor in that tree.
 		// Read from the manifest, never a hardcoded list, so a new canvas kind needs no code change (R-47-12).
 		canvas: !! s.canvas,
+		// R-47-12 (c) is about SIBLINGS as much as ancestors: every block the author already placed in this canvas.
+		canvasBlocks: () => canvasRoster,
 		nodeFor: ( ref ) => nodes.get( ref ) || null,
 		ancestorsOf: ( ref ) => ancestors.get( ref ) || [],
 		// Every SGS-owned row of the block, css_property NULL rows included (lib/db.mjs::attrsFor leaves those out).

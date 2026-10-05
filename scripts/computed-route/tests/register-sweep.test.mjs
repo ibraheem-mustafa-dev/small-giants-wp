@@ -208,3 +208,11 @@ test( 'MUST FAIL: Help and product page items sit on the size-guide surface too'
 	assert.ok( itemSurfaces( its[ 1 ], its ).includes( 'size-guide' ) );
 } );
 
+test( 'MUST FAIL: measuredRefs also reads handMeasured, and a report without it behaves as before', async () => {
+	const { measuredRefs } = await import( '../lib/register-sweep.mjs' );
+	assert.deepEqual( measuredRefs( { keptPairs: [ { ref: 'r1' } ], coveredByHand: [ 'r2' ], handMeasured: [ 'r3', 'r1' ] } ), [ 'r1', 'r2', 'r3' ] );
+	assert.deepEqual( measuredRefs( { keptPairs: [ { ref: 'r1' } ], coveredByHand: [] } ), [ 'r1' ] );
+	assert.deepEqual( measuredRefs( null ), [] );
+	assert.deepEqual( measuredRefs( { keptPairs: [], coveredByHand: [], handMeasured: [ 'cr-ref-lenses-28' ] } ), [ 'cr-ref-lenses-28' ] );
+} );
+

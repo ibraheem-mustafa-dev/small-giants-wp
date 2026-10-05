@@ -6,10 +6,10 @@
 import fs from 'fs';
 import path from 'path';
 // The kinds, classes, order and issue key are shared with lib/triage.mjs so the two counts agree by construction.
-import { VISUAL, SOLVE_CLASSES as CLASSES, UNMAPPED, issueKey } from './issue-classes.mjs';
+import { SOLVE_CLASSES as CLASSES, UNMAPPED, CONTENT, isContentRow, isIssue, issueKey } from './issue-classes.mjs';
 
 const one = ( list ) => ( 1 === list.length ? list[ 0 ] : list );
-const emptyCounts = () => Object.fromEntries( [ ...CLASSES, UNMAPPED ].map( ( c ) => [ c, 0 ] ) );
+const emptyCounts = () => Object.fromEntries( [ ...CLASSES, UNMAPPED, CONTENT ].map( ( c ) => [ c, 0 ] ) );
 
 // The newest solve-report.json of a surface under `<solveDir>/<surface>/<timestamp dir>/`, or null.
 export function latestReport( solveDir, surface ) {
@@ -26,9 +26,10 @@ export function issueRows( report, surface, reportPath ) {
 	const prefix = `cr-ref-${ surface }-`;
 	const mine = ( x ) => ! x.ref || ( x.ref.startsWith( prefix ) && /^\d+$/.test( x.ref.slice( prefix.length ) ) );
 	const found = new Map();
-	for ( const cls of [ ...CLASSES, UNMAPPED ] ) {
-		for ( const x of report.classes?.[ UNMAPPED === cls ? 'other' : cls ] || [] ) {
-			if ( ! VISUAL.includes( x.kind ) || ! mine( x ) ) {
+	for ( const cls of [ ...CLASSES, UNMAPPED, CONTENT ] ) {
+		for ( const x of report.classes?.[ [ UNMAPPED, CONTENT ].includes( cls ) ? 'other' : cls ] || [] ) {
+			// UNMAPPED takes visual rows only and CONTENT content rows only; a Solve class takes either.
+			if ( ! isIssue( x ) || ! mine( x ) || ( UNMAPPED === cls && isContentRow( x ) ) || ( CONTENT === cls && ! isContentRow( x ) ) ) {
 				continue;
 			}
 			const k = issueKey( x );
@@ -62,7 +63,7 @@ export function issueRows( report, surface, reportPath ) {
 			},
 		};
 	} );
-	return { rows, otherRows: ( report.classes?.other || [] ).filter( ( x ) => ! VISUAL.includes( x.kind ) ).length };
+	return { rows, otherRows: ( report.classes?.other || [] ).filter( ( x ) => ! isIssue( x ) ).length };
 }
 
 // entries: [ { surface, reportPath, report, config? } ] in surfaces.json order (config: the surface's hand walker config,

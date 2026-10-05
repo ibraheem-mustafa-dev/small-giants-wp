@@ -5,7 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { candidates, siblings } from './db.mjs';
+import { candidates, siblings, isPseudoProperty } from './db.mjs';
 import { parseLength, toPx, pxTo, snapColour, ratioSetting, tracksSetting, round } from './normalise.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -35,6 +35,31 @@ export function blockSchema( slug ) {
 		}
 	}
 	return schemaIndex[ slug ] || null;
+}
+
+// A path with its :nth-of-type steps dropped: an enclosing block's calibration fixture repeats the child at other
+// positions, so paths from two different trees compare without their indices (the same rule `resolve`'s own `loose`
+// applies under anyIndex).
+export const LOOSE = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
+
+let contextIndex = null;
+// A block's block-context channel, read from its block.json: { provides: { "<context key>": "<attribute>" }, uses:
+// [ "<context key>" ] }. A child that `usesContext` a key an ancestor `providesContext` receives that ancestor's
+// attribute at render (accordion-item/render.php reads $block->context['sgs/accordionHeaderPadding']), so the setting
+// that holds the value sits on the ancestor and nothing on the child declares it. 32 provide keys across 5 blocks and
+// 34 uses across 8 (sgs/accordion holds 25).
+export function blockContext( slug ) {
+	if ( ! contextIndex ) {
+		contextIndex = {};
+		for ( const dir of fs.readdirSync( BLOCKS_DIR ) ) {
+			const f = path.join( BLOCKS_DIR, dir, 'block.json' );
+			if ( fs.existsSync( f ) ) {
+				const j = JSON.parse( fs.readFileSync( f, 'utf8' ) );
+				contextIndex[ j.name ] = { provides: j.providesContext || {}, uses: j.usesContext || [] };
+			}
+		}
+	}
+	return contextIndex[ slug ] || null;
 }
 
 // A walker property (a longhand) as the database's property and the side of a box it writes.
@@ -151,7 +176,12 @@ function tierWrite( attr, d, perWidth, at, same ) {
 // A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
 // value whose recorded effect equals the draft at every calibrated width. Ties go to the value that also matches most
 // of the element's other draft properties (`siblings`: { prop: { width: value } }). Returns a write, a gap, or null.
-export function resolveDiscovered( { slot, prop, perWidth, siblings = {} }, calibration ) {
+// Slots compare under the same `loose` rule every other path comparison uses, taking `anyIndex` from the input, so a
+// setting discovered on a fixture's second repetition is found on a client's first. `state` must equal the state
+// discovery recorded for the entry (an entry recording no state answers rest rows only): a resting measurement can
+// never prove an open or hover value.
+export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyIndex = false, state = null }, calibration ) {
+	const lp = ( p ) => ( anyIndex ? LOOSE( p ) : String( p ?? '' ) );
 	const at = ( pw, w ) => pw[ w ] ?? ( 1440 === w ? pw[ 1920 ] : undefined );
 	const same = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).replace( /\s+/g, '' );
 	const fits = ( values, pw ) => {
@@ -161,7 +191,7 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {} }, cali
 	const options = [];
 	for ( const [ attr, props ] of Object.entries( calibration?.discovered || {} ) ) {
 		const d = props[ prop ];
-		if ( ! d || ! d.slots.includes( slot ) ) {
+		if ( ! d || ! ( d.slots || [] ).map( lp ).includes( lp( slot ) ) || ( d.state ?? null ) !== ( state || null ) ) {
 			continue;
 		}
 		if ( 'tier_object' === d.tier ) {
@@ -236,7 +266,7 @@ export function resolve( input, ctx ) {
 	const rows = [ ...candidates( ctx.db, block, short, state ), ...( short !== prop ? candidates( ctx.db, block, prop, state ) : [] ) ]
 		.filter( ( r, i, all ) => all.findIndex( ( x ) => x.attr_name === r.attr_name ) === i );
 	if ( ! rows.length ) {
-		return ( ! state && resolveDiscovered( input, ctx.calibration ) ) || { gap: 'no-setting', detail: `${ block } has no setting for ${ prop }${ state ? ' (' + state + ')' : '' }` };
+		return resolveDiscovered( { ...input, state }, ctx.calibration ) || { gap: 'no-setting', detail: `${ block } has no setting for ${ prop }${ state ? ' (' + state + ')' : '' }` };
 	}
 	if ( ! ctx.calibration ) {
 		return { gap: 'uncalibrated', detail: `${ block } has no calibration file` };
@@ -253,7 +283,7 @@ export function resolve( input, ctx ) {
 		return { gap: 'uncalibrated', detail: `${ block } ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) } (${ state }) not calibrated` };
 	}
 	if ( ! tied.length ) {
-		return ( ! state && resolveDiscovered( input, ctx.calibration ) ) || { gap: 'no-setting', detail: `no ${ prop } setting on ${ block } paints "${ slot }" (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` };
+		return resolveDiscovered( { ...input, state }, ctx.calibration ) || { gap: 'no-setting', detail: `no ${ prop } setting on ${ block } paints "${ slot }" (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` };
 	}
 	const flat = tied.filter( ( r ) => 'flat_sibling' === r.tier_shape );
 	const others = tied.filter( ( r ) => 'flat_sibling' !== r.tier_shape );
@@ -270,6 +300,19 @@ export function resolve( input, ctx ) {
 	const schema = { ...Object.fromEntries( tied.filter( ( r ) => 'sgs-ext' === r.source ).map( ( r ) => [ r.attr_name, rowDef( r ) ] ) ), ...( blockSchema( block ) || {} ) };
 	const row = others[ 0 ] || flat[ 0 ];
 	const attr = others[ 0 ] ? row.attr_name : [ ...bases ][ 0 ];
+	// A pseudo-namespaced setting (anim:duration, anim:easing, fx:*) holds a KEYWORD slug, not a measured CSS value:
+	// `includes/animation-timing-clamp.php` clamps sgsAnimationDuration to instant, fast, medium, slow, extra-slow, and
+	// block.json declares the attribute `{ type: 'string' }` with no enum, so a measured "0.3s" would be written and
+	// then silently coerced back to the default on render. The measured value is only written when the schema declares
+	// it as one of the setting's own values; otherwise the row is a shape gap, and what the route still needs is a
+	// calibration discovery of which keyword gives which duration, not a hardcoded keyword-to-duration table.
+	if ( isPseudoProperty( row.css_property ) ) {
+		const allowed = [].concat( schema[ attr ]?.enum || [] );
+		const bad = Object.values( tiers ).find( ( v ) => ! allowed.includes( String( v ) ) );
+		if ( undefined !== bad ) {
+			return { gap: 'shape', detail: `${ attr } holds a ${ row.css_property } keyword (includes/animation-timing-clamp.php: instant, fast, medium, slow, extra-slow), not the measured ${ bad }` };
+		}
+	}
 	const unitAttr = schema[ `${ attr }Unit` ] ? `${ attr }Unit` : null;
 	const unit = unitAttr ? ( current[ unitAttr ] ?? schema[ unitAttr ].default ?? 'px' ) : undefined;
 	const forms = ctx.calibration.settings[ row.attr_name ]?.forms;
@@ -334,4 +377,81 @@ export function resolve( input, ctx ) {
 		writes.push( { attr, value: boxed( JSON.parse( vals[ 0 ] ), 'desktop' ), merge: isBox ? 'deep' : 'replace' } );
 	}
 	return { writes };
+}
+
+// The measured descendants one ancestor setting's paint reaches: the element paths the CALLER measured an open row of
+// this property on (ctx.measuredSlots, in the ancestor's own path space), that the ancestor's calibration shows this
+// setting painting or reaching. Counted from measurement only. An ancestor merely declaring a property of the same
+// name proves nothing about paint, so a setting with no calibration entry reaches nothing and can never be written.
+// The match is loose, because the calibration fixture and the client tree index their repetitions differently; the
+// COUNT is of the measured paths as measured. Two accordion items share one loose path and are still two descendants,
+// so counting loose forms would collapse them and let a parent attribute be written over both.
+export function reachedDescendants( attr, ancestor, measuredSlots ) {
+	const c = ancestor.calibration?.settings?.[ attr ];
+	const paints = [ ...( c?.slots || ( c?.slot ? [ c.slot ] : [] ) ), ...( c?.reaches || [] ) ].map( LOOSE );
+	return [ ...new Set( measuredSlots || [] ) ].filter( ( p ) => paints.includes( LOOSE( p ) ) );
+}
+
+// FR-47-8 / R-47-12: the canvas-awareness hop. The caller invokes it ONLY after the existing `owners` retry has
+// exhausted (its result still carries a gap), so the order is direct match → calibration `reaches` tie → the existing
+// caller hop → this hop. A row that resolves today therefore cannot change, and deleting this one call restores the
+// previous behaviour exactly, which is what makes the hop falsifiable.
+//
+// input: the row's own resolver input ({ block, slot, prop, state, perWidth, fontPx, siblings }).
+// ctx: { db, snapshot, log, canvas: the surface's manifest flag (§2), ancestors: [ { ref, block, path, tag,
+//   attributes, calibration } ] nearest first — built by the caller from the row's own `owners`, with no tree walk and
+//   no new lookup — and measuredSlots: the element paths under the ancestor carrying an open row for this property.
+//
+// Returns one of:
+//   null                                      no block in the chain declares the property in the row's state
+//   { writes, on, via, cite }                 a proven write whose paint reaches exactly ONE measured descendant
+//   { gap: 'canvas-settable', detail, cite }  on a canvas: a block that can hold it, cited, and no write (R-47-5)
+//   { cite }                                  off a canvas: the same citation, for the caller's `evidence`, and the
+//                                             row's existing classification untouched — the five ordinary pages are
+//                                             the route's own output, so a missing setting there stays a real gap
+export function resolveViaAncestor( input, ctx ) {
+	const { prop, state = null } = input;
+	const { short } = splitProperty( prop );
+	const uses = blockContext( input.block )?.uses || [];
+	for ( const a of ctx.ancestors || [] ) {
+		const rows = [ ...candidates( ctx.db, a.block, short, state ), ...( short !== prop ? candidates( ctx.db, a.block, prop, state ) : [] ) ]
+			.filter( ( r, i, all ) => all.findIndex( ( x ) => x.attr_name === r.attr_name ) === i );
+		if ( ! rows.length ) {
+			// Nothing on this ancestor declares the property IN THE ROW'S STATE. A resting setting is never cited for an
+			// open or hover row: that citation would be the false positive this hop exists to avoid.
+			continue;
+		}
+		// Write-prover 1: the ancestor's own calibration proves one of those settings paints or reaches this element.
+		const painted = rows.find( ( r ) => {
+			const c = a.calibration?.settings?.[ r.attr_name ];
+			return c && [ ...( c.slots || ( c.slot ? [ c.slot ] : [] ) ), ...( c.reaches || [] ) ].some( ( p ) => LOOSE( p ) === LOOSE( a.path ) ) &&
+				( ! c.property || c.property === short || c.property === prop ) && ( ( c.state || null ) === ( state || null ) );
+		} );
+		// Write-prover 2: the block-context channel. The row's block `usesContext` a key this ancestor
+		// `providesContext`, and the attribute behind that key is one of the candidates.
+		const provides = blockContext( a.block )?.provides || {};
+		const viaContext = rows.find( ( r ) => Object.entries( provides ).some( ( [ key, attr ] ) => attr === r.attr_name && uses.includes( key ) ) );
+		const row = painted || viaContext || rows[ 0 ];
+		const via = painted ? 'calibration' : ( viaContext ? 'context' : 'declared' );
+		const cite = { check: 'canvas-settable', ref: a.ref ?? null, block: a.block, setting: row.attr_name, property: row.css_property, via };
+		if ( painted || viaContext ) {
+			// R-47-5, the refuse-to-write guard: a parent attribute is written only where its paint reaches exactly one
+			// measured descendant. sgs/container's inherited typography and sgs/accordion's headerPadding both reach
+			// every item, so on a real page they are explained and cited, never written; the write belongs on the child.
+			const reach = reachedDescendants( row.attr_name, a, ctx.measuredSlots );
+			cite.measuredDescendants = reach;
+			if ( 1 === reach.length ) {
+				const out = resolve( { ...input, block: a.block, slot: a.path, anyIndex: true, tag: a.tag || null, current: a.attributes || {} },
+					{ ...ctx, calibration: a.calibration } );
+				if ( out.writes ) {
+					return { writes: out.writes, on: { ref: a.ref ?? null, block: a.block, path: a.path }, via, cite };
+				}
+				cite.resolverGap = out.gap;
+			}
+		}
+		return ctx.canvas
+			? { gap: 'canvas-settable', detail: `${ a.block }::${ row.attr_name } is already in this canvas and can hold ${ prop }${ state ? ' (' + state + ')' : '' }`, cite }
+			: { cite };
+	}
+	return null;
 }

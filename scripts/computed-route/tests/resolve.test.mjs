@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
-import { resolve, resolveDiscovered, splitProperty, tiersOf } from '../lib/resolve.mjs';
+import { resolve, resolveDiscovered, resolveViaAncestor, blockContext, splitProperty, tiersOf } from '../lib/resolve.mjs';
 import { parseColour } from '../lib/normalise.mjs';
 
 const db = openDb();
@@ -164,4 +164,131 @@ test( 'a yes/no setting is never written from a measured display value', () => {
 		{ db, snapshot, calibration: cal( { sgsHideOnDesktop: { slot: '', property: 'display' } } ) } );
 	assert.equal( r.gap, 'shape' );
 	assert.equal( r.writes, undefined );
+} );
+
+// L1.2's keyword guard. sgs/card-grid::sgsAnimationDuration carries css_property 'anim:duration' and is reachable now
+// that the namespace is understood, but block.json declares it `{ type: 'string', default: 'medium' }` with no enum
+// while includes/animation-timing-clamp.php clamps it to instant / fast / medium / slow / extra-slow. Writing the
+// measured "0.3s" would be coerced back to the default on render, silently.
+test( 'MUST FAIL TO WRITE: a measured duration is never written into a keyword setting', () => {
+	const calibration = cal( { sgsAnimationDuration: { slot: '', slots: [ '' ], property: 'animation-duration' } } );
+	const r = resolve( { block: 'sgs/card-grid', slot: '', prop: 'animation-duration', perWidth: { 375: '0.3s', 768: '0.3s', 1440: '0.3s' } }, { db, snapshot, calibration } );
+	assert.equal( r.gap, 'shape' );
+	assert.equal( r.writes, undefined );
+	assert.match( r.detail, /animation-timing-clamp\.php/ );
+} );
+
+// L1.3: slots compare under the same loose rule as every other path comparison, so a setting discovered on the
+// fixture's second repetition is found on a client's first; and a state-qualified row consults discovery, matching the
+// state discovery recorded. No cache file records a state on a discovered entry today (94 files, 0 entries with a
+// state), so the state half opens the path without moving a row: a resting measurement must never answer an open row.
+const indexedDiscovery = { discovered: { sgsChildSizing: { 'flex-grow': {
+	slots: [ '.sgs-mega-panel__content > .sgs-mega-group:nth-of-type(2)' ],
+	values: { fill: { 375: '1', 768: '1', 1440: '1' } },
+} } } };
+
+test( 'MUST FAIL: a discovered slot matches a client path under anyIndex, and a state-qualified row reaches discovery', () => {
+	const at = ( over ) => resolveDiscovered( { slot: '.sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1)', prop: 'flex-grow', perWidth: { 1440: '1' }, ...over }, indexedDiscovery );
+	assert.equal( at( {} ), null, 'without anyIndex the indices must still differ' );
+	assert.deepEqual( at( { anyIndex: true } ).writes, [ { attr: 'sgsChildSizing', value: 'fill', merge: 'replace' } ] );
+	// A hover row consults discovery, and an entry recording no state answers rest rows only.
+	assert.equal( at( { anyIndex: true, state: 'hover' } ), null );
+	const stated = { discovered: { sgsHoverDuration: { 'transition-duration': { slots: [ '' ], state: 'hover', values: { fast: { 1440: '0.15s' } } } } } };
+	assert.deepEqual( resolveDiscovered( { slot: '', prop: 'transition-duration', perWidth: { 1440: '0.15s' }, state: 'hover' }, stated ).writes,
+		[ { attr: 'sgsHoverDuration', value: 'fast', merge: 'replace' } ] );
+	assert.equal( resolveDiscovered( { slot: '', prop: 'transition-duration', perWidth: { 1440: '0.15s' } }, stated ), null, 'a hover discovery never answers a rest row' );
+} );
+
+// ── FR-47-8 / R-47-12, the canvas-awareness hop (L1.4) ───────────────────────────────────────────────────────────────
+// Every fixture below is a REAL draft node, named with the surface and ref it was measured on. No cache/ read: the
+// calibration is inlined from what cache/<block>.json records for that setting.
+
+// The mega-lenses mega-group padding row: sites/eye-care-ward-end/build/qa/solve/mega-lenses (2026-10-05), surface
+// mega-lenses (canvas: true, states { "mega-lenses": null }), row cr-ref-mega-lenses-1, block sgs/mega-group, path "",
+// padding-top 26px against 0px at 1440 and 1920. sgs/mega-group declares NO padding setting at all, and its nearest
+// owner cr-ref-mega-lenses-0 is sgs/mega-panel at the path below. cache/mega-panel.json records panelPadding on the
+// panel root alone, so nothing proves it paints the group: the hop cites it and refuses to write.
+const MEGA_GROUP = { block: 'sgs/mega-group', slot: '', prop: 'padding-top', state: null, perWidth: { 1440: '26px', 1920: '26px' } };
+const MEGA_PANEL = {
+	ref: 'cr-ref-mega-lenses-0',
+	block: 'sgs/mega-panel',
+	path: '.sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1)',
+	tag: 'a',
+	attributes: {},
+	calibration: { settings: { panelPadding: { property: 'padding', slot: '', slots: [ '' ] }, brandsEyebrowPadding: { property: 'padding', slot: '.sgs-mega-panel__eyebrow', slots: [ '.sgs-mega-panel__eyebrow' ] } } },
+};
+
+test( 'MUST FAIL: the real mega-group padding row is canvas-settable, citing sgs/mega-panel::panelPadding, with no write', () => {
+	const r = resolveViaAncestor( MEGA_GROUP, { db, snapshot, canvas: true, ancestors: [ MEGA_PANEL ], measuredSlots: [ MEGA_PANEL.path ] } );
+	assert.equal( r.gap, 'canvas-settable' );
+	assert.equal( r.writes, undefined );
+	assert.equal( r.cite.block, 'sgs/mega-panel' );
+	assert.equal( r.cite.setting, 'panelPadding' );
+	assert.equal( r.cite.via, 'declared', 'the panel declares padding; nothing proves it paints the group' );
+} );
+
+test( 'the negative control: off a canvas the same row keeps its class and only gains the citation as evidence', () => {
+	const r = resolveViaAncestor( MEGA_GROUP, { db, snapshot, canvas: false, ancestors: [ MEGA_PANEL ], measuredSlots: [ MEGA_PANEL.path ] } );
+	assert.equal( r.gap, undefined );
+	assert.equal( r.writes, undefined );
+	assert.equal( r.cite.setting, 'panelPadding' );
+} );
+
+// The real accordion-item header-padding node: sites/eye-care-ward-end/build/qa/solve/help (2026-10-05), surface help
+// (not a canvas), rows cr-ref-help-17 (pair faq-question-1, rest) and cr-ref-help-19 (pair faq-question-2, walker
+// state faq-item2-open → setting state "open"), both on path ".sgs-accordion-item__header". Their owner
+// cr-ref-help-16 is sgs/accordion. accordion-item/render.php reads the value from block context, and cache/
+// accordion.json records headerPadding painting BOTH items' headers.
+const ACCORDION = {
+	ref: 'cr-ref-help-16',
+	block: 'sgs/accordion',
+	path: '.sgs-container:nth-of-type(2) > .sgs-accordion-item__header',
+	tag: 'summary',
+	attributes: {},
+	calibration: { settings: { headerPadding: { property: 'padding', state: null, slot: '.sgs-container:nth-of-type(1) > .sgs-accordion-item__header',
+		slots: [ '.sgs-container:nth-of-type(1) > .sgs-accordion-item__header', '.sgs-container:nth-of-type(2) > .sgs-accordion-item__header' ] } } },
+};
+const ITEM_HEADERS = [ '.sgs-container:nth-of-type(1) > .sgs-accordion-item__header', '.sgs-container:nth-of-type(2) > .sgs-accordion-item__header' ];
+
+test( 'MUST FAIL: the block-context channel explains the real accordion header padding, citing sgs/accordion::headerPadding', () => {
+	const row = { block: 'sgs/accordion-item', slot: '.sgs-accordion-item__header', prop: 'padding-top', state: null, perWidth: { 375: '20px', 768: '20px', 1440: '20px' } };
+	const r = resolveViaAncestor( row, { db, snapshot, canvas: false, ancestors: [ ACCORDION ], measuredSlots: ITEM_HEADERS } );
+	assert.equal( r.cite.block, 'sgs/accordion' );
+	assert.equal( r.cite.setting, 'headerPadding' );
+	assert.equal( r.cite.via, 'calibration' );
+	// R-47-5: headerPadding paints both measured item headers, so the write belongs on the child, never on the parent.
+	assert.deepEqual( r.cite.measuredDescendants.sort(), [ ...ITEM_HEADERS ].sort() );
+	assert.equal( r.writes, undefined );
+	// block.json's channel is read, not guessed: the item uses the key the accordion provides for that attribute.
+	assert.equal( blockContext( 'sgs/accordion' ).provides[ 'sgs/accordionHeaderPadding' ], 'headerPadding' );
+	assert.ok( blockContext( 'sgs/accordion-item' ).uses.includes( 'sgs/accordionHeaderPadding' ) );
+} );
+
+test( 'MUST REFUSE THE CITATION: the real open-state accordion row cites nothing, because no open-state setting exists', () => {
+	// cr-ref-help-19 was measured in walker state faq-item2-open, which help maps to the setting state "open".
+	// sgs/accordion declares padding at rest only, so citing headerPadding here would be the false positive this hop
+	// exists to avoid: the row stays exactly as it is classed today.
+	const row = { block: 'sgs/accordion-item', slot: '.sgs-accordion-item__header', prop: 'padding-top', state: 'open', perWidth: { 375: '20px', 1440: '20px' } };
+	assert.equal( resolveViaAncestor( row, { db, snapshot, canvas: true, ancestors: [ ACCORDION ], measuredSlots: ITEM_HEADERS } ), null );
+} );
+
+test( 'MUST FAIL TO WRITE: a container ancestor whose typography reaches several measured descendants is never written', () => {
+	const paths = [ '.sgs-container__inner > h3', '.sgs-container__inner > p', '.sgs-container__inner > .sgs-icon-list > .sgs-icon-list__item' ];
+	const container = { ref: 'cr-ref-header-3', block: 'sgs/container', path: paths[ 0 ], tag: 'h3', attributes: {},
+		calibration: { settings: { textColour: { property: 'color', slot: '', slots: [ '' ], reaches: [ '', ...paths ] } } } };
+	const row = { block: 'sgs/heading', slot: '', prop: 'color', state: null, perWidth: { 1440: 'rgb(138, 130, 120)' } };
+	const r = resolveViaAncestor( row, { db, snapshot, canvas: true, ancestors: [ container ], measuredSlots: paths } );
+	assert.equal( r.gap, 'canvas-settable' );
+	assert.equal( r.writes, undefined );
+	assert.equal( r.cite.measuredDescendants.length, 3 );
+	// One measured descendant and the write is proven, so the guard is a real gate and not a blanket refusal.
+	const one = resolveViaAncestor( row, { db, snapshot, canvas: true, ancestors: [ container ], measuredSlots: [ paths[ 0 ] ] } );
+	assert.deepEqual( one.writes.map( ( w ) => w.attr ), [ 'textColour' ] );
+	assert.equal( one.on.block, 'sgs/container' );
+} );
+
+test( 'nothing in the chain declaring the property returns null, so the caller keeps its own gap', () => {
+	const row = { block: 'sgs/mega-group', slot: '', prop: 'mask-composite', state: null, perWidth: { 1440: 'add' } };
+	assert.equal( resolveViaAncestor( row, { db, snapshot, canvas: true, ancestors: [ MEGA_PANEL ], measuredSlots: [ MEGA_PANEL.path ] } ), null );
+	assert.equal( resolveViaAncestor( MEGA_GROUP, { db, snapshot, canvas: true, ancestors: [] } ), null );
 } );

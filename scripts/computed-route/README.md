@@ -100,6 +100,11 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `attrRow(db, block, attr)` → one row whatever its source, or null.
 - `variantInfo(db, block)` → `{ variantAttr, variantSlots }` from `blocks.variant_attr` and `variant_slots`: the settings that render only under one variant value.
 - Rows carry `role` (`roles.classification`), which decides a colour marker for a setting painted under a non-colour property.
+- `PSEUDO_NAMESPACES`: the namespaces whose stored `css_property` is a pseudo-property (`anim`, `fx`); the leaf after the colon names no CSS property of its own.
+- `cssPropertiesOf(stored)` → the CSS properties one stored `css_property` matches: itself when plain; for `anim:`/`fx:` the leaf map's property (`duration` → `animation-duration`, `easing`/`ease` → `animation-timing-function`, `preset` → `animation-name`) and `[]` for any other leaf, deliberately unmatchable; and its exact stored string for a real property carrying a modifier (`grid-template-columns:count`, which must never match `grid-template-columns`). The one definition `candidates` and `lib/triage.mjs::settingFits` both read, so the two cannot drift.
+- `listedProperties(stored)` → every CSS property a comma list of stored values matches.
+- `modifierOf(stored)` → the property a modifier row modifies (`grid-template-columns:count` → `grid-template-columns`), or null: a modifier is a fitting setting for that property but never a resolver candidate for it.
+- `isPseudoProperty(stored)` → whether the stored value is namespaced under `PSEUDO_NAMESPACES`, so it holds a keyword slug rather than a measured CSS value.
 
 ### `lib/normalise.mjs`
 - `COLOUR_DE`, `LENGTH_TOL`: snap tolerances (ΔE 2, 0.5px).
@@ -122,10 +127,15 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `blockSchema(slug)` → the block's `block.json` attributes.
 - `splitProperty(prop)` → `{ short, side }` (a walker longhand as the database shorthand and box side).
 - `tiersOf(perWidth, prop)` → `{ tiers }` (375 mobile, 768 tablet, 1440 and 1920 desktop) or `{ error }`.
-- `resolveDiscovered(input, calibration)` → a write for a setting calibration found (an enum value whose effects match the draft; ties broken by the element's other properties), a gap, or null.
+- `resolveDiscovered(input, calibration)` → a write for a setting calibration found (an enum value whose effects match the draft; ties broken by the element's other properties), a gap, or null. Slots compare under the same `LOOSE()` rule, taking `anyIndex` from the input, and a row's `state` must equal the state discovery recorded.
 - `CORNERS`, `radiusCorners(raw)` → a border-radius box's corner keys (`helpers-box.php::sgs_border_radius_tiers` reads only these), and the computed shorthand as corners (null when elliptical); border-radius writes are corner objects, per device when the default is a tier object.
 - `WIDER_TIERS`: the tiers an empty tier falls back to, nearest first; box seeding takes an empty tier's other sides from the node's nearest wider tier before the default paint.
 - `resolve(input, ctx)` → `{ writes: [{ attr, value, merge }] }` or `{ gap, detail }`.
+- `LOOSE(path)` → a path with its `:nth-of-type` steps dropped: the rule every cross-tree path comparison uses.
+- `blockContext(slug)` → `{ provides: { "<context key>": "<attribute>" }, uses: [ "<context key>" ] }` from the block's `block.json`: the channel by which a child receives an ancestor's attribute at render (32 provide keys over 5 blocks, 34 uses over 8; `sgs/accordion` holds 25).
+- `reachedDescendants(attr, ancestor, measuredSlots)` → the measured descendants one ancestor setting's paint reaches. The match is loose, but the count is of the paths **as measured**, so two repetitions sharing a loose path stay two descendants and a parent attribute is not written over both.
+- `resolveViaAncestor(input, ctx)` → FR-47-8 / R-47-12's canvas hop, invoked only after the caller's `owners` retry has exhausted, so the order is direct match → calibration `reaches` tie → the caller's hop → this one, and deleting the one call restores the previous behaviour exactly. Candidates are taken in the row's own state, so a resting setting is never cited for an open or hover row. Returns `{ writes, on, via, cite }` where a prover holds (the ancestor's calibration covers the element, or a `providesContext`/`usesContext` pair carries the attribute) **and** its paint reaches exactly one measured descendant (R-47-5); `{ gap: 'canvas-settable', detail, cite }` on a canvas otherwise; `{ cite }` off a canvas, leaving the row's class untouched, because an ordinary page's blocks are the route's own output and a missing setting there is a real gap; and null when nothing in the chain declares the property in that state.
+- `resolve` returns `{ gap: 'shape' }` for a pseudo-namespaced setting whose measured value is not one of its declared keywords (`includes/animation-timing-clamp.php` clamps to instant, fast, medium, slow, extra-slow): writing a measured duration would be coerced back to the default on render.
 
 ### `lib/tree.mjs`
 - `REF_PREFIX`: `cr-ref-`.
@@ -304,7 +314,12 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `wrongWrites(writes, reportAfter, stateMap)` → writes a later round reverted or that moved their rows further from the draft.
 
 ### `lib/issue-classes.mjs`
-- `VISUAL`: the row kinds that paint something a setting could hold (`style`, `hover`, `box`); any other kind is reported, never counted.
+- `VISUAL`: the row kinds counted as a distinct open issue: the painting kinds (`style`, `hover`, `box`) plus `CONTENT_KINDS`. Any other kind is reported, never counted.
+- `CONTENT_KINDS`: the row kinds carrying page content (`text`, `presence`).
+- `LINK_COVERAGE_PREFIXES`: the key prefixes that make a kind-`auto` row a link-coverage issue (`link-missing`, `link-extra`).
+- `CONTENT`: the class for a content row no Solve class holds (`content`), walked after `UNMAPPED`, which never takes one.
+- `isContentRow(x)` → whether a row is page content (text, presence, or link coverage).
+- `isIssue(x)` → whether a row is a distinct open issue at all: the one test every reader applies.
 - `SOLVE_CLASSES`: Solve's classes for a surviving row, in the order both readers walk them (`hardcode`, `missing`, `unresolved`, `derived`); the first class to hold a key keeps it.
 - `UNMAPPED`: the class for a visual row from a walker state the surface maps to no setting state (`unmapped-state`), walked last.
 - `issueKey(x)` → `solve-report.mjs::wholePage`'s key: one element and property whatever the width or state (`pair` stands in for a row with no ref).
@@ -354,6 +369,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `holdsValue(current, value, merge)` → whether an attribute already holds a write.
 - `fittingSettings(issue, ctx)` → attribute, discovered, extension and enclosing evidence (`reaches: false` where calibration shows a setting not reaching the element).
 - `triageIssue(issue, ctx)` → `{ key, class, decidedBy, evidence, source? }`.
+- `canvasSettable(issue, ctx)` → FR-47-8 (c): the citation for the nearest block already in the canvas that declares the row's property **in the row's state** — enclosing blocks first, then `ctx.canvasBlocks()` — or null. A declaration is a `css_property` match or a modifier of it, never a name that merely reads like the property. A classification only: the route cannot decide which sibling should own the value, so it refuses F and hands the row on with its citation.
 - `triage(report, walk, surface, ctx)` → `{ verdicts, counts }`.
 
 ### `lib/triage-source.mjs`
@@ -368,6 +384,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `finalWalk(reportFile)` → the highest `round-N/report.json` beside a Solve report, or null.
 - `treeIndex(buildDir, manifest)` → `{ nodes, ancestors }` for every ref in every surface tree.
 - `runTriage({ client, surface, report?, out? })` → `{ verdicts, counts, file }`.
+- `surfaceBlocks(buildDir, entry)` → every block in one surface's own tree as `[ { ref, name } ]`: the sibling roster R-47-12 (c) checks for a block that can hold the row.
 
 ### `lint.mjs`
 - `routeFiles(root)` → every route file, relative.
