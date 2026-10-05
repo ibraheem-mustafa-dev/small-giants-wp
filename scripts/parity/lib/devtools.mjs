@@ -38,9 +38,19 @@ export async function settleAnimations( page, { floor = 300, cap = 6000, step = 
 	}
 }
 
-// The DOM nodeIds of a finder's element and its ancestors (nearest first), or null when it resolves to nothing.
+// The DOM nodeIds of a finder's element and its ancestors (nearest first), or null when it resolves to nothing. The
+// remote objects it makes are released before it returns (one object group per call).
+const GROUP = 'sgs-walk';
 async function nodeChain( cdp, finder, resolveSrc, ancestors ) {
-	const { result } = await cdp.send( 'Runtime.evaluate', { expression: `(${ resolveSrc })(${ JSON.stringify( finder ) })` } );
+	try {
+		return await chainOf( cdp, finder, resolveSrc, ancestors );
+	} finally {
+		await cdp.send( 'Runtime.releaseObjectGroup', { objectGroup: GROUP } ).catch( () => {} );
+	}
+}
+
+async function chainOf( cdp, finder, resolveSrc, ancestors ) {
+	const { result } = await cdp.send( 'Runtime.evaluate', { expression: `(${ resolveSrc })(${ JSON.stringify( finder ) })`, objectGroup: GROUP } );
 	if ( ! result?.objectId ) {
 		return null;
 	}
@@ -51,7 +61,7 @@ async function nodeChain( cdp, finder, resolveSrc, ancestors ) {
 		if ( ! ancestors ) {
 			break;
 		}
-		const up = await cdp.send( 'Runtime.callFunctionOn', { objectId, functionDeclaration: 'function () { return this.parentElement; }' } );
+		const up = await cdp.send( 'Runtime.callFunctionOn', { objectId, objectGroup: GROUP, functionDeclaration: 'function () { return this.parentElement; }' } );
 		objectId = up.result?.objectId || null;
 	}
 	return ids;

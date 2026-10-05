@@ -105,3 +105,32 @@ test( 'MUST FAIL TO DROP: the full check replaces the element\'s background-colo
 	const kept = compareChrome( {}, snap( {}, { extras: {} } ), snap( {}, { extras: {} } ), tol, rows ).filter( ( x ) => 'background-color' === x.key );
 	assert.deepEqual( kept.map( ( x ) => x.pseudo ), [ '::before' ] );
 } );
+
+// Code review of Track P (2026-10-05): three ways the new reads could write the wrong setting.
+import { usedValueTarget } from '../lib/solve-rows.mjs';
+import { judgeDivergence } from '../../parity/lib/divergences.mjs';
+import { isAccepted } from '../../parity/lib/compare.mjs';
+import { match } from '../lib/ledger.mjs';
+
+test( 'MUST FAIL TO INVENT A HOVER: a rest difference that hovering changes on neither side is no hover row', () => {
+	const side = ( c ) => snap( { color: c }, { hover: { color: c } } );
+	assert.deepEqual( keys( comparePair( { text: false }, side( 'rgb(0, 0, 0)' ), side( 'rgb(9, 9, 9)' ), tol ) ), [ 'color' ] );
+	const draftHovers = snap( { color: 'rgb(0, 0, 0)' }, { hover: { color: 'rgb(200, 0, 0)' } } );
+	assert.deepEqual( comparePair( { text: false }, draftHovers, side( 'rgb(0, 0, 0)' ), tol ).map( ( x ) => x.kind ), [ 'hover' ], 'a hover only the draft has is a row' );
+} );
+
+test( 'MUST FAIL TO MIX LAYERS: an element\'s ledger entry or accept never covers its ::before rows, a layer\'s entry does', () => {
+	const e = { id: 'D-2', node: 'cr-ref-a-1', state: '*', property: 'transform', expected: { value: 'none' }, reason: 'r' };
+	const layerRow = { kind: 'style', key: 'transform', pseudo: '::after', ref: 'cr-ref-a-1', draft: 'none', live: 'scale(2)' };
+	assert.equal( judgeDivergence( [ e ], { state: 'opening', width: 375 }, layerRow, 0.5 ), null );
+	assert.equal( layerRow.decided, undefined, 'the layer row keeps its own draft target' );
+	assert.match( judgeDivergence( [ { ...e, pseudo: '::after', expected: { rule: 'bean-choice' } } ], { state: 'opening', width: 375 }, { ...layerRow }, 0.5 ), /D-2/ );
+	assert.equal( match( [ e ], { ref: 'cr-ref-a-1', property: 'transform', state: 'opening', width: 375, pseudo: '::after' } ), null );
+	assert.equal( isAccepted( [ { key: 'transform', reason: 'element only' } ], { pair: 'p', state: 'opening', width: 375 }, layerRow ), null );
+} );
+
+test( 'MUST FAIL TO OVERWRITE A DECISION: a declared width replaces the draft only at widths no ledger entry holds', () => {
+	const t = usedValueTarget( 'width', { perWidth: { 375: '30px', 768: '44px' }, declared: { 375: '30px', 768: '30px' }, held: [ '768' ] } );
+	assert.deepEqual( t.perWidth, { 375: '30px', 768: '44px' } );
+	assert.equal( usedValueTarget( 'width', { perWidth: { 375: '320px' }, declared: {}, held: [] } ).gap, 'used-value' );
+} );

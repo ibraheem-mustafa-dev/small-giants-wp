@@ -61,6 +61,7 @@ const slugClass = ( node ) => 'sgs-' + node.replace( /^sgs\//, '' );
 export function match( entries, row ) {
 	const stateOk = ( e ) => '*' === e.state || ( 'hover' === e.state ? 'hover' === row.kind : e.state === row.state );
 	return entries.find( ( e ) => stateOk( e ) &&
+		( e.pseudo ?? null ) === ( row.pseudo ?? null ) &&
 		( '*' === e.property || e.property === row.property ) &&
 		( ! e.widths || e.widths.includes( row.width ) ) &&
 		( '*' === e.node || e.node === row.ref || ( row.block && e.node.includes( '/' ) && slugClass( e.node ) === row.block ) ) ) || null;

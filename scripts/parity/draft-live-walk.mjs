@@ -162,8 +162,9 @@ async function walkSide( browser, side, width ) {
 				return page.evaluate( collectRunning, [ p[ side ], RESOLVE ] );
 			} );
 		}
-		// Read once the state's animations finish (a state's `settle` is the floor for scripts that start one late).
-		const settled = await settleAnimations( page, { floor: state.settle ?? 300 } );
+		// Read once the state's animations finish. The floor (a state's `settle`, else 900ms) covers what starts late
+		// without a running animation to wait on: a reveal class added on load or after a fetch, a late font or image.
+		const settled = await settleAnimations( page, { floor: state.settle ?? 900 } );
 		if ( onlyStates && ! onlyStates.includes( state.name ) ) {
 			continue;
 		}

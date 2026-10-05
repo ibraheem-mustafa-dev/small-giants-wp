@@ -60,11 +60,13 @@ function draftValueOf( d, prop, hover, pseudo ) {
 // walkerStates: only runs in these walker states are read (the states mapped to the group's setting state).
 // pseudo ('::before' / '::after'): the value is read on that painting layer of the pair's element.
 // declared: the value the draft's matched rules declare for prop at each width (the walker's DevTools read), when any.
-// At a width where a divergence-ledger entry covers the row, the target is the entry's decided value instead.
+// At a width where a divergence-ledger entry covers the row, the target is the entry's decided value instead, and the
+// width is listed in held (no declared value replaces it).
 export function draftValues( report, pair, prop, hover, walkerStates = null, pseudo = null ) {
 	const perWidth = {};
 	const fontPx = {};
 	const declared = {};
+	const held = [];
 	for ( const run of report.runs || [] ) {
 		if ( walkerStates && ! walkerStates.includes( run.state ) ) {
 			continue;
@@ -80,7 +82,9 @@ export function draftValues( report, pair, prop, hover, walkerStates = null, pse
 		if ( undefined !== v ) {
 			perWidth[ run.width ] = v;
 		}
-		if ( ! hover && ! pseudo && undefined !== d.declared?.[ prop ] ) {
+		if ( ruled ) {
+			held.push( String( run.width ) );
+		} else if ( ! hover && ! pseudo && undefined !== d.declared?.[ prop ] ) {
 			declared[ run.width ] = d.declared[ prop ];
 		}
 		const fs = parseFloat( d.styles?.[ 'font-size' ] );
@@ -88,11 +92,21 @@ export function draftValues( report, pair, prop, hover, walkerStates = null, pse
 			fontPx[ run.width ] = fs;
 		}
 	}
-	return { perWidth, fontPx, declared };
+	return { perWidth, fontPx, declared, held };
 }
 
 // A declared value a setting can hold as it is: a plain length or percentage (not auto, a keyword, var() or calc()).
 export const plainLength = ( v ) => /^-?(\d+(\.\d+)?|\.\d+)(px|rem|em|%|vw|vh|ch)$/.test( String( v ?? '' ) );
+
+// The target of a used-size group (solve.mjs::USED_VALUES): the draft's declared value at every width a ledger entry
+// does not hold (held widths keep the decided value), or a used-value gap when any such width declares no plain length.
+export function usedValueTarget( prop, { perWidth, declared, held = [] } ) {
+	const free = Object.keys( perWidth ).filter( ( w ) => ! held.includes( w ) );
+	if ( ! Object.keys( perWidth ).length || ! free.every( ( w ) => plainLength( declared[ w ] ) ) ) {
+		return { gap: 'used-value', detail: `${ prop } is the box's used size, not a declared value${ Object.keys( declared ).length ? ` (the draft declares ${ JSON.stringify( declared ) })` : '' }` };
+	}
+	return { perWidth: { ...perWidth, ...Object.fromEntries( free.map( ( w ) => [ w, declared[ w ] ] ) ) } };
+}
 
 // The candidate groups a round may write: style and hover rows with a ref from a mapped walker state, one group per
 // groupKey. Box rows, rows without a ref and rows from an unmapped state are returned apart (box rows are derived from

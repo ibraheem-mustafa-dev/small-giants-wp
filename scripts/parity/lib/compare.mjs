@@ -221,9 +221,12 @@ export function comparePair( pair, d, l, tol ) {
 			add( 'motion', 'running-after-action', rd || 'none', rl || 'none' );
 		}
 	}
+	// A hover row is a difference in what hovering changes: where neither side's hover end state moves a property off
+	// its rest value, a difference there is the rest row's (a rest colour that differs is not also a hover colour).
 	if ( d.hover && l.hover ) {
+		const still = ( s, p ) => undefined !== s.styles?.[ p ] && sameValue( p, s.hover[ p ], s.styles[ p ], tol.px );
 		for ( const p of Object.keys( d.hover ) ) {
-			if ( borderColourIrrelevant( p, d.styles, l.styles ) ) {
+			if ( borderColourIrrelevant( p, d.styles, l.styles ) || ( still( d, p ) && still( l, p ) ) ) {
 				continue;
 			}
 			if ( ! sameValue( p, d.hover[ p ], l.hover[ p ], tol.px ) ) {
@@ -264,6 +267,7 @@ export function compareScroll( d, l ) {
 // unexplained box difference may be what the property moved.
 export function isAccepted( accept, ctx, diff ) {
 	return accept.find( ( a ) => ( ! a.notPainted || ctx.boxMatches ) &&
+		( a.pseudo ?? null ) === ( diff.pseudo ?? null ) &&
 		( ! a.pair || a.pair === ctx.pair ) &&
 		( ! a.key || a.key === diff.key ) &&
 		( ! a.kind || a.kind === diff.kind ) &&

@@ -187,7 +187,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `settingState(row, stateMap)` → the row's setting state from the surface's walker-state map (`null` rest, `'hover'`, `'scrolled'`, …), or undefined when the walker state is unmapped or the row is a hover outside rest.
 - `openRows(report)` → every unaccepted row with its walker state, width and pair.
 - `plainLength(v)` → whether a declared value is a plain length or percentage a setting can hold.
-- `draftValues(report, pair, prop, hover, walkerStates?, pseudo?)` → `{ perWidth, fontPx, declared }` from the draft snapshots, read only from runs in `walkerStates` when given, and on the `::before`/`::after` layer when `pseudo` is given (a group's `pseudo` comes from its rows).
+- `usedValueTarget(prop, { perWidth, declared, held })` → `{ perWidth }` with the draft's declared value at every width no ledger entry holds (`held` from `draftValues`), or a `used-value` gap.
+- `draftValues(report, pair, prop, hover, walkerStates?, pseudo?)` → `{ perWidth, fontPx, declared, held }` from the draft snapshots, read only from runs in `walkerStates` when given, and on the `::before`/`::after` layer when `pseudo` is given (a group's `pseudo` comes from its rows).
 - `writableGroups(report, stateMap)` → `{ groups, box, unmapped, unmappedState, other }`; each group carries its setting `state` and `walkerStates`.
 - `rowDistance(row)` → px distance from the draft (0 or 1 for non-lengths).
 - `regressedRows(prev, report)` → open style or box rows that are new or further from the draft than last round (keyed per walker state).

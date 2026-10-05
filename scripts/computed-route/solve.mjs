@@ -12,7 +12,7 @@ import { openDb } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve } from './lib/resolve.mjs';
 import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet } from './lib/tree.mjs';
-import { writableGroups, draftValues, plainLength, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState, cssProp } from './lib/solve-rows.mjs';
+import { writableGroups, draftValues, usedValueTarget, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState, cssProp } from './lib/solve-rows.mjs';
 import { writeSolveReport } from './lib/solve-report.mjs';
 import { guardRound, closeTrials } from './lib/guard.mjs';
 import { detectReferences, referenceOf } from './lib/references.mjs';
@@ -112,17 +112,17 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			gaps[ g.key ] = { gap: 'linked', detail: `${ node.name } renders ${ ref.key } "${ ref.value }" from its own post: solve that post's surface` };
 			continue;
 		}
-		const { perWidth, fontPx, declared } = draftValues( report, g.pair, g.prop, 'hover' === g.state, g.walkerStates, g.pseudo );
+		const { perWidth, fontPx, declared, held } = draftValues( report, g.pair, g.prop, 'hover' === g.state, g.walkerStates, g.pseudo );
 		// A computed width is the used size (an auto or grid-sized box reads as pixels): writing it would freeze a fluid
-		// layout. It is written only as the draft declares it (a plain length or percentage at every measured width);
-		// otherwise widths change only through the settings that size the box.
+		// layout. It is written only as the draft declares it (a plain length or percentage at every measured width a
+		// ledger entry does not hold); otherwise widths change only through the settings that size the box.
 		if ( USED_VALUES.includes( g.prop ) ) {
-			const widths = Object.keys( perWidth );
-			if ( ! widths.length || ! widths.every( ( w ) => plainLength( declared[ w ] ) ) ) {
-				gaps[ g.key ] = { gap: 'used-value', detail: `${ g.prop } is the box's used size, not a declared value${ Object.keys( declared ).length ? ` (the draft declares ${ JSON.stringify( declared ) })` : '' }` };
+			const t = usedValueTarget( g.prop, { perWidth, declared, held } );
+			if ( t.gap ) {
+				gaps[ g.key ] = t;
 				continue;
 			}
-			widths.forEach( ( w ) => ( perWidth[ w ] = declared[ w ] ) );
+			Object.assign( perWidth, t.perWidth );
 		}
 		// The element's other draft properties, for a setting calibration found (a layout mode decided by several properties).
 		const siblings = Object.fromEntries( groups.filter( ( o ) => o.ref === g.ref && o.path === g.path && ! o.state && o.prop !== g.prop ).map( ( o ) => [ o.prop, draftValues( report, o.pair, o.prop, false, o.walkerStates, o.pseudo ).perWidth ] ) );

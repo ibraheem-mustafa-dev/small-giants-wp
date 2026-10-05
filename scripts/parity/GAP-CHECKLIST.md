@@ -402,7 +402,7 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   write it; paint on `::before`/`::after` layers was never compared; motion timings showed only as one shorthand row
   Solve never writes; a text run (an opening-hours list) never compared the spacing between its rows.
 - **Detected by:** `lib/devtools.mjs` (ref-traced walks, one DevTools protocol session per page): `settleAnimations`
-  waits a floor (a state's `settle`, default 300ms) then until no finite animation on the document timeline is left
+  waits a floor (a state's `settle`, default 900ms: a reveal class added on load runs no animation to wait on) then until no finite animation on the document timeline is left
   (6s cap; a state that hits it is recorded as `unsettled`); `forcedHover` forces `:hover` on the element and every
   ancestor (`CSS.forcePseudoState`, as a pointer hovers the chain), reads `hoverStyles` once its transitions finish and
   clears it, for every pair not flagged `hover` (`state-passes.mjs::hoverPass`; phones still skip hover);

@@ -26,7 +26,10 @@ const slugClass = ( node ) => 'sgs-' + node.replace( /^sgs\//, '' );
 export function divergenceFor( entries, ctx, diff ) {
 	// state 'hover' matches hover rows (the hover end state); any other state names the walker state.
 	const stateOk = ( e ) => '*' === e.state || ( 'hover' === e.state ? 'hover' === diff.kind : e.state === ctx.state );
+	// A pseudo layer's row (diff.pseudo) matches only an entry naming that layer (e.pseudo), and an element's entry only
+	// the element's own rows.
 	return entries.find( ( e ) => stateOk( e ) &&
+		( e.pseudo ?? null ) === ( diff.pseudo ?? null ) &&
 		( '*' === e.property || e.property === diff.key ) &&
 		( ! e.widths || e.widths.includes( ctx.width ) ) &&
 		( '*' === e.node || e.node === diff.ref || ( diff.block && e.node.includes( '/' ) && slugClass( e.node ) === diff.block ) ) ) || null;
