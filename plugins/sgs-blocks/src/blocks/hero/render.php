@@ -642,7 +642,7 @@ if ( $is_split ) {
 //     `flex-direction:column`), where the block axis is the MAIN axis, so
 //     `justify-content` is the vertical one and `align-items` would move the
 //     content sideways instead.
-// `.sgs-hero--standard` also hardcodes `justify-content:center`; the scoped
+// `.sgs-hero--standard` sets no `justify-content` of its own, so the scoped
 // `.uid` rule below beats it on source order (this block's CSS prints in an
 // in-body <style> after the stylesheet), which is how every other scoped
 // override in this file wins.
@@ -759,7 +759,7 @@ if ( $is_split ) {
 } else {
 	// ── Flex-axis controls (non-split variants) — justifyContent/flexDirection/
 	// flexWrap. `.sgs-hero{display:flex}` is the base rule in style.css (the
-	// standard variant then adds `flex-direction:column;justify-content:center`
+	// standard variant then adds `flex-direction:column`
 	// at class specificity (0,1,0) via `.sgs-hero--standard`); these three
 	// attrs let an operator override that on the scoped `.uid` rule, which
 	// out-specifies the class default by source + specificity, matching every

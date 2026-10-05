@@ -440,6 +440,8 @@ LIVES INSIDE the `sgs_drawer` CPT as that post's content (the CPT's template is 
 
 **Structure = a CHROME TOP ROW + one editable body.**
 
+**Frontend layout.** The dialog is a column flex container **only while open** (`.wp-block-sgs-nav-drawer[open]{display:flex;flex-direction:column}`), and the body is a flex child that grows into whatever the chrome row leaves (`flex:1 0 auto`, no `min-height`). The `[open]` scoping is load-bearing: any `display` on the base rule beats the UA `dialog:not([open]){display:none}` and the drawer never closes, which is why `style.css` carries a STOP gate against it. `flex-shrink` is 0 so a menu taller than the screen keeps its content height and the dialog scrolls, instead of the body shrinking and its content spilling past its own bottom padding.
+
 **1. The chrome top row** — rendered by render.php OUTSIDE the editable InnerBlocks. It is the *close
 button's* band; everything else in it is optional. Attribute-driven (NOT blocks, NOT InnerBlocks).
 

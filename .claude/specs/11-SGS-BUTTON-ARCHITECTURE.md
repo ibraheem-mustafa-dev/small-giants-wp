@@ -534,7 +534,10 @@ Attributes we're planning that no competitor has (or that are unique to our spec
 
   // --- Effects ---
   "hoverScale": { "type": "number", "default": 1.0 },            // 1.0 = no scale; 1.05 typical
-  "transitionDuration": { "type": "number", "default": 300 },    // ms
+  "transitionDuration": { "type": "number", "default": 0 },      // ms; 0 = this instance sets no
+                                                               // timing, so the site preset
+                                                               // (buttonPresets.default.hover-transition)
+                                                               // applies instead
   "transitionEasing": { "type": "string", "default": "ease" },   // ease | ease-in | ease-out | ease-in-out | linear
 
   // --- Icon ---

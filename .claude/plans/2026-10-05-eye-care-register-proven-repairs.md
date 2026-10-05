@@ -2,7 +2,7 @@
 title: "Eye Care: the register-proven framework repairs (parallel track)"
 project: small-giants-wp
 created: 2026-10-05
-status: not started
+status: built and verified on sandybrown 2026-10-05; one item open (the eye-care-test deploy)
 governs: a track that runs beside Session C, never inside it
 references:
   - .claude/plans/2026-10-02-eye-care-fix-register.md
@@ -12,8 +12,26 @@ references:
 
 # Eye Care: the register-proven framework repairs (parallel track)
 
-**Goal:** every fix the register has already investigated, whose cause is written down in code terms and whose fix
-is already decided, is built and verified on the canary. No investigation, no judgement calls, no waiting on Bean.
+**Outcome (2026-10-05, `a62ae6fdb`): achieved, with three measurement limits stated below.** All twelve items are
+built, gates P1 to P3 ran, and the work is verified on sandybrown and pushed to `main`: 38 (+130) `7689ebb70`,
+87 `9776e7d86`, N3+17B `4aff6c3f0`, 68 `2ec85d5bc`, S1 `c1c660428`, 15 `31aa51090`, N11(b) `35e8b94d4`,
+N25 `3b0407324`, N46 `9e8581ad9` corrected by `5d26ee6e4`, N17b `39daf2656`, S12 `8aa7274ef`, and the register
+update `a62ae6fdb`. Item 76 needed no work. Each row in the register carries its own hash and what was measured.
+
+**Three things could not be measured on the canary, and are not claims of success:**
+1. **38 and 68** — no canary page renders `.sgs-business-hours__day` or a tile-style option picker, so WordPress
+   never enqueues those stylesheets and the rules cannot be exercised there. Both are content-verified in the
+   deployed files. Eye Care renders both, so Session C's Wave 3 sweep is where they get exercised.
+2. **S1 end to end** — sandybrown sets no `buttonPresets.default.hover-transition`, so its buttons fell to the
+   stylesheet's 0.18s fallback. That a site's own 0.25s reaches a button can only be shown on a site that sets
+   one. Session C has agreed to read one computed `transitionDuration` on an Eye Care button after its Wave 3
+   deploy and report it.
+3. **N25** — the register's test passes (choose, clear, group count matches), but the defect did not reproduce in
+   the before-state either: this canary shop has three filter groups and no "Gender" filter. The invariant holds
+   and nothing regressed; a reproduced break was not repaired.
+
+**The original goal, for reference:** every fix the register has already investigated, whose cause is written down
+in code terms and whose fix is already decided, is built and verified on the canary.
 
 **Why this track exists.** Session C repairs the measuring route and touches only `scripts/`. Session C2 then judges
 the walker's findings, which is where investigation and Bean's approval belong. The items below need neither: the
@@ -69,16 +87,12 @@ recorded rather than guessed.
 | **68** | The colour tiles are 8px taller than the draft | "the tile's top padding… is meant only for text-only tiles" | Remove the tile's top padding whenever the tile shows a photo or a colour block |
 | **N25** | The shop's filter panel breaks after choosing then clearing a filter | "WooCommerce redraws the filters and leaves the shop's own group wrappers behind as empty shells." | Clear the empty shells before each rebuild. **The register supplies the test**: choose a filter, then clear it, and the group count must equal the heading count |
 
-### Check whether these are already done (5 minutes, before anything else)
+### The two "already done?" checks — settled 2026-10-05
 
-Both read as complete but carry no "done" note, and a wasted fix here is worse than none: re-fixing something that
-already works leaves two overlapping fixes and neither can ever be safely removed
-(`~/.claude/rules/prove-the-cause-before-fix.md`).
-
-| id | Why it may be done | What settles it |
-|---|---|---|
-| **76** | The colour tile lift "snaps" because the lift is missing from the tile's transition list. Its Sweep column says **closed earlier**, and S1's note records that the colour tiles' transitions now take the 0.25s timing | Read the tile's `transition` list in the source for `transform` |
-| **87** | The breadcrumb trail ends at the brand, wrongly marked as the current page and forced bold. Its Sweep column says **clean on the walker** | Read the breadcrumb render for the current-item marker and the weight |
+| id | Verdict |
+|---|---|
+| **76** | **Closed, no work needed.** `option-picker/style.css::.sgs-option-picker--tile .sgs-option-picker__pill` already lists `transform var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease`, on a two-class selector that beats the base pill rule, with a reduced-motion twin below it |
+| **87** | **Open, and it split.** The framework half (a literal `font-weight: 600` on `.sgs-breadcrumbs__item--current`) was built in `9776e7d86`. The trail ending at the brand is a tree value: `render.php` already appends the post title when `showCurrentCrumb` is on, so the Eye Care instance has it off — recorded against the register row for Session D |
 
 ## Hard boundaries
 
@@ -90,7 +104,6 @@ This track shares a worktree and a test site with Session C. These are not style
 | **Never write a page tree** (`sites/eye-care-ward-end/build/*.tree.json`) | The trees are the route's write target and Session D's work. Where an item's remainder is a tree value, build the framework half and **record the value needed** against its register row |
 | **Never add a `divergences.json` entry** | The ledger is Solve's write target, so a wrongly added entry freezes a wrong value permanently and turns no check red |
 | **Never deploy to eye-care-test, and never reseed, until Session C's Wave 3 sweep has run** | See below. This is the one that will bite |
-| **Never touch `sgs/google-reviews`** | Another track owns it. Its colours and sizes follow Google's own interface, which is an accepted difference and never a gap |
 
 ### The deploy and reseed rule, and why
 
@@ -106,11 +119,7 @@ So this track:
 3. **Hands its reseed and its eye-care-test deploy to Session C's Wave 3**, which already runs exactly one of each,
    or runs them itself after Session C's Gate 3 has passed. Message the other session either way.
 
-**If sandybrown will not deploy**, it is the known blocker, not this track: `build-deploy.py --target sandybrown`
-aborts on its oldshape audit over 155 old-shape `sgs/cta-section` blocks on the Spec 47 calibration page (post
-4750). Migrate with `scripts/wp-migrate-oldshape-blocks.js`, or empty the page, since calibration replaces it with
-an empty tree at the end of each run anyway. Session C's C0.2 does the same job: whoever gets there first does it,
-and the other checks whether it is already cleared. **Never `--skip-oldshape-audit`.**
+**sandybrown is deployed** at `a62ae6fdb`. Its oldshape audit passed without intervention: calibration had already replaced the Spec 47 calibration page (post 4750) with an empty tree, which Session C confirmed by running the audit itself (483 posts, exit 0). The only deploy still owed is eye-care-test, in Deferred above.
 
 ## Where this track meets the other two
 
@@ -168,13 +177,24 @@ Nothing here is dropped; each has an owner.
 |---|---|---|
 | Register items whose cause is **not stated in code terms** | 48 | They need investigating before anything is built, which is Session C2's step 2 (fact-check with a cited `file::symbol`) and step 3 (live test) |
 | Items whose remaining work is a **tree or content value** | S3, S5, S11, N45 and the tree halves of items above | Session D, per `plans/2026-10-04-spec47-full-coverage.md` "Progress". Record the value, never write it |
-| Items needing a **new setting plus a design decision** | N4 top bar drop-and-scroll, N5 mega panel width-limit mode, N5.5 mega items link-plus-button, 53 hero drift mode, 65B shop single column below 400px, 75/82/158 gallery and the WooCommerce product gallery | A second sitting of this track, or C2's list. Each is register-decided, so none needs Bean again, but each is larger than the items above and adds editor UI |
-| `sgs/google-reviews` | all of it | the parallel Google reviews track |
+| Items needing a **new setting plus a design decision** | N4 top bar drop-and-scroll, N5 mega panel width-limit mode, N5.5 mega items link-plus-button, 53 hero drift mode, 65B shop single column below 400px, 75/82/158 gallery and the WooCommerce product gallery | `plans/2026-10-05-eye-care-functionality-backlog.md` Tier 2, or C2's list. Each is register-decided, so none needs Bean again, but each is larger than the items above and adds editor UI |
+| `sgs/google-reviews` | its attribution work | Built and closed. The block is available to build again (2026-10-05); N24, the per-card logo link, is in the functionality backlog |
 | The Spec 47 route and its unbuilt parts | all of it | Session C |
 
-**The six "new setting plus design decision" items are the obvious second sitting**, in that order: N5.5 and 65B are
-the most contained, 53 and N4 add motion settings that need a reduced-motion path, and 75/82/158 crosses into
-WooCommerce data.
+**What to build next is no longer this list.** The whole register was read for functional work and the result is
+`plans/2026-10-05-eye-care-functionality-backlog.md`, which supersedes this section: it tiers every feature, dead
+control and broken behaviour in the register by what it costs a user, and carries the six items named above inside
+Tier 2. Start there, not here.
+
+## Deferred, with the task each item serves
+
+| Item | Why it is open | Who |
+|---|---|---|
+| **The eye-care-test deploy and the reseed** | Held deliberately so Session C's framework-gap count stays attributable to the route. Session C has accepted both into its Wave 3 and will deploy `a62ae6fdb` after its measure-only sweep, then report the Eye Care button's computed `transitionDuration` to close S1's evidence gap | Session C's Wave 3 |
+| **Regenerate `specs/02-SGS-BLOCKS-REFERENCE.md`** | It is auto-generated from `sgs-framework.db` and its header forbids hand-editing. Two rows are now stale: `sgs/button` and `sgs/heading` show `transitionDuration` default `300`, which is `0` as of `c1c660428`. The database is rebuilt by `/sgs-update`, which is frozen until the reseed runs, so this must wait for it. Then: `python plugins/sgs-blocks/scripts/generate-block-reference.py` | Whoever runs the reseed |
+| **`sgs_header_rows_align_css()` shares N46's latent shape** | Its own comment scopes it to "the common case (no content band)", so a header **with** a content band collapses its capped rows exactly as the footer did. Not fixed here: outside N46, and the header surface is being measured by another session. Recorded in the register's N46 row with the citation | Session C's sweep will surface it; fix belongs with whoever owns the header surface |
+| **`sgs/product-card` throws a TypeError in the block editor** | `Me is not a function` at `edit()`. Proven unrelated to this track: inserting the block alone on an empty new page throws it, with no other SGS block present. Real defect, pre-existing, and not a Spec 47 finding | Session C is carrying it into its handoff as its own item |
+| **The canary's `sgs_block_defaults` option** | It stores 127 attributes for `sgs/button` and 112 for `sgs/text`, both pinning `transitionDuration: 300`, which `extensions/block-defaults.js::applyBlockDefaults` merges over block.json at registration. So a newly inserted button on sandybrown still gets 300 while existing ones are fine. Site data, not framework code, so nothing was deleted. Separately: that whole `wp_options` defaults store contradicts `.claude/rules/block-authoring.md` ("no `wp_options` defaults store"), so it is legacy against the current rule and needs a decision | Bean, when convenient |
 
 ## Effort
 

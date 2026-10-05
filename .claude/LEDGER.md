@@ -51,7 +51,7 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-05).** eye-care-test and sandybrown both run block code at `7f375f765` (the google-reviews track, `plans/archive/2026-10-05-google-reviews-attribution.md`, is done on both). Re-verify live = HEAD by checksum before measuring.
+**Now (2026-10-05).** sandybrown runs `a62ae6fdb`; eye-care-test still runs `7f375f765`, held so Session C's gap count stays attributable to the route. Re-verify live = HEAD by checksum before measuring.
 Step 0 is done (all 17 trees
 rebuilt, zero invalid blocks). The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list:
 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9 taken, three build rules, and the proven
@@ -106,20 +106,20 @@ discovery path, and the animation half is resolver work. The three `!important` 
 source as two causes (core's constrained-layout rule, which `sgs/hero` already steps out of, and an inline
 WP-native base margin), so both go on the C2 list rather than waiting.
 
-**Parallel track, the register-proven repairs (not started)** (`plans/2026-10-05-eye-care-register-proven-repairs.md`).
-Beside Session C, in `plugins/` and `theme/` only: no file overlap with the route work. Twelve register items whose
-cause is proven in code and whose fix is decided, so none needs Bean or C2. **It holds its eye-care-test deploy and
-its reseed until Session C's Wave 3 sweep has run**, or C's gap count stops being attributable to the route; C2
-re-measures before matching.
+**Parallel track, the register-proven repairs — built, verified on sandybrown, pushed (`a62ae6fdb`)**
+(`plans/2026-10-05-eye-care-register-proven-repairs.md`). All twelve done: 38/130, 87, N3+17B, 68, S1 (button and
+heading), 15, N11(b), N25, N46, N17b, S12; 76 was already closed. Four register citations were wrong and are
+corrected in their rows. **Open: its eye-care-test deploy and reseed are handed to Session C's Wave 3.** The
+register's remaining functional work is tiered in `plans/2026-10-05-eye-care-functionality-backlog.md`.
 
 **Session 0 (2026-10-05, complete):** the route data audit's repairs
 (`.claude/reports/2026-10-04-route-data-audit/README.md`), every block recalibrated on the WSL mirrors; parked
 P0-3 to P0-10 in the sweep plan. The wiring gate blocks new gaps only (201 baselined).
 
-**The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Paste-ready prompts** for all three tracks: `.claude/prompts/` (single-use; C's handoff updates C2's).
+**The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Paste-ready prompts** for Sessions C and C2: `.claude/prompts/` (single-use; C's handoff updates C2's).
 **Resume from:**
 **Session C's first action** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`): confirm live = HEAD by
-checksum, because the Google reviews track was mid-deploy to eye-care-test at Session B's handoff. Then Wave 0, then
+checksum: sandybrown runs `a62ae6fdb`, eye-care-test `7f375f765`. Then Wave 0, then
 the six Wave 1 lanes. Session C2 runs on Session C's C3.8 output. Per-surface Solve work
 (`plans/2026-10-04-spec47-full-coverage.md` "Progress") is that Session D.
 
