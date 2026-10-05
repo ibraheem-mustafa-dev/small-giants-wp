@@ -1,0 +1,5119 @@
+{
+ "batch": "b2f",
+ "mechanisms": {
+  "M1-hardcode": {
+   "rows": 20,
+   "combos": [
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(1)",
+     "property": "border-top-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(1)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderTopColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(1)",
+     "property": "border-bottom-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(1)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderBottomColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderBottomColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderBottomColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderBottomColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(1)",
+     "property": "border-left-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(1)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderLeftColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderLeftColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderLeftColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderLeftColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(1)",
+     "property": "border-right-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(1)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderRightColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderRightColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderRightColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderRightColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(3)",
+     "property": "border-top-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(3)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderTopColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(3)",
+     "property": "border-bottom-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(3)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderBottomColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderBottomColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderBottomColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderBottomColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(3)",
+     "property": "border-left-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(3)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderLeftColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderLeftColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderLeftColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderLeftColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(3)",
+     "property": "border-right-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(3)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderRightColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderRightColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderRightColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderRightColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2)",
+     "property": "border-top-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(2)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderTopColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2)",
+     "property": "border-bottom-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(2)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderBottomColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderBottomColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderBottomColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderBottomColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2)",
+     "property": "border-left-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(2)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderLeftColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderLeftColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderLeftColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderLeftColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2)",
+     "property": "border-right-color",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "iconBorderColour"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-6",
+          "block": "sgs/social-icons",
+          "path": ".sgs-social-icons__item:nth-of-type(2)"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColour",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColour",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHover",
+         "css_property": "border-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "wrapperBorderColourHoverGradient",
+         "css_property": "border-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs"
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/social-icons",
+         "setting": "colourMode",
+         "values": [
+          "brand"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode"
+          ],
+          "absent": [
+           "borderRightColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderRightColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderRightColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconBorderColour",
+           "iconBorderColourHover",
+           "iconBorderColourGradient",
+           "iconBorderColourHoverGradient",
+           "wrapperBorderColour",
+           "wrapperBorderColourGradient",
+           "wrapperBorderColourHover",
+           "wrapperBorderColourHoverGradient",
+           "colourMode",
+           "borderRightColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--outlined .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons--boxed .sgs-social-icons__item:hover",
+          "declaration": "border-color:var(--sgs-social-border-hover)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/site-footer-row",
+     "path": ".sgs-container__inner",
+     "property": "justify-content",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-27",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "justifyContent"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-27",
+          "block": "sgs/site-footer-row",
+          "path": ".sgs-container__inner"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/site-footer-row",
+         "setting": "justifyContent",
+         "css_property": "justify-content",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "site-footer-row",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "justifyContent"
+          ],
+          "declares": [
+           "istribute vertically into, so a client's justify-content:'center' // (already correctly routed on",
+           "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }",
+           "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }"
+          ]
+         },
+         {
+          "block": "site-footer-row",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:a"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/site-footer",
+     "path": "",
+     "property": "margin-top",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-0",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "margin"
+         ],
+         "on": {
+          "ref": "cr-ref-footer-0",
+          "block": "sgs/site-footer",
+          "path": ""
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/site-footer",
+         "setting": "margin",
+         "css_property": "margin",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "margin",
+           "marginTop"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "site-footer",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
+          ]
+         },
+         {
+          "block": "site-footer",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "margin"
+          ],
+          "declares": [
+           "argin_top ) { $base_band_decls[] = 'margin-top:' . $band_margin_top; } if ( '' !== $ban",
+           "blet ) { $tablet_margin_decls[] = 'margin-top:' . $margin_top_tablet; } if ( '' !==",
+           "bile ) { $mobile_margin_decls[] = 'margin-top:' . $margin_top_mobile; } if ( '' !=="
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/container",
+     "path": ".sgs-container__inner",
+     "property": "margin-right",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-15",
+       "widths": [
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "contentBandMargin"
+         ],
+         "on": {
+          "ref": "cr-ref-home-15",
+          "block": "sgs/container",
+          "path": ".sgs-container__inner"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/container",
+         "setting": "margin",
+         "css_property": "margin",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/container",
+         "setting": "contentBandMargin",
+         "css_property": "margin-bottom,margin-left,margin-right,margin-top",
+         "css_element": "content-band",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "contentBandMargin",
+           "margin",
+           "marginRight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "contentBandMargin",
+           "margin"
+          ],
+          "declares": [
+           "gin_right ) { $base_band_decls[] = 'margin-right:' . $band_margin_right; } if ( '' !==",
+           "blet ) { $tablet_margin_decls[] = 'margin-right:' . $margin_right_tablet; } if ( ''",
+           "bile ) { $mobile_margin_decls[] = 'margin-right:' . $margin_right_mobile; } if ( ''"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/container",
+     "path": ".sgs-container__inner",
+     "property": "margin-left",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-15",
+       "widths": [
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "contentBandMargin"
+         ],
+         "on": {
+          "ref": "cr-ref-home-15",
+          "block": "sgs/container",
+          "path": ".sgs-container__inner"
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/container",
+         "setting": "margin",
+         "css_property": "margin",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/container",
+         "setting": "contentBandMargin",
+         "css_property": "margin-bottom,margin-left,margin-right,margin-top",
+         "css_element": "content-band",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "contentBandMargin",
+           "margin",
+           "marginLeft"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "contentBandMargin",
+           "margin"
+          ],
+          "declares": [
+           "rgin_left ) { $base_band_decls[] = 'margin-left:' . $band_margin_left; } // (band backg",
+           "blet ) { $tablet_margin_decls[] = 'margin-left:' . $margin_left_tablet; } if ( $tabl",
+           "bile ) { $mobile_margin_decls[] = 'margin-left:' . $margin_left_mobile; } if ( $mobi"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "padding-top",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-41",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "padding"
+         ],
+         "on": {
+          "ref": "cr-ref-mega-brands-41",
+          "block": "sgs/button",
+          "path": ""
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/button",
+         "setting": "padding",
+         "css_property": "padding",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/button",
+         "setting": "inheritStyle",
+         "values": [
+          "custom"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [
+           "padding",
+           "inheritStyle"
+          ],
+          "absent": [
+           "paddingTop"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "padding",
+           "inheritStyle",
+           "paddingTop"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "padding",
+           "inheritStyle",
+           "paddingTop"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingTop"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingTop"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingTop"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingTop"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "button/style.css",
+          "selector": ".sgs-button",
+          "declaration": "padding:14px 24px"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "button",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+          ]
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
+           "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
+           "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
+          ]
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
+           "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
+           "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "ot . '__submenu{list-style:none;margin:0;padding:0;overflow:hidden;' . 'min-width:var(--sgs-nm-su",
+           ":flex;align-items:center;min-height:44px;padding:0 16px;' . 'text-decoration:none;white-space:now",
+           "sublink's own resting inline-start * padding: `submenuLinkPadding`'s left side where set (publis"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-item-padding-css.php::sgs_nav_item_badge_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-css.php::sgs_nav_shared_item_state_css",
+          "mentions": [],
+          "declares": [
+           "hift, on top of the resting inline-start padding: `itemPadding`'s left * side where set (published",
+           ", * else style.css's own `.{bem}__link{padding:8px 12px}` (bar AND drawer * both carry that lite"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-link-css.php::includes/nav-menu-submenu-link-css.php",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}'; $",
+           "$uid_sel . ' .' . $bem_root . '__sublink{padding:0 16px 0 12px;gap:8px;' . 'border-left:2px solid",
+           "@media ' . $tier_mq . '{' . $uid_sel . '{padding:' . $tier_shorthand . ';}}'; } } // `gap` —"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-link-css.php::sgs_nav_shared_submenu_link_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}'; $",
+           "$uid_sel . ' .' . $bem_root . '__sublink{padding:0 16px 0 12px;gap:8px;' . 'border-left:2px solid",
+           "@media ' . $tier_mq . '{' . $uid_sel . '{padding:' . $tier_shorthand . ';}}'; } } // `gap` —"
+          ]
+         },
+         {
+          "block": "site-header-row",
+          "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "padding-right",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-41",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "padding"
+         ],
+         "on": {
+          "ref": "cr-ref-mega-brands-41",
+          "block": "sgs/button",
+          "path": ""
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/button",
+         "setting": "padding",
+         "css_property": "padding",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/button",
+         "setting": "inheritStyle",
+         "values": [
+          "link",
+          "custom"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [
+           "padding",
+           "inheritStyle"
+          ],
+          "absent": [
+           "paddingRight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "padding",
+           "inheritStyle",
+           "paddingRight"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "padding",
+           "inheritStyle",
+           "paddingRight"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingRight"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingRight"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingRight"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingRight"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "button/style.css",
+          "selector": ".sgs-button",
+          "declaration": "padding:14px 24px"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "button",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+          ]
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
+           "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
+           "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
+          ]
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "ing_right ) { $base_band_decls[] = 'padding-right:' . $band_padding_right; } if ( '' !=",
+           "let ) { $tablet_padding_decls[] = 'padding-right:' . $padding_right_tablet; } if ( '",
+           "ile ) { $mobile_padding_decls[] = 'padding-right:' . $padding_right_mobile; } if ( '"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "ot . '__submenu{list-style:none;margin:0;padding:0;overflow:hidden;' . 'min-width:var(--sgs-nm-su",
+           ":flex;align-items:center;min-height:44px;padding:0 16px;' . 'text-decoration:none;white-space:now",
+           "sublink's own resting inline-start * padding: `submenuLinkPadding`'s left side where set (publis"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-item-padding-css.php::sgs_nav_item_badge_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-css.php::sgs_nav_shared_item_state_css",
+          "mentions": [],
+          "declares": [
+           "hift, on top of the resting inline-start padding: `itemPadding`'s left * side where set (published",
+           ", * else style.css's own `.{bem}__link{padding:8px 12px}` (bar AND drawer * both carry that lite"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-link-css.php::includes/nav-menu-submenu-link-css.php",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}'; $",
+           "$uid_sel . ' .' . $bem_root . '__sublink{padding:0 16px 0 12px;gap:8px;' . 'border-left:2px solid",
+           "@media ' . $tier_mq . '{' . $uid_sel . '{padding:' . $tier_shorthand . ';}}'; } } // `gap` —"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-link-css.php::sgs_nav_shared_submenu_link_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}'; $",
+           "$uid_sel . ' .' . $bem_root . '__sublink{padding:0 16px 0 12px;gap:8px;' . 'border-left:2px solid",
+           "@media ' . $tier_mq . '{' . $uid_sel . '{padding:' . $tier_shorthand . ';}}'; } } // `gap` —"
+          ]
+         },
+         {
+          "block": "site-header-row",
+          "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "padding-bottom",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-41",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "padding"
+         ],
+         "on": {
+          "ref": "cr-ref-mega-brands-41",
+          "block": "sgs/button",
+          "path": ""
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/button",
+         "setting": "padding",
+         "css_property": "padding",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/button",
+         "setting": "inheritStyle",
+         "values": [
+          "custom"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [
+           "padding",
+           "inheritStyle"
+          ],
+          "absent": [
+           "paddingBottom"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "padding",
+           "inheritStyle",
+           "paddingBottom"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "padding",
+           "inheritStyle",
+           "paddingBottom"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingBottom"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingBottom"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingBottom"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingBottom"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "button/style.css",
+          "selector": ".sgs-button",
+          "declaration": "padding:14px 24px"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "button",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+          ]
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
+           "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
+           "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
+          ]
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
+           "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
+           "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "ot . '__submenu{list-style:none;margin:0;padding:0;overflow:hidden;' . 'min-width:var(--sgs-nm-su",
+           ":flex;align-items:center;min-height:44px;padding:0 16px;' . 'text-decoration:none;white-space:now",
+           "sublink's own resting inline-start * padding: `submenuLinkPadding`'s left side where set (publis"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-item-padding-css.php::sgs_nav_item_badge_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-css.php::sgs_nav_shared_item_state_css",
+          "mentions": [],
+          "declares": [
+           "hift, on top of the resting inline-start padding: `itemPadding`'s left * side where set (published",
+           ", * else style.css's own `.{bem}__link{padding:8px 12px}` (bar AND drawer * both carry that lite"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-link-css.php::includes/nav-menu-submenu-link-css.php",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}'; $",
+           "$uid_sel . ' .' . $bem_root . '__sublink{padding:0 16px 0 12px;gap:8px;' . 'border-left:2px solid",
+           "@media ' . $tier_mq . '{' . $uid_sel . '{padding:' . $tier_shorthand . ';}}'; } } // `gap` —"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-link-css.php::sgs_nav_shared_submenu_link_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}'; $",
+           "$uid_sel . ' .' . $bem_root . '__sublink{padding:0 16px 0 12px;gap:8px;' . 'border-left:2px solid",
+           "@media ' . $tier_mq . '{' . $uid_sel . '{padding:' . $tier_shorthand . ';}}'; } } // `gap` —"
+          ]
+         },
+         {
+          "block": "site-header-row",
+          "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "padding-left",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "hardcode",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-41",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "wouldWrite": [
+          "padding"
+         ],
+         "on": {
+          "ref": "cr-ref-mega-brands-41",
+          "block": "sgs/button",
+          "path": ""
+         },
+         "holds": true
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/button",
+         "setting": "padding",
+         "css_property": "padding",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": true
+        },
+        {
+         "check": "discovered",
+         "block": "sgs/button",
+         "setting": "inheritStyle",
+         "values": [
+          "link",
+          "custom"
+         ]
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [
+           "padding",
+           "inheritStyle"
+          ],
+          "absent": [
+           "paddingLeft"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "padding",
+           "inheritStyle",
+           "paddingLeft"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "padding",
+           "inheritStyle",
+           "paddingLeft"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingLeft"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingLeft"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingLeft"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [
+           "padding"
+          ],
+          "absent": [
+           "inheritStyle",
+           "paddingLeft"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "button/style.css",
+          "selector": ".sgs-button",
+          "declaration": "padding:14px 24px"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "button",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+          ]
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
+           "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
+           "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
+          ]
+         },
+         {
+          "block": "button",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "ding_left ) { $base_band_decls[] = 'padding-left:' . $band_padding_left; } // contentBa",
+           "let ) { $tablet_padding_decls[] = 'padding-left:' . $padding_left_tablet; } if ( $ta",
+           "ile ) { $mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile; } if ( $mo"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "ot . '__submenu{list-style:none;margin:0;padding:0;overflow:hidden;' . 'min-width:var(--sgs-nm-su",
+           ":flex;align-items:center;min-height:44px;padding:0 16px;' . 'text-decoration:none;white-space:now",
+           "sublink's own resting inline-start * padding: `submenuLinkPadding`'s left side where set (publis"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-item-padding-css.php::sgs_nav_item_badge_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-css.php::sgs_nav_shared_item_state_css",
+          "mentions": [],
+          "declares": [
+           "hift, on top of the resting inline-start padding: `itemPadding`'s left * side where set (published",
+           ", * else style.css's own `.{bem}__link{padding:8px 12px}` (bar AND drawer * both carry that lite"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "le / colour). style.css's `.burger` sets padding:0 and border:none * at (0,1,0) and a zero-specif"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-link-css.php::includes/nav-menu-submenu-link-css.php",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}'; $",
+           "$uid_sel . ' .' . $bem_root . '__sublink{padding:0 16px 0 12px;gap:8px;' . 'border-left:2px solid",
+           "@media ' . $tier_mq . '{' . $uid_sel . '{padding:' . $tier_shorthand . ';}}'; } } // `gap` —"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-link-css.php::sgs_nav_shared_submenu_link_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": [
+           "min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}'; $",
+           "$uid_sel . ' .' . $bem_root . '__sublink{padding:0 16px 0 12px;gap:8px;' . 'border-left:2px solid",
+           "@media ' . $tier_mq . '{' . $uid_sel . '{padding:' . $tier_shorthand . ';}}'; } } // `gap` —"
+          ]
+         },
+         {
+          "block": "site-header-row",
+          "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
+          "mentions": [
+           "padding"
+          ],
+          "declares": []
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "M8-colour": {
+   "rows": 3,
+   "combos": [
+    {
+     "block": "sgs/media",
+     "path": "",
+     "property": "painted-ground",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-60",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/media has no setting for background-color"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "media/render.php",
+          "mentions": [],
+          "absent": [
+           "backgroundColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "backgroundColor"
+          ],
+          "absent": []
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "media",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "; if ( '' !== $bg ) { $decls[] = 'background-color:' . $bg; } } // Display model — fu"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/card-grid",
+     "path": "",
+     "property": "painted-ground",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-5",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no background-color setting on sgs/card-grid paints \"\" (candidates: cardBackground, imageFallbackColour, overlayColour)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "backgroundColourHover",
+         "css_property": "background-color",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "cardBackground",
+         "css_property": "background-color",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "cardBackgroundGradient",
+         "css_property": "background-image",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "backgroundColourHoverGradient",
+         "css_property": "background-image",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "imageFallbackColour",
+         "css_property": "background-color",
+         "css_element": "image-wrap",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "overlayColour",
+         "css_property": "background-color",
+         "css_element": "imageOverlay",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "card-grid/render.php",
+          "mentions": [
+           "backgroundColourHover",
+           "cardBackground",
+           "cardBackgroundGradient",
+           "backgroundColourHoverGradient",
+           "imageFallbackColour",
+           "overlayColour",
+           "backgroundColor"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "backgroundColourHover",
+           "backgroundColourHoverGradient",
+           "backgroundColor"
+          ],
+          "absent": [
+           "cardBackground",
+           "cardBackgroundGradient",
+           "imageFallbackColour",
+           "overlayColour"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "backgroundColourHover",
+           "cardBackground",
+           "cardBackgroundGradient",
+           "backgroundColourHoverGradient",
+           "imageFallbackColour",
+           "overlayColour",
+           "backgroundColor"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [
+           "backgroundColourHover"
+          ],
+          "absent": [
+           "cardBackground",
+           "cardBackgroundGradient",
+           "backgroundColourHoverGradient",
+           "imageFallbackColour",
+           "overlayColour",
+           "backgroundColor"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "backgroundColourHover",
+           "cardBackground",
+           "cardBackgroundGradient",
+           "backgroundColourHoverGradient",
+           "imageFallbackColour",
+           "overlayColour",
+           "backgroundColor"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [
+           "backgroundColourHover",
+           "backgroundColourHoverGradient",
+           "backgroundColor"
+          ],
+          "absent": [
+           "cardBackground",
+           "cardBackgroundGradient",
+           "imageFallbackColour",
+           "overlayColour"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [
+           "backgroundColor"
+          ],
+          "absent": [
+           "backgroundColourHover",
+           "cardBackground",
+           "cardBackgroundGradient",
+           "backgroundColourHoverGradient",
+           "imageFallbackColour",
+           "overlayColour"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "card-grid",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "; if ( '' !== $bg ) { $decls[] = 'background-color:' . $bg; } } // Display model — fu"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
+          "mentions": [],
+          "declares": [
+           "sgs-nm-submenu-min-width, 200px);' . 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset-",
+           "dion .' . $bem_root . '__submenu{' . 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset-"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-css.php::sgs_nav_shared_item_state_css",
+          "mentions": [],
+          "declares": [
+           "_bg_hover_decl = '' !== $nav_bg_hover ? 'background-color:' . sgs_colour_value( $nav_bg_hover ) : ''"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+          "mentions": [],
+          "declares": [
+           ".= sgs_hover_state_rules( $burger_sel, 'background-color:' . sgs_colour_value( $burger_hover_slug )"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-detach-chip.php::sgs_nav_detach_chip_css",
+          "mentions": [],
+          "declares": [
+           "und'] ?? '' ); $css .= $button . '{background-color:' . ( '' !== $bg ? sgs_colour_value( $bg )",
+           "$css .= sgs_hover_state_rules( $button, 'background-color:' . sgs_colour_value( $bg_hover ), ':focus"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-link-css.php::includes/nav-menu-submenu-link-css.php",
+          "mentions": [],
+          "declares": [
+           "r--text-inverse, currentColor));' . 'background-color:var(--sgs-nm-featured-bg);' . 'font-we",
+           "nu_border_box ? '' : 'border:0;' ) . 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset-"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-link-css.php::sgs_nav_shared_submenu_link_css",
+          "mentions": [],
+          "declares": [
+           "r--text-inverse, currentColor));' . 'background-color:var(--sgs-nm-featured-bg);' . 'font-we",
+           "nu_border_box ? '' : 'border:0;' ) . 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset-"
+          ]
+         },
+         {
+          "block": "site-header",
+          "cite": "includes/sgs-header-scroll-trigger.php::sgs_header_scroll_fade_css",
+          "mentions": [],
+          "declares": [
+           "roll-state module owns). $after_bg = 'background-color:' . ( '' !== $resting_bg_color ? $resting_"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+     "property": "painted-ground",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no background-color setting on sgs/buybox paints \".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)\" (candidates: backgroundColour, rrpPillBackgroundColour, addToCartBackgroundColour)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "backgroundColour",
+         "css_property": "background-color",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "backgroundColourHover",
+         "css_property": "background-color",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "backgroundColourGradient",
+         "css_property": "background-color-gradient",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "backgroundColourHoverGradient",
+         "css_property": "background-color-gradient",
+         "css_element": "wrapper",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "rrpPillBackgroundColour",
+         "css_property": "background-color",
+         "css_element": "rrp-pill",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "addToCartBackgroundColour",
+         "css_property": "background-color",
+         "css_element": "add-to-cart",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "backgroundColour",
+           "backgroundColourHover",
+           "backgroundColourGradient",
+           "backgroundColourHoverGradient",
+           "addToCartBackgroundColour"
+          ],
+          "absent": [
+           "rrpPillBackgroundColour",
+           "backgroundColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "backgroundColour",
+           "backgroundColourHover",
+           "backgroundColourGradient",
+           "backgroundColourHoverGradient",
+           "backgroundColor"
+          ],
+          "absent": [
+           "rrpPillBackgroundColour",
+           "addToCartBackgroundColour"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "buybox",
+          "cite": "src/blocks/buybox/extras.php::sgs_buybox_extras_scoped_css",
+          "mentions": [
+           "rrpPillBackgroundColour"
+          ],
+          "declares": [
+           "if ( '' !== $rrp_bg ) { $decls[] = 'background-color:' . $rrp_bg . ';'; } if ( '' !== $rr",
+           ";}' . $status_sel . ' .buybox__stock-dot{background-color:' . $resolved . ';}'; } return $css;"
+          ]
+         },
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "; if ( '' !== $bg ) { $decls[] = 'background-color:' . $bg; } } // Display model — fu"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "backgroundColour",
+           "backgroundColourGradient"
+          ],
+          "declares": []
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "M10-pseudo-content": {
+   "rows": 4,
+   "combos": [
+    {
+     "block": "sgs/product-card",
+     "path": "div:nth-of-type(1) > .sgs-product-card__wishlist::after",
+     "property": "content",
+     "kind": "style",
+     "surfaces": [
+      "home",
+      "shop"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-17",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/product-card has no setting for content"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "product-card/render.php",
+          "mentions": [
+           "content"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "content"
+          ],
+          "absent": []
+         }
+        ],
+        "rules": [
+         {
+          "file": "product-card/style.css",
+          "selector": ".sgs-product-card__wishlist::after",
+          "declaration": "content:\"\""
+         }
+        ],
+        "helpers": [
+         {
+          "block": "product-card",
+          "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
+          "mentions": [],
+          "declares": [
+           ":isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+          ]
+         },
+         {
+          "block": "product-card",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "$css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+          ]
+         },
+         {
+          "block": "product-card",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "equires. $sgs_media_layer_decls[] = 'content:\"\"'; $sgs_media_layer_decls[] = 'position:absol"
+          ]
+         },
+         {
+          "block": "product-card",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "surface": "shop",
+       "ref": "cr-ref-shop-50",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/product-card has no setting for content"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "product-card/render.php",
+          "mentions": [
+           "content"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "content"
+          ],
+          "absent": []
+         }
+        ],
+        "rules": [
+         {
+          "file": "product-card/style.css",
+          "selector": ".sgs-product-card__wishlist::after",
+          "declaration": "content:\"\""
+         }
+        ],
+        "helpers": [
+         {
+          "block": "product-card",
+          "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
+          "mentions": [],
+          "declares": [
+           ":isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+          ]
+         },
+         {
+          "block": "product-card",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "$css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+          ]
+         },
+         {
+          "block": "product-card",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "equires. $sgs_media_layer_decls[] = 'content:\"\"'; $sgs_media_layer_decls[] = 'position:absol"
+          ]
+         },
+         {
+          "block": "product-card",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/business-info",
+     "path": ".sgs-business-info > .sgs-business-info__link::after",
+     "property": "content",
+     "kind": "style",
+     "surfaces": [
+      "contact"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "contact",
+       "ref": "cr-ref-contact-9",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/business-info has no setting for content"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "business-info/render.php",
+          "mentions": [
+           "content"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "content"
+          ],
+          "absent": []
+         }
+        ],
+        "rules": [
+         {
+          "file": "business-info/style.css",
+          "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+          "declaration": "content:\"\""
+         }
+        ],
+        "helpers": [
+         {
+          "block": "business-info",
+          "cite": "includes/helpers-separators-line-css.php::sgs_separators_line_css",
+          "mentions": [],
+          "declares": [
+           "sep-g-' . $axis . ',0px)'; $edge = 'content:\"\";position:absolute;pointer-events:none;' . $geo['"
+          ]
+         },
+         {
+          "block": "business-info",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+          ]
+         },
+         {
+          "block": "business-info",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "$css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "equires. $sgs_media_layer_decls[] = 'content:\"\"'; $sgs_media_layer_decls[] = 'position:absol"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/nav-drawer",
+     "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close::after",
+     "property": "content",
+     "kind": "style",
+     "surfaces": [
+      "mobile-menu"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mobile-menu",
+       "ref": "cr-ref-mobile-menu-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/nav-drawer has no setting for content"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "nav-drawer/render.php",
+          "mentions": [
+           "content"
+          ],
+          "absent": []
+         }
+        ],
+        "rules": [
+         {
+          "file": "nav-drawer/style.css",
+          "selector": ".sgs-nav-drawer__close::after",
+          "declaration": "content:\"\""
+         }
+        ],
+        "helpers": [
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+          "mentions": [],
+          "declares": [
+           "$fill . '}'; $css .= $sel . '::before{content:\"\";position:absolute;inset:0;background:var(--sgs-s"
+          ]
+         },
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+          ]
+         },
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
+          "mentions": [],
+          "declares": [
+           ":isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+          ]
+         },
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "$css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "totals": {
+  "rows": 27,
+  "combos": 26
+ }
+}

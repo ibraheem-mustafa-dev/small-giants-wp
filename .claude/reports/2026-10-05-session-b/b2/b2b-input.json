@@ -1,0 +1,3425 @@
+{
+ "batch": "b2b",
+ "mechanisms": {
+  "M4-typography": {
+   "rows": 58,
+   "combos": [
+    {
+     "block": "core/list-item",
+     "path": "a",
+     "property": "font-size",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 7,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-10",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "core/list-item has no setting for font-size"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "fontSize"
+          ],
+          "absent": []
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "fontSize"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "fontSize"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+           "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+          "mentions": [],
+          "declares": [
+           ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-11",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "core/list-item has no setting for font-size"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "fontSize"
+          ],
+          "absent": []
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "fontSize"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "fontSize"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+           "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+          "mentions": [],
+          "declares": [
+           ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "core/list-item",
+     "path": "a",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 7,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-10",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "core/list-item has no setting for line-height"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      },
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-11",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "core/list-item has no setting for line-height"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-17",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for line-height"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      },
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for line-height (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/product-card",
+     "path": "div:nth-of-type(3) > .sgs-product-card__title-row > .sgs-product-card__title > a",
+     "property": "text-decoration-color",
+     "kind": "hover",
+     "surfaces": [
+      "home",
+      "shop"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-17",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/product-card has no setting for text-decoration-color (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "product-card/render.php",
+          "mentions": [],
+          "absent": [
+           "textDecorationColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textDecorationColor"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      },
+      {
+       "surface": "shop",
+       "ref": "cr-ref-shop-50",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/product-card has no setting for text-decoration-color (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "product-card/render.php",
+          "mentions": [],
+          "absent": [
+           "textDecorationColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textDecorationColor"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "core/list-item",
+     "path": "",
+     "property": "font-size",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-13",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "core/list-item has no setting for font-size"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "fontSize"
+          ],
+          "absent": []
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "fontSize"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "fontSize"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+           "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+          "mentions": [],
+          "declares": [
+           ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "core/list-item",
+     "path": "",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-13",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "core/list-item has no setting for line-height"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion",
+     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-16",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no line-height setting on sgs/accordion paints \".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title\" (candidates: lineHeight)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/accordion",
+         "setting": "lineHeight",
+         "css_property": "line-height",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__content",
+     "property": "text-wrap",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for text-wrap (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "textWrap"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "textWrap"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textWrap"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "ed_wraps, true ) ) { $base_decls[] = 'text-wrap:' . $attributes[ $k_wrap ] . ';'; } // writin"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+     "property": "font-family",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for font-family (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "fontFamily"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "fontFamily"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "fontFamily"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "== $family_safe ) { $base_decls[] = 'font-family:' . $family_safe . ';'; } } elseif ( $inhe",
+           "bs/audio style.css). $base_decls[] = 'font-family:inherit;'; } if ( ! empty( $attributes[ $k_"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+     "property": "font-size",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for font-size (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "fontSize"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "fontSize"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "fontSize"
+          ],
+          "absent": []
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+          ]
+         },
+         {
+          "block": "accordion",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+           "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+          ]
+         },
+         {
+          "block": "accordion",
+          "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+          "mentions": [],
+          "declares": [
+           ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+     "property": "font-style",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for font-style (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "fontStyle"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "fontStyle"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "fontStyle"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "talic' ), true ) ) { $base_decls[] = 'font-style:' . $attributes[ $k_style ] . ';'; } $allowe"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+     "property": "letter-spacing",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for letter-spacing (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "letterSpacing"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "letterSpacing"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "letterSpacing"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+     "property": "text-transform",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for text-transform (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "textTransform"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "textTransform"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textTransform"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "ansforms, true ) ) { $base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';'; }"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": "",
+     "property": "font-family",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-family setting on sgs/brand-strip paints \"\" (candidates: nameFontFamily, brandTextFontFamily)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameFontFamily",
+         "css_property": "font-family",
+         "css_element": "name",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "brandTextFontFamily",
+         "css_property": "font-family",
+         "css_element": "brand-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontFamily",
+           "brandTextFontFamily",
+           "fontFamily"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontFamily",
+           "brandTextFontFamily",
+           "fontFamily"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "== $family_safe ) { $base_decls[] = 'font-family:' . $family_safe . ';'; } } elseif ( $inhe",
+           "bs/audio style.css). $base_decls[] = 'font-family:inherit;'; } if ( ! empty( $attributes[ $k_"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": "",
+     "property": "font-size",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-size setting on sgs/brand-strip paints \"\" (candidates: nameFontSize, brandTextFontSize)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameFontSize",
+         "css_property": "font-size",
+         "css_element": "caption",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "brandTextFontSize",
+         "css_property": "font-size",
+         "css_element": "brand-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontSize",
+           "brandTextFontSize",
+           "fontSize"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "fontSize"
+          ],
+          "absent": [
+           "nameFontSize",
+           "brandTextFontSize"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+           "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+          ]
+         },
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+          "mentions": [],
+          "declares": [
+           ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+          ]
+         },
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": "",
+     "property": "font-weight",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-weight setting on sgs/brand-strip paints \"\" (candidates: nameFontWeight, brandTextFontWeight)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameFontWeight",
+         "css_property": "font-weight",
+         "css_element": "caption",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "brandTextFontWeight",
+         "css_property": "font-weight",
+         "css_element": "brand-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontWeight",
+           "brandTextFontWeight",
+           "fontWeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontWeight",
+           "brandTextFontWeight",
+           "fontWeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "s[ $k_weight ] ) ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string)"
+          ]
+         },
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": "",
+     "property": "font-style",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-style setting on sgs/brand-strip paints \"\" (candidates: nameFontStyle)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameFontStyle",
+         "css_property": "font-style",
+         "css_element": "name",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontStyle",
+           "fontStyle"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontStyle",
+           "fontStyle"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "talic' ), true ) ) { $base_decls[] = 'font-style:' . $attributes[ $k_style ] . ';'; } $allowe"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": "",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no line-height setting on sgs/brand-strip paints \"\" (candidates: nameLineHeight)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameLineHeight",
+         "css_property": "line-height",
+         "css_element": "name",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameLineHeight",
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameLineHeight",
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": "",
+     "property": "letter-spacing",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no letter-spacing setting on sgs/brand-strip paints \"\" (candidates: nameLetterSpacing, brandTextLetterSpacing)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameLetterSpacing",
+         "css_property": "letter-spacing",
+         "css_element": "name",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "brandTextLetterSpacing",
+         "css_property": "letter-spacing",
+         "css_element": "brand-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameLetterSpacing",
+           "brandTextLetterSpacing",
+           "letterSpacing"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameLetterSpacing",
+           "brandTextLetterSpacing",
+           "letterSpacing"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": "",
+     "property": "text-transform",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no text-transform setting on sgs/brand-strip paints \"\" (candidates: nameTextTransform, brandTextTextTransform)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameTextTransform",
+         "css_property": "text-transform",
+         "css_element": "name",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "brandTextTextTransform",
+         "css_property": "text-transform",
+         "css_element": "brand-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameTextTransform",
+           "brandTextTextTransform",
+           "textTransform"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameTextTransform",
+           "brandTextTextTransform",
+           "textTransform"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "ansforms, true ) ) { $base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';'; }"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "font-family",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-family setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameFontFamily, brandTextFontFamily)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameFontFamily",
+         "css_property": "font-family",
+         "css_element": "name",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "brandTextFontFamily",
+         "css_property": "font-family",
+         "css_element": "brand-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontFamily",
+           "brandTextFontFamily",
+           "fontFamily"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontFamily",
+           "brandTextFontFamily",
+           "fontFamily"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "== $family_safe ) { $base_decls[] = 'font-family:' . $family_safe . ';'; } } elseif ( $inhe",
+           "bs/audio style.css). $base_decls[] = 'font-family:inherit;'; } if ( ! empty( $attributes[ $k_"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "font-size",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-size setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameFontSize, brandTextFontSize)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameFontSize",
+         "css_property": "font-size",
+         "css_element": "caption",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "brandTextFontSize",
+         "css_property": "font-size",
+         "css_element": "brand-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontSize",
+           "brandTextFontSize",
+           "fontSize"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "fontSize"
+          ],
+          "absent": [
+           "nameFontSize",
+           "brandTextFontSize"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+           "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+          ]
+         },
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+          "mentions": [],
+          "declares": [
+           ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+          ]
+         },
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "font-weight",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-weight setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameFontWeight, brandTextFontWeight)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameFontWeight",
+         "css_property": "font-weight",
+         "css_element": "caption",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "brandTextFontWeight",
+         "css_property": "font-weight",
+         "css_element": "brand-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontWeight",
+           "brandTextFontWeight",
+           "fontWeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontWeight",
+           "brandTextFontWeight",
+           "fontWeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "s[ $k_weight ] ) ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string)"
+          ]
+         },
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "font-style",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-style setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameFontStyle)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameFontStyle",
+         "css_property": "font-style",
+         "css_element": "name",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontStyle",
+           "fontStyle"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameFontStyle",
+           "fontStyle"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "talic' ), true ) ) { $base_decls[] = 'font-style:' . $attributes[ $k_style ] . ';'; } $allowe"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no line-height setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameLineHeight)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameLineHeight",
+         "css_property": "line-height",
+         "css_element": "name",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameLineHeight",
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameLineHeight",
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "letter-spacing",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no letter-spacing setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameLetterSpacing, brandTextLetterSpacing)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameLetterSpacing",
+         "css_property": "letter-spacing",
+         "css_element": "name",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "brandTextLetterSpacing",
+         "css_property": "letter-spacing",
+         "css_element": "brand-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameLetterSpacing",
+           "brandTextLetterSpacing",
+           "letterSpacing"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameLetterSpacing",
+           "brandTextLetterSpacing",
+           "letterSpacing"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "text-transform",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no text-transform setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameTextTransform, brandTextTextTransform)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "nameTextTransform",
+         "css_property": "text-transform",
+         "css_element": "name",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/brand-strip",
+         "setting": "brandTextTextTransform",
+         "css_property": "text-transform",
+         "css_element": "brand-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "nameTextTransform",
+           "brandTextTextTransform",
+           "textTransform"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "nameTextTransform",
+           "brandTextTextTransform",
+           "textTransform"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "brand-strip",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "ansforms, true ) ) { $base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';'; }"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/card-grid",
+     "path": ".sgs-card-grid__item:nth-of-type(2) > .sgs-card-grid__image-wrap > .sgs-card-grid__overlay > .sgs-card-grid__glyph",
+     "property": "text-align",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-53",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/card-grid has no setting for text-align"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "card-grid/render.php",
+          "mentions": [
+           "textAlign"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "textAlign"
+          ],
+          "absent": []
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "card-grid",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "d_aligns, true ) ) { $base_decls[] = 'text-align:' . $attributes[ $k_align ] . ';'; } // text"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/card-grid",
+     "path": ".sgs-card-grid__item:nth-of-type(6) > .sgs-card-grid__image-wrap > .sgs-card-grid__no-image-label",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-53",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no line-height setting on sgs/card-grid paints \".sgs-card-grid__item:nth-of-type(6) > .sgs-card-grid__image-wrap > .sgs-card-grid__no-image-label\" (candidates: titleLineHeight, subtitleLineHeight)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "titleLineHeight",
+         "css_property": "line-height",
+         "css_element": "title",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "subtitleLineHeight",
+         "css_property": "line-height",
+         "css_element": "subtitle",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "card-grid/render.php",
+          "mentions": [
+           "lineHeight"
+          ],
+          "absent": [
+           "titleLineHeight",
+           "subtitleLineHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "titleLineHeight",
+           "subtitleLineHeight",
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/card-grid",
+     "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__image-wrap > .sgs-card-grid__no-image-label",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-53",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no line-height setting on sgs/card-grid paints \".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__image-wrap > .sgs-card-grid__no-image-label\" (candidates: titleLineHeight, subtitleLineHeight)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "titleLineHeight",
+         "css_property": "line-height",
+         "css_element": "title",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "subtitleLineHeight",
+         "css_property": "line-height",
+         "css_element": "subtitle",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "card-grid/render.php",
+          "mentions": [
+           "lineHeight"
+          ],
+          "absent": [
+           "titleLineHeight",
+           "subtitleLineHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "titleLineHeight",
+           "subtitleLineHeight",
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/nav-drawer",
+     "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+     "property": "font-size",
+     "kind": "style",
+     "surfaces": [
+      "mobile-menu"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mobile-menu",
+       "ref": "cr-ref-mobile-menu-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-size setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: closeFontSize, chromeSlotFontSize, chromeSlotFontSizeTablet, chromeSlotFontSizeMobile)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/nav-drawer",
+         "setting": "closeFontSize",
+         "css_property": "font-size",
+         "css_element": "close",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/nav-drawer",
+         "setting": "chromeSlotFontSize",
+         "css_property": "font-size",
+         "css_element": "chromeSlot",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/nav-drawer",
+         "setting": "chromeSlotFontSizeTablet",
+         "css_property": "font-size",
+         "css_element": "chromeSlot",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/nav-drawer",
+         "setting": "chromeSlotFontSizeMobile",
+         "css_property": "font-size",
+         "css_element": "chromeSlot",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "nav-drawer/render.php",
+          "mentions": [
+           "closeFontSize"
+          ],
+          "absent": [
+           "chromeSlotFontSize",
+           "chromeSlotFontSizeTablet",
+           "chromeSlotFontSizeMobile",
+           "fontSize"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+           "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+          ]
+         },
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-tokens.php::includes/helpers-tokens.php",
+          "mentions": [],
+          "declares": [
+           ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+          ]
+         },
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+          "mentions": [],
+          "declares": [
+           ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+          ]
+         },
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/nav-drawer",
+     "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+     "property": "font-style",
+     "kind": "style",
+     "surfaces": [
+      "mobile-menu"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mobile-menu",
+       "ref": "cr-ref-mobile-menu-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-style setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: chromeSlotFontStyle)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/nav-drawer",
+         "setting": "chromeSlotFontStyle",
+         "css_property": "font-style",
+         "css_element": "chromeSlot",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "nav-drawer/render.php",
+          "mentions": [],
+          "absent": [
+           "chromeSlotFontStyle",
+           "fontStyle"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "talic' ), true ) ) { $base_decls[] = 'font-style:' . $attributes[ $k_style ] . ';'; } $allowe"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill > .sgs-option-picker__pill-text > .sgs-option-picker__pill-label",
+     "property": "font-weight",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no font-weight setting on sgs/buybox paints \".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill > .sgs-option-picker__pill-text > .sgs-option-picker__pill-label\" (candidates: priceFontWeight, addToCartFontWeight)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "priceFontWeight",
+         "css_property": "font-weight",
+         "css_element": null,
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "addToCartFontWeight",
+         "css_property": "font-weight",
+         "css_element": "add-to-cart",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "priceFontWeight"
+          ],
+          "absent": [
+           "addToCartFontWeight",
+           "fontWeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "priceFontWeight",
+           "addToCartFontWeight",
+           "fontWeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "s[ $k_weight ] ) ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string)"
+          ]
+         },
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill > .sgs-option-picker__pill-text > .sgs-option-picker__pill-label",
+     "property": "letter-spacing",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no letter-spacing setting on sgs/buybox paints \".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill > .sgs-option-picker__pill-text > .sgs-option-picker__pill-label\" (candidates: pickerLabelLetterSpacing, addToCartLetterSpacing)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "pickerLabelLetterSpacing",
+         "css_property": "letter-spacing",
+         "css_element": "picker-label-text",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "addToCartLetterSpacing",
+         "css_property": "letter-spacing",
+         "css_element": "add-to-cart",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "pickerLabelLetterSpacing"
+          ],
+          "absent": [
+           "addToCartLetterSpacing",
+           "letterSpacing"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "pickerLabelLetterSpacing",
+           "addToCartLetterSpacing",
+           "letterSpacing"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+     "property": "text-align",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for text-align"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "textAlign"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "textAlign"
+          ],
+          "absent": []
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "d_aligns, true ) ) { $base_decls[] = 'text-align:' . $attributes[ $k_align ] . ';'; } // text"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > form > button > span:nth-of-type(1) > span",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no line-height setting on sgs/buybox paints \".sgs-buybox__config-col > form > button > span:nth-of-type(1) > span\" (candidates: priceLineHeight)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "priceLineHeight",
+         "css_property": "line-height",
+         "css_element": null,
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "priceLineHeight"
+          ],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "priceLineHeight",
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/tabs",
+     "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-12",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "consequence",
+         "partial": true,
+         "widths": [
+          375,
+          375,
+          768,
+          768,
+          1440,
+          1440,
+          1920,
+          1920
+         ],
+         "parent": "cr-ref-product-11|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|line-height"
+        },
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/tabs has no setting for line-height"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "tabs/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "tabs/style.css",
+          "selector": ".sgs-tabs__tab",
+          "declaration": "line-height:1.4"
+         }
+        ],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/tabs",
+     "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
+     "property": "text-wrap",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-12",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/tabs has no setting for text-wrap"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "tabs/render.php",
+          "mentions": [],
+          "absent": [
+           "textWrap"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textWrap"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "tabs",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "ed_wraps, true ) ) { $base_decls[] = 'text-wrap:' . $attributes[ $k_wrap ] . ';'; } // writin"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/tabs",
+     "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)",
+     "property": "line-height",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-12",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "consequence",
+         "partial": true,
+         "widths": [
+          375,
+          768,
+          1440,
+          1920
+         ],
+         "parent": "cr-ref-product-11|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|line-height"
+        },
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/tabs has no setting for line-height"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "tabs/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "lineHeight"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "tabs/style.css",
+          "selector": ".sgs-tabs__tab",
+          "declaration": "line-height:1.4"
+         }
+        ],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/tabs",
+     "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)",
+     "property": "text-wrap",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-12",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/tabs has no setting for text-wrap"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "tabs/render.php",
+          "mentions": [],
+          "absent": [
+           "textWrap"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textWrap"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "tabs",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "ed_wraps, true ) ) { $base_decls[] = 'text-wrap:' . $attributes[ $k_wrap ] . ';'; } // writin"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/whatsapp-cta",
+     "path": "",
+     "property": "text-wrap",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-9",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no text-wrap setting on sgs/whatsapp-cta paints \"\" (candidates: labelTextWrap)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/whatsapp-cta",
+         "setting": "labelTextWrap",
+         "css_property": "text-wrap",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "whatsapp-cta/render.php",
+          "mentions": [
+           "labelTextWrap"
+          ],
+          "absent": [
+           "textWrap"
+          ]
+         },
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "labelTextWrap",
+           "textWrap"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "labelTextWrap",
+           "textWrap"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "whatsapp-cta",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "ed_wraps, true ) ) { $base_decls[] = 'text-wrap:' . $attributes[ $k_wrap ] . ';'; } // writin"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/tabs",
+     "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)",
+     "property": "text-decoration-line",
+     "kind": "hover",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-12",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/tabs has no setting for text-decoration-line (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "tabs/render.php",
+          "mentions": [],
+          "absent": [
+           "textDecorationLine",
+           "textDecoration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textDecorationLine",
+           "textDecoration"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "tabs/style.css",
+          "selector": ".sgs-tabs__tab:hover",
+          "declaration": "text-decoration:underline"
+         },
+         {
+          "file": "tabs/style.css",
+          "selector": ".sgs-tabs__tab[aria-selected=\"true\"], .sgs-tabs__tab--active",
+          "declaration": "text-decoration:none"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "tabs",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "orations, true ) ) { $base_decls[] = 'text-decoration:' . $attributes[ $k_decoration ] . ';'; }"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/tabs",
+     "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)",
+     "property": "text-decoration-color",
+     "kind": "hover",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-12",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/tabs has no setting for text-decoration-color (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "tabs/render.php",
+          "mentions": [],
+          "absent": [
+           "textDecorationColor"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textDecorationColor"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "core/query-title",
+     "path": "",
+     "property": "text-wrap",
+     "kind": "style",
+     "surfaces": [
+      "shop"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "shop",
+       "ref": "cr-ref-shop-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "core/query-title has no setting for text-wrap"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textWrap"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+          "mentions": [],
+          "declares": [
+           "ed_wraps, true ) ) { $base_decls[] = 'text-wrap:' . $attributes[ $k_wrap ] . ';'; } // writin"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "totals": {
+  "rows": 58,
+  "combos": 44
+ }
+}

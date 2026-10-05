@@ -1,0 +1,4053 @@
+{
+ "batch": "b2e",
+ "mechanisms": {
+  "M7-decoration": {
+   "rows": 34,
+   "combos": [
+    {
+     "block": "core/list",
+     "path": "",
+     "property": "border-top-color",
+     "kind": "hover",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-9",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "core/list has no setting for border-top-color (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-16",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "core/list has no setting for border-top-color (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+     "property": "text-shadow",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-17",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for text-shadow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      },
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for text-shadow (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+     "property": "filter",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for filter"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "filter"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "filter"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      },
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for filter (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "filter"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "filter"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(1)",
+     "property": "box-shadow",
+     "kind": "hover",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for box-shadow (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+          "mentions": [],
+          "declares": [
+           "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+          "mentions": [],
+          "declares": [
+           "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(3)",
+     "property": "box-shadow",
+     "kind": "hover",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for box-shadow (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+          "mentions": [],
+          "declares": [
+           "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+          "mentions": [],
+          "declares": [
+           "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2)",
+     "property": "box-shadow",
+     "kind": "hover",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for box-shadow (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+          "mentions": [],
+          "declares": [
+           "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+          "mentions": [],
+          "declares": [
+           "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/cart",
+     "path": "",
+     "property": "border-top-width",
+     "kind": "style",
+     "surfaces": [
+      "header"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "header",
+       "ref": "cr-ref-header-13",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-top-width setting on sgs/cart paints \"\" (candidates: pillBorderWidth)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/cart",
+         "setting": "pillBorderWidth",
+         "css_property": "border-width",
+         "css_element": "pill",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "cart/render.php",
+          "mentions": [
+           "pillBorderWidth"
+          ],
+          "absent": [
+           "borderTopWidth",
+           "borderWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderTopWidth"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderTopWidth"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderTopWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "cart",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+           "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+          "mentions": [],
+          "declares": [
+           "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/cart",
+     "path": "",
+     "property": "border-top-style",
+     "kind": "style",
+     "surfaces": [
+      "header"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "header",
+       "ref": "cr-ref-header-13",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-top-style setting on sgs/cart paints \"\" (candidates: pillBorderStyle)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/cart",
+         "setting": "pillBorderStyle",
+         "css_property": "border-style",
+         "css_element": "pill",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "cart/render.php",
+          "mentions": [
+           "pillBorderStyle"
+          ],
+          "absent": [
+           "borderTopStyle",
+           "borderStyle"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "borderStyle"
+          ],
+          "absent": [
+           "pillBorderStyle",
+           "borderTopStyle"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [
+           "borderStyle"
+          ],
+          "absent": [
+           "pillBorderStyle",
+           "borderTopStyle"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [
+           "borderStyle"
+          ],
+          "absent": [
+           "pillBorderStyle",
+           "borderTopStyle"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "cart",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "border_has_width ) { $base_decls[] = 'border-style:' . $border_style . ';'; } if ( null !== $"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+          "mentions": [],
+          "declares": [
+           "'none' !== $style ) { return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $s"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/cart",
+     "path": "",
+     "property": "border-bottom-width",
+     "kind": "style",
+     "surfaces": [
+      "header"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "header",
+       "ref": "cr-ref-header-13",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-bottom-width setting on sgs/cart paints \"\" (candidates: pillBorderWidth)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/cart",
+         "setting": "pillBorderWidth",
+         "css_property": "border-width",
+         "css_element": "pill",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "cart/render.php",
+          "mentions": [
+           "pillBorderWidth"
+          ],
+          "absent": [
+           "borderBottomWidth",
+           "borderWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderBottomWidth"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderBottomWidth"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderBottomWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "cart",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+           "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+          "mentions": [],
+          "declares": [
+           "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/cart",
+     "path": "",
+     "property": "border-left-width",
+     "kind": "style",
+     "surfaces": [
+      "header"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "header",
+       "ref": "cr-ref-header-13",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-left-width setting on sgs/cart paints \"\" (candidates: pillBorderWidth)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/cart",
+         "setting": "pillBorderWidth",
+         "css_property": "border-width",
+         "css_element": "pill",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "cart/render.php",
+          "mentions": [
+           "pillBorderWidth"
+          ],
+          "absent": [
+           "borderLeftWidth",
+           "borderWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderLeftWidth"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderLeftWidth"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderLeftWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "cart",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+           "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+          "mentions": [],
+          "declares": [
+           "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/cart",
+     "path": "",
+     "property": "border-right-width",
+     "kind": "style",
+     "surfaces": [
+      "header"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "header",
+       "ref": "cr-ref-header-13",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-right-width setting on sgs/cart paints \"\" (candidates: pillBorderWidth)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/cart",
+         "setting": "pillBorderWidth",
+         "css_property": "border-width",
+         "css_element": "pill",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "cart/render.php",
+          "mentions": [
+           "pillBorderWidth"
+          ],
+          "absent": [
+           "borderRightWidth",
+           "borderWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderRightWidth"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderRightWidth"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "pillBorderWidth",
+           "borderRightWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "cart",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+           "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+          "mentions": [],
+          "declares": [
+           "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": "",
+     "property": "text-shadow",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/brand-strip has no setting for text-shadow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "text-shadow",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/brand-strip has no setting for text-shadow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/card-grid",
+     "path": ".sgs-card-grid__item:nth-of-type(2) > .sgs-card-grid__image-wrap > .sgs-media-el",
+     "property": "background-image",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-53",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no background-image setting on sgs/card-grid paints \".sgs-card-grid__item:nth-of-type(2) > .sgs-card-grid__image-wrap > .sgs-media-el\" (candidates: cardBackgroundGradient, titleColourGradient, subtitleColourGradient, overlayGradient)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "cardBackgroundGradient",
+         "css_property": "background-image",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "backgroundColourHoverGradient",
+         "css_property": "background-image",
+         "css_element": "item",
+         "css_state": "hover",
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "titleColourGradient",
+         "css_property": "background-image",
+         "css_element": "title",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "subtitleColourGradient",
+         "css_property": "background-image",
+         "css_element": "subtitle",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/card-grid",
+         "setting": "overlayGradient",
+         "css_property": "background-image",
+         "css_element": "imageOverlay",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "card-grid/render.php",
+          "mentions": [
+           "cardBackgroundGradient",
+           "backgroundColourHoverGradient",
+           "titleColourGradient",
+           "subtitleColourGradient",
+           "overlayGradient"
+          ],
+          "absent": [
+           "backgroundImage"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "backgroundColourHoverGradient",
+           "overlayGradient"
+          ],
+          "absent": [
+           "cardBackgroundGradient",
+           "titleColourGradient",
+           "subtitleColourGradient",
+           "backgroundImage"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "card-grid",
+          "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+          "mentions": [],
+          "declares": [
+           "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+          ]
+         },
+         {
+          "block": "card-grid",
+          "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+          "mentions": [],
+          "declares": [
+           "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
+          ]
+         },
+         {
+          "block": "card-grid",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "overlayGradient"
+          ],
+          "declares": [
+           "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
+           "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
+           "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/product-card",
+     "path": "",
+     "property": "box-shadow",
+     "kind": "hover",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-23",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/product-card has no setting for box-shadow (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "product-card/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "product-card",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
+          ]
+         },
+         {
+          "block": "product-card",
+          "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+          "mentions": [],
+          "declares": [
+           "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
+          ]
+         },
+         {
+          "block": "product-card",
+          "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+          "mentions": [],
+          "declares": [
+           "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/choice-flow",
+     "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
+     "property": "border-bottom-width",
+     "kind": "style",
+     "surfaces": [
+      "lens"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-bottom-width setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backBorderWidth)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/choice-flow",
+         "setting": "backBorderWidth",
+         "css_property": "border-width",
+         "css_element": "back",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "backBorderWidth",
+           "borderBottomWidth",
+           "borderWidth"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "backBorderWidth",
+           "borderBottomWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "choice-flow",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+           "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/choice-flow",
+     "path": "",
+     "property": "border-radius",
+     "kind": "style",
+     "surfaces": [
+      "lens"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-0",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-radius setting on sgs/choice-flow paints \"\" (candidates: backBorderRadius)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/choice-flow",
+         "setting": "backBorderRadius",
+         "css_property": "border-radius",
+         "css_element": "back",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "backBorderRadius",
+           "borderRadius"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [],
+          "absent": [
+           "backBorderRadius",
+           "borderRadius"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "choice-flow",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "radius_shorthand ) { $base_decls[] = 'border-radius:' . esc_attr( $border_radius_shorthand ) . ';",
+           "= $border_radius ) { $base_decls[] = 'border-radius:' . $border_radius . 'px;'; } if ( '' !==",
+           "\"\\\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;\" . $bg_decl . ';"
+          ]
+         },
+         {
+          "block": "choice-flow",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "$radius .= 'px'; } $decls[] = 'border-radius:' . $radius; } } // Background colour"
+          ]
+         },
+         {
+          "block": "choice-flow",
+          "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
+          "mentions": [],
+          "declares": [
+           "\"\\\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;\"; $css .= $pain"
+          ]
+         },
+         {
+          "block": "choice-flow",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "sition:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/choice-flow",
+     "path": "",
+     "property": "box-shadow",
+     "kind": "style",
+     "surfaces": [
+      "lens"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-0",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/choice-flow has no setting for box-shadow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [],
+          "absent": [
+           "boxShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "modal",
+          "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+          "mentions": [],
+          "declares": [
+           "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/choice-flow",
+     "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
+     "property": "border-right-width",
+     "kind": "style",
+     "surfaces": [
+      "lens"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-0",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-right-width setting on sgs/choice-flow paints \".sgs-choice-flow__body > .sgs-choice-flow__summary\" (candidates: backBorderWidth)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/choice-flow",
+         "setting": "backBorderWidth",
+         "css_property": "border-width",
+         "css_element": "back",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "backBorderWidth",
+           "borderRightWidth",
+           "borderWidth"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "backBorderWidth",
+           "borderRightWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "choice-flow",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+           "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "backdrop-filter",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-41",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/button has no setting for backdrop-filter"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [],
+          "absent": [
+           "backdropFilter"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "backdropFilter"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "backdropFilter"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "backdropFilter"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "backdropFilter"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "backdropFilter"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "backdropFilter"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "site-header/style.css",
+          "selector": "header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown]",
+          "declaration": "backdrop-filter:none"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/helpers-surface-ground.php::sgs_surface_backdrop_decls",
+          "mentions": [],
+          "declares": [
+           "lode( ' ', $parts ); return array( 'backdrop-filter:' . $value, '-webkit-backdrop-filter:' ."
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+          "mentions": [],
+          "declares": [
+           "p-filter:blur(var(--sgs-scrim-blur,0px));backdrop-filter:blur(var(--sgs-scrim-blur,0px))}'; $css"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "outline-style",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-41",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/button has no setting for outline-style"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [],
+          "absent": [
+           "outlineStyle"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "outlineStyle"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "outlineStyle"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "outlineStyle"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "outlineStyle"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "outlineStyle"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "outlineStyle"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/mega-group",
+     "path": "",
+     "property": "border-top-color",
+     "kind": "hover",
+     "surfaces": [
+      "mega-sunglasses"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-sunglasses",
+       "ref": "cr-ref-mega-sunglasses-27",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/mega-group has no setting for border-top-color (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "borderTopColor",
+           "borderColor"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "mega-panel",
+          "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+          "mentions": [],
+          "declares": [
+           "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+           "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
+           "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+          ]
+         },
+         {
+          "block": "mega-panel",
+          "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
+          "mentions": [],
+          "declares": [
+           "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
+           "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
+          ]
+         },
+         {
+          "block": "mega-panel",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+           "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+           "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
+          "mentions": [],
+          "declares": [
+           "-nm-submenu-border-style, solid);' . 'border-color:var(--wp--preset--color--border, transparent);"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-css.php::sgs_nav_shared_item_state_css",
+          "mentions": [],
+          "declares": [
+           "{ $sgs_nm_ancestor_current_decls[] = 'border-color:' . sgs_colour_value( $sgs_nm_item_border_colo",
+           "ur ) { $item_hover_decls['border'] = 'border-color:' . $item_border_hover_colour; } } // Onl"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+          "mentions": [],
+          "declares": [
+           ". ( '' !== $burger_border_colour ? 'border-color:' . $burger_border_colour . ';' : '' ) . '}';"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-item-hover-scope-css.php::includes/nav-menu-item-hover-scope-css.php",
+          "mentions": [],
+          "declares": [
+           "gs_hover_state_rules( $no_submenu_link, 'border-color:' . $reset_colour, ':focus-within' ); retur"
+          ]
+         },
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/nav-menu-item-hover-scope-css.php::sgs_nav_item_hover_scope_border_css",
+          "mentions": [],
+          "declares": [
+           "gs_hover_state_rules( $no_submenu_link, 'border-color:' . $reset_colour, ':focus-within' ); retur"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/nav-drawer",
+     "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+     "property": "box-shadow",
+     "kind": "style",
+     "surfaces": [
+      "mobile-menu"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mobile-menu",
+       "ref": "cr-ref-mobile-menu-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no box-shadow setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: shadow)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/nav-drawer",
+         "setting": "shadow",
+         "css_property": "box-shadow",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "nav-drawer/render.php",
+          "mentions": [
+           "shadow"
+          ],
+          "absent": [
+           "boxShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+          "mentions": [],
+          "declares": [
+           "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
+          ]
+         },
+         {
+          "block": "nav-drawer",
+          "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+          "mentions": [
+           "shadow"
+          ],
+          "declares": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/nav-drawer",
+     "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+     "property": "text-shadow",
+     "kind": "style",
+     "surfaces": [
+      "mobile-menu"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mobile-menu",
+       "ref": "cr-ref-mobile-menu-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/nav-drawer has no setting for text-shadow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "nav-drawer/render.php",
+          "mentions": [],
+          "absent": [
+           "textShadow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/nav-drawer",
+     "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+     "property": "outline-style",
+     "kind": "style",
+     "surfaces": [
+      "mobile-menu"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mobile-menu",
+       "ref": "cr-ref-mobile-menu-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/nav-drawer has no setting for outline-style"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "nav-drawer/render.php",
+          "mentions": [],
+          "absent": [
+           "outlineStyle"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+     "property": "border-top-width",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-top-width setting on sgs/buybox paints \".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)\" (candidates: borderWidth)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "borderWidth",
+         "css_property": "border-width",
+         "css_element": null,
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "borderTopWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "borderTopWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+           "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+          "mentions": [],
+          "declares": [
+           "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+     "property": "border-top-style",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-top-style setting on sgs/buybox paints \".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)\" (candidates: borderStyle)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "borderStyle",
+         "css_property": "border-style",
+         "css_element": null,
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "borderStyle"
+          ],
+          "absent": [
+           "borderTopStyle"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "borderStyle"
+          ],
+          "absent": [
+           "borderTopStyle"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "border_has_width ) { $base_decls[] = 'border-style:' . $border_style . ';'; } if ( null !== $"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+          "mentions": [],
+          "declares": [
+           "'none' !== $style ) { return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $s"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+     "property": "border-bottom-width",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-bottom-width setting on sgs/buybox paints \".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)\" (candidates: borderWidth)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "borderWidth",
+         "css_property": "border-width",
+         "css_element": null,
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "borderBottomWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "borderBottomWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+           "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+          "mentions": [],
+          "declares": [
+           "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+     "property": "border-left-width",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-left-width setting on sgs/buybox paints \".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)\" (candidates: borderWidth)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "borderWidth",
+         "css_property": "border-width",
+         "css_element": null,
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "borderLeftWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "borderLeftWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+           "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+          "mentions": [],
+          "declares": [
+           "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+     "property": "border-right-width",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no border-right-width setting on sgs/buybox paints \".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)\" (candidates: borderWidth)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/buybox",
+         "setting": "borderWidth",
+         "css_property": "border-width",
+         "css_element": null,
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "borderRightWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "borderWidth"
+          ],
+          "absent": [
+           "borderRightWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+           "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+          "mentions": [],
+          "declares": [
+           "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+     "property": "background-image",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for background-image"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "backgroundImage"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "backgroundImage"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+          "mentions": [],
+          "declares": [
+           "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+          ]
+         },
+         {
+          "block": "buybox",
+          "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+          "mentions": [],
+          "declares": [
+           "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
+           "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
+           "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "M6-icon-paint": {
+   "rows": 16,
+   "combos": [
+    {
+     "block": "sgs/site-footer",
+     "path": "",
+     "property": "icon-stroke",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-0",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/site-footer has no setting for icon-stroke"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconStroke"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2)",
+     "property": "icon-fill",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for icon-fill"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2) > .sgs-social-icons__icon > .sgs-brand-icon",
+     "property": "icon-fill",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for icon-fill"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)",
+     "property": "icon-fill",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/google-reviews has no setting for icon-fill"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)",
+     "property": "icon-stroke",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/google-reviews has no setting for icon-stroke"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [],
+          "absent": [
+           "iconStroke"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconStroke"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1) > svg",
+     "property": "icon-width",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no width setting on sgs/google-reviews paints \".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1) > svg\" (candidates: starSize, aggregateStarSize, cardWidth, avatarSize, cardLogoSize, arrowSize)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "contentWidth",
+         "css_property": "max-width",
+         "css_element": null,
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "maxWidth",
+         "css_property": "max-width",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "headerDividerWidth",
+         "css_property": "border-bottom-width",
+         "css_element": "header",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "starSize",
+         "css_property": "height,width,font-size",
+         "css_element": "star",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "aggregateStarSize",
+         "css_property": "height,width,font-size",
+         "css_element": "aggregate-star",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "cardWidth",
+         "css_property": "flex-basis,width",
+         "css_element": "review",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "avatarSize",
+         "css_property": "height,width",
+         "css_element": "avatar",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "cardLogoSize",
+         "css_property": "height,width",
+         "css_element": "card-logo",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "arrowSize",
+         "css_property": "height,width",
+         "css_element": "arrow",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [
+           "headerDividerWidth",
+           "starSize",
+           "aggregateStarSize",
+           "cardWidth",
+           "avatarSize",
+           "cardLogoSize",
+           "arrowSize",
+           "width"
+          ],
+          "absent": [
+           "contentWidth",
+           "maxWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "contentWidth",
+           "maxWidth",
+           "headerDividerWidth",
+           "starSize",
+           "aggregateStarSize",
+           "cardWidth",
+           "avatarSize",
+           "cardLogoSize",
+           "arrowSize"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "google-reviews",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+          ]
+         },
+         {
+          "block": "google-reviews",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "contentWidth",
+           "maxWidth"
+          ],
+          "declares": []
+         },
+         {
+          "block": "google-reviews",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "ecls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( isset( $box['display'] ) && '' !="
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1) > svg",
+     "property": "icon-height",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no height setting on sgs/google-reviews paints \".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1) > svg\" (candidates: starSize, aggregateStarSize, avatarSize, cardLogoSize, arrowSize)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "starSize",
+         "css_property": "height,width,font-size",
+         "css_element": "star",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "aggregateStarSize",
+         "css_property": "height,width,font-size",
+         "css_element": "aggregate-star",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "avatarSize",
+         "css_property": "height,width",
+         "css_element": "avatar",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "cardLogoSize",
+         "css_property": "height,width",
+         "css_element": "card-logo",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "arrowSize",
+         "css_property": "height,width",
+         "css_element": "arrow",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "writeReviewMinHeight",
+         "css_property": "min-height",
+         "css_element": "write-review",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "seeAllMinHeight",
+         "css_property": "min-height",
+         "css_element": "see-all",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [
+           "starSize",
+           "aggregateStarSize",
+           "avatarSize",
+           "cardLogoSize",
+           "arrowSize",
+           "writeReviewMinHeight",
+           "seeAllMinHeight",
+           "height"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "starSize",
+           "aggregateStarSize",
+           "avatarSize",
+           "cardLogoSize",
+           "arrowSize",
+           "writeReviewMinHeight",
+           "seeAllMinHeight",
+           "height"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "google-reviews",
+          "cite": "includes/shape-dividers.php::sgs_shape_divider_decls",
+          "mentions": [],
+          "declares": [
+           "EWBOX_H * $scale_y / 100 ); $decls = 'height:' . absint( $height ) . 'px'; $safe_colour = sgs_s"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)",
+     "property": "icon-fill",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/google-reviews has no setting for icon-fill"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)",
+     "property": "icon-stroke",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/google-reviews has no setting for icon-stroke"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [],
+          "absent": [
+           "iconStroke"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconStroke"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2) > svg",
+     "property": "icon-width",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no width setting on sgs/google-reviews paints \".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2) > svg\" (candidates: starSize, aggregateStarSize, cardWidth, avatarSize, cardLogoSize, arrowSize)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "contentWidth",
+         "css_property": "max-width",
+         "css_element": null,
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "maxWidth",
+         "css_property": "max-width",
+         "css_element": "wrapper",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "headerDividerWidth",
+         "css_property": "border-bottom-width",
+         "css_element": "header",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "starSize",
+         "css_property": "height,width,font-size",
+         "css_element": "star",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "aggregateStarSize",
+         "css_property": "height,width,font-size",
+         "css_element": "aggregate-star",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "cardWidth",
+         "css_property": "flex-basis,width",
+         "css_element": "review",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "avatarSize",
+         "css_property": "height,width",
+         "css_element": "avatar",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "cardLogoSize",
+         "css_property": "height,width",
+         "css_element": "card-logo",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "arrowSize",
+         "css_property": "height,width",
+         "css_element": "arrow",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [
+           "headerDividerWidth",
+           "starSize",
+           "aggregateStarSize",
+           "cardWidth",
+           "avatarSize",
+           "cardLogoSize",
+           "arrowSize",
+           "width"
+          ],
+          "absent": [
+           "contentWidth",
+           "maxWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "contentWidth",
+           "maxWidth",
+           "headerDividerWidth",
+           "starSize",
+           "aggregateStarSize",
+           "cardWidth",
+           "avatarSize",
+           "cardLogoSize",
+           "arrowSize"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "google-reviews",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+          ]
+         },
+         {
+          "block": "google-reviews",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "contentWidth",
+           "maxWidth"
+          ],
+          "declares": []
+         },
+         {
+          "block": "google-reviews",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "ecls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( isset( $box['display'] ) && '' !="
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2) > svg",
+     "property": "icon-height",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no height setting on sgs/google-reviews paints \".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2) > svg\" (candidates: starSize, aggregateStarSize, avatarSize, cardLogoSize, arrowSize)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "starSize",
+         "css_property": "height,width,font-size",
+         "css_element": "star",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "aggregateStarSize",
+         "css_property": "height,width,font-size",
+         "css_element": "aggregate-star",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "avatarSize",
+         "css_property": "height,width",
+         "css_element": "avatar",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "cardLogoSize",
+         "css_property": "height,width",
+         "css_element": "card-logo",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "arrowSize",
+         "css_property": "height,width",
+         "css_element": "arrow",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "writeReviewMinHeight",
+         "css_property": "min-height",
+         "css_element": "write-review",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/google-reviews",
+         "setting": "seeAllMinHeight",
+         "css_property": "min-height",
+         "css_element": "see-all",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [
+           "starSize",
+           "aggregateStarSize",
+           "avatarSize",
+           "cardLogoSize",
+           "arrowSize",
+           "writeReviewMinHeight",
+           "seeAllMinHeight",
+           "height"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "starSize",
+           "aggregateStarSize",
+           "avatarSize",
+           "cardLogoSize",
+           "arrowSize",
+           "writeReviewMinHeight",
+           "seeAllMinHeight",
+           "height"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "google-reviews",
+          "cite": "includes/shape-dividers.php::sgs_shape_divider_decls",
+          "mentions": [],
+          "declares": [
+           "EWBOX_H * $scale_y / 100 ); $decls = 'height:' . absint( $height ) . 'px'; $safe_colour = sgs_s"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/container",
+     "path": "",
+     "property": "icon-fill",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-54",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/container has no setting for icon-fill"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/choice-flow",
+     "path": "",
+     "property": "icon-fill",
+     "kind": "style",
+     "surfaces": [
+      "lens"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/choice-flow has no setting for icon-fill"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/choice-flow",
+     "path": "",
+     "property": "icon-stroke",
+     "kind": "style",
+     "surfaces": [
+      "lens"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/choice-flow has no setting for icon-stroke"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "iconStroke"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [],
+          "absent": [
+           "iconStroke"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/nav-drawer",
+     "path": "",
+     "property": "icon-stroke",
+     "kind": "style",
+     "surfaces": [
+      "mobile-menu"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mobile-menu",
+       "ref": "cr-ref-mobile-menu-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/nav-drawer has no setting for icon-stroke"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "nav-drawer/render.php",
+          "mentions": [],
+          "absent": [
+           "iconStroke"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/whatsapp-cta",
+     "path": "",
+     "property": "icon-fill",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-9",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/whatsapp-cta has no setting for icon-fill"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "whatsapp-cta/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "iconFill"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "totals": {
+  "rows": 50,
+  "combos": 47
+ }
+}

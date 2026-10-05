@@ -1,0 +1,820 @@
+[
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|border-top-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "border-top-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|border-bottom-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "border-bottom-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|border-left-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "border-left-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|border-right-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "border-right-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|border-top-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "border-top-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|border-bottom-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "border-bottom-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|border-left-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "border-left-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|border-right-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "border-right-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|border-top-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "border-top-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|border-bottom-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "border-bottom-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|border-left-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "border-left-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|border-right-color",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "border-right-color",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an enum mode writes a per-item custom property at a nearer element, unconditionally beating the colour setting",
+  "proof": "Tree cr-ref-footer-6 holds iconBorderColour:\"border\" and colourMode:\"brand\"; the snapshot resolves slug `border` to #E6E1DA = rgb(230,225,218), exactly the draft value, so a real setting DOES hold it. social-icons/render.php writes that setting at the ROOT ($root_decls <- sgs_custom_property_gradient_decls('sgs-social-border', $icon_border_colour), emitted as `{$root_sel}{...--sgs-social-border:...}`), then, when colourMode==='brand', writes a SECOND rule ON THE ITEM: `{$root_sel} .sgs-social-icons__item:nth-child(N){--sgs-social-bg:..;--sgs-social-border:<brand hex>;--sgs-social-glyph:..}`. style.css::.sgs-social-icons--boxed .sgs-social-icons__item consumes `border: 1px solid var(--sgs-social-border)` on the ITEM, so the brand rule's per-item custom property is both nearer in the inheritance chain and higher in specificity ((0,3,0) vs (0,1,0)) - iconBorderColour can never paint while colourMode='brand'. The live values are the official brand hexes from $platform_brand_colours (#e4405f Instagram, #25d366 WhatsApp, #4285f4 Google).",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-6 = {colourMode:\"brand\", iconStyle:\"boxed\", iconBorderColour:\"border\"}",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgb(230,225,218) = the draft value",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) )` merged into $root_decls, emitted `$scoped_css[] = \"{$root_sel}{\" . implode( ';', $root_decls ) . ';}'`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php :: `if ( 'brand' === $colour_mode ) { $brand_hex = $platform_brand_colours[ $platform ] ...; $scoped_css[] = \"{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}\"; }` -- THE WINNING DECLARATION",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css :: `.sgs-social-icons--boxed .sgs-social-icons__item { border: 1px solid var(--sgs-social-border); }`",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/social-icons' -> iconBorderColour|border-color|item|sgs ; colourMode|NULL|NULL|sgs (role select-from-enum)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "icons[].colour (per-item override)",
+   "helper": "scoped nth-child custom-property rule in render.php",
+   "note": "A per-item override already wins over brand mode, but it sets --sgs-social-bg/-border/-glyph to ONE value, so it cannot express brand glyphs with a neutral border. No block elsewhere makes an enum mode yield to an explicitly-set colour attribute, so there is no precedent for the real fix."
+  },
+  "fixShape": "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually paints with, and must never override --sgs-social-border when iconBorderColour is explicitly set (gate the brand rule per property, not per item).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/site-footer-row|.sgs-container__inner|justify-content",
+  "block": "sgs/site-footer-row",
+  "path": ".sgs-container__inner",
+  "property": "justify-content",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "T",
+  "changed": true,
+  "subMechanism": "a layout-mode enum gates the setting; the tree picked the wrong mode",
+  "proof": "Not a hardcode: nothing beats the setting, the setting is never consulted. Tree cr-ref-footer-27 holds justifyContent:\"space-between\" (the draft value) and rowSlot:\"bottom\" but NO `layout`, so block.json's `\"layout\": {\"enum\":[\"flex\",\"grid\"],\"default\":\"grid\"}` makes this row a GRID. SGS_Container_Wrapper::render emits `justify-content` only in its `elseif ( 'flex' === $layout ... )` and `elseif ( 'stack' === $layout ... )` branches; the grid branch emits justify-items / align-content / align-items and never justify-content, so the attribute is silently dropped and the painted value is the initial `normal`. There is no framework gap, because the inspector is consistent with the renderer: edit.js gates the control with `{ ! isGrid && ( <SelectControl label={ __( 'Distribution' ) } ... ) }`. A bottom bar is meant to be flex - render.php's own docblock says \"layout='flex' -> an intrinsic never-overflow cluster (top strip / bottom bar)\" - so the tree closes it today by adding layout:\"flex\".",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-27 = {rowSlot:\"bottom\", justifyContent:\"space-between\", borderWidth:{top:\"1px\"}, ...} with NO `layout` key",
+   "plugins/sgs-blocks/src/blocks/site-footer-row/block.json :: attributes.layout = {\"type\":\"string\",\"enum\":[\"flex\",\"grid\"],\"default\":\"grid\"}",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render :: `} elseif ( 'flex' === $layout && ! $suppress_outer_flex_for_main ) { ... if ( '' !== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); } }` -- the preceding grid branch has no such emit",
+   "plugins/sgs-blocks/src/blocks/site-footer-row/edit.js :: `{ ! isGrid && ( <SelectControl label={ __( 'Distribution', 'sgs-blocks' ) } value={ justifyContent || '' } options={ DISTRIBUTION_OPTIONS } ... ) }`",
+   "plugins/sgs-blocks/src/blocks/site-footer-row/render.php :: docblock \"layout='flex' -> an intrinsic never-overflow cluster (top strip / bottom bar)\"",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/site-footer-row' AND attr_name='justifyContent' -> justifyContent|justify-content|wrapper|sgs"
+  ],
+  "precedent": {
+   "block": "sgs/site-footer-row",
+   "setting": "layout",
+   "helper": "class-sgs-container-wrapper.php flex branch",
+   "note": "Every sibling row built as a flex cluster paints justify-content correctly through the same branch."
+  },
+  "fixShape": "Tree fix: add layout:\"flex\" to cr-ref-footer-27 in sites/eye-care-ward-end/build/footer.tree.json. No framework change.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/site-footer||margin-top",
+  "block": "sgs/site-footer",
+  "path": "",
+  "property": "margin-top",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an SGS spacing longhand emitted without !important loses at the base (desktop) tier; the @media tiers escape it because they carry !important",
+  "proof": "Tree cr-ref-footer-0 holds margin:{mobile:{top:\"40px\"},tablet:{top:\"40px\"},desktop:{top:\"40px\"}} - the draft value is 40px, so a real setting holds it. Measured live: margin-top 40px at 375 and 768 (no diff), 0px at 1440 and 1920. So the value IS written and only the DESKTOP tier fails to paint. The only difference between the two emission paths is !important: the tablet and mobile tiers are written as `@media (max-width:1023px){.$uid{margin-top:40px !important}}` and `@media (max-width:767px){...!important}` in the $has_responsive_margin branch, whose own in-code comment states why they need it - \"!important for the same reason as padding: WP-native base margin is inline on the wrapper\" - while the desktop base rule goes through `wp_style_engine_get_styles( array( 'spacing' => $base_spacing_style_args ), array( 'selector' => '.' . $uid ) )` with NO !important. The gate is satisfied (the node holds both padding and margin and the only enclosing condition is `$has_base_spacing && $uid`), so a higher-priority declaration beats the base rule at desktop only.",
+  "citations": [
+   "sites/eye-care-ward-end/build/footer.tree.json :: cr-ref-footer-0 = {margin:{mobile:{top:\"40px\"},tablet:{top:\"40px\"},desktop:{top:\"40px\"}}, padding:{desktop:{top:\"0px\",...}}}",
+   "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/round-1/w375/report.json and .../w768/report.json :: pairs['footer-root'].live.styles['margin-top'] = \"40px\", diffs = []",
+   "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/round-1/w1440/report.json and .../w1920/report.json :: pairs['footer-root'].live.styles['margin-top'] = \"0px\", diff {kind:\"style\", key:\"margin-top\", draft:\"40px\", live:\"0px\", ref:\"cr-ref-footer-0\"}",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render ($has_responsive_margin branch) :: `$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ' !important;', $tablet_margin_decls ) . ' !important}}';` with the comment \"!important for the same reason as padding: WP-native base margin is inline on the wrapper\"",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render ($has_base_spacing branch) :: `$base_spacing_styles = wp_style_engine_get_styles( array( 'spacing' => $base_spacing_style_args ), array( 'selector' => '.' . $uid ) ); ... $responsive_css .= $base_spacing_styles['css'];` -- THE LOSING DECLARATION, no !important",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/site-footer' AND attr_name='margin' -> margin|margin|wrapper|sgs"
+  ],
+  "precedent": {
+   "block": "sgs/site-footer (and every SGS_Container_Wrapper block)",
+   "setting": "margin, tablet and mobile tiers",
+   "helper": "class-sgs-container-wrapper.php $has_responsive_margin branch",
+   "note": "The same attribute paints correctly at tablet and mobile on the same element and the same selector; the only difference is that those rules carry !important. The escape hatch already exists in the wrapper."
+  },
+  "fixShape": "Emit the base (desktop) spacing rule with the same !important the tablet/mobile tiers use - build the base padding/margin longhands into $responsive_css by hand as `.$uid{margin-top:40px !important}` rather than through wp_style_engine_get_styles() - or suppress the competing WP-native base spacing for blocks that own `margin`. Blast radius: every block rendered by SGS_Container_Wrapper that sets a desktop-tier margin.",
+  "confidence": "medium",
+  "wouldSettle": "Open the live footer at 1440 in DevTools and read the matched rules for the <footer>: confirm whether an !important or inline declaration wins over `.sgs-sf-<hash>{margin-top:40px}`, or whether that rule is absent from the emitted <style> altogether."
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/container|.sgs-container__inner|margin-right",
+  "block": "sgs/container",
+  "path": ".sgs-container__inner",
+  "property": "margin-right",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an SGS spacing longhand emitted without !important loses to an !important auto-centring declaration (same sub-mechanism as sgs/site-footer margin-top)",
+  "proof": "Tree cr-ref-home-15 ALREADY holds contentBandMargin with top/right/bottom/left = \"0px\" on all three tiers - the draft value is 0px - so a real setting holds it. The dispatch's open question (does a helper treat 0 as empty and substitute a fallback?) is answered NO: sgs_css_length_or_sizing_keyword(\"0px\") returns \"0px\" because its preg_replace keeps [A-Za-z0-9.%], and the band emitters gate on `'' !== $band_margin_left`, which \"0px\" passes. The band rule is therefore emitted as `.{$uid}>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto;...;margin-right:0px;margin-left:0px}` with the longhands deliberately AFTER margin-inline:auto (the code comment: \"emitted AFTER margin-inline:auto above ... so an explicit side here wins by plain CSS declaration order\"). The live element nevertheless paints margin-left/right 52px with max-width 1336px inside a 1440px parent - auto centring - while its max-width DID take the SGS value: the walker's `declared` set is {width:\"100%\", max-width:\"var(--wp--style--global--content-size,1200px)\"}, the exact string $sgs_resolve_content_width() returns for contentWidth 'normal'. So the SGS rule applied for max-width and lost ONLY on the margin longhands, which is the signature of a competing `margin-left:auto !important; margin-right:auto !important` (WordPress core's constrained-layout rule) beating a plain (0,2,0) class rule. Only 1920 differs because at narrower widths the band is not capped below the container width, so auto resolves to ~0 and matches the draft's 0px.",
+  "citations": [
+   "sites/eye-care-ward-end/build/home.tree.json :: cr-ref-home-15 = {layout:\"grid\", contentBandMargin:{mobile:{top/right/bottom/left:\"0px\"}, tablet:{...\"0px\"}, desktop:{...\"0px\"}}} -- the setting already HOLDS the draft value",
+   "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/round-1/w1920/report.json :: pairs['bestsellers-grid'].live.styles margin-left = margin-right = \"52px\", max-width = width = \"1336px\"; live.declared = {\"width\":\"100%\",\"max-width\":\"var(--wp--style--global--content-size,1200px)\"}",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render :: `$base_band_decls[] = 'margin-inline:auto';` then `if ( '' !== $band_margin_left ) { $base_band_decls[] = 'margin-left:' . $band_margin_left; }`, emitted as `$responsive_css .= '.' . $uid . '>.sgs-container__inner{' . implode( ';', $base_band_decls ) . '}';` -- THE LOSING DECLARATION, a plain class rule at specificity (0,2,0)",
+   "plugins/sgs-blocks/includes/helpers-css-sizing-keyword.php::sgs_css_length_or_sizing_keyword :: `return (string) preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );` -> \"0px\" survives, so contentBandMargin:0px is NOT treated as empty (the dispatch's zero-as-empty hypothesis is disproven)",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php :: `$sgs_resolve_content_width` returns `'var(--wp--style--global--content-size,1200px)'` for 'normal' -- matching the walker's `declared` max-width, which proves the SGS band rule DID apply and lost only on the margins",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/container' -> contentBandMargin|margin-bottom,margin-left,margin-right,margin-top|content-band|sgs"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "contentBandMargin / the responsive margin tiers",
+   "helper": "class-sgs-container-wrapper.php $has_responsive_margin branch, which uses !important",
+   "note": "The wrapper already owns the escape: its @media tier spacing rules carry !important precisely so an !important or inline competitor cannot win. The base band rule does not."
+  },
+  "fixShape": "Emit the contentBandMargin longhands (and the base band padding) with !important on `.$uid>.sgs-container__inner`, matching the wrapper's own @media tier rules; or stop WordPress's constrained-layout class reaching the SGS band so core's `margin-left:auto !important` never applies.",
+  "confidence": "medium",
+  "wouldSettle": "At 1920 on the live homepage, read the matched CSS rules for `.cr-ref-home-15 > .sgs-container__inner` and confirm the winning margin-left declaration is `auto !important` from a `.wp-container-*.is-layout-constrained` rule rather than the SGS band rule being absent."
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/container|.sgs-container__inner|margin-left",
+  "block": "sgs/container",
+  "path": ".sgs-container__inner",
+  "property": "margin-left",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "an SGS spacing longhand emitted without !important loses to an !important auto-centring declaration (same sub-mechanism as sgs/site-footer margin-top)",
+  "proof": "Tree cr-ref-home-15 ALREADY holds contentBandMargin with top/right/bottom/left = \"0px\" on all three tiers - the draft value is 0px - so a real setting holds it. The dispatch's open question (does a helper treat 0 as empty and substitute a fallback?) is answered NO: sgs_css_length_or_sizing_keyword(\"0px\") returns \"0px\" because its preg_replace keeps [A-Za-z0-9.%], and the band emitters gate on `'' !== $band_margin_left`, which \"0px\" passes. The band rule is therefore emitted as `.{$uid}>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto;...;margin-right:0px;margin-left:0px}` with the longhands deliberately AFTER margin-inline:auto (the code comment: \"emitted AFTER margin-inline:auto above ... so an explicit side here wins by plain CSS declaration order\"). The live element nevertheless paints margin-left/right 52px with max-width 1336px inside a 1440px parent - auto centring - while its max-width DID take the SGS value: the walker's `declared` set is {width:\"100%\", max-width:\"var(--wp--style--global--content-size,1200px)\"}, the exact string $sgs_resolve_content_width() returns for contentWidth 'normal'. So the SGS rule applied for max-width and lost ONLY on the margin longhands, which is the signature of a competing `margin-left:auto !important; margin-right:auto !important` (WordPress core's constrained-layout rule) beating a plain (0,2,0) class rule. Only 1920 differs because at narrower widths the band is not capped below the container width, so auto resolves to ~0 and matches the draft's 0px.",
+  "citations": [
+   "sites/eye-care-ward-end/build/home.tree.json :: cr-ref-home-15 = {layout:\"grid\", contentBandMargin:{mobile:{top/right/bottom/left:\"0px\"}, tablet:{...\"0px\"}, desktop:{...\"0px\"}}} -- the setting already HOLDS the draft value",
+   "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/round-1/w1920/report.json :: pairs['bestsellers-grid'].live.styles margin-left = margin-right = \"52px\", max-width = width = \"1336px\"; live.declared = {\"width\":\"100%\",\"max-width\":\"var(--wp--style--global--content-size,1200px)\"}",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render :: `$base_band_decls[] = 'margin-inline:auto';` then `if ( '' !== $band_margin_left ) { $base_band_decls[] = 'margin-left:' . $band_margin_left; }`, emitted as `$responsive_css .= '.' . $uid . '>.sgs-container__inner{' . implode( ';', $base_band_decls ) . '}';` -- THE LOSING DECLARATION, a plain class rule at specificity (0,2,0)",
+   "plugins/sgs-blocks/includes/helpers-css-sizing-keyword.php::sgs_css_length_or_sizing_keyword :: `return (string) preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );` -> \"0px\" survives, so contentBandMargin:0px is NOT treated as empty (the dispatch's zero-as-empty hypothesis is disproven)",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php :: `$sgs_resolve_content_width` returns `'var(--wp--style--global--content-size,1200px)'` for 'normal' -- matching the walker's `declared` max-width, which proves the SGS band rule DID apply and lost only on the margins",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/container' -> contentBandMargin|margin-bottom,margin-left,margin-right,margin-top|content-band|sgs"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "contentBandMargin / the responsive margin tiers",
+   "helper": "class-sgs-container-wrapper.php $has_responsive_margin branch, which uses !important",
+   "note": "The wrapper already owns the escape: its @media tier spacing rules carry !important precisely so an !important or inline competitor cannot win. The base band rule does not."
+  },
+  "fixShape": "Emit the contentBandMargin longhands (and the base band padding) with !important on `.$uid>.sgs-container__inner`, matching the wrapper's own @media tier rules; or stop WordPress's constrained-layout class reaching the SGS band so core's `margin-left:auto !important` never applies.",
+  "confidence": "medium",
+  "wouldSettle": "At 1920 on the live homepage, read the matched CSS rules for `.cr-ref-home-15 > .sgs-container__inner` and confirm the winning margin-left declaration is `auto !important` from a `.wp-container-*.is-layout-constrained` rule rather than the SGS band rule being absent."
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/button||padding-top",
+  "block": "sgs/button",
+  "path": "",
+  "property": "padding-top",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "null draft value - the walker paired a draft <span> carrying no padding to a live <a>",
+  "proof": "NOT a hardcode - there is no draft value to beat. The sweep row records `\"draft\": null` for all four sides. The walker paired a draft `<span>` whose captured style set contains NO padding keys at all to a live `<a>` (the sgs/button). Meanwhile the setting holds AND paints exactly: tree cr-ref-mega-brands-41 holds padding:{desktop:{top:\"5px\",right:\"0\",bottom:\"5px\",left:\"0\"}} and the live element measures padding-top 5px, right 0px, bottom 5px, left 0px. So sgs/button::padding reaches the element and writes the value it was given; the row exists only because the draft side was never measured. Walker/route gap: an unmeasured draft value plus a span-to-anchor pairing.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json :: {ref:\"cr-ref-mega-brands-41\", block:\"sgs-button\", property:\"padding-top\", values:[{\"draft\": null, \"live\": \"5px\"}]} -- draft is null",
+   "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-05T10-26-00/round-1/w1440/report.json :: pairs['gen-mega-brands-41'] draft.tag = \"span\" with no padding-* keys in draft.styles; live.tag = \"a\" with padding-top 5px / padding-right 0px / padding-bottom 5px / padding-left 0px",
+   "sites/eye-care-ward-end/build/mega-brands.tree.json :: cr-ref-mega-brands-41 = {inheritStyle:\"link\", label:\"O'Neill\", padding:{desktop:{top:\"5px\",right:\"0\",bottom:\"5px\",left:\"0\"}}} -- the setting is written and paints the measured live value",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/button' AND attr_name='padding' -> padding|padding|wrapper|sgs"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "padding",
+   "helper": "class-sgs-container-wrapper.php spacing path",
+   "note": "The setting already paints the exact live values; nothing is missing."
+  },
+  "fixShape": "Walker/route fix: drop or mark unmeasurable any row whose draft value is null, and fix the span-to-anchor pairing for sgs/button nodes. No framework change.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/button||padding-right",
+  "block": "sgs/button",
+  "path": "",
+  "property": "padding-right",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "null draft value - the walker paired a draft <span> carrying no padding to a live <a>",
+  "proof": "NOT a hardcode - there is no draft value to beat. The sweep row records `\"draft\": null` for all four sides. The walker paired a draft `<span>` whose captured style set contains NO padding keys at all to a live `<a>` (the sgs/button). Meanwhile the setting holds AND paints exactly: tree cr-ref-mega-brands-41 holds padding:{desktop:{top:\"5px\",right:\"0\",bottom:\"5px\",left:\"0\"}} and the live element measures padding-top 5px, right 0px, bottom 5px, left 0px. So sgs/button::padding reaches the element and writes the value it was given; the row exists only because the draft side was never measured. Walker/route gap: an unmeasured draft value plus a span-to-anchor pairing.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json :: {ref:\"cr-ref-mega-brands-41\", block:\"sgs-button\", property:\"padding-top\", values:[{\"draft\": null, \"live\": \"5px\"}]} -- draft is null",
+   "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-05T10-26-00/round-1/w1440/report.json :: pairs['gen-mega-brands-41'] draft.tag = \"span\" with no padding-* keys in draft.styles; live.tag = \"a\" with padding-top 5px / padding-right 0px / padding-bottom 5px / padding-left 0px",
+   "sites/eye-care-ward-end/build/mega-brands.tree.json :: cr-ref-mega-brands-41 = {inheritStyle:\"link\", label:\"O'Neill\", padding:{desktop:{top:\"5px\",right:\"0\",bottom:\"5px\",left:\"0\"}}} -- the setting is written and paints the measured live value",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/button' AND attr_name='padding' -> padding|padding|wrapper|sgs"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "padding",
+   "helper": "class-sgs-container-wrapper.php spacing path",
+   "note": "The setting already paints the exact live values; nothing is missing."
+  },
+  "fixShape": "Walker/route fix: drop or mark unmeasurable any row whose draft value is null, and fix the span-to-anchor pairing for sgs/button nodes. No framework change.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/button||padding-bottom",
+  "block": "sgs/button",
+  "path": "",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "null draft value - the walker paired a draft <span> carrying no padding to a live <a>",
+  "proof": "NOT a hardcode - there is no draft value to beat. The sweep row records `\"draft\": null` for all four sides. The walker paired a draft `<span>` whose captured style set contains NO padding keys at all to a live `<a>` (the sgs/button). Meanwhile the setting holds AND paints exactly: tree cr-ref-mega-brands-41 holds padding:{desktop:{top:\"5px\",right:\"0\",bottom:\"5px\",left:\"0\"}} and the live element measures padding-top 5px, right 0px, bottom 5px, left 0px. So sgs/button::padding reaches the element and writes the value it was given; the row exists only because the draft side was never measured. Walker/route gap: an unmeasured draft value plus a span-to-anchor pairing.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json :: {ref:\"cr-ref-mega-brands-41\", block:\"sgs-button\", property:\"padding-top\", values:[{\"draft\": null, \"live\": \"5px\"}]} -- draft is null",
+   "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-05T10-26-00/round-1/w1440/report.json :: pairs['gen-mega-brands-41'] draft.tag = \"span\" with no padding-* keys in draft.styles; live.tag = \"a\" with padding-top 5px / padding-right 0px / padding-bottom 5px / padding-left 0px",
+   "sites/eye-care-ward-end/build/mega-brands.tree.json :: cr-ref-mega-brands-41 = {inheritStyle:\"link\", label:\"O'Neill\", padding:{desktop:{top:\"5px\",right:\"0\",bottom:\"5px\",left:\"0\"}}} -- the setting is written and paints the measured live value",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/button' AND attr_name='padding' -> padding|padding|wrapper|sgs"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "padding",
+   "helper": "class-sgs-container-wrapper.php spacing path",
+   "note": "The setting already paints the exact live values; nothing is missing."
+  },
+  "fixShape": "Walker/route fix: drop or mark unmeasurable any row whose draft value is null, and fix the span-to-anchor pairing for sgs/button nodes. No framework change.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M1-hardcode",
+  "combo": "sgs/button||padding-left",
+  "block": "sgs/button",
+  "path": "",
+  "property": "padding-left",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "null draft value - the walker paired a draft <span> carrying no padding to a live <a>",
+  "proof": "NOT a hardcode - there is no draft value to beat. The sweep row records `\"draft\": null` for all four sides. The walker paired a draft `<span>` whose captured style set contains NO padding keys at all to a live `<a>` (the sgs/button). Meanwhile the setting holds AND paints exactly: tree cr-ref-mega-brands-41 holds padding:{desktop:{top:\"5px\",right:\"0\",bottom:\"5px\",left:\"0\"}} and the live element measures padding-top 5px, right 0px, bottom 5px, left 0px. So sgs/button::padding reaches the element and writes the value it was given; the row exists only because the draft side was never measured. Walker/route gap: an unmeasured draft value plus a span-to-anchor pairing.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json :: {ref:\"cr-ref-mega-brands-41\", block:\"sgs-button\", property:\"padding-top\", values:[{\"draft\": null, \"live\": \"5px\"}]} -- draft is null",
+   "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-05T10-26-00/round-1/w1440/report.json :: pairs['gen-mega-brands-41'] draft.tag = \"span\" with no padding-* keys in draft.styles; live.tag = \"a\" with padding-top 5px / padding-right 0px / padding-bottom 5px / padding-left 0px",
+   "sites/eye-care-ward-end/build/mega-brands.tree.json :: cr-ref-mega-brands-41 = {inheritStyle:\"link\", label:\"O'Neill\", padding:{desktop:{top:\"5px\",right:\"0\",bottom:\"5px\",left:\"0\"}}} -- the setting is written and paints the measured live value",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/button' AND attr_name='padding' -> padding|padding|wrapper|sgs"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "padding",
+   "helper": "class-sgs-container-wrapper.php spacing path",
+   "note": "The setting already paints the exact live values; nothing is missing."
+  },
+  "fixShape": "Walker/route fix: drop or mark unmeasurable any row whose draft value is null, and fix the span-to-anchor pairing for sgs/button nodes. No framework change.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M8-colour",
+  "combo": "sgs/media||painted-ground",
+  "block": "sgs/media",
+  "path": "",
+  "property": "painted-ground",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "no background-colour setting on the media figure (a dark mat behind a photo)",
+  "proof": "`painted-ground` is the walker's resolved ground: the element's own background, else the nearest painted ancestor. The DRAFT node is a `div` whose OWN background-color is rgb(20,20,20) (extras.ground rgba(20,20,20,1)); the LIVE node is a `<figure>` with background-color rgba(0,0,0,0) and extras.ground \"none\", and no ancestor paints either - cr-ref-home-59's live ground is also \"none\". sgs/media has no background-colour attribute at all: the only background row on the block is captionColourGradient (background-image on `caption`). The one enclosing capability that reaches this element is sgs/container::gridItemBackground (background-color on `grid-item`) - cr-ref-home-59 is layout:\"grid\" and the figure is a direct grid item - but it paints EVERY grid item of that two-column strip, so it cannot express a dark mat behind the photo only.",
+  "citations": [
+   "db: SELECT block_slug,attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/media' AND css_property LIKE '%background-color%' -> (no results)",
+   "db: SELECT block_slug,attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/media' AND (css_property LIKE '%background%' OR attr_name LIKE '%ackground%' OR attr_name LIKE '%round%') -> 1 row: captionColourGradient|background-image|caption",
+   "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/round-1/w1440/report.json :: pairs['about-photo-reveal'] draft.tag=\"div\" background-color rgb(20,20,20) extras.ground rgba(20,20,20,1); live.tag=\"figure\" background-color rgba(0,0,0,0) extras.ground \"none\"; pairs['gen-home-59'] live extras.ground \"none\" (no painted ancestor)",
+   "sites/eye-care-ward-end/build/home.tree.json :: cr-ref-home-60 = sgs/media {className:\"cr-ref-home-60\"}; its parent cr-ref-home-59 = sgs/container {layout:\"grid\", gridTemplateColumns:{desktop:\"minmax(0,1.1fr) minmax(0,1fr)\"}}",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/container' -> gridItemBackground|background-color|grid-item (reaches the element, but paints every item)"
+  ],
+  "precedent": {
+   "block": "sgs/card-grid",
+   "setting": "imageFallbackColour",
+   "helper": "role `color`, background-color on css_element `image-wrap`",
+   "note": "Exactly this capability on another block: a flat colour painted behind an image inside its own wrapper. sgs/container::gridItemBackground is the enclosing-block variant but is not per-item."
+  },
+  "fixShape": "Add a `mediaBackgroundColour` colour control to sgs/media (background-color on the figure / image wrap), cloned from sgs/card-grid::imageFallbackColour and its inspector group.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M8-colour",
+  "combo": "sgs/card-grid||painted-ground",
+  "block": "sgs/card-grid",
+  "path": "",
+  "property": "painted-ground",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "the walker's painted-ground probe does not climb to the painted ancestor; the setting exists, is written, and already paints",
+  "proof": "The setting exists, is already set, and already paints the exact draft colour. The card-grid's immediate parent cr-ref-mega-brands-4 is an sgs/container holding backgroundColour:\"border\" (= #E6E1DA = rgba(230,225,218,1), the draft ground), and the card-grid is its ONLY child. Measured live, that parent paints background-color rgb(230,225,218) with extras.ground rgba(230,225,218,1) - identical to the draft. The child card-grid at the same visual position reports extras.ground \"none\" because the probe returned the element's own transparent background instead of inheriting the ancestor's painted ground. Two route gaps compound: the triage resolver also evaluated the WRONG block's candidates (card-grid's cardBackground / imageFallbackColour / overlayColour, whose css_elements are item / image-wrap / imageOverlay) and never looked at the enclosing container's backgroundColour. Note the triage also labelled this combo sgs/card-grid while the sweep row's `block` field says sgs-container - the tree confirms the node IS sgs/card-grid and its parent IS sgs/container.",
+  "citations": [
+   "sites/eye-care-ward-end/build/mega-brands.tree.json :: cr-ref-mega-brands-4 = sgs/container {backgroundColour:\"border\", borderColour:\"border\", borderWidth:{top/right/bottom/left:\"1px\"}}, children = [sgs/card-grid cr-ref-mega-brands-5] (only child)",
+   "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-05T10-26-00/round-1/w1440/report.json :: pairs['gen-mega-brands-4'] live own background-color rgb(230,225,218), extras.ground rgba(230,225,218,1); pairs['gen-mega-brands-5'] live own background-color rgba(0,0,0,0), extras.ground \"none\"",
+   "sites/eye-care-ward-end/theme-snapshot.json :: {\"slug\":\"border\",\"color\":\"#E6E1DA\"} = rgba(230,225,218,1) = the draft ground",
+   "db: SELECT attr_name,css_property,css_element,source FROM block_attributes WHERE block_slug='sgs/container' AND attr_name='backgroundColour' -> backgroundColour|background-color|wrapper|sgs",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/card-grid' AND css_property LIKE '%background%' -> 9 rows, all css_element item / image-wrap / imageOverlay / title / subtitle; none on `wrapper`"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "backgroundColour",
+   "helper": "class-sgs-container-wrapper.php wrapper background",
+   "note": "Already in use on this very node and already painting the draft colour."
+  },
+  "fixShape": "Walker fix: make the painted-ground probe inherit the nearest painted ancestor's ground (climbing through `.sgs-container__inner`) instead of returning \"none\" for a transparent element; and make the triage resolver consider enclosing blocks' background settings for a painted-ground row.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M8-colour",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|painted-ground",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "painted-ground",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "a block that renders another block's markup without forwarding that block's style group",
+  "proof": "The draft's option is a `<button>` with its OWN background-color rgb(243,240,235) (#F3F0EB); the live option is a `<label>` with background-color rgba(0,0,0,0), so extras.ground falls through to the page surface rgba(250,248,245,1) - the swatch has no ground of its own. sgs/buybox renders the option-picker markup itself but exposes no background setting for that element: its only background rows are backgroundColour and backgroundColourHover (css_element `wrapper`), rrpPillBackgroundColour (`rrp-pill`) and addToCartBackgroundColour (`add-to-cart`), and restricted to pill/option/picker/swatch elements the query returns a single row, rrpPillBackgroundColour. Every `picker*` attribute on sgs/buybox is behaviour, technical or label typography - none paints the option. The capability exists on the standalone sgs/option-picker block as pillBgColour (background-color on `pill`) with a full resting/hover/current set, so this is a confirmed F with an exact precedent and therefore a cheap fix.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND css_property LIKE '%background%' AND (css_element LIKE '%pill%' OR css_element LIKE '%option%' OR css_element LIKE '%picker%' OR css_element LIKE '%swatch%') -> 1 row: rrpPillBackgroundColour|background-color|rrp-pill (nothing for the option)",
+   "db: SELECT attr_name,css_property,css_element,css_state FROM block_attributes WHERE block_slug='sgs/option-picker' -> pillBgColour|background-color|pill|NULL ; pillBgColourHover|background-color|pill|hover ; pillSelectedBgColour|background-color|pill|current -- THE PRECEDENT",
+   "db: SELECT attr_name,role,css_property,css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND attr_name LIKE 'picker%' -> pickerSwatchStyle, pickerStyle, pickerSubLabelMetaKey, pickerShowSelectedTick, pickerLabel* (typography/colour on picker-label-text), pickerVariationSwatch -- none paints the option background",
+   "sites/eye-care-ward-end/build/qa/solve/product/2026-10-05T10-38-12/round-1/w1440/report.json :: pairs['colour-swatch'] draft.tag=\"button\" background-color rgb(243,240,235) extras.ground rgba(243,240,235,1); live.tag=\"label\" background-color rgba(0,0,0,0) extras.ground rgba(250,248,245,1)"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "pillBgColour",
+   "helper": "role `color`, background-color on css_element `pill`, with pillBgColourHover and pillSelectedBgColour completing the state set",
+   "note": "The identical control already exists on the standalone picker block; sgs/buybox renders the same markup but never forwards the pill colour group."
+  },
+  "fixShape": "Forward sgs/option-picker's pill colour group (pillBgColour / pillBgColourHover / pillSelectedBgColour and their text and border siblings) onto sgs/buybox's embedded picker as pickerPillBgColour etc., reusing the option-picker's existing emitter rather than writing a new one.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M10-pseudo-content",
+  "combo": "sgs/product-card|div:nth-of-type(1) > .sgs-product-card__wishlist::after|content",
+  "block": "sgs/product-card",
+  "path": "div:nth-of-type(1) > .sgs-product-card__wishlist::after",
+  "property": "content",
+  "rows": 2,
+  "surfaces": [
+   "home",
+   "shop"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "vacuous pseudo row - the walker compares the CSS `content` keyword on a layer that paints zero area",
+  "proof": "Every row in this mechanism is draft `none` versus live `\"\"`, and neither value paints anything, so there is no visual difference to close and no setting is missing. plugins/sgs-blocks/src/blocks/product-card/style.css::.sgs-product-card__wishlist::after declares `content:\"\"; position:absolute; inset:-4px;` - an invisible hit-area expander. The live pseudo measures background-color rgba(0,0,0,0) at 42x42px: zero painted area. Removing the pseudo would break a non-negotiable (the 44px touch target, or the hover affordance), so a `content` control would be the wrong fix. Confirmed that no SGS or core block anywhere exposes the CSS `content` property or any before/after layer: the cross-block query returns 0 rows, so the absence is a design decision, not a gap. Per Spec 47 3.2/3.3 a genuine `content` difference would be a text difference handled by the presence/text read, not a style row. Correcting the dispatch's premise: sgs/business-info::textBefore and ::textAfter are role `text-content` with css_property NULL - they render real text nodes, not a pseudo `content` layer - so CR17 is not the right citation for this combo; the ::after here is the hover underline.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/product-card/style.css::.sgs-product-card__wishlist::after :: `content:\"\"; position:absolute; inset:-4px;`",
+   "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/round-1/w1440/report.json :: pairs['card-wishlist'].live.pseudo['::after'] = {content:\"\\\"\\\"\", background-color:\"rgba(0, 0, 0, 0)\", background-image:\"none\", width:\"42px\", height:\"42px\"}; draft.pseudo = {}",
+   "db: SELECT block_slug,attr_name,css_property,css_element FROM block_attributes WHERE css_property='content' OR css_property LIKE 'content,%' OR css_property LIKE '%,content' OR css_element LIKE '%after%' OR css_element LIKE '%before%' -> (no results)",
+   "db: SELECT block_slug,attr_name,role,css_property,css_element FROM block_attributes WHERE attr_name LIKE '%textBefore%' OR attr_name LIKE '%prefix%' OR attr_name LIKE '%suffix%' -> sgs/business-info::textBefore / textAfter / copyrightPrefix, sgs/counter::prefix / suffix, sgs/buybox::rrpSavingPrefix -- all role `text-content` with css_property NULL, i.e. real text nodes, not pseudo `content` layers"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "Nothing in the framework exposes CSS `content`, by design. The text-content attributes (sgs/business-info::textBefore / textAfter, sgs/counter::prefix / suffix) render real text nodes, not pseudo layers, so they are not the precedent for this property."
+  },
+  "fixShape": "Walker fix: suppress the `content` property on a pseudo layer whose painted area is zero (transparent background and no text, or a zero-scale transform). No framework control.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M10-pseudo-content",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-info__link::after|content",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-info__link::after",
+  "property": "content",
+  "rows": 1,
+  "surfaces": [
+   "contact"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "vacuous pseudo row - the walker compares the CSS `content` keyword on a layer that paints zero area",
+  "proof": "Every row in this mechanism is draft `none` versus live `\"\"`, and neither value paints anything, so there is no visual difference to close and no setting is missing. plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-attribution .sgs-business-info__link::after declares `content:\"\"; height:1px; background:var(--sgs-bi-link-hover-bg,#d4a73c); transform:scaleX(0); transform-origin:left; transition:transform 300ms ease;` - a hover-reveal underline, scaled to zero width at rest. The live pseudo measures transform matrix(0,0,0,1,0,0) at 109.281x1px: zero painted area at rest. Removing the pseudo would break a non-negotiable (the 44px touch target, or the hover affordance), so a `content` control would be the wrong fix. Confirmed that no SGS or core block anywhere exposes the CSS `content` property or any before/after layer: the cross-block query returns 0 rows, so the absence is a design decision, not a gap. Per Spec 47 3.2/3.3 a genuine `content` difference would be a text difference handled by the presence/text read, not a style row. Correcting the dispatch's premise: sgs/business-info::textBefore and ::textAfter are role `text-content` with css_property NULL - they render real text nodes, not a pseudo `content` layer - so CR17 is not the right citation for this combo; the ::after here is the hover underline.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-attribution .sgs-business-info__link::after :: `content:\"\"; height:1px; background:var(--sgs-bi-link-hover-bg,#d4a73c); transform:scaleX(0); transform-origin:left; transition:transform 300ms ease;`",
+   "sites/eye-care-ward-end/build/qa/solve/contact/<latest-run>/round-1/w1440/report.json :: pairs['detail-phone-value'].live.pseudo['::after'] = {content:\"\\\"\\\"\", background-color:\"rgb(20, 20, 20)\", transform:\"matrix(0, 0, 0, 1, 0, 0)\", width:\"109.281px\", height:\"1px\"}; draft.pseudo = {}",
+   "db: SELECT block_slug,attr_name,css_property,css_element FROM block_attributes WHERE css_property='content' OR css_property LIKE 'content,%' OR css_property LIKE '%,content' OR css_element LIKE '%after%' OR css_element LIKE '%before%' -> (no results)",
+   "db: SELECT block_slug,attr_name,role,css_property,css_element FROM block_attributes WHERE attr_name LIKE '%textBefore%' OR attr_name LIKE '%prefix%' OR attr_name LIKE '%suffix%' -> sgs/business-info::textBefore / textAfter / copyrightPrefix, sgs/counter::prefix / suffix, sgs/buybox::rrpSavingPrefix -- all role `text-content` with css_property NULL, i.e. real text nodes, not pseudo `content` layers"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "Nothing in the framework exposes CSS `content`, by design. The text-content attributes (sgs/business-info::textBefore / textAfter, sgs/counter::prefix / suffix) render real text nodes, not pseudo layers, so they are not the precedent for this property."
+  },
+  "fixShape": "Walker fix: suppress the `content` property on a pseudo layer whose painted area is zero (transparent background and no text, or a zero-scale transform). No framework control.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M10-pseudo-content",
+  "combo": "sgs/nav-drawer|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close::after|content",
+  "block": "sgs/nav-drawer",
+  "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close::after",
+  "property": "content",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "vacuous pseudo row - the walker compares the CSS `content` keyword on a layer that paints zero area",
+  "proof": "Every row in this mechanism is draft `none` versus live `\"\"`, and neither value paints anything, so there is no visual difference to close and no setting is missing. plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.sgs-nav-drawer__close::after declares `content:\"\"; width:max(100%,44px); height:max(100%,44px);` under the comment \"The hit area never drops below 44px, whatever closeSize paints.\" - the WCAG 44px touch target. The live pseudo measures background-color rgba(0,0,0,0) at 44x44px: zero painted area. Removing the pseudo would break a non-negotiable (the 44px touch target, or the hover affordance), so a `content` control would be the wrong fix. Confirmed that no SGS or core block anywhere exposes the CSS `content` property or any before/after layer: the cross-block query returns 0 rows, so the absence is a design decision, not a gap. Per Spec 47 3.2/3.3 a genuine `content` difference would be a text difference handled by the presence/text read, not a style row. Correcting the dispatch's premise: sgs/business-info::textBefore and ::textAfter are role `text-content` with css_property NULL - they render real text nodes, not a pseudo `content` layer - so CR17 is not the right citation for this combo; the ::after here is the hover underline.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.sgs-nav-drawer__close::after :: `content:\"\"; width:max(100%,44px); height:max(100%,44px);` under the comment \"The hit area never drops below 44px, whatever closeSize paints.\"",
+   "sites/eye-care-ward-end/build/qa/solve/mobile-menu/<latest-run>/round-1/w375/report.json :: pairs['drawer-close'].live.pseudo['::after'] = {content:\"\\\"\\\"\", background-color:\"rgba(0, 0, 0, 0)\", width:\"44px\", height:\"44px\"}; draft.pseudo = {}",
+   "db: SELECT block_slug,attr_name,css_property,css_element FROM block_attributes WHERE css_property='content' OR css_property LIKE 'content,%' OR css_property LIKE '%,content' OR css_element LIKE '%after%' OR css_element LIKE '%before%' -> (no results)",
+   "db: SELECT block_slug,attr_name,role,css_property,css_element FROM block_attributes WHERE attr_name LIKE '%textBefore%' OR attr_name LIKE '%prefix%' OR attr_name LIKE '%suffix%' -> sgs/business-info::textBefore / textAfter / copyrightPrefix, sgs/counter::prefix / suffix, sgs/buybox::rrpSavingPrefix -- all role `text-content` with css_property NULL, i.e. real text nodes, not pseudo `content` layers"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "Nothing in the framework exposes CSS `content`, by design. The text-content attributes (sgs/business-info::textBefore / textAfter, sgs/counter::prefix / suffix) render real text nodes, not pseudo layers, so they are not the precedent for this property."
+  },
+  "fixShape": "Walker fix: suppress the `content` property on a pseudo layer whose painted area is zero (transparent background and no text, or a zero-scale transform). No framework control.",
+  "confidence": "high"
+ }
+]

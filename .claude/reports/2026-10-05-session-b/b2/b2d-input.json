@@ -1,0 +1,3203 @@
+{
+ "batch": "b2d",
+ "mechanisms": {
+  "M3-layout-alignment": {
+   "rows": 36,
+   "combos": [
+    {
+     "block": "sgs/mega-group",
+     "path": "",
+     "property": "flex-grow",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands",
+      "mega-help",
+      "mega-lenses",
+      "mega-sunglasses"
+     ],
+     "rows": 9,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-1",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/mega-group has no setting for flex-grow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      },
+      {
+       "surface": "mega-help",
+       "ref": "cr-ref-mega-help-1",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/mega-group has no setting for flex-grow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/choice-flow-question",
+     "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
+     "property": "align-items",
+     "kind": "style",
+     "surfaces": [
+      "lens"
+     ],
+     "rows": 3,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-2",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/choice-flow-question has no setting for align-items"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow-question/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "form-step/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "choice-flow-question/style.css",
+          "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
+          "declaration": "align-items:center"
+         },
+         {
+          "file": "choice-flow-question/style.css",
+          "selector": ".sgs-choice-flow-question__option-button",
+          "declaration": "align-items:flex-start"
+         },
+         {
+          "file": "choice-flow-question/style.css",
+          "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button",
+          "declaration": "align-items:baseline"
+         },
+         {
+          "file": "choice-flow-question/style.css",
+          "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button",
+          "declaration": "align-items:center"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "form-step",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+          ]
+         },
+         {
+          "block": "form-step",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/choice-flow-question has no setting for align-items"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow-question/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "form-step/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "choice-flow-question/style.css",
+          "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
+          "declaration": "align-items:center"
+         },
+         {
+          "file": "choice-flow-question/style.css",
+          "selector": ".sgs-choice-flow-question__option-button",
+          "declaration": "align-items:flex-start"
+         },
+         {
+          "file": "choice-flow-question/style.css",
+          "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button",
+          "declaration": "align-items:baseline"
+         },
+         {
+          "file": "choice-flow-question/style.css",
+          "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button",
+          "declaration": "align-items:center"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "form-step",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+          ]
+         },
+         {
+          "block": "form-step",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header",
+     "property": "justify-content",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-17",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for justify-content"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "istribute vertically into, so a client's justify-content:'center' // (already correctly routed on",
+           "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }",
+           "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }"
+          ]
+         },
+         {
+          "block": "accordion-item",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:a"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for justify-content (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "istribute vertically into, so a client's justify-content:'center' // (already correctly routed on",
+           "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }",
+           "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }"
+          ]
+         },
+         {
+          "block": "accordion-item",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:a"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/form-field-text",
+     "path": ".sgs-form-field__input",
+     "property": "display",
+     "kind": "style",
+     "surfaces": [
+      "contact-form"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "contact-form",
+       "ref": "cr-ref-contact-form-1",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no display setting on sgs/form-field-text paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "form-field-text/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         },
+         {
+          "file": "form/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "form",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+           "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+           "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+           "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/form-field-email",
+     "path": ".sgs-form-field__input",
+     "property": "display",
+     "kind": "style",
+     "surfaces": [
+      "contact-form"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "contact-form",
+       "ref": "cr-ref-contact-form-2",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no display setting on sgs/form-field-email paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "form-field-email/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         },
+         {
+          "file": "form/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "form",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+           "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+           "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+           "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/form-field-phone",
+     "path": ".sgs-form-field__input",
+     "property": "display",
+     "kind": "style",
+     "surfaces": [
+      "contact-form"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "contact-form",
+       "ref": "cr-ref-contact-form-3",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no display setting on sgs/form-field-phone paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "form-field-phone/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         },
+         {
+          "file": "form/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "form",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+           "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+           "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+           "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/form-field-select",
+     "path": ".sgs-form-field__input",
+     "property": "display",
+     "kind": "style",
+     "surfaces": [
+      "contact-form"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "contact-form",
+       "ref": "cr-ref-contact-form-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no display setting on sgs/form-field-select paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "form-field-select/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         },
+         {
+          "file": "form/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "form",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+           "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+           "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+           "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": "",
+     "property": "align-items",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for align-items"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons",
+          "declaration": "align-items:center"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": "",
+     "property": "flex-wrap",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for flex-wrap"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "flexWrap"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "flexWrap"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "flexWrap"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "flexWrap"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons",
+          "declaration": "flex-wrap:wrap"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "f ( '' !== $flex_wrap ) { $gd[] = 'flex-wrap:' . esc_attr( $flex_wrap ); } // D288:",
+           "f ( '' !== $flex_wrap ) { $gd[] = 'flex-wrap:' . esc_attr( $flex_wrap ); } // D288:",
+           "`.sgs-container-50841e95 { display:flex; flex-wrap:nowrap }`, and NO rule // anywhere keys `displ"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:str"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/business-info",
+     "path": "",
+     "property": "flex-grow",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-28",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/business-info has no setting for flex-grow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "business-info/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/trust-bar",
+     "path": ".sgs-trust-bar__badge:nth-of-type(1)",
+     "property": "align-items",
+     "kind": "style",
+     "surfaces": [
+      "header"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "header",
+       "ref": "cr-ref-header-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no align-items setting on sgs/trust-bar paints \".sgs-trust-bar__badge:nth-of-type(1)\" (candidates: alignItems)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/trust-bar",
+         "setting": "alignItems",
+         "css_property": "align-items",
+         "css_element": null,
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "trust-bar/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "trust-bar/style.css",
+          "selector": ".sgs-trust-bar__badge",
+          "declaration": "align-items:center"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "trust-bar",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "alignItems"
+          ],
+          "declares": [
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+          ]
+         },
+         {
+          "block": "trust-bar",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/container",
+     "path": "",
+     "property": "align-items",
+     "kind": "style",
+     "surfaces": [
+      "header"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "header",
+       "ref": "cr-ref-header-5",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no align-items setting on sgs/container paints \"\" (candidates: alignItems)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/container",
+         "setting": "alignItems",
+         "css_property": "align-items",
+         "css_element": "inner",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [
+           "alignItems"
+          ],
+          "declares": [
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/business-info",
+     "path": ".sgs-business-info > .sgs-business-info__link",
+     "property": "justify-content",
+     "kind": "style",
+     "surfaces": [
+      "header"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "header",
+       "ref": "cr-ref-header-11",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/business-info has no setting for justify-content"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "business-info/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "business-info/style.css",
+          "selector": ".sgs-business-info__link",
+          "declaration": "justify-content:center"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "istribute vertically into, so a client's justify-content:'center' // (already correctly routed on",
+           "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }",
+           "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:a"
+          ]
+         },
+         {
+          "block": "site-header",
+          "cite": "includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css",
+          "mentions": [],
+          "declares": [
+           "=> 'display:flex;flex-direction:column;justify-content:flex-start;', 'center' => 'display:fle",
+           "=> 'display:flex;flex-direction:column;justify-content:center;', 'end' => 'display:flex;fl",
+           "=> 'display:flex;flex-direction:column;justify-content:flex-end;', 'stretch' => 'display:flex;"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track > .sgs-brand-strip__set",
+     "property": "align-items",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        375,
+        768
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/brand-strip has no setting for align-items"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "brand-strip/style.css",
+          "selector": ".sgs-brand-strip__set",
+          "declaration": "align-items:center"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/process-steps",
+     "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title",
+     "property": "flex-grow",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-65",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/process-steps has no setting for flex-grow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "process-steps/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/process-steps",
+     "path": ".sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title",
+     "property": "flex-grow",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-65",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/process-steps has no setting for flex-grow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "process-steps/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/process-steps",
+     "path": ".sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title",
+     "property": "flex-grow",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-65",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/process-steps has no setting for flex-grow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "process-steps/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "align-items",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/brand-strip has no setting for align-items"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "brand-strip/style.css",
+          "selector": ".sgs-brand-strip__track",
+          "declaration": "align-items:center"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/choice-flow",
+     "path": ".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow",
+     "property": "flex-grow",
+     "kind": "style",
+     "surfaces": [
+      "lens"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-0",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/choice-flow has no setting for flex-grow"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [],
+          "absent": [
+           "flexGrow"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/choice-flow",
+     "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary",
+     "property": "justify-content",
+     "kind": "style",
+     "surfaces": [
+      "lens"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/choice-flow has no setting for justify-content"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [],
+          "absent": [
+           "justifyContent"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "flex-direction",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-8",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/button has no setting for flex-direction"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [],
+          "absent": [
+           "flexDirection"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "flexDirection"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "flexDirection"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "flexDirection"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [
+           "flexDirection"
+          ],
+          "absent": []
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "flexDirection"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "flexDirection"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "mega-group/style.css",
+          "selector": ".sgs-mega-group",
+          "declaration": "flex-direction:column"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "a flex mode (display:flex + // forced flex-direction:column, see the layout branch below), so it",
+           "isplay:flex'; $base_outer_decls[] = 'flex-direction:column'; } if ( $shadow ) { // T2",
+           "' !== $flex_direction ) { $gd[] = 'flex-direction:' . esc_attr( $flex_direction ); }"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "} $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-st"
+          ]
+         },
+         {
+          "block": "site-header",
+          "cite": "includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css",
+          "mentions": [],
+          "declares": [
+           "array( 'start' => 'display:flex;flex-direction:column;justify-content:flex-start;', 'ce",
+           "-start;', 'center' => 'display:flex;flex-direction:column;justify-content:center;', 'end'",
+           "center;', 'end' => 'display:flex;flex-direction:column;justify-content:flex-end;', 'stre"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options",
+     "property": "align-items",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for align-items"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "buybox/style.css",
+          "selector": ".sgs-buybox .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__options",
+          "declaration": "align-items:stretch"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+     "property": "flex-direction",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for flex-direction"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "flexDirection"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "flexDirection"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "a flex mode (display:flex + // forced flex-direction:column, see the layout branch below), so it",
+           "isplay:flex'; $base_outer_decls[] = 'flex-direction:column'; } if ( $shadow ) { // T2",
+           "' !== $flex_direction ) { $gd[] = 'flex-direction:' . esc_attr( $flex_direction ); }"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "} $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-st"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": "",
+     "property": "align-items",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for align-items"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "alignItems"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "buybox/style.css",
+          "selector": ".sgs-buybox",
+          "declaration": "align-items:start"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+           "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "core/query-title",
+     "path": "",
+     "property": "display",
+     "kind": "style",
+     "surfaces": [
+      "shop"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "shop",
+       "ref": "cr-ref-shop-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "core/query-title has no setting for display"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "display"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+           "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+           "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+          "mentions": [],
+          "declares": [
+           "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+           "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "M9-measure": {
+   "rows": 14,
+   "combos": [
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header",
+     "property": "min-height",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-17",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for min-height"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "minHeight"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "minHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "minHeight"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "accordion/style.css",
+          "selector": ".sgs-accordion-item__header",
+          "declaration": "min-height:44px"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "in_height ) { $base_outer_decls[] = 'min-height:' . esc_attr( $min_height ); } // minHeig",
+           "':where(' . $grid_sel . '>*){min-width:0;min-height:0}'; } if ( $has_responsive_attr ) {",
+           "$responsive_css .= '.' . $uid . '{min-height:' . $min_height . '}'; } if ( '' !== $"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for min-height (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "minHeight"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "minHeight"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "minHeight"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "accordion/style.css",
+          "selector": ".sgs-accordion-item__header",
+          "declaration": "min-height:44px"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "in_height ) { $base_outer_decls[] = 'min-height:' . esc_attr( $min_height ); } // minHeig",
+           "':where(' . $grid_sel . '>*){min-width:0;min-height:0}'; } if ( $has_responsive_attr ) {",
+           "$responsive_css .= '.' . $uid . '{min-height:' . $min_height . '}'; } if ( '' !== $"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(1)",
+     "property": "width",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no width setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: iconSize)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconSize",
+         "css_property": "height,width",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconSize",
+           "width"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "iconSize"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "iconSize"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "iconSize"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
+          "declaration": "width:25px"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "ecls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( isset( $box['display'] ) && '' !="
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(3)",
+     "property": "width",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no width setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: iconSize)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconSize",
+         "css_property": "height,width",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconSize",
+           "width"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "iconSize"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "iconSize"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "iconSize"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
+          "declaration": "width:25px"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "ecls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( isset( $box['display'] ) && '' !="
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2)",
+     "property": "width",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "no width setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: iconSize)"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/social-icons",
+         "setting": "iconSize",
+         "css_property": "height,width",
+         "css_element": "item",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [
+           "iconSize",
+           "width"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "iconSize"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "iconSize"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [
+           "width"
+          ],
+          "absent": [
+           "iconSize"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
+          "declaration": "width:25px"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+          "mentions": [],
+          "declares": [
+           "ecls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( isset( $box['display'] ) && '' !="
+          ]
+         },
+         {
+          "block": "social-icons",
+          "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+          "mentions": [],
+          "declares": [
+           "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/responsive-logo",
+     "path": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img",
+     "property": "aspect-ratio",
+     "kind": "style",
+     "surfaces": [
+      "header"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "header",
+       "ref": "cr-ref-header-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/responsive-logo has no setting for aspect-ratio"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "responsive-logo/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "!== $sgs_box_ratio ) { $styles[] = 'aspect-ratio:' . $sgs_box_ratio; } // Ken-burns dura"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "object-fit",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-41",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/button has no setting for object-fit"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [],
+          "absent": [
+           "objectFit"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "objectFit"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "objectFit"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "objectFit"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "objectFit"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "objectFit"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "objectFit"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "tml ) { $sgs_bg_img_style_decls[] = 'object-fit:' . esc_attr( $bg_size ); $sgs_bg_img_style_",
+           "o ) { $sgs_bg_video_style_decls[] = 'object-fit:' . esc_attr( $bg_size ); $sgs_bg_video_styl",
+           "l (style.css's `.sgs-container__video-bg{object-fit:cover}` // stays as the CSS fallback default"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "aspect-ratio",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-41",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/button has no setting for aspect-ratio"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "aspectRatio"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "!== $sgs_box_ratio ) { $styles[] = 'aspect-ratio:' . $sgs_box_ratio; } // Ken-burns dura"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/nav-drawer",
+     "path": "",
+     "property": "max-width",
+     "kind": "style",
+     "surfaces": [
+      "mobile-menu"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mobile-menu",
+       "ref": "cr-ref-mobile-menu-0",
+       "widths": [
+        375
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/nav-drawer has no setting for max-width"
+        },
+        {
+         "check": "attribute",
+         "block": "sgs/nav-drawer",
+         "setting": "chromeLogoWidth",
+         "css_property": "width",
+         "css_element": "chromeLogo",
+         "css_state": null,
+         "source": "sgs",
+         "reaches": false
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "nav-drawer/render.php",
+          "mentions": [],
+          "absent": [
+           "chromeLogoWidth",
+           "maxWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "nav-drawer",
+          "cite": "includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css",
+          "mentions": [
+           "chromeLogoWidth"
+          ],
+          "declares": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+     "property": "object-fit",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for object-fit"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "objectFit"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "objectFit"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "tml ) { $sgs_bg_img_style_decls[] = 'object-fit:' . esc_attr( $bg_size ); $sgs_bg_img_style_",
+           "o ) { $sgs_bg_video_style_decls[] = 'object-fit:' . esc_attr( $bg_size ); $sgs_bg_video_styl",
+           "l (style.css's `.sgs-container__video-bg{object-fit:cover}` // stays as the CSS fallback default"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+     "property": "max-width",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for max-width"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "maxWidth"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "maxWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "th on the CHILD also fixes it (measured: max-width:100% * -> 327px). Deliberately NOT added as",
+           "{ $responsive_css .= '.' . $uid . '{max-width:' . $base_max_width_css_value . ( $base_max_",
+           "ct-standard 768/1024 breakpoints (tablet max-width:1023px, mobile // max-width:767px). Emitted o"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "woocommerce/catalog-sorting",
+     "path": "form > select",
+     "property": "max-width",
+     "kind": "style",
+     "surfaces": [
+      "shop"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "shop",
+       "ref": "cr-ref-shop-9",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "woocommerce/catalog-sorting has no setting for max-width"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "maxWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "th on the CHILD also fixes it (measured: max-width:100% * -> 327px). Deliberately NOT added as",
+           "{ $responsive_css .= '.' . $uid . '{max-width:' . $base_max_width_css_value . ( $base_max_",
+           "ct-standard 768/1024 breakpoints (tablet max-width:1023px, mobile // max-width:767px). Emitted o"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "woocommerce/product-template",
+     "path": "",
+     "property": "max-width",
+     "kind": "style",
+     "surfaces": [
+      "shop"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "shop",
+       "ref": "cr-ref-shop-49",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "woocommerce/product-template has no setting for max-width"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "maxWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "th on the CHILD also fixes it (measured: max-width:100% * -> 327px). Deliberately NOT added as",
+           "{ $responsive_css .= '.' . $uid . '{max-width:' . $base_max_width_css_value . ( $base_max_",
+           "ct-standard 768/1024 breakpoints (tablet max-width:1023px, mobile // max-width:767px). Emitted o"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "woocommerce/product-template",
+     "path": "li:nth-of-type(7)",
+     "property": "max-width",
+     "kind": "style",
+     "surfaces": [
+      "shop"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "shop",
+       "ref": "cr-ref-shop-49",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "woocommerce/product-template has no setting for max-width"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "maxWidth"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "th on the CHILD also fixes it (measured: max-width:100% * -> 327px). Deliberately NOT added as",
+           "{ $responsive_css .= '.' . $uid . '{max-width:' . $base_max_width_css_value . ( $base_max_",
+           "ct-standard 768/1024 breakpoints (tablet max-width:1023px, mobile // max-width:767px). Emitted o"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "totals": {
+  "rows": 50,
+  "combos": 38
+ }
+}

@@ -1,0 +1,1130 @@
+[
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/mega-group||transition-duration",
+  "block": "sgs/mega-group",
+  "path": "",
+  "property": "transition-duration",
+  "rows": 4,
+  "surfaces": [
+   "mega-lenses"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft 0.25s, live 0s (sweep cr-ref-mega-lenses-1/16): the only writer of a transition on .sgs-mega-group is mega-panel/render.php's literal `transition:transform .2s ease`, and it is scoped to [data-mega-style=\"cards\"], so a lenses-style panel paints nothing at all. Neither sgs/mega-group nor sgs/mega-panel has a transition attribute.",
+  "citations": [
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/mega-group' AND (css_property LIKE '%transition%' OR css_property LIKE '%animation%') -> 0 rows",
+   "db: sgs/mega-panel's only motion row is panelCardLift (css_property=transform, css_element=group, css_state=hover); no transition-duration row",
+   "plugins/sgs-blocks/src/blocks/mega-panel/render.php emits `$style_crd . $rel_group . '{position:relative;transition:transform .2s ease;}'` with `$style_crd = $root_sel . '[data-mega-style=\"cards\"]'` and `$rel_group = ' .sgs-mega-group'`",
+   "sweep sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json cr-ref-mega-lenses-1 transition-duration {draft:'0.25s', live:'0s'}"
+  ],
+  "precedent": {
+   "block": "sgs/mega-panel",
+   "setting": "panelCardLift",
+   "helper": "sgs_hover_state_rules + sgs_css_single_length_value",
+   "note": "the lift itself is already a real control on the same selector; only its timing is a literal, and only the cards style gets a transition at all"
+  },
+  "fixShape": "a duration/easing pair beside mega-panel::panelCardLift (or read --wp--custom--button-presets--default--hover-transition), with the transition declaration moved out of the cards-only scope",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|transform",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+  "property": "transform",
+  "rows": 2,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Draft matrix(0.707107,0.707107,-0.707107,0.707107,0,0) = a 45deg turn, live `none`. A setting exists: sgs/accordion::iconRotation. The route misses it twice over - the DB row is calibrated to css_property `transform` while accordion/style.css paints the `rotate` LONGHAND, and that rule only matches the `--rotates` icon mode this instance is not in.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND attr_name='iconRotation' -> ('iconRotation','styling','transform','icon')",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item[open] .sgs-accordion-item__icon-open--rotates declares `rotate: var(--sgs-accordion-icon-rotate, 0deg)` - the rotate longhand, not transform",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item[open] .sgs-accordion-item__chevron declares `transform: rotate(180deg)` (the other, transform-based icon)",
+   "sweep cr-ref-help-17 / cr-ref-help-19 transform {draft:'matrix(0.707107, 0.707107, -0.707107, 0.707107, 0, 0)', live:'none'}"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "iconRotation",
+   "helper": "--sgs-accordion-icon-rotate custom property",
+   "note": "the 45deg turn is already expressible; recalibrate the row to `rotate` and have the route select the rotating icon mode"
+  },
+  "fixShape": "recalibrate block_attributes(sgs/accordion,iconRotation).css_property from `transform` to `rotate`, and pair it with the icon-mode attribute that emits the --rotates class",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|transition-duration",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+  "property": "transition-duration",
+  "rows": 2,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Draft 0.3s, live '0.3s, 0.3s, 0.15s'. The first two items ALREADY equal the draft: the rule reads --wp--custom--duration--medium, which the client snapshot sets to 300ms. The row survives only because the live list carries a third item (the colour fade at duration.fast). A client-settable channel exists; the resolver inspects block attributes only, never the snapshot token.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item__icon-open declares `transition: opacity var(--wp--custom--duration--medium, 300ms) ..., rotate var(--wp--custom--duration--medium, 300ms) ..., color var(--wp--custom--duration--fast, 150ms) ...`",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.duration.medium = '300ms', duration.fast = '150ms' (Spec 33 client token)",
+   "sweep cr-ref-help-17 transition-duration {draft:'0.3s', live:'0.3s, 0.3s, 0.15s'}",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug IN ('sgs/accordion','sgs/accordion-item') AND css_property LIKE '%transition-duration%' -> 0 rows"
+  ],
+  "precedent": {
+   "block": "any token consumer",
+   "setting": "snapshot settings.custom.duration.*",
+   "helper": "theme-snapshot.json (Spec 33), pushed by push-theme-snapshot.py",
+   "note": "the same token already times accordion, tabs, nav-bar-menu and the hover extension"
+  },
+  "fixShape": "teach the resolver the snapshot motion tokens (duration.*/easing.*) as a settable channel, and compare transition items per animated property rather than as a positional list",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|transition-timing-function",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+  "property": "transition-timing-function",
+  "rows": 2,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Draft 'ease', live three copies of cubic-bezier(0.4, 0, 0.2, 1) - exactly the client snapshot's settings.custom.easing.default, which this rule reads. The easing IS settable; the resolver reported no-setting because it only looks for a block attribute.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item__icon-open reads `var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1))` for all three items",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.easing.default = 'cubic-bezier(0.4, 0, 0.2, 1)'",
+   "sweep cr-ref-help-17 transition-timing-function {draft:'ease', live:'cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1)'}",
+   "db: 0 transition-timing-function rows for sgs/accordion or sgs/accordion-item"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "transitionEasing",
+   "helper": "sgs_transition_vars() -> --sgs-transition-easing, DB-calibrated to 'transition,transition-timing-function'",
+   "note": "brand-strip exposes the same easing per block; accordion relies on the site token alone"
+  },
+  "fixShape": "route the snapshot easing token, or give accordion the same transitionDuration/transitionEasing pair brand-strip has",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/container||translate",
+  "block": "sgs/container",
+  "path": "",
+  "property": "translate",
+  "rows": 2,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Entrance-animation transient, proven numerically: live `translate: 0px 26px` is the start value of the block's own fade-up entrance, whose distance the tree sets to 26. Both nodes carry sgsAnimation 'fade-up' with sgsAnimationDistance '26'. The walker read the element before or part-way through the entrance; the draft has no resting translate.",
+  "citations": [
+   "sites/eye-care-ward-end/build/home.tree.json cr-ref-home-39 and cr-ref-home-43: {\"sgsAnimation\":\"fade-up\",\"sgsAnimationDistance\":\"26\",\"sgsAnimationDuration\":\"460\",\"sgsAnimationEasing\":\"cubic-bezier(0.33, 1, 0.68, 1)\"}",
+   "sweep cr-ref-home-39 / cr-ref-home-43 translate (hover) {draft:'none', live:'0px 26px'} - 26px matches sgsAnimationDistance exactly",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/container' AND css_property LIKE '%translate%' -> 0 rows (the lift that does exist is sgsHoverLift, css_property=transform, source=sgs-ext)"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "liftHover",
+   "helper": "button/render.php writes `translate:0 -Npx` deliberately on the independent translate property",
+   "note": "if a translate-longhand hover lift is ever wanted on container, button is the built precedent; the container lift paints transform in assets/css/extensions.css::.sgs-has-hover-lift:hover"
+  },
+  "fixShape": "settle the entrance before reading hover state (finish animations, or wait out sgsAnimationDuration) and record entrance motion as an unbuilt walker read (Spec 47 FR-47-6)",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/form-field-text|.sgs-form-field__input|transition-duration",
+  "block": "sgs/form-field-text",
+  "path": ".sgs-form-field__input",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "contact-form"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft 0s (the draft input has no transition), live '0.2s, 0.2s' from a literal in the shared form stylesheet. No form-field block, nor sgs/form, nor the enclosing sgs/container has any transition attribute, so a client cannot retime or remove it. Sweep cr-ref-contact-form-1.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input declares `transition: border-color 0.2s, box-shadow 0.2s` (literal, no var)",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/form-field-text' AND (css_property LIKE '%transition%' OR css_property LIKE '%animation%' OR attr_name LIKE '%uration%' OR attr_name LIKE '%asing%') -> 0 rows",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/form' AND css_property LIKE '%transition%' -> 0 rows",
+   "sweep cr-ref-contact-form-1 transition-duration {draft:'0s', live:'0.2s, 0.2s'}"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "the Field style group (parent-styles-children precedent)",
+   "helper": "sgs/form's field-level style attributes already reach .sgs-form-field__input",
+   "note": "the form already styles its children's inputs from the parent block, so one fieldTransitionDuration/Easing pair on sgs/form closes all five field blocks"
+  },
+  "fixShape": "one fieldTransitionDuration + fieldTransitionEasing pair on sgs/form (or read duration.fast / easing.default) replacing the literal in form/style.css::.sgs-form-field__input",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/form-field-email|.sgs-form-field__input|transition-duration",
+  "block": "sgs/form-field-email",
+  "path": ".sgs-form-field__input",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "contact-form"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft 0s (the draft input has no transition), live '0.2s, 0.2s' from a literal in the shared form stylesheet. No form-field block, nor sgs/form, nor the enclosing sgs/container has any transition attribute, so a client cannot retime or remove it. Sweep cr-ref-contact-form-2.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input declares `transition: border-color 0.2s, box-shadow 0.2s` (literal, no var)",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/form-field-email' AND (css_property LIKE '%transition%' OR css_property LIKE '%animation%' OR attr_name LIKE '%uration%' OR attr_name LIKE '%asing%') -> 0 rows",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/form' AND css_property LIKE '%transition%' -> 0 rows",
+   "sweep cr-ref-contact-form-2 transition-duration {draft:'0s', live:'0.2s, 0.2s'}"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "the Field style group (parent-styles-children precedent)",
+   "helper": "sgs/form's field-level style attributes already reach .sgs-form-field__input",
+   "note": "the form already styles its children's inputs from the parent block, so one fieldTransitionDuration/Easing pair on sgs/form closes all five field blocks"
+  },
+  "fixShape": "one fieldTransitionDuration + fieldTransitionEasing pair on sgs/form (or read duration.fast / easing.default) replacing the literal in form/style.css::.sgs-form-field__input",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/form-field-phone|.sgs-form-field__input|transition-duration",
+  "block": "sgs/form-field-phone",
+  "path": ".sgs-form-field__input",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "contact-form"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft 0s (the draft input has no transition), live '0.2s, 0.2s' from a literal in the shared form stylesheet. No form-field block, nor sgs/form, nor the enclosing sgs/container has any transition attribute, so a client cannot retime or remove it. Sweep cr-ref-contact-form-3.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input declares `transition: border-color 0.2s, box-shadow 0.2s` (literal, no var)",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/form-field-phone' AND (css_property LIKE '%transition%' OR css_property LIKE '%animation%' OR attr_name LIKE '%uration%' OR attr_name LIKE '%asing%') -> 0 rows",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/form' AND css_property LIKE '%transition%' -> 0 rows",
+   "sweep cr-ref-contact-form-3 transition-duration {draft:'0s', live:'0.2s, 0.2s'}"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "the Field style group (parent-styles-children precedent)",
+   "helper": "sgs/form's field-level style attributes already reach .sgs-form-field__input",
+   "note": "the form already styles its children's inputs from the parent block, so one fieldTransitionDuration/Easing pair on sgs/form closes all five field blocks"
+  },
+  "fixShape": "one fieldTransitionDuration + fieldTransitionEasing pair on sgs/form (or read duration.fast / easing.default) replacing the literal in form/style.css::.sgs-form-field__input",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/form-field-select|.sgs-form-field__input|transition-duration",
+  "block": "sgs/form-field-select",
+  "path": ".sgs-form-field__input",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "contact-form"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft 0s (the draft input has no transition), live '0.2s, 0.2s' from a literal in the shared form stylesheet. No form-field block, nor sgs/form, nor the enclosing sgs/container has any transition attribute, so a client cannot retime or remove it. Sweep cr-ref-contact-form-4.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input declares `transition: border-color 0.2s, box-shadow 0.2s` (literal, no var)",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/form-field-select' AND (css_property LIKE '%transition%' OR css_property LIKE '%animation%' OR attr_name LIKE '%uration%' OR attr_name LIKE '%asing%') -> 0 rows",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/form' AND css_property LIKE '%transition%' -> 0 rows",
+   "sweep cr-ref-contact-form-4 transition-duration {draft:'0s', live:'0.2s, 0.2s'}"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "the Field style group (parent-styles-children precedent)",
+   "helper": "sgs/form's field-level style attributes already reach .sgs-form-field__input",
+   "note": "the form already styles its children's inputs from the parent block, so one fieldTransitionDuration/Easing pair on sgs/form closes all five field blocks"
+  },
+  "fixShape": "one fieldTransitionDuration + fieldTransitionEasing pair on sgs/form (or read duration.fast / easing.default) replacing the literal in form/style.css::.sgs-form-field__input",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/form-field-textarea|.sgs-form-field__input|transition-duration",
+  "block": "sgs/form-field-textarea",
+  "path": ".sgs-form-field__input",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "contact-form"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft 0s (the draft input has no transition), live '0.2s, 0.2s' from a literal in the shared form stylesheet. No form-field block, nor sgs/form, nor the enclosing sgs/container has any transition attribute, so a client cannot retime or remove it. Sweep cr-ref-contact-form-5.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input declares `transition: border-color 0.2s, box-shadow 0.2s` (literal, no var)",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/form-field-textarea' AND (css_property LIKE '%transition%' OR css_property LIKE '%animation%' OR attr_name LIKE '%uration%' OR attr_name LIKE '%asing%') -> 0 rows",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/form' AND css_property LIKE '%transition%' -> 0 rows",
+   "sweep cr-ref-contact-form-5 transition-duration {draft:'0s', live:'0.2s, 0.2s'}"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "the Field style group (parent-styles-children precedent)",
+   "helper": "sgs/form's field-level style attributes already reach .sgs-form-field__input",
+   "note": "the form already styles its children's inputs from the parent block, so one fieldTransitionDuration/Easing pair on sgs/form closes all five field blocks"
+  },
+  "fixShape": "one fieldTransitionDuration + fieldTransitionEasing pair on sgs/form (or read duration.fast / easing.default) replacing the literal in form/style.css::.sgs-form-field__input",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|transition-duration",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Draft '0.25s, 0.25s', live '0.15s' - and 0.15s is precisely the site-wide token the rule reads. A client-settable channel exists (snapshot settings.custom.transition.fast); the resolver reported no-setting because it only inspects block attributes. Fact-checked that the footer style variation does NOT apply: the tree instance is iconStyle 'boxed' with no is-style-social-icons-footer class, so the literal `color 0.2s ease, transform 0.1s ease` rule is not the winner.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item declares `transition: var(--wp--custom--transition--fast, 0.15s ease)`",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.transition.fast = '0.15s ease'",
+   "sites/eye-care-ward-end/build/footer.tree.json cr-ref-footer-6: {\"name\":\"sgs/social-icons\",\"attributes\":{\"iconStyle\":\"boxed\",...}} - no is-style-social-icons-footer className",
+   "sweep cr-ref-footer-6 transition-duration {draft:'0.25s, 0.25s', live:'0.15s'}",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%transition%' -> 0 rows"
+  ],
+  "precedent": {
+   "block": "any token consumer",
+   "setting": "snapshot settings.custom.transition.fast",
+   "helper": "theme-snapshot.json (Spec 33)",
+   "note": "the same token times option-picker and choice-flow-question; it is per-client but site-wide, not per block"
+  },
+  "fixShape": "route the snapshot transition/duration/easing tokens in the resolver; add a per-block motion pair on social-icons only if a per-element divergence survives the token",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|transition-duration",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Draft '0.25s, 0.25s', live '0.15s' - and 0.15s is precisely the site-wide token the rule reads. A client-settable channel exists (snapshot settings.custom.transition.fast); the resolver reported no-setting because it only inspects block attributes. Fact-checked that the footer style variation does NOT apply: the tree instance is iconStyle 'boxed' with no is-style-social-icons-footer class, so the literal `color 0.2s ease, transform 0.1s ease` rule is not the winner.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item declares `transition: var(--wp--custom--transition--fast, 0.15s ease)`",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.transition.fast = '0.15s ease'",
+   "sites/eye-care-ward-end/build/footer.tree.json cr-ref-footer-6: {\"name\":\"sgs/social-icons\",\"attributes\":{\"iconStyle\":\"boxed\",...}} - no is-style-social-icons-footer className",
+   "sweep cr-ref-footer-6 transition-duration {draft:'0.25s, 0.25s', live:'0.15s'}",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%transition%' -> 0 rows"
+  ],
+  "precedent": {
+   "block": "any token consumer",
+   "setting": "snapshot settings.custom.transition.fast",
+   "helper": "theme-snapshot.json (Spec 33)",
+   "note": "the same token times option-picker and choice-flow-question; it is per-client but site-wide, not per block"
+  },
+  "fixShape": "route the snapshot transition/duration/easing tokens in the resolver; add a per-block motion pair on social-icons only if a per-element divergence survives the token",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|transition-duration",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Draft '0.25s, 0.25s', live '0.15s' - and 0.15s is precisely the site-wide token the rule reads. A client-settable channel exists (snapshot settings.custom.transition.fast); the resolver reported no-setting because it only inspects block attributes. Fact-checked that the footer style variation does NOT apply: the tree instance is iconStyle 'boxed' with no is-style-social-icons-footer class, so the literal `color 0.2s ease, transform 0.1s ease` rule is not the winner.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item declares `transition: var(--wp--custom--transition--fast, 0.15s ease)`",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.transition.fast = '0.15s ease'",
+   "sites/eye-care-ward-end/build/footer.tree.json cr-ref-footer-6: {\"name\":\"sgs/social-icons\",\"attributes\":{\"iconStyle\":\"boxed\",...}} - no is-style-social-icons-footer className",
+   "sweep cr-ref-footer-6 transition-duration {draft:'0.25s, 0.25s', live:'0.15s'}",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%transition%' -> 0 rows"
+  ],
+  "precedent": {
+   "block": "any token consumer",
+   "setting": "snapshot settings.custom.transition.fast",
+   "helper": "theme-snapshot.json (Spec 33)",
+   "note": "the same token times option-picker and choice-flow-question; it is per-client but site-wide, not per block"
+  },
+  "fixShape": "route the snapshot transition/duration/easing tokens in the resolver; add a per-block motion pair on social-icons only if a per-element divergence survives the token",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|transform",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "transform",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft `none` - the draft icon does NOT scale on hover - live matrix(1.1,0,0,1.1,0,0) from a hardcoded `transform:scale(1.1)`. sgs/social-icons has no transform attribute at all, so a client cannot switch the scale off. Register row 39-43 independently decided the intended hover is 'border and a 1px ring in the network's colour, no scale-up', so this is a framework defect, not a divergence.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item:hover declares `transform: scale(1.1)` (literal)",
+   "db: SELECT attr_name,role,css_property,css_state FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property IN ('transform','translate','scale') -> 0 rows (only colour/border hover rows exist)",
+   "sweep cr-ref-footer-6 transform (hover) {draft:'none', live:'matrix(1.1, 0, 0, 1.1, 0, 0)'}",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md row 39-43: 'Hover: border and a 1px ring in the network's colour, no scale-up'"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "scaleHover",
+   "helper": "select-from-enum scale control (css_property=transform, css_element=face, css_state=hover)",
+   "note": "the enum hover-scale control exists on button, card-grid, gallery, heading, icon, info-box, post-grid, quote, team-member, testimonial and text; social-icons never got it"
+  },
+  "fixShape": "delete the hardcoded scale(1.1) and give social-icons the shared scaleHover enum (default none), per register 39-43",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|hover-effects",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "hover-effects",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "The walker's aggregate hover row for the same defect: draft 'none', live 'moves'. Same hardcoded `transform:scale(1.1)` with no setting to disable it; it closes with the transform combo above, not separately.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item:hover declares `transform: scale(1.1)`",
+   "sweep cr-ref-footer-6 hover-effects (hover) {draft:'none', live:'moves'}",
+   "db: 0 transform/translate/scale rows for sgs/social-icons"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "scaleHover",
+   "helper": "select-from-enum scale control",
+   "note": "one change closes both rows per icon"
+  },
+  "fixShape": "same fix as the social-icons transform combo: remove the literal scale, expose scaleHover",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|transform",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "transform",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft `none` - the draft icon does NOT scale on hover - live matrix(1.1,0,0,1.1,0,0) from a hardcoded `transform:scale(1.1)`. sgs/social-icons has no transform attribute at all, so a client cannot switch the scale off. Register row 39-43 independently decided the intended hover is 'border and a 1px ring in the network's colour, no scale-up', so this is a framework defect, not a divergence.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item:hover declares `transform: scale(1.1)` (literal)",
+   "db: SELECT attr_name,role,css_property,css_state FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property IN ('transform','translate','scale') -> 0 rows (only colour/border hover rows exist)",
+   "sweep cr-ref-footer-6 transform (hover) {draft:'none', live:'matrix(1.1, 0, 0, 1.1, 0, 0)'}",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md row 39-43: 'Hover: border and a 1px ring in the network's colour, no scale-up'"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "scaleHover",
+   "helper": "select-from-enum scale control (css_property=transform, css_element=face, css_state=hover)",
+   "note": "the enum hover-scale control exists on button, card-grid, gallery, heading, icon, info-box, post-grid, quote, team-member, testimonial and text; social-icons never got it"
+  },
+  "fixShape": "delete the hardcoded scale(1.1) and give social-icons the shared scaleHover enum (default none), per register 39-43",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|hover-effects",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "hover-effects",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "The walker's aggregate hover row for the same defect: draft 'none', live 'moves'. Same hardcoded `transform:scale(1.1)` with no setting to disable it; it closes with the transform combo above, not separately.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item:hover declares `transform: scale(1.1)`",
+   "sweep cr-ref-footer-6 hover-effects (hover) {draft:'none', live:'moves'}",
+   "db: 0 transform/translate/scale rows for sgs/social-icons"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "scaleHover",
+   "helper": "select-from-enum scale control",
+   "note": "one change closes both rows per icon"
+  },
+  "fixShape": "same fix as the social-icons transform combo: remove the literal scale, expose scaleHover",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|transform",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "transform",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft `none` - the draft icon does NOT scale on hover - live matrix(1.1,0,0,1.1,0,0) from a hardcoded `transform:scale(1.1)`. sgs/social-icons has no transform attribute at all, so a client cannot switch the scale off. Register row 39-43 independently decided the intended hover is 'border and a 1px ring in the network's colour, no scale-up', so this is a framework defect, not a divergence.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item:hover declares `transform: scale(1.1)` (literal)",
+   "db: SELECT attr_name,role,css_property,css_state FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property IN ('transform','translate','scale') -> 0 rows (only colour/border hover rows exist)",
+   "sweep cr-ref-footer-6 transform (hover) {draft:'none', live:'matrix(1.1, 0, 0, 1.1, 0, 0)'}",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md row 39-43: 'Hover: border and a 1px ring in the network's colour, no scale-up'"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "scaleHover",
+   "helper": "select-from-enum scale control (css_property=transform, css_element=face, css_state=hover)",
+   "note": "the enum hover-scale control exists on button, card-grid, gallery, heading, icon, info-box, post-grid, quote, team-member, testimonial and text; social-icons never got it"
+  },
+  "fixShape": "delete the hardcoded scale(1.1) and give social-icons the shared scaleHover enum (default none), per register 39-43",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|hover-effects",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "hover-effects",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "The walker's aggregate hover row for the same defect: draft 'none', live 'moves'. Same hardcoded `transform:scale(1.1)` with no setting to disable it; it closes with the transform combo above, not separately.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item:hover declares `transform: scale(1.1)`",
+   "sweep cr-ref-footer-6 hover-effects (hover) {draft:'none', live:'moves'}",
+   "db: 0 transform/translate/scale rows for sgs/social-icons"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "scaleHover",
+   "helper": "select-from-enum scale control",
+   "note": "one change closes both rows per icon"
+  },
+  "fixShape": "same fix as the social-icons transform combo: remove the literal scale, expose scaleHover",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1)|transition-duration",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1)",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft 0s (the draft card has no transition), live '0.2s, 0.2s' from a literal on the card. sgs/google-reviews has no transition-duration attribute; its hover-extension motion pair paints on the block ROOT via .sgs-has-hover and transitions do not inherit, so it cannot reach the card. Three lines away in the same file the button rule DOES read the client token - the card was simply never converted.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/google-reviews/style.css::.sgs-google-reviews__review declares `transition: box-shadow 200ms ease, transform 200ms ease` (literal)",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/google-reviews' AND css_property LIKE '%transition%' -> 0 rows",
+   "plugins/sgs-blocks/assets/css/extensions.css::.sgs-has-hover declares the extension transition on the block root only, via var(--sgs-hover-duration, 250ms)",
+   "sweep cr-ref-home-58 transition-duration (review:nth-of-type(1)) {draft:'0s', live:'0.2s, 0.2s'}"
+  ],
+  "precedent": {
+   "block": "sgs/google-reviews",
+   "setting": "its own __write-review/__see-all transition rule",
+   "helper": "var(--wp--custom--button-presets--default--hover-transition)",
+   "note": "the identical property on sibling elements of the SAME block already reads the client token; copying that pattern onto the card is the whole fix"
+  },
+  "fixShape": "convert google-reviews/style.css::.sgs-google-reviews__review to the card-motion token (or a cardTransitionDuration/Easing pair) instead of 200ms literals",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)|transition-duration",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft 0.2s, live '0.15s, 0.15s, 0.15s' from two literal 150ms rules on the arrow. No transition attribute on sgs/google-reviews, and the hover extension's transition lands on the block root, not the arrow. The same file's button rule reads the client token, so this is an unconverted literal, not a missing capability.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/google-reviews/style.css::.sgs-google-reviews__arrow declares `transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease`, and :where(.sgs-google-reviews__arrow) declares `transition: background-color 150ms ease, border-color 150ms ease`",
+   "db: 0 transition rows for sgs/google-reviews",
+   "sweep cr-ref-home-58 transition-duration (arrow:nth-of-type(1)) {draft:'0.2s', live:'0.15s, 0.15s, 0.15s'}"
+  ],
+  "precedent": {
+   "block": "sgs/google-reviews",
+   "setting": "__write-review / __see-all transition rule",
+   "helper": "var(--wp--custom--button-presets--default--hover-transition)",
+   "note": "same block, same file, same property, already tokenised"
+  },
+  "fixShape": "convert the two arrow transition rules to the duration/easing tokens (or an arrowTransitionDuration pair)",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)|transition-duration",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft 0.2s, live '0.15s, 0.15s, 0.15s' from two literal 150ms rules on the arrow. No transition attribute on sgs/google-reviews, and the hover extension's transition lands on the block root, not the arrow. The same file's button rule reads the client token, so this is an unconverted literal, not a missing capability.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/google-reviews/style.css::.sgs-google-reviews__arrow declares `transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease`, and :where(.sgs-google-reviews__arrow) declares `transition: background-color 150ms ease, border-color 150ms ease`",
+   "db: 0 transition rows for sgs/google-reviews",
+   "sweep cr-ref-home-58 transition-duration (arrow:nth-of-type(2)) {draft:'0.2s', live:'0.15s, 0.15s, 0.15s'}"
+  ],
+  "precedent": {
+   "block": "sgs/google-reviews",
+   "setting": "__write-review / __see-all transition rule",
+   "helper": "var(--wp--custom--button-presets--default--hover-transition)",
+   "note": "same block, same file, same property, already tokenised"
+  },
+  "fixShape": "convert the two arrow transition rules to the duration/easing tokens (or an arrowTransitionDuration pair)",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__aggregate > .sgs-google-reviews__cta > .sgs-google-reviews__see-all|transition-duration",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__aggregate > .sgs-google-reviews__cta > .sgs-google-reviews__see-all",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "proof": "Not a gap: the setting reaches this element and holds Bean's value. Live '0.25s, 0.25s, 0.25s' is the client snapshot's buttonPresets.default.hover-transition = 0.25s, read by this very rule; the draft's 0.2s is overridden by register S1's decision that one site setting holds every button's hover timing (N16a puts the review buttons under S1). No ledger entry exists for the home reviews buttons yet - Session C should add one citing S1/N16a.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/google-reviews/style.css::.sgs-google-reviews__write-review, .sgs-google-reviews__see-all declares `transition: background-color var(--wp--custom--button-presets--default--hover-transition, 150ms) ease, box-shadow var(...) ease, transform var(...) ease`",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.buttonPresets.default.hover-transition = '0.25s' - the live value exactly",
+   "sweep cr-ref-home-58 transition-duration (see-all) {draft:'0.2s', live:'0.25s, 0.25s, 0.25s'}",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md S1 ('One site setting holds the button hover: lift 3px over 0.25s') and N16a ('Review buttons need the 3px lift | S1')"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "buttonPresets.default.hover-transition",
+   "helper": "theme-snapshot.json client token (Spec 33)",
+   "note": "the channel is built and live; the row is the decided site-wide timing, not a framework gap"
+  },
+  "fixShape": "no framework change - add a divergences.json entry citing S1/N16a (expected 0.25s) so the row closes as decided",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__aggregate > .sgs-google-reviews__cta > .sgs-google-reviews__write-review|transition-duration",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__aggregate > .sgs-google-reviews__cta > .sgs-google-reviews__write-review",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "proof": "Not a gap: the setting reaches this element and holds Bean's value. Live '0.25s, 0.25s, 0.25s' is the client snapshot's buttonPresets.default.hover-transition = 0.25s, read by this very rule; the draft's 0.2s is overridden by register S1's decision that one site setting holds every button's hover timing (N16a puts the review buttons under S1). No ledger entry exists for the home reviews buttons yet - Session C should add one citing S1/N16a.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/google-reviews/style.css::.sgs-google-reviews__write-review, .sgs-google-reviews__see-all declares `transition: background-color var(--wp--custom--button-presets--default--hover-transition, 150ms) ease, box-shadow var(...) ease, transform var(...) ease`",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.buttonPresets.default.hover-transition = '0.25s' - the live value exactly",
+   "sweep cr-ref-home-58 transition-duration (write-review) {draft:'0.2s', live:'0.25s, 0.25s, 0.25s'}",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md S1 ('One site setting holds the button hover: lift 3px over 0.25s') and N16a ('Review buttons need the 3px lift | S1')"
+  ],
+  "precedent": {
+   "block": "sgs/button",
+   "setting": "buttonPresets.default.hover-transition",
+   "helper": "theme-snapshot.json client token (Spec 33)",
+   "note": "the channel is built and live; the row is the decided site-wide timing, not a framework gap"
+  },
+  "fixShape": "no framework change - add a divergences.json entry citing S1/N16a (expected 0.25s) so the row closes as decided",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/media|.sgs-media__img|transition-duration",
+  "block": "sgs/media",
+  "path": ".sgs-media__img",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft 1.4s, live '1.4s, 0.3s'. The draft's 1.4s is already matched; the extra 0.3s is a LITERAL in the shared media atom layer, declared on every .sgs-media-el (media/render.php puts both classes on the img) with no var and no setting anywhere.",
+  "citations": [
+   "plugins/sgs-blocks/assets/css/media-element.css::.sgs-media-el declares `transition-property: box-shadow; transition-duration: 0.3s; transition-timing-function: ease;` (literals)",
+   "plugins/sgs-blocks/src/blocks/media/render.php: `$base_class = 'sgs-media__img sgs-media-el';` - the img carries the atom marker",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/media' AND css_property LIKE '%transition%' -> 0 rows (media's motion attrs are sgsHoverDuration/sgsHoverEasing from sgs-ext, both css_property NULL, and they paint on the root)",
+   "sweep cr-ref-home-60 transition-duration {draft:'1.4s', live:'1.4s, 0.3s'}"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "bgHoverZoomDuration / bgHoverZoomEasing",
+   "helper": "transition-duration / transition-timing-function attributes on the same family of effects",
+   "note": "the container's background-zoom timing is a real control; the media atom's box-shadow timing is the one literal left in that family"
+  },
+  "fixShape": "give assets/css/media-element.css::.sgs-media-el a --sgs-media-transition-duration/-easing pair defaulted to the snapshot duration/easing tokens",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/media|.sgs-media__img|transition-timing-function",
+  "block": "sgs/media",
+  "path": ".sgs-media__img",
+  "property": "transition-timing-function",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Same atom literal, easing half: draft cubic-bezier(0.2, 0.7, 0.2, 1), live 'cubic-bezier(0.2, 0.7, 0.2, 1), ease' - the draft's easing is already matched and the extra `ease` is the atom's hardcoded value.",
+  "citations": [
+   "plugins/sgs-blocks/assets/css/media-element.css::.sgs-media-el declares `transition-timing-function: ease;` (literal)",
+   "plugins/sgs-blocks/src/blocks/media/render.php: `$base_class = 'sgs-media__img sgs-media-el';`",
+   "db: 0 transition-timing-function rows for sgs/media",
+   "sweep cr-ref-home-60 transition-timing-function {draft:'cubic-bezier(0.2, 0.7, 0.2, 1)', live:'cubic-bezier(0.2, 0.7, 0.2, 1), ease'}"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "bgHoverZoomEasing",
+   "helper": "transition-timing-function attribute",
+   "note": "closes with the duration combo above in one edit"
+  },
+  "fixShape": "same fix as the media duration combo: tokenise the .sgs-media-el atom's transition longhands",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/hero||transition-timing-function",
+  "block": "sgs/hero",
+  "path": "",
+  "property": "transition-timing-function",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting EXISTS and is uncalibrated, not missing. sgs/hero::transitionEasing is a real block.json attribute, written by hero/render.php via sgs_transition_vars() as --sgs-transition-easing and read by hero/style.css::.sgs-hero. Its block_attributes row carries css_property NULL, so the resolver could not route transition-timing-function to it. Live 'ease-in-out' is exactly the stylesheet's var() fallback, i.e. the attribute is simply unset; the draft wants 'ease'.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/hero' AND attr_name='transitionEasing' -> ('transitionEasing', NULL, NULL) - row present, css_property NULL",
+   "plugins/sgs-blocks/src/blocks/hero/block.json::attributes.transitionEasing exists (and transitionDuration)",
+   "plugins/sgs-blocks/src/blocks/hero/render.php: `$styles = array_merge( $styles, sgs_transition_vars( $attributes ) );`",
+   "plugins/sgs-blocks/src/blocks/hero/style.css::.sgs-hero declares `transition-timing-function: var(--sgs-transition-easing, ease-in-out)`",
+   "sweep cr-ref-home-0 transition-timing-function {draft:'ease', live:'ease-in-out'} - the var() fallback"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "transitionEasing",
+   "helper": "the identical sgs_transition_vars() pair, DB-calibrated to 'transition,transition-timing-function'",
+   "note": "brand-strip and hero share the helper; only brand-strip's DB rows carry css_property"
+  },
+  "fixShape": "calibrate block_attributes(sgs/hero,transitionEasing).css_property to 'transition-timing-function' (and transitionDuration to 'transition-duration'); the value then becomes a plain tree write",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|animation-name",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "animation-name",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Not a style value: draft 'marquee' vs live 'sgs-brand-scroll' is a @keyframes IDENTIFIER difference between two implementations of the same marquee. The marquee exists and its settable value, the speed, is sgs/brand-strip::scrollDuration (calibrated to css_property 'animation', css_element 'track'). The declaration is also only applied once view.js adds the --ready class, so the walker is reading script-gated motion (Spec 47 FR-47-6).",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND attr_name='scrollDuration' -> ('scrollDuration','motion','animation','track')",
+   "plugins/sgs-blocks/src/blocks/brand-strip/style.css::.sgs-brand-strip--scrolling .sgs-brand-strip__track--ready declares `animation: sgs-brand-scroll var(--sgs-scroll-speed, 25s) linear infinite`",
+   "plugins/sgs-blocks/src/blocks/brand-strip/view.js adds 'sgs-brand-strip__track--ready'",
+   "sweep cr-ref-home-8 animation-name {draft:'marquee', live:'sgs-brand-scroll'}"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "scrollDuration",
+   "helper": "--sgs-scroll-speed custom property + @keyframes sgs-brand-scroll",
+   "note": "the capability is built; only the keyframes name differs, and a keyframes name is never a client-settable value"
+  },
+  "fixShape": "exclude animation-name (a keyframes identifier) from the walker's comparable properties and compare the resulting duration/geometry instead",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|animation-play-state",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "animation-play-state",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists: sgs/brand-strip::pauseOnHover (block.json attribute, DB row present with css_property NULL). It is implemented as a JS class toggle - view.js adds .sgs-brand-strip__track--paused on pointer enter and the compound rule then sets animation-play-state:paused - so the walker's CSS :hover simulation never triggers it and the resolver cannot route the property to the attribute. Script-driven motion the walker cannot read: Spec 47 FR-47-6.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND attr_name='pauseOnHover' -> ('pauseOnHover', NULL, NULL)",
+   "plugins/sgs-blocks/src/blocks/brand-strip/block.json::attributes.pauseOnHover exists",
+   "plugins/sgs-blocks/src/blocks/brand-strip/style.css::.sgs-brand-strip--scrolling .sgs-brand-strip__track--ready.sgs-brand-strip__track--paused declares `animation-play-state: paused`",
+   "plugins/sgs-blocks/src/blocks/brand-strip/view.js toggles 'sgs-brand-strip__track--paused'",
+   "sweep cr-ref-home-8 animation-play-state (hover) {draft:'paused', live:'running'}"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "pauseOnHover",
+   "helper": "view.js class toggle + the compound (0,3,0) selector documented in style.css",
+   "note": "the capability is built and the stylesheet comment records the specificity trap it already survived; the gap is the walker's hover simulation plus the uncalibrated DB row"
+  },
+  "fixShape": "drive the pause from a real pointer event in the walker (or assert the class) and set pauseOnHover in the tree; record under Spec 47 FR-47-6",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/choice-flow-question|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|transition-duration",
+  "block": "sgs/choice-flow-question",
+  "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft '0.25s, 0.25s', live '0.25s, 0.25s, 0.3s'. The winner is a LITERAL showcase-layout rule (0,2,0) that beats the block's own tokenised rule (0,1,0) in the same file. Its first two values happen to match the draft; the extra box-shadow 0.3s is the divergence, and sgs/choice-flow-question has no motion attribute of any kind, so nothing can change it.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button declares `transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.3s ease` (literal, specificity 0,2,0)",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow-question__option-button declares the same three items with `var(--wp--custom--transition--fast, 0.15s ease)` (0,1,0) - the tokenised rule it beats",
+   "db: SELECT attr_name,css_property FROM block_attributes WHERE block_slug='sgs/choice-flow-question' AND (css_property LIKE '%transition%' OR attr_name LIKE '%uration%') -> 0 rows",
+   "sweep cr-ref-lens-8 transition-duration {draft:'0.25s, 0.25s', live:'0.25s, 0.25s, 0.3s'}"
+  ],
+  "precedent": {
+   "block": "sgs/choice-flow-question",
+   "setting": "its own base __option-button rule",
+   "helper": "var(--wp--custom--transition--fast)",
+   "note": "the same file already tokenises the same property on the same element at lower specificity; the showcase layout override reverted it to literals"
+  },
+  "fixShape": "make the showcase-layout rule inherit the token (drop its literal durations) so one channel times the option button",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/button||rotate",
+  "block": "sgs/button",
+  "path": "",
+  "property": "rotate",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The draft side was NOT MEASURED: the sweep row records {draft: null, live: 'none'}. With no draft value there is nothing to prove a framework gap against; the live value is the CSS initial. cr-ref-mega-brands-41 is one of the mega-brands text links (an <a> + <span> in the brands panel), so the likely draft source is a staggered entrance, not a button setting.",
+  "citations": [
+   "sweep sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json cr-ref-mega-brands-41 rotate {draft: null, live: 'none'} - draft unread",
+   "sites/eye-care-ward-end/build/qa/pairs/mega-brands.json cr-ref-mega-brands-41 -> draft `... > a:nth-child(34) > span:nth-child(1)`, text o'neill",
+   "db: SELECT attr_name,role,css_property FROM block_attributes WHERE block_slug='sgs/button' AND css_property LIKE '%rotate%' -> only ('fxPathRotate','behaviour','fx:path-rotate', source=sgs-fx)"
+  ],
+  "precedent": {
+   "block": "sgs/icon",
+   "setting": "iconRotate",
+   "helper": "css_property=transform on the wrapper (also sgs/accordion::iconRotation, sgs/nav-drawer-menu::itemExpanderRotate)",
+   "note": "a rotate capability exists on three sibling blocks via transform; nothing is proven missing on button until the draft value is read"
+  },
+  "fixShape": "re-measure the draft node for this property; if a real rotate value lands it is a staggered-entrance read (Spec 47 FR-47-6), not a button control",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/button||transition-delay",
+  "block": "sgs/button",
+  "path": "",
+  "property": "transition-delay",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Same unmeasured draft: {draft: null, live: '0s'}. Live 0s is what button/render.php's `transition:all {dur}ms {ease}` shorthand produces (a shorthand resets transition-delay to 0s), but with no draft value the row cannot be convicted. Note for S1: the per-instance shorthand is confirmed in source, and because it is a SHORTHAND it also zeroes any delay - so the S1 repair must cover transition-delay, not just duration.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/button/render.php emits `$scoped_css_parts[] = \".{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}\"` with `$transition_duration = isset( $attributes['transitionDuration'] ) ? absint( ... ) : 300` - unconditional, default 300ms (register S1's proven hardcode)",
+   "db: SELECT block_slug,attr_name,css_property FROM block_attributes WHERE css_property LIKE '%transition-delay%' -> 0 rows (no block in the framework exposes transition-delay)",
+   "sweep cr-ref-mega-brands-41 transition-delay {draft: null, live: '0s'} - draft unread"
+  ],
+  "precedent": {
+   "block": "sgs/nav-bar-menu",
+   "setting": "submenuItemStagger / submenuItemStaggerMax / submenuItemStaggerDuration",
+   "helper": "css_property animation-delay (and animation-delay,translate) on the enclosing menu block",
+   "note": "per-item delayed entrance IS built, one level up on nav-bar-menu, via animation-delay; no block exposes transition-delay"
+  },
+  "fixShape": "re-measure the draft; then either set the enclosing nav-bar-menu stagger, or make button/render.php emit transition LONGHANDS (never `all`) so a delay survives",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|transition-duration",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Pairing gap, not a missing control: the walker measured .sgs-option-picker__option (the label wrapper, which carries no transition - live 0s), while SGS paints the whole tile box on its CHILD .sgs-option-picker__pill, where the transition is already tokenised. The draft's '0.25s, 0.25s' is exactly what the pill reads from the client tokens.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker--tile .sgs-option-picker__pill declares `transition: background-color var(--wp--custom--transition--fast, 0.15s ease), color var(...), border-color var(...), box-shadow var(...), transform var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease`",
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker__pill (base) declares the same four tokenised items; no rule in the file targets .sgs-option-picker__option",
+   "sweep cr-ref-product-4 transition-duration (.sgs-option-picker__option:nth-of-type(1)) {draft:'0.25s, 0.25s', live:'0s'}",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.buttonPresets.default.hover-transition = '0.25s' - exactly the draft value"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "the __pill transition rule",
+   "helper": "var(--wp--custom--transition--fast) + var(--wp--custom--button-presets--default--hover-transition)",
+   "note": "this reconciles register S1's 2026-10-04 live check, which measured the pill and found both the 0.25s timing and the 3px lift"
+  },
+  "fixShape": "re-pair the draft's option box to .sgs-option-picker__pill, not .sgs-option-picker__option",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/buybox|.sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el|transition-duration",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+  "property": "transition-duration",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft '0.9s, 0.4s', live '0.2s' from literals: buybox/style.css declares a `transition: opacity 0.2s ease` SHORTHAND on the gallery element (a shorthand resets transition-property, so it beats the atom layer's longhands), and the atom layer itself is the literal 0.3s. Neither is settable - sgs/buybox has no transition attribute, only fxDuration/fxPathRotate from sgs-fx.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/buybox/style.css declares `transition: opacity 0.2s ease` on the gallery media element (literal shorthand)",
+   "plugins/sgs-blocks/assets/css/media-element.css::.sgs-media-el declares `transition-property: box-shadow; transition-duration: 0.3s; transition-timing-function: ease;` (literals)",
+   "db: SELECT attr_name,role,css_property FROM block_attributes WHERE block_slug='sgs/buybox' AND (css_property LIKE '%transition%' OR attr_name LIKE '%uration%') -> only ('fxDuration','motion','fx:duration', source=sgs-fx)",
+   "sweep cr-ref-product-4 transition-duration (.sgs-media-el) {draft:'0.9s, 0.4s', live:'0.2s'}"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "bgHoverZoomDuration / bgHoverZoomEasing",
+   "helper": "transition-duration / transition-timing-function attributes",
+   "note": "same atom family as the sgs/media rows - one tokenisation of .sgs-media-el closes three rows across sgs/media and sgs/buybox"
+  },
+  "fixShape": "tokenise the .sgs-media-el atom transition and replace buybox's literal shorthand with longhands reading the same var",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/tabs|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|transition-timing-function",
+  "block": "sgs/tabs",
+  "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
+  "property": "transition-timing-function",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Draft 'ease, ease', live three copies of cubic-bezier(0.4, 0, 0.2, 1) - exactly the client snapshot's settings.custom.easing.default, which the tab rule reads. The easing is a live, client-settable channel; the resolver reported no-setting because sgs/tabs carries only a transitionDuration attribute and the resolver never inspects snapshot tokens.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/tabs/style.css::.sgs-tabs__tab declares `transition: color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)), background-color var(...) var(...), box-shadow var(...) var(...)`",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.easing.default = 'cubic-bezier(0.4, 0, 0.2, 1)'",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/tabs' AND css_property LIKE '%transition%' -> ('transitionDuration','transition-duration','tab') only; no easing row",
+   "sweep cr-ref-product-12 transition-timing-function (tab:nth-of-type(1)) {draft:'ease, ease', live:'cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1)'}"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "transitionEasing",
+   "helper": "sgs_transition_vars() pair, DB-calibrated to transition-timing-function",
+   "note": "tabs already has the duration half of the pair (transitionDuration, element tab); only the easing half was never added"
+  },
+  "fixShape": "route the snapshot easing token in the resolver, and add tabs::transitionEasing beside the existing transitionDuration so the tab can diverge per client",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/tabs|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)|transition-timing-function",
+  "block": "sgs/tabs",
+  "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)",
+  "property": "transition-timing-function",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Draft 'ease, ease', live three copies of cubic-bezier(0.4, 0, 0.2, 1) - exactly the client snapshot's settings.custom.easing.default, which the tab rule reads. The easing is a live, client-settable channel; the resolver reported no-setting because sgs/tabs carries only a transitionDuration attribute and the resolver never inspects snapshot tokens.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/tabs/style.css::.sgs-tabs__tab declares `transition: color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)), background-color var(...) var(...), box-shadow var(...) var(...)`",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.easing.default = 'cubic-bezier(0.4, 0, 0.2, 1)'",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/tabs' AND css_property LIKE '%transition%' -> ('transitionDuration','transition-duration','tab') only; no easing row",
+   "sweep cr-ref-product-12 transition-timing-function (tab:nth-of-type(2)) {draft:'ease, ease', live:'cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1)'}"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "transitionEasing",
+   "helper": "sgs_transition_vars() pair, DB-calibrated to transition-timing-function",
+   "note": "tabs already has the duration half of the pair (transitionDuration, element tab); only the easing half was never added"
+  },
+  "fixShape": "route the snapshot easing token in the resolver, and add tabs::transitionEasing beside the existing transitionDuration so the tab can diverge per client",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|transform",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "transform",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Same pairing gap as the duration row: the lift is painted on the CHILD .sgs-option-picker__pill from the client token buttonPresets.default.hover-transform, not on .sgs-option-picker__option (live 'none' because nothing targets the wrapper). Register S1 built and live-checked this lift on 2026-10-04, so the wrapper reading 'none' is a measurement-target error, not a regression.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker--tile .sgs-option-picker__option:hover .sgs-option-picker__pill declares `transform: var(--wp--custom--button-presets--default--hover-transform, translateY(-2px))`",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.buttonPresets.default.hover-transform = 'matrix(1, 0, 0, 1, 0, -3)'",
+   "sweep cr-ref-product-4 transform (hover, .sgs-option-picker__option:nth-of-type(1)) {draft:'matrix(1, 0, 0, 1, 0, -2)', live:'none'}",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md S1: 'the colour tiles lift 3px where the draft lifts 2px ... they become ledger entries citing S1/S4 when the product surface is solved'"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "the __pill hover rule",
+   "helper": "var(--wp--custom--button-presets--default--hover-transform)",
+   "note": "once re-paired to the pill this row becomes the S1 3px-vs-2px decided divergence, like the add-to-bag row"
+  },
+  "fixShape": "re-pair to .sgs-option-picker__pill; the remaining 3px-vs-2px difference is then register S1 (a ledger entry)",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > form > button|transform",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > form > button",
+  "property": "transform",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "proof": "Decided divergence, measured exactly: draft matrix(1, 0, 0, 1, 0, -2) = a 2px lift, live matrix(1, 0, 0, 1, 0, -3) = 3px. Register S1 states the add-to-bag takes the site-wide 3px lift and that 'add-to-bag and the colour tiles lift 3px where the draft lifts 2px ... they become ledger entries citing S1/S4 when the product surface is solved'. The setting reaches the element and holds Bean's value.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/buybox/style.css::.sgs-buybox__add-to-cart:hover declares `transform: var(--wp--custom--button-presets--default--hover-transform, translateY(-2px))`",
+   "sites/eye-care-ward-end/theme-snapshot.json settings.custom.buttonPresets.default.hover-transform = 'matrix(1, 0, 0, 1, 0, -3)' - the live value exactly",
+   "sweep cr-ref-product-4 transform (hover, .sgs-buybox__config-col > form > button) {draft:'matrix(1, 0, 0, 1, 0, -2)', live:'matrix(1, 0, 0, 1, 0, -3)'}",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md S1 and N36C ('New add-to-bag hover ground setting, set to white; lift per S1')"
+  ],
+  "precedent": {
+   "block": "sgs/buybox",
+   "setting": "buttonPresets.default.hover-transform",
+   "helper": "theme-snapshot.json client token (Spec 33)",
+   "note": "no framework change; the register already names this row as a future ledger entry"
+  },
+  "fixShape": "no framework change - add the divergences.json entry citing S1 (expected matrix(1, 0, 0, 1, 0, -3)) now that the value is measured",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M5-motion",
+  "combo": "sgs/buybox|.sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el|transform",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+  "property": "transform",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Draft matrix(1.04, 0, 0, 1.04, 0, 0) = a 1.04 image zoom on hover, live 'none'. The only framework path to a media-child hover zoom is SGS_Container_Wrapper's hover-spill-scale branch, gated on the container's own hover-zoom opt-in and painting var(--sgs-hover-scale, 1.05); sgs/buybox has no hover-scale, image-zoom or hover-extension attribute at all, so the gallery image cannot be made to zoom.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,css_element,css_state FROM block_attributes WHERE block_slug='sgs/buybox' AND css_property LIKE '%transform%' AND css_property NOT LIKE '%text-transform%' -> 0 rows",
+   "db: SELECT block_slug FROM block_attributes WHERE attr_name='sgsHoverDuration' AND block_slug='sgs/buybox' -> 0 rows (buybox does not enable the hover extension)",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper emits `'.' . $uid . ' .sgs-media-el{transition-property:transform;transition-duration:0.35s;...}'` plus the :hover scale only when `$hover_spill_scale` is on",
+   "sweep cr-ref-product-4 transform (hover, .sgs-media-el) {draft:'matrix(1.04, 0, 0, 1.04, 0, 0)', live:'none'}"
+  ],
+  "precedent": {
+   "block": "sgs/card-grid",
+   "setting": "imageZoomHover",
+   "helper": "css-gate role, css_property=transform, css_element=image, css_state=hover (the same control on sgs/gallery, sgs/post-grid, sgs/team-member)",
+   "note": "a per-element image zoom-on-hover control is built on four blocks; buybox's gallery never got it"
+  },
+  "fixShape": "give sgs/buybox the shared imageZoomHover css-gate (plus its zoom factor) on the gallery element",
+  "confidence": "high"
+ }
+]

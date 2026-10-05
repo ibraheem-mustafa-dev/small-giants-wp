@@ -1,0 +1,2313 @@
+[
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/mega-group||padding-top",
+  "block": "sgs/mega-group",
+  "path": "",
+  "property": "padding-top",
+  "rows": 4,
+  "surfaces": [
+   "mega-lenses"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM1-no-box-family-declared",
+  "proof": "sgs/mega-group declares no box family and holds no spacing attribute at all (block.json::supports.sgs has only `enabledExtensions` and `elements`; the DB spacing query returns 0 rows over its 34 attributes), and the only padding any rule gives `.sgs-mega-group` is the hardcoded `padding: 17px` in mega-panel/style.css, which the live cards style is not applying (measured live 0px against the draft's 26px/24px). The enclosing sgs/mega-panel's padding settings reach its own wrapper, its eyebrow and its drawer card, never a group.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/mega-group' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/mega-group/block.json::supports.sgs -> {enabledExtensions, elements}; no boxFamilies key",
+   "plugins/sgs-blocks/src/blocks/mega-panel/style.css::.wp-block-sgs-mega-panel[data-mega-style='cards'] .sgs-mega-group declares `padding: 17px` (hardcoded, no custom property)",
+   "db: sgs/mega-panel padding attrs -> panelPadding (css_element wrapper), brandsEyebrowPadding (eyebrow), drawerCardPadding (drawerCard); none is a group",
+   "solve/mega-lenses pairs lenses-card-light and lenses-card-single: draft padding 26px/24px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/mega-panel",
+   "setting": "drawerCardPadding",
+   "helper": "box control on a non-wrapper css_element (role layout, css_property padding)",
+   "note": "the same parent-styles-an-inner-card shape already exists on the sibling block; a groupPadding box family on mega-panel (or padding on mega-group) copies it"
+  },
+  "fixShape": "Add a `padding` box family to sgs/mega-group (supports.sgs.boxFamilies.padding) or a `groupPadding` box control on sgs/mega-panel targeting css_element `group`, and replace mega-panel/style.css's hardcoded `padding:17px` with the emitted custom property.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/mega-group||padding-right",
+  "block": "sgs/mega-group",
+  "path": "",
+  "property": "padding-right",
+  "rows": 4,
+  "surfaces": [
+   "mega-lenses"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM1-no-box-family-declared",
+  "proof": "sgs/mega-group declares no box family and holds no spacing attribute at all (block.json::supports.sgs has only `enabledExtensions` and `elements`; the DB spacing query returns 0 rows over its 34 attributes), and the only padding any rule gives `.sgs-mega-group` is the hardcoded `padding: 17px` in mega-panel/style.css, which the live cards style is not applying (measured live 0px against the draft's 26px/24px). The enclosing sgs/mega-panel's padding settings reach its own wrapper, its eyebrow and its drawer card, never a group.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/mega-group' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/mega-group/block.json::supports.sgs -> {enabledExtensions, elements}; no boxFamilies key",
+   "plugins/sgs-blocks/src/blocks/mega-panel/style.css::.wp-block-sgs-mega-panel[data-mega-style='cards'] .sgs-mega-group declares `padding: 17px` (hardcoded, no custom property)",
+   "db: sgs/mega-panel padding attrs -> panelPadding (css_element wrapper), brandsEyebrowPadding (eyebrow), drawerCardPadding (drawerCard); none is a group",
+   "solve/mega-lenses pairs lenses-card-light and lenses-card-single: draft padding 26px/24px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/mega-panel",
+   "setting": "drawerCardPadding",
+   "helper": "box control on a non-wrapper css_element (role layout, css_property padding)",
+   "note": "the same parent-styles-an-inner-card shape already exists on the sibling block; a groupPadding box family on mega-panel (or padding on mega-group) copies it"
+  },
+  "fixShape": "Add a `padding` box family to sgs/mega-group (supports.sgs.boxFamilies.padding) or a `groupPadding` box control on sgs/mega-panel targeting css_element `group`, and replace mega-panel/style.css's hardcoded `padding:17px` with the emitted custom property.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/mega-group||padding-bottom",
+  "block": "sgs/mega-group",
+  "path": "",
+  "property": "padding-bottom",
+  "rows": 4,
+  "surfaces": [
+   "mega-lenses"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM1-no-box-family-declared",
+  "proof": "sgs/mega-group declares no box family and holds no spacing attribute at all (block.json::supports.sgs has only `enabledExtensions` and `elements`; the DB spacing query returns 0 rows over its 34 attributes), and the only padding any rule gives `.sgs-mega-group` is the hardcoded `padding: 17px` in mega-panel/style.css, which the live cards style is not applying (measured live 0px against the draft's 26px/24px). The enclosing sgs/mega-panel's padding settings reach its own wrapper, its eyebrow and its drawer card, never a group.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/mega-group' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/mega-group/block.json::supports.sgs -> {enabledExtensions, elements}; no boxFamilies key",
+   "plugins/sgs-blocks/src/blocks/mega-panel/style.css::.wp-block-sgs-mega-panel[data-mega-style='cards'] .sgs-mega-group declares `padding: 17px` (hardcoded, no custom property)",
+   "db: sgs/mega-panel padding attrs -> panelPadding (css_element wrapper), brandsEyebrowPadding (eyebrow), drawerCardPadding (drawerCard); none is a group",
+   "solve/mega-lenses pairs lenses-card-light and lenses-card-single: draft padding 26px/24px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/mega-panel",
+   "setting": "drawerCardPadding",
+   "helper": "box control on a non-wrapper css_element (role layout, css_property padding)",
+   "note": "the same parent-styles-an-inner-card shape already exists on the sibling block; a groupPadding box family on mega-panel (or padding on mega-group) copies it"
+  },
+  "fixShape": "Add a `padding` box family to sgs/mega-group (supports.sgs.boxFamilies.padding) or a `groupPadding` box control on sgs/mega-panel targeting css_element `group`, and replace mega-panel/style.css's hardcoded `padding:17px` with the emitted custom property.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/mega-group||padding-left",
+  "block": "sgs/mega-group",
+  "path": "",
+  "property": "padding-left",
+  "rows": 4,
+  "surfaces": [
+   "mega-lenses"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM1-no-box-family-declared",
+  "proof": "sgs/mega-group declares no box family and holds no spacing attribute at all (block.json::supports.sgs has only `enabledExtensions` and `elements`; the DB spacing query returns 0 rows over its 34 attributes), and the only padding any rule gives `.sgs-mega-group` is the hardcoded `padding: 17px` in mega-panel/style.css, which the live cards style is not applying (measured live 0px against the draft's 26px/24px). The enclosing sgs/mega-panel's padding settings reach its own wrapper, its eyebrow and its drawer card, never a group.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/mega-group' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/mega-group/block.json::supports.sgs -> {enabledExtensions, elements}; no boxFamilies key",
+   "plugins/sgs-blocks/src/blocks/mega-panel/style.css::.wp-block-sgs-mega-panel[data-mega-style='cards'] .sgs-mega-group declares `padding: 17px` (hardcoded, no custom property)",
+   "db: sgs/mega-panel padding attrs -> panelPadding (css_element wrapper), brandsEyebrowPadding (eyebrow), drawerCardPadding (drawerCard); none is a group",
+   "solve/mega-lenses pairs lenses-card-light and lenses-card-single: draft padding 26px/24px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/mega-panel",
+   "setting": "drawerCardPadding",
+   "helper": "box control on a non-wrapper css_element (role layout, css_property padding)",
+   "note": "the same parent-styles-an-inner-card shape already exists on the sibling block; a groupPadding box family on mega-panel (or padding on mega-group) copies it"
+  },
+  "fixShape": "Add a `padding` box family to sgs/mega-group (supports.sgs.boxFamilies.padding) or a `groupPadding` box control on sgs/mega-panel targeting css_element `group`, and replace mega-panel/style.css's hardcoded `padding:17px` with the emitted custom property.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow-question|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|column-gap",
+  "block": "sgs/choice-flow-question",
+  "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
+  "property": "column-gap",
+  "rows": 3,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM1-no-box-family-declared",
+  "proof": "sgs/choice-flow-question has no spacing setting of any kind (block.json::supports.sgs is `hideExtensions` + `elements`, no boxFamilies; the DB spacing query returns 0 rows over its 26 attributes) and the live gap is hardcoded per layout class in its own stylesheet.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow-question' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/block.json::supports.sgs -> {hideExtensions, elements}; no boxFamilies key",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button declares `column-gap:10px` and `row-gap:5px`; ::.sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button declares `gap:16px`",
+   "solve/lens pair option-card: draft gap 0px vs live `5px 10px`"
+  ],
+  "precedent": {
+   "block": "sgs/google-reviews",
+   "setting": "cardGap",
+   "helper": "gap control on a non-wrapper css_element (role layout, css_property gap)",
+   "note": "a per-element gap control on a repeated card is already standard; the same shape fits the option button"
+  },
+  "fixShape": "Add an `optionGap` gap control on sgs/choice-flow-question (css_element option-button) and have style.css read its custom property instead of the per-layout literals.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow-question|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|gap",
+  "block": "sgs/choice-flow-question",
+  "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
+  "property": "gap",
+  "rows": 3,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM1-no-box-family-declared",
+  "proof": "sgs/choice-flow-question has no spacing setting of any kind (block.json::supports.sgs is `hideExtensions` + `elements`, no boxFamilies; the DB spacing query returns 0 rows over its 26 attributes) and the live gap is hardcoded per layout class in its own stylesheet.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow-question' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/block.json::supports.sgs -> {hideExtensions, elements}; no boxFamilies key",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button declares `column-gap:10px` and `row-gap:5px`; ::.sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button declares `gap:16px`",
+   "solve/lens pair option-card: draft gap 0px vs live `5px 10px`"
+  ],
+  "precedent": {
+   "block": "sgs/google-reviews",
+   "setting": "cardGap",
+   "helper": "gap control on a non-wrapper css_element (role layout, css_property gap)",
+   "note": "a per-element gap control on a repeated card is already standard; the same shape fits the option button"
+  },
+  "fixShape": "Add an `optionGap` gap control on sgs/choice-flow-question (css_element option-button) and have style.css read its custom property instead of the per-layout literals.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-info__link|padding-right",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-info__link",
+  "property": "padding-right",
+  "rows": 2,
+  "surfaces": [
+   "footer",
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "subMechanism": "SM7-decided-44px-tap-area",
+  "proof": "This is Bean's decided touch-target divergence, already in the ledger for the identical element and the identical eight properties: the link pads its tap area to 44px and cancels the padding with equal negative margins so the text paints where the draft's does. The ledger rows are node-scoped to `contact`/cr-ref-contact-9 but carry `expected:{rule:'touch-target'}`, a rule, and the footer and header rows are the same mechanism on the same element.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-17..D-20 (padding-top/right/bottom/left) and D-21..D-24 (margin-top/right/bottom/left), node cr-ref-contact-9, expected {rule:'touch-target'}, decided 2026-10-04 Bean",
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-32/D-33 reason: 'the phone link's box is its 44px tap area ... (layout-neutral since the business-info link fix)'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-info__link declares `min-width:44px;min-height:44px;padding:0.5em 0.6em;margin:-0.5em -0.6em` plus `margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2)`",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md rows 34,35: 'Phone link: no minimum height, no padding, so it is one 21px line. The 44px touch-target rule is met by the line spacing around it'",
+   "solve/footer pair link-phone: draft padding 0px vs live 7px/8.4px with margin -11.5px/-8.4px (the negative margin equals the padding); solve/header pair header-phone: draft padding 10px vs live 7.5px"
+  ],
+  "precedent": {
+   "block": "sgs/business-info",
+   "setting": "padding",
+   "helper": "supports.sgs.boxFamilies.padding (wrapper)",
+   "note": "the wrapper box control exists; the link-level padding is the decided WCAG 2.5.5 hit-area technique, not a missing control"
+  },
+  "fixShape": "No control needed. Extend divergences.json D-17..D-24 from node cr-ref-contact-9 to the footer (cr-ref-footer-24) and header business-info nodes so the sweep stops re-reporting a decided rule.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-info__link|padding-left",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-info__link",
+  "property": "padding-left",
+  "rows": 2,
+  "surfaces": [
+   "footer",
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "subMechanism": "SM7-decided-44px-tap-area",
+  "proof": "This is Bean's decided touch-target divergence, already in the ledger for the identical element and the identical eight properties: the link pads its tap area to 44px and cancels the padding with equal negative margins so the text paints where the draft's does. The ledger rows are node-scoped to `contact`/cr-ref-contact-9 but carry `expected:{rule:'touch-target'}`, a rule, and the footer and header rows are the same mechanism on the same element.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-17..D-20 (padding-top/right/bottom/left) and D-21..D-24 (margin-top/right/bottom/left), node cr-ref-contact-9, expected {rule:'touch-target'}, decided 2026-10-04 Bean",
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-32/D-33 reason: 'the phone link's box is its 44px tap area ... (layout-neutral since the business-info link fix)'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-info__link declares `min-width:44px;min-height:44px;padding:0.5em 0.6em;margin:-0.5em -0.6em` plus `margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2)`",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md rows 34,35: 'Phone link: no minimum height, no padding, so it is one 21px line. The 44px touch-target rule is met by the line spacing around it'",
+   "solve/footer pair link-phone: draft padding 0px vs live 7px/8.4px with margin -11.5px/-8.4px (the negative margin equals the padding); solve/header pair header-phone: draft padding 10px vs live 7.5px"
+  ],
+  "precedent": {
+   "block": "sgs/business-info",
+   "setting": "padding",
+   "helper": "supports.sgs.boxFamilies.padding (wrapper)",
+   "note": "the wrapper box control exists; the link-level padding is the decided WCAG 2.5.5 hit-area technique, not a missing control"
+  },
+  "fixShape": "No control needed. Extend divergences.json D-17..D-24 from node cr-ref-contact-9 to the footer (cr-ref-footer-24) and header business-info nodes so the sweep stops re-reporting a decided rule.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-info__link|margin-top",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-info__link",
+  "property": "margin-top",
+  "rows": 2,
+  "surfaces": [
+   "footer",
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "subMechanism": "SM7-decided-44px-tap-area",
+  "proof": "This is Bean's decided touch-target divergence, already in the ledger for the identical element and the identical eight properties: the link pads its tap area to 44px and cancels the padding with equal negative margins so the text paints where the draft's does. The ledger rows are node-scoped to `contact`/cr-ref-contact-9 but carry `expected:{rule:'touch-target'}`, a rule, and the footer and header rows are the same mechanism on the same element.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-17..D-20 (padding-top/right/bottom/left) and D-21..D-24 (margin-top/right/bottom/left), node cr-ref-contact-9, expected {rule:'touch-target'}, decided 2026-10-04 Bean",
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-32/D-33 reason: 'the phone link's box is its 44px tap area ... (layout-neutral since the business-info link fix)'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-info__link declares `min-width:44px;min-height:44px;padding:0.5em 0.6em;margin:-0.5em -0.6em` plus `margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2)`",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md rows 34,35: 'Phone link: no minimum height, no padding, so it is one 21px line. The 44px touch-target rule is met by the line spacing around it'",
+   "solve/footer pair link-phone: draft padding 0px vs live 7px/8.4px with margin -11.5px/-8.4px (the negative margin equals the padding); solve/header pair header-phone: draft padding 10px vs live 7.5px"
+  ],
+  "precedent": {
+   "block": "sgs/business-info",
+   "setting": "padding",
+   "helper": "supports.sgs.boxFamilies.padding (wrapper)",
+   "note": "the wrapper box control exists; the link-level padding is the decided WCAG 2.5.5 hit-area technique, not a missing control"
+  },
+  "fixShape": "No control needed. Extend divergences.json D-17..D-24 from node cr-ref-contact-9 to the footer (cr-ref-footer-24) and header business-info nodes so the sweep stops re-reporting a decided rule.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-info__link|margin-right",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-info__link",
+  "property": "margin-right",
+  "rows": 2,
+  "surfaces": [
+   "footer",
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "subMechanism": "SM7-decided-44px-tap-area",
+  "proof": "This is Bean's decided touch-target divergence, already in the ledger for the identical element and the identical eight properties: the link pads its tap area to 44px and cancels the padding with equal negative margins so the text paints where the draft's does. The ledger rows are node-scoped to `contact`/cr-ref-contact-9 but carry `expected:{rule:'touch-target'}`, a rule, and the footer and header rows are the same mechanism on the same element.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-17..D-20 (padding-top/right/bottom/left) and D-21..D-24 (margin-top/right/bottom/left), node cr-ref-contact-9, expected {rule:'touch-target'}, decided 2026-10-04 Bean",
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-32/D-33 reason: 'the phone link's box is its 44px tap area ... (layout-neutral since the business-info link fix)'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-info__link declares `min-width:44px;min-height:44px;padding:0.5em 0.6em;margin:-0.5em -0.6em` plus `margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2)`",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md rows 34,35: 'Phone link: no minimum height, no padding, so it is one 21px line. The 44px touch-target rule is met by the line spacing around it'",
+   "solve/footer pair link-phone: draft padding 0px vs live 7px/8.4px with margin -11.5px/-8.4px (the negative margin equals the padding); solve/header pair header-phone: draft padding 10px vs live 7.5px"
+  ],
+  "precedent": {
+   "block": "sgs/business-info",
+   "setting": "padding",
+   "helper": "supports.sgs.boxFamilies.padding (wrapper)",
+   "note": "the wrapper box control exists; the link-level padding is the decided WCAG 2.5.5 hit-area technique, not a missing control"
+  },
+  "fixShape": "No control needed. Extend divergences.json D-17..D-24 from node cr-ref-contact-9 to the footer (cr-ref-footer-24) and header business-info nodes so the sweep stops re-reporting a decided rule.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-info__link|margin-bottom",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-info__link",
+  "property": "margin-bottom",
+  "rows": 2,
+  "surfaces": [
+   "footer",
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "subMechanism": "SM7-decided-44px-tap-area",
+  "proof": "This is Bean's decided touch-target divergence, already in the ledger for the identical element and the identical eight properties: the link pads its tap area to 44px and cancels the padding with equal negative margins so the text paints where the draft's does. The ledger rows are node-scoped to `contact`/cr-ref-contact-9 but carry `expected:{rule:'touch-target'}`, a rule, and the footer and header rows are the same mechanism on the same element.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-17..D-20 (padding-top/right/bottom/left) and D-21..D-24 (margin-top/right/bottom/left), node cr-ref-contact-9, expected {rule:'touch-target'}, decided 2026-10-04 Bean",
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-32/D-33 reason: 'the phone link's box is its 44px tap area ... (layout-neutral since the business-info link fix)'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-info__link declares `min-width:44px;min-height:44px;padding:0.5em 0.6em;margin:-0.5em -0.6em` plus `margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2)`",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md rows 34,35: 'Phone link: no minimum height, no padding, so it is one 21px line. The 44px touch-target rule is met by the line spacing around it'",
+   "solve/footer pair link-phone: draft padding 0px vs live 7px/8.4px with margin -11.5px/-8.4px (the negative margin equals the padding); solve/header pair header-phone: draft padding 10px vs live 7.5px"
+  ],
+  "precedent": {
+   "block": "sgs/business-info",
+   "setting": "padding",
+   "helper": "supports.sgs.boxFamilies.padding (wrapper)",
+   "note": "the wrapper box control exists; the link-level padding is the decided WCAG 2.5.5 hit-area technique, not a missing control"
+  },
+  "fixShape": "No control needed. Extend divergences.json D-17..D-24 from node cr-ref-contact-9 to the footer (cr-ref-footer-24) and header business-info nodes so the sweep stops re-reporting a decided rule.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-info__link|margin-left",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-info__link",
+  "property": "margin-left",
+  "rows": 2,
+  "surfaces": [
+   "footer",
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "subMechanism": "SM7-decided-44px-tap-area",
+  "proof": "This is Bean's decided touch-target divergence, already in the ledger for the identical element and the identical eight properties: the link pads its tap area to 44px and cancels the padding with equal negative margins so the text paints where the draft's does. The ledger rows are node-scoped to `contact`/cr-ref-contact-9 but carry `expected:{rule:'touch-target'}`, a rule, and the footer and header rows are the same mechanism on the same element.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-17..D-20 (padding-top/right/bottom/left) and D-21..D-24 (margin-top/right/bottom/left), node cr-ref-contact-9, expected {rule:'touch-target'}, decided 2026-10-04 Bean",
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-32/D-33 reason: 'the phone link's box is its 44px tap area ... (layout-neutral since the business-info link fix)'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-info__link declares `min-width:44px;min-height:44px;padding:0.5em 0.6em;margin:-0.5em -0.6em` plus `margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2)`",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md rows 34,35: 'Phone link: no minimum height, no padding, so it is one 21px line. The 44px touch-target rule is met by the line spacing around it'",
+   "solve/footer pair link-phone: draft padding 0px vs live 7px/8.4px with margin -11.5px/-8.4px (the negative margin equals the padding); solve/header pair header-phone: draft padding 10px vs live 7.5px"
+  ],
+  "precedent": {
+   "block": "sgs/business-info",
+   "setting": "padding",
+   "helper": "supports.sgs.boxFamilies.padding (wrapper)",
+   "note": "the wrapper box control exists; the link-level padding is the decided WCAG 2.5.5 hit-area technique, not a missing control"
+  },
+  "fixShape": "No control needed. Extend divergences.json D-17..D-24 from node cr-ref-contact-9 to the footer (cr-ref-footer-24) and header business-info nodes so the sweep stops re-reporting a decided rule.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header|column-gap",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header",
+  "property": "column-gap",
+  "rows": 2,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The header's gap is the literal `gap:12px` in accordion/style.css and neither the item nor its parent exposes a gap for it: sgs/accordion-item has no gap attribute at all, and sgs/accordion's only gap is css_element `inner` (the item-to-item gap). Unlike headerPadding/contentPadding there is no `--sgs-accordion-header-gap` custom property to write.",
+  "citations": [
+   "db: SELECT attr_name FROM block_attributes WHERE block_slug='sgs/accordion-item' AND css_property LIKE '%gap%' -> 0 rows",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND css_property LIKE '%gap%' -> 1 row: gap | gap | inner",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item__header declares `gap:12px`",
+   "solve/help pairs faq-question-1 and faq-question-2: draft 20px vs live 12px"
+  ],
+  "precedent": {
+   "block": "sgs/google-reviews",
+   "setting": "headerGap",
+   "helper": "gap control on css_element header (role layout, css_property gap)",
+   "note": "the identical control on the identically named element already exists on another block"
+  },
+  "fixShape": "Add `headerGap` to sgs/accordion (css_element header), emit it as `--sgs-accordion-header-gap` beside the existing header-padding tiers in accordion-item/render.php, and have style.css read it.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header|row-gap",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header",
+  "property": "row-gap",
+  "rows": 2,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The header's gap is the literal `gap:12px` in accordion/style.css and neither the item nor its parent exposes a gap for it: sgs/accordion-item has no gap attribute at all, and sgs/accordion's only gap is css_element `inner` (the item-to-item gap). Unlike headerPadding/contentPadding there is no `--sgs-accordion-header-gap` custom property to write.",
+  "citations": [
+   "db: SELECT attr_name FROM block_attributes WHERE block_slug='sgs/accordion-item' AND css_property LIKE '%gap%' -> 0 rows",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND css_property LIKE '%gap%' -> 1 row: gap | gap | inner",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item__header declares `gap:12px`",
+   "solve/help pairs faq-question-1 and faq-question-2: draft 20px vs live 12px"
+  ],
+  "precedent": {
+   "block": "sgs/google-reviews",
+   "setting": "headerGap",
+   "helper": "gap control on css_element header (role layout, css_property gap)",
+   "note": "the identical control on the identically named element already exists on another block"
+  },
+  "fixShape": "Add `headerGap` to sgs/accordion (css_element header), emit it as `--sgs-accordion-header-gap` beside the existing header-padding tiers in accordion-item/render.php, and have style.css read it.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header|gap",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header",
+  "property": "gap",
+  "rows": 2,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The header's gap is the literal `gap:12px` in accordion/style.css and neither the item nor its parent exposes a gap for it: sgs/accordion-item has no gap attribute at all, and sgs/accordion's only gap is css_element `inner` (the item-to-item gap). Unlike headerPadding/contentPadding there is no `--sgs-accordion-header-gap` custom property to write.",
+  "citations": [
+   "db: SELECT attr_name FROM block_attributes WHERE block_slug='sgs/accordion-item' AND css_property LIKE '%gap%' -> 0 rows",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND css_property LIKE '%gap%' -> 1 row: gap | gap | inner",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item__header declares `gap:12px`",
+   "solve/help pairs faq-question-1 and faq-question-2: draft 20px vs live 12px"
+  ],
+  "precedent": {
+   "block": "sgs/google-reviews",
+   "setting": "headerGap",
+   "helper": "gap control on css_element header (role layout, css_property gap)",
+   "note": "the identical control on the identically named element already exists on another block"
+  },
+  "fixShape": "Add `headerGap` to sgs/accordion (css_element header), emit it as `--sgs-accordion-header-gap` beside the existing header-padding tiers in accordion-item/render.php, and have style.css read it.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow-question|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|row-gap",
+  "block": "sgs/choice-flow-question",
+  "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
+  "property": "row-gap",
+  "rows": 2,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM1-no-box-family-declared",
+  "proof": "sgs/choice-flow-question has no spacing setting of any kind (block.json::supports.sgs is `hideExtensions` + `elements`, no boxFamilies; the DB spacing query returns 0 rows over its 26 attributes) and the live gap is hardcoded per layout class in its own stylesheet.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow-question' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/block.json::supports.sgs -> {hideExtensions, elements}; no boxFamilies key",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button declares `column-gap:10px` and `row-gap:5px`; ::.sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button declares `gap:16px`",
+   "solve/lens pair option-card: draft gap 0px vs live `5px 10px`"
+  ],
+  "precedent": {
+   "block": "sgs/google-reviews",
+   "setting": "cardGap",
+   "helper": "gap control on a non-wrapper css_element (role layout, css_property gap)",
+   "note": "a per-element gap control on a repeated card is already standard; the same shape fits the option button"
+  },
+  "fixShape": "Add an `optionGap` gap control on sgs/choice-flow-question (css_element option-button) and have style.css read its custom property instead of the per-layout literals.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow-question|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|margin-top",
+  "block": "sgs/choice-flow-question",
+  "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
+  "property": "margin-top",
+  "rows": 2,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM4-hardcoded-bleed-margin",
+  "proof": "The option media's negative bleed margin is a literal in the block's own stylesheet and sgs/choice-flow-question exposes no margin setting at all (DB spacing query 0 rows; no boxFamilies in block.json).",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow-question' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media declares `margin:-16px -18px 11px`",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow-question__option-media declares `margin-bottom:12px`",
+   "solve/lens pair option-band: draft margin 0px vs live -16px/-18px/11px/-18px"
+  ],
+  "precedent": {
+   "block": "sgs/mega-panel",
+   "setting": "drawerCardTagMargin",
+   "helper": "margin control on a non-wrapper css_element (role layout, css_property margin)",
+   "note": "a per-element margin control, negative values included, already exists on a sibling block"
+  },
+  "fixShape": "Add an `optionMediaMargin` margin control (css_element option-media) and emit it as the custom property the showcase bleed rule reads.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow-question|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|margin-right",
+  "block": "sgs/choice-flow-question",
+  "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
+  "property": "margin-right",
+  "rows": 2,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM4-hardcoded-bleed-margin",
+  "proof": "The option media's negative bleed margin is a literal in the block's own stylesheet and sgs/choice-flow-question exposes no margin setting at all (DB spacing query 0 rows; no boxFamilies in block.json).",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow-question' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media declares `margin:-16px -18px 11px`",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow-question__option-media declares `margin-bottom:12px`",
+   "solve/lens pair option-band: draft margin 0px vs live -16px/-18px/11px/-18px"
+  ],
+  "precedent": {
+   "block": "sgs/mega-panel",
+   "setting": "drawerCardTagMargin",
+   "helper": "margin control on a non-wrapper css_element (role layout, css_property margin)",
+   "note": "a per-element margin control, negative values included, already exists on a sibling block"
+  },
+  "fixShape": "Add an `optionMediaMargin` margin control (css_element option-media) and emit it as the custom property the showcase bleed rule reads.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow-question|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|margin-bottom",
+  "block": "sgs/choice-flow-question",
+  "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
+  "property": "margin-bottom",
+  "rows": 2,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM4-hardcoded-bleed-margin",
+  "proof": "The option media's negative bleed margin is a literal in the block's own stylesheet and sgs/choice-flow-question exposes no margin setting at all (DB spacing query 0 rows; no boxFamilies in block.json).",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow-question' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media declares `margin:-16px -18px 11px`",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow-question__option-media declares `margin-bottom:12px`",
+   "solve/lens pair option-band: draft margin 0px vs live -16px/-18px/11px/-18px"
+  ],
+  "precedent": {
+   "block": "sgs/mega-panel",
+   "setting": "drawerCardTagMargin",
+   "helper": "margin control on a non-wrapper css_element (role layout, css_property margin)",
+   "note": "a per-element margin control, negative values included, already exists on a sibling block"
+  },
+  "fixShape": "Add an `optionMediaMargin` margin control (css_element option-media) and emit it as the custom property the showcase bleed rule reads.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow-question|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|margin-left",
+  "block": "sgs/choice-flow-question",
+  "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
+  "property": "margin-left",
+  "rows": 2,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM4-hardcoded-bleed-margin",
+  "proof": "The option media's negative bleed margin is a literal in the block's own stylesheet and sgs/choice-flow-question exposes no margin setting at all (DB spacing query 0 rows; no boxFamilies in block.json).",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow-question' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media declares `margin:-16px -18px 11px`",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow-question__option-media declares `margin-bottom:12px`",
+   "solve/lens pair option-band: draft margin 0px vs live -16px/-18px/11px/-18px"
+  ],
+  "precedent": {
+   "block": "sgs/mega-panel",
+   "setting": "drawerCardTagMargin",
+   "helper": "margin control on a non-wrapper css_element (role layout, css_property margin)",
+   "note": "a per-element margin control, negative values included, already exists on a sibling block"
+  },
+  "fixShape": "Add an `optionMediaMargin` margin control (css_element option-media) and emit it as the custom property the showcase bleed rule reads.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/form-field-textarea|.sgs-form-field__input|margin-top",
+  "block": "sgs/form-field-textarea",
+  "path": ".sgs-form-field__input",
+  "property": "margin-top",
+  "rows": 1,
+  "surfaces": [
+   "contact-form"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM9-no-label-to-input-gap-control",
+  "proof": "The draft's 10px is the label-to-input gap, carried on the input's own margin-top, and no setting holds it. sgs/form-field-textarea has no styling attribute at all (24 attributes, all content, behaviour or extension; 0 spacing rows), and the parent sgs/form styles the field via `fieldPadding` (css_element field-input) and spaces fields via `gap` (css_element inner) - neither is a label-to-input gap.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/form-field-textarea' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/form-field-textarea/block.json::supports.sgs -> {hideExtensions, elements}; no boxFamilies key",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/form' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%') -> gap | gap | NULL | inner; padding | padding | padding | wrapper; margin | margin | margin | wrapper; submitPadding | padding | submitPadding | submit-button; fieldPadding | padding | fieldPadding | field-input (0 margin rows on field-input)",
+   "solve/contact-form pair field-message: draft margin-top 10px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "fieldPadding",
+   "helper": "supports.sgs.boxFamilies.fieldPadding (css_element field-input) - the Field style group that styles every child field from the parent",
+   "note": "the parent-styles-children channel already exists and already reaches this exact element for padding; a label gap is one more key in the same group"
+  },
+  "fixShape": "Add `fieldLabelGap` to sgs/form's Field style group (css_element field-label, or margin-block-start on field-input) so the label-to-input distance is settable alongside fieldPadding.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|padding-top",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "padding-top",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|padding-right",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "padding-right",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|padding-bottom",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|padding-left",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "padding-left",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|padding-top",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "padding-top",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|padding-right",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "padding-right",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|padding-bottom",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|padding-left",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "padding-left",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|padding-top",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "padding-top",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|padding-right",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "padding-right",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|padding-bottom",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|padding-left",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "padding-left",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The padding on each icon box is a literal `padding:8px` repeated in four style-variant rules, and sgs/social-icons' padding box family reaches only the wrapper: no attribute of the block has css_property padding on an item element. The 44px target floor comes from separate `min-width`/`min-height` declarations, so a settable item padding would not weaken it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%padding%' -> 1 row: padding | padding | padding | wrapper (0 rows for any item element)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons--filled .sgs-social-icons__item, ::--outlined, ::--boxed and ::--pill each declare `padding:8px` with no custom property; ::.is-style-social-icons-footer .sgs-social-icons__item declares `padding:0`",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php emits only `{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}` for the item - size, never padding",
+   "solve/footer pairs social-instagram, social-whatsapp and social-google: draft padding 0px vs live 8px"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "itemPaddingBlock",
+   "helper": "padding control on css_element item (role layout, css_property padding)",
+   "note": "the sibling list block already exposes per-item padding; sgs/nav-bar-menu::itemPadding is the same shape with a full box family"
+  },
+  "fixShape": "Add an `itemPadding` box family to sgs/social-icons (css_element item) and replace the four variant literals with its custom property; the separate min-width/min-height 44px floor keeps WCAG 2.5.8.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-info__link|padding-top",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-info__link",
+  "property": "padding-top",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "subMechanism": "SM7-decided-44px-tap-area",
+  "proof": "This is Bean's decided touch-target divergence, already in the ledger for the identical element and the identical eight properties: the link pads its tap area to 44px and cancels the padding with equal negative margins so the text paints where the draft's does. The ledger rows are node-scoped to `contact`/cr-ref-contact-9 but carry `expected:{rule:'touch-target'}`, a rule, and the footer and header rows are the same mechanism on the same element.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-17..D-20 (padding-top/right/bottom/left) and D-21..D-24 (margin-top/right/bottom/left), node cr-ref-contact-9, expected {rule:'touch-target'}, decided 2026-10-04 Bean",
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-32/D-33 reason: 'the phone link's box is its 44px tap area ... (layout-neutral since the business-info link fix)'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-info__link declares `min-width:44px;min-height:44px;padding:0.5em 0.6em;margin:-0.5em -0.6em` plus `margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2)`",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md rows 34,35: 'Phone link: no minimum height, no padding, so it is one 21px line. The 44px touch-target rule is met by the line spacing around it'",
+   "solve/footer pair link-phone: draft padding 0px vs live 7px/8.4px with margin -11.5px/-8.4px (the negative margin equals the padding); solve/header pair header-phone: draft padding 10px vs live 7.5px"
+  ],
+  "precedent": {
+   "block": "sgs/business-info",
+   "setting": "padding",
+   "helper": "supports.sgs.boxFamilies.padding (wrapper)",
+   "note": "the wrapper box control exists; the link-level padding is the decided WCAG 2.5.5 hit-area technique, not a missing control"
+  },
+  "fixShape": "No control needed. Extend divergences.json D-17..D-24 from node cr-ref-contact-9 to the footer (cr-ref-footer-24) and header business-info nodes so the sweep stops re-reporting a decided rule.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-info__link|padding-bottom",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-info__link",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "D",
+  "changed": true,
+  "subMechanism": "SM7-decided-44px-tap-area",
+  "proof": "This is Bean's decided touch-target divergence, already in the ledger for the identical element and the identical eight properties: the link pads its tap area to 44px and cancels the padding with equal negative margins so the text paints where the draft's does. The ledger rows are node-scoped to `contact`/cr-ref-contact-9 but carry `expected:{rule:'touch-target'}`, a rule, and the footer and header rows are the same mechanism on the same element.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-17..D-20 (padding-top/right/bottom/left) and D-21..D-24 (margin-top/right/bottom/left), node cr-ref-contact-9, expected {rule:'touch-target'}, decided 2026-10-04 Bean",
+   "sites/eye-care-ward-end/build/qa/divergences.json::D-32/D-33 reason: 'the phone link's box is its 44px tap area ... (layout-neutral since the business-info link fix)'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-info__link declares `min-width:44px;min-height:44px;padding:0.5em 0.6em;margin:-0.5em -0.6em` plus `margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2)`",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md rows 34,35: 'Phone link: no minimum height, no padding, so it is one 21px line. The 44px touch-target rule is met by the line spacing around it'",
+   "solve/footer pair link-phone: draft padding 0px vs live 7px/8.4px with margin -11.5px/-8.4px (the negative margin equals the padding); solve/header pair header-phone: draft padding 10px vs live 7.5px"
+  ],
+  "precedent": {
+   "block": "sgs/business-info",
+   "setting": "padding",
+   "helper": "supports.sgs.boxFamilies.padding (wrapper)",
+   "note": "the wrapper box control exists; the link-level padding is the decided WCAG 2.5.5 hit-area technique, not a missing control"
+  },
+  "fixShape": "No control needed. Extend divergences.json D-17..D-24 from node cr-ref-contact-9 to the footer (cr-ref-footer-24) and header business-info nodes so the sweep stops re-reporting a decided rule.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-hours__row|column-gap",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-hours__row",
+  "property": "column-gap",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The hours row's gap is the literal `gap:1em` in the block's own stylesheet; sgs/business-info's only gap setting is `iconGap`, which render.php emits onto `.sgs-business-info__icon`, never the hours row.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element,output_signature FROM block_attributes WHERE block_slug='sgs/business-info' AND css_property LIKE '%gap%' -> 1 row: iconGap | gap | wrapper | output_class 'sgs-business-info__icon'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-hours__row declares `display:flex; justify-content:space-between; gap:1em`; ::.sgs-business-hours--condensed-inline .sgs-business-hours__row declares `gap:0.35em`",
+   "solve/footer pair hours: draft gap 0px vs live 13px (= 1em at the footer's 13px font)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "chromeRowGap",
+   "helper": "gap control on a non-wrapper css_element (role layout, css_property gap)",
+   "note": "a named inner-row gap control is already standard; the hours row needs the same"
+  },
+  "fixShape": "Add an `hoursRowGap` gap control (css_element hours-row) and have style.css read its custom property instead of `1em`; the row is `justify-content:space-between`, so the painted effect only shows on narrow columns.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-hours__row|row-gap",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-hours__row",
+  "property": "row-gap",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The hours row's gap is the literal `gap:1em` in the block's own stylesheet; sgs/business-info's only gap setting is `iconGap`, which render.php emits onto `.sgs-business-info__icon`, never the hours row.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element,output_signature FROM block_attributes WHERE block_slug='sgs/business-info' AND css_property LIKE '%gap%' -> 1 row: iconGap | gap | wrapper | output_class 'sgs-business-info__icon'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-hours__row declares `display:flex; justify-content:space-between; gap:1em`; ::.sgs-business-hours--condensed-inline .sgs-business-hours__row declares `gap:0.35em`",
+   "solve/footer pair hours: draft gap 0px vs live 13px (= 1em at the footer's 13px font)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "chromeRowGap",
+   "helper": "gap control on a non-wrapper css_element (role layout, css_property gap)",
+   "note": "a named inner-row gap control is already standard; the hours row needs the same"
+  },
+  "fixShape": "Add an `hoursRowGap` gap control (css_element hours-row) and have style.css read its custom property instead of `1em`; the row is `justify-content:space-between`, so the painted effect only shows on narrow columns.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-hours__row|gap",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-hours__row",
+  "property": "gap",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The hours row's gap is the literal `gap:1em` in the block's own stylesheet; sgs/business-info's only gap setting is `iconGap`, which render.php emits onto `.sgs-business-info__icon`, never the hours row.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element,output_signature FROM block_attributes WHERE block_slug='sgs/business-info' AND css_property LIKE '%gap%' -> 1 row: iconGap | gap | wrapper | output_class 'sgs-business-info__icon'",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-hours__row declares `display:flex; justify-content:space-between; gap:1em`; ::.sgs-business-hours--condensed-inline .sgs-business-hours__row declares `gap:0.35em`",
+   "solve/footer pair hours: draft gap 0px vs live 13px (= 1em at the footer's 13px font)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "chromeRowGap",
+   "helper": "gap control on a non-wrapper css_element (role layout, css_property gap)",
+   "note": "a named inner-row gap control is already standard; the hours row needs the same"
+  },
+  "fixShape": "Add an `hoursRowGap` gap control (css_element hours-row) and have style.css read its custom property instead of `1em`; the row is `justify-content:space-between`, so the painted effect only shows on narrow columns.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/text||column-gap",
+  "block": "sgs/text",
+  "path": "",
+  "property": "column-gap",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM6-gap-row-with-no-painted-consequence",
+  "proof": "A pairing artefact: the draft element is a flex row (`display:flex`, gap 18px) while the live element is an sgs/text block computing `display:block`, where gap paints nothing, so no gap setting on sgs/text could ever show. The spacing the draft's gap creates between its children is, on the live side, the enclosing container's gap or the text block's own margin, both settings that exist.",
+  "citations": [
+   "solve/help pair gen-help-15 (w1440): draft {display: 'flex', gap: '18px'}, live {display: 'block', gap: '0px'}",
+   "plugins/sgs-blocks/src/blocks/text/style.css: no display:flex or display:grid rule on the text wrapper (only 'Ensure the element forms its own box so margin/padding attrs work as expected')",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/text' AND (css_property LIKE '%margin%' OR css_property LIKE '%padding%') -> margin | margin | margin | wrapper; padding | padding | padding | wrapper",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/container' AND css_property LIKE '%gap%' -> gap | gap | inner"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "gap",
+   "helper": "gap control on css_element inner",
+   "note": "sibling spacing on the live side is the container gap; sgs/text::margin covers the per-block case"
+  },
+  "fixShape": "Walker/pairing fix: do not raise a gap row when the live element cannot form a gap, and pair a draft flex row to the live container that holds the siblings rather than to a single text block.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/text||row-gap",
+  "block": "sgs/text",
+  "path": "",
+  "property": "row-gap",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM6-gap-row-with-no-painted-consequence",
+  "proof": "A pairing artefact: the draft element is a flex row (`display:flex`, gap 18px) while the live element is an sgs/text block computing `display:block`, where gap paints nothing, so no gap setting on sgs/text could ever show. The spacing the draft's gap creates between its children is, on the live side, the enclosing container's gap or the text block's own margin, both settings that exist.",
+  "citations": [
+   "solve/help pair gen-help-15 (w1440): draft {display: 'flex', gap: '18px'}, live {display: 'block', gap: '0px'}",
+   "plugins/sgs-blocks/src/blocks/text/style.css: no display:flex or display:grid rule on the text wrapper (only 'Ensure the element forms its own box so margin/padding attrs work as expected')",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/text' AND (css_property LIKE '%margin%' OR css_property LIKE '%padding%') -> margin | margin | margin | wrapper; padding | padding | padding | wrapper",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/container' AND css_property LIKE '%gap%' -> gap | gap | inner"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "gap",
+   "helper": "gap control on css_element inner",
+   "note": "sibling spacing on the live side is the container gap; sgs/text::margin covers the per-block case"
+  },
+  "fixShape": "Walker/pairing fix: do not raise a gap row when the live element cannot form a gap, and pair a draft flex row to the live container that holds the siblings rather than to a single text block.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/text||gap",
+  "block": "sgs/text",
+  "path": "",
+  "property": "gap",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM6-gap-row-with-no-painted-consequence",
+  "proof": "A pairing artefact: the draft element is a flex row (`display:flex`, gap 18px) while the live element is an sgs/text block computing `display:block`, where gap paints nothing, so no gap setting on sgs/text could ever show. The spacing the draft's gap creates between its children is, on the live side, the enclosing container's gap or the text block's own margin, both settings that exist.",
+  "citations": [
+   "solve/help pair gen-help-15 (w1440): draft {display: 'flex', gap: '18px'}, live {display: 'block', gap: '0px'}",
+   "plugins/sgs-blocks/src/blocks/text/style.css: no display:flex or display:grid rule on the text wrapper (only 'Ensure the element forms its own box so margin/padding attrs work as expected')",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/text' AND (css_property LIKE '%margin%' OR css_property LIKE '%padding%') -> margin | margin | margin | wrapper; padding | padding | padding | wrapper",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/container' AND css_property LIKE '%gap%' -> gap | gap | inner"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "gap",
+   "helper": "gap control on css_element inner",
+   "note": "sibling spacing on the live side is the container gap; sgs/text::margin covers the per-block case"
+  },
+  "fixShape": "Walker/pairing fix: do not raise a gap row when the live element cannot form a gap, and pair a draft flex row to the live container that holds the siblings rather than to a single text block.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/accordion-item||column-gap",
+  "block": "sgs/accordion-item",
+  "path": "",
+  "property": "column-gap",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM6-gap-row-with-no-painted-consequence",
+  "proof": "A measuring artefact: both sides compute `display:block`, and `gap` applies only to flex, grid and multi-column containers, so neither the draft's 20px nor the live's 0px paints anything. No gap control on any block could change this row, and the real item-to-item spacing is `sgs/accordion::gap` (css_element inner).",
+  "citations": [
+   "solve/help pair gen-help-17 (w1440): draft {display: 'block', gap: '20px'}, live {display: 'block', gap: '0px'} - gap is inert on a block container",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND css_property LIKE '%gap%' -> gap | gap | inner",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css: no display:flex or display:grid rule on `.sgs-accordion-item`"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "gap",
+   "helper": "gap control on css_element inner",
+   "note": "the item-to-item spacing this row looks like is already controllable"
+  },
+  "fixShape": "Walker fix: suppress gap/column-gap/row-gap rows when the measured element computes a display value that cannot form a gap (block, inline, inline-block, table-cell).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/accordion-item||row-gap",
+  "block": "sgs/accordion-item",
+  "path": "",
+  "property": "row-gap",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM6-gap-row-with-no-painted-consequence",
+  "proof": "A measuring artefact: both sides compute `display:block`, and `gap` applies only to flex, grid and multi-column containers, so neither the draft's 20px nor the live's 0px paints anything. No gap control on any block could change this row, and the real item-to-item spacing is `sgs/accordion::gap` (css_element inner).",
+  "citations": [
+   "solve/help pair gen-help-17 (w1440): draft {display: 'block', gap: '20px'}, live {display: 'block', gap: '0px'} - gap is inert on a block container",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND css_property LIKE '%gap%' -> gap | gap | inner",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css: no display:flex or display:grid rule on `.sgs-accordion-item`"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "gap",
+   "helper": "gap control on css_element inner",
+   "note": "the item-to-item spacing this row looks like is already controllable"
+  },
+  "fixShape": "Walker fix: suppress gap/column-gap/row-gap rows when the measured element computes a display value that cannot form a gap (block, inline, inline-block, table-cell).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/accordion-item||gap",
+  "block": "sgs/accordion-item",
+  "path": "",
+  "property": "gap",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM6-gap-row-with-no-painted-consequence",
+  "proof": "A measuring artefact: both sides compute `display:block`, and `gap` applies only to flex, grid and multi-column containers, so neither the draft's 20px nor the live's 0px paints anything. No gap control on any block could change this row, and the real item-to-item spacing is `sgs/accordion::gap` (css_element inner).",
+  "citations": [
+   "solve/help pair gen-help-17 (w1440): draft {display: 'block', gap: '20px'}, live {display: 'block', gap: '0px'} - gap is inert on a block container",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND css_property LIKE '%gap%' -> gap | gap | inner",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css: no display:flex or display:grid rule on `.sgs-accordion-item`"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "gap",
+   "helper": "gap control on css_element inner",
+   "note": "the item-to-item spacing this row looks like is already controllable"
+  },
+  "fixShape": "Walker fix: suppress gap/column-gap/row-gap rows when the measured element computes a display value that cannot form a gap (block, inline, inline-block, table-cell).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header|padding-top",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header",
+  "property": "padding-top",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM5-setting-lives-on-the-parent-and-arrives-by-context",
+  "proof": "The setting exists on the enclosing block: `sgs/accordion::headerPadding` (role layout, css_property padding, css_element header) travels to the item through block context and is emitted as `--sgs-accordion-header-pad`, which is exactly what paints this element's padding. The resolver searched only sgs/accordion-item's own 36 attributes, so it never saw it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND css_property LIKE '%padding%' -> headerPadding | padding | header; contentPadding | padding | answer; padding | padding | wrapper",
+   "plugins/sgs-blocks/src/blocks/accordion-item/render.php: `$header_padding_raw = $block->context['sgs/accordionHeaderPadding'] ?? array();` then `$responsive_css .= $sgs_ai_box_tiers( $header_padding_raw, '--sgs-accordion-header-pad' );`",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item sets `--sgs-accordion-header-pad-base: 16px 20px` and the header rule reads `padding: var(--sgs-accordion-header-pad, ...)`",
+   "solve/help pair faq-question-2: draft 20px vs live 14px/16px - a value the headerPadding control can hold"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "headerPadding",
+   "helper": "parent control delivered by block context plus a custom property",
+   "note": "this is the setting itself, not an analogue"
+  },
+  "fixShape": "Route fix, not a control: the resolver must follow a measured element to the ancestor block that provides its context setting (sgs/accordion::headerPadding) instead of searching only the block the walker attributed the element to.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header|padding-bottom",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM5-setting-lives-on-the-parent-and-arrives-by-context",
+  "proof": "The setting exists on the enclosing block: `sgs/accordion::headerPadding` (role layout, css_property padding, css_element header) travels to the item through block context and is emitted as `--sgs-accordion-header-pad`, which is exactly what paints this element's padding. The resolver searched only sgs/accordion-item's own 36 attributes, so it never saw it.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND css_property LIKE '%padding%' -> headerPadding | padding | header; contentPadding | padding | answer; padding | padding | wrapper",
+   "plugins/sgs-blocks/src/blocks/accordion-item/render.php: `$header_padding_raw = $block->context['sgs/accordionHeaderPadding'] ?? array();` then `$responsive_css .= $sgs_ai_box_tiers( $header_padding_raw, '--sgs-accordion-header-pad' );`",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item sets `--sgs-accordion-header-pad-base: 16px 20px` and the header rule reads `padding: var(--sgs-accordion-header-pad, ...)`",
+   "solve/help pair faq-question-2: draft 20px vs live 14px/16px - a value the headerPadding control can hold"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "headerPadding",
+   "helper": "parent control delivered by block context plus a custom property",
+   "note": "this is the setting itself, not an analogue"
+  },
+  "fixShape": "Route fix, not a control: the resolver must follow a measured element to the ancestor block that provides its context setting (sgs/accordion::headerPadding) instead of searching only the block the walker attributed the element to.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__content|padding-bottom",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__content",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM5-setting-lives-on-the-parent-and-arrives-by-context",
+  "proof": "`sgs/accordion::contentPadding` (role layout, padding, css_element answer) reaches this element through block context as `--sgs-accordion-content-pad`; the resolver searched only sgs/accordion-item.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND attr_name='contentPadding' -> contentPadding | padding | answer",
+   "plugins/sgs-blocks/src/blocks/accordion-item/render.php: `$content_padding_raw = $block->context['sgs/accordionContentPadding'] ?? array();` then `$sgs_ai_box_tiers( $content_padding_raw, '--sgs-accordion-content-pad' )`",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item__content declares `padding: var(--sgs-accordion-content-pad, ...)`",
+   "solve/help pair faq-answer-2: draft 22px vs live 14px/16px"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "contentPadding",
+   "helper": "parent control delivered by block context plus a custom property",
+   "note": "this is the setting itself"
+  },
+  "fixShape": "Same route fix as the header padding: resolve context-provided parent settings for a measured child element.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|padding-top",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "padding-top",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM2b-setting-paints-a-neighbouring-element",
+  "proof": "The setting exists and paints the same inset one level up: `sgs/brand-strip::padding` is a real box family that render.php emits onto the block root through the core style engine, and `.sgs-brand-strip__track` is its only child, so block-root padding insets the track identically. The reach test failed only because the attribute's css_element is recorded as `strip-spacing` while the pair measured `.sgs-brand-strip__track`.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element,derived_selector FROM block_attributes WHERE block_slug='sgs/brand-strip' AND css_property LIKE '%padding%' -> padding | padding | padding | strip-spacing | .sgs-brand-strip__padding; tilePadding | padding | NULL | tile",
+   "plugins/sgs-blocks/src/blocks/brand-strip/render.php: `$base_spacing['padding'] = $base_padding_obj;` into `$base_style_engine_args['spacing']` against `$root_sel = '.' . $uid . '.wp-block-sgs-brand-strip'`",
+   "plugins/sgs-blocks/src/blocks/brand-strip/style.css::.sgs-brand-strip__track declares only `display:flex; align-items:center; gap:...` - no block padding of its own (the static-mode rule adds inline padding only)",
+   "solve/home pair brand-track: draft padding-top/bottom 26px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "padding",
+   "helper": "supports.sgs.boxFamilies.padding",
+   "note": "this is the setting itself, emitted one element up"
+  },
+  "fixShape": "Route fix: calibrate sgs/brand-strip::padding's css_element to the painted selector (the block root) so a track-level padding row resolves to it; the DB's derived_selector `.sgs-brand-strip__padding` is a naming artefact and should be corrected.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|padding-bottom",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM2b-setting-paints-a-neighbouring-element",
+  "proof": "The setting exists and paints the same inset one level up: `sgs/brand-strip::padding` is a real box family that render.php emits onto the block root through the core style engine, and `.sgs-brand-strip__track` is its only child, so block-root padding insets the track identically. The reach test failed only because the attribute's css_element is recorded as `strip-spacing` while the pair measured `.sgs-brand-strip__track`.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element,derived_selector FROM block_attributes WHERE block_slug='sgs/brand-strip' AND css_property LIKE '%padding%' -> padding | padding | padding | strip-spacing | .sgs-brand-strip__padding; tilePadding | padding | NULL | tile",
+   "plugins/sgs-blocks/src/blocks/brand-strip/render.php: `$base_spacing['padding'] = $base_padding_obj;` into `$base_style_engine_args['spacing']` against `$root_sel = '.' . $uid . '.wp-block-sgs-brand-strip'`",
+   "plugins/sgs-blocks/src/blocks/brand-strip/style.css::.sgs-brand-strip__track declares only `display:flex; align-items:center; gap:...` - no block padding of its own (the static-mode rule adds inline padding only)",
+   "solve/home pair brand-track: draft padding-top/bottom 26px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "padding",
+   "helper": "supports.sgs.boxFamilies.padding",
+   "note": "this is the setting itself, emitted one element up"
+  },
+  "fixShape": "Route fix: calibrate sgs/brand-strip::padding's css_element to the painted selector (the block root) so a track-level padding row resolves to it; the DB's derived_selector `.sgs-brand-strip__padding` is a naming artefact and should be corrected.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/card-grid|.sgs-card-grid__item:nth-of-type(2) > .sgs-card-grid__image-wrap > .sgs-card-grid__overlay > .sgs-card-grid__glyph|margin-bottom",
+  "block": "sgs/card-grid",
+  "path": ".sgs-card-grid__item:nth-of-type(2) > .sgs-card-grid__image-wrap > .sgs-card-grid__overlay > .sgs-card-grid__glyph",
+  "property": "margin-bottom",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM4-hardcoded-bleed-margin",
+  "proof": "The overlay glyph's bottom margin is a literal preset in the block's own stylesheet and no attribute paints margin on the glyph: the only margin attribute on sgs/card-grid is `titleMarginBottom`, css_element title.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/card-grid/style.css::.sgs-card-grid__overlay .sgs-card-grid__glyph declares `margin-bottom:var(--wp--preset--spacing--10, 10px)`",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/card-grid' AND css_property LIKE '%margin%' -> titleMarginBottom | margin | title (0 rows for a glyph element)",
+   "solve/home pair shapetile-wayfarer-glyph: draft margin-bottom 0px vs live 4px"
+  ],
+  "precedent": {
+   "block": "sgs/card-grid",
+   "setting": "titleMarginBottom",
+   "helper": "single-side margin control on a non-wrapper css_element",
+   "note": "the same control shape on a sibling element of the same block"
+  },
+  "fixShape": "Add `glyphMarginBottom` (css_element glyph) alongside titleMarginBottom and have the overlay rule read its custom property.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/process-steps|.sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title|gap",
+  "block": "sgs/process-steps",
+  "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title",
+  "property": "gap",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM6-gap-row-with-no-painted-consequence",
+  "proof": "A pairing artefact: the draft's step title is a flex row with a 16px gap while the live title computes `display:block`, where gap paints nothing. The gap the draft puts on its title is, on the live side, the number-to-content gap, which is a setting that exists: `sgs/process-steps::numberGap` (gap, css_element step).",
+  "citations": [
+   "solve/home pair about-step-1 (w1440): draft {display: 'flex', gap: '16px'}, live {display: 'block', gap: '0px'} - identical for about-step-2 and about-step-3",
+   "db: SELECT attr_name,css_property,css_element,output_signature FROM block_attributes WHERE block_slug='sgs/process-steps' AND css_property LIKE '%gap%' -> numberGap | gap | step | output_class 'sgs-process-steps__step'; stepGap | gap | wrapper",
+   "the triage evidence for this row already records numberGap and stepGap as candidates with reaches:false"
+  ],
+  "precedent": {
+   "block": "sgs/process-steps",
+   "setting": "numberGap",
+   "helper": "gap control on css_element step",
+   "note": "the step-internal gap is already controllable; the row measures it on the wrong element"
+  },
+  "fixShape": "Walker fix: drop gap rows where the measured element cannot form a gap, and pair the draft title row to the live step (which holds numberGap), not to the title.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/process-steps|.sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title|gap",
+  "block": "sgs/process-steps",
+  "path": ".sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title",
+  "property": "gap",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM6-gap-row-with-no-painted-consequence",
+  "proof": "A pairing artefact: the draft's step title is a flex row with a 16px gap while the live title computes `display:block`, where gap paints nothing. The gap the draft puts on its title is, on the live side, the number-to-content gap, which is a setting that exists: `sgs/process-steps::numberGap` (gap, css_element step).",
+  "citations": [
+   "solve/home pair about-step-1 (w1440): draft {display: 'flex', gap: '16px'}, live {display: 'block', gap: '0px'} - identical for about-step-2 and about-step-3",
+   "db: SELECT attr_name,css_property,css_element,output_signature FROM block_attributes WHERE block_slug='sgs/process-steps' AND css_property LIKE '%gap%' -> numberGap | gap | step | output_class 'sgs-process-steps__step'; stepGap | gap | wrapper",
+   "the triage evidence for this row already records numberGap and stepGap as candidates with reaches:false"
+  ],
+  "precedent": {
+   "block": "sgs/process-steps",
+   "setting": "numberGap",
+   "helper": "gap control on css_element step",
+   "note": "the step-internal gap is already controllable; the row measures it on the wrong element"
+  },
+  "fixShape": "Walker fix: drop gap rows where the measured element cannot form a gap, and pair the draft title row to the live step (which holds numberGap), not to the title.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/process-steps|.sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title|gap",
+  "block": "sgs/process-steps",
+  "path": ".sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title",
+  "property": "gap",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM6-gap-row-with-no-painted-consequence",
+  "proof": "A pairing artefact: the draft's step title is a flex row with a 16px gap while the live title computes `display:block`, where gap paints nothing. The gap the draft puts on its title is, on the live side, the number-to-content gap, which is a setting that exists: `sgs/process-steps::numberGap` (gap, css_element step).",
+  "citations": [
+   "solve/home pair about-step-1 (w1440): draft {display: 'flex', gap: '16px'}, live {display: 'block', gap: '0px'} - identical for about-step-2 and about-step-3",
+   "db: SELECT attr_name,css_property,css_element,output_signature FROM block_attributes WHERE block_slug='sgs/process-steps' AND css_property LIKE '%gap%' -> numberGap | gap | step | output_class 'sgs-process-steps__step'; stepGap | gap | wrapper",
+   "the triage evidence for this row already records numberGap and stepGap as candidates with reaches:false"
+  ],
+  "precedent": {
+   "block": "sgs/process-steps",
+   "setting": "numberGap",
+   "helper": "gap control on css_element step",
+   "note": "the step-internal gap is already controllable; the row measures it on the wrong element"
+  },
+  "fixShape": "Walker fix: drop gap rows where the measured element cannot form a gap, and pair the draft title row to the live step (which holds numberGap), not to the title.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__header > .sgs-choice-flow__step-indicator > .sgs-choice-flow__step-count|margin-bottom",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__header > .sgs-choice-flow__step-indicator > .sgs-choice-flow__step-count",
+  "property": "margin-bottom",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The step-count's bottom margin has no setting: sgs/choice-flow holds no margin attribute at all and its single box family is wrapper padding.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_property LIKE '%margin%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow/block.json::supports.sgs.boxFamilies -> {\"padding\":[\"padding\"]}",
+   "solve/lens pair step-count: draft margin-bottom 8px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/card-grid",
+   "setting": "titleMarginBottom",
+   "helper": "single-side margin control on a non-wrapper css_element",
+   "note": "the same one-side margin control shape"
+  },
+  "fixShape": "Add `stepCountMarginBottom` (css_element step-count) to sgs/choice-flow.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__body > .sgs-choice-flow__summary|padding-top",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
+  "property": "padding-top",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "sgs/choice-flow's only box family is `padding` on the wrapper; the DB holds exactly one padding attribute for the block, css_element wrapper, so nothing can pad the summary panel inside it.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/choice-flow/block.json::supports.sgs.boxFamilies -> {\"padding\":[\"padding\"]}",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%') -> 1 row: padding | padding | padding | wrapper",
+   "solve/lens pair stage: draft padding 32px/22px/12px per width vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/cart",
+   "setting": "panelBodyPadding",
+   "helper": "per-region padding box family on a non-wrapper css_element",
+   "note": "sgs/cart gives every panel region its own padding family (panelHead, panelBody, panelFooter, panelEmpty); the choice flow needs the same for its summary"
+  },
+  "fixShape": "Add `summaryPadding` (and the matching region families) to sgs/choice-flow::supports.sgs.boxFamilies, css_element summary.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__body > .sgs-choice-flow__summary|padding-right",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
+  "property": "padding-right",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "sgs/choice-flow's only box family is `padding` on the wrapper; the DB holds exactly one padding attribute for the block, css_element wrapper, so nothing can pad the summary panel inside it.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/choice-flow/block.json::supports.sgs.boxFamilies -> {\"padding\":[\"padding\"]}",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%') -> 1 row: padding | padding | padding | wrapper",
+   "solve/lens pair stage: draft padding 32px/22px/12px per width vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/cart",
+   "setting": "panelBodyPadding",
+   "helper": "per-region padding box family on a non-wrapper css_element",
+   "note": "sgs/cart gives every panel region its own padding family (panelHead, panelBody, panelFooter, panelEmpty); the choice flow needs the same for its summary"
+  },
+  "fixShape": "Add `summaryPadding` (and the matching region families) to sgs/choice-flow::supports.sgs.boxFamilies, css_element summary.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__body > .sgs-choice-flow__summary|padding-bottom",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "sgs/choice-flow's only box family is `padding` on the wrapper; the DB holds exactly one padding attribute for the block, css_element wrapper, so nothing can pad the summary panel inside it.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/choice-flow/block.json::supports.sgs.boxFamilies -> {\"padding\":[\"padding\"]}",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%') -> 1 row: padding | padding | padding | wrapper",
+   "solve/lens pair stage: draft padding 32px/22px/12px per width vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/cart",
+   "setting": "panelBodyPadding",
+   "helper": "per-region padding box family on a non-wrapper css_element",
+   "note": "sgs/cart gives every panel region its own padding family (panelHead, panelBody, panelFooter, panelEmpty); the choice flow needs the same for its summary"
+  },
+  "fixShape": "Add `summaryPadding` (and the matching region families) to sgs/choice-flow::supports.sgs.boxFamilies, css_element summary.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__body > .sgs-choice-flow__summary|padding-left",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
+  "property": "padding-left",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "sgs/choice-flow's only box family is `padding` on the wrapper; the DB holds exactly one padding attribute for the block, css_element wrapper, so nothing can pad the summary panel inside it.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/choice-flow/block.json::supports.sgs.boxFamilies -> {\"padding\":[\"padding\"]}",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%') -> 1 row: padding | padding | padding | wrapper",
+   "solve/lens pair stage: draft padding 32px/22px/12px per width vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/cart",
+   "setting": "panelBodyPadding",
+   "helper": "per-region padding box family on a non-wrapper css_element",
+   "note": "sgs/cart gives every panel region its own padding family (panelHead, panelBody, panelFooter, panelEmpty); the choice flow needs the same for its summary"
+  },
+  "fixShape": "Add `summaryPadding` (and the matching region families) to sgs/choice-flow::supports.sgs.boxFamilies, css_element summary.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back|gap",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back",
+  "property": "gap",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The back button's gap is the literal `gap:6px` in the block's own stylesheet and sgs/choice-flow exposes no gap setting at all (one spacing attribute in total: `padding`, css_element wrapper).",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/choice-flow/style.css::.sgs-choice-flow__nav-back declares `gap:6px`",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_property LIKE '%gap%' -> 0 rows",
+   "solve/lens pair back: draft gap 0px (display block) vs live 6px (display flex)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-bar-menu",
+   "setting": "burgerTextGap",
+   "helper": "gap control on a named button element",
+   "note": "a gap control on a chrome button already exists on another block"
+  },
+  "fixShape": "Add a `navButtonGap` gap control (css_element nav-back, shared with the footer buttons) and have style.css read its custom property.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow-result||margin-top",
+  "block": "sgs/choice-flow-result",
+  "path": "",
+  "property": "margin-top",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM1-no-box-family-declared",
+  "proof": "sgs/choice-flow-result declares no box family and holds no spacing attribute across its 114 attributes, so its wrapper margin cannot be set at all.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow-result' AND (css_property LIKE '%padding%' OR css_property LIKE '%margin%' OR css_property LIKE '%gap%' OR box_family IS NOT NULL) -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow-result/block.json::supports.sgs -> {hideExtensions, elements}; no boxFamilies key",
+   "solve/lens pair rx-note: draft margin-top 20px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/text",
+   "setting": "margin",
+   "helper": "supports.sgs.boxFamilies.margin (wrapper)",
+   "note": "the standard wrapper margin family, already on most blocks"
+  },
+  "fixShape": "Add `margin` and `padding` to sgs/choice-flow-result::supports.sgs.boxFamilies and emit them on the block root.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__footer-actions > .sgs-choice-flow__add-to-basket|gap",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__footer-actions > .sgs-choice-flow__add-to-basket",
+  "property": "gap",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The draft's 14px gap inside the add-to-basket button has no counterpart: sgs/choice-flow holds no gap attribute (0 rows) and the live button computes gap 0px, so there is nothing to write.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_property LIKE '%gap%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow/block.json::supports.sgs.boxFamilies -> {\"padding\":[\"padding\"]} only",
+   "solve/lens pair add-to-bag: draft gap 14px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "submitPadding",
+   "helper": "box family on css_element submit-button",
+   "note": "the submit-button precedent shows the shape for a form-style action button; a gap sibling is the same work"
+  },
+  "fixShape": "Add an `actionButtonGap` gap control (css_element add-to-basket / footer-actions) to sgs/choice-flow.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back|column-gap",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back",
+  "property": "column-gap",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The back button's gap is the literal `gap:6px` in the block's own stylesheet and sgs/choice-flow exposes no gap setting at all (one spacing attribute in total: `padding`, css_element wrapper).",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/choice-flow/style.css::.sgs-choice-flow__nav-back declares `gap:6px`",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_property LIKE '%gap%' -> 0 rows",
+   "solve/lens pair back: draft gap 0px (display block) vs live 6px (display flex)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-bar-menu",
+   "setting": "burgerTextGap",
+   "helper": "gap control on a named button element",
+   "note": "a gap control on a chrome button already exists on another block"
+  },
+  "fixShape": "Add a `navButtonGap` gap control (css_element nav-back, shared with the footer buttons) and have style.css read its custom property.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back|row-gap",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back",
+  "property": "row-gap",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The back button's gap is the literal `gap:6px` in the block's own stylesheet and sgs/choice-flow exposes no gap setting at all (one spacing attribute in total: `padding`, css_element wrapper).",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/choice-flow/style.css::.sgs-choice-flow__nav-back declares `gap:6px`",
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_property LIKE '%gap%' -> 0 rows",
+   "solve/lens pair back: draft gap 0px (display block) vs live 6px (display flex)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-bar-menu",
+   "setting": "burgerTextGap",
+   "helper": "gap control on a named button element",
+   "note": "a gap control on a chrome button already exists on another block"
+  },
+  "fixShape": "Add a `navButtonGap` gap control (css_element nav-back, shared with the footer buttons) and have style.css read its custom property.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/card-grid||margin-bottom",
+  "block": "sgs/card-grid",
+  "path": "",
+  "property": "margin-bottom",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM8-no-wrapper-margin-family",
+  "proof": "sgs/card-grid is missing the wrapper margin box family that its sibling blocks all declare: its boxFamilies are cardBorderWidth, borderRadius, borderWidth, cardPadding and imagePadding - no margin and no wrapper padding - and the DB holds no margin attribute for the block beyond `titleMarginBottom` on the title element.",
+  "citations": [
+   "plugins/sgs-blocks/src/blocks/card-grid/block.json::supports.sgs.boxFamilies -> {cardBorderWidth, borderRadius, borderWidth, cardPadding, imagePadding} (no margin, no wrapper padding)",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/card-grid' AND css_property LIKE '%margin%' -> 1 row: titleMarginBottom | margin | NULL | title (0 rows for the wrapper)",
+   "solve/mega-brands pair gen-mega-brands-5: draft margin-bottom 30px vs live 0px"
+  ],
+  "precedent": {
+   "block": "sgs/text",
+   "setting": "margin",
+   "helper": "supports.sgs.boxFamilies.margin (wrapper)",
+   "note": "the identical wrapper margin family is already declared on sgs/text, sgs/icon-list, sgs/social-icons, sgs/business-info, sgs/process-steps, sgs/brand-strip and sgs/buybox"
+  },
+  "fixShape": "Add `margin` (and `padding`) to sgs/card-grid::supports.sgs.boxFamilies and emit them on the block root exactly as sgs/text does.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/nav-drawer||padding-top",
+  "block": "sgs/nav-drawer",
+  "path": "",
+  "property": "padding-top",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM2b-setting-paints-a-neighbouring-element",
+  "proof": "The setting exists and paints the same inset one level in: `sgs/nav-drawer::drawerPadding` is a box family on css_element body which render.php emits onto `.sgs-nav-drawer__body`, while the pair measured `.sgs-nav-drawer[open]` - the dialog, which style.css deliberately keeps at `padding:0` so the drawer is full-bleed. A padding row on the dialog is the drawerPadding row one element up.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/parity/header.mjs: pair `drawer-panel` live selector is `LDRAWER = '.sgs-nav-drawer[open]'`, props ['background-color','padding-top','padding-left']",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_property LIKE '%padding%' -> drawerPadding | padding | drawerPadding | body; chromeRowPadding | padding | chromeRowPadding | chrome; closePadding | padding | closePadding | close; chromeButtonPadding | padding | NULL | chromeButton",
+   "plugins/sgs-blocks/src/blocks/nav-drawer/render.php emits drawerPadding via `sgs_emit_responsive_css( $body_sel, array( array( 'value' => $attributes['drawerPadding'], 'css' => 'padding', 'box' => true ) ) )`",
+   "plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.wp-block-sgs-nav-drawer declares `padding:0` (full-screen modal geometry) and ::.sgs-nav-drawer__body declares `padding: clamp(16px, 6vw, 32px)` as the default until drawerPadding is set",
+   "solve/mobile-menu pair drawer-panel: draft padding 20px/24px vs live 0px; on the same surface the `.sgs-nav-drawer__chrome > .sgs-nav-drawer__close` padding rows are already class T (resolver-writes) via closePadding"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "drawerPadding",
+   "helper": "supports.sgs.boxFamilies.drawerPadding (css_element body)",
+   "note": "this is the setting itself, emitted one element in"
+  },
+  "fixShape": "Pairing fix: point the `drawer-panel` pair at `.sgs-nav-drawer__body` (the padded element drawerPadding writes), or let the resolver fall through from the dialog to its single padded child.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/nav-drawer||padding-right",
+  "block": "sgs/nav-drawer",
+  "path": "",
+  "property": "padding-right",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM2b-setting-paints-a-neighbouring-element",
+  "proof": "The setting exists and paints the same inset one level in: `sgs/nav-drawer::drawerPadding` is a box family on css_element body which render.php emits onto `.sgs-nav-drawer__body`, while the pair measured `.sgs-nav-drawer[open]` - the dialog, which style.css deliberately keeps at `padding:0` so the drawer is full-bleed. A padding row on the dialog is the drawerPadding row one element up.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/parity/header.mjs: pair `drawer-panel` live selector is `LDRAWER = '.sgs-nav-drawer[open]'`, props ['background-color','padding-top','padding-left']",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_property LIKE '%padding%' -> drawerPadding | padding | drawerPadding | body; chromeRowPadding | padding | chromeRowPadding | chrome; closePadding | padding | closePadding | close; chromeButtonPadding | padding | NULL | chromeButton",
+   "plugins/sgs-blocks/src/blocks/nav-drawer/render.php emits drawerPadding via `sgs_emit_responsive_css( $body_sel, array( array( 'value' => $attributes['drawerPadding'], 'css' => 'padding', 'box' => true ) ) )`",
+   "plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.wp-block-sgs-nav-drawer declares `padding:0` (full-screen modal geometry) and ::.sgs-nav-drawer__body declares `padding: clamp(16px, 6vw, 32px)` as the default until drawerPadding is set",
+   "solve/mobile-menu pair drawer-panel: draft padding 20px/24px vs live 0px; on the same surface the `.sgs-nav-drawer__chrome > .sgs-nav-drawer__close` padding rows are already class T (resolver-writes) via closePadding"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "drawerPadding",
+   "helper": "supports.sgs.boxFamilies.drawerPadding (css_element body)",
+   "note": "this is the setting itself, emitted one element in"
+  },
+  "fixShape": "Pairing fix: point the `drawer-panel` pair at `.sgs-nav-drawer__body` (the padded element drawerPadding writes), or let the resolver fall through from the dialog to its single padded child.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/nav-drawer||padding-bottom",
+  "block": "sgs/nav-drawer",
+  "path": "",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM2b-setting-paints-a-neighbouring-element",
+  "proof": "The setting exists and paints the same inset one level in: `sgs/nav-drawer::drawerPadding` is a box family on css_element body which render.php emits onto `.sgs-nav-drawer__body`, while the pair measured `.sgs-nav-drawer[open]` - the dialog, which style.css deliberately keeps at `padding:0` so the drawer is full-bleed. A padding row on the dialog is the drawerPadding row one element up.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/parity/header.mjs: pair `drawer-panel` live selector is `LDRAWER = '.sgs-nav-drawer[open]'`, props ['background-color','padding-top','padding-left']",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_property LIKE '%padding%' -> drawerPadding | padding | drawerPadding | body; chromeRowPadding | padding | chromeRowPadding | chrome; closePadding | padding | closePadding | close; chromeButtonPadding | padding | NULL | chromeButton",
+   "plugins/sgs-blocks/src/blocks/nav-drawer/render.php emits drawerPadding via `sgs_emit_responsive_css( $body_sel, array( array( 'value' => $attributes['drawerPadding'], 'css' => 'padding', 'box' => true ) ) )`",
+   "plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.wp-block-sgs-nav-drawer declares `padding:0` (full-screen modal geometry) and ::.sgs-nav-drawer__body declares `padding: clamp(16px, 6vw, 32px)` as the default until drawerPadding is set",
+   "solve/mobile-menu pair drawer-panel: draft padding 20px/24px vs live 0px; on the same surface the `.sgs-nav-drawer__chrome > .sgs-nav-drawer__close` padding rows are already class T (resolver-writes) via closePadding"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "drawerPadding",
+   "helper": "supports.sgs.boxFamilies.drawerPadding (css_element body)",
+   "note": "this is the setting itself, emitted one element in"
+  },
+  "fixShape": "Pairing fix: point the `drawer-panel` pair at `.sgs-nav-drawer__body` (the padded element drawerPadding writes), or let the resolver fall through from the dialog to its single padded child.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/nav-drawer||padding-left",
+  "block": "sgs/nav-drawer",
+  "path": "",
+  "property": "padding-left",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM2b-setting-paints-a-neighbouring-element",
+  "proof": "The setting exists and paints the same inset one level in: `sgs/nav-drawer::drawerPadding` is a box family on css_element body which render.php emits onto `.sgs-nav-drawer__body`, while the pair measured `.sgs-nav-drawer[open]` - the dialog, which style.css deliberately keeps at `padding:0` so the drawer is full-bleed. A padding row on the dialog is the drawerPadding row one element up.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/parity/header.mjs: pair `drawer-panel` live selector is `LDRAWER = '.sgs-nav-drawer[open]'`, props ['background-color','padding-top','padding-left']",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_property LIKE '%padding%' -> drawerPadding | padding | drawerPadding | body; chromeRowPadding | padding | chromeRowPadding | chrome; closePadding | padding | closePadding | close; chromeButtonPadding | padding | NULL | chromeButton",
+   "plugins/sgs-blocks/src/blocks/nav-drawer/render.php emits drawerPadding via `sgs_emit_responsive_css( $body_sel, array( array( 'value' => $attributes['drawerPadding'], 'css' => 'padding', 'box' => true ) ) )`",
+   "plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.wp-block-sgs-nav-drawer declares `padding:0` (full-screen modal geometry) and ::.sgs-nav-drawer__body declares `padding: clamp(16px, 6vw, 32px)` as the default until drawerPadding is set",
+   "solve/mobile-menu pair drawer-panel: draft padding 20px/24px vs live 0px; on the same surface the `.sgs-nav-drawer__chrome > .sgs-nav-drawer__close` padding rows are already class T (resolver-writes) via closePadding"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "drawerPadding",
+   "helper": "supports.sgs.boxFamilies.drawerPadding (css_element body)",
+   "note": "this is the setting itself, emitted one element in"
+  },
+  "fixShape": "Pairing fix: point the `drawer-panel` pair at `.sgs-nav-drawer__body` (the padded element drawerPadding writes), or let the resolver fall through from the dialog to its single padded child.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|margin-bottom",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "margin-bottom",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "Neither the measured element's own block nor the buybox can set it: sgs/option-picker's margin controls are `margin` (box family, wrapper) and `labelMarginBottom` (css_element label, i.e. the picker caption `.sgs-option-picker__label`), with no margin on the option itself; sgs/buybox's only margin is the wrapper family. I could not locate the rule producing the live 11.2px in either block's stylesheet, so the fix needs that rule found as well as the control added.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_property LIKE '%margin%' -> margin | margin | margin | wrapper; labelMarginBottom | margin-bottom | NULL | label (0 rows for an option element)",
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND css_property LIKE '%margin%' -> 1 row: margin | margin | margin | wrapper",
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker__option declares `display:inline-flex; cursor:pointer; min-height:44px; align-items:center` - no margin; ::.sgs-option-picker__label declares `margin-bottom: var(--wp--preset--spacing--20, 8px)` (the caption, not the option)",
+   "solve/product pair colour-swatch: draft margin-bottom 0px vs live 11.2px"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "pillPadding",
+   "helper": "box family on css_element pill",
+   "note": "the picker already box-controls an inner element (the pill); an option-level margin is the same shape"
+  },
+  "fixShape": "Add an `optionMargin` box family to sgs/option-picker (css_element option) and first locate the rule emitting the live 11.2px so it reads the custom property.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > form > button|padding-top",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > form > button",
+  "property": "padding-top",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The add-to-cart button has a full typography and colour control set but no box controls: sgs/buybox's padding query returns 0 rows and its only box families are margin, borderRadius and borderWidth on the wrapper.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND css_property LIKE '%padding%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/buybox/block.json::supports.sgs.boxFamilies -> {margin, borderRadius, borderWidth} (all wrapper)",
+   "db: the block's add-to-cart element controls are addToCartMinHeight, addToCartFontSize/FontWeight/TextTransform/LetterSpacing and addToCartBackgroundColour/BorderColour - no padding",
+   "solve/product pair add-to-bag: draft padding 0px/22px vs live 12px/24px"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "submitPadding",
+   "helper": "supports.sgs.boxFamilies.submitPadding (css_element submit-button)",
+   "note": "identical element class, already solved on the form block"
+  },
+  "fixShape": "Add an `addToCartPadding` box family to sgs/buybox (css_element add-to-cart), copying sgs/form::submitPadding.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > form > button|padding-right",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > form > button",
+  "property": "padding-right",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The add-to-cart button has a full typography and colour control set but no box controls: sgs/buybox's padding query returns 0 rows and its only box families are margin, borderRadius and borderWidth on the wrapper.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND css_property LIKE '%padding%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/buybox/block.json::supports.sgs.boxFamilies -> {margin, borderRadius, borderWidth} (all wrapper)",
+   "db: the block's add-to-cart element controls are addToCartMinHeight, addToCartFontSize/FontWeight/TextTransform/LetterSpacing and addToCartBackgroundColour/BorderColour - no padding",
+   "solve/product pair add-to-bag: draft padding 0px/22px vs live 12px/24px"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "submitPadding",
+   "helper": "supports.sgs.boxFamilies.submitPadding (css_element submit-button)",
+   "note": "identical element class, already solved on the form block"
+  },
+  "fixShape": "Add an `addToCartPadding` box family to sgs/buybox (css_element add-to-cart), copying sgs/form::submitPadding.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > form > button|padding-bottom",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > form > button",
+  "property": "padding-bottom",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The add-to-cart button has a full typography and colour control set but no box controls: sgs/buybox's padding query returns 0 rows and its only box families are margin, borderRadius and borderWidth on the wrapper.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND css_property LIKE '%padding%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/buybox/block.json::supports.sgs.boxFamilies -> {margin, borderRadius, borderWidth} (all wrapper)",
+   "db: the block's add-to-cart element controls are addToCartMinHeight, addToCartFontSize/FontWeight/TextTransform/LetterSpacing and addToCartBackgroundColour/BorderColour - no padding",
+   "solve/product pair add-to-bag: draft padding 0px/22px vs live 12px/24px"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "submitPadding",
+   "helper": "supports.sgs.boxFamilies.submitPadding (css_element submit-button)",
+   "note": "identical element class, already solved on the form block"
+  },
+  "fixShape": "Add an `addToCartPadding` box family to sgs/buybox (css_element add-to-cart), copying sgs/form::submitPadding.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > form > button|padding-left",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > form > button",
+  "property": "padding-left",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM2-box-family-stops-at-the-wrapper",
+  "proof": "The add-to-cart button has a full typography and colour control set but no box controls: sgs/buybox's padding query returns 0 rows and its only box families are margin, borderRadius and borderWidth on the wrapper.",
+  "citations": [
+   "db: SELECT attr_name,css_property,box_family,css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND css_property LIKE '%padding%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/buybox/block.json::supports.sgs.boxFamilies -> {margin, borderRadius, borderWidth} (all wrapper)",
+   "db: the block's add-to-cart element controls are addToCartMinHeight, addToCartFontSize/FontWeight/TextTransform/LetterSpacing and addToCartBackgroundColour/BorderColour - no padding",
+   "solve/product pair add-to-bag: draft padding 0px/22px vs live 12px/24px"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "submitPadding",
+   "helper": "supports.sgs.boxFamilies.submitPadding (css_element submit-button)",
+   "note": "identical element class, already solved on the form block"
+  },
+  "fixShape": "Add an `addToCartPadding` box family to sgs/buybox (css_element add-to-cart), copying sgs/form::submitPadding.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > form > button|gap",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > form > button",
+  "property": "gap",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "subMechanism": "SM3-gap-hardcoded-on-an-inner-row",
+  "proof": "The add-to-cart button's internal gap has no setting: sgs/buybox's only gap attribute is `galleryColumnGap` (the gallery), and the config column's gap literal is `var(--sgs-buybox-gap, 12px)` on `.sgs-buybox__config-col`, a different element from the button.",
+  "citations": [
+   "db: SELECT attr_name,css_property,css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND css_property LIKE '%gap%' -> 1 row: galleryColumnGap | gap | NULL",
+   "plugins/sgs-blocks/src/blocks/buybox/style.css::.sgs-buybox__config-col declares `gap:var(--sgs-buybox-gap, 12px)`; the add-to-cart button has no gap custom property",
+   "db: sgs/buybox add-to-cart attributes -> addToCartMinHeight (min-height), addToCartFontSize, addToCartFontWeight, addToCartBackgroundColour, addToCartBorderColour, addToCartLetterSpacing, addToCartTextTransform; 0 rows with css_property padding or gap",
+   "solve/product pair add-to-bag: draft gap 12px vs live 10px"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "submitPadding",
+   "helper": "supports.sgs.boxFamilies.submitPadding (css_element submit-button)",
+   "note": "the form block already box-controls its submit button; the buybox add-to-cart button is the same element class and has colour, type and min-height controls but no box ones"
+  },
+  "fixShape": "Add `addToCartPadding` (box family) and `addToCartGap` to sgs/buybox, css_element add-to-cart, mirroring sgs/form::submitPadding.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/icon-list||column-gap",
+  "block": "sgs/icon-list",
+  "path": "",
+  "property": "column-gap",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM2b-setting-paints-a-neighbouring-element",
+  "proof": "The setting exists for exactly this gap: `sgs/icon-list::gap` (role layout, css_property gap, css_element wrapper, default '20') is emitted by render.php as `--sgs-icon-list-gap` and read by `style.css::.sgs-icon-list { gap: var(--sgs-icon-list-gap, ...) }` - the very declaration the triage's own source pass cited while the resolver recorded reaches:false. The live 20px is that default; the draft's 0px is a value the control holds.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,css_element FROM block_attributes WHERE block_slug='sgs/icon-list' AND css_property LIKE '%gap%' -> 1 row: gap | layout | gap | wrapper",
+   "plugins/sgs-blocks/src/blocks/icon-list/render.php: `$gap = $attributes['gap'] ?? '20';` then `$scoped_css[] = \"{$root_sel}{--sgs-icon-list-gap:{$gap_css};}\"` with `$root_sel = '.' . $uid . '.wp-block-sgs-icon-list'`",
+   "plugins/sgs-blocks/src/blocks/icon-list/style.css::.sgs-icon-list declares `display:flex; flex-direction:column; gap: var(--sgs-icon-list-gap, var(--wp--preset--spacing--20))`",
+   "solve/product pair gen-product-10: draft {display: 'block', gap: '0px'} vs live {display: 'flex', gap: '20px'}"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "gap",
+   "helper": "gap control emitted as a scoped custom property",
+   "note": "this is the setting itself"
+  },
+  "fixShape": "Route fix: a css_element `wrapper` attribute must satisfy a row measured at the block root (path ''); this reach test is wrongly returning false, which is also why the triage cited the exact declaration it then called missing.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/icon-list||row-gap",
+  "block": "sgs/icon-list",
+  "path": "",
+  "property": "row-gap",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM2b-setting-paints-a-neighbouring-element",
+  "proof": "The setting exists for exactly this gap: `sgs/icon-list::gap` (role layout, css_property gap, css_element wrapper, default '20') is emitted by render.php as `--sgs-icon-list-gap` and read by `style.css::.sgs-icon-list { gap: var(--sgs-icon-list-gap, ...) }` - the very declaration the triage's own source pass cited while the resolver recorded reaches:false. The live 20px is that default; the draft's 0px is a value the control holds.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,css_element FROM block_attributes WHERE block_slug='sgs/icon-list' AND css_property LIKE '%gap%' -> 1 row: gap | layout | gap | wrapper",
+   "plugins/sgs-blocks/src/blocks/icon-list/render.php: `$gap = $attributes['gap'] ?? '20';` then `$scoped_css[] = \"{$root_sel}{--sgs-icon-list-gap:{$gap_css};}\"` with `$root_sel = '.' . $uid . '.wp-block-sgs-icon-list'`",
+   "plugins/sgs-blocks/src/blocks/icon-list/style.css::.sgs-icon-list declares `display:flex; flex-direction:column; gap: var(--sgs-icon-list-gap, var(--wp--preset--spacing--20))`",
+   "solve/product pair gen-product-10: draft {display: 'block', gap: '0px'} vs live {display: 'flex', gap: '20px'}"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "gap",
+   "helper": "gap control emitted as a scoped custom property",
+   "note": "this is the setting itself"
+  },
+  "fixShape": "Route fix: a css_element `wrapper` attribute must satisfy a row measured at the block root (path ''); this reach test is wrongly returning false, which is also why the triage cited the exact declaration it then called missing.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M2-box-spacing",
+  "combo": "sgs/icon-list||gap",
+  "block": "sgs/icon-list",
+  "path": "",
+  "property": "gap",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "subMechanism": "SM2b-setting-paints-a-neighbouring-element",
+  "proof": "The setting exists for exactly this gap: `sgs/icon-list::gap` (role layout, css_property gap, css_element wrapper, default '20') is emitted by render.php as `--sgs-icon-list-gap` and read by `style.css::.sgs-icon-list { gap: var(--sgs-icon-list-gap, ...) }` - the very declaration the triage's own source pass cited while the resolver recorded reaches:false. The live 20px is that default; the draft's 0px is a value the control holds.",
+  "citations": [
+   "db: SELECT attr_name,role,css_property,css_element FROM block_attributes WHERE block_slug='sgs/icon-list' AND css_property LIKE '%gap%' -> 1 row: gap | layout | gap | wrapper",
+   "plugins/sgs-blocks/src/blocks/icon-list/render.php: `$gap = $attributes['gap'] ?? '20';` then `$scoped_css[] = \"{$root_sel}{--sgs-icon-list-gap:{$gap_css};}\"` with `$root_sel = '.' . $uid . '.wp-block-sgs-icon-list'`",
+   "plugins/sgs-blocks/src/blocks/icon-list/style.css::.sgs-icon-list declares `display:flex; flex-direction:column; gap: var(--sgs-icon-list-gap, var(--wp--preset--spacing--20))`",
+   "solve/product pair gen-product-10: draft {display: 'block', gap: '0px'} vs live {display: 'flex', gap: '20px'}"
+  ],
+  "precedent": {
+   "block": "sgs/icon-list",
+   "setting": "gap",
+   "helper": "gap control emitted as a scoped custom property",
+   "note": "this is the setting itself"
+  },
+  "fixShape": "Route fix: a css_element `wrapper` attribute must satisfy a row measured at the block root (path ''); this reach test is wrongly returning false, which is also why the triage cited the exact declaration it then called missing.",
+  "confidence": "high"
+ }
+]

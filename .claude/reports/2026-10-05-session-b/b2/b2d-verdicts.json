@@ -1,0 +1,1135 @@
+[
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/mega-group||flex-grow",
+  "block": "sgs/mega-group",
+  "path": "",
+  "property": "flex-grow",
+  "rows": 9,
+  "surfaces": [
+   "mega-brands",
+   "mega-help",
+   "mega-lenses",
+   "mega-sunglasses"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "subMechanism": "SM1-setting-exists-but-its-db-row-carries-no-css_property",
+  "proof": "The setting exists and produces exactly the draft value: `sgs/mega-group::sgsChildSizing` set to 'fit' emits `flex:0 1 auto` (flex-grow 0, the draft's value; live is 1). The route missed it because its `block_attributes` row carries `css_property` NULL, so `lib/triage.mjs::settingFits` cannot list 'flex-grow' and `nameFits('flex-grow','sgsChildSizing')` does not match either; the resolver therefore returned no-setting. The live 1 comes from a rule the framework wrote expressly to be overridden by that setting.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/mega-group' AND attr_name='sgsChildSizing' -> 1 row: (sgs/mega-group, sgsChildSizing, layout, NULL, wrapper, NULL, sgs-ext)",
+   "plugins/sgs-blocks/includes/child-sizing.php::child_sizing_declarations returns `'flex:0 1 auto;'` for mode 'fit' and `'flex:1 1 0%;min-width:0;'` for 'fill', scoped to the block's root element (the flex item)",
+   "plugins/sgs-blocks/src/blocks/mega-group/block.json::supports.sgs.enabledExtensions = [ \"childSizing\" ]",
+   "plugins/sgs-blocks/src/blocks/mega-panel/style.css::`:where( .wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-panel__content ) > *` declares `flex: 1 1 200px` with the comment \"A default, so :where(): a group's own Child sizing setting (0,2,0) overrides it.\"",
+   "walker: mega-brands/cr-ref-mega-brands-1 and mega-help/cr-ref-mega-help-1, path '', tags div->div, flex-grow 0 -> 1 at 1440 and 1920",
+   "scripts/computed-route/lib/triage.mjs::settingFits - a row with css_property NULL can only fit by name"
+  ],
+  "precedent": {
+   "block": "sgs/mega-group",
+   "setting": "sgsChildSizing",
+   "helper": "includes/child-sizing.php + src/blocks/extensions/child-sizing.js",
+   "note": "the Child sizing extension (fit / fill / fixed, per device) is the framework's flex-item sizing control; enabled on sgs/button, sgs/container, sgs/mega-group and sgs/responsive-logo"
+  },
+  "fixShape": "Seed `css_property='flex,flex-grow,flex-basis'` and `css_element='wrapper'` onto the sgsChildSizing / sgsChildWidth rows in `block_attributes` (and record the extension's slot in calibration) so the resolver can route flex-grow to Child sizing = 'fit'.",
+  "confidence": "high",
+  "changed": true
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/choice-flow-question|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|align-items",
+  "block": "sgs/choice-flow-question",
+  "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
+  "property": "align-items",
+  "rows": 3,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "No setting on sgs/choice-flow-question (or its enclosing sgs/choice-flow, sgs/form-step, sgs/modal) paints align-items on the option button; the live `baseline` is hardcoded by the layout-keyed rules in the block's own stylesheet. The `layout` attribute selects between four hardcoded align-items values (flex-start / center / baseline / center) and none of them is the draft's `normal`.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/choice-flow-question' AND css_property LIKE '%align-items%' -> 0 rows",
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/choice-flow' AND (css_property LIKE '%justify-content%' OR css_property LIKE '%flex%') -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css::.sgs-choice-flow-question__option-button declares `align-items:flex-start`; `::.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button` declares `align-items:baseline`; `::.sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button` declares `align-items:center`",
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/choice-flow-question' AND attr_name='layout' -> 1 row: (layout, layout, NULL, NULL, NULL, sgs) - an enum with no css_property, so the route cannot see that it decides align-items",
+   "walker: lens/cr-ref-lens-2 and cr-ref-lens-6, tags button->button, align-items normal -> baseline at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "alignItems / justifyContent / flexDirection / flexWrap",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (the four-member layout cluster, css_element 'inner')",
+   "note": "the same four-member layout cluster is already carried by sgs/container, sgs/form, sgs/form-field-tiles, sgs/trust-bar, sgs/site-header-row and sgs/site-footer-row (db: SELECT block_slug, attr_name FROM block_attributes WHERE css_property LIKE '%align-items%' -> 20 rows incl. those blocks); adding the member to a block that lacks it is a cluster declaration, not a new control primitive"
+  },
+  "fixShape": "Add an option-card alignment member (align-items) to the question's layout group, or make the showcase default `normal`/`stretch` instead of `baseline`; cheapest is to seed `css_property='align-items'` onto `sgs/choice-flow-question::layout` and add a neutral layout value.",
+  "confidence": "medium",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header|justify-content",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header",
+  "property": "justify-content",
+  "rows": 2,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM4-parent-setting-exists-but-its-calibrated-slot-is-not-the-child-element",
+  "proof": "The draft's FAQ header distributes with `space-between`; live computes `normal` because nothing declares justify-content on `.sgs-accordion-item__header`. The parent block does carry the member (`sgs/accordion::justifyContent`), but its calibrated slot is the accordion's `inner` wrapper, not the item header, and the resolver already tried the enclosing blocks (its owners loop) before reporting no-setting.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug IN ('sgs/accordion-item','sgs/accordion') AND (css_property LIKE '%justify-content%' OR css_property LIKE '%min-height%') -> 1 row: (sgs/accordion, justifyContent, layout, justify-content, inner, NULL, sgs) - none on sgs/accordion-item, none on the header element",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item__header declares `display:flex; align-items:center; min-height:44px` and no justify-content (sgs/accordion-item ships no style.css of its own - the parent owns the CSS)",
+   "walker: help/cr-ref-help-17 and cr-ref-help-19, tags button->summary, justify-content space-between -> normal at 375/768/1440/1920",
+   "scripts/computed-route/lib/triage.mjs::resolveIssue - the owners loop retries each enclosing block with anyIndex before returning no-setting"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "justifyContent",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (css_element 'inner')",
+   "note": "the parent accordion already has the member; it just does not reach the item header slot"
+  },
+  "fixShape": "Extend `sgs/accordion::justifyContent` (and alignItems) to a header slot, or add a header alignment member on sgs/accordion-item, routed through SGS_Container_Wrapper's layout cluster.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/form-field-text|.sgs-form-field__input|display",
+  "block": "sgs/form-field-text",
+  "path": ".sgs-form-field__input",
+  "property": "display",
+  "rows": 1,
+  "surfaces": [
+   "contact-form"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM5-shared-field-stylesheet-declares-no-display-on-the-control",
+  "proof": "Not a presence difference: the draft computes `display:block` and live `inline-block`, neither side is `none`, so the sgsHideOn* visibility settings are correctly rejected by settingFits (which only fits a boolean-visibility setting when a side is 'none'). `inline-block` is simply the user-agent default for <input>, because the shared field rule declares width/max-width but no display. No setting paints display on the control element on any sgs/form-field-* block.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug LIKE 'sgs/form-field-%' AND css_property='display' AND attr_name NOT LIKE 'sgsHide%' -> 0 rows (the only display rows on these blocks are sgsHideOnDesktop/Tablet/Mobile, role boolean-visibility, css_element 'wrapper', source sgs-ext)",
+   "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input declares `width:100%; max-width:100%` and no `display` (the form-field-* blocks ship no style.css of their own: `ls plugins/sgs-blocks/src/blocks/form-field-text/` -> block.json, edit.js, index.js, render.php)",
+   "scripts/computed-route/lib/triage.mjs::settingFits - `'boolean-visibility' === s.role && ! values.includes( 'none' )` returns false, which is why the three candidates were listed but never decided",
+   "walker: contact-form/cr-ref-contact-form-1, tags input->input, display block -> inline-block at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/form (shared stylesheet)",
+   "setting": "n/a - a corrected default, not a control",
+   "helper": "plugins/sgs-blocks/includes/helpers-box.php::sgs_label_box_css_rule, which already emits `display:block` for a full-width label box",
+   "note": "one declaration in the shared field stylesheet closes every sgs/form-field-* block at once"
+  },
+  "fixShape": "Add `display:block` to `plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input` - a corrected framework default, not an inspector control (no client would ever set a form control's display).",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/form-field-email|.sgs-form-field__input|display",
+  "block": "sgs/form-field-email",
+  "path": ".sgs-form-field__input",
+  "property": "display",
+  "rows": 1,
+  "surfaces": [
+   "contact-form"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM5-shared-field-stylesheet-declares-no-display-on-the-control",
+  "proof": "Not a presence difference: the draft computes `display:block` and live `inline-block`, neither side is `none`, so the sgsHideOn* visibility settings are correctly rejected by settingFits (which only fits a boolean-visibility setting when a side is 'none'). `inline-block` is simply the user-agent default for <input>, because the shared field rule declares width/max-width but no display. No setting paints display on the control element on any sgs/form-field-* block.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug LIKE 'sgs/form-field-%' AND css_property='display' AND attr_name NOT LIKE 'sgsHide%' -> 0 rows (the only display rows on these blocks are sgsHideOnDesktop/Tablet/Mobile, role boolean-visibility, css_element 'wrapper', source sgs-ext)",
+   "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input declares `width:100%; max-width:100%` and no `display` (the form-field-* blocks ship no style.css of their own: `ls plugins/sgs-blocks/src/blocks/form-field-text/` -> block.json, edit.js, index.js, render.php)",
+   "scripts/computed-route/lib/triage.mjs::settingFits - `'boolean-visibility' === s.role && ! values.includes( 'none' )` returns false, which is why the three candidates were listed but never decided",
+   "walker: contact-form/cr-ref-contact-form-2, tags input->input, display block -> inline-block at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/form (shared stylesheet)",
+   "setting": "n/a - a corrected default, not a control",
+   "helper": "plugins/sgs-blocks/includes/helpers-box.php::sgs_label_box_css_rule, which already emits `display:block` for a full-width label box",
+   "note": "one declaration in the shared field stylesheet closes every sgs/form-field-* block at once"
+  },
+  "fixShape": "Add `display:block` to `plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input` - a corrected framework default, not an inspector control (no client would ever set a form control's display).",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/form-field-phone|.sgs-form-field__input|display",
+  "block": "sgs/form-field-phone",
+  "path": ".sgs-form-field__input",
+  "property": "display",
+  "rows": 1,
+  "surfaces": [
+   "contact-form"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM5-shared-field-stylesheet-declares-no-display-on-the-control",
+  "proof": "Not a presence difference: the draft computes `display:block` and live `inline-block`, neither side is `none`, so the sgsHideOn* visibility settings are correctly rejected by settingFits (which only fits a boolean-visibility setting when a side is 'none'). `inline-block` is simply the user-agent default for <input>, because the shared field rule declares width/max-width but no display. No setting paints display on the control element on any sgs/form-field-* block.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug LIKE 'sgs/form-field-%' AND css_property='display' AND attr_name NOT LIKE 'sgsHide%' -> 0 rows (the only display rows on these blocks are sgsHideOnDesktop/Tablet/Mobile, role boolean-visibility, css_element 'wrapper', source sgs-ext)",
+   "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input declares `width:100%; max-width:100%` and no `display` (the form-field-* blocks ship no style.css of their own: `ls plugins/sgs-blocks/src/blocks/form-field-text/` -> block.json, edit.js, index.js, render.php)",
+   "scripts/computed-route/lib/triage.mjs::settingFits - `'boolean-visibility' === s.role && ! values.includes( 'none' )` returns false, which is why the three candidates were listed but never decided",
+   "walker: contact-form/cr-ref-contact-form-3, tags input->input, display block -> inline-block at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/form (shared stylesheet)",
+   "setting": "n/a - a corrected default, not a control",
+   "helper": "plugins/sgs-blocks/includes/helpers-box.php::sgs_label_box_css_rule, which already emits `display:block` for a full-width label box",
+   "note": "one declaration in the shared field stylesheet closes every sgs/form-field-* block at once"
+  },
+  "fixShape": "Add `display:block` to `plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input` - a corrected framework default, not an inspector control (no client would ever set a form control's display).",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/form-field-select|.sgs-form-field__input|display",
+  "block": "sgs/form-field-select",
+  "path": ".sgs-form-field__input",
+  "property": "display",
+  "rows": 1,
+  "surfaces": [
+   "contact-form"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM5-shared-field-stylesheet-declares-no-display-on-the-control",
+  "proof": "Not a presence difference: the draft computes `display:block` and live `inline-block`, neither side is `none`, so the sgsHideOn* visibility settings are correctly rejected by settingFits (which only fits a boolean-visibility setting when a side is 'none'). `inline-block` is simply the user-agent default for <select>, because the shared field rule declares width/max-width but no display. No setting paints display on the control element on any sgs/form-field-* block.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug LIKE 'sgs/form-field-%' AND css_property='display' AND attr_name NOT LIKE 'sgsHide%' -> 0 rows (the only display rows on these blocks are sgsHideOnDesktop/Tablet/Mobile, role boolean-visibility, css_element 'wrapper', source sgs-ext)",
+   "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input declares `width:100%; max-width:100%` and no `display` (the form-field-* blocks ship no style.css of their own: `ls plugins/sgs-blocks/src/blocks/form-field-text/` -> block.json, edit.js, index.js, render.php)",
+   "scripts/computed-route/lib/triage.mjs::settingFits - `'boolean-visibility' === s.role && ! values.includes( 'none' )` returns false, which is why the three candidates were listed but never decided",
+   "walker: contact-form/cr-ref-contact-form-4, tags select->select, display block -> inline-block at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/form (shared stylesheet)",
+   "setting": "n/a - a corrected default, not a control",
+   "helper": "plugins/sgs-blocks/includes/helpers-box.php::sgs_label_box_css_rule, which already emits `display:block` for a full-width label box",
+   "note": "one declaration in the shared field stylesheet closes every sgs/form-field-* block at once"
+  },
+  "fixShape": "Add `display:block` to `plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input` - a corrected framework default, not an inspector control (no client would ever set a form control's display).",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/social-icons||align-items",
+  "block": "sgs/social-icons",
+  "path": "",
+  "property": "align-items",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "sgs/social-icons carries no align-items setting at all; the live `center` is hardcoded on the block root.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%align-items%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons declares `align-items: center`",
+   "walker: footer/cr-ref-footer-6, tags div->div, align-items normal -> center at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "alignItems / justifyContent / flexDirection / flexWrap",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (the four-member layout cluster, css_element 'inner')",
+   "note": "the same four-member layout cluster is already carried by sgs/container, sgs/form, sgs/form-field-tiles, sgs/trust-bar, sgs/site-header-row and sgs/site-footer-row (db: SELECT block_slug, attr_name FROM block_attributes WHERE css_property LIKE '%align-items%' -> 20 rows incl. those blocks); adding the member to a block that lacks it is a cluster declaration, not a new control primitive"
+  },
+  "fixShape": "Declare the four-member layout cluster (alignItems, justifyContent, flexDirection, flexWrap) on sgs/social-icons' root through SGS_Container_Wrapper, as sgs/trust-bar already does.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/social-icons||flex-wrap",
+  "block": "sgs/social-icons",
+  "path": "",
+  "property": "flex-wrap",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "sgs/social-icons carries no flex-wrap setting; the live `wrap` is hardcoded on the block root.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%flex-wrap%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons declares `flex-wrap: wrap`",
+   "walker: footer/cr-ref-footer-6, tags div->div, flex-wrap nowrap -> wrap at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/trust-bar",
+   "setting": "flexWrap",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (`if ( '' !== $flex_wrap ) { $gd[] = 'flex-wrap:' . esc_attr( $flex_wrap ); }`), css_element 'wrapper'",
+   "note": "sgs/trust-bar, sgs/container, sgs/form, sgs/form-field-tiles, sgs/site-header-row and sgs/site-footer-row all carry flexWrap"
+  },
+  "fixShape": "Same cluster declaration as the align-items row above - one change closes both social-icons combos.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/business-info||flex-grow",
+  "block": "sgs/business-info",
+  "path": "",
+  "property": "flex-grow",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM2-child-sizing-extension-not-enabled-on-the-block",
+  "proof": "sgs/business-info has no flex setting and, unlike sgs/mega-group, does not opt into the Child sizing extension, so nothing can set its flex-grow as a flex item: the DB shows no sgsChildSizing row for it.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/business-info' AND (css_property LIKE '%justify-content%' OR css_property LIKE '%flex%') -> 0 rows",
+   "db: SELECT block_slug FROM block_attributes WHERE attr_name='sgsChildSizing' AND block_slug IN (the 15 blocks of this batch) -> 4 rows: sgs/button, sgs/container, sgs/mega-group, sgs/responsive-logo - sgs/business-info is absent",
+   "walker: footer/cr-ref-footer-28, tags span->div, flex-grow 0 -> 1 at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/mega-group",
+   "setting": "sgsChildSizing",
+   "helper": "plugins/sgs-blocks/includes/child-sizing.php + block.json::supports.sgs.enabledExtensions",
+   "note": "'fit' emits `flex:0 1 auto` = the draft's flex-grow 0; a one-line supports change gives business-info the same control"
+  },
+  "fixShape": "Add `\"childSizing\"` to `business-info/block.json::supports.sgs.enabledExtensions` (one line, existing extension, existing inspector panel).",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/trust-bar|.sgs-trust-bar__badge:nth-of-type(1)|align-items",
+  "block": "sgs/trust-bar",
+  "path": ".sgs-trust-bar__badge:nth-of-type(1)",
+  "property": "align-items",
+  "rows": 1,
+  "surfaces": [
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM4-parent-setting-exists-but-its-calibrated-slot-is-not-the-child-element",
+  "proof": "`sgs/trust-bar::alignItems` exists and is calibrated, but only to the block root: its calibration records `slots: [\"\"]`. The badge is a separately calibrated element whose align-items is hardcoded, so the setting cannot paint it - exactly the gap typing Spec 47 section 6 already records (\"a setting that paints a parent while a rule on a child overrides it comes out Missing setting\").",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/trust-bar' AND css_property LIKE '%align-items%' -> 1 row: (sgs/trust-bar, alignItems, layout, align-items, NULL, NULL, sgs)",
+   "scripts/computed-route/cache/trust-bar.json::settings.alignItems = { slot: \"\", slots: [\"\"], property: \"align-items\", reachedAt: [375,768,1440] } - and `.sgs-trust-bar__badge:nth-of-type(1)` is a separate key in `elements`",
+   "plugins/sgs-blocks/src/blocks/trust-bar/style.css::.sgs-trust-bar__badge declares `align-items: center`",
+   ".claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md section 6: \"Gap typing (a setting that paints a parent while a rule on a child overrides it comes out Missing setting)\""
+  ],
+  "precedent": {
+   "block": "sgs/trust-bar",
+   "setting": "alignItems",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper, calibrated slot \"\"",
+   "note": "the member already exists on this very block - the fix is to widen its slot set, not to invent a control"
+  },
+  "fixShape": "Extend `sgs/trust-bar::alignItems` to a badge slot (a badge-scoped alignment member), so one setting covers the root and the badges.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/container||align-items",
+  "block": "sgs/container",
+  "path": "",
+  "property": "align-items",
+  "rows": 1,
+  "surfaces": [
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "subMechanism": "SM6-setting-calibrated-to-inner-while-the-pair-measures-the-root",
+  "proof": "The setting exists for this block and this property: `sgs/container::alignItems` writes align-items through SGS_Container_Wrapper. The route could not use it because its calibrated element is `inner` while the paired element is the container root (path ''), and the pair maps a draft <span> to the live container <div> - so calibration reported reaches:false and the resolver returned no-setting. A setting that exists but cannot be calibrated to the paired element is the brief's W, not F.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/container' AND css_property LIKE '%align-items%' -> 1 row: (sgs/container, alignItems, layout, align-items, inner, NULL, sgs)",
+   "triage evidence for header/cr-ref-header-5: { check: 'attribute', block: 'sgs/container', setting: 'alignItems', css_property: 'align-items', css_element: 'inner', reaches: false }",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper - `if ( '' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); }`",
+   "walker: header/cr-ref-header-5, tags span->div, align-items normal -> center at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "alignItems",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+   "note": "the setting itself is the precedent; only the slot mapping (inner vs the measured root) is wrong"
+  },
+  "fixShape": "Record the container's alignItems against whichever element the pair measures (both the root and `inner` in calibration), so the resolver can write it.",
+  "confidence": "high",
+  "changed": true
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/business-info|.sgs-business-info > .sgs-business-info__link|justify-content",
+  "block": "sgs/business-info",
+  "path": ".sgs-business-info > .sgs-business-info__link",
+  "property": "justify-content",
+  "rows": 1,
+  "surfaces": [
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "No justify-content setting on sgs/business-info or its enclosing site-header-row/site-header reaches the link element; the live `center` is hardcoded on the link.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/business-info' AND (css_property LIKE '%justify-content%' OR css_property LIKE '%flex%') -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-info__link declares `justify-content: center`",
+   "walker: header/cr-ref-header-11, tags a->a, justify-content normal -> center at 1440 and 1920"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "alignItems / justifyContent / flexDirection / flexWrap",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (the four-member layout cluster, css_element 'inner')",
+   "note": "the same four-member layout cluster is already carried by sgs/container, sgs/form, sgs/form-field-tiles, sgs/trust-bar, sgs/site-header-row and sgs/site-footer-row (db: SELECT block_slug, attr_name FROM block_attributes WHERE css_property LIKE '%align-items%' -> 20 rows incl. those blocks); adding the member to a block that lacks it is a cluster declaration, not a new control primitive"
+  },
+  "fixShape": "Declare a link-scoped alignment member on sgs/business-info (the layout cluster, css_element 'link'), as sgs/site-footer-row does for its wrapper.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track > .sgs-brand-strip__set|align-items",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track > .sgs-brand-strip__set",
+  "property": "align-items",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "sgs/brand-strip carries no align-items setting; the live `center` is hardcoded on the set element.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/brand-strip' AND css_property LIKE '%align-items%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/brand-strip/style.css::.sgs-brand-strip__set declares `align-items: center`",
+   "walker: home/cr-ref-home-8, tags div->div, align-items normal -> center"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "alignItems / justifyContent / flexDirection / flexWrap",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (the four-member layout cluster, css_element 'inner')",
+   "note": "the same four-member layout cluster is already carried by sgs/container, sgs/form, sgs/form-field-tiles, sgs/trust-bar, sgs/site-header-row and sgs/site-footer-row (db: SELECT block_slug, attr_name FROM block_attributes WHERE css_property LIKE '%align-items%' -> 20 rows incl. those blocks); adding the member to a block that lacks it is a cluster declaration, not a new control primitive"
+  },
+  "fixShape": "Declare the layout cluster on sgs/brand-strip's track (one member covers both the track and the set).",
+  "confidence": "medium",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|align-items",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "align-items",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "sgs/brand-strip carries no align-items setting; the live `center` is hardcoded on the track element.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/brand-strip' AND css_property LIKE '%align-items%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/brand-strip/style.css::.sgs-brand-strip__track declares `align-items: center`",
+   "walker: home/cr-ref-home-8, tags div->div, align-items normal -> center"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "alignItems / justifyContent / flexDirection / flexWrap",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (the four-member layout cluster, css_element 'inner')",
+   "note": "the same four-member layout cluster is already carried by sgs/container, sgs/form, sgs/form-field-tiles, sgs/trust-bar, sgs/site-header-row and sgs/site-footer-row (db: SELECT block_slug, attr_name FROM block_attributes WHERE css_property LIKE '%align-items%' -> 20 rows incl. those blocks); adding the member to a block that lacks it is a cluster declaration, not a new control primitive"
+  },
+  "fixShape": "Declare the layout cluster on sgs/brand-strip's track (one member covers both the track and the set).",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/process-steps|.sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title|flex-grow",
+  "block": "sgs/process-steps",
+  "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title",
+  "property": "flex-grow",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM7-hardcoded-flex-on-an-inner-element",
+  "proof": "The live flex-grow 1 is hardcoded on the step title inside the mobile media query, and no setting on sgs/process-steps touches flex; Child sizing cannot help because its rules only ever land on a block's own root, never on an inner element.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/process-steps' AND css_property LIKE '%flex%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/process-steps/style.css::.sgs-process-steps__title declares `flex: 1; align-self: center` inside the mobile block, which is why the row only fires at 375",
+   "plugins/sgs-blocks/includes/child-sizing.php - the rules \"land on the block's root element (the flex item)\", so the extension cannot reach __title",
+   "walker: home/cr-ref-home-65, tags li->p, flex-grow 0 -> 1 at 375 only"
+  ],
+  "precedent": {
+   "block": "sgs/mega-group",
+   "setting": "sgsChildSizing",
+   "helper": "includes/child-sizing.php",
+   "note": "root-only, so it does NOT cover this inner element - this needs the hardcode removed or a per-element sizing member"
+  },
+  "fixShape": "Drop `flex: 1` from the mobile `.sgs-process-steps__title` rule (a default, nothing to protect pre-production), or expose a step-title sizing member.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/process-steps|.sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title|flex-grow",
+  "block": "sgs/process-steps",
+  "path": ".sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title",
+  "property": "flex-grow",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM7-hardcoded-flex-on-an-inner-element",
+  "proof": "The live flex-grow 1 is hardcoded on the step title inside the mobile media query, and no setting on sgs/process-steps touches flex; Child sizing cannot help because its rules only ever land on a block's own root, never on an inner element.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/process-steps' AND css_property LIKE '%flex%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/process-steps/style.css::.sgs-process-steps__title declares `flex: 1; align-self: center` inside the mobile block, which is why the row only fires at 375",
+   "plugins/sgs-blocks/includes/child-sizing.php - the rules \"land on the block's root element (the flex item)\", so the extension cannot reach __title",
+   "walker: home/cr-ref-home-65, tags li->p, flex-grow 0 -> 1 at 375 only"
+  ],
+  "precedent": {
+   "block": "sgs/mega-group",
+   "setting": "sgsChildSizing",
+   "helper": "includes/child-sizing.php",
+   "note": "root-only, so it does NOT cover this inner element - this needs the hardcode removed or a per-element sizing member"
+  },
+  "fixShape": "Drop `flex: 1` from the mobile `.sgs-process-steps__title` rule (a default, nothing to protect pre-production), or expose a step-title sizing member.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/process-steps|.sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title|flex-grow",
+  "block": "sgs/process-steps",
+  "path": ".sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title",
+  "property": "flex-grow",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM7-hardcoded-flex-on-an-inner-element",
+  "proof": "The live flex-grow 1 is hardcoded on the step title inside the mobile media query, and no setting on sgs/process-steps touches flex; Child sizing cannot help because its rules only ever land on a block's own root, never on an inner element.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/process-steps' AND css_property LIKE '%flex%' -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/process-steps/style.css::.sgs-process-steps__title declares `flex: 1; align-self: center` inside the mobile block, which is why the row only fires at 375",
+   "plugins/sgs-blocks/includes/child-sizing.php - the rules \"land on the block's root element (the flex item)\", so the extension cannot reach __title",
+   "walker: home/cr-ref-home-65, tags li->p, flex-grow 0 -> 1 at 375 only"
+  ],
+  "precedent": {
+   "block": "sgs/mega-group",
+   "setting": "sgsChildSizing",
+   "helper": "includes/child-sizing.php",
+   "note": "root-only, so it does NOT cover this inner element - this needs the hardcode removed or a per-element sizing member"
+  },
+  "fixShape": "Drop `flex: 1` from the mobile `.sgs-process-steps__title` rule (a default, nothing to protect pre-production), or expose a step-title sizing member.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow|flex-grow",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow",
+  "property": "flex-grow",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM7-hardcoded-flex-on-an-inner-element",
+  "proof": "The live flex-grow 1 is hardcoded on the chrome eyebrow; sgs/choice-flow has no flex setting and does not opt into Child sizing, which in any case is root-only.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/choice-flow' AND (css_property LIKE '%justify-content%' OR css_property LIKE '%flex%') -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow/style.css::.sgs-choice-flow__chrome-eyebrow declares `flex: 1 1 auto; min-width: 0`",
+   "walker: lens/cr-ref-lens-0, tags span->span, flex-grow 0 -> 1 at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/mega-group",
+   "setting": "sgsChildSizing",
+   "helper": "includes/child-sizing.php",
+   "note": "root-only; does not reach an inner element"
+  },
+  "fixShape": "Change the eyebrow's hardcode to `flex: 0 1 auto` (the draft's shape) or expose a chrome-header sizing member.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary|justify-content",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary",
+  "property": "justify-content",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "sgs/choice-flow carries no justify-content setting anywhere, so nothing can align the summary row; the live value is painted by the block's own stylesheet (the sibling `.sgs-choice-flow__summary` row shows the same pattern, normal -> space-between).",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/choice-flow' AND (css_property LIKE '%justify-content%' OR css_property LIKE '%flex%') -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/choice-flow/style.css - justify-content is declared only in hardcoded element rules (`.sgs-choice-flow__summary` space-between, `.sgs-choice-flow__chrome-close` center, `.sgs-choice-flow__footer-row` center); no attribute reads it",
+   "walker: lens/cr-ref-lens-0 - this exact path carries no open diff in the walk the triage read, so the row's values could not be re-measured; the 0-row DB result is what carries this verdict"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "alignItems / justifyContent / flexDirection / flexWrap",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (the four-member layout cluster, css_element 'inner')",
+   "note": "the same four-member layout cluster is already carried by sgs/container, sgs/form, sgs/form-field-tiles, sgs/trust-bar, sgs/site-header-row and sgs/site-footer-row (db: SELECT block_slug, attr_name FROM block_attributes WHERE css_property LIKE '%align-items%' -> 20 rows incl. those blocks); adding the member to a block that lacks it is a cluster declaration, not a new control primitive"
+  },
+  "fixShape": "Declare the layout cluster on sgs/choice-flow's summary panel (css_element 'summary'), or set the summary row's default to the draft's distribution.",
+  "confidence": "low",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/button||flex-direction",
+  "block": "sgs/button",
+  "path": "",
+  "property": "flex-direction",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "The draft's brand tile stacks its icon above its label (flex-direction column on the <a>); live is row. sgs/button has no flex-direction setting, and `iconPosition` only reorders the DOM nodes (before / after / only) - it never emits flex-direction, so no value of it can produce column.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/button' AND css_property LIKE '%flex-direction%' -> 0 rows (the block's layout-ish rows are contentAlign -> justify-content, iconGap -> gap, textAlign -> text-align, minHeight -> min-height, customWidth -> width)",
+   "plugins/sgs-blocks/src/blocks/button/render.php - `$icon_position` is only ever compared with 'before' / 'only' and reorders the markup; block.json::attributes.iconPosition is `{ type: string, default: 'after' }` with no enum",
+   "walker: mega-brands/cr-ref-mega-brands-8, tags a->a, flex-direction column -> row at 1440 and 1920"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "flexDirection",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (`if ( '' !== $flex_direction ) { $gd[] = 'flex-direction:' . esc_attr( $flex_direction ); }`), css_element 'inner'",
+   "note": "also on sgs/trust-bar (wrapper), sgs/form, sgs/form-field-tiles, sgs/site-header-row, sgs/site-footer-row"
+  },
+  "fixShape": "Add an `above` / `below` value to `sgs/button::iconPosition` that emits flex-direction:column on the wrapper (the product-shaped fix), or declare flexDirection on the button wrapper via the layout cluster.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options|align-items",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options",
+  "property": "align-items",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "sgs/buybox has no align-items or flex-direction setting at all; the option row's `stretch` is hardcoded.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/buybox' AND (css_property LIKE '%align-items%' OR css_property LIKE '%flex-direction%') -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/buybox/style.css::`.sgs-buybox .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__options` declares `align-items: stretch`",
+   "walker: product/cr-ref-product-4, tags div->div, align-items normal -> stretch at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "alignItems / justifyContent / flexDirection / flexWrap",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (the four-member layout cluster, css_element 'inner')",
+   "note": "the same four-member layout cluster is already carried by sgs/container, sgs/form, sgs/form-field-tiles, sgs/trust-bar, sgs/site-header-row and sgs/site-footer-row (db: SELECT block_slug, attr_name FROM block_attributes WHERE css_property LIKE '%align-items%' -> 20 rows incl. those blocks); adding the member to a block that lacks it is a cluster declaration, not a new control primitive"
+  },
+  "fixShape": "Declare the layout cluster on the buybox's option-picker element (css_element 'option-picker'), as sgs/form-field-tiles already does for its tile row.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|flex-direction",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "flex-direction",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "The draft's option chip stacks its parts (column); live is row. sgs/buybox carries no flex-direction setting; `stackBelow` is a min-width breakpoint for the buybox's own two columns, not a direction control for an option chip.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/buybox' AND (css_property LIKE '%align-items%' OR css_property LIKE '%flex-direction%') -> 0 rows; the nearest row is (sgs/buybox, stackBelow, enum-mode, min-width, NULL, NULL, sgs)",
+   "walker: product/cr-ref-product-4, tags button->label, flex-direction column -> row at 375/768/1440/1920"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "alignItems / justifyContent / flexDirection / flexWrap",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (the four-member layout cluster, css_element 'inner')",
+   "note": "the same four-member layout cluster is already carried by sgs/container, sgs/form, sgs/form-field-tiles, sgs/trust-bar, sgs/site-header-row and sgs/site-footer-row (db: SELECT block_slug, attr_name FROM block_attributes WHERE css_property LIKE '%align-items%' -> 20 rows incl. those blocks); adding the member to a block that lacks it is a cluster declaration, not a new control primitive"
+  },
+  "fixShape": "Same option-picker layout cluster as the align-items row above - one declaration closes both buybox option-picker combos.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "sgs/buybox||align-items",
+  "block": "sgs/buybox",
+  "path": "",
+  "property": "align-items",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM3-block-lacks-the-four-member-layout-cluster",
+  "proof": "At 375 the draft aligns the buybox grid to `start` and live computes `normal`: the block's `align-items:start` rule does not apply at that width and no setting can supply it.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/buybox' AND (css_property LIKE '%align-items%' OR css_property LIKE '%flex-direction%') -> 0 rows",
+   "plugins/sgs-blocks/src/blocks/buybox/style.css::.sgs-buybox declares `align-items: start`",
+   "walker: product/cr-ref-product-4, path '', tags div->div, align-items start -> normal at 375"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "alignItems / justifyContent / flexDirection / flexWrap",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (the four-member layout cluster, css_element 'inner')",
+   "note": "the same four-member layout cluster is already carried by sgs/container, sgs/form, sgs/form-field-tiles, sgs/trust-bar, sgs/site-header-row and sgs/site-footer-row (db: SELECT block_slug, attr_name FROM block_attributes WHERE css_property LIKE '%align-items%' -> 20 rows incl. those blocks); adding the member to a block that lacks it is a cluster declaration, not a new control primitive"
+  },
+  "fixShape": "Declare alignItems (per device) on the sgs/buybox root through SGS_Container_Wrapper's layout cluster.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M3-layout-alignment",
+  "combo": "core/query-title||display",
+  "block": "core/query-title",
+  "path": "",
+  "property": "display",
+  "rows": 1,
+  "surfaces": [
+   "shop"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "subMechanism": "SM8-tag-mismatch-pair",
+  "proof": "The pair maps a draft inline <span> to the live core/query-title <h1>: `display inline -> block` is the consequence of the two sides being different element types, not of a missing setting. core/query-title is a core block whose five DB rows are all role 'core'/'select-from-enum' with no css_property, and no SGS setting can paint display on it; the row is a pairing artefact the triage has no tag check for.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='core/query-title' -> 5 rows: level, levelOptions, showPrefix, showSearchTerm (role core), type (select-from-enum) - all css_property NULL",
+   "walker: shop/cr-ref-shop-6, path '', tags span->h1, display inline -> block at 375/768/1440/1920",
+   "scripts/computed-route/lib/triage.mjs - no check reads the pair's `trace.tags`; `grep -n 'tags' lib/triage.mjs` returns only the owners loop's `o.tag`, so a tag-mismatch pair is never typed as an artefact"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "nothing should produce this: the fix is at the pairing layer (or the draft's heading markup), not a control"
+  },
+  "fixShape": "Add a tag-mismatch artefact check to lib/triage.mjs (the walker already records `trace.tags.path` and the draft's `tag`): a style row whose two sides are different element types is a W artefact, like the used-value guard.",
+  "confidence": "high",
+  "changed": true
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header|min-height",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header",
+  "property": "min-height",
+  "rows": 2,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM9-no-row-height-member-on-an-inner-element",
+  "proof": "The draft declares `min-height: 56px` on the FAQ header; live computes 44px from the hardcoded touch-target floor. No min-height setting exists on sgs/accordion-item or sgs/accordion, so nothing can raise it. Note this is NOT a touch-target conflict: 56px exceeds the 44px floor, so the draft value is fully compatible with the WCAG non-negotiable - it is a real control gap.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug IN ('sgs/accordion-item','sgs/accordion') AND (css_property LIKE '%justify-content%' OR css_property LIKE '%min-height%') -> 1 row, and it is (sgs/accordion, justifyContent, layout, justify-content, inner) - 0 min-height rows",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item__header declares `min-height: 44px; /* touch target */`",
+   "walker: help/cr-ref-help-17 and cr-ref-help-19, tags button->summary, min-height 56px -> 44px at 375/768/1440/1920, draft `declared.min-height` = 56px (a real declaration, not a used value)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "chromeRowHeight",
+   "helper": "db row (sgs/nav-drawer, chromeRowHeight, layout, min-height, chrome) - the identical shape: a row-height control on an inner element; see also sgs/button::minHeight (wrapper) and sgs/container::minHeight (wrapper)",
+   "note": "three existing min-height members to copy; the 44px floor stays as a guard"
+  },
+  "fixShape": "Add `headerMinHeight` (layout, min-height, css_element 'header') to sgs/accordion-item, emitting `max(44px, value)` so the touch-target floor still holds.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|width",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "width",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM10-wcag-touch-target-floor-beats-a-real-setting",
+  "proof": "Not a used value: the draft DECLARES `width: 40px` (a plain length), so solve.mjs::USED_VALUES / lib/solve-rows.mjs::usedValueTarget would write it and lib/triage.mjs::usedValueOf correctly emitted no used-value check - verified against the walker's `declared` map, not taken from the triage evidence. The setting that paints it exists on exactly this element (`sgs/social-icons::iconSize`, css_property 'height,width', css_element 'item'), but even at 40px the hardcoded `min-width: 44px` touch-target floor wins, so live stays 44px. That is the brief's hardcode F - and the winning rule is a CLAUDE.md non-negotiable, so the right outcome is a decided divergence, not a new control.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/social-icons' AND attr_name='iconSize' -> 1 row: (sgs/social-icons, iconSize, select-from-enum, 'height,width', item, NULL, sgs)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item declares `min-width: 44px` with the comment \"iconSize ... sets the authoritative width/height, but min-width/min-height stay here\"",
+   "walker: footer/cr-ref-footer-6, tags a->a, width 40px -> 44px at 375/768/1440/1920, draft `declared.width` = 40px",
+   "scripts/computed-route/solve.mjs::USED_VALUES = [ 'width' ] and lib/solve-rows.mjs::usedValueTarget - a declared plain length is written, not reported as a used value, so this row is on the written side of the trap",
+   "triage evidence: { check: 'attribute', setting: 'iconSize', reaches: false } - calibration did not record iconSize reaching the `:nth-of-type()` path, which is why the fitting setting never decided"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "iconSize",
+   "helper": "the setting already paints width/height on this element; divergences.json rule 'touch-target' (ids D-17 to D-30, the contact phone link) is the established class for a WCAG floor beating a draft value",
+   "note": "no new control is needed"
+  },
+  "fixShape": "Register as a `touch-target` divergence in `sites/eye-care-ward-end/build/qa/divergences.json` (rule 'touch-target', precedent D-17 to D-30): 40px icons cannot be matched without breaking the 44px non-negotiable. Separately record iconSize's `:nth-of-type()` reach in calibration so it stops reading as reaches:false.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|width",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "width",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM10-wcag-touch-target-floor-beats-a-real-setting",
+  "proof": "Not a used value: the draft DECLARES `width: 40px` (a plain length), so solve.mjs::USED_VALUES / lib/solve-rows.mjs::usedValueTarget would write it and lib/triage.mjs::usedValueOf correctly emitted no used-value check - verified against the walker's `declared` map, not taken from the triage evidence. The setting that paints it exists on exactly this element (`sgs/social-icons::iconSize`, css_property 'height,width', css_element 'item'), but even at 40px the hardcoded `min-width: 44px` touch-target floor wins, so live stays 44px. That is the brief's hardcode F - and the winning rule is a CLAUDE.md non-negotiable, so the right outcome is a decided divergence, not a new control.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/social-icons' AND attr_name='iconSize' -> 1 row: (sgs/social-icons, iconSize, select-from-enum, 'height,width', item, NULL, sgs)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item declares `min-width: 44px` with the comment \"iconSize ... sets the authoritative width/height, but min-width/min-height stay here\"",
+   "walker: footer/cr-ref-footer-6, tags a->a, width 40px -> 44px at 375/768/1440/1920, draft `declared.width` = 40px",
+   "scripts/computed-route/solve.mjs::USED_VALUES = [ 'width' ] and lib/solve-rows.mjs::usedValueTarget - a declared plain length is written, not reported as a used value, so this row is on the written side of the trap",
+   "triage evidence: { check: 'attribute', setting: 'iconSize', reaches: false } - calibration did not record iconSize reaching the `:nth-of-type()` path, which is why the fitting setting never decided"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "iconSize",
+   "helper": "the setting already paints width/height on this element; divergences.json rule 'touch-target' (ids D-17 to D-30, the contact phone link) is the established class for a WCAG floor beating a draft value",
+   "note": "no new control is needed"
+  },
+  "fixShape": "Register as a `touch-target` divergence in `sites/eye-care-ward-end/build/qa/divergences.json` (rule 'touch-target', precedent D-17 to D-30): 40px icons cannot be matched without breaking the 44px non-negotiable. Separately record iconSize's `:nth-of-type()` reach in calibration so it stops reading as reaches:false.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|width",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "width",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM10-wcag-touch-target-floor-beats-a-real-setting",
+  "proof": "Not a used value: the draft DECLARES `width: 40px` (a plain length), so solve.mjs::USED_VALUES / lib/solve-rows.mjs::usedValueTarget would write it and lib/triage.mjs::usedValueOf correctly emitted no used-value check - verified against the walker's `declared` map, not taken from the triage evidence. The setting that paints it exists on exactly this element (`sgs/social-icons::iconSize`, css_property 'height,width', css_element 'item'), but even at 40px the hardcoded `min-width: 44px` touch-target floor wins, so live stays 44px. That is the brief's hardcode F - and the winning rule is a CLAUDE.md non-negotiable, so the right outcome is a decided divergence, not a new control.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/social-icons' AND attr_name='iconSize' -> 1 row: (sgs/social-icons, iconSize, select-from-enum, 'height,width', item, NULL, sgs)",
+   "plugins/sgs-blocks/src/blocks/social-icons/style.css::.sgs-social-icons__item declares `min-width: 44px` with the comment \"iconSize ... sets the authoritative width/height, but min-width/min-height stay here\"",
+   "walker: footer/cr-ref-footer-6, tags a->a, width 40px -> 44px at 375/768/1440/1920, draft `declared.width` = 40px",
+   "scripts/computed-route/solve.mjs::USED_VALUES = [ 'width' ] and lib/solve-rows.mjs::usedValueTarget - a declared plain length is written, not reported as a used value, so this row is on the written side of the trap",
+   "triage evidence: { check: 'attribute', setting: 'iconSize', reaches: false } - calibration did not record iconSize reaching the `:nth-of-type()` path, which is why the fitting setting never decided"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "iconSize",
+   "helper": "the setting already paints width/height on this element; divergences.json rule 'touch-target' (ids D-17 to D-30, the contact phone link) is the established class for a WCAG floor beating a draft value",
+   "note": "no new control is needed"
+  },
+  "fixShape": "Register as a `touch-target` divergence in `sites/eye-care-ward-end/build/qa/divergences.json` (rule 'touch-target', precedent D-17 to D-30): 40px icons cannot be matched without breaking the 44px non-negotiable. Separately record iconSize's `:nth-of-type()` reach in calibration so it stops reading as reaches:false.",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "sgs/responsive-logo|.sgs-responsive-logo__link > .sgs-responsive-logo__picture > img|aspect-ratio",
+  "block": "sgs/responsive-logo",
+  "path": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img",
+  "property": "aspect-ratio",
+  "rows": 1,
+  "surfaces": [
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "subMechanism": "SM11-intrinsic-value-with-no-used-value-guard",
+  "proof": "Neither side declares aspect-ratio. The draft's value is the INTRINSIC form `auto 48 / 22` (`auto 40 / 18` in the scrolled state) - the computed shape a replaced element takes when it has intrinsic dimensions - against live's bare `auto`, i.e. the live <img> presents no intrinsic ratio. CR10 built the declared-aspect-ratio route, but `USED_VALUES` covers only `width`, so there is no intrinsic guard for aspect-ratio and nothing a setting writes could ever produce `auto 48 / 22`. The existing route therefore misses it not through a missing control but because the row's value is a used/intrinsic value: a measuring artefact whose real cause is markup (the logo <img> carrying no width/height, or an uploaded SVG stripped of its viewBox).",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/responsive-logo' AND css_property LIKE '%aspect%' -> 0 rows (the block's size rows are maxWidth/logoId/logoIdTablet/logoIdMobile -> max-width on 'image', width and maxHeight on 'wrapper')",
+   "walker: header/cr-ref-header-6, tags img->img, aspect-ratio `auto 48 / 22` -> `auto` (closed) and `auto 40 / 18` -> `auto` (scrolled); declared = none on either side",
+   "scripts/computed-route/solve.mjs::USED_VALUES = [ 'width' ]; lib/triage.mjs::usedValueOf tests only /^(width|height)$/, so aspect-ratio has no used/intrinsic guard",
+   ".claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md section 6 lists \"aspect ratio (CR10, live proof on the first image-heavy surface)\" as built on 2026-10-04"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "boxAspectRatio",
+   "helper": "db row (sgs/container, boxAspectRatio, layout, aspect-ratio, wrapper) - the declared-aspect-ratio control CR10 routes",
+   "note": "it exists and works for a declared ratio; it cannot and should not produce an intrinsic `auto <w> / <h>`"
+  },
+  "fixShape": "Extend the used-value guard to the intrinsic forms - treat an `auto <w> / <h>` aspect-ratio (against a bare `auto`) as a used value in solve.mjs::USED_VALUES / lib/triage.mjs::usedValueOf; separately emit width/height on the logo <img> in responsive-logo/render.php so both sides share an intrinsic ratio.",
+  "confidence": "high",
+  "changed": true
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "sgs/button||object-fit",
+  "block": "sgs/button",
+  "path": "",
+  "property": "object-fit",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "subMechanism": "SM12-draft-side-has-no-value-for-the-property",
+  "proof": "The draft side has NO value for this property at all (the walker records null), and live's `fill` is simply the CSS initial value of object-fit - the row compares an unread draft against a default. The pair also crosses element types (draft <span>, live <a>), and every other property on this ref shows the same null -> initial shape, so the whole draft pair is unread rather than this one property being uncontrollable. Nothing a setting writes can close a row with no target value.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/button' AND (css_property LIKE '%object-fit%' OR css_property LIKE '%aspect%') -> 0 rows",
+   "walker: mega-brands/cr-ref-mega-brands-41, path '', tags span->a, object-fit null -> fill at 1440 and 1920",
+   "walker, same ref and runs: display null -> flex, flex-direction null -> row, flex-wrap null -> nowrap, justify-content null -> flex-start, align-items null -> center, flex-grow null -> 0",
+   "scripts/computed-route/lib/solve-rows.mjs::usedValueTarget - `! Object.keys( perWidth ).length` already returns a gap for an empty draft read, but no equivalent guard runs for a per-property null"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "nothing should produce this: the draft pair carries no value to write"
+  },
+  "fixShape": "Guard in the walker/triage: drop (or type as W) a style row whose draft value is null, and re-pair cr-ref-mega-brands-41 so the draft <span> is matched to the right live element.",
+  "confidence": "high",
+  "changed": true
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "sgs/button||aspect-ratio",
+  "block": "sgs/button",
+  "path": "",
+  "property": "aspect-ratio",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "subMechanism": "SM12-draft-side-has-no-value-for-the-property",
+  "proof": "The draft side has NO value for this property at all (the walker records null), and live's `auto` is simply the CSS initial value of aspect-ratio - the row compares an unread draft against a default. The pair also crosses element types (draft <span>, live <a>), and every other property on this ref shows the same null -> initial shape, so the whole draft pair is unread rather than this one property being uncontrollable. Nothing a setting writes can close a row with no target value.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/button' AND (css_property LIKE '%object-fit%' OR css_property LIKE '%aspect%') -> 0 rows",
+   "walker: mega-brands/cr-ref-mega-brands-41, path '', tags span->a, aspect-ratio null -> auto at 1440 and 1920",
+   "walker, same ref and runs: display null -> flex, flex-direction null -> row, flex-wrap null -> nowrap, justify-content null -> flex-start, align-items null -> center, flex-grow null -> 0",
+   "scripts/computed-route/lib/solve-rows.mjs::usedValueTarget - `! Object.keys( perWidth ).length` already returns a gap for an empty draft read, but no equivalent guard runs for a per-property null"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "nothing should produce this: the draft pair carries no value to write"
+  },
+  "fixShape": "Guard in the walker/triage: drop (or type as W) a style row whose draft value is null, and re-pair cr-ref-mega-brands-41 so the draft <span> is matched to the right live element.",
+  "confidence": "high",
+  "changed": true
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "sgs/nav-drawer||max-width",
+  "block": "sgs/nav-drawer",
+  "path": "",
+  "property": "max-width",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "subMechanism": "SM1-setting-exists-but-its-db-row-carries-no-css_property",
+  "proof": "The setting exists and writes exactly this property on exactly this element: `sgs/nav-drawer::panelSize` is the per-device CSS-length width cap for the side / trigger / centred anchors, emitted on the drawer root by render.php's geometry closure - the live `375px` IS panelSize. The route missed it because the DB row carries css_property NULL and css_element NULL, so settingFits cannot list 'max-width' and `nameFits('max-width','panelSize')` does not match; the triage instead surfaced the unrelated `chromeLogoWidth` (reaches:false).",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_property LIKE '%max-width%' -> 0 rows; the row that actually writes it is (sgs/nav-drawer, panelSize, select-from-enum, NULL, NULL, NULL, sgs)",
+   "plugins/sgs-blocks/src/blocks/nav-drawer/block.json::attributes.panelSize, documented in the same file: \"`panelSize` (per-device width cap for the side, trigger and centred anchors) ... see render.php's $sgs_nd_geometry_for_anchor closure\"",
+   "plugins/sgs-blocks/src/blocks/nav-drawer/render.php - `$panel_size_attr_raw = $attributes['panelSize'] ?? array();` and `@param string $panel_size Resolved, pre-sanitised panelSize length for this tier`; the header notes `side-start`/`side-end` are \"full-height edge panels, `panelSize` wide\"",
+   "walker: mobile-menu/cr-ref-mobile-menu-0, tags div->dialog, max-width none -> 375px at 375"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "panelSize",
+   "helper": "render.php::$sgs_nd_geometry_for_anchor",
+   "note": "the same sub-mechanism as sgs/mega-group::sgsChildSizing - a real geometry setting invisible to the resolver because its DB row has no css_property"
+  },
+  "fixShape": "Seed `css_property='max-width,width'` and `css_element='wrapper'` onto the `sgs/nav-drawer::panelSize` row, and audit every other geometry/layout row whose css_property is NULL, so the resolver can route max-width to it.",
+  "confidence": "high",
+  "changed": true
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "sgs/buybox|.sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el|object-fit",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+  "property": "object-fit",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "subMechanism": "SM8-tag-mismatch-pair",
+  "proof": "The pair maps a draft <div> gallery slide to a live <img>: `object-fit fill -> cover` is the consequence of the element types differing, not of a missing setting. `object-fit: fill` is the initial value and is inert on a non-replaced <div>, and `max-width: 100%` is the standard replaced-element reset the live <img> picks up; neither side declares either property. The triage has no tag-mismatch check, so it typed the row as a framework gap.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/buybox' AND (css_property LIKE '%object-fit%' OR css_property LIKE '%max-width%') -> 0 rows",
+   "walker: product/cr-ref-product-4, path '.sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el', tags div->img, object-fit fill -> cover at 375/768/1440/1920, declared = none on either side",
+   "scripts/computed-route/lib/triage.mjs - no check reads the pair's tags (`grep -n 'tags' lib/triage.mjs` -> only the owners loop's `o.tag`)"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "backgroundSize",
+   "helper": "db row (sgs/container, backgroundSize, visual, 'background-size,object-fit', NULL) - the framework's existing object-fit channel",
+   "note": "a real object-fit control exists on sgs/container, so if the row survives re-pairing the fix has a precedent"
+  },
+  "fixShape": "Add the tag-mismatch artefact check to lib/triage.mjs (shared with the core/query-title and woocommerce rows), then re-pair the gallery slide so a draft <div> is not compared with a live <img>.",
+  "confidence": "high",
+  "changed": true
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "sgs/buybox|.sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el|max-width",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+  "property": "max-width",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "subMechanism": "SM8-tag-mismatch-pair",
+  "proof": "The pair maps a draft <div> gallery slide to a live <img>: `max-width none -> 100%` is the consequence of the element types differing, not of a missing setting. `object-fit: fill` is the initial value and is inert on a non-replaced <div>, and `max-width: 100%` is the standard replaced-element reset the live <img> picks up; neither side declares either property. The triage has no tag-mismatch check, so it typed the row as a framework gap.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/buybox' AND (css_property LIKE '%object-fit%' OR css_property LIKE '%max-width%') -> 0 rows",
+   "walker: product/cr-ref-product-4, path '.sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el', tags div->img, max-width none -> 100% at 375/768/1440/1920, declared = none on either side",
+   "scripts/computed-route/lib/triage.mjs - no check reads the pair's tags (`grep -n 'tags' lib/triage.mjs` -> only the owners loop's `o.tag`)"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "backgroundSize",
+   "helper": "db row (sgs/container, backgroundSize, visual, 'background-size,object-fit', NULL) - the framework's existing object-fit channel",
+   "note": "a real object-fit control exists on sgs/container, so if the row survives re-pairing the fix has a precedent"
+  },
+  "fixShape": "Add the tag-mismatch artefact check to lib/triage.mjs (shared with the core/query-title and woocommerce rows), then re-pair the gallery slide so a draft <div> is not compared with a live <img>.",
+  "confidence": "high",
+  "changed": true
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "woocommerce/catalog-sorting|form > select|max-width",
+  "block": "woocommerce/catalog-sorting",
+  "path": "form > select",
+  "property": "max-width",
+  "rows": 1,
+  "surfaces": [
+   "shop"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM13-woocommerce-block-holds-no-sgs-setting-theme-css-is-the-only-channel",
+  "proof": "Spec 47 section 2 states outright that WooCommerce blocks hold no SGS setting, and the DB confirms it: zero rows for any woocommerce/* block. The draft DECLARES `max-width: 100%` on the sorting <select> and live has `none`, so the value has to be added. No enclosing SGS block can reach it either: sgs/container's maxWidth paints the container wrapper (css_element 'wrapper'), never a descendant inside another block's markup. The only styling channel is the theme's WooCommerce stylesheet - so the fix is a theme declaration, never a control on the WooCommerce block.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug LIKE 'woocommerce/%' -> 0 rows",
+   ".claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md section 2: \"description (`core/post-content`), and WooCommerce blocks hold no SGS setting\"",
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug='sgs/container' AND css_property LIKE '%max-width%' -> 1 row: (sgs/container, maxWidth, layout, max-width, wrapper) - the wrapper only",
+   "walker: shop/cr-ref-shop-9, tags select->select, max-width 100% -> none at 375/768/1440, draft `declared.max-width` = 100%",
+   "theme/sgs-theme/assets/css/woocommerce.css already carries this kind of rule: `.wp-block-woocommerce-cart { width:100%; max-width:100%; overflow-x:hidden }` and `.wp-block-woocommerce-checkout { ... max-width:100% ... }`"
+  ],
+  "precedent": {
+   "block": "theme, not a block",
+   "setting": "n/a",
+   "helper": "theme/sgs-theme/assets/css/woocommerce.css",
+   "note": "the established channel for styling WooCommerce block markup in SGS; it already sets max-width on the cart and checkout blocks and restyles `.wc-block-components-text-input input`"
+  },
+  "fixShape": "Add a rule to `theme/sgs-theme/assets/css/woocommerce.css` for the catalog-sorting select (`max-width:100%`).",
+  "confidence": "high",
+  "changed": false
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "woocommerce/product-template||max-width",
+  "block": "woocommerce/product-template",
+  "path": "",
+  "property": "max-width",
+  "rows": 1,
+  "surfaces": [
+   "shop"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM13-woocommerce-block-holds-no-sgs-setting-theme-css-is-the-only-channel",
+  "proof": "Zero SGS settings exist on any woocommerce/* block (Spec 47 section 2), and no enclosing SGS block can reach inside the product loop's own markup - sgs/container::maxWidth paints only its own wrapper. Live declares `max-width: 100%` on the product-template <ul> where the draft's <div> has the initial `none`, so only the theme's WooCommerce stylesheet can change it. Caveat: the pair also crosses element types (draft <div> -> live <ul>), so part of this row may dissolve once a tag-mismatch check exists.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug LIKE 'woocommerce/%' -> 0 rows",
+   ".claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md section 2: \"WooCommerce blocks hold no SGS setting\"",
+   "walker: shop/cr-ref-shop-49, path '', tags div->ul, max-width none -> 100% at 375/768/1440/1920",
+   "theme/sgs-theme/assets/css/woocommerce.css is the existing channel (it already declares max-width on `.wp-block-woocommerce-cart` and `.wp-block-woocommerce-checkout`)"
+  ],
+  "precedent": {
+   "block": "theme, not a block",
+   "setting": "n/a",
+   "helper": "theme/sgs-theme/assets/css/woocommerce.css",
+   "note": "theme CSS is the only channel; adding a control to a WooCommerce block is never the fix"
+  },
+  "fixShape": "Either a `max-width:none` rule for the product-template list and items in `theme/sgs-theme/assets/css/woocommerce.css`, or close the row with the tag-mismatch artefact check first (draft <div> vs live <ul>).",
+  "confidence": "medium",
+  "changed": false
+ },
+ {
+  "mechanism": "M9-measure",
+  "combo": "woocommerce/product-template|li:nth-of-type(7)|max-width",
+  "block": "woocommerce/product-template",
+  "path": "li:nth-of-type(7)",
+  "property": "max-width",
+  "rows": 1,
+  "surfaces": [
+   "shop"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "subMechanism": "SM13-woocommerce-block-holds-no-sgs-setting-theme-css-is-the-only-channel",
+  "proof": "Zero SGS settings exist on any woocommerce/* block (Spec 47 section 2), and no enclosing SGS block can reach inside the product loop's own markup - sgs/container::maxWidth paints only its own wrapper. Live declares `max-width: 100%` on the product-template <li> where the draft's <div> has the initial `none`, so only the theme's WooCommerce stylesheet can change it. Caveat: the pair also crosses element types (draft <div> -> live <li>), so part of this row may dissolve once a tag-mismatch check exists.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, css_state, source FROM block_attributes WHERE block_slug LIKE 'woocommerce/%' -> 0 rows",
+   ".claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md section 2: \"WooCommerce blocks hold no SGS setting\"",
+   "walker: shop/cr-ref-shop-49, path 'li:nth-of-type(7)', tags div->li, max-width none -> 100% at 375/768/1440/1920",
+   "theme/sgs-theme/assets/css/woocommerce.css is the existing channel (it already declares max-width on `.wp-block-woocommerce-cart` and `.wp-block-woocommerce-checkout`)"
+  ],
+  "precedent": {
+   "block": "theme, not a block",
+   "setting": "n/a",
+   "helper": "theme/sgs-theme/assets/css/woocommerce.css",
+   "note": "theme CSS is the only channel; adding a control to a WooCommerce block is never the fix"
+  },
+  "fixShape": "Either a `max-width:none` rule for the product-template list and items in `theme/sgs-theme/assets/css/woocommerce.css`, or close the row with the tag-mismatch artefact check first (draft <div> vs live <li>).",
+  "confidence": "medium",
+  "changed": false
+ }
+]

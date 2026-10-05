@@ -1,0 +1,1355 @@
+[
+ {
+  "mechanism": "M7-decoration",
+  "combo": "core/list||border-top-color",
+  "block": "core/list",
+  "path": "",
+  "property": "border-top-color",
+  "rows": 2,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Knock-on, not a border. Each of the two refs carries a `color` (hover) row whose draft and live values are byte-identical to the border-top-color row (draft rgb(111, 97, 82) / live rgb(20, 20, 20)), and neither ref has ANY border-*-width row, so the border is zero-width and its computed colour is simply `currentColor` resolving to the `color` row's value. Fixing the text colour closes both rows. On the brief's question 3: core/list holds no SGS style setting (6 rows, every css_property NULL, every source='native_wp') AND it is not a banned core block (no list pairing exists in plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/), so the migration fix shape does not apply; had the row been real the shape would have been the enclosing sgs/container footer link-group's descendant styling, not a block control and not a migration.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, source FROM block_attributes WHERE block_slug='core/list'\" -> 6 rows (ordered, placeholder, reversed, start, type, values), every css_property NULL, every source='native_wp'",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-footer-9', path=''] -> only 3 rows: color(hover) draft rgb(111, 97, 82)/live rgb(20, 20, 20); border-top-color(hover) draft rgb(111, 97, 82)/live rgb(20, 20, 20); h(box). No border-*-width row. Identical at ref='cr-ref-footer-16'.",
+   "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/ -> button, buttons, column, columns, cover, group, heading, image, latest_posts, paragraph, post_template, query, row, separator, site_logo, stack. No list pairing: core/list is not banned."
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "textColour",
+   "helper": "supports.sgs.elements.attrMap `css:color`",
+   "note": "the enclosing footer column paints descendant link colour; border-color follows it as currentColor"
+  },
+  "fixShape": "None on core/list. Close the paired `color` (hover) row on the enclosing sgs/container footer link group and this row closes with it. In the route, suppress a border-*-color row when no border-*-width row is open on the same node.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/mega-group||border-top-color",
+  "block": "sgs/mega-group",
+  "path": "",
+  "property": "border-top-color",
+  "rows": 1,
+  "surfaces": [
+   "mega-sunglasses"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The same currentColor knock-on on a zero-width border. cr-ref-mega-sunglasses-27 has exactly ONE row in the entire sweep -- border-top-color (hover) -- with no companion border-width and no border-style row, so the border paints nothing on either side and the reported colour is the computed currentColor. This is the phantom-border class the brief names: a colour difference with no width beside it. sgs/mega-group does have no border setting of any kind (0 rows), but with zero width there is nothing to paint, so the row is a measuring artefact rather than a gap.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/mega-group' AND css_property LIKE '%border%'\" -> 0",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, role, css_property, source FROM block_attributes WHERE block_slug='sgs/mega-group'\" -> 34 rows, all link/motion/condition/visibility (url, rel, opensInNewTab, sgsAnimation*, sgsCondition*, sgsHideOn*, sgsChildSizing, sgsChildWidth, sgsClick*, sgsCustomCss, sgsParallax*); the only non-NULL css_property is `display` on the three sgsHideOn* rows",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-mega-sunglasses-27'] -> 1 row total: border-top-color(hover) draft rgb(250, 248, 245) / live rgb(15, 15, 15); no border-width, no border-style row"
+  ],
+  "precedent": {
+   "block": "sgs/mega-panel",
+   "setting": "borderColour + borderWidth + borderStyle",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the sibling panel block carries the full colour+width+style trio; mega-group carries none, but with no width there is no paint"
+  },
+  "fixShape": "None. If a real mega-group border is ever wanted, add the borderWidth/borderStyle/borderColour trio via supports.sgs.boxFamilies as sgs/mega-panel has. Same route fix as the core/list row.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|text-shadow",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+  "property": "text-shadow",
+  "rows": 2,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "No painted difference exists. The sweep row reads draft `none` and live `null`; `null` means the walker never obtained a live value for this node, so there is nothing to match. `none` is also text-shadow's CSS initial value, so even had the live been read it would have matched. text-shadow is additionally absent from the whole framework as a CSS property (0 rows), but that is moot while the row carries no measured difference. At cr-ref-mobile-menu-0 the same close-button node returns live null for font-family, font-size, font-weight, font-style, line-height, letter-spacing, text-transform and color as well -- nine properties from one unread node, which is the real defect.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref in (cr-ref-help-17 / cr-ref-help-19), path='.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open', property='text-shadow'] -> values [{\"draft\": \"none\", \"live\": null}]",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE css_property LIKE '%text-shadow%'\" -> 0 (framework-wide)",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-mobile-menu-0', path='.sgs-nav-drawer__chrome > .sgs-nav-drawer__close'] -> font-family, font-size, font-weight, font-style, line-height, letter-spacing, text-transform and color ALL read live null on the same node"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "no block declares a CSS text-shadow setting. sgs/container::bgSvgTextShadow and sgs/site-footer::bgSvgTextShadow are background-SVG toggles with css_property NULL, not text-shadow controls -- so there is no precedent, but none is needed"
+  },
+  "fixShape": "None on the block. Make the walker drop a row whose draft or live side is null instead of emitting it as a difference, and find why that whole node read null on the live side.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/brand-strip||text-shadow",
+  "block": "sgs/brand-strip",
+  "path": "",
+  "property": "text-shadow",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "No painted difference exists. The sweep row reads draft `none` and live `null`; `null` means the walker never obtained a live value for this node, so there is nothing to match. `none` is also text-shadow's CSS initial value, so even had the live been read it would have matched. text-shadow is additionally absent from the whole framework as a CSS property (0 rows), but that is moot while the row carries no measured difference. At cr-ref-mobile-menu-0 the same close-button node returns live null for font-family, font-size, font-weight, font-style, line-height, letter-spacing, text-transform and color as well -- nine properties from one unread node, which is the real defect.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref in (cr-ref-home-8), path='', property='text-shadow'] -> values [{\"draft\": \"none\", \"live\": null}]",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE css_property LIKE '%text-shadow%'\" -> 0 (framework-wide)",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-mobile-menu-0', path='.sgs-nav-drawer__chrome > .sgs-nav-drawer__close'] -> font-family, font-size, font-weight, font-style, line-height, letter-spacing, text-transform and color ALL read live null on the same node"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "no block declares a CSS text-shadow setting. sgs/container::bgSvgTextShadow and sgs/site-footer::bgSvgTextShadow are background-SVG toggles with css_property NULL, not text-shadow controls -- so there is no precedent, but none is needed"
+  },
+  "fixShape": "None on the block. Make the walker drop a row whose draft or live side is null instead of emitting it as a difference, and find why that whole node read null on the live side.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|text-shadow",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "text-shadow",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "No painted difference exists. The sweep row reads draft `none` and live `null`; `null` means the walker never obtained a live value for this node, so there is nothing to match. `none` is also text-shadow's CSS initial value, so even had the live been read it would have matched. text-shadow is additionally absent from the whole framework as a CSS property (0 rows), but that is moot while the row carries no measured difference. At cr-ref-mobile-menu-0 the same close-button node returns live null for font-family, font-size, font-weight, font-style, line-height, letter-spacing, text-transform and color as well -- nine properties from one unread node, which is the real defect.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref in (cr-ref-home-8), path='.sgs-brand-strip__track', property='text-shadow'] -> values [{\"draft\": \"none\", \"live\": null}]",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE css_property LIKE '%text-shadow%'\" -> 0 (framework-wide)",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-mobile-menu-0', path='.sgs-nav-drawer__chrome > .sgs-nav-drawer__close'] -> font-family, font-size, font-weight, font-style, line-height, letter-spacing, text-transform and color ALL read live null on the same node"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "no block declares a CSS text-shadow setting. sgs/container::bgSvgTextShadow and sgs/site-footer::bgSvgTextShadow are background-SVG toggles with css_property NULL, not text-shadow controls -- so there is no precedent, but none is needed"
+  },
+  "fixShape": "None on the block. Make the walker drop a row whose draft or live side is null instead of emitting it as a difference, and find why that whole node read null on the live side.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/nav-drawer|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|text-shadow",
+  "block": "sgs/nav-drawer",
+  "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+  "property": "text-shadow",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "No painted difference exists. The sweep row reads draft `none` and live `null`; `null` means the walker never obtained a live value for this node, so there is nothing to match. `none` is also text-shadow's CSS initial value, so even had the live been read it would have matched. text-shadow is additionally absent from the whole framework as a CSS property (0 rows), but that is moot while the row carries no measured difference. At cr-ref-mobile-menu-0 the same close-button node returns live null for font-family, font-size, font-weight, font-style, line-height, letter-spacing, text-transform and color as well -- nine properties from one unread node, which is the real defect.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref in (cr-ref-mobile-menu-0), path='.sgs-nav-drawer__chrome > .sgs-nav-drawer__close', property='text-shadow'] -> values [{\"draft\": \"none\", \"live\": null}]",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE css_property LIKE '%text-shadow%'\" -> 0 (framework-wide)",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-mobile-menu-0', path='.sgs-nav-drawer__chrome > .sgs-nav-drawer__close'] -> font-family, font-size, font-weight, font-style, line-height, letter-spacing, text-transform and color ALL read live null on the same node"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "no block declares a CSS text-shadow setting. sgs/container::bgSvgTextShadow and sgs/site-footer::bgSvgTextShadow are background-SVG toggles with css_property NULL, not text-shadow controls -- so there is no precedent, but none is needed"
+  },
+  "fixShape": "None on the block. Make the walker drop a row whose draft or live side is null instead of emitting it as a difference, and find why that whole node read null on the live side.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/button||backdrop-filter",
+  "block": "sgs/button",
+  "path": "",
+  "property": "backdrop-filter",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Reversed and vacuous: the row reads draft `null` / live `none`. The DRAFT side was never measured, and the live value `none` is backdrop-filter's CSS initial value -- the live site declares nothing. There is no target value to reproduce. The only backdrop-filter declaration the source pass found (site-header/style.css for `header.sgs-site-header[data-sgs-drawer-grown]`) also declares `none`. sgs/button has no backdrop-filter setting (0 rows); the framework exposes backdrop-filter on scrim/backdrop elements only, but neither matters while the draft side is unread.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-mega-brands-41', path='', property='backdrop-filter'] -> values [{\"draft\": null, \"live\": \"none\"}]",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE css_property='outline-style'\" -> 0 (framework-wide)",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/button' AND css_property LIKE '%backdrop%'\" -> 0",
+   "plugins/sgs-blocks/src/blocks/site-header/style.css::header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] declares `backdrop-filter:none`"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "surface backdrop",
+   "helper": "includes/helpers-surface-ground.php::sgs_surface_backdrop_decls",
+   "note": "backdrop-filter is controllable on scrim/backdrop elements only -- sgs/cart::scrimBlur, sgs/gallery::scrimBlur, sgs/modal::scrimBlur, sgs/nav-bar-menu::scrimBlur, sgs/nav-drawer::scrimBlur, sgs/product-search::scrimBlur"
+  },
+  "fixShape": "None on the block. Drop rows whose draft side is null, and suppress a row whose live value equals the property's CSS initial value with nothing authored.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/button||outline-style",
+  "block": "sgs/button",
+  "path": "",
+  "property": "outline-style",
+  "rows": 1,
+  "surfaces": [
+   "mega-brands"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Reversed and vacuous: the row reads draft `null` / live `none`. The DRAFT side was never measured, and the live value `none` is outline-style's CSS initial value -- the live site declares nothing. There is no target value to reproduce. The only outline-style declaration the source pass found (site-header/style.css for `header.sgs-site-header[data-sgs-drawer-grown]`) also declares `none`. outline-style does not exist anywhere in the framework (0 rows); outline-width, outline-offset and outline-color do, but neither matters while the draft side is unread.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-mega-brands-41', path='', property='outline-style'] -> values [{\"draft\": null, \"live\": \"none\"}]",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE css_property='outline-style'\" -> 0 (framework-wide)",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/button' AND css_property LIKE '%backdrop%'\" -> 0",
+   "plugins/sgs-blocks/src/blocks/site-header/style.css::header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] declares `backdrop-filter:none`"
+  ],
+  "precedent": {
+   "block": "sgs/form",
+   "setting": "formFocusRingWidth",
+   "helper": "outline-width @focus-ring",
+   "note": "the framework exposes outline-width (sgs/form), outline-offset (sgs/form) and outline-color (sgs/filter-search, sgs/product-search) but never outline-style -- a focus ring is always authored `solid`"
+  },
+  "fixShape": "None on the block. Drop rows whose draft side is null, and suppress a row whose live value equals the property's CSS initial value with nothing authored.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/nav-drawer|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|box-shadow",
+  "block": "sgs/nav-drawer",
+  "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+  "property": "box-shadow",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The live value is the theme's WCAG focus ring, measured because the walker had to drive the live site with clicks or keys to reach this state (drawer-open) and left focus on the node. The draft, a static HTML page, was never focused, so it reads `none`. The live `color(srgb 0.611765 0.545098 0.470588 / 0.4) 0px 0px 8px 2px` is produced declaration-for-declaration by one rule: theme/sgs-theme/assets/css/core-blocks-critical.css::`:focus-visible` declares `outline: 3px solid var(--sgs-focus-color); box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent)`. That single rule explains BOTH this row and its sibling (the box-shadow ring and the outline-style `solid` on the same node), and the identical box-shadow string appears on two unrelated blocks -- sgs/nav-drawer's close button and the sgs/choice-flow root -- which a per-block setting could not coincide on. This is the recorded scripted-focus probe trap, not a decoration gap.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-mobile-menu-0', path='.sgs-nav-drawer__chrome > .sgs-nav-drawer__close', property='box-shadow'] -> values [{\"draft\": \"none\", \"live\": \"color(srgb 0.611765 0.545098 0.470588 / 0.4) 0px 0px 8px 2px\"}]",
+   "theme/sgs-theme/assets/css/core-blocks-critical.css::`:focus-visible` declares `outline: 3px solid var(--sgs-focus-color); box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent)`",
+   "theme/sgs-theme/assets/css/core-blocks-critical.css declares `--sgs-focus-glow: var(--wp--preset--color--accent, #d8ca50)`; the live srgb triple 0.611765/0.545098/0.470588 at alpha 0.4 is that accent token at 40%",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json: the identical live box-shadow string `color(srgb 0.611765 0.545098 0.470588 / 0.4) 0px 0px 8px 2px` appears at ref='cr-ref-mobile-menu-0' (sgs/nav-drawer close) AND ref='cr-ref-lens-0' (sgs/choice-flow root)",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_property LIKE '%box-shadow%' AND css_element='close'\" -> 0 (the close button has no shadow control -- but the focus ring, not a control, is what painted this)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "shadow",
+   "helper": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+   "note": "box-shadow is controllable on 40+ blocks through the shared shadow helpers; it is not the mechanism here, the universal focus ring is"
+  },
+  "fixShape": "None on the block. Blur the live page (or exclude :focus-visible-derived box-shadow and outline values) before reading computed styles in scripts/computed-route, so an interaction-driven state is not recorded as a style.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/nav-drawer|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|outline-style",
+  "block": "sgs/nav-drawer",
+  "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+  "property": "outline-style",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The live value is the theme's WCAG focus ring, measured because the walker had to drive the live site with clicks or keys to reach this state (drawer-open) and left focus on the node. The draft, a static HTML page, was never focused, so it reads `none`. The live `solid` is produced declaration-for-declaration by one rule: theme/sgs-theme/assets/css/core-blocks-critical.css::`:focus-visible` declares `outline: 3px solid var(--sgs-focus-color); box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent)`. That single rule explains BOTH this row and its sibling (the box-shadow ring and the outline-style `solid` on the same node), and the identical box-shadow string appears on two unrelated blocks -- sgs/nav-drawer's close button and the sgs/choice-flow root -- which a per-block setting could not coincide on. This is the recorded scripted-focus probe trap, not a decoration gap.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-mobile-menu-0', path='.sgs-nav-drawer__chrome > .sgs-nav-drawer__close', property='outline-style'] -> values [{\"draft\": \"none\", \"live\": \"solid\"}]",
+   "theme/sgs-theme/assets/css/core-blocks-critical.css::`:focus-visible` declares `outline: 3px solid var(--sgs-focus-color); box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent)`",
+   "theme/sgs-theme/assets/css/core-blocks-critical.css declares `--sgs-focus-glow: var(--wp--preset--color--accent, #d8ca50)`; the live srgb triple 0.611765/0.545098/0.470588 at alpha 0.4 is that accent token at 40%",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json: the identical live box-shadow string `color(srgb 0.611765 0.545098 0.470588 / 0.4) 0px 0px 8px 2px` appears at ref='cr-ref-mobile-menu-0' (sgs/nav-drawer close) AND ref='cr-ref-lens-0' (sgs/choice-flow root)",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_property LIKE '%box-shadow%' AND css_element='close'\" -> 0 (the close button has no shadow control -- but the focus ring, not a control, is what painted this)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "shadow",
+   "helper": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+   "note": "box-shadow is controllable on 40+ blocks through the shared shadow helpers; it is not the mechanism here, the universal focus ring is"
+  },
+  "fixShape": "None on the block. Blur the live page (or exclude :focus-visible-derived box-shadow and outline values) before reading computed styles in scripts/computed-route, so an interaction-driven state is not recorded as a style.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/choice-flow||box-shadow",
+  "block": "sgs/choice-flow",
+  "path": "",
+  "property": "box-shadow",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The live value is the theme's WCAG focus ring, measured because the walker had to drive the live site with clicks or keys to reach this state (q1-use .. q4-type) and left focus on the node. The draft, a static HTML page, was never focused, so it reads `none`. The live `color(srgb 0.611765 0.545098 0.470588 / 0.4) 0px 0px 8px 2px` is produced declaration-for-declaration by one rule: theme/sgs-theme/assets/css/core-blocks-critical.css::`:focus-visible` declares `outline: 3px solid var(--sgs-focus-color); box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent)`. That single rule explains BOTH this row and its sibling (the box-shadow ring and the outline-style `solid` on the same node), and the identical box-shadow string appears on two unrelated blocks -- sgs/nav-drawer's close button and the sgs/choice-flow root -- which a per-block setting could not coincide on. This is the recorded scripted-focus probe trap, not a decoration gap.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-lens-0', path='', property='box-shadow'] -> values [{\"draft\": \"none\", \"live\": \"color(srgb 0.611765 0.545098 0.470588 / 0.4) 0px 0px 8px 2px\"}]",
+   "theme/sgs-theme/assets/css/core-blocks-critical.css::`:focus-visible` declares `outline: 3px solid var(--sgs-focus-color); box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent)`",
+   "theme/sgs-theme/assets/css/core-blocks-critical.css declares `--sgs-focus-glow: var(--wp--preset--color--accent, #d8ca50)`; the live srgb triple 0.611765/0.545098/0.470588 at alpha 0.4 is that accent token at 40%",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json: the identical live box-shadow string `color(srgb 0.611765 0.545098 0.470588 / 0.4) 0px 0px 8px 2px` appears at ref='cr-ref-mobile-menu-0' (sgs/nav-drawer close) AND ref='cr-ref-lens-0' (sgs/choice-flow root)",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_property LIKE '%box-shadow%' AND css_element='close'\" -> 0 (the close button has no shadow control -- but the focus ring, not a control, is what painted this)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "shadow",
+   "helper": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+   "note": "box-shadow is controllable on 40+ blocks through the shared shadow helpers; it is not the mechanism here, the universal focus ring is"
+  },
+  "fixShape": "None on the block. Blur the live page (or exclude :focus-visible-derived box-shadow and outline values) before reading computed styles in scripts/computed-route, so an interaction-driven state is not recorded as a style.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/card-grid|.sgs-card-grid__item:nth-of-type(2) > .sgs-card-grid__image-wrap > .sgs-media-el|background-image",
+  "block": "sgs/card-grid",
+  "path": ".sgs-card-grid__item:nth-of-type(2) > .sgs-card-grid__image-wrap > .sgs-media-el",
+  "property": "background-image",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Not a gradient, and not reproducible by anything. The draft value is a `blob:` object URL -- `url(\"blob:https://mintcream-lyrebird-224487.hostingersite.com/<uuid>\")` -- minted at runtime by the draft page's own in-browser image loader, with a per-load UUID that differs between the value pairs within this one row. No CSS setting, gradient attrMap or theme token can ever emit a blob: URL, and no parity target exists because the value is not stable across two reads of the same page. The brief's gradient-seeder hypothesis (attrMap `css:color-gradient` / `css:border-color-gradient`) is ruled out on the value itself: a gradient would read `linear-gradient(...)`, not `url(blob:...)`. sgs/card-grid already has a routed background-image setting on its image overlay (overlayGradient @imageOverlay), so even the mechanism the triage proposed is present on the block.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-53', property='background-image'] -> draft \"url(\\\"blob:https://mintcream-lyrebird-224487.hostingersite.com/<uuid>\\\")\", live \"none\" -- several value pairs in the same row, each carrying a DIFFERENT uuid (e.g. 6527686b-4f48-4751-852f-4d744453446b, c7ef9375-3115-4338-bf3b-40c151b059ef, cffb6814-e480-470a-b490-c64107ef0206)",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/card-grid' AND css_property='background-image' AND css_element LIKE '%image%'\" -> 1 (overlayGradient @imageOverlay)",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper emits `background-image:url(' . esc_url( $bg_image['url'] ) . ')` -- a real media URL, never a blob"
+  ],
+  "precedent": {
+   "block": "sgs/card-grid",
+   "setting": "overlayGradient",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (background-image on ::before) + includes/helpers-tokens.php::sgs_text_colour_decl",
+   "note": "background-image IS routed on card-grid's image overlay; the blob: value is simply not expressible by any mechanism"
+  },
+  "fixShape": "None on the block. Make the walker drop any value matching /^url\\(\"?blob:/ -- it is a per-load artefact of the draft page, never a parity target.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/buybox|.sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el|background-image",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+  "property": "background-image",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Not a gradient, and not reproducible by anything. The draft value is a `blob:` object URL -- `url(\"blob:https://mintcream-lyrebird-224487.hostingersite.com/<uuid>\")` -- minted at runtime by the draft page's own in-browser image loader, with a per-load UUID that differs between the value pairs within this one row. No CSS setting, gradient attrMap or theme token can ever emit a blob: URL, and no parity target exists because the value is not stable across two reads of the same page. The brief's gradient-seeder hypothesis (attrMap `css:color-gradient` / `css:border-color-gradient`) is ruled out on the value itself: a gradient would read `linear-gradient(...)`, not `url(blob:...)`. sgs/card-grid already has a routed background-image setting on its image overlay (overlayGradient @imageOverlay), so even the mechanism the triage proposed is present on the block.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-product-4', property='background-image'] -> draft \"url(\\\"blob:https://mintcream-lyrebird-224487.hostingersite.com/<uuid>\\\")\", live \"none\" -- several value pairs in the same row, each carrying a DIFFERENT uuid (e.g. 6527686b-4f48-4751-852f-4d744453446b, c7ef9375-3115-4338-bf3b-40c151b059ef, cffb6814-e480-470a-b490-c64107ef0206)",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/card-grid' AND css_property='background-image' AND css_element LIKE '%image%'\" -> 1 (overlayGradient @imageOverlay)",
+   "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper emits `background-image:url(' . esc_url( $bg_image['url'] ) . ')` -- a real media URL, never a blob"
+  ],
+  "precedent": {
+   "block": "sgs/card-grid",
+   "setting": "overlayGradient",
+   "helper": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (background-image on ::before) + includes/helpers-tokens.php::sgs_text_colour_decl",
+   "note": "background-image IS routed on card-grid's image overlay; the blob: value is simply not expressible by any mechanism"
+  },
+  "fixShape": "None on the block. Make the walker drop any value matching /^url\\(\"?blob:/ -- it is a per-load artefact of the draft page, never a parity target.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/cart||border-top-width",
+  "block": "sgs/cart",
+  "path": "",
+  "property": "border-top-width",
+  "rows": 1,
+  "surfaces": [
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists and is correctly declared -- `sgs/cart::pillBorderWidth` -> css_property `border-width` @element `pill` -- but the pair compares the draft's pill BUTTON against the live block's ROOT WRAPPER, one level above the node that carries the pill box. render.php resolves the pill to a DESCENDANT (`$pill_sel = $sel . ' .sgs-cart__trigger'`) and style.css declares the pill box on `.sgs-cart--trigger-pill .sgs-cart__trigger`, while the wrapper classes are `sgs-cart <uid> sgs-cart--mode-* sgs-cart--trigger-pill`. The negative control is decisive: the SAME node and ref also report `border-radius` draft 999px / live 0px and `min-height` draft 38px / live 0px, and sgs/cart::pillBorderRadius and ::pillMinHeight provably exist -- a node reading 0px for both cannot be the pill. All 14 rows of cr-ref-header-13 are one pairing-depth artefact. cart's block.json pill element also carries `selector: null`, so the route has no selector to descend to.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/cart' AND attr_name LIKE 'pill%'\" -> pillBorderWidth|border-width|pill, pillBorderStyle|border-style|pill, pillBorderColour|border-color|pill, pillBorderRadius|border-radius|pill, pillMinHeight|min-height|pill, pillBgColour|background-color|pill, pillTextColour|color|pill (+7 more)",
+   "plugins/sgs-blocks/src/blocks/cart/render.php -> `$pill_sel = $sel . ' .sgs-cart__trigger';` (a descendant selector, not the wrapper)",
+   "plugins/sgs-blocks/src/blocks/cart/style.css::.sgs-cart--trigger-pill .sgs-cart__trigger declares the pill box",
+   "plugins/sgs-blocks/src/blocks/cart/block.json::supports.sgs.elements.pill -> selector: null; attrMap {css:border-width->pillBorderWidth, css:border-style->pillBorderStyle, css:border-radius->pillBorderRadius, css:min-height->pillMinHeight, css:background-color->pillBgColour, css:color->pillTextColour, css:border-color->pillBorderColour}",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-header-13', path=''] -> 14 rows including border-radius draft 999px/live 0px and min-height draft 38px/live 0px on the same node, although pillBorderRadius and pillMinHeight both exist -- the negative control proving the measured node is not the pill"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "closeBorderWidth / closeBorderStyle / closeBorderColour",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the identical per-element border trio, on a block whose element manifest entry resolves to a real node"
+  },
+  "fixShape": "Give cart's `pill` element a real `selector` (`.sgs-cart__trigger`) in block.json::supports.sgs.elements, and make the route descend when the draft's paired node is the styled control rather than the block wrapper. Zero block controls needed -- all five already exist.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/cart||border-top-style",
+  "block": "sgs/cart",
+  "path": "",
+  "property": "border-top-style",
+  "rows": 1,
+  "surfaces": [
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists and is correctly declared -- `sgs/cart::pillBorderStyle` -> css_property `border-style` @element `pill` -- but the pair compares the draft's pill BUTTON against the live block's ROOT WRAPPER, one level above the node that carries the pill box. render.php resolves the pill to a DESCENDANT (`$pill_sel = $sel . ' .sgs-cart__trigger'`) and style.css declares the pill box on `.sgs-cart--trigger-pill .sgs-cart__trigger`, while the wrapper classes are `sgs-cart <uid> sgs-cart--mode-* sgs-cart--trigger-pill`. The negative control is decisive: the SAME node and ref also report `border-radius` draft 999px / live 0px and `min-height` draft 38px / live 0px, and sgs/cart::pillBorderRadius and ::pillMinHeight provably exist -- a node reading 0px for both cannot be the pill. All 14 rows of cr-ref-header-13 are one pairing-depth artefact. cart's block.json pill element also carries `selector: null`, so the route has no selector to descend to.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/cart' AND attr_name LIKE 'pill%'\" -> pillBorderWidth|border-width|pill, pillBorderStyle|border-style|pill, pillBorderColour|border-color|pill, pillBorderRadius|border-radius|pill, pillMinHeight|min-height|pill, pillBgColour|background-color|pill, pillTextColour|color|pill (+7 more)",
+   "plugins/sgs-blocks/src/blocks/cart/render.php -> `$pill_sel = $sel . ' .sgs-cart__trigger';` (a descendant selector, not the wrapper)",
+   "plugins/sgs-blocks/src/blocks/cart/style.css::.sgs-cart--trigger-pill .sgs-cart__trigger declares the pill box",
+   "plugins/sgs-blocks/src/blocks/cart/block.json::supports.sgs.elements.pill -> selector: null; attrMap {css:border-width->pillBorderWidth, css:border-style->pillBorderStyle, css:border-radius->pillBorderRadius, css:min-height->pillMinHeight, css:background-color->pillBgColour, css:color->pillTextColour, css:border-color->pillBorderColour}",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-header-13', path=''] -> 14 rows including border-radius draft 999px/live 0px and min-height draft 38px/live 0px on the same node, although pillBorderRadius and pillMinHeight both exist -- the negative control proving the measured node is not the pill"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "closeBorderWidth / closeBorderStyle / closeBorderColour",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the identical per-element border trio, on a block whose element manifest entry resolves to a real node"
+  },
+  "fixShape": "Give cart's `pill` element a real `selector` (`.sgs-cart__trigger`) in block.json::supports.sgs.elements, and make the route descend when the draft's paired node is the styled control rather than the block wrapper. Zero block controls needed -- all five already exist.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/cart||border-bottom-width",
+  "block": "sgs/cart",
+  "path": "",
+  "property": "border-bottom-width",
+  "rows": 1,
+  "surfaces": [
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists and is correctly declared -- `sgs/cart::pillBorderWidth` -> css_property `border-width` @element `pill` -- but the pair compares the draft's pill BUTTON against the live block's ROOT WRAPPER, one level above the node that carries the pill box. render.php resolves the pill to a DESCENDANT (`$pill_sel = $sel . ' .sgs-cart__trigger'`) and style.css declares the pill box on `.sgs-cart--trigger-pill .sgs-cart__trigger`, while the wrapper classes are `sgs-cart <uid> sgs-cart--mode-* sgs-cart--trigger-pill`. The negative control is decisive: the SAME node and ref also report `border-radius` draft 999px / live 0px and `min-height` draft 38px / live 0px, and sgs/cart::pillBorderRadius and ::pillMinHeight provably exist -- a node reading 0px for both cannot be the pill. All 14 rows of cr-ref-header-13 are one pairing-depth artefact. cart's block.json pill element also carries `selector: null`, so the route has no selector to descend to.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/cart' AND attr_name LIKE 'pill%'\" -> pillBorderWidth|border-width|pill, pillBorderStyle|border-style|pill, pillBorderColour|border-color|pill, pillBorderRadius|border-radius|pill, pillMinHeight|min-height|pill, pillBgColour|background-color|pill, pillTextColour|color|pill (+7 more)",
+   "plugins/sgs-blocks/src/blocks/cart/render.php -> `$pill_sel = $sel . ' .sgs-cart__trigger';` (a descendant selector, not the wrapper)",
+   "plugins/sgs-blocks/src/blocks/cart/style.css::.sgs-cart--trigger-pill .sgs-cart__trigger declares the pill box",
+   "plugins/sgs-blocks/src/blocks/cart/block.json::supports.sgs.elements.pill -> selector: null; attrMap {css:border-width->pillBorderWidth, css:border-style->pillBorderStyle, css:border-radius->pillBorderRadius, css:min-height->pillMinHeight, css:background-color->pillBgColour, css:color->pillTextColour, css:border-color->pillBorderColour}",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-header-13', path=''] -> 14 rows including border-radius draft 999px/live 0px and min-height draft 38px/live 0px on the same node, although pillBorderRadius and pillMinHeight both exist -- the negative control proving the measured node is not the pill"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "closeBorderWidth / closeBorderStyle / closeBorderColour",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the identical per-element border trio, on a block whose element manifest entry resolves to a real node"
+  },
+  "fixShape": "Give cart's `pill` element a real `selector` (`.sgs-cart__trigger`) in block.json::supports.sgs.elements, and make the route descend when the draft's paired node is the styled control rather than the block wrapper. Zero block controls needed -- all five already exist.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/cart||border-left-width",
+  "block": "sgs/cart",
+  "path": "",
+  "property": "border-left-width",
+  "rows": 1,
+  "surfaces": [
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists and is correctly declared -- `sgs/cart::pillBorderWidth` -> css_property `border-width` @element `pill` -- but the pair compares the draft's pill BUTTON against the live block's ROOT WRAPPER, one level above the node that carries the pill box. render.php resolves the pill to a DESCENDANT (`$pill_sel = $sel . ' .sgs-cart__trigger'`) and style.css declares the pill box on `.sgs-cart--trigger-pill .sgs-cart__trigger`, while the wrapper classes are `sgs-cart <uid> sgs-cart--mode-* sgs-cart--trigger-pill`. The negative control is decisive: the SAME node and ref also report `border-radius` draft 999px / live 0px and `min-height` draft 38px / live 0px, and sgs/cart::pillBorderRadius and ::pillMinHeight provably exist -- a node reading 0px for both cannot be the pill. All 14 rows of cr-ref-header-13 are one pairing-depth artefact. cart's block.json pill element also carries `selector: null`, so the route has no selector to descend to.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/cart' AND attr_name LIKE 'pill%'\" -> pillBorderWidth|border-width|pill, pillBorderStyle|border-style|pill, pillBorderColour|border-color|pill, pillBorderRadius|border-radius|pill, pillMinHeight|min-height|pill, pillBgColour|background-color|pill, pillTextColour|color|pill (+7 more)",
+   "plugins/sgs-blocks/src/blocks/cart/render.php -> `$pill_sel = $sel . ' .sgs-cart__trigger';` (a descendant selector, not the wrapper)",
+   "plugins/sgs-blocks/src/blocks/cart/style.css::.sgs-cart--trigger-pill .sgs-cart__trigger declares the pill box",
+   "plugins/sgs-blocks/src/blocks/cart/block.json::supports.sgs.elements.pill -> selector: null; attrMap {css:border-width->pillBorderWidth, css:border-style->pillBorderStyle, css:border-radius->pillBorderRadius, css:min-height->pillMinHeight, css:background-color->pillBgColour, css:color->pillTextColour, css:border-color->pillBorderColour}",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-header-13', path=''] -> 14 rows including border-radius draft 999px/live 0px and min-height draft 38px/live 0px on the same node, although pillBorderRadius and pillMinHeight both exist -- the negative control proving the measured node is not the pill"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "closeBorderWidth / closeBorderStyle / closeBorderColour",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the identical per-element border trio, on a block whose element manifest entry resolves to a real node"
+  },
+  "fixShape": "Give cart's `pill` element a real `selector` (`.sgs-cart__trigger`) in block.json::supports.sgs.elements, and make the route descend when the draft's paired node is the styled control rather than the block wrapper. Zero block controls needed -- all five already exist.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/cart||border-right-width",
+  "block": "sgs/cart",
+  "path": "",
+  "property": "border-right-width",
+  "rows": 1,
+  "surfaces": [
+   "header"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists and is correctly declared -- `sgs/cart::pillBorderWidth` -> css_property `border-width` @element `pill` -- but the pair compares the draft's pill BUTTON against the live block's ROOT WRAPPER, one level above the node that carries the pill box. render.php resolves the pill to a DESCENDANT (`$pill_sel = $sel . ' .sgs-cart__trigger'`) and style.css declares the pill box on `.sgs-cart--trigger-pill .sgs-cart__trigger`, while the wrapper classes are `sgs-cart <uid> sgs-cart--mode-* sgs-cart--trigger-pill`. The negative control is decisive: the SAME node and ref also report `border-radius` draft 999px / live 0px and `min-height` draft 38px / live 0px, and sgs/cart::pillBorderRadius and ::pillMinHeight provably exist -- a node reading 0px for both cannot be the pill. All 14 rows of cr-ref-header-13 are one pairing-depth artefact. cart's block.json pill element also carries `selector: null`, so the route has no selector to descend to.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/cart' AND attr_name LIKE 'pill%'\" -> pillBorderWidth|border-width|pill, pillBorderStyle|border-style|pill, pillBorderColour|border-color|pill, pillBorderRadius|border-radius|pill, pillMinHeight|min-height|pill, pillBgColour|background-color|pill, pillTextColour|color|pill (+7 more)",
+   "plugins/sgs-blocks/src/blocks/cart/render.php -> `$pill_sel = $sel . ' .sgs-cart__trigger';` (a descendant selector, not the wrapper)",
+   "plugins/sgs-blocks/src/blocks/cart/style.css::.sgs-cart--trigger-pill .sgs-cart__trigger declares the pill box",
+   "plugins/sgs-blocks/src/blocks/cart/block.json::supports.sgs.elements.pill -> selector: null; attrMap {css:border-width->pillBorderWidth, css:border-style->pillBorderStyle, css:border-radius->pillBorderRadius, css:min-height->pillMinHeight, css:background-color->pillBgColour, css:color->pillTextColour, css:border-color->pillBorderColour}",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-header-13', path=''] -> 14 rows including border-radius draft 999px/live 0px and min-height draft 38px/live 0px on the same node, although pillBorderRadius and pillMinHeight both exist -- the negative control proving the measured node is not the pill"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "closeBorderWidth / closeBorderStyle / closeBorderColour",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the identical per-element border trio, on a block whose element manifest entry resolves to a real node"
+  },
+  "fixShape": "Give cart's `pill` element a real `selector` (`.sgs-cart__trigger`) in block.json::supports.sgs.elements, and make the route descend when the draft's paired node is the styled control rather than the block wrapper. Zero block controls needed -- all five already exist.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/product-card||box-shadow",
+  "block": "sgs/product-card",
+  "path": "",
+  "property": "box-shadow",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "T",
+  "changed": true,
+  "proof": "Writable in the tree today, and the tree is already writing the wrong value. The live hover shadow `color(srgb 0.0784314 0.0784314 0.0784314 / 0.09) 0px 18px 44px 0px` is the theme shadow preset `diffuse` to the digit, and sites/eye-care-ward-end/build/home.tree.json already sets `\"sgsHoverShadow\": \"diffuse\"`. Clearing it to `\"\"` yields the draft's `none`. The resolver reported no-setting only because sgsHoverShadow stores a PRESET SLUG and therefore carries css_property NULL in block_attributes, which a property-keyed lookup cannot match to `box-shadow` -- a route gap on top of a wrong tree value, not a framework gap. The measured element's class `sgs-has-hover` confirms the hover-effects extension is the writer.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, role, css_property, source FROM block_attributes WHERE block_slug='sgs/product-card' AND attr_name LIKE '%Shadow%'\" -> sgsHoverShadow|visual|NULL|sgs-ext, sgsHoverShadowCustom|visual|NULL|sgs-ext, showShadow|visual|NULL|sgs, fxTreatmentShadow|visual|fx:treatment-shadow|sgs-fx",
+   "theme/sgs-theme/theme.json::settings.shadow.presets[slug='diffuse'] -> `0px 18px 44px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 9%, transparent)`",
+   "sites/eye-care-ward-end/build/home.tree.json -> `\"sgsHoverShadow\": \"diffuse\"` (and `\"showShadow\": false`)",
+   "plugins/sgs-blocks/includes/helpers-shadow-hover.php::sgs_shadow_hover_rules reads `$attributes['sgsHoverShadow']` through sgs_shadow_hover_is_slug()",
+   "plugins/sgs-blocks/includes/hover-effects/hover-effects.php documents `sgsHoverShadow (the slug of any theme shadow preset, settings.shadow.presets)`",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-23', path='', property='box-shadow', kind=hover] -> draft \"none\", live \"color(srgb 0.0784314 0.0784314 0.0784314 / 0.09) 0px 18px 44px 0px\"; the element's first class is `sgs-has-hover`"
+  ],
+  "precedent": {
+   "block": "sgs/product-card",
+   "setting": "sgsHoverShadow",
+   "helper": "includes/hover-effects/hover-effects.php + includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+   "note": "the universal hover-effects extension already owns this property on every opt-in block"
+  },
+  "fixShape": "Clear `sgsHoverShadow` for that product-card in sites/eye-care-ward-end/build/home.tree.json. Separately, give preset-slug attributes a css_property in the framework DB so the property-keyed resolver can find them.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(1)|box-shadow",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(1)",
+  "property": "box-shadow",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed. sgs/social-icons has 54 attributes and not one touches box-shadow: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%box-shadow%'` returns 0, and the block does not appear in the framework-wide box-shadow listing. The draft paints a spread-only 1px ring in each network's own brand colour on hover (`rgb(193, 53, 132) 0px 0px 0px 1px` = Instagram magenta #C13584), and the three items carry three different colours, so it is genuinely per-network decoration, not an artefact. The near miss is informative: the block DOES have `iconBorderColourHover` -> border-color @item, but there is no item border-width or border-style setting to pair with it -- the @item border group is colour-only, while only the @wrapper group has wrapperBorderWidth and wrapperBorderStyle -- so the existing colour control paints nothing on a zero-width border. A box-shadow ring is also the right primitive: it does not shift layout.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%box-shadow%'\" -> 0",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT block_slug, attr_name, css_property, css_element, css_state FROM block_attributes WHERE css_property LIKE '%box-shadow%'\" -> 76 rows across sgs/button, container, cta-section, gallery, heading, hero, info-box, media, post-grid, quote, testimonial, text, trust-bar, brand-strip, card-grid, team-member, before-after, physics-canvas, site-footer, site-header, nav-bar-menu, mega-panel, nav-drawer, notice-banner, modal, nav-drawer-menu, cart, form -- sgs/social-icons appears in none",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%border%'\" -> iconBorderColour|border-color|item, iconBorderColourHover|border-color|item|hover, iconBorderColourGradient, iconBorderColourHoverGradient, wrapperBorderColour/Hover(+gradients)|border-color|wrapper, wrapperBorderStyle|border-style|wrapper, wrapperBorderWidth|border-width|wrapper, borderRadius|border-radius|wrapper -- NO border-width and NO border-style on @item",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-footer-6', path='.sgs-social-icons__item:nth-of-type(1)', property='box-shadow', kind=hover] -> draft \"rgb(193, 53, 132) 0px 0px 0px 1px\", live \"none\""
+  ],
+  "precedent": {
+   "block": "sgs/gallery",
+   "setting": "shadowHover",
+   "helper": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+   "note": "a per-ITEM hover box-shadow with its own colour already ships on three grid blocks through the same helper -- sgs/gallery::shadowHover @item, sgs/card-grid::cardShadowHover + cardShadowColourHover @item, sgs/post-grid::shadowHover @card. social-icons simply has no entry."
+  },
+  "fixShape": "Add `iconShadowHover` + `iconShadowHoverColour` @item to sgs/social-icons routed through sgs_shadow_hover_rules, honouring colourMode='brand' so the ring picks up each network's brand colour. Add iconBorderWidth/iconBorderStyle @item in the same pass so the existing iconBorderColour/Hover pair stops being unpaintable.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|box-shadow",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "box-shadow",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed. sgs/social-icons has 54 attributes and not one touches box-shadow: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%box-shadow%'` returns 0, and the block does not appear in the framework-wide box-shadow listing. The draft paints a spread-only 1px ring in each network's own brand colour on hover (`rgb(37, 211, 102) 0px 0px 0px 1px` = WhatsApp green #25D366), and the three items carry three different colours, so it is genuinely per-network decoration, not an artefact. The near miss is informative: the block DOES have `iconBorderColourHover` -> border-color @item, but there is no item border-width or border-style setting to pair with it -- the @item border group is colour-only, while only the @wrapper group has wrapperBorderWidth and wrapperBorderStyle -- so the existing colour control paints nothing on a zero-width border. A box-shadow ring is also the right primitive: it does not shift layout.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%box-shadow%'\" -> 0",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT block_slug, attr_name, css_property, css_element, css_state FROM block_attributes WHERE css_property LIKE '%box-shadow%'\" -> 76 rows across sgs/button, container, cta-section, gallery, heading, hero, info-box, media, post-grid, quote, testimonial, text, trust-bar, brand-strip, card-grid, team-member, before-after, physics-canvas, site-footer, site-header, nav-bar-menu, mega-panel, nav-drawer, notice-banner, modal, nav-drawer-menu, cart, form -- sgs/social-icons appears in none",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%border%'\" -> iconBorderColour|border-color|item, iconBorderColourHover|border-color|item|hover, iconBorderColourGradient, iconBorderColourHoverGradient, wrapperBorderColour/Hover(+gradients)|border-color|wrapper, wrapperBorderStyle|border-style|wrapper, wrapperBorderWidth|border-width|wrapper, borderRadius|border-radius|wrapper -- NO border-width and NO border-style on @item",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-footer-6', path='.sgs-social-icons__item:nth-of-type(2)', property='box-shadow', kind=hover] -> draft \"rgb(37, 211, 102) 0px 0px 0px 1px\", live \"none\""
+  ],
+  "precedent": {
+   "block": "sgs/gallery",
+   "setting": "shadowHover",
+   "helper": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+   "note": "a per-ITEM hover box-shadow with its own colour already ships on three grid blocks through the same helper -- sgs/gallery::shadowHover @item, sgs/card-grid::cardShadowHover + cardShadowColourHover @item, sgs/post-grid::shadowHover @card. social-icons simply has no entry."
+  },
+  "fixShape": "Add `iconShadowHover` + `iconShadowHoverColour` @item to sgs/social-icons routed through sgs_shadow_hover_rules, honouring colourMode='brand' so the ring picks up each network's brand colour. Add iconBorderWidth/iconBorderStyle @item in the same pass so the existing iconBorderColour/Hover pair stops being unpaintable.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(3)|box-shadow",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(3)",
+  "property": "box-shadow",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed. sgs/social-icons has 54 attributes and not one touches box-shadow: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%box-shadow%'` returns 0, and the block does not appear in the framework-wide box-shadow listing. The draft paints a spread-only 1px ring in each network's own brand colour on hover (`rgb(66, 133, 244) 0px 0px 0px 1px` = Google blue #4285F4), and the three items carry three different colours, so it is genuinely per-network decoration, not an artefact. The near miss is informative: the block DOES have `iconBorderColourHover` -> border-color @item, but there is no item border-width or border-style setting to pair with it -- the @item border group is colour-only, while only the @wrapper group has wrapperBorderWidth and wrapperBorderStyle -- so the existing colour control paints nothing on a zero-width border. A box-shadow ring is also the right primitive: it does not shift layout.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%box-shadow%'\" -> 0",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT block_slug, attr_name, css_property, css_element, css_state FROM block_attributes WHERE css_property LIKE '%box-shadow%'\" -> 76 rows across sgs/button, container, cta-section, gallery, heading, hero, info-box, media, post-grid, quote, testimonial, text, trust-bar, brand-strip, card-grid, team-member, before-after, physics-canvas, site-footer, site-header, nav-bar-menu, mega-panel, nav-drawer, notice-banner, modal, nav-drawer-menu, cart, form -- sgs/social-icons appears in none",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property LIKE '%border%'\" -> iconBorderColour|border-color|item, iconBorderColourHover|border-color|item|hover, iconBorderColourGradient, iconBorderColourHoverGradient, wrapperBorderColour/Hover(+gradients)|border-color|wrapper, wrapperBorderStyle|border-style|wrapper, wrapperBorderWidth|border-width|wrapper, borderRadius|border-radius|wrapper -- NO border-width and NO border-style on @item",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-footer-6', path='.sgs-social-icons__item:nth-of-type(3)', property='box-shadow', kind=hover] -> draft \"rgb(66, 133, 244) 0px 0px 0px 1px\", live \"none\""
+  ],
+  "precedent": {
+   "block": "sgs/gallery",
+   "setting": "shadowHover",
+   "helper": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+   "note": "a per-ITEM hover box-shadow with its own colour already ships on three grid blocks through the same helper -- sgs/gallery::shadowHover @item, sgs/card-grid::cardShadowHover + cardShadowColourHover @item, sgs/post-grid::shadowHover @card. social-icons simply has no entry."
+  },
+  "fixShape": "Add `iconShadowHover` + `iconShadowHoverColour` @item to sgs/social-icons routed through sgs_shadow_hover_rules, honouring colourMode='brand' so the ring picks up each network's brand colour. Add iconBorderWidth/iconBorderStyle @item in the same pass so the existing iconBorderColour/Hover pair stops being unpaintable.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|border-top-width",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "border-top-width",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed F, but on a DIFFERENT BLOCK than the triage recorded. `.sgs-option-picker` is its own block, sgs/option-picker, which buybox merely composes -- buybox's own block.json says so: 'this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling)'. On the real owner, the pill element (`.sgs-option-picker__option`) has border COLOUR and RADIUS settings but no width and no style: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_element='pill' AND css_property IN ('border-width','border-style')` returns 0. This is one of the unpaired settings the brief's partner rule anticipates -- pillBorderColour and pillSelectedBorderColour paint nothing because no width exists beside them. The row is real, not a phantom: the draft wants 1px solid on all four sides against live 0px/none, and the five rows are one missing pair.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/option-picker' AND (css_property LIKE '%border%' OR attr_name LIKE '%ption%')\" -> pillBorderColour|border-color|pill|hover, pillSelectedBorderColour|border-color|pill|current, pillBorderRadius|border-radius|pill, pillSelectedBorderRadius|border-radius|pill|current, pillBorderColourGradient|border-color-gradient|pill, pillSelectedBorderColourGradient|border-color-gradient|pill|current, borderWidth|border-width|wrapper, borderStyle|border-style|wrapper, borderColour|border-color|wrapper, borderColourGradient|border-color-gradient|wrapper, borderRadius|border-radius|wrapper, optionItems|NULL|NULL",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_element='pill' AND css_property IN ('border-width','border-style')\" -> 0",
+   "plugins/sgs-blocks/src/blocks/buybox/block.json::supports.sgs.elements.wrapper._note -> 'this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling)'",
+   "plugins/sgs-blocks/src/blocks/option-picker/render.php + style.css own the `.sgs-option-picker__option` markup and rules (buybox only references them from style.css and canvas-mock.js)",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-product-4', path='..__option:nth-of-type(1)'] -> border-top-width, border-bottom-width, border-left-width, border-right-width all draft 1px / live 0px; border-top-style draft solid / live none"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "borderWidth + borderStyle @wrapper",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the SAME block already carries the width+style pair on its wrapper element through the shared border helper, so the pill needs the identical pair added to its attrMap. sgs/nav-drawer::closeBorderWidth/closeBorderStyle/closeBorderColour is the full per-element trio precedent."
+  },
+  "fixShape": "Add `pillBorderWidth` + `pillBorderStyle` @pill to sgs/option-picker's block.json attrMap (css:border-width, css:border-style) routed through sgs_border_box_decls, mirroring its own @wrapper pair. Also reattribute these 5 sweep rows from sgs/buybox to sgs/option-picker.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|border-top-style",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "border-top-style",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed F, but on a DIFFERENT BLOCK than the triage recorded. `.sgs-option-picker` is its own block, sgs/option-picker, which buybox merely composes -- buybox's own block.json says so: 'this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling)'. On the real owner, the pill element (`.sgs-option-picker__option`) has border COLOUR and RADIUS settings but no width and no style: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_element='pill' AND css_property IN ('border-width','border-style')` returns 0. This is one of the unpaired settings the brief's partner rule anticipates -- pillBorderColour and pillSelectedBorderColour paint nothing because no width exists beside them. The row is real, not a phantom: the draft wants 1px solid on all four sides against live 0px/none, and the five rows are one missing pair.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/option-picker' AND (css_property LIKE '%border%' OR attr_name LIKE '%ption%')\" -> pillBorderColour|border-color|pill|hover, pillSelectedBorderColour|border-color|pill|current, pillBorderRadius|border-radius|pill, pillSelectedBorderRadius|border-radius|pill|current, pillBorderColourGradient|border-color-gradient|pill, pillSelectedBorderColourGradient|border-color-gradient|pill|current, borderWidth|border-width|wrapper, borderStyle|border-style|wrapper, borderColour|border-color|wrapper, borderColourGradient|border-color-gradient|wrapper, borderRadius|border-radius|wrapper, optionItems|NULL|NULL",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_element='pill' AND css_property IN ('border-width','border-style')\" -> 0",
+   "plugins/sgs-blocks/src/blocks/buybox/block.json::supports.sgs.elements.wrapper._note -> 'this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling)'",
+   "plugins/sgs-blocks/src/blocks/option-picker/render.php + style.css own the `.sgs-option-picker__option` markup and rules (buybox only references them from style.css and canvas-mock.js)",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-product-4', path='..__option:nth-of-type(1)'] -> border-top-width, border-bottom-width, border-left-width, border-right-width all draft 1px / live 0px; border-top-style draft solid / live none"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "borderWidth + borderStyle @wrapper",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the SAME block already carries the width+style pair on its wrapper element through the shared border helper, so the pill needs the identical pair added to its attrMap. sgs/nav-drawer::closeBorderWidth/closeBorderStyle/closeBorderColour is the full per-element trio precedent."
+  },
+  "fixShape": "Add `pillBorderWidth` + `pillBorderStyle` @pill to sgs/option-picker's block.json attrMap (css:border-width, css:border-style) routed through sgs_border_box_decls, mirroring its own @wrapper pair. Also reattribute these 5 sweep rows from sgs/buybox to sgs/option-picker.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|border-bottom-width",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "border-bottom-width",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed F, but on a DIFFERENT BLOCK than the triage recorded. `.sgs-option-picker` is its own block, sgs/option-picker, which buybox merely composes -- buybox's own block.json says so: 'this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling)'. On the real owner, the pill element (`.sgs-option-picker__option`) has border COLOUR and RADIUS settings but no width and no style: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_element='pill' AND css_property IN ('border-width','border-style')` returns 0. This is one of the unpaired settings the brief's partner rule anticipates -- pillBorderColour and pillSelectedBorderColour paint nothing because no width exists beside them. The row is real, not a phantom: the draft wants 1px solid on all four sides against live 0px/none, and the five rows are one missing pair.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/option-picker' AND (css_property LIKE '%border%' OR attr_name LIKE '%ption%')\" -> pillBorderColour|border-color|pill|hover, pillSelectedBorderColour|border-color|pill|current, pillBorderRadius|border-radius|pill, pillSelectedBorderRadius|border-radius|pill|current, pillBorderColourGradient|border-color-gradient|pill, pillSelectedBorderColourGradient|border-color-gradient|pill|current, borderWidth|border-width|wrapper, borderStyle|border-style|wrapper, borderColour|border-color|wrapper, borderColourGradient|border-color-gradient|wrapper, borderRadius|border-radius|wrapper, optionItems|NULL|NULL",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_element='pill' AND css_property IN ('border-width','border-style')\" -> 0",
+   "plugins/sgs-blocks/src/blocks/buybox/block.json::supports.sgs.elements.wrapper._note -> 'this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling)'",
+   "plugins/sgs-blocks/src/blocks/option-picker/render.php + style.css own the `.sgs-option-picker__option` markup and rules (buybox only references them from style.css and canvas-mock.js)",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-product-4', path='..__option:nth-of-type(1)'] -> border-top-width, border-bottom-width, border-left-width, border-right-width all draft 1px / live 0px; border-top-style draft solid / live none"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "borderWidth + borderStyle @wrapper",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the SAME block already carries the width+style pair on its wrapper element through the shared border helper, so the pill needs the identical pair added to its attrMap. sgs/nav-drawer::closeBorderWidth/closeBorderStyle/closeBorderColour is the full per-element trio precedent."
+  },
+  "fixShape": "Add `pillBorderWidth` + `pillBorderStyle` @pill to sgs/option-picker's block.json attrMap (css:border-width, css:border-style) routed through sgs_border_box_decls, mirroring its own @wrapper pair. Also reattribute these 5 sweep rows from sgs/buybox to sgs/option-picker.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|border-left-width",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "border-left-width",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed F, but on a DIFFERENT BLOCK than the triage recorded. `.sgs-option-picker` is its own block, sgs/option-picker, which buybox merely composes -- buybox's own block.json says so: 'this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling)'. On the real owner, the pill element (`.sgs-option-picker__option`) has border COLOUR and RADIUS settings but no width and no style: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_element='pill' AND css_property IN ('border-width','border-style')` returns 0. This is one of the unpaired settings the brief's partner rule anticipates -- pillBorderColour and pillSelectedBorderColour paint nothing because no width exists beside them. The row is real, not a phantom: the draft wants 1px solid on all four sides against live 0px/none, and the five rows are one missing pair.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/option-picker' AND (css_property LIKE '%border%' OR attr_name LIKE '%ption%')\" -> pillBorderColour|border-color|pill|hover, pillSelectedBorderColour|border-color|pill|current, pillBorderRadius|border-radius|pill, pillSelectedBorderRadius|border-radius|pill|current, pillBorderColourGradient|border-color-gradient|pill, pillSelectedBorderColourGradient|border-color-gradient|pill|current, borderWidth|border-width|wrapper, borderStyle|border-style|wrapper, borderColour|border-color|wrapper, borderColourGradient|border-color-gradient|wrapper, borderRadius|border-radius|wrapper, optionItems|NULL|NULL",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_element='pill' AND css_property IN ('border-width','border-style')\" -> 0",
+   "plugins/sgs-blocks/src/blocks/buybox/block.json::supports.sgs.elements.wrapper._note -> 'this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling)'",
+   "plugins/sgs-blocks/src/blocks/option-picker/render.php + style.css own the `.sgs-option-picker__option` markup and rules (buybox only references them from style.css and canvas-mock.js)",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-product-4', path='..__option:nth-of-type(1)'] -> border-top-width, border-bottom-width, border-left-width, border-right-width all draft 1px / live 0px; border-top-style draft solid / live none"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "borderWidth + borderStyle @wrapper",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the SAME block already carries the width+style pair on its wrapper element through the shared border helper, so the pill needs the identical pair added to its attrMap. sgs/nav-drawer::closeBorderWidth/closeBorderStyle/closeBorderColour is the full per-element trio precedent."
+  },
+  "fixShape": "Add `pillBorderWidth` + `pillBorderStyle` @pill to sgs/option-picker's block.json attrMap (css:border-width, css:border-style) routed through sgs_border_box_decls, mirroring its own @wrapper pair. Also reattribute these 5 sweep rows from sgs/buybox to sgs/option-picker.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|border-right-width",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "border-right-width",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed F, but on a DIFFERENT BLOCK than the triage recorded. `.sgs-option-picker` is its own block, sgs/option-picker, which buybox merely composes -- buybox's own block.json says so: 'this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling)'. On the real owner, the pill element (`.sgs-option-picker__option`) has border COLOUR and RADIUS settings but no width and no style: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_element='pill' AND css_property IN ('border-width','border-style')` returns 0. This is one of the unpaired settings the brief's partner rule anticipates -- pillBorderColour and pillSelectedBorderColour paint nothing because no width exists beside them. The row is real, not a phantom: the draft wants 1px solid on all four sides against live 0px/none, and the five rows are one missing pair.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/option-picker' AND (css_property LIKE '%border%' OR attr_name LIKE '%ption%')\" -> pillBorderColour|border-color|pill|hover, pillSelectedBorderColour|border-color|pill|current, pillBorderRadius|border-radius|pill, pillSelectedBorderRadius|border-radius|pill|current, pillBorderColourGradient|border-color-gradient|pill, pillSelectedBorderColourGradient|border-color-gradient|pill|current, borderWidth|border-width|wrapper, borderStyle|border-style|wrapper, borderColour|border-color|wrapper, borderColourGradient|border-color-gradient|wrapper, borderRadius|border-radius|wrapper, optionItems|NULL|NULL",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/option-picker' AND css_element='pill' AND css_property IN ('border-width','border-style')\" -> 0",
+   "plugins/sgs-blocks/src/blocks/buybox/block.json::supports.sgs.elements.wrapper._note -> 'this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling)'",
+   "plugins/sgs-blocks/src/blocks/option-picker/render.php + style.css own the `.sgs-option-picker__option` markup and rules (buybox only references them from style.css and canvas-mock.js)",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-product-4', path='..__option:nth-of-type(1)'] -> border-top-width, border-bottom-width, border-left-width, border-right-width all draft 1px / live 0px; border-top-style draft solid / live none"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "borderWidth + borderStyle @wrapper",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the SAME block already carries the width+style pair on its wrapper element through the shared border helper, so the pill needs the identical pair added to its attrMap. sgs/nav-drawer::closeBorderWidth/closeBorderStyle/closeBorderColour is the full per-element trio precedent."
+  },
+  "fixShape": "Add `pillBorderWidth` + `pillBorderStyle` @pill to sgs/option-picker's block.json attrMap (css:border-width, css:border-style) routed through sgs_border_box_decls, mirroring its own @wrapper pair. Also reattribute these 5 sweep rows from sgs/buybox to sgs/option-picker.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/buybox|.sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el|filter",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+  "property": "filter",
+  "rows": 2,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed, and the near-precedents provably cannot express it. The draft wants `brightness(1.14) saturate(0.7)` on the gallery image (style and hover, 2 rows). sgs/buybox has no filter setting at all (0 rows), and its supports.sgs.mediaElements declares only the `object-fit` atom for both the main and thumb prefixes. The two framework filter mechanisms are both fixed-value and neither can produce an arbitrary brightness/saturate pair: `sgsColourTreatment` is a two-value enum `[\"\", \"white\"]` whose only output is `--sgs-image-filter: brightness(0) invert(1)`, and `grayscaleHover` emits grayscale on hover only. Nothing in the framework can hold a tunable filter value, so this is a real new control -- though it lands inside an existing universal extension rather than needing a new mechanism.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/buybox' AND css_property LIKE '%filter%'\" -> 0",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT block_slug, attr_name, css_property, css_element, css_state FROM block_attributes WHERE css_property LIKE '%filter%'\" -> card-grid/gallery/info-box/team-member::grayscaleHover (filter @image hover), card-grid/gallery/team-member::sgsColourTreatment (filter @image), and six ::scrimBlur (backdrop-filter @scrim). Nothing else.",
+   "plugins/sgs-blocks/src/blocks/extensions/extension-roster.json -> \"sgsColourTreatment\": { \"type\": \"string\", \"default\": \"\", \"enum\": [ \"\", \"white\" ], \"role\": \"visual\", \"css_property\": \"filter\", \"css_element\": \"image\" }",
+   "plugins/sgs-blocks/includes/image-controls.php -> `$css_vars[] = '--sgs-image-filter:brightness(0) invert(1)'` (the only value 'white' can emit); the docblock lists the extension's whole surface: sgsObjectPosition, sgsObjectFit, sgsMaxWidth, sgsHeight{Desktop,Tablet,Mobile}, sgsHeightUnit, sgsColourTreatment -- no brightness, contrast or saturate",
+   "plugins/sgs-blocks/src/blocks/buybox/block.json::supports.sgs.mediaElements -> atoms: [\"object-fit\"] for both the `main` and `thumb` prefixes; no filter atom",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-product-4', path='..__gallery-col > div:nth-of-type(1) > .sgs-media-el', property='filter'] -> draft \"brightness(1.14) saturate(0.7)\", live \"none\" (one style row, one hover row)"
+  ],
+  "precedent": {
+   "block": "sgs/card-grid",
+   "setting": "sgsColourTreatment",
+   "helper": "supports.sgs.imageControls + includes/image-controls.php (the universal image-controls extension)",
+   "note": "the host extension exists and already owns `filter` on the image element for three blocks; it is enum-only, so the fix is new keys on it rather than a new mechanism"
+  },
+  "fixShape": "Add tunable `sgsImageBrightness` / `sgsImageSaturate` / `sgsImageContrast` keys (plus hover twins) to the universal image-controls extension in includes/image-controls.php, composing them into `--sgs-image-filter` alongside sgsColourTreatment; then give sgs/buybox `supports.sgs.imageControls: true` and a filter atom on its main/thumb mediaElements.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__body > .sgs-choice-flow__summary|border-bottom-width",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
+  "property": "border-bottom-width",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed. The summary panel is not a styleable element on this block at all: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_element='summary'` returns 0, and block.json::supports.sgs.elements lists only `wrapper` and `back`. Every summary* attribute the block does have is text content or placement (summaryBaseLabel, summaryPendingLabel, summaryPendingText, summaryPosition, summaryShowImage) -- never paint. The row is real and properly paired, which is what makes it an F rather than a phantom border: the draft wants a 1px border and the matching border-bottom-color row is open beside it (draft rgb(230, 225, 218) / live rgb(20, 20, 20)), together with four padding rows on the same element at three device widths. The triage's candidate `backBorderWidth` is a genuinely different element (@back, the back BUTTON), so its reaches=false is correct rather than a calibration miss.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_element='summary'\" -> 0",
+   "plugins/sgs-blocks/src/blocks/choice-flow/block.json::supports.sgs.elements -> ['wrapper', 'back'] only. wrapper attrMap = {css:padding -> padding, css:max-width -> maxWidth}. back attrMap = {css:background-color, css:color, css:border-color -> backColourBorder, css:border-width -> backBorderWidth, css:border-style -> backBorderStyle, css:border-radius -> backBorderRadius}",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/choice-flow' AND attr_name LIKE 'summary%'\" -> summaryBaseLabel|technical, summaryPendingLabel|text-content, summaryPendingText|text-content, summaryPosition|select-from-enum, summaryShowImage|boolean-visibility -- no paint role among them",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-lens-0', path='.sgs-choice-flow__body > .sgs-choice-flow__summary'] -> border-bottom-width draft 1px/live 0px, border-bottom-color draft rgb(230, 225, 218)/live rgb(20, 20, 20), border-right-width draft 1px/live 0px, border-right-color draft rgb(230, 225, 218)/live rgb(20, 20, 20), plus padding-top/right/bottom/left each at three widths"
+  ],
+  "precedent": {
+   "block": "sgs/choice-flow",
+   "setting": "backBorderWidth + backBorderStyle + backColourBorder @back",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the same block already carries a complete per-element border group on its @back element; the summary element just has no manifest entry to hang one on"
+  },
+  "fixShape": "Add a `summary` entry to sgs/choice-flow's block.json::supports.sgs.elements with attrMap css:border-width / css:border-style / css:border-color / css:padding (per-device), routed through sgs_border_box_decls exactly as its @back element already is.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/choice-flow|.sgs-choice-flow__body > .sgs-choice-flow__summary|border-right-width",
+  "block": "sgs/choice-flow",
+  "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary",
+  "property": "border-right-width",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed. The summary panel is not a styleable element on this block at all: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_element='summary'` returns 0, and block.json::supports.sgs.elements lists only `wrapper` and `back`. Every summary* attribute the block does have is text content or placement (summaryBaseLabel, summaryPendingLabel, summaryPendingText, summaryPosition, summaryShowImage) -- never paint. The row is real and properly paired, which is what makes it an F rather than a phantom border: the draft wants a 1px border and the matching border-right-color row is open beside it (draft rgb(230, 225, 218) / live rgb(20, 20, 20)), together with four padding rows on the same element at three device widths. The triage's candidate `backBorderWidth` is a genuinely different element (@back, the back BUTTON), so its reaches=false is correct rather than a calibration miss.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_element='summary'\" -> 0",
+   "plugins/sgs-blocks/src/blocks/choice-flow/block.json::supports.sgs.elements -> ['wrapper', 'back'] only. wrapper attrMap = {css:padding -> padding, css:max-width -> maxWidth}. back attrMap = {css:background-color, css:color, css:border-color -> backColourBorder, css:border-width -> backBorderWidth, css:border-style -> backBorderStyle, css:border-radius -> backBorderRadius}",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/choice-flow' AND attr_name LIKE 'summary%'\" -> summaryBaseLabel|technical, summaryPendingLabel|text-content, summaryPendingText|text-content, summaryPosition|select-from-enum, summaryShowImage|boolean-visibility -- no paint role among them",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-lens-0', path='.sgs-choice-flow__body > .sgs-choice-flow__summary'] -> border-bottom-width draft 1px/live 0px, border-bottom-color draft rgb(230, 225, 218)/live rgb(20, 20, 20), border-right-width draft 1px/live 0px, border-right-color draft rgb(230, 225, 218)/live rgb(20, 20, 20), plus padding-top/right/bottom/left each at three widths"
+  ],
+  "precedent": {
+   "block": "sgs/choice-flow",
+   "setting": "backBorderWidth + backBorderStyle + backColourBorder @back",
+   "helper": "includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "the same block already carries a complete per-element border group on its @back element; the summary element just has no manifest entry to hang one on"
+  },
+  "fixShape": "Add a `summary` entry to sgs/choice-flow's block.json::supports.sgs.elements with attrMap css:border-width / css:border-style / css:border-color / css:padding (per-device), routed through sgs_border_box_decls exactly as its @back element already is.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M7-decoration",
+  "combo": "sgs/choice-flow||border-radius",
+  "block": "sgs/choice-flow",
+  "path": "",
+  "property": "border-radius",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed on the database, with a caveat on the node. sgs/choice-flow has no wrapper border-radius: `SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_property='border-radius' AND css_element='wrapper'` returns 0; supports.sgs.boxFamilies is `{\"padding\": [\"padding\"]}` with no borderRadius family, and the wrapper attrMap is `{css:padding, css:max-width}` -- so nothing can set this element's radius to the draft's 0px. The caveat, and why this is medium rather than high confidence: the same node and ref also report the :focus-visible box-shadow ring (classed W above) and a complementary icon fill/stroke swap, which together suggest the walker's live node may be a focused inner control carrying its own 4px radius rather than the section wrapper. choice-flow's own style.css declares radii of 8px, 999px, 50% and 0 -- never 4px -- so the live 4px is not authored on the choice-flow root. The DB gap is real either way; only this row's attribution is in doubt.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/choice-flow' AND css_property='border-radius' AND css_element='wrapper'\" -> 0",
+   "plugins/sgs-blocks/src/blocks/choice-flow/block.json::supports.sgs.boxFamilies -> {\"padding\": [\"padding\"]} (no borderRadius family); supports.sgs.elements.wrapper.attrMap -> {\"css:padding\": \"padding\", \"css:max-width\": \"maxWidth\"}",
+   "plugins/sgs-blocks/src/blocks/choice-flow/style.css declares border-radius only as var(--wp--custom--button-presets--primary--border-radius, 8px), 999px, 50%, var(--wp--custom--border-radius--medium, 8px) and 0 -- no 4px",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-lens-0', path=''] -> exactly 4 rows: border-radius draft 0px/live 4px; box-shadow (the focus ring, classed W); icon-fill; icon-stroke"
+  ],
+  "precedent": {
+   "block": "sgs/accordion-item",
+   "setting": "borderRadius",
+   "helper": "supports.sgs.boxFamilies.borderRadius + includes/helpers-border-style.php::sgs_border_box_decls",
+   "note": "a wrapper border-radius through the borderRadius box family is standard -- sgs/accordion-item, sgs/nav-drawer, sgs/product-card and sgs/social-icons all have it; choice-flow declares only the padding family"
+  },
+  "fixShape": "Add `borderRadius` to sgs/choice-flow's supports.sgs.boxFamilies and `css:border-radius` to its wrapper attrMap. Confirm the walker's live node identity for cr-ref-lens-0 path '' first: if it is a focused inner control, this row is the same pairing artefact as its box-shadow sibling.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)|icon-fill",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)",
+  "property": "icon-fill",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "deferred",
+  "changed": true,
+  "proof": "owned by the parallel google-reviews session",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-58', path='.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)', property='icon-fill'] -- not investigated; per dispatch no DB or source work was done on sgs/google-reviews"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "deferred"
+  },
+  "fixShape": "Deferred to the parallel session already working sgs/google-reviews attribution, logo and avatar. For the size pair specifically, Spec 47 records that an icon's size is already a row on the svg's own path and that the route writes it ('About's WhatsApp icon 21px written on Contact'), so arrowSize -> height,width @arrow is the candidate to check first.",
+  "confidence": "low"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)|icon-stroke",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)",
+  "property": "icon-stroke",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "deferred",
+  "changed": true,
+  "proof": "owned by the parallel google-reviews session",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-58', path='.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)', property='icon-stroke'] -- not investigated; per dispatch no DB or source work was done on sgs/google-reviews"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "deferred"
+  },
+  "fixShape": "Deferred to the parallel session already working sgs/google-reviews attribution, logo and avatar. For the size pair specifically, Spec 47 records that an icon's size is already a row on the svg's own path and that the route writes it ('About's WhatsApp icon 21px written on Contact'), so arrowSize -> height,width @arrow is the candidate to check first.",
+  "confidence": "low"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1) > svg|icon-width",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1) > svg",
+  "property": "icon-width",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "deferred",
+  "changed": true,
+  "proof": "owned by the parallel google-reviews session",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-58', path='.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1) > svg', property='icon-width'] -- not investigated; per dispatch no DB or source work was done on sgs/google-reviews"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "deferred"
+  },
+  "fixShape": "Deferred to the parallel session already working sgs/google-reviews attribution, logo and avatar. For the size pair specifically, Spec 47 records that an icon's size is already a row on the svg's own path and that the route writes it ('About's WhatsApp icon 21px written on Contact'), so arrowSize -> height,width @arrow is the candidate to check first.",
+  "confidence": "low"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1) > svg|icon-height",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1) > svg",
+  "property": "icon-height",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "deferred",
+  "changed": true,
+  "proof": "owned by the parallel google-reviews session",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-58', path='.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1) > svg', property='icon-height'] -- not investigated; per dispatch no DB or source work was done on sgs/google-reviews"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "deferred"
+  },
+  "fixShape": "Deferred to the parallel session already working sgs/google-reviews attribution, logo and avatar. For the size pair specifically, Spec 47 records that an icon's size is already a row on the svg's own path and that the route writes it ('About's WhatsApp icon 21px written on Contact'), so arrowSize -> height,width @arrow is the candidate to check first.",
+  "confidence": "low"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)|icon-fill",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)",
+  "property": "icon-fill",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "deferred",
+  "changed": true,
+  "proof": "owned by the parallel google-reviews session",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-58', path='.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)', property='icon-fill'] -- not investigated; per dispatch no DB or source work was done on sgs/google-reviews"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "deferred"
+  },
+  "fixShape": "Deferred to the parallel session already working sgs/google-reviews attribution, logo and avatar. For the size pair specifically, Spec 47 records that an icon's size is already a row on the svg's own path and that the route writes it ('About's WhatsApp icon 21px written on Contact'), so arrowSize -> height,width @arrow is the candidate to check first.",
+  "confidence": "low"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)|icon-stroke",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)",
+  "property": "icon-stroke",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "deferred",
+  "changed": true,
+  "proof": "owned by the parallel google-reviews session",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-58', path='.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)', property='icon-stroke'] -- not investigated; per dispatch no DB or source work was done on sgs/google-reviews"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "deferred"
+  },
+  "fixShape": "Deferred to the parallel session already working sgs/google-reviews attribution, logo and avatar. For the size pair specifically, Spec 47 records that an icon's size is already a row on the svg's own path and that the route writes it ('About's WhatsApp icon 21px written on Contact'), so arrowSize -> height,width @arrow is the candidate to check first.",
+  "confidence": "low"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2) > svg|icon-width",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2) > svg",
+  "property": "icon-width",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "deferred",
+  "changed": true,
+  "proof": "owned by the parallel google-reviews session",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-58', path='.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2) > svg', property='icon-width'] -- not investigated; per dispatch no DB or source work was done on sgs/google-reviews"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "deferred"
+  },
+  "fixShape": "Deferred to the parallel session already working sgs/google-reviews attribution, logo and avatar. For the size pair specifically, Spec 47 records that an icon's size is already a row on the svg's own path and that the route writes it ('About's WhatsApp icon 21px written on Contact'), so arrowSize -> height,width @arrow is the candidate to check first.",
+  "confidence": "low"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/google-reviews|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2) > svg|icon-height",
+  "block": "sgs/google-reviews",
+  "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2) > svg",
+  "property": "icon-height",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "deferred",
+  "changed": true,
+  "proof": "owned by the parallel google-reviews session",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-58', path='.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2) > svg', property='icon-height'] -- not investigated; per dispatch no DB or source work was done on sgs/google-reviews"
+  ],
+  "precedent": {
+   "block": null,
+   "setting": null,
+   "helper": null,
+   "note": "deferred"
+  },
+  "fixShape": "Deferred to the parallel session already working sgs/google-reviews attribution, logo and avatar. For the size pair specifically, Spec 47 records that an icon's size is already a row on the svg's own path and that the route writes it ('About's WhatsApp icon 21px written on Contact'), so arrowSize -> height,width @arrow is the candidate to check first.",
+  "confidence": "low"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2)|icon-fill",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2)",
+  "property": "icon-fill",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists twice over. The brand glyphs are emitted with `fill=\"currentColor\"` -- brand-icons.php renders `'whatsapp' => '<svg class=\"sgs-brand-icon sgs-brand-icon-whatsapp\" .. fill=\"currentColor\" ..>'` -- so the SVG's fill is whatever paints `color` on the item, which is exactly `sgs/social-icons::iconGlyphColour` -> color @item (with ::iconGlyphColourHover for hover). Better still, the draft value rgb(37, 211, 102) is #25D366, WhatsApp's own brand green, and the block has `colourMode` with enum [\"theme\", \"brand\"] -- the \"brand\" mode IS 'paint each icon its network's brand colour', precisely what the draft shows. The resolver reported no-setting only because `icon-fill` is not a CSS property and no block_attributes row carries css_property='fill' for this block (0 rows): the paint reaches the SVG through `color` plus currentColor, which a property-keyed lookup on 'fill' cannot see. Both rows are the same icon, one measured at the item and one at the glyph itself.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/social-icons' AND attr_name LIKE 'iconGlyph%'\" -> iconGlyphColour|color|item, iconGlyphColourHover|color|item|hover, iconGlyphColourGradient|stroke|item, iconGlyphColourHoverGradient|stroke|item|hover",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property='fill'\" -> 0 (exactly why the property-keyed resolver missed it)",
+   "plugins/sgs-blocks/src/blocks/social-icons/brand-icons.php -> every brand glyph carries `fill=\"currentColor\"` (whatsapp, google, tiktok, twitter, ..)",
+   "plugins/sgs-blocks/src/blocks/social-icons/block.json::attributes.colourMode -> {\"type\": \"string\", \"enum\": [\"theme\", \"brand\"], \"default\": \"theme\"}",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-footer-6', path='.sgs-social-icons__item:nth-of-type(2)', property='icon-fill'] -> draft rgb(37, 211, 102) (= #25D366, WhatsApp brand green), live rgb(20, 20, 20)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "colourMode='brand' (or iconGlyphColour)",
+   "helper": "fill=\"currentColor\" in src/blocks/social-icons/brand-icons.php, painted via color @item",
+   "note": "the brand-colour mode already exists on this exact block and produces exactly the draft's per-network colours"
+  },
+  "fixShape": "Set `colourMode: \"brand\"` on the footer social-icons block in the tree. In the route, teach the walker that an SVG painting with currentColor is controlled by whatever sets `color` on its host, so an icon-fill/icon-stroke row resolves against css_property='color' instead of reporting no-setting.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/social-icons|.sgs-social-icons__item:nth-of-type(2) > .sgs-social-icons__icon > .sgs-brand-icon|icon-fill",
+  "block": "sgs/social-icons",
+  "path": ".sgs-social-icons__item:nth-of-type(2) > .sgs-social-icons__icon > .sgs-brand-icon",
+  "property": "icon-fill",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists twice over. The brand glyphs are emitted with `fill=\"currentColor\"` -- brand-icons.php renders `'whatsapp' => '<svg class=\"sgs-brand-icon sgs-brand-icon-whatsapp\" .. fill=\"currentColor\" ..>'` -- so the SVG's fill is whatever paints `color` on the item, which is exactly `sgs/social-icons::iconGlyphColour` -> color @item (with ::iconGlyphColourHover for hover). Better still, the draft value rgb(37, 211, 102) is #25D366, WhatsApp's own brand green, and the block has `colourMode` with enum [\"theme\", \"brand\"] -- the \"brand\" mode IS 'paint each icon its network's brand colour', precisely what the draft shows. The resolver reported no-setting only because `icon-fill` is not a CSS property and no block_attributes row carries css_property='fill' for this block (0 rows): the paint reaches the SVG through `color` plus currentColor, which a property-keyed lookup on 'fill' cannot see. Both rows are the same icon, one measured at the item and one at the glyph itself.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/social-icons' AND attr_name LIKE 'iconGlyph%'\" -> iconGlyphColour|color|item, iconGlyphColourHover|color|item|hover, iconGlyphColourGradient|stroke|item, iconGlyphColourHoverGradient|stroke|item|hover",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property='fill'\" -> 0 (exactly why the property-keyed resolver missed it)",
+   "plugins/sgs-blocks/src/blocks/social-icons/brand-icons.php -> every brand glyph carries `fill=\"currentColor\"` (whatsapp, google, tiktok, twitter, ..)",
+   "plugins/sgs-blocks/src/blocks/social-icons/block.json::attributes.colourMode -> {\"type\": \"string\", \"enum\": [\"theme\", \"brand\"], \"default\": \"theme\"}",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-footer-6', path='.sgs-social-icons__item:nth-of-type(2) > .sgs-social-icons__icon > .sgs-brand-icon', property='icon-fill'] -> draft rgb(37, 211, 102) (= #25D366, WhatsApp brand green), live rgb(20, 20, 20)"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "colourMode='brand' (or iconGlyphColour)",
+   "helper": "fill=\"currentColor\" in src/blocks/social-icons/brand-icons.php, painted via color @item",
+   "note": "the brand-colour mode already exists on this exact block and produces exactly the draft's per-network colours"
+  },
+  "fixShape": "Set `colourMode: \"brand\"` on the footer social-icons block in the tree. In the route, teach the walker that an SVG painting with currentColor is controlled by whatever sets `color` on its host, so an icon-fill/icon-stroke row resolves against css_property='color' instead of reporting no-setting.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/site-footer||icon-stroke",
+  "block": "sgs/site-footer",
+  "path": "",
+  "property": "icon-stroke",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Three findings, all pointing away from F. First, the value is not a colour: the draft reads `url(\"#igGradFooter\")`, an SVG paint-server reference to a <linearGradient> in the draft's own <defs> -- the Instagram brand gradient. Second, the framework ships this exact mechanism: `includes/helpers-svg-gradient.php::sgs_svg_stroke_gradient` converts a validated CSS gradient string into a real `<defs><linearGradient id=..>` and returns `'css' => $target . ':url(#' . $id . ')'` for target 'stroke' or 'fill' -- the identical value shape. It is wired up as `sgs/social-icons::iconGlyphColourGradient` ('CSS gradient string painting every icon's stroke instead of a flat colour'), invoked at social-icons/render.php as `sgs_icon_gradient_css('lucide', $icon_glyph_colour_gradient, $uid . '-ig', \"{$root_sel} .sgs-social-icons__item svg\")` -- note the `-ig` id suffix, matching the draft's own `igGradFooter`. Third, the row is mis-attributed: the icon belongs to the social-icons block inside the footer, not to sgs/site-footer, whose only icon-ish attributes are background-SVG toggles. The walker reads the first descendant SVG from a ref's root and files it against the root's block.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-footer-0', path='', property='icon-stroke'] -> draft \"url(\\\"#igGradFooter\\\")\", live \"rgb(20, 20, 20)\"",
+   "plugins/sgs-blocks/includes/helpers-svg-gradient.php::sgs_svg_stroke_gradient -> builds `<defs><linearGradient id=\"%1$s\" x1 y1 x2 y2>..</linearGradient></defs>` and returns `'css' => $target . ':url(#' . $id . ')'`, with $target constrained to ('stroke','fill')",
+   "plugins/sgs-blocks/src/blocks/social-icons/render.php -> `$sgs_social_stroke_grad = sgs_icon_gradient_css( 'lucide', $icon_glyph_colour_gradient, $uid . '-ig', \"{$root_sel} .sgs-social-icons__item svg\" );`",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/social-icons' AND css_property='stroke'\" -> iconGlyphColourGradient|stroke|item, iconGlyphColourHoverGradient|stroke|item",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, role, css_property FROM block_attributes WHERE block_slug='sgs/site-footer' AND attr_name LIKE '%Svg%'\" -> bgSvgAnimation, bgSvgAnimationSpeed, bgSvgContent, bgSvgMinHeight, bgSvgOpacity, bgSvgPosition, bgSvgTextShadow -- background-SVG only, no icon paint on the footer block itself"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "iconGlyphColourGradient",
+   "helper": "includes/helpers-svg-gradient.php::sgs_svg_stroke_gradient (emits stroke:url(#id) from a CSS gradient string)",
+   "note": "the SVG paint-server gradient mechanism ships and produces the draft's exact value shape, id-suffix convention included"
+  },
+  "fixShape": "Write `iconGlyphColourGradient` on the footer social-icons block with the Instagram gradient. In the route, file an icon-* row against the block that owns the SVG rather than the ref root's block, and recognise a `url(#id)` draft value as the iconGlyphColourGradient mechanism rather than an unmatched colour.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/nav-drawer||icon-stroke",
+  "block": "sgs/nav-drawer",
+  "path": "",
+  "property": "icon-stroke",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists, and one of them literally declares css_property `stroke`. The Lucide glyph set the drawer draws from is emitted `fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"` for every entry in includes/lucide-icons.php, so the icon's stroke is whatever sets `color` on its host: `sgs/nav-drawer::toggleCloseColour` -> color @close, with ::toggleCloseColourHover for hover, and `::toggleCloseColourGradient` for the gradient path. The live value rgb(0, 0, 0) is the unset UA default `color` -- so nothing was written at all. This is not a control that cannot reach the element; it is one the route left empty. The resolver said no-setting because it looked for css_property='icon-stroke', which is a walker name, not a CSS property.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND attr_name LIKE 'toggleClose%'\" -> toggleCloseColour|color|close, toggleCloseColourGradient|color-gradient|close, toggleCloseColourHover|color|close|hover, toggleCloseColourHoverGradient|color-gradient|close|hover",
+   "plugins/sgs-blocks/includes/lucide-icons.php -> every glyph is emitted `fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"`",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND attr_name LIKE 'closeIcon%'\" -> closeIcon|NULL|NULL (enum-class-probe), closeIconSize|height,width|closeIcon",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-mobile-menu-0', path='', property='icon-stroke'] -> draft rgb(20, 20, 20), live rgb(0, 0, 0) (the unset UA default)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "toggleCloseColour",
+   "helper": "stroke=\"currentColor\" in includes/lucide-icons.php, painted via color @close",
+   "note": "the same block also exposes toggleCloseColourGradient, whose sibling on sgs/social-icons carries css_property 'stroke' outright"
+  },
+  "fixShape": "Write `toggleCloseColour` on the drawer in the tree. In the route, map icon-stroke and icon-fill to css_property='color' whenever the target SVG paints with currentColor.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/whatsapp-cta||icon-fill",
+  "block": "sgs/whatsapp-cta",
+  "path": "",
+  "property": "icon-fill",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists and render.php says so in as many words. The WhatsApp glyph comes from `includes/helpers-brand-glyphs.php::sgs_whatsapp_glyph_svg` and whatsapp-cta/render.php comments at the icon-colour block: 'Icon colour follows the label colour. The glyph fills with currentColor', then scopes `$icon_colour_sel = $root_sel . ' .sgs-whatsapp-cta__icon'`. So the fill is driven by `sgs/whatsapp-cta::labelColour` -> color @wrapper (plus ::labelColourHover @wrapper hover and the gradient twins). The draft wants rgb(255, 255, 255) -- a white glyph on the green card -- and the live reads rgb(20, 20, 20), the unwritten default. There is no 'fill' or 'stroke' row for this block (0 rows), which is exactly why the property-keyed resolver reported no-setting.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/whatsapp-cta' AND attr_name LIKE 'label%'\" -> labelColour|color|wrapper, labelColourGradient|color-gradient|wrapper, labelColourHover|color|wrapper|hover, labelColourHoverGradient|color-gradient|wrapper|hover",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/whatsapp-cta' AND css_property IN ('fill','stroke')\" -> 0",
+   "plugins/sgs-blocks/src/blocks/whatsapp-cta/render.php -> '// --- Icon colour follows the label colour. The glyph fills with currentColor'; `$icon_colour_sel = $root_sel . ' .sgs-whatsapp-cta__icon';`; `$whatsapp_svg = sgs_whatsapp_glyph_svg( 'sgs-whatsapp-cta__icon' );` preceded by '// WhatsApp logo, coloured by CSS through currentColor (includes/helpers-brand-glyphs.php).'",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-product-9', path='', property='icon-fill'] -> draft rgb(255, 255, 255), live rgb(20, 20, 20)"
+  ],
+  "precedent": {
+   "block": "sgs/whatsapp-cta",
+   "setting": "labelColour",
+   "helper": "currentColor fill via includes/helpers-brand-glyphs.php::sgs_whatsapp_glyph_svg",
+   "note": "render.php documents the currentColor contract explicitly: one colour control paints both the label and the glyph"
+  },
+  "fixShape": "Write `labelColour` (white) on the whatsapp-cta block in the tree. Same route fix: resolve icon-fill through css_property='color' for currentColor glyphs.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/container||icon-fill",
+  "block": "sgs/container",
+  "path": "",
+  "property": "icon-fill",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Mis-attributed: this is a google-reviews icon, not a container one. sgs/container has no icon paint at all -- its only SVG attributes are the background-SVG set (bgSvgContent role 'svg', bgSvgOpacity -> opacity @svg-bg, bgSvgPosition, bgSvgMinHeight, bgSvgAnimation, bgSvgAnimationSpeed, bgSvgTextShadow) with no fill and no stroke row. The proof of what the walker actually read is in the same ref: cr-ref-home-54's very next two rows are icon-width and icon-height at path `.sgs-container__inner > .sgs-has-focus-ring > .sgs-google-re..` -- google-reviews icons. The values settle it: draft rgb(66, 133, 244) is Google blue #4285F4 and live rgb(251, 188, 4) is Google star yellow #FBBC04, the two colours the parallel session's own commit b551d9eb5 names ('star yellow, Material greys, Google blue'). The walker reads the first descendant SVG from a ref's root and files it against the root's block. Per dispatch I did no DB or source work on sgs/google-reviews; this row belongs on that session's pile.",
+  "citations": [
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND (attr_name LIKE '%Svg%' OR css_property IN ('fill','stroke'))\" -> bgSvgAnimation|motion|NULL, bgSvgAnimationSpeed|behaviour|NULL, bgSvgContent|svg|NULL, bgSvgMinHeight|layout|min-height, bgSvgOpacity|visual|opacity|svg-bg, bgSvgPosition|select-from-enum|NULL, bgSvgTextShadow|behaviour|NULL -- no fill, no stroke",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-home-54'] -> icon-fill at path '' (draft rgb(66, 133, 244) = Google blue #4285F4, live rgb(251, 188, 4) = Google yellow #FBBC04), immediately followed by icon-width and icon-height at path '.sgs-container__inner > .sgs-has-focus-ring > .sgs-google-re..' (draft 30px / live 16.8px)",
+   "plugins/sgs-blocks/src/blocks/social-icons/brand-icons.php::'google-brand' hardcodes the four Google path fills #4285F4 / #34A853 / #FBBC05 / #EA4335 -- the blue and yellow in this row are both from Google's own palette",
+   "git log: commit b551d9eb5 'fix(google-reviews): default colours are Google's (star yellow, Material greys, Google blue, dark-mode set), not the theme presets' -- the parallel session owns both colours in this row"
+  ],
+  "precedent": {
+   "block": "sgs/social-icons",
+   "setting": "iconGlyphColour",
+   "helper": "fill=\"currentColor\" painted via color @item",
+   "note": "the generic currentColor icon-paint precedent; the specific owner of this row is sgs/google-reviews, held by the parallel session"
+  },
+  "fixShape": "Reattribute this row from sgs/container to sgs/google-reviews in the route (file an icon-* row against the block that owns the SVG, not the ref root's block) and hand it to the google-reviews session.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/choice-flow||icon-fill",
+  "block": "sgs/choice-flow",
+  "path": "",
+  "property": "icon-fill",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A complementary pair, so one fact, and it is an icon-ASSET difference rather than a paint gap. The two rows at this node are exact mirrors: icon-fill draft `none` / live rgb(255, 255, 255), and icon-stroke draft rgb(20, 20, 20) / live `none`. That is the signature of two different icon SETS -- an outline glyph (`fill=\"none\" stroke=\"currentColor\"`, how every entry in includes/lucide-icons.php is emitted) against a solid glyph (`fill=\"currentColor\"`, how the brand glyphs in social-icons/brand-icons.php are) -- the draft's icon is stroked and unfilled while the live one is solid. No colour control can turn a solid glyph into an outline one; the setting that decides it is the icon chooser, and sgs/choice-flow has one (`stageNoteIcon`, role enum-class-probe, with ::stageNoteIconColour beside it), the same pattern as sgs/nav-drawer::closeIcon and sgs/cart::iconName. The same mirrored pair recurs at cr-ref-product-4 (icon-fill draft white / live none, icon-stroke draft none / live rgb(138, 31, 33)), confirming a systematic fill-versus-stroke swap rather than a one-off.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-lens-0', path=''] -> icon-fill draft \"none\" / live \"rgb(255, 255, 255)\" AND icon-stroke draft \"rgb(20, 20, 20)\" / live \"none\" -- exact mirrors",
+   "plugins/sgs-blocks/includes/lucide-icons.php -> the outline set: every glyph `fill=\"none\" stroke=\"currentColor\"`",
+   "plugins/sgs-blocks/src/blocks/social-icons/brand-icons.php -> the solid set: every glyph `fill=\"currentColor\"`",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, role, css_property FROM block_attributes WHERE block_slug='sgs/choice-flow' AND attr_name LIKE '%Icon%'\" -> stageNoteIcon|enum-class-probe|NULL, stageNoteIconColour|color|NULL",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-product-4'] -> the same mirrored pair on another surface: icon-fill draft rgb(255, 255, 255)/live none, icon-stroke draft none/live rgb(138, 31, 33)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "closeIcon",
+   "helper": "enum-class-probe icon chooser (also sgs/cart::iconName and sgs/choice-flow::stageNoteIcon)",
+   "note": "the icon-set choice is a real control on this and sibling blocks; the fill/stroke split follows the chosen asset and is not separately paintable"
+  },
+  "fixShape": "In the route, collapse a mirrored icon-fill/icon-stroke pair into ONE icon-asset row (outline versus solid) and resolve it against the block's icon chooser (sgs/choice-flow::stageNoteIcon), instead of emitting two unmatched paint rows.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M6-icon-paint",
+  "combo": "sgs/choice-flow||icon-stroke",
+  "block": "sgs/choice-flow",
+  "path": "",
+  "property": "icon-stroke",
+  "rows": 1,
+  "surfaces": [
+   "lens"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A complementary pair, so one fact, and it is an icon-ASSET difference rather than a paint gap. The two rows at this node are exact mirrors: icon-fill draft `none` / live rgb(255, 255, 255), and icon-stroke draft rgb(20, 20, 20) / live `none`. That is the signature of two different icon SETS -- an outline glyph (`fill=\"none\" stroke=\"currentColor\"`, how every entry in includes/lucide-icons.php is emitted) against a solid glyph (`fill=\"currentColor\"`, how the brand glyphs in social-icons/brand-icons.php are) -- the live icon is filled and unstroked while the draft one is an outline. No colour control can turn a solid glyph into an outline one; the setting that decides it is the icon chooser, and sgs/choice-flow has one (`stageNoteIcon`, role enum-class-probe, with ::stageNoteIconColour beside it), the same pattern as sgs/nav-drawer::closeIcon and sgs/cart::iconName. The same mirrored pair recurs at cr-ref-product-4 (icon-fill draft white / live none, icon-stroke draft none / live rgb(138, 31, 33)), confirming a systematic fill-versus-stroke swap rather than a one-off.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-lens-0', path=''] -> icon-fill draft \"none\" / live \"rgb(255, 255, 255)\" AND icon-stroke draft \"rgb(20, 20, 20)\" / live \"none\" -- exact mirrors",
+   "plugins/sgs-blocks/includes/lucide-icons.php -> the outline set: every glyph `fill=\"none\" stroke=\"currentColor\"`",
+   "plugins/sgs-blocks/src/blocks/social-icons/brand-icons.php -> the solid set: every glyph `fill=\"currentColor\"`",
+   "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name, role, css_property FROM block_attributes WHERE block_slug='sgs/choice-flow' AND attr_name LIKE '%Icon%'\" -> stageNoteIcon|enum-class-probe|NULL, stageNoteIconColour|color|NULL",
+   "sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json::rows[ref='cr-ref-product-4'] -> the same mirrored pair on another surface: icon-fill draft rgb(255, 255, 255)/live none, icon-stroke draft none/live rgb(138, 31, 33)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "closeIcon",
+   "helper": "enum-class-probe icon chooser (also sgs/cart::iconName and sgs/choice-flow::stageNoteIcon)",
+   "note": "the icon-set choice is a real control on this and sibling blocks; the fill/stroke split follows the chosen asset and is not separately paintable"
+  },
+  "fixShape": "In the route, collapse a mirrored icon-fill/icon-stroke pair into ONE icon-asset row (outline versus solid) and resolve it against the block's icon chooser (sgs/choice-flow::stageNoteIcon), instead of emitting two unmatched paint rows.",
+  "confidence": "high"
+ }
+]

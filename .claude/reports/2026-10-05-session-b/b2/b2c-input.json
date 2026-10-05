@@ -1,0 +1,3155 @@
+{
+ "batch": "b2c",
+ "mechanisms": {
+  "M5-motion": {
+   "rows": 46,
+   "combos": [
+    {
+     "block": "sgs/mega-group",
+     "path": "",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "mega-lenses"
+     ],
+     "rows": 4,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-lenses",
+       "ref": "cr-ref-mega-lenses-1",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/mega-group has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+          "mentions": [],
+          "declares": [
+           ". $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}'; $css .= '@medi",
+           "fers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}'; $css .= '@media (forced-col"
+          ]
+         },
+         {
+          "block": "site-header-row",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "site-header-row",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "surface": "mega-lenses",
+       "ref": "cr-ref-mega-lenses-16",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/mega-group has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "nav-bar-menu",
+          "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+          "mentions": [],
+          "declares": [
+           ". $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}'; $css .= '@medi",
+           "fers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}'; $css .= '@media (forced-col"
+          ]
+         },
+         {
+          "block": "site-header-row",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "site-header-row",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+     "property": "transform",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-17",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for transform"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
+           "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
+          ]
+         },
+         {
+          "block": "accordion-item",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for transform (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
+           "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
+          ]
+         },
+         {
+          "block": "accordion-item",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-17",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "accordion/style.css",
+          "selector": ".sgs-accordion-item::details-content, .sgs-accordion-item__header, .sgs-accordion-item__icon-open, .sgs-accordion-item__icon-close, .sgs-accordion-item__chevron, .sgs-accordion-item__content",
+          "declaration": "transition-duration:0.01ms !important"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "accordion-item",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for transition-duration (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "accordion/style.css",
+          "selector": ".sgs-accordion-item::details-content, .sgs-accordion-item__header, .sgs-accordion-item__icon-open, .sgs-accordion-item__icon-close, .sgs-accordion-item__chevron, .sgs-accordion-item__content",
+          "declaration": "transition-duration:0.01ms !important"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "accordion-item",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/accordion-item",
+     "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+     "property": "transition-timing-function",
+     "kind": "style",
+     "surfaces": [
+      "help"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-17",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for transition-timing-function"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "erty:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}'; $responsive_"
+          ]
+         },
+         {
+          "block": "accordion-item",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "nsform;transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}' . '@media (p"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "surface": "help",
+       "ref": "cr-ref-help-19",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/accordion-item has no setting for transition-timing-function (open)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "accordion-item/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         },
+         {
+          "file": "accordion/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "accordion-item",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "erty:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}'; $responsive_"
+          ]
+         },
+         {
+          "block": "accordion-item",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "nsform;transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}' . '@media (p"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/container",
+     "path": "",
+     "property": "translate",
+     "kind": "hover",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 2,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-39",
+       "widths": [
+        768
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/container has no setting for translate (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "translate"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      },
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-43",
+       "widths": [
+        768
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/container has no setting for translate (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "translate"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/form-field-text",
+     "path": ".sgs-form-field__input",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "contact-form"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "contact-form",
+       "ref": "cr-ref-contact-form-1",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/form-field-text has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "form-field-text/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "form/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "form",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/form-field-email",
+     "path": ".sgs-form-field__input",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "contact-form"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "contact-form",
+       "ref": "cr-ref-contact-form-2",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/form-field-email has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "form-field-email/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "form/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "form",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/form-field-phone",
+     "path": ".sgs-form-field__input",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "contact-form"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "contact-form",
+       "ref": "cr-ref-contact-form-3",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/form-field-phone has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "form-field-phone/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "form/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "form",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/form-field-select",
+     "path": ".sgs-form-field__input",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "contact-form"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "contact-form",
+       "ref": "cr-ref-contact-form-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/form-field-select has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "form-field-select/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "form/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "form",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/form-field-textarea",
+     "path": ".sgs-form-field__input",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "contact-form"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "contact-form",
+       "ref": "cr-ref-contact-form-5",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/form-field-textarea has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "form-field-textarea/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "form/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "form",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "form",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(1)",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(3)",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2)",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(1)",
+     "property": "transform",
+     "kind": "hover",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for transform (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [
+           "transform"
+          ],
+          "absent": []
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons__item:hover",
+          "declaration": "transform:scale(1.1)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".is-style-social-icons-footer .sgs-social-icons__item:hover",
+          "declaration": "transform:scale(1.1)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
+           "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(1)",
+     "property": "hover-effects",
+     "kind": "hover",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for hover-effects (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(3)",
+     "property": "transform",
+     "kind": "hover",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for transform (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [
+           "transform"
+          ],
+          "absent": []
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons__item:hover",
+          "declaration": "transform:scale(1.1)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".is-style-social-icons-footer .sgs-social-icons__item:hover",
+          "declaration": "transform:scale(1.1)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
+           "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(3)",
+     "property": "hover-effects",
+     "kind": "hover",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for hover-effects (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2)",
+     "property": "transform",
+     "kind": "hover",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for transform (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [
+           "transform"
+          ],
+          "absent": []
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "social-icons/style.css",
+          "selector": ".sgs-social-icons__item:hover",
+          "declaration": "transform:scale(1.1)"
+         },
+         {
+          "file": "social-icons/style.css",
+          "selector": ".is-style-social-icons-footer .sgs-social-icons__item:hover",
+          "declaration": "transform:scale(1.1)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
+           "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/social-icons",
+     "path": ".sgs-social-icons__item:nth-of-type(2)",
+     "property": "hover-effects",
+     "kind": "hover",
+     "surfaces": [
+      "footer"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "footer",
+       "ref": "cr-ref-footer-6",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/social-icons has no setting for hover-effects (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "social-icons/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         },
+         {
+          "file": "site-footer-row/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         },
+         {
+          "file": "site-footer/render.php",
+          "mentions": [],
+          "absent": [
+           "hoverEffects"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1)",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/google-reviews has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "google-reviews",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "google-reviews",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/google-reviews has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "google-reviews",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "google-reviews",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(2)",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/google-reviews has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "google-reviews",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "google-reviews",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__aggregate > .sgs-google-reviews__cta > .sgs-google-reviews__see-all",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/google-reviews has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "google-reviews",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "google-reviews",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/google-reviews",
+     "path": ".sgs-google-reviews__aggregate > .sgs-google-reviews__cta > .sgs-google-reviews__write-review",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-58",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/google-reviews has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "google-reviews/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "google-reviews",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "google-reviews",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/media",
+     "path": ".sgs-media__img",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-60",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/media has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "media/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/media",
+     "path": ".sgs-media__img",
+     "property": "transition-timing-function",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-60",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/media has no setting for transition-timing-function"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "media/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "erty:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}'; $responsive_"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "nsform;transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}' . '@media (p"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/hero",
+     "path": "",
+     "property": "transition-timing-function",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-0",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/hero has no setting for transition-timing-function"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "hero/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         }
+        ],
+        "rules": [
+         {
+          "file": "hero/style.css",
+          "selector": ".sgs-hero",
+          "declaration": "transition-timing-function:var(--sgs-transition-easing, ease-in-out)"
+         }
+        ],
+        "helpers": [
+         {
+          "block": "hero",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "erty:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}'; $responsive_"
+          ]
+         },
+         {
+          "block": "hero",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "nsform;transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}' . '@media (p"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "animation-name",
+     "kind": "style",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/brand-strip has no setting for animation-name"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "animationName"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "animationName"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/brand-strip",
+     "path": ".sgs-brand-strip__track",
+     "property": "animation-play-state",
+     "kind": "hover",
+     "surfaces": [
+      "home"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "home",
+       "ref": "cr-ref-home-8",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/brand-strip has no setting for animation-play-state (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "brand-strip/render.php",
+          "mentions": [],
+          "absent": [
+           "animationPlayState"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "animationPlayState"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/choice-flow-question",
+     "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "lens"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "lens",
+       "ref": "cr-ref-lens-8",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/choice-flow-question has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "choice-flow-question/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "form-step/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "choice-flow/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "modal/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "form-step",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "form-step",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         },
+         {
+          "block": "modal",
+          "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+          "mentions": [],
+          "declares": [
+           ". $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}'; $css .= '@medi",
+           "fers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}'; $css .= '@media (forced-col"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "rotate",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-41",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/button has no setting for rotate"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [],
+          "absent": [
+           "rotate"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "rotate"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "rotate"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "rotate"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [
+           "rotate"
+          ],
+          "absent": []
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "rotate"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "rotate"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/button",
+     "path": "",
+     "property": "transition-delay",
+     "kind": "style",
+     "surfaces": [
+      "mega-brands"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "mega-brands",
+       "ref": "cr-ref-mega-brands-41",
+       "widths": [
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/button has no setting for transition-delay"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "button/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDelay"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDelay"
+          ]
+         },
+         {
+          "file": "mega-group/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDelay"
+          ]
+         },
+         {
+          "file": "mega-panel/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDelay"
+          ]
+         },
+         {
+          "file": "nav-bar-menu/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDelay"
+          ]
+         },
+         {
+          "file": "site-header-row/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDelay"
+          ]
+         },
+         {
+          "file": "site-header/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDelay"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": []
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+     "property": "transition-duration",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for transition-duration"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionDuration"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/tabs",
+     "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
+     "property": "transition-timing-function",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-12",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/tabs has no setting for transition-timing-function"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "tabs/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "tabs",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "erty:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}'; $responsive_"
+          ]
+         },
+         {
+          "block": "tabs",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "nsform;transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}' . '@media (p"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/tabs",
+     "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)",
+     "property": "transition-timing-function",
+     "kind": "style",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-12",
+       "widths": [
+        375,
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/tabs has no setting for transition-timing-function"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "tabs/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transitionTimingFunction"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "tabs",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "erty:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}'; $responsive_"
+          ]
+         },
+         {
+          "block": "tabs",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           "nsform;transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}' . '@media (p"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+     "property": "transform",
+     "kind": "hover",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for transform (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "transform"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
+           "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__config-col > form > button",
+     "property": "transform",
+     "kind": "hover",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for transform (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "transform"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
+           "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "block": "sgs/buybox",
+     "path": ".sgs-buybox__gallery-col > div:nth-of-type(1) > .sgs-media-el",
+     "property": "transform",
+     "kind": "hover",
+     "surfaces": [
+      "product"
+     ],
+     "rows": 1,
+     "decidedBy": "no-setting",
+     "examples": [
+      {
+       "surface": "product",
+       "ref": "cr-ref-product-4",
+       "widths": [
+        768,
+        1440,
+        1920
+       ],
+       "solveReason": "not written",
+       "evidence": [
+        {
+         "check": "resolver",
+         "gap": "no-setting",
+         "detail": "sgs/buybox has no setting for transform (hover)"
+        }
+       ],
+       "source": {
+        "render": [
+         {
+          "file": "buybox/render.php",
+          "mentions": [
+           "transform"
+          ],
+          "absent": []
+         },
+         {
+          "file": "container/render.php",
+          "mentions": [],
+          "absent": [
+           "transform"
+          ]
+         }
+        ],
+        "rules": [],
+        "helpers": [
+         {
+          "block": "container",
+          "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+          "mentions": [],
+          "declares": [
+           "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
+           "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
+          ]
+         },
+         {
+          "block": "container",
+          "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+          "mentions": [],
+          "declares": [
+           ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "totals": {
+  "rows": 46,
+  "combos": 39
+ }
+}

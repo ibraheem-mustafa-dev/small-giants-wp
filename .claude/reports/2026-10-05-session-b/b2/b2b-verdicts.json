@@ -1,0 +1,1384 @@
+[
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4a-enclosing-container-typography-not-checked",
+  "combo": "core/list-item|a|font-size",
+  "block": "core/list-item",
+  "path": "a",
+  "property": "font-size",
+  "kind": "style",
+  "rows": 7,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "core/list-item holds no SGS setting (2 native_wp rows, both css_property NULL), but EVERY footer list item is enclosed by sgs/container, and sgs/container::fontSize declares font-size on the container wrapper, which inherits into <ul>/<li>/<a>. Nothing between the container and the link declares font-size: the live value is 16px, the unstyled root default, and no rule in site-footer/style.css, site-footer-row/style.css or the theme sets font-size on a list or a footer link. Draft 14px. The resolver returned no-setting because it only queried core/list-item. core/list and core/list-item are also NOT banned core blocks, so no block swap applies.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, source FROM block_attributes WHERE block_slug IN ('core/list','core/list-item') -> 8 rows, all source=native_wp, all css_property NULL",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "plugins/sgs-blocks/src/blocks/container/render.php emits them through includes/helpers-typography.php::sgs_typography_css_rule( $attributes, '', $sgs_container_typography_sel ) onto `.{uid}.wp-block-sgs-container`, so every declared value inherits into the block's descendants",
+   "sites/eye-care-ward-end/build/footer.tree.json: every chain is sgs/site-footer > sgs/site-footer-row > sgs/container > core/list > core/list-item",
+   "plugins/sgs-blocks/scripts/data/block-replacements.json: no entry maps core/list or core/list-item to an SGS block, so plugins/sgs-blocks/scripts/migrate-core-blocks/lint-page.py::banned_in never flags them",
+   "sweep: footer cr-ref-footer-10/11/12/17/18/19/20 font-size draft 14px vs live 16px"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "fontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/container::fontSize already paints font-size on the container wrapper for any descendant, core blocks included; it is the parent-styles-children channel for core/list content"
+  },
+  "fixShape": "No new control. Calibrate the route to write sgs/container::fontSize on the enclosing container when the measured element is a core block with no setting of its own (same shape as the form's Field style group as the parent-styles-children precedent).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4a-enclosing-container-typography-not-checked",
+  "combo": "core/list-item||font-size",
+  "block": "core/list-item",
+  "path": "",
+  "property": "font-size",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "core/list-item holds no SGS setting (2 native_wp rows, both css_property NULL), but EVERY footer list item is enclosed by sgs/container, and sgs/container::fontSize declares font-size on the container wrapper, which inherits into <ul>/<li>/<a>. Nothing between the container and the link declares font-size: the live value is 16px, the unstyled root default, and no rule in site-footer/style.css, site-footer-row/style.css or the theme sets font-size on a list or a footer link. Draft 14px. The resolver returned no-setting because it only queried core/list-item. core/list and core/list-item are also NOT banned core blocks, so no block swap applies.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, css_element, source FROM block_attributes WHERE block_slug IN ('core/list','core/list-item') -> 8 rows, all source=native_wp, all css_property NULL",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "plugins/sgs-blocks/src/blocks/container/render.php emits them through includes/helpers-typography.php::sgs_typography_css_rule( $attributes, '', $sgs_container_typography_sel ) onto `.{uid}.wp-block-sgs-container`, so every declared value inherits into the block's descendants",
+   "sites/eye-care-ward-end/build/footer.tree.json: every chain is sgs/site-footer > sgs/site-footer-row > sgs/container > core/list > core/list-item",
+   "plugins/sgs-blocks/scripts/data/block-replacements.json: no entry maps core/list or core/list-item to an SGS block, so plugins/sgs-blocks/scripts/migrate-core-blocks/lint-page.py::banned_in never flags them",
+   "sweep: footer cr-ref-footer-10/11/12/17/18/19/20 font-size draft 14px vs live 16px"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "fontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/container::fontSize already paints font-size on the container wrapper for any descendant, core blocks included; it is the parent-styles-children channel for core/list content"
+  },
+  "fixShape": "No new control. Calibrate the route to write sgs/container::fontSize on the enclosing container when the measured element is a core block with no setting of its own (same shape as the form's Field style group as the parent-styles-children precedent).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4a-enclosing-container-typography-not-checked",
+  "combo": "sgs/card-grid|.sgs-card-grid__item:nth-of-type(2) > .sgs-card-grid__image-wrap > .sgs-card-grid__overlay > .sgs-card-grid__glyph|text-align",
+  "block": "sgs/card-grid",
+  "path": ".sgs-card-grid__item:nth-of-type(2) > .sgs-card-grid__image-wrap > .sgs-card-grid__overlay > .sgs-card-grid__glyph",
+  "property": "text-align",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "No rule anywhere declares text-align on the glyph: card-grid/style.css::.sgs-card-grid__glyph and ::.sgs-card-grid__overlay .sgs-card-grid__glyph set position, size, background and colour only, so the live `start` is purely inherited. sgs/card-grid is enclosed by sgs/container (home tree) and sgs/container::textAlign declares text-align on the wrapper, which inherits straight into the glyph. The glyph is an inline-flex wrapper around an <svg> with no text node, so the row paints nothing either way.",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/card-grid' AND (css_element LIKE '%glyph%' OR attr_name LIKE '%Glyph%') -> glyphSize|font-size,height,width and glyphColour|color only; 0 rows for text-align",
+   "plugins/sgs-blocks/src/blocks/card-grid/style.css::.sgs-card-grid__glyph declares no text-align",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "sites/eye-care-ward-end/build/home.tree.json: sgs/container > sgs/card-grid",
+   "sweep: home cr-ref-home-53 text-align draft center vs live start"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "textAlign",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "text-align on the container wrapper inherits to every descendant that declares none"
+  },
+  "fixShape": "No new control. Either write sgs/container::textAlign, or drop the row as non-painting (an icon slot with no text).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4a-enclosing-container-typography-not-checked",
+  "combo": "sgs/card-grid|.sgs-card-grid__item:nth-of-type(6) > .sgs-card-grid__image-wrap > .sgs-card-grid__no-image-label|line-height",
+  "block": "sgs/card-grid",
+  "path": ".sgs-card-grid__item:nth-of-type(6) > .sgs-card-grid__image-wrap > .sgs-card-grid__no-image-label",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "card-grid/style.css:::where(.sgs-card-grid__no-image-label) declares font-size, letter-spacing, text-transform, text-align and colour but NO line-height, so the painted line-height is inherited and sgs/container::lineHeight (the enclosing container, home tree) reaches it. The block carries four of the five noImageLabel typography attrs and line-height is the one omitted, so the clean fix is the element-scoped attr the same block already uses for its title and subtitle.",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/card-grid' AND css_property='line-height' -> titleLineHeight|title and subtitleLineHeight|subtitle only; 0 rows for css_element='no-image-label'",
+   "plugins/sgs-blocks/src/blocks/card-grid/style.css:::where(.sgs-card-grid__no-image-label) declares no line-height",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "sites/eye-care-ward-end/build/home.tree.json: sgs/container > sgs/card-grid",
+   "sweep: home cr-ref-home-53 line-height draft 13px vs live 15px"
+  ],
+  "precedent": {
+   "block": "sgs/card-grid",
+   "setting": "subtitleLineHeight",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the same block already exposes a per-element line-height for its title and subtitle through the typography helper; no-image-label is the only text element without one"
+  },
+  "fixShape": "Add sgs/card-grid::noImageLabelLineHeight (+Unit) to the existing noImageLabel typography group, emitted by sgs_typography_css_rule with prefix 'noImageLabel'; until then sgs/container::lineHeight can carry it.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4a-enclosing-container-typography-not-checked",
+  "combo": "sgs/card-grid|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__image-wrap > .sgs-card-grid__no-image-label|line-height",
+  "block": "sgs/card-grid",
+  "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__image-wrap > .sgs-card-grid__no-image-label",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "card-grid/style.css:::where(.sgs-card-grid__no-image-label) declares font-size, letter-spacing, text-transform, text-align and colour but NO line-height, so the painted line-height is inherited and sgs/container::lineHeight (the enclosing container, home tree) reaches it. The block carries four of the five noImageLabel typography attrs and line-height is the one omitted, so the clean fix is the element-scoped attr the same block already uses for its title and subtitle.",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/card-grid' AND css_property='line-height' -> titleLineHeight|title and subtitleLineHeight|subtitle only; 0 rows for css_element='no-image-label'",
+   "plugins/sgs-blocks/src/blocks/card-grid/style.css:::where(.sgs-card-grid__no-image-label) declares no line-height",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "sites/eye-care-ward-end/build/home.tree.json: sgs/container > sgs/card-grid",
+   "sweep: home cr-ref-home-53 line-height draft 13px vs live 15px"
+  ],
+  "precedent": {
+   "block": "sgs/card-grid",
+   "setting": "subtitleLineHeight",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the same block already exposes a per-element line-height for its title and subtitle through the typography helper; no-image-label is the only text element without one"
+  },
+  "fixShape": "Add sgs/card-grid::noImageLabelLineHeight (+Unit) to the existing noImageLabel typography group, emitted by sgs_typography_css_rule with prefix 'noImageLabel'; until then sgs/container::lineHeight can carry it.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4b-line-height-is-the-used-value-of-a-font-size-row",
+  "combo": "core/list-item|a|line-height",
+  "block": "core/list-item",
+  "path": "a",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 7,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "This is a used value, not an independent gap: draft 21px / live 24px is exactly 1.5x the same rows' font-size (draft 14px / live 16px). Nothing declares line-height on the list, the item or the link, so both sides carry the same unitless 1.5 and the px difference is the font-size difference re-expressed. The box row on the same ref confirms it (h draft 21 vs live 24). Closing the font-size row closes this one; sgs/container::lineHeight is also available on the enclosing container if a ratio change is ever wanted.",
+  "citations": [
+   "sweep: footer cr-ref-footer-10/13 font-size draft 14px vs live 16px AND line-height draft 21px vs live 24px (21/14 = 24/16 = 1.5); cr-ref-footer-13 also carries box h draft 21 vs live 24",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "plugins/sgs-blocks/src/blocks/container/render.php emits them through includes/helpers-typography.php::sgs_typography_css_rule( $attributes, '', $sgs_container_typography_sel ) onto `.{uid}.wp-block-sgs-container`, so every declared value inherits into the block's descendants",
+   "sites/eye-care-ward-end/build/footer.tree.json: sgs/site-footer > sgs/site-footer-row > sgs/container > core/list > core/list-item"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "lineHeight",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the enclosing container owns line-height for every descendant that declares none; here it does not even need writing, since the ratio already matches"
+  },
+  "fixShape": "No control. Mark the row derived from the font-size row of the same ref, the way Spec 47 §3.3 already treats box rows, so it closes when font-size closes.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4b-line-height-is-the-used-value-of-a-font-size-row",
+  "combo": "core/list-item||line-height",
+  "block": "core/list-item",
+  "path": "",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "footer"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "This is a used value, not an independent gap: draft 21px / live 24px is exactly 1.5x the same rows' font-size (draft 14px / live 16px). Nothing declares line-height on the list, the item or the link, so both sides carry the same unitless 1.5 and the px difference is the font-size difference re-expressed. The box row on the same ref confirms it (h draft 21 vs live 24). Closing the font-size row closes this one; sgs/container::lineHeight is also available on the enclosing container if a ratio change is ever wanted.",
+  "citations": [
+   "sweep: footer cr-ref-footer-10/13 font-size draft 14px vs live 16px AND line-height draft 21px vs live 24px (21/14 = 24/16 = 1.5); cr-ref-footer-13 also carries box h draft 21 vs live 24",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "plugins/sgs-blocks/src/blocks/container/render.php emits them through includes/helpers-typography.php::sgs_typography_css_rule( $attributes, '', $sgs_container_typography_sel ) onto `.{uid}.wp-block-sgs-container`, so every declared value inherits into the block's descendants",
+   "sites/eye-care-ward-end/build/footer.tree.json: sgs/site-footer > sgs/site-footer-row > sgs/container > core/list > core/list-item"
+  ],
+  "precedent": {
+   "block": "sgs/container",
+   "setting": "lineHeight",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the enclosing container owns line-height for every descendant that declares none; here it does not even need writing, since the ratio already matches"
+  },
+  "fixShape": "No control. Mark the row derived from the font-size row of the same ref, the way Spec 47 §3.3 already treats box rows, so it closes when font-size closes.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4c-parent-typography-blocked-by-an-un-de-specified-child-declaration",
+  "combo": "sgs/accordion|.sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title|line-height",
+  "block": "sgs/accordion",
+  "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__title",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "sgs/accordion::lineHeight exists and paints line-height on the accordion wrapper, but accordion/style.css::.sgs-accordion-item__header declares a literal `line-height: 1.4` with no :where() and no custom property, so the inherited value never reaches the header or its title. Live 23.8px = 17px x 1.4 and the sweep carries no font-size row for this path, so font-size already matches and the divergence is the hardcoded ratio alone. This is exactly the Spec 47 §5 pattern: a setting paints the parent, a child rule overrides it, and the resolver records no-setting.",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND css_property='line-height' -> lineHeight|line-height|wrapper (1 row); sgs/accordion-item has 36 rows and 0 of role='typography'",
+   "plugins/sgs-blocks/src/blocks/accordion/render.php calls sgs_typography_css_rule( $attributes, '', $root_sel ) - the accordion wrapper, not the header",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css::.sgs-accordion-item__header declares `line-height: 1.4` (overriding rule)",
+   "sweep: help cr-ref-help-16 line-height draft 21px vs live 23.8px (23.8 = 17 x 1.4); no font-size row on this path"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "headerFontWeight",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/accordion already carries a header-scoped typography attr (headerFontWeight|font-weight|header), and accordion/style.css already de-specifies its own icon colour with :where(.sgs-accordion-item__icon-open) - both patterns for this fix exist in the same two files"
+  },
+  "fixShape": "Framework repair: de-specify to :where(.sgs-accordion-item__header){line-height:1.4} so sgs/accordion::lineHeight reaches the header, or add a header-scoped headerLineHeight beside headerFontWeight.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4c-parent-typography-blocked-by-an-un-de-specified-child-declaration",
+  "combo": "sgs/tabs|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|line-height",
+  "block": "sgs/tabs",
+  "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "sgs/tabs has no line-height attribute of its own, but tabs/style.css::.sgs-tabs__tab already re-inherits `font-size: inherit; font-family: inherit` from the enclosing sgs/container and then declares a literal `line-height: 1.4`, which blocks sgs/container::lineHeight from reaching the tab. Live 17.5px = 12.5px x 1.4 and the sweep carries no font-size row for this path, so the divergence is the hardcoded ratio alone. Parent setting + overriding child declaration = the Spec 47 section 5 pattern.",
+  "citations": [
+   "db: SELECT attr_name, css_property FROM block_attributes WHERE block_slug='sgs/tabs' AND (attr_name LIKE '%Line%' OR css_property LIKE '%line-height%') -> 0 rows (the block's 81 attrs include only flexWrap for anything wrap-like)",
+   "plugins/sgs-blocks/src/blocks/tabs/style.css::.sgs-tabs__tab declares `font-size: inherit; font-family: inherit; line-height: 1.4` - the first two prove the inherit channel is deliberate, the third blocks it",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "sites/eye-care-ward-end/build/single-product.tree.json: sgs/container > sgs/container > sgs/container > sgs/tabs",
+   "sweep: product cr-ref-product-12 line-height draft 16px vs live 17.5px (17.5 = 12.5 x 1.4)"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "pillLineHeight",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/option-picker::pillLineHeight and sgs/icon-list::itemLineHeight are sub-element line-heights emitted by the same typography helper; sgs/accordion::lineHeight is the wrapper-level equivalent"
+  },
+  "fixShape": "Framework repair: `:where(.sgs-tabs__tab){line-height:1.4}` so sgs/container::lineHeight reaches the tab, or add sgs/tabs::tabLineHeight (+Unit) beside the existing tabFontSize/tabFontWeight group.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4c-parent-typography-blocked-by-an-un-de-specified-child-declaration",
+  "combo": "sgs/tabs|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|text-wrap",
+  "block": "sgs/tabs",
+  "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
+  "property": "text-wrap",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Live `nowrap` is produced by tabs/style.css::.sgs-tabs__tab `white-space: nowrap` (white-space is the shorthand that sets text-wrap-mode), declared with no :where() and no custom property. sgs/tabs has no text-wrap attribute, but sgs/container::textWrap paints text-wrap on the enclosing container wrapper and is blocked only by that declaration. Same Spec 47 section 5 pattern as the line-height row on the same element.",
+  "citations": [
+   "db: SELECT attr_name, css_property FROM block_attributes WHERE block_slug='sgs/tabs' AND (attr_name LIKE '%Wrap%' OR css_property LIKE '%wrap%') -> flexWrap|flex-wrap only; 0 rows for text-wrap",
+   "plugins/sgs-blocks/src/blocks/tabs/style.css::.sgs-tabs__tab declares `white-space: nowrap` (overriding rule)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "sites/eye-care-ward-end/build/single-product.tree.json: sgs/container > sgs/container > sgs/container > sgs/tabs",
+   "sweep: product cr-ref-product-12 text-wrap draft wrap vs live nowrap"
+  ],
+  "precedent": {
+   "block": "sgs/whatsapp-cta",
+   "setting": "labelTextWrap",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "whatsapp-cta/style.css uses `text-wrap: var(--sgs-whatsapp-cta-card-text-wrap, pretty)` and render.php writes the var from labelTextWrap - the sanctioned var(--sgs-x, <default>) pattern for exactly this case"
+  },
+  "fixShape": "Framework repair: turn the literal into `white-space: var(--sgs-tab-white-space, nowrap)` (or de-specify with :where()) and let sgs/container::textWrap or a new sgs/tabs::tabTextWrap drive it.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4c-parent-typography-blocked-by-an-un-de-specified-child-declaration",
+  "combo": "sgs/tabs|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)|line-height",
+  "block": "sgs/tabs",
+  "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "sgs/tabs has no line-height attribute of its own, but tabs/style.css::.sgs-tabs__tab already re-inherits `font-size: inherit; font-family: inherit` from the enclosing sgs/container and then declares a literal `line-height: 1.4`, which blocks sgs/container::lineHeight from reaching the tab. Live 17.5px = 12.5px x 1.4 and the sweep carries no font-size row for this path, so the divergence is the hardcoded ratio alone. Parent setting + overriding child declaration = the Spec 47 section 5 pattern.",
+  "citations": [
+   "db: SELECT attr_name, css_property FROM block_attributes WHERE block_slug='sgs/tabs' AND (attr_name LIKE '%Line%' OR css_property LIKE '%line-height%') -> 0 rows (the block's 81 attrs include only flexWrap for anything wrap-like)",
+   "plugins/sgs-blocks/src/blocks/tabs/style.css::.sgs-tabs__tab declares `font-size: inherit; font-family: inherit; line-height: 1.4` - the first two prove the inherit channel is deliberate, the third blocks it",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "sites/eye-care-ward-end/build/single-product.tree.json: sgs/container > sgs/container > sgs/container > sgs/tabs",
+   "sweep: product cr-ref-product-12 line-height draft 16px vs live 17.5px (17.5 = 12.5 x 1.4)"
+  ],
+  "precedent": {
+   "block": "sgs/option-picker",
+   "setting": "pillLineHeight",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/option-picker::pillLineHeight and sgs/icon-list::itemLineHeight are sub-element line-heights emitted by the same typography helper; sgs/accordion::lineHeight is the wrapper-level equivalent"
+  },
+  "fixShape": "Framework repair: `:where(.sgs-tabs__tab){line-height:1.4}` so sgs/container::lineHeight reaches the tab, or add sgs/tabs::tabLineHeight (+Unit) beside the existing tabFontSize/tabFontWeight group.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4c-parent-typography-blocked-by-an-un-de-specified-child-declaration",
+  "combo": "sgs/tabs|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)|text-wrap",
+  "block": "sgs/tabs",
+  "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)",
+  "property": "text-wrap",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Live `nowrap` is produced by tabs/style.css::.sgs-tabs__tab `white-space: nowrap` (white-space is the shorthand that sets text-wrap-mode), declared with no :where() and no custom property. sgs/tabs has no text-wrap attribute, but sgs/container::textWrap paints text-wrap on the enclosing container wrapper and is blocked only by that declaration. Same Spec 47 section 5 pattern as the line-height row on the same element.",
+  "citations": [
+   "db: SELECT attr_name, css_property FROM block_attributes WHERE block_slug='sgs/tabs' AND (attr_name LIKE '%Wrap%' OR css_property LIKE '%wrap%') -> flexWrap|flex-wrap only; 0 rows for text-wrap",
+   "plugins/sgs-blocks/src/blocks/tabs/style.css::.sgs-tabs__tab declares `white-space: nowrap` (overriding rule)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "sites/eye-care-ward-end/build/single-product.tree.json: sgs/container > sgs/container > sgs/container > sgs/tabs",
+   "sweep: product cr-ref-product-12 text-wrap draft wrap vs live nowrap"
+  ],
+  "precedent": {
+   "block": "sgs/whatsapp-cta",
+   "setting": "labelTextWrap",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "whatsapp-cta/style.css uses `text-wrap: var(--sgs-whatsapp-cta-card-text-wrap, pretty)` and render.php writes the var from labelTextWrap - the sanctioned var(--sgs-x, <default>) pattern for exactly this case"
+  },
+  "fixShape": "Framework repair: turn the literal into `white-space: var(--sgs-tab-white-space, nowrap)` (or de-specify with :where()) and let sgs/container::textWrap or a new sgs/tabs::tabTextWrap drive it.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4c-parent-typography-blocked-by-an-un-de-specified-child-declaration",
+  "combo": "core/query-title||text-wrap",
+  "block": "core/query-title",
+  "path": "",
+  "property": "text-wrap",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "shop"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "core/query-title holds no SGS setting (5 native_wp rows, all css_property NULL), and the live `balance` comes from one framework-wide theme literal: core-blocks-critical.css::`h1, h2, h3, h4, h5, h6, .wp-block-heading { text-wrap: balance }`. sgs/container::textWrap paints text-wrap on the enclosing container (archive-product tree: four nested containers above the title) but a direct declaration on the h1 always beats inheritance. Parent setting + overriding child rule, so the route records no-setting.",
+  "citations": [
+   "db: SELECT block_slug, attr_name, role, css_property, source FROM block_attributes WHERE block_slug='core/query-title' -> 5 rows, all source=native_wp, all css_property NULL",
+   "theme/sgs-theme/assets/css/core-blocks-critical.css::`h1, h2, h3, h4, h5, h6, .wp-block-heading` declares `text-wrap: balance` (the winning rule, framework-wide, no :where())",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "sites/eye-care-ward-end/build/archive-product.tree.json: sgs/container x4 > core/query-title",
+   "sweep: shop cr-ref-shop-6 text-wrap draft wrap vs live balance"
+  ],
+  "precedent": {
+   "block": "sgs/whatsapp-cta",
+   "setting": "labelTextWrap",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "no SGS block can currently beat the theme's heading text-wrap literal; the same file already records that a framework-wide heading letter-spacing default was removed for exactly this reason (clones drifting from their reference sites)"
+  },
+  "fixShape": "Framework repair in the theme: de-specify to `:where(h1, h2, h3, h4, h5, h6, .wp-block-heading){text-wrap:balance}` so any block or container text-wrap setting wins. One change, wide reach, not a per-block control.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip||font-family",
+  "block": "sgs/brand-strip",
+  "path": "",
+  "property": "font-family",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read font-family from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 font-family draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip||font-size",
+  "block": "sgs/brand-strip",
+  "path": "",
+  "property": "font-size",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read font-size from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 font-size draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip||font-weight",
+  "block": "sgs/brand-strip",
+  "path": "",
+  "property": "font-weight",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read font-weight from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 font-weight draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip||font-style",
+  "block": "sgs/brand-strip",
+  "path": "",
+  "property": "font-style",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read font-style from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 font-style draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip||line-height",
+  "block": "sgs/brand-strip",
+  "path": "",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read line-height from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 line-height draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip||letter-spacing",
+  "block": "sgs/brand-strip",
+  "path": "",
+  "property": "letter-spacing",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read letter-spacing from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 letter-spacing draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip||text-transform",
+  "block": "sgs/brand-strip",
+  "path": "",
+  "property": "text-transform",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read text-transform from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 text-transform draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|font-family",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "font-family",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read font-family from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 font-family draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|font-size",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "font-size",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read font-size from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 font-size draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|font-weight",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "font-weight",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read font-weight from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 font-weight draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|font-style",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "font-style",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read font-style from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 font-style draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|line-height",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read line-height from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 line-height draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|letter-spacing",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "letter-spacing",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read letter-spacing from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 letter-spacing draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/brand-strip|.sgs-brand-strip__track|text-transform",
+  "block": "sgs/brand-strip",
+  "path": ".sgs-brand-strip__track",
+  "property": "text-transform",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "home"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact, not a gap: every row on this ref reads live = null because the reference was never paired. pairs/home.json lists cr-ref-home-8 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read text-transform from. sgs/brand-strip is also not short of typography: it carries 20 typography attrs across its brand-text and name elements.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/home.json::left[ref='cr-ref-home-8'].why = 'no painted words (an image, an icon or an empty wrapper)' - the ref is unpaired, it is not in keptPairs",
+   "sweep: home cr-ref-home-8 text-transform draft present vs live null (all 14 rows on this ref read live null)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/brand-strip' AND role='typography' -> 20 rows (brandTextFontFamily/FontSize/FontWeight/LetterSpacing/TextTransform on brand-text; nameFontFamily/FontSize/FontWeight/FontStyle/LineHeight/LetterSpacing/TextAlign/TextDecoration/TextTransform/TextWrap on name)"
+  ],
+  "precedent": {
+   "block": "sgs/brand-strip",
+   "setting": "brandTextFontSize / nameFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "sgs/brand-strip already carries two full typography groups (brandText* on the brand-text element and name* on the name/caption element, 20 attrs), so nothing is missing: there was no live element to compare against"
+  },
+  "fixShape": "No control. Fix the pairing (or exclude a wordless ref from style rows) and re-measure; only then can a real typography gap on this block be judged.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|line-height",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 2,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Every row on this path reads live = null: the walker never measured a live `__icon-open`. The F row is cr-ref-help-19, which pairs/help.json lists under `left` with why = 'its width is 319px on the draft against 996px live', so the ref is unpaired; the sibling rows on the paired ref cr-ref-help-17 were already classed T or W by the triage for the same path. The element itself is rendered (accordion-item/render.php emits `<span class=\"sgs-accordion-item__icon-open\">`), so this is a measurement and pairing problem, not a missing control.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/help.json::left[ref='cr-ref-help-19'].why = 'its width is 319px on the draft against 996px live' (unpaired); cr-ref-help-17 is in keptPairs",
+   "sweep: help cr-ref-help-17 and cr-ref-help-19 line-height draft present vs live null",
+   "sites/eye-care-ward-end/build/qa/triage/help.json: the same (block, path, line-height) row on cr-ref-help-17 is class T decidedBy resolver-writes (W decidedBy enclosing for letter-spacing), not F",
+   "plugins/sgs-blocks/src/blocks/accordion-item/render.php renders the element: '<span class=\"sgs-accordion-item__icons\"><span class=\"sgs-accordion-item__icon-open\" aria-hidden=\"true\">'",
+   "db: SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/accordion-item' AND role='typography' -> 0 rows; the enclosing sgs/accordion carries 14 typography attrs on its wrapper"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "fontSize / lineHeight / letterSpacing / textTransform",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the icon span declares no font-size or line-height of its own (accordion/style.css::.sgs-accordion-item__icon-open sets only grid-area, display, size and transition), so the parent accordion's typography inherits into it once a live element exists to measure"
+  },
+  "fixShape": "No control. Repair the pairing for cr-ref-help-19 and re-measure; the icon is sized by --sgs-accordion-icon-size, so a font-size row on it is probably non-painting anyway.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|font-family",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+  "property": "font-family",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Every row on this path reads live = null: the walker never measured a live `__icon-open`. The F row is cr-ref-help-19, which pairs/help.json lists under `left` with why = 'its width is 319px on the draft against 996px live', so the ref is unpaired; the sibling rows on the paired ref cr-ref-help-17 were already classed T or W by the triage for the same path. The element itself is rendered (accordion-item/render.php emits `<span class=\"sgs-accordion-item__icon-open\">`), so this is a measurement and pairing problem, not a missing control.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/help.json::left[ref='cr-ref-help-19'].why = 'its width is 319px on the draft against 996px live' (unpaired); cr-ref-help-17 is in keptPairs",
+   "sweep: help cr-ref-help-17 and cr-ref-help-19 font-family draft present vs live null",
+   "sites/eye-care-ward-end/build/qa/triage/help.json: the same (block, path, font-family) row on cr-ref-help-17 is class T decidedBy resolver-writes (W decidedBy enclosing for letter-spacing), not F",
+   "plugins/sgs-blocks/src/blocks/accordion-item/render.php renders the element: '<span class=\"sgs-accordion-item__icons\"><span class=\"sgs-accordion-item__icon-open\" aria-hidden=\"true\">'",
+   "db: SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/accordion-item' AND role='typography' -> 0 rows; the enclosing sgs/accordion carries 14 typography attrs on its wrapper"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "fontSize / lineHeight / letterSpacing / textTransform",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the icon span declares no font-size or line-height of its own (accordion/style.css::.sgs-accordion-item__icon-open sets only grid-area, display, size and transition), so the parent accordion's typography inherits into it once a live element exists to measure"
+  },
+  "fixShape": "No control. Repair the pairing for cr-ref-help-19 and re-measure; the icon is sized by --sgs-accordion-icon-size, so a font-size row on it is probably non-painting anyway.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|font-size",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+  "property": "font-size",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Every row on this path reads live = null: the walker never measured a live `__icon-open`. The F row is cr-ref-help-19, which pairs/help.json lists under `left` with why = 'its width is 319px on the draft against 996px live', so the ref is unpaired; the sibling rows on the paired ref cr-ref-help-17 were already classed T or W by the triage for the same path. The element itself is rendered (accordion-item/render.php emits `<span class=\"sgs-accordion-item__icon-open\">`), so this is a measurement and pairing problem, not a missing control.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/help.json::left[ref='cr-ref-help-19'].why = 'its width is 319px on the draft against 996px live' (unpaired); cr-ref-help-17 is in keptPairs",
+   "sweep: help cr-ref-help-17 and cr-ref-help-19 font-size draft present vs live null",
+   "sites/eye-care-ward-end/build/qa/triage/help.json: the same (block, path, font-size) row on cr-ref-help-17 is class T decidedBy resolver-writes (W decidedBy enclosing for letter-spacing), not F",
+   "plugins/sgs-blocks/src/blocks/accordion-item/render.php renders the element: '<span class=\"sgs-accordion-item__icons\"><span class=\"sgs-accordion-item__icon-open\" aria-hidden=\"true\">'",
+   "db: SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/accordion-item' AND role='typography' -> 0 rows; the enclosing sgs/accordion carries 14 typography attrs on its wrapper"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "fontSize / lineHeight / letterSpacing / textTransform",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the icon span declares no font-size or line-height of its own (accordion/style.css::.sgs-accordion-item__icon-open sets only grid-area, display, size and transition), so the parent accordion's typography inherits into it once a live element exists to measure"
+  },
+  "fixShape": "No control. Repair the pairing for cr-ref-help-19 and re-measure; the icon is sized by --sgs-accordion-icon-size, so a font-size row on it is probably non-painting anyway.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|font-style",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+  "property": "font-style",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Every row on this path reads live = null: the walker never measured a live `__icon-open`. The F row is cr-ref-help-19, which pairs/help.json lists under `left` with why = 'its width is 319px on the draft against 996px live', so the ref is unpaired; the sibling rows on the paired ref cr-ref-help-17 were already classed T or W by the triage for the same path. The element itself is rendered (accordion-item/render.php emits `<span class=\"sgs-accordion-item__icon-open\">`), so this is a measurement and pairing problem, not a missing control.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/help.json::left[ref='cr-ref-help-19'].why = 'its width is 319px on the draft against 996px live' (unpaired); cr-ref-help-17 is in keptPairs",
+   "sweep: help cr-ref-help-17 and cr-ref-help-19 font-style draft present vs live null",
+   "sites/eye-care-ward-end/build/qa/triage/help.json: the same (block, path, font-style) row on cr-ref-help-17 is class T decidedBy resolver-writes (W decidedBy enclosing for letter-spacing), not F",
+   "plugins/sgs-blocks/src/blocks/accordion-item/render.php renders the element: '<span class=\"sgs-accordion-item__icons\"><span class=\"sgs-accordion-item__icon-open\" aria-hidden=\"true\">'",
+   "db: SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/accordion-item' AND role='typography' -> 0 rows; the enclosing sgs/accordion carries 14 typography attrs on its wrapper"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "fontSize / lineHeight / letterSpacing / textTransform",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the icon span declares no font-size or line-height of its own (accordion/style.css::.sgs-accordion-item__icon-open sets only grid-area, display, size and transition), so the parent accordion's typography inherits into it once a live element exists to measure"
+  },
+  "fixShape": "No control. Repair the pairing for cr-ref-help-19 and re-measure; the icon is sized by --sgs-accordion-icon-size, so a font-size row on it is probably non-painting anyway.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|letter-spacing",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+  "property": "letter-spacing",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Every row on this path reads live = null: the walker never measured a live `__icon-open`. The F row is cr-ref-help-19, which pairs/help.json lists under `left` with why = 'its width is 319px on the draft against 996px live', so the ref is unpaired; the sibling rows on the paired ref cr-ref-help-17 were already classed T or W by the triage for the same path. The element itself is rendered (accordion-item/render.php emits `<span class=\"sgs-accordion-item__icon-open\">`), so this is a measurement and pairing problem, not a missing control.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/help.json::left[ref='cr-ref-help-19'].why = 'its width is 319px on the draft against 996px live' (unpaired); cr-ref-help-17 is in keptPairs",
+   "sweep: help cr-ref-help-17 and cr-ref-help-19 letter-spacing draft present vs live null",
+   "sites/eye-care-ward-end/build/qa/triage/help.json: the same (block, path, letter-spacing) row on cr-ref-help-17 is class T decidedBy resolver-writes (W decidedBy enclosing for letter-spacing), not F",
+   "plugins/sgs-blocks/src/blocks/accordion-item/render.php renders the element: '<span class=\"sgs-accordion-item__icons\"><span class=\"sgs-accordion-item__icon-open\" aria-hidden=\"true\">'",
+   "db: SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/accordion-item' AND role='typography' -> 0 rows; the enclosing sgs/accordion carries 14 typography attrs on its wrapper"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "fontSize / lineHeight / letterSpacing / textTransform",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the icon span declares no font-size or line-height of its own (accordion/style.css::.sgs-accordion-item__icon-open sets only grid-area, display, size and transition), so the parent accordion's typography inherits into it once a live element exists to measure"
+  },
+  "fixShape": "No control. Repair the pairing for cr-ref-help-19 and re-measure; the icon is sized by --sgs-accordion-icon-size, so a font-size row on it is probably non-painting anyway.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|text-transform",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
+  "property": "text-transform",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Every row on this path reads live = null: the walker never measured a live `__icon-open`. The F row is cr-ref-help-19, which pairs/help.json lists under `left` with why = 'its width is 319px on the draft against 996px live', so the ref is unpaired; the sibling rows on the paired ref cr-ref-help-17 were already classed T or W by the triage for the same path. The element itself is rendered (accordion-item/render.php emits `<span class=\"sgs-accordion-item__icon-open\">`), so this is a measurement and pairing problem, not a missing control.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/help.json::left[ref='cr-ref-help-19'].why = 'its width is 319px on the draft against 996px live' (unpaired); cr-ref-help-17 is in keptPairs",
+   "sweep: help cr-ref-help-17 and cr-ref-help-19 text-transform draft present vs live null",
+   "sites/eye-care-ward-end/build/qa/triage/help.json: the same (block, path, text-transform) row on cr-ref-help-17 is class T decidedBy resolver-writes (W decidedBy enclosing for letter-spacing), not F",
+   "plugins/sgs-blocks/src/blocks/accordion-item/render.php renders the element: '<span class=\"sgs-accordion-item__icons\"><span class=\"sgs-accordion-item__icon-open\" aria-hidden=\"true\">'",
+   "db: SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/accordion-item' AND role='typography' -> 0 rows; the enclosing sgs/accordion carries 14 typography attrs on its wrapper"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "fontSize / lineHeight / letterSpacing / textTransform",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the icon span declares no font-size or line-height of its own (accordion/style.css::.sgs-accordion-item__icon-open sets only grid-area, display, size and transition), so the parent accordion's typography inherits into it once a live element exists to measure"
+  },
+  "fixShape": "No control. Repair the pairing for cr-ref-help-19 and re-measure; the icon is sized by --sgs-accordion-icon-size, so a font-size row on it is probably non-painting anyway.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/accordion-item|.sgs-accordion-item__content|text-wrap",
+  "block": "sgs/accordion-item",
+  "path": ".sgs-accordion-item__content",
+  "property": "text-wrap",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "help"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The combo's single F row is cr-ref-help-19, an unpaired ref (pairs/help.json::left, why = 'its width is 319px on the draft against 996px live'). The identical row on the paired ref cr-ref-help-17 was already classed T (decidedBy resolver-writes) by the triage, so the route can write this value today; the F is a duplicate of a writable row on a ref that should not have produced style rows at all. sgs/accordion-item has no typography attrs, but the enclosing sgs/accordion::textWrap paints text-wrap on the wrapper and accordion/style.css declares no text-wrap on __content, so it inherits.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/help.json::left[ref='cr-ref-help-19'].why = 'its width is 319px on the draft against 996px live'",
+   "sites/eye-care-ward-end/build/qa/triage/help.json: help cr-ref-help-17 | .sgs-accordion-item__content | text-wrap | style -> class T, decidedBy resolver-writes (same draft pretty vs live wrap)",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/accordion' AND css_property='text-wrap' -> textWrap|text-wrap|wrapper (1 row)",
+   "plugins/sgs-blocks/src/blocks/accordion/style.css declares no text-wrap on .sgs-accordion-item__content (grep text-wrap -> 0 hits in that file)"
+  ],
+  "precedent": {
+   "block": "sgs/accordion",
+   "setting": "textWrap",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "already writable: the triage itself resolved the same row on the paired ref as T"
+  },
+  "fixShape": "No control. Drop style rows from unpaired refs so one writable row does not reappear as an F.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/nav-drawer|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|font-size",
+  "block": "sgs/nav-drawer",
+  "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+  "property": "font-size",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "Two independent reasons, either enough for W. First, the setting exists and is already element-scoped: sgs/nav-drawer::closeFontSize declares font-size on the `close` element. Second, the row is a measuring artefact: live = null because pairs/mobile-menu.json lists cr-ref-mobile-menu-0 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)', so the walker had no live element to read.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/mobile-menu.json::left[ref='cr-ref-mobile-menu-0'].why = 'no painted words (an image, an icon or an empty wrapper)'",
+   "sweep: mobile-menu cr-ref-mobile-menu-0 font-size draft 28px vs live null",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_element='close' -> closeFontFamily|font-family, closeFontSize|font-size, closeFontWeight|font-weight, closeLetterSpacing|letter-spacing, closeLineHeight|line-height, closeTextTransform|text-transform (6 rows; there is no closeFontStyle)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "closeFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the close button already has a six-property element-scoped typography group; font-style is the only one absent, and its draft value is the initial value"
+  },
+  "fixShape": "No control. Repair the pairing and re-measure; the setting (closeFontSize) is already there.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4d-no-live-counterpart-unpaired-ref-or-absent-element",
+  "combo": "sgs/nav-drawer|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|font-style",
+  "block": "sgs/nav-drawer",
+  "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
+  "property": "font-style",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "mobile-menu"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "A measuring artefact: live = null because pairs/mobile-menu.json lists cr-ref-mobile-menu-0 under `left` with why = 'no painted words (an image, an icon or an empty wrapper)'. There is indeed no closeFontStyle attribute (the close element carries the other six typography properties), but with no live element measured the gap is unproven, and the draft value is `normal` - the initial value, so nothing needs writing even if it were measured.",
+  "citations": [
+   "sites/eye-care-ward-end/build/qa/pairs/mobile-menu.json::left[ref='cr-ref-mobile-menu-0'].why = 'no painted words (an image, an icon or an empty wrapper)'",
+   "sweep: mobile-menu cr-ref-mobile-menu-0 font-style draft normal vs live null",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_element='close' -> closeFontFamily|font-family, closeFontSize|font-size, closeFontWeight|font-weight, closeLetterSpacing|letter-spacing, closeLineHeight|line-height, closeTextTransform|text-transform (6 rows; there is no closeFontStyle)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-drawer",
+   "setting": "closeFontSize",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "the close button already has a six-property element-scoped typography group; font-style is the only one absent, and its draft value is the initial value"
+  },
+  "fixShape": "No control. Repair the pairing and re-measure; add closeFontStyle only if a real non-initial value appears.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4e-buybox-renders-option-picker-with-no-block-node-so-pill-typography-is-unreachable",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill > .sgs-option-picker__pill-text > .sgs-option-picker__pill-label|font-weight",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill > .sgs-option-picker__pill-text > .sgs-option-picker__pill-label",
+  "property": "font-weight",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists on the block that owns the element: sgs/option-picker::pillFontWeight declares font-weight on the pill, and the pill-label declares only `display: block`, so it inherits. The route cannot reach it because sgs/buybox renders the per-axis pickers itself and the single-product tree holds no sgs/option-picker node to write to. That the channel works is proved twice: the live 500 comes from that attribute's own custom-property default, and the sibling font-size row on the same path (draft 10.5px vs live 12.6px) was NOT classed F, because buybox already forwards pickerLabelFontSize.",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/option-picker' AND role='typography' -> 26 rows incl. pillFontSize|font-size|pill, pillFontWeight|font-weight|pill, pillLetterSpacing|letter-spacing|pill, pillTextAlign|text-align|pill, pillTextWrap|text-wrap|pill, pillLineHeight|line-height|pill",
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker__pill declares `font-weight: var(--sgs-op-pill-font-weight, 500)` - the live 500 is that attribute's DEFAULT, not a hardcode, so the setting demonstrably reaches this element",
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker__pill-label declares only `display: block`, so it inherits font-weight, letter-spacing and text-align from the pill",
+   "sites/eye-care-ward-end/build/single-product.tree.json: the tree contains sgs/buybox x1 and sgs/option-picker x0 - buybox instantiates the pickers itself (buybox/render.php '8b. Per-axis option-picker blocks'), so there is no option-picker node for the route or a client to write settings on",
+   "plugins/sgs-blocks/src/blocks/buybox/render.php already forwards label typography to the nested picker ('Picker-label typography - forwarded to sgs/option-picker's ...', reading pickerLabelFontSize, pickerLabelLetterSpacing, pickerLabelTextTransform) - the forwarding mechanism exists, it just stops at the legend and never covers the pill",
+   "sweep: product cr-ref-product-4 font-weight draft/live differ, alongside font-size draft 10.5px vs live 12.6px on the same path (not in this F batch)"
+  ],
+  "precedent": {
+   "block": "sgs/buybox",
+   "setting": "pickerLabelFontSize / pickerLabelLetterSpacing / pickerLabelTextTransform",
+   "helper": "buybox/render.php's existing picker-label forwarding into the sgs/option-picker it renders",
+   "note": "buybox already forwards one typography group into the picker it renders; the pill group needs the same forwarding, not a new control"
+  },
+  "fixShape": "Extend buybox's existing picker forwarding to the pill group: add sgs/buybox::pickerPillFontWeight passed through to sgs/option-picker::pillFontWeight, exactly as pickerLabelFontSize is passed today.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4e-buybox-renders-option-picker-with-no-block-node-so-pill-typography-is-unreachable",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill > .sgs-option-picker__pill-text > .sgs-option-picker__pill-label|letter-spacing",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill > .sgs-option-picker__pill-text > .sgs-option-picker__pill-label",
+  "property": "letter-spacing",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists on the block that owns the element: sgs/option-picker::pillLetterSpacing declares letter-spacing on the pill, and the pill-label declares only `display: block`, so it inherits. The route cannot reach it because sgs/buybox renders the per-axis pickers itself and the single-product tree holds no sgs/option-picker node to write to. That the channel works is proved twice: the live normal comes from that attribute's own custom-property default, and the sibling font-size row on the same path (draft 10.5px vs live 12.6px) was NOT classed F, because buybox already forwards pickerLabelFontSize.",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/option-picker' AND role='typography' -> 26 rows incl. pillFontSize|font-size|pill, pillFontWeight|font-weight|pill, pillLetterSpacing|letter-spacing|pill, pillTextAlign|text-align|pill, pillTextWrap|text-wrap|pill, pillLineHeight|line-height|pill",
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker__pill declares `font-weight: var(--sgs-op-pill-font-weight, 500)` - the live 500 is that attribute's DEFAULT, not a hardcode, so the setting demonstrably reaches this element",
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker__pill-label declares only `display: block`, so it inherits font-weight, letter-spacing and text-align from the pill",
+   "sites/eye-care-ward-end/build/single-product.tree.json: the tree contains sgs/buybox x1 and sgs/option-picker x0 - buybox instantiates the pickers itself (buybox/render.php '8b. Per-axis option-picker blocks'), so there is no option-picker node for the route or a client to write settings on",
+   "plugins/sgs-blocks/src/blocks/buybox/render.php already forwards label typography to the nested picker ('Picker-label typography - forwarded to sgs/option-picker's ...', reading pickerLabelFontSize, pickerLabelLetterSpacing, pickerLabelTextTransform) - the forwarding mechanism exists, it just stops at the legend and never covers the pill",
+   "sweep: product cr-ref-product-4 letter-spacing draft/live differ, alongside font-size draft 10.5px vs live 12.6px on the same path (not in this F batch)"
+  ],
+  "precedent": {
+   "block": "sgs/buybox",
+   "setting": "pickerLabelFontSize / pickerLabelLetterSpacing / pickerLabelTextTransform",
+   "helper": "buybox/render.php's existing picker-label forwarding into the sgs/option-picker it renders",
+   "note": "buybox already forwards one typography group into the picker it renders; the pill group needs the same forwarding, not a new control"
+  },
+  "fixShape": "Extend buybox's existing picker forwarding to the pill group: add sgs/buybox::pickerPillLetterSpacing passed through to sgs/option-picker::pillLetterSpacing, exactly as pickerLabelFontSize is passed today.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4e-buybox-renders-option-picker-with-no-block-node-so-pill-typography-is-unreachable",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)|text-align",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1)",
+  "property": "text-align",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "option-picker/style.css::.sgs-option-picker__option declares display, cursor, min-height and align-items but no text-align, so the live `start` is inherited; sgs/option-picker::pillTextAlign declares text-align on the pill (the option's only text-bearing child), and sgs/container::textAlign covers the whole chain above. The route cannot reach either from this surface because buybox renders the pickers and the tree holds no option-picker node.",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/option-picker' AND role='typography' -> 26 rows incl. pillFontSize|font-size|pill, pillFontWeight|font-weight|pill, pillLetterSpacing|letter-spacing|pill, pillTextAlign|text-align|pill, pillTextWrap|text-wrap|pill, pillLineHeight|line-height|pill",
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker__pill declares `font-weight: var(--sgs-op-pill-font-weight, 500)` - the live 500 is that attribute's DEFAULT, not a hardcode, so the setting demonstrably reaches this element",
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker__pill-label declares only `display: block`, so it inherits font-weight, letter-spacing and text-align from the pill",
+   "sites/eye-care-ward-end/build/single-product.tree.json: the tree contains sgs/buybox x1 and sgs/option-picker x0 - buybox instantiates the pickers itself (buybox/render.php '8b. Per-axis option-picker blocks'), so there is no option-picker node for the route or a client to write settings on",
+   "plugins/sgs-blocks/src/blocks/buybox/render.php already forwards label typography to the nested picker ('Picker-label typography - forwarded to sgs/option-picker's ...', reading pickerLabelFontSize, pickerLabelLetterSpacing, pickerLabelTextTransform) - the forwarding mechanism exists, it just stops at the legend and never covers the pill",
+   "plugins/sgs-blocks/src/blocks/option-picker/style.css::.sgs-option-picker__option declares no text-align",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/container' AND role='typography' -> 15 rows incl. fontSize|font-size|wrapper, lineHeight|line-height|wrapper, textWrap|text-wrap, textAlign|text-align|wrapper, letterSpacing|letter-spacing, textTransform|text-transform",
+   "sweep: product cr-ref-product-4 text-align draft center vs live start"
+  ],
+  "precedent": {
+   "block": "sgs/buybox",
+   "setting": "pickerLabelFontSize / pickerLabelLetterSpacing / pickerLabelTextTransform",
+   "helper": "buybox/render.php's existing picker-label forwarding into the sgs/option-picker it renders",
+   "note": "buybox already forwards one typography group into the picker it renders; the pill group needs the same forwarding, not a new control"
+  },
+  "fixShape": "Same forwarding fix: add sgs/buybox::pickerPillTextAlign forwarded to sgs/option-picker::pillTextAlign.",
+  "confidence": "medium"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "M4f-block-setting-exists-and-reaches-the-element",
+  "combo": "sgs/whatsapp-cta||text-wrap",
+  "block": "sgs/whatsapp-cta",
+  "path": "",
+  "property": "text-wrap",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "W",
+  "changed": true,
+  "proof": "The setting exists and is documented as covering exactly this element: sgs/whatsapp-cta::labelTextWrap declares text-wrap on the wrapper, and whatsapp-cta/render.php's card branch writes `.{uid} .sgs-whatsapp-cta__card-text{--sgs-whatsapp-cta-card-text-wrap:<value>}` against the default in style.css::.sgs-whatsapp-cta__card-text (`text-wrap: var(--sgs-whatsapp-cta-card-text-wrap, pretty)`), with a comment stating labelTextWrap 'owns the wrapper's value here too'. The allowlist includes wrap, nowrap, balance, pretty and stable, so the draft's `pretty` is writable. The resolver returned no-setting against the block-root path rather than the label / card-text element.",
+  "citations": [
+   "db: SELECT attr_name, role, css_property, css_element FROM block_attributes WHERE block_slug='sgs/whatsapp-cta' AND css_property='text-wrap' -> labelTextWrap|typography|text-wrap|wrapper (1 row)",
+   "plugins/sgs-blocks/src/blocks/whatsapp-cta/render.php ('card' === $variant branch) writes --sgs-whatsapp-cta-card-text-wrap from $attributes['labelTextWrap'], allowlist array('wrap','nowrap','balance','pretty','stable')",
+   "plugins/sgs-blocks/src/blocks/whatsapp-cta/style.css::.sgs-whatsapp-cta__card-text declares `text-wrap: var(--sgs-whatsapp-cta-card-text-wrap, pretty)`",
+   "sweep: product cr-ref-product-9 text-wrap draft pretty vs live wrap"
+  ],
+  "precedent": {
+   "block": "sgs/whatsapp-cta",
+   "setting": "labelTextWrap",
+   "helper": "includes/helpers-typography.php::sgs_typography_css_rule (prefix + selector)",
+   "note": "self-solving: the block's one text-wrap control already owns both the plain label and the card-text wrapper"
+  },
+  "fixShape": "No control. Calibrate text-wrap on this block to labelTextWrap (map the block-root path to the label / card-text element).",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "F-hover-state-text-decoration-has-no-control-anywhere-on-the-chain",
+  "combo": "sgs/tabs|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)|text-decoration-line",
+  "block": "sgs/tabs",
+  "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)",
+  "property": "text-decoration-line",
+  "kind": "hover",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed gap. tabs/style.css::.sgs-tabs__tab:hover declares a literal `text-decoration: underline` (its own comment calls it a WCAG 1.4.1 non-colour signal), and nothing on the chain can turn it off: sgs/tabs has no text-decoration attribute at all, and the only text-decoration attribute above it, sgs/container::textDecoration, is base-state (css_state NULL), so a written `none` would still lose to the :hover rule. No enclosing block and no sgs-ext extension carries a hover-state text-decoration. Draft none vs live underline.",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/tabs' AND (css_property LIKE '%decoration%' OR attr_name LIKE '%Decoration%') -> 0 rows",
+   "db: SELECT attr_name, css_property, css_state FROM block_attributes WHERE block_slug='sgs/container' AND (css_property LIKE '%decoration%' OR (role='typography' AND css_state IS NOT NULL)) -> 1 row, textDecoration|text-decoration|NULL state - base only",
+   "db: SELECT block_slug, attr_name, css_property, css_element, css_state FROM block_attributes WHERE css_property LIKE '%decoration%' AND css_state IS NOT NULL -> 4 rows, all on sgs/nav-bar-menu and sgs/nav-drawer-menu; none on sgs/tabs or any enclosing block",
+   "plugins/sgs-blocks/src/blocks/tabs/style.css::.sgs-tabs__tab:hover declares `text-decoration: underline` (the winning rule)",
+   "sweep: product cr-ref-product-12 text-decoration-line (hover) draft none vs live underline",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md: items S2, S12, N19 and N36E/F cover link and focus underlines; none covers the product-page tab hover underline, so this is not a decided divergence"
+  ],
+  "precedent": {
+   "block": "sgs/nav-bar-menu",
+   "setting": "itemTextDecorationHover",
+   "helper": "a css_state='hover' typography attribute emitted through the block's hover-state rule helper (sgs_hover_state_rules)",
+   "note": "sgs/nav-bar-menu::itemTextDecorationHover and sgs/nav-drawer-menu::itemTextDecorationHover (plus their submenu twins) are the only hover-state text-decoration attributes in the whole framework - 4 rows in all - so this is a cheap copy of an existing pattern, not a new mechanism"
+  },
+  "fixShape": "Add sgs/tabs::tabTextDecorationHover (css_state hover, css_element tab) emitted through the block's hover rule, copying sgs/nav-bar-menu::itemTextDecorationHover; keep underline as the default so the WCAG signal survives unless a client opts out.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "F-hover-state-text-decoration-has-no-control-anywhere-on-the-chain",
+  "combo": "sgs/tabs|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)|text-decoration-color",
+  "block": "sgs/tabs",
+  "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(2)",
+  "property": "text-decoration-color",
+  "kind": "hover",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed gap. tabs/style.css::.sgs-tabs__tab:hover declares a literal `text-decoration: underline` (its own comment calls it a WCAG 1.4.1 non-colour signal), and nothing on the chain can turn it off: sgs/tabs has no text-decoration attribute at all, and the only text-decoration attribute above it, sgs/container::textDecoration, is base-state (css_state NULL), so a written `none` would still lose to the :hover rule. No enclosing block and no sgs-ext extension carries a hover-state text-decoration. Draft none vs live rgb(94, 88, 79).",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/tabs' AND (css_property LIKE '%decoration%' OR attr_name LIKE '%Decoration%') -> 0 rows",
+   "db: SELECT attr_name, css_property, css_state FROM block_attributes WHERE block_slug='sgs/container' AND (css_property LIKE '%decoration%' OR (role='typography' AND css_state IS NOT NULL)) -> 1 row, textDecoration|text-decoration|NULL state - base only",
+   "db: SELECT block_slug, attr_name, css_property, css_element, css_state FROM block_attributes WHERE css_property LIKE '%decoration%' AND css_state IS NOT NULL -> 4 rows, all on sgs/nav-bar-menu and sgs/nav-drawer-menu; none on sgs/tabs or any enclosing block",
+   "plugins/sgs-blocks/src/blocks/tabs/style.css::.sgs-tabs__tab:hover declares `text-decoration: underline` (the winning rule)",
+   "sweep: product cr-ref-product-12 text-decoration-color (hover) draft none vs live rgb(94, 88, 79)",
+   ".claude/plans/2026-10-02-eye-care-fix-register.md: items S2, S12, N19 and N36E/F cover link and focus underlines; none covers the product-page tab hover underline, so this is not a decided divergence"
+  ],
+  "precedent": {
+   "block": "sgs/nav-bar-menu",
+   "setting": "itemTextDecorationHover",
+   "helper": "a css_state='hover' typography attribute emitted through the block's hover-state rule helper (sgs_hover_state_rules)",
+   "note": "sgs/nav-bar-menu::itemTextDecorationHover and sgs/nav-drawer-menu::itemTextDecorationHover (plus their submenu twins) are the only hover-state text-decoration attributes in the whole framework - 4 rows in all - so this is a cheap copy of an existing pattern, not a new mechanism"
+  },
+  "fixShape": "Add sgs/tabs::tabTextDecorationHover (css_state hover, css_element tab) emitted through the block's hover rule, copying sgs/nav-bar-menu::itemTextDecorationHover; keep underline as the default so the WCAG signal survives unless a client opts out.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "F-hover-state-text-decoration-has-no-control-anywhere-on-the-chain",
+  "combo": "sgs/product-card|div:nth-of-type(3) > .sgs-product-card__title-row > .sgs-product-card__title > a|text-decoration-color",
+  "block": "sgs/product-card",
+  "path": "div:nth-of-type(3) > .sgs-product-card__title-row > .sgs-product-card__title > a",
+  "property": "text-decoration-color",
+  "kind": "hover",
+  "rows": 2,
+  "surfaces": [
+   "home",
+   "shop"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed gap, and the highest-row F in the batch (2 rows, 2 surfaces). product-card/style.css::`.product-card--live .product-card__title-link:hover` declares a literal `text-decoration: underline`, and the title link is `<a class=\"product-card__title-link\">` inside `<h3 class=\"sgs-product-card__title\">` (product-card/render.php), so the measured path IS that rule's subject. sgs/product-card's 369 attributes include titleTextDecoration, but on css_element `title` (the h3) in the BASE state, emitted onto `.{uid} .sgs-product-card__title, .{uid} h3` - not onto the inner <a> and not in :hover - so a written `none` cannot beat the :hover rule. Of the 22 hover-state attributes on the block, not one is a text-decoration.",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/product-card' AND (css_property LIKE '%decoration%' OR css_state='hover') -> 22 hover rows (colour, gradient, transform, opacity, padding) + titleTextDecoration|text-decoration|title|NULL, descTextDecoration|description|NULL, tagTextDecoration|tag|NULL; 0 rows with a decoration property AND css_state='hover'",
+   "plugins/sgs-blocks/src/blocks/product-card/style.css::`.product-card--live .product-card__title-link:hover` declares `text-decoration: underline` (the winning rule); the resting rule above it declares `text-decoration: none`",
+   "plugins/sgs-blocks/src/blocks/product-card/render.php emits `<h3 class=\"sgs-product-card__title\"><a class=\"product-card__title-link\" ...>`, so the sweep path `.sgs-product-card__title > a` is that link",
+   "plugins/sgs-blocks/src/blocks/product-card/render.php: titleTextDecoration is emitted by sgs_typography_css_rule( $attributes, 'title', '.{uid} .sgs-product-card__title, .{uid} h3' ) - the heading, not the link, and no hover state",
+   "db: SELECT block_slug, attr_name FROM block_attributes WHERE css_property LIKE '%decoration%' AND css_state IS NOT NULL -> 4 rows, all on sgs/nav-bar-menu and sgs/nav-drawer-menu",
+   "sweep: home cr-ref-home-17 and shop cr-ref-shop-50 text-decoration-color (hover) draft none vs live rgb(20, 20, 20)"
+  ],
+  "precedent": {
+   "block": "sgs/nav-bar-menu",
+   "setting": "itemTextDecorationHover",
+   "helper": "a css_state='hover' typography attribute emitted through the block's hover-state rule helper (sgs_hover_state_rules)",
+   "note": "sgs/nav-bar-menu::itemTextDecorationHover and sgs/nav-drawer-menu::itemTextDecorationHover (plus their submenu twins) are the only hover-state text-decoration attributes in the whole framework - 4 rows in all - so this is a cheap copy of an existing pattern, not a new mechanism"
+  },
+  "fixShape": "Add sgs/product-card::titleTextDecorationHover (css_state hover, scoped to the title link) copying sgs/nav-bar-menu::itemTextDecorationHover. One attribute closes both rows and both surfaces.",
+  "confidence": "high"
+ },
+ {
+  "mechanism": "M4-typography",
+  "subMechanism": "F-button-line-height-has-no-control-and-cannot-be-inherited",
+  "combo": "sgs/buybox|.sgs-buybox__config-col > form > button > span:nth-of-type(1) > span|line-height",
+  "block": "sgs/buybox",
+  "path": ".sgs-buybox__config-col > form > button > span:nth-of-type(1) > span",
+  "property": "line-height",
+  "kind": "style",
+  "rows": 1,
+  "surfaces": [
+   "product"
+  ],
+  "candidate": "F",
+  "verdict": "F",
+  "changed": false,
+  "proof": "Confirmed gap. sgs/buybox has exactly one line-height attribute, priceLineHeight, and nothing scoped to the add-to-cart button; buybox/style.css::`.sgs-buybox .buybox__add-to-cart` sets font-size, font-weight, padding and min-height but declares no line-height. The enclosing sgs/container::lineHeight cannot cover it either: the theme's root line-height is 1.7, which would paint about 28.6px on this button, while the live value is 19.5px (about 1.16x font-size, the button element's own `normal`) - so the inherited value demonstrably does not reach inside the <button>, and no :where() de-specification can change that because there is no author declaration to de-specify. Draft 16px.",
+  "citations": [
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND css_property='line-height' -> 1 row, priceLineHeight (css_element NULL); 0 rows for css_element='add-to-cart'",
+   "db: SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/buybox' AND attr_name LIKE 'addToCart%' -> 16 rows (Label, Style, ShowPrice, Action, ModalId, TextTransform, LetterSpacing, LetterSpacingUnit, FontWeight, FontSize, FontSizeUnit, BorderColour, BackgroundColour, MinHeight, ShowIcon, HoverLift) - font-size and letter-spacing are there, line-height is not",
+   "plugins/sgs-blocks/src/blocks/buybox/style.css::`.sgs-buybox .buybox__add-to-cart` declares no line-height",
+   "theme/sgs-theme/theme.json::styles.typography.lineHeight = 1.7, and styles.elements.button carries no lineHeight; 1.7 x the button's font-size would be about 28.6px, not the measured 19.5px",
+   "sweep: product cr-ref-product-4 line-height draft 16px vs live 19.5px"
+  ],
+  "precedent": {
+   "block": "sgs/product-card",
+   "setting": "--sgs-product-card-btn-line-height",
+   "helper": "product-card/style.css::`line-height: var(--sgs-product-card-btn-line-height, 1.4)` on its own CTA, plus sgs/button::lineHeight and sgs/buybox's own priceLineHeight",
+   "note": "the identical control already exists on product-card's button and on sgs/button, so the pattern and the var-with-default convention are both settled"
+  },
+  "fixShape": "Add sgs/buybox::addToCartLineHeight (+Unit) to the existing addToCart typography group and paint it as `line-height: var(--sgs-buybox-cta-line-height, normal)` on .buybox__add-to-cart, matching product-card's --sgs-product-card-btn-line-height.",
+  "confidence": "high"
+ }
+]
