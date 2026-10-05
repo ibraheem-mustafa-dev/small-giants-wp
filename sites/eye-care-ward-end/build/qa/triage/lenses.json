@@ -1,0 +1,2811 @@
+{
+ "surface": "lenses",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/round-1/report.json",
+ "date": "2026-10-05",
+ "counts": {
+  "W": 35,
+  "F": 0,
+  "T": 23,
+  "U": 0
+ },
+ "verdicts": [
+  {
+   "key": "cr-ref-lenses-24|.sgs-icon-list__item:nth-of-type(1)|style|transition-duration",
+   "ref": "cr-ref-lenses-24",
+   "pair": "benefits-item-1",
+   "path": ".sgs-icon-list__item:nth-of-type(1)",
+   "block": "sgs/icon-list",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1)\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/icon-list",
+     "setting": "itemMotionDuration",
+     "css_property": "transition-duration",
+     "css_element": "item-dimmed",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-28||style|transition-duration",
+   "ref": "cr-ref-lenses-28",
+   "pair": "choose-a-frame",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-0||style|padding-top",
+   "ref": "cr-ref-lenses-0",
+   "pair": "gen-lenses-0",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "padding"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-0",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "css_property": "padding",
+     "css_element": "grid-item",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "contentBandPadding",
+     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
+     "css_element": "content-band",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-0||style|padding-bottom",
+   "ref": "cr-ref-lenses-0",
+   "pair": "gen-lenses-0",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "padding"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-0",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "css_property": "padding",
+     "css_element": "grid-item",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "contentBandPadding",
+     "css_property": "padding-bottom,padding-left,padding-right,padding-top",
+     "css_element": "content-band",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-4||style|painted-ground",
+   "ref": "cr-ref-lenses-4",
+   "pair": "gen-lenses-4",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "painted-ground",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "backgroundColour"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-4",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundImage",
+     "css_property": "background-image",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundImageTablet",
+     "css_property": "background-image",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundImageMobile",
+     "css_property": "background-image",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundSize",
+     "css_property": "background-size,object-fit",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundPosition",
+     "css_property": "background-position,object-position",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundRepeat",
+     "css_property": "background-repeat",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundAttachment",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayColour",
+     "css_property": "background-color",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgVideo",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgVideoMobile",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgParallax",
+     "css_property": "anim:parallax",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgKenBurns",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgAnimationDuration",
+     "css_property": "anim:duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgContent",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgPosition",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgAnimation",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgAnimationSpeed",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgOpacity",
+     "css_property": "opacity",
+     "css_element": "svg-bg",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgMinHeight",
+     "css_property": "min-height",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgTextShadow",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemBackground",
+     "css_property": "background-color",
+     "css_element": "grid-item",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgVideoTablet",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayOpacity",
+     "css_property": "opacity",
+     "css_element": "overlay",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayColourHover",
+     "css_property": "background-color",
+     "css_element": "overlay",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayBlendMode",
+     "css_property": "mix-blend-mode",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundColour",
+     "css_property": "background-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundColourHover",
+     "css_property": "background-color",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundColourHoverGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemBackgroundHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemBackgroundGradient",
+     "css_property": "background-image",
+     "css_element": "grid-item",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gridItemBackgroundHoverGradient",
+     "css_property": "background-image",
+     "css_element": "grid-item",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgLottie",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgLottieLoop",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgHoverZoom",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomScale",
+     "css_property": "transform",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomEasing",
+     "css_property": "transition-timing-function",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomEasingCustom",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-11||style|margin-top",
+   "ref": "cr-ref-lenses-11",
+   "pair": "gen-lenses-11",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "margin-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "margin"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-11",
+      "block": "sgs/text",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-11||style|margin-bottom",
+   "ref": "cr-ref-lenses-11",
+   "pair": "gen-lenses-11",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "margin-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "margin"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-11",
+      "block": "sgs/text",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-15||style|margin-top",
+   "ref": "cr-ref-lenses-15",
+   "pair": "gen-lenses-15",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "margin-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "margin"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-15",
+      "block": "sgs/text",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-15||style|margin-bottom",
+   "ref": "cr-ref-lenses-15",
+   "pair": "gen-lenses-15",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "margin-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "margin"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-15",
+      "block": "sgs/text",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-19||style|margin-top",
+   "ref": "cr-ref-lenses-19",
+   "pair": "gen-lenses-19",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "margin-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "margin"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-19",
+      "block": "sgs/text",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-19||style|margin-bottom",
+   "ref": "cr-ref-lenses-19",
+   "pair": "gen-lenses-19",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "style",
+   "property": "margin-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "margin"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-19",
+      "block": "sgs/text",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-22||style|opacity",
+   "ref": "cr-ref-lenses-22",
+   "pair": "gen-lenses-22",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "opacity",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "transient",
+   "evidence": [
+    {
+     "check": "transient",
+     "widths": [
+      375,
+      768
+     ],
+     "values": [
+      "0→1",
+      "0→1"
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no opacity setting on sgs/container paints \"\" (candidates: bgSvgOpacity, backgroundOverlayOpacity)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgOpacity",
+     "css_property": "opacity",
+     "css_element": "svg-bg",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayOpacity",
+     "css_property": "opacity",
+     "css_element": "overlay",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "sgsHoverOpacity",
+     "css_property": "opacity",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs-ext",
+     "reaches": true
+    },
+    {
+     "check": "extension",
+     "extension": "hover",
+     "setting": "sgsHoverOpacity",
+     "css_property": "opacity",
+     "css_element": "wrapper"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-22|.sgs-container__inner|style|column-gap",
+   "ref": "cr-ref-lenses-22",
+   "pair": "gen-lenses-22",
+   "path": ".sgs-container__inner",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "column-gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "gap"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-22",
+      "block": "sgs/container",
+      "path": ".sgs-container__inner"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gap",
+     "css_property": "gap",
+     "css_element": "inner",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-22|.sgs-container__inner|style|row-gap",
+   "ref": "cr-ref-lenses-22",
+   "pair": "gen-lenses-22",
+   "path": ".sgs-container__inner",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "row-gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "gap"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-22",
+      "block": "sgs/container",
+      "path": ".sgs-container__inner"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gap",
+     "css_property": "gap",
+     "css_element": "inner",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-22||style|transform",
+   "ref": "cr-ref-lenses-22",
+   "pair": "gen-lenses-22",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "transform",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "transient",
+   "evidence": [
+    {
+     "check": "transient",
+     "widths": [
+      375,
+      768
+     ],
+     "values": [
+      "matrix(1, 0, 0, 1, 0, 26)→none",
+      "matrix(1, 0, 0, 1, 0, 26)→none"
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transform setting on sgs/container paints \"\" (candidates: bgHoverZoomScale)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomScale",
+     "css_property": "transform",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "sgsHoverLift",
+     "css_property": "transform",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs-ext",
+     "reaches": true
+    },
+    {
+     "check": "extension",
+     "extension": "hover",
+     "setting": "sgsHoverLift",
+     "css_property": "transform",
+     "css_element": "wrapper"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-22|.sgs-container__inner|style|gap",
+   "ref": "cr-ref-lenses-22",
+   "pair": "gen-lenses-22",
+   "path": ".sgs-container__inner",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "gap"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-22",
+      "block": "sgs/container",
+      "path": ".sgs-container__inner"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gap",
+     "css_property": "gap",
+     "css_element": "inner",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-25||style|opacity",
+   "ref": "cr-ref-lenses-25",
+   "pair": "gen-lenses-25",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "opacity",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "transient",
+   "evidence": [
+    {
+     "check": "transient",
+     "widths": [
+      375,
+      768
+     ],
+     "values": [
+      "0→1",
+      "0→1"
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no opacity setting on sgs/container paints \"\" (candidates: bgSvgOpacity, backgroundOverlayOpacity)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgOpacity",
+     "css_property": "opacity",
+     "css_element": "svg-bg",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayOpacity",
+     "css_property": "opacity",
+     "css_element": "overlay",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "sgsHoverOpacity",
+     "css_property": "opacity",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs-ext",
+     "reaches": true
+    },
+    {
+     "check": "extension",
+     "extension": "hover",
+     "setting": "sgsHoverOpacity",
+     "css_property": "opacity",
+     "css_element": "wrapper"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-25|.sgs-container__inner|style|column-gap",
+   "ref": "cr-ref-lenses-25",
+   "pair": "gen-lenses-25",
+   "path": ".sgs-container__inner",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "column-gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "gap"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-25",
+      "block": "sgs/container",
+      "path": ".sgs-container__inner"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gap",
+     "css_property": "gap",
+     "css_element": "inner",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-25|.sgs-container__inner|style|row-gap",
+   "ref": "cr-ref-lenses-25",
+   "pair": "gen-lenses-25",
+   "path": ".sgs-container__inner",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "row-gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "gap"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-25",
+      "block": "sgs/container",
+      "path": ".sgs-container__inner"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gap",
+     "css_property": "gap",
+     "css_element": "inner",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-25||style|transform",
+   "ref": "cr-ref-lenses-25",
+   "pair": "gen-lenses-25",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "transform",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "transient",
+   "evidence": [
+    {
+     "check": "transient",
+     "widths": [
+      375,
+      768
+     ],
+     "values": [
+      "matrix(1, 0, 0, 1, 0, 26)→none",
+      "matrix(1, 0, 0, 1, 0, 26)→none"
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transform setting on sgs/container paints \"\" (candidates: bgHoverZoomScale)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomScale",
+     "css_property": "transform",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "sgsHoverLift",
+     "css_property": "transform",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs-ext",
+     "reaches": true
+    },
+    {
+     "check": "extension",
+     "extension": "hover",
+     "setting": "sgsHoverLift",
+     "css_property": "transform",
+     "css_element": "wrapper"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-25|.sgs-container__inner|style|gap",
+   "ref": "cr-ref-lenses-25",
+   "pair": "gen-lenses-25",
+   "path": ".sgs-container__inner",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "gap"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-25",
+      "block": "sgs/container",
+      "path": ".sgs-container__inner"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "gap",
+     "css_property": "gap",
+     "css_element": "inner",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27|.sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number|style|font-size",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "font-size",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "numberFontSize"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-27",
+      "block": "sgs/process-steps",
+      "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "titleFontSize",
+     "css_property": "font-size",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "numberFontSize",
+     "css_property": "font-size",
+     "css_element": "number",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27|.sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number|style|font-weight",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "font-weight",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "numberFontWeight"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-27",
+      "block": "sgs/process-steps",
+      "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "titleFontWeight",
+     "css_property": "font-weight",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "numberFontWeight",
+     "css_property": "font-weight",
+     "css_element": "number",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27|.sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number|style|line-height",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "numberLineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-27",
+      "block": "sgs/process-steps",
+      "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__number"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "titleLineHeight",
+     "css_property": "line-height",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "numberLineHeight",
+     "css_property": "line-height",
+     "css_element": "number",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27||style|padding-top",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": "",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "padding"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-27",
+      "block": "sgs/process-steps",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27||style|padding-bottom",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": "",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "padding"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-27",
+      "block": "sgs/process-steps",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27||style|column-gap",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": "",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "column-gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "stepGap"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-27",
+      "block": "sgs/process-steps",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "numberGap",
+     "css_property": "gap",
+     "css_element": "step",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "stepGap",
+     "css_property": "gap",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27||style|row-gap",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": "",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "row-gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "stepGap"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-27",
+      "block": "sgs/process-steps",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "numberGap",
+     "css_property": "gap",
+     "css_element": "step",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "stepGap",
+     "css_property": "gap",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27||style|align-items",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": "",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "align-items",
+   "widths": [
+    375
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "discovered",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/process-steps has no setting for align-items"
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/process-steps",
+     "setting": "layout",
+     "values": [
+      "list"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27||style|gap",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": "",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "stepGap"
+     ],
+     "on": {
+      "ref": "cr-ref-lenses-27",
+      "block": "sgs/process-steps",
+      "path": ""
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "numberGap",
+     "css_property": "gap",
+     "css_element": "step",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "stepGap",
+     "css_property": "gap",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-28||hover|transform",
+   "ref": "cr-ref-lenses-28",
+   "pair": "choose-a-frame",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "hover",
+   "property": "transform",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "shape",
+     "detail": "none cannot be held"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "scaleHover",
+     "css_property": "transform",
+     "css_element": "face",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-28||hover|hover-effects",
+   "ref": "cr-ref-lenses-28",
+   "pair": "choose-a-frame",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "hover",
+   "property": "hover-effects",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/button has no setting for hover-effects (hover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "boxShadowHover",
+     "css_property": "box-shadow",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "scaleHover",
+     "css_property": "transform",
+     "css_element": "face",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "boxShadowColourHover",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "shadowLiftOnHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "scaleHoverTarget",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "opacityHover",
+     "css_property": "opacity",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "liftHover",
+     "css_property": "translate",
+     "css_element": null,
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-1||box|y-after-gen-lenses-0",
+   "ref": "cr-ref-lenses-1",
+   "pair": "eyebrow",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-0",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 28,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-24||box|y-from-benefits-heading",
+   "ref": "cr-ref-lenses-24",
+   "pair": "benefits-list",
+   "path": "",
+   "block": "sgs/icon-list",
+   "kind": "box",
+   "property": "y-from-benefits-heading",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-22|.sgs-container__inner|style|column-gap",
+     "ref": "cr-ref-lenses-22",
+     "key": "column-gap",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 16,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-0||box|h",
+   "ref": "cr-ref-lenses-0",
+   "pair": "gen-lenses-0",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-27||style|padding-top",
+     "ref": "cr-ref-lenses-27",
+     "key": "padding-top",
+     "relation": "descendant",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -23,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-4||box|h",
+   "ref": "cr-ref-lenses-4",
+   "pair": "gen-lenses-4",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -48,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-9||box|h",
+   "ref": "cr-ref-lenses-9",
+   "pair": "gen-lenses-9",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -16,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-11||box|y-after-gen-lenses-10",
+   "ref": "cr-ref-lenses-11",
+   "pair": "gen-lenses-11",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-10",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-11||style|margin-top",
+     "ref": "cr-ref-lenses-11",
+     "key": "margin-top",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -10,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-12||box|y-after-gen-lenses-11",
+   "ref": "cr-ref-lenses-12",
+   "pair": "gen-lenses-12",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-11",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-11||style|margin-bottom",
+     "ref": "cr-ref-lenses-11",
+     "key": "margin-bottom",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -6,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-13||box|h",
+   "ref": "cr-ref-lenses-13",
+   "pair": "gen-lenses-13",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -16,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-15||box|y-after-gen-lenses-14",
+   "ref": "cr-ref-lenses-15",
+   "pair": "gen-lenses-15",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-14",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-15||style|margin-top",
+     "ref": "cr-ref-lenses-15",
+     "key": "margin-top",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -10,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-16||box|y-after-gen-lenses-15",
+   "ref": "cr-ref-lenses-16",
+   "pair": "gen-lenses-16",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-15",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-15||style|margin-bottom",
+     "ref": "cr-ref-lenses-15",
+     "key": "margin-bottom",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -6,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-17||box|h",
+   "ref": "cr-ref-lenses-17",
+   "pair": "gen-lenses-17",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -16,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-19||box|y-after-gen-lenses-18",
+   "ref": "cr-ref-lenses-19",
+   "pair": "gen-lenses-19",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-18",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-19||style|margin-top",
+     "ref": "cr-ref-lenses-19",
+     "key": "margin-top",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -10,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-20||box|y-after-gen-lenses-19",
+   "ref": "cr-ref-lenses-20",
+   "pair": "gen-lenses-20",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-19",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-19||style|margin-bottom",
+     "ref": "cr-ref-lenses-19",
+     "key": "margin-bottom",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -6,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-22||box|h",
+   "ref": "cr-ref-lenses-22",
+   "pair": "gen-lenses-22",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-22|.sgs-container__inner|style|column-gap",
+     "ref": "cr-ref-lenses-22",
+     "key": "column-gap",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 16,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-25||box|h",
+   "ref": "cr-ref-lenses-25",
+   "pair": "gen-lenses-25",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -14,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27||box|y-after-gen-lenses-25",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": "",
+   "block": "sgs/process-steps",
+   "kind": "box",
+   "property": "y-after-gen-lenses-25",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-25|.sgs-container__inner|style|column-gap",
+     "ref": "cr-ref-lenses-25",
+     "key": "column-gap",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 16,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-27||box|h",
+   "ref": "cr-ref-lenses-27",
+   "pair": "gen-lenses-27",
+   "path": "",
+   "block": "sgs/process-steps",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -18,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-8||box|y-after-gen-lenses-11",
+   "ref": "cr-ref-lenses-8",
+   "pair": "gen-lenses-8",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-11",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-11||style|margin-top",
+     "ref": "cr-ref-lenses-11",
+     "key": "margin-top",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 768,
+     "delta": 10,
+     "widths": [
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-11||box|y-after-gen-lenses-7",
+   "ref": "cr-ref-lenses-11",
+   "pair": "gen-lenses-11",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-7",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-11||style|margin-top",
+     "ref": "cr-ref-lenses-11",
+     "key": "margin-top",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 768,
+     "delta": -10,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-12||box|y-after-gen-lenses-8",
+   "ref": "cr-ref-lenses-12",
+   "pair": "gen-lenses-12",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-8",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 768,
+     "delta": -16,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-13||box|y-after-gen-lenses-12",
+   "ref": "cr-ref-lenses-13",
+   "pair": "gen-lenses-13",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-lenses-12",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 768,
+     "delta": 16,
+     "widths": [
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-15||box|y-after-gen-lenses-18",
+   "ref": "cr-ref-lenses-15",
+   "pair": "gen-lenses-15",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-18",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-15||style|margin-top",
+     "ref": "cr-ref-lenses-15",
+     "key": "margin-top",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 768,
+     "delta": -10,
+     "widths": [
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-16||box|y-after-gen-lenses-19",
+   "ref": "cr-ref-lenses-16",
+   "pair": "gen-lenses-16",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-19",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-19||style|margin-bottom",
+     "ref": "cr-ref-lenses-19",
+     "key": "margin-bottom",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 768,
+     "delta": -6,
+     "widths": [
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-21||box|h",
+   "ref": "cr-ref-lenses-21",
+   "pair": "gen-lenses-21",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 768,
+     "delta": 52,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-26||box|y-from-benefits-list",
+   "ref": "cr-ref-lenses-26",
+   "pair": "steps-heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "box",
+   "property": "y-from-benefits-list",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-25|.sgs-container__inner|style|column-gap",
+     "ref": "cr-ref-lenses-25",
+     "key": "column-gap",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": -16,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-8||box|y-after-gen-lenses-19",
+   "ref": "cr-ref-lenses-8",
+   "pair": "gen-lenses-8",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-lenses-19",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-19||style|margin-top",
+     "ref": "cr-ref-lenses-19",
+     "key": "margin-top",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": 10,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  }
+ ]
+}

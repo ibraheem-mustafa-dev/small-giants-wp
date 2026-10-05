@@ -1,7 +1,9 @@
 // Proves triage (Session B1): a setting an extension provides is never labelled F (MUST FAIL); a box row that follows
 // an open style row on its parent by the same amount is W, a consequence (MUST FAIL); a row nothing fits and the
 // resolver finds no setting for is F, with the stylesheet rule that declares it; a mid-animation row and a used size
-// are W; a value the tree can hold is T, and one the node already holds is F, a hardcode.
+// are W; a value the tree can hold is T, and one the node already holds is F, a hardcode; a row from a walker state the
+// surface maps to no setting state is W, unmapped-state, whatever its property (MUST FAIL), and never steals a key a
+// Solve class already holds.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { triage, nameFits, rosterApplies } from '../lib/triage.mjs';
@@ -139,4 +141,46 @@ test( 'a value the node already holds while paint differs is F, a hardcode', () 
 	assert.equal( v.class, 'F' );
 	assert.equal( v.decidedBy, 'hardcode' );
 	assert.ok( v.source );
+} );
+
+test( 'MUST FAIL: a box row from an unmapped walker state is W, unmapped-state, not U', () => {
+	// Without the unmapped-state class this box row falls through to U, box-unexplained: nothing explains it, because the
+	// state it was measured in is mapped to no setting state, so no parent row of that state is open to follow.
+	const r = row( { kind: 'box', key: 'h', draft: 220, live: 180, ref: 'cr-ref-s-2', path: '', pair: 'card', state: 'filters-open', reason: 'unmapped-state filters-open' } );
+	const { verdicts, counts } = run( { other: [ r ] }, [ r ], ctxOf() );
+	assert.equal( verdicts.length, 1 );
+	assert.notEqual( verdicts[ 0 ].class, 'U' );
+	assert.equal( verdicts[ 0 ].class, 'W' );
+	assert.equal( verdicts[ 0 ].decidedBy, 'unmapped-state' );
+	assert.equal( counts.U, 0 );
+	const ev = verdicts[ 0 ].evidence[ 0 ];
+	assert.equal( ev.check, 'unmapped-state' );
+	assert.deepEqual( ev.states, [ 'filters-open' ] );
+	assert.deepEqual( ev.mappedStates, [ 'rest' ] );
+} );
+
+test( 'a style row from an unmapped walker state is W, unmapped-state, and never reaches the resolver', () => {
+	const r = row( { key: 'gap', draft: '24px', live: '16px', state: 'panel-after-click', reason: 'unmapped-state panel-after-click' } );
+	let asked = 0;
+	const { verdicts } = run( { other: [ r ] }, [ r ], ctxOf( { resolver: () => ( asked++, { gap: 'no-setting', detail: 'no setting' } ) } ) );
+	assert.equal( verdicts[ 0 ].class, 'W' );
+	assert.equal( verdicts[ 0 ].decidedBy, 'unmapped-state' );
+	assert.equal( asked, 0, 'an unmapped state cannot prove or disprove a setting, so the resolver is never asked' );
+} );
+
+test( 'an unmapped-state row never steals a key a Solve class already holds', () => {
+	// The same element and property, open at rest and again in an unmapped state: one issue, under the Solve class, as
+	// the sweep counts it (lib/sweep.mjs::issueRows).
+	const rest = row( { key: 'gap', draft: '24px', live: '16px' } );
+	const open = row( { key: 'gap', draft: '24px', live: '16px', state: 'filters-open', reason: 'unmapped-state filters-open' } );
+	const { verdicts } = run( { unresolved: [ rest ], other: [ open ] }, [ rest, open ], ctxOf() );
+	assert.equal( verdicts.length, 1 );
+	assert.equal( verdicts[ 0 ].solveClass, 'unresolved' );
+	assert.notEqual( verdicts[ 0 ].decidedBy, 'unmapped-state' );
+} );
+
+test( 'a non-visual row in `other` is not an issue', () => {
+	const r = row( { kind: 'text', key: 'text', state: 'filters-open', reason: 'unmapped-state filters-open' } );
+	const { verdicts } = run( { other: [ r ] }, [ r ], ctxOf() );
+	assert.equal( verdicts.length, 0 );
 } );

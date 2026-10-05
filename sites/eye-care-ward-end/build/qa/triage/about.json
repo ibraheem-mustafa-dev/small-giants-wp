@@ -1,0 +1,49 @@
+{
+ "surface": "about",
+ "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-05T10-11-41/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-05T10-11-41/round-1/report.json",
+ "date": "2026-10-05",
+ "counts": {
+  "W": 1,
+  "F": 0,
+  "T": 0,
+  "U": 0
+ },
+ "verdicts": [
+  {
+   "key": "cr-ref-about-10||style|transition-duration",
+   "ref": "cr-ref-about-10",
+   "pair": "shop-button",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/button",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  }
+ ]
+}

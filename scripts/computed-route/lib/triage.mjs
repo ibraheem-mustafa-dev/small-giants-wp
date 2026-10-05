@@ -15,19 +15,24 @@ import { USED_VALUES } from '../solve.mjs';
 export const TRIAGE_CLASSES = [ 'W', 'F', 'T', 'U' ];
 const VISUAL = [ 'style', 'hover', 'box' ];
 const SOLVE_CLASSES = [ 'hardcode', 'missing', 'unresolved', 'derived' ];
+// A visual row from a walker state the surface maps to no setting state: Solve files it under `other`, and the sweep
+// counts it as its own class (lib/sweep.mjs::UNMAPPED) unless a Solve class already holds its key. Triage reads the same
+// rows in the same order, so a surface's issue count equals its sweep count.
+const UNMAPPED = 'unmapped-state';
 // solve-report.mjs::wholePage's issue key: one element and property, whatever the width or state.
 const keyOf = ( x ) => `${ x.ref || x.pair }|${ x.path ?? '' }|${ x.kind }|${ x.key }`;
 const loose = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
 const PX_TOL = 1;
 
-// Distinct issues of a report's hardcode, missing, unresolved and derived rows (the surface's own blocks and rows with
-// no block), each with every row it covers and the Solve class of its first row.
+// Distinct issues of a report's hardcode, missing, unresolved and derived rows, then its unmapped-state rows (the
+// surface's own blocks and rows with no block), each with every row it covers and the Solve class of its first row. The
+// class order is the sweep's, so a key a Solve class already holds stays under that class.
 export function issuesOf( report, surface ) {
 	const prefix = `cr-ref-${ surface }-`;
 	const mine = ( x ) => ! x.ref || ( x.ref.startsWith( prefix ) && /^\d+$/.test( x.ref.slice( prefix.length ) ) );
 	const found = new Map();
-	for ( const cls of SOLVE_CLASSES ) {
-		for ( const x of report.classes?.[ cls ] || [] ) {
+	for ( const cls of [ ...SOLVE_CLASSES, UNMAPPED ] ) {
+		for ( const x of report.classes?.[ UNMAPPED === cls ? 'other' : cls ] || [] ) {
 			if ( ! VISUAL.includes( x.kind ) || ! mine( x ) ) {
 				continue;
 			}
@@ -309,6 +314,13 @@ export function triageIssue( issue, ctx ) {
 	const conseq = explained.every( Boolean ) ? { check: 'consequence', ...explained[ 0 ], widths: explained.map( ( e ) => e.width ) } : null;
 	if ( ! conseq && explained.some( Boolean ) ) {
 		evidence.push( { check: 'consequence', partial: true, widths: explained.filter( Boolean ).map( ( e ) => e.width ), parent: explained.find( Boolean ).parent } );
+	}
+	// A row measured in a walker state the surface maps to no setting state is a route gap whatever its property: the
+	// route cannot resolve, write or disprove it until the flow is mapped (FR-47-7), so F cannot be assessed through it.
+	if ( UNMAPPED === issue.solveClass ) {
+		evidence.unshift( { check: 'unmapped-state', states: [ ...new Set( issue.rows.map( ( x ) => x.state ) ) ],
+			mappedStates: Object.keys( ctx.stateMap || {} ), detail: 'the surface maps no setting state to this walker state (FR-47-7 not built)' } );
+		return verdict( 'W', 'unmapped-state' );
 	}
 	if ( 'box' === r.kind ) {
 		return conseq ? ( evidence.unshift( conseq ), verdict( 'W', 'consequence' ) ) : verdict( 'U', 'box-unexplained' );

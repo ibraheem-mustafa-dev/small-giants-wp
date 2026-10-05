@@ -1,0 +1,2950 @@
+{
+ "surface": "contact-form",
+ "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-05T10-40-59/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-05T10-40-59/round-1/report.json",
+ "date": "2026-10-05",
+ "counts": {
+  "W": 24,
+  "F": 10,
+  "T": 24,
+  "U": 0
+ },
+ "verdicts": [
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|display",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "display",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no display setting on sgs/form-field-text paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-text/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|padding-top",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|padding-right",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "padding-right",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|padding-bottom",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|padding-left",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "padding-left",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|min-height",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "min-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldMinHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldMinHeight",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldTextareaMinHeight",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|transition-duration",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-text has no setting for transition-duration"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-text/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|display",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "display",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no display setting on sgs/form-field-email paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-email/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|padding-top",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|padding-right",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "padding-right",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|padding-bottom",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|padding-left",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "padding-left",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|min-height",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "min-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldMinHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldMinHeight",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldTextareaMinHeight",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|transition-duration",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-email has no setting for transition-duration"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-email/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|style|display",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "style",
+   "property": "display",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no display setting on sgs/form-field-phone paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-phone/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|style|padding-top",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|style|padding-right",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "style",
+   "property": "padding-right",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|style|padding-bottom",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|style|padding-left",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "style",
+   "property": "padding-left",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|style|min-height",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "style",
+   "property": "min-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldMinHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldMinHeight",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldTextareaMinHeight",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|style|transition-duration",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-phone has no setting for transition-duration"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-phone/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|display",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "display",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no display setting on sgs/form-field-select paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-select/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|padding-top",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|padding-right",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "padding-right",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|padding-bottom",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|padding-left",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "padding-left",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|min-height",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "min-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldMinHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldMinHeight",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldTextareaMinHeight",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|transition-duration",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-select has no setting for transition-duration"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-select/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-top",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-right",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "padding-right",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-bottom",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-left",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "padding-left",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldPadding"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldPadding",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|transition-duration",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-textarea has no setting for transition-duration"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-textarea/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|margin-top",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "margin-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-textarea has no setting for margin-top"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-textarea/render.php",
+      "mentions": [],
+      "absent": [
+       "marginTop",
+       "margin"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [
+       "margin"
+      ],
+      "absent": [
+       "marginTop"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "marginTop",
+       "margin"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "argin_top ) { $base_band_decls[] = 'margin-top:' . $band_margin_top; } if ( '' !== $ban",
+       "blet ) { $tablet_margin_decls[] = 'margin-top:' . $margin_top_tablet; } if ( '' !==",
+       "bile ) { $mobile_margin_decls[] = 'margin-top:' . $margin_top_mobile; } if ( '' !=="
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|max-width",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "max-width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-textarea has no setting for max-width"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-field-textarea",
+     "setting": "width",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|style|line-height",
+   "ref": "cr-ref-contact-form-0",
+   "pair": "submit-button",
+   "path": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button",
+   "block": "sgs/form",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/form path \".sgs-form__inner > .sgs-form__actions > .sgs-form__button\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "lineHeight",
+     "css_property": "line-height",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|style|transition-duration",
+   "ref": "cr-ref-contact-form-0",
+   "pair": "submit-button",
+   "path": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button",
+   "block": "sgs/form",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/form path \".sgs-form__inner > .sgs-form__actions > .sgs-form__button\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|style|width",
+   "ref": "cr-ref-contact-form-0",
+   "pair": "submit-button",
+   "path": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button",
+   "block": "sgs/form",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    375
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "maxWidth",
+     "css_property": "max-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "contentWidth",
+     "css_property": "width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|width",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-field-text",
+     "setting": "width",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|hover|color",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-0||hover|color",
+     "ref": "cr-ref-contact-form-0",
+     "key": "color",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 768,
+     "delta": null,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-text has no setting for color (hover)"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|width",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-field-email",
+     "setting": "width",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|hover|color",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-0||hover|color",
+     "ref": "cr-ref-contact-form-0",
+     "key": "color",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 768,
+     "delta": null,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-email has no setting for color (hover)"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|style|width",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-field-phone",
+     "setting": "width",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|hover|color",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-0||hover|color",
+     "ref": "cr-ref-contact-form-0",
+     "key": "color",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 768,
+     "delta": null,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-phone has no setting for color (hover)"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|width",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-field-select",
+     "setting": "width",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|hover|color",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-0||hover|color",
+     "ref": "cr-ref-contact-form-0",
+     "key": "color",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 768,
+     "delta": null,
+     "widths": [
+      768,
+      1440,
+      1920
+     ]
+    },
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-textarea has no setting for color (hover)"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-0||hover|color",
+   "ref": "cr-ref-contact-form-0",
+   "pair": "gen-contact-form-0",
+   "path": "",
+   "block": "sgs/form",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "uncalibrated",
+     "detail": "sgs/form submitColourHover (hover) not calibrated"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "submitColour",
+     "css_property": "color",
+     "css_element": "button",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "progressBarColour",
+     "css_property": "background-color",
+     "css_element": "progress-bar",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "formFocusRingColour",
+     "css_property": "border-color",
+     "css_element": "focus-ring",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "prevColourBackground",
+     "css_property": "background-color",
+     "css_element": "prev-button",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "prevColourBackgroundHover",
+     "css_property": "background-color",
+     "css_element": "prev-button",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "prevColourBackgroundGradient",
+     "css_property": "background-image",
+     "css_element": "prev-button",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "prevColourBackgroundHoverGradient",
+     "css_property": "background-image",
+     "css_element": "prev-button",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fileLabelBackgroundColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fileLabelBackgroundColourHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fileLabelBackgroundColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fileLabelBackgroundColourHoverGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "submitColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "progressBarColourGradient",
+     "css_property": "background-image",
+     "css_element": "progress-bar",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "progressBarColourHover",
+     "css_property": "background-color",
+     "css_element": "progress-bar",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "progressBarColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "progress-bar",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "submitColourHover",
+     "css_property": "color",
+     "css_element": "submit-button",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "submitColourHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "submit-button",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fieldTextColour",
+     "css_property": "color",
+     "css_element": "field-input",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fieldPlaceholderColour",
+     "css_property": "color",
+     "css_element": "field-placeholder",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-0||hover|border-top-color",
+   "ref": "cr-ref-contact-form-0",
+   "pair": "gen-contact-form-0",
+   "path": "",
+   "block": "sgs/form",
+   "kind": "hover",
+   "property": "border-top-color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form has no setting for border-top-color (hover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "formFocusRingColour",
+     "css_property": "border-color",
+     "css_element": "focus-ring",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "borderColour",
+     "css_property": "border-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "borderColourGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "tileBorderColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "tileBorderColourHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "tileBorderColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "tileBorderColourHoverGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fileLabelBorderColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fileLabelBorderColourHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fileLabelBorderColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fileLabelBorderColourHoverGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "css_property": "border-color",
+     "css_element": "field-input",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|box|h",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-1|.sgs-form-field__input|style|display",
+     "ref": "cr-ref-contact-form-1",
+     "key": "display",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -5,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|box|y-from-form-subtext",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "box",
+   "property": "y-from-form-subtext",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-22||style|margin-bottom",
+     "ref": "cr-ref-contact-22",
+     "key": "margin-bottom",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -22,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|box|h",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-2|.sgs-form-field__input|style|display",
+     "ref": "cr-ref-contact-form-2",
+     "key": "display",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -5,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|box|h",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-3|.sgs-form-field__input|style|display",
+     "ref": "cr-ref-contact-form-3",
+     "key": "display",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -5,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|box|h",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-4|.sgs-form-field__input|style|display",
+     "ref": "cr-ref-contact-form-4",
+     "key": "display",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -6,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|box|h",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|margin-top",
+     "ref": "cr-ref-contact-form-5",
+     "key": "margin-top",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -10,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|box|w",
+   "ref": "cr-ref-contact-form-0",
+   "pair": "submit-button",
+   "path": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button",
+   "block": "sgs/form",
+   "kind": "box",
+   "property": "w",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|style|width",
+     "ref": "cr-ref-contact-form-0",
+     "key": "width",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 169,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|box|y-from-field-message",
+   "ref": "cr-ref-contact-form-0",
+   "pair": "submit-button",
+   "path": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button",
+   "block": "sgs/form",
+   "kind": "box",
+   "property": "y-from-field-message",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-top",
+     "ref": "cr-ref-contact-form-5",
+     "key": "padding-top",
+     "relation": "anchor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 8,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|box|text-inset-x",
+   "ref": "cr-ref-contact-form-0",
+   "pair": "submit-button",
+   "path": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button",
+   "block": "sgs/form",
+   "kind": "box",
+   "property": "text-inset-x",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|style|line-height",
+     "ref": "cr-ref-contact-form-0",
+     "key": "line-height",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 84,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-0||box|h",
+   "ref": "cr-ref-contact-form-0",
+   "pair": "gen-contact-form-0",
+   "path": "",
+   "block": "sgs/form",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|style|line-height",
+     "ref": "cr-ref-contact-form-0",
+     "key": "line-height",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 83,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  }
+ ]
+}
