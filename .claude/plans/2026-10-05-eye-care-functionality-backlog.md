@@ -130,6 +130,20 @@ session.
 **Re-tiering:** CR6 is no longer "build this first". Its cross-session dependency puts it behind the
 Spec 47 route work. Build N11(a), 75/82/158, 91 and 52 first.
 
+## Found by the QC pass, 2026-10-06 (not yet built)
+
+Full pass with evidence: `.claude/reports/2026-10-06-qc-eye-care-tier1/README.md`.
+15 of 17 adversarial scenarios passed. One failure was this session's own defect and is fixed
+(`82f54f351`). These two are **pre-existing**, proven so by diff, and are new items:
+
+| Ref | What a user (or an abuser) hits | What to build | Tier |
+|---|---|---|---|
+| **Q1** | **A single guest request can put 9,999 units in the basket** (GBP 94,990.50, measured live). There is no upper bound at all on a product with stock tracking off, which is every canary product and any client product not tracking stock | `class-cart-proxy.php::Cart_Proxy::handle` sets `$stock_qty = PHP_INT_MAX` for unmanaged stock, which skips the clamp branch, and `class-cart-limits.php::enforce_add_to_cart_limits` returns early for unmanaged stock. Two guards both opt out. Give the unmanaged branch a real ceiling; the number is Bean's commercial call | Tier 1 — abuse surface |
+| **Q2** | The selected product tab fails contrast at **2.24:1** (`#e68a95` on `#fbf3dc`, needs 4.5:1), flagged serious by axe-core | `tabs/style.css::.sgs-tabs__tab--active` paints the client's primary token on `surface-alt`. Decide whether the fix is the client token in `sites/<client>/theme-snapshot.json` or which token the framework rule reads — confirm which layer owns it first | Tier 2 — WCAG 2.1 AA |
+
+Both are fix-shape proposals, so per `/qc`'s own rule they go through `/qc-council` before any
+implementer is dispatched.
+
 ## Tier 1 — a shopper cannot finish the job (build these first)
 
 > **Built and verified on the sandybrown canary, 2026-10-05** (`65573118c`, plus `c06f71ea6` for the
