@@ -5,13 +5,9 @@
 // counts once on the site, under the first surface; the later surfaces are named in its `alsoIn`.
 import fs from 'fs';
 import path from 'path';
+// The kinds, classes, order and issue key are shared with lib/triage.mjs so the two counts agree by construction.
+import { VISUAL, SOLVE_CLASSES as CLASSES, UNMAPPED, issueKey } from './issue-classes.mjs';
 
-const VISUAL = [ 'style', 'hover', 'box' ];
-const CLASSES = [ 'hardcode', 'missing', 'unresolved', 'derived' ];
-// A visual row from a walker state Solve does not map to a setting state (Solve files it under `other`) is still an
-// open issue on the page (wholePage counts it): it is listed under this class unless a Solve class already holds its key.
-const UNMAPPED = 'unmapped-state';
-const issueKey = ( x ) => `${ x.ref || x.pair }|${ x.path ?? '' }|${ x.kind }|${ x.key }`;
 const one = ( list ) => ( 1 === list.length ? list[ 0 ] : list );
 const emptyCounts = () => Object.fromEntries( [ ...CLASSES, UNMAPPED ].map( ( c ) => [ c, 0 ] ) );
 

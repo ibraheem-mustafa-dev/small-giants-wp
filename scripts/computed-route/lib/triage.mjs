@@ -11,16 +11,10 @@ import { entranceStart } from './entrance.mjs';
 import { referenceOf } from './references.mjs';
 import { sourcePass } from './triage-source.mjs';
 import { USED_VALUES } from '../solve.mjs';
+// The kinds, classes, order and issue key are shared with lib/sweep.mjs so the two counts agree by construction.
+import { VISUAL, SOLVE_CLASSES, UNMAPPED, issueKey as keyOf } from './issue-classes.mjs';
 
 export const TRIAGE_CLASSES = [ 'W', 'F', 'T', 'U' ];
-const VISUAL = [ 'style', 'hover', 'box' ];
-const SOLVE_CLASSES = [ 'hardcode', 'missing', 'unresolved', 'derived' ];
-// A visual row from a walker state the surface maps to no setting state: Solve files it under `other`, and the sweep
-// counts it as its own class (lib/sweep.mjs::UNMAPPED) unless a Solve class already holds its key. Triage reads the same
-// rows in the same order, so a surface's issue count equals its sweep count.
-const UNMAPPED = 'unmapped-state';
-// solve-report.mjs::wholePage's issue key: one element and property, whatever the width or state.
-const keyOf = ( x ) => `${ x.ref || x.pair }|${ x.path ?? '' }|${ x.kind }|${ x.key }`;
 const loose = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
 const PX_TOL = 1;
 

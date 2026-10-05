@@ -48,6 +48,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/entrance.mjs` | Entrance start: a block the draft shows at rest while live holds its entrance waiting for a scroll gets `sgsAnimationStart: 'load'` (Spec 38). |
 | `lib/pairs.mjs` | Block pairing: words per block, their draft twins (repeated words planned apart), the partner choice (element, padded wrapper or text run), the keep-or-leave-out judgement (PAIRING_LIMITS) and the generated config's text. |
 | `lib/pairs-page.mjs` | Block pairing's in-page collectors: tagged words, live block boxes and text runs, draft chains (repeated words placed nearest the sure ones), form controls by identity, hand pair elements, and the draft opened through its navigation. |
+| `lib/issue-classes.mjs` | The one definition of a distinct open issue: the visual row kinds, the Solve classes and their order, the unmapped-state class and the issue key. Imported by both `lib/sweep.mjs` and `lib/triage.mjs`, so a surface's triage count equals its sweep count by construction rather than by two copies agreeing. |
 | `lib/sweep.mjs` | Sweep library: the newest report per surface, issue rows per report (`wholePage`'s definition) and the site aggregate with shared rows counted once. |
 | `lib/register-sweep.mjs` | Register sweep library: register tables as items, the eight A4 groups, section to surface mapping, verdict checking against the sweep and the pairings, the Sweep column writer and the per-group bundle. |
 | `lib/triage.mjs` | Triage library: issues by `wholePage`'s key (the Solve classes, then the unmapped-state rows of `other`, in the sweep's order so the counts agree), the mechanical checks (fitting attributes including NULL css_property rows and discovered enums, roster extensions, enclosing calibration, consequence, transient, used value), the read-only resolver pass and the verdict order. |
@@ -267,6 +268,12 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `solveLoop({ maxRounds, build, walk, guard, write, save, blocked?, log? })` → `{ report, writes, gaps, rounds, lastWrote }`: the build, walk and write rounds with every step passed in; `maxRounds` 0 is measure-only (one build, one walk, never a write).
 - `revertRegressions(prev, report, tree, lastWrites, blocked, calFor?, trials?)` → the writes the guard undid this round (`lib/guard.mjs::guardRound`).
 - `wrongWrites(writes, reportAfter, stateMap)` → writes a later round reverted or that moved their rows further from the draft.
+
+### `lib/issue-classes.mjs`
+- `VISUAL`: the row kinds that paint something a setting could hold (`style`, `hover`, `box`); any other kind is reported, never counted.
+- `SOLVE_CLASSES`: Solve's classes for a surviving row, in the order both readers walk them (`hardcode`, `missing`, `unresolved`, `derived`); the first class to hold a key keeps it.
+- `UNMAPPED`: the class for a visual row from a walker state the surface maps to no setting state (`unmapped-state`), walked last.
+- `issueKey(x)` → `solve-report.mjs::wholePage`'s key: one element and property whatever the width or state (`pair` stands in for a row with no ref).
 
 ### `lib/sweep.mjs`
 - `latestReport(solveDir, surface)` → the newest `solve-report.json` of a surface (the last timestamp folder holding one), or null.
