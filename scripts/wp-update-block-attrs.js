@@ -35,6 +35,7 @@
  *     --attrs ./reports/hero-attrs.json \
  *     [--all-instances] \
  *     [--dry-run]
+ *   An attribute given as null in the --attrs JSON is removed from the block (verified absent after save).
  *
  * Authentication (set BEFORE running):
  *   $env:WP_USER         = "Claude"
@@ -177,6 +178,8 @@ async function replaceBlockAttrs(page, clientId, blockName, incomingAttrs) {
         const oldBlock = select('core/block-editor').getBlock(clientId);
         if (!oldBlock) return { ok: false, error: `Block ${clientId} no longer in store` };
         const mergedAttrs = Object.assign({}, oldBlock.attributes, incomingAttrs);
+        // An incoming null removes the attribute (it is left out of the rebuilt block, so it is not serialised).
+        Object.keys(incomingAttrs).forEach((k) => { if (incomingAttrs[k] === null) delete mergedAttrs[k]; });
         const fresh = window.wp.blocks.createBlock(blockName, mergedAttrs, oldBlock.innerBlocks || []);
         dispatch('core/block-editor').replaceBlock(clientId, fresh);
         return {
@@ -267,7 +270,8 @@ function verifyAttrsMatch(persistedAttrsList, expectedAttrs, allInstances) {
     for (let i = 0; i < targets.length; i++) {
         const persisted = targets[i];
         for (const [k, v] of Object.entries(expectedAttrs)) {
-            if (JSON.stringify(persisted[k]) !== JSON.stringify(v)) {
+            // A null expectation means the attribute was removed: it must be absent from the saved markup.
+            if (v === null ? k in persisted : JSON.stringify(persisted[k]) !== JSON.stringify(v)) {
                 mismatches.push({ instance: i, key: k, expected: v, actual: persisted[k] });
             }
         }
